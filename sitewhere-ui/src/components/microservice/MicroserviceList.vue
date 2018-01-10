@@ -1,14 +1,14 @@
 <template>
   <span>
-    <v-toolbar class="blue darken-2 white--text" flat card v-if="topology">
+    <v-toolbar flat card dark color="primary" v-if="topology">
       <v-toolbar-title>{{title}}</v-toolbar-title>
     </v-toolbar>
-    <v-list v-if="topology" two-line dense class="elevation-2 mb-4">
+    <v-list v-if="topology" two-line dense>
       <template v-for="microservice in topology">
         <v-list-tile :key="microservice.identifier"
-          @click.native="onMicroserviceClicked(microservice)">
+          @click="onMicroserviceClicked(microservice)">
           <v-list-tile-avatar>
-            <v-icon left light fa>{{microservice.icon}}</v-icon>
+            <v-icon left light>fa-{{microservice.icon}}</v-icon>
           </v-list-tile-avatar>
           <v-list-tile-content>
             <v-list-tile-title v-text="microservice.name" class="subheading"></v-list-tile-title>

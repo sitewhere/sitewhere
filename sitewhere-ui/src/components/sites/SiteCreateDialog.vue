@@ -3,10 +3,13 @@
     <site-dialog ref="dialog" title="Create Site" width="600" resetOnOpen="true"
       createLabel="Create" cancelLabel="Cancel" @payload="onCommit">
     </site-dialog>
-    <v-btn fab dark class="add-button red darken-1 elevation-5"
-      v-tooltip:top="{ html: 'Add Site' }" @click.native.stop="onOpenDialog">
-      <v-icon>add</v-icon>
-    </v-btn>
+    <v-tooltip top>
+      <v-btn fab dark class="add-button red darken-1 elevation-5"
+        @click.stop="onOpenDialog" slot="activator">
+        <v-icon>fa-plus</v-icon>
+      </v-btn>
+      <span>Add Site</span>
+    </v-tooltip>
   </div>
 </template>
 

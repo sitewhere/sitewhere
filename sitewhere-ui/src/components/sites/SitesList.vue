@@ -3,7 +3,8 @@
     <v-container fluid grid-list-md v-if="sites">
       <v-layout row wrap>
          <v-flex xs6 v-for="(site, index) in sites" :key="site.token">
-          <site-list-entry :site="site"></site-list-entry>
+          <site-list-entry :site="site" @siteOpened="onOpenSite">
+          </site-list-entry>
         </v-flex>
       </v-layout>
     </v-container>
@@ -49,6 +50,14 @@ export default {
           component.sites = response.data.results
         }).catch(function (e) {
         })
+    },
+
+    // Called when a site is clicked.
+    onOpenSite: function (token) {
+      var tenant = this.$store.getters.selectedTenant
+      if (tenant) {
+        this.$router.push('/tenants/' + tenant.id + '/sites/' + token)
+      }
     },
 
     // Called when a new site is added.

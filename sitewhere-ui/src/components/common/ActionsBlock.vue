@@ -1,17 +1,19 @@
 <template>
   <span class="actions-block">
-    <v-btn dark icon small
-      class="blue--text text--darken-4 ml-0 mr-0"
-      v-tooltip:top="{ html: 'Edit' }"
-      @click.native.stop="onOpenEdit">
-      <v-icon fa class="fa-lg">edit</v-icon>
-    </v-btn>
-    <v-btn dark icon small
-      class="red--text text--darken-4 ml-0"
-      v-tooltip:top="{ html: 'Delete' }"
-      @click.native.stop="onOpenDelete">
-      <v-icon fa class="fa-lg">times</v-icon>
-    </v-btn>
+    <v-tooltip top>
+      <v-btn dark icon small class="blue--text text--darken-4 ml-0 mr-0"
+        @click.stop="onOpenEdit" slot="activator">
+        <v-icon>fa-edit</v-icon>
+      </v-btn>
+      <span>Edit</span>
+    </v-tooltip>
+    <v-tooltip top>
+      <v-btn dark icon small class="red--text text--darken-4 ml-0"
+        @click.stop="onOpenDelete" slot="activator">
+        <v-icon>fa-times</v-icon>
+      </v-btn>
+      <span>Delete</span>
+    </v-tooltip>
     <slot name="edit"></slot>
     <slot name="delete"></slot>
   </span>

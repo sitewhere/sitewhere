@@ -11,8 +11,8 @@
       </v-card-text>
     </delete-dialog>
     <v-btn class="red darken-2 white--text"
-      @click.native.stop="showDeleteDialog">
-      <v-icon fa class="white--text mr-1">times</v-icon>
+      @click.stop="showDeleteDialog">
+      <v-icon class="white--text mr-1">fa-times</v-icon>
       Delete
     </v-btn>
   </span>

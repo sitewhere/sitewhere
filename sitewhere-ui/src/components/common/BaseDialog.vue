@@ -1,11 +1,11 @@
 <template>
   <v-dialog v-model="visible" persistent :width="width">
     <v-card>
-      <div class="create-dialog blue darken-2 white--text headline">
-        {{title}}
-      </div>
+      <v-toolbar dense flat card dark color="primary">
+        <v-toolbar-title>{{title}}</v-toolbar-title>
+      </v-toolbar>
       <error-banner :error="error"></error-banner>
-      <v-card-text>
+      <v-card-text class="pa-0">
         <slot>
             <div>Your content goes here!</div>
         </slot>
@@ -51,8 +51,4 @@ export default {
 </script>
 
 <style scoped>
-.create-dialog {
-  padding: 10px;
-  width: 100%;
-}
 </style>

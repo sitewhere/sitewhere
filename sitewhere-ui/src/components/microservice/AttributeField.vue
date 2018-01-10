@@ -26,9 +26,12 @@
       </v-checkbox>
     </v-flex>
     <v-flex xs1>
-      <div v-tooltip:left="{ html: attribute.description }" >
-        <v-icon fa class="fa-lg blue--text text--darken-2">question-circle</v-icon>
-      </div>
+      <v-tooltip left>
+        <v-icon class="blue--text text--darken-2" slot="activator">
+          fa-question-circle
+        </v-icon>
+        <span>{{ attribute.description }}</span>
+      </v-tooltip>
     </v-flex>
   </v-layout>
 </template>

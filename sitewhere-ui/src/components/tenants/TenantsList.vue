@@ -1,10 +1,13 @@
 <template>
-  <div>
-    <v-container fluid grid-list-md  v-if="tenants">
+  <span>
+    <v-toolbar flat card dark color="primary">
+      <v-toolbar-title>Tenant Management</v-toolbar-title>
+    </v-toolbar>
+    <v-container fluid grid-list-md v-if="tenants">
       <v-layout row wrap>
          <v-flex xs12 v-for="(tenant, index) in tenants" :key="tenant.id">
           <tenant-list-entry :tenant="tenant" class="mb-2"
-            @click.native="onOpenTenant(tenant)"
+            @click="onOpenTenant(tenant)"
             @openTenant="onOpenTenant(tenant)"
             @configureTenant="onConfigureTenant(tenant)">
           </tenant-list-entry>
@@ -14,7 +17,7 @@
     <pager :results="results" @pagingUpdated="updatePaging"></pager>
     <tenant-create-dialog @tenantAdded="refresh">
     </tenant-create-dialog>
-  </div>
+  </span>
 </template>
 
 <script>

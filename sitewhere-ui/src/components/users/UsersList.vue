@@ -1,5 +1,8 @@
 <template>
-  <div>
+  <span>
+    <v-toolbar flat card dark color="primary">
+      <v-toolbar-title>User Management</v-toolbar-title>
+    </v-toolbar>
     <v-layout row wrap v-if="users">
       <v-flex xs12>
         <no-results-panel v-if="users.length === 0"
@@ -48,7 +51,7 @@
     </pager>
     <user-create-dialog @userAdded="refresh">
     </user-create-dialog>
-  </div>
+  </span>
 </template>
 
 <script>

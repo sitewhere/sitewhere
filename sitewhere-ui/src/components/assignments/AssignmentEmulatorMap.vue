@@ -35,7 +35,7 @@ export default {
   created: function () {
     // Load site information for map.
     var component = this
-    _getSite(this.$store, this.assignment.siteToken)
+    _getSite(this.$store, this.assignment.site.token)
       .then(function (response) {
         component.onSiteLoaded(response.data)
       }).catch(function (e) {

@@ -98,10 +98,12 @@
         </v-tabs-content>
       </v-tabs>
     </base-dialog>
-    <v-btn fab dark class="filter-button red darken-1 elevation-5"
-      v-tooltip:left="{ html: 'Update Filter' }" @click.native.stop="openDialog">
-      <v-icon fa class="fa-2x" style="margin-top: -8px;">filter</v-icon>
-    </v-btn>
+    <v-tooltip top>
+      <v-btn fab class="white blue--text text--darken-3" @click.stop="openDialog" slot="activator">
+        <v-icon>fa-filter</v-icon>
+      </v-btn>
+      <span>Update Filter</span>
+    </v-tooltip>
   </span>
 </template>
 
@@ -243,9 +245,4 @@ export default {
 </script>
 
 <style scoped>
-.filter-button {
-  position: absolute;
-  right: 16px;
-  top: 16px;
-}
 </style>

@@ -1,9 +1,9 @@
 <template>
   <v-dialog v-model="visible" persistent :width="width">
     <v-card >
-      <div class="confirm-dialog blue darken-2 white--text">
-        {{title}}
-      </div>
+      <v-toolbar dense flat card dark color="primary">
+        <v-toolbar-title>{{title}}</v-toolbar-title>
+      </v-toolbar>
       <v-alert class="ma-0" error v-bind:value="true" style="width: 100%" v-if="error">
         {{ error.message }}
       </v-alert>

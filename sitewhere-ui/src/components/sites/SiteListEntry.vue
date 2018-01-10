@@ -1,6 +1,6 @@
 <template>
-  <v-card hover @click="onOpenSite(site.token)" class="site white pa-2">
-    <v-card-text>
+  <v-card hover class="site white pa-2">
+    <v-card-text @click="onOpenSite">
       <div class="site-logo"
         v-bind:style="{ 'background': 'url(' + site.imageUrl + ')', 'background-size': 'cover', 'background-repeat': 'no-repeat', 'background-position': '50% 50%'}">
       </div>
@@ -20,11 +20,8 @@ export default {
 
   methods: {
     // Called when a site is clicked.
-    onOpenSite: function (token) {
-      var tenant = this.$store.getters.selectedTenant
-      if (tenant) {
-        this.$router.push('/tenants/' + tenant.id + '/sites/' + token)
-      }
+    onOpenSite: function () {
+      this.$emit('siteOpened', this.site.token)
     }
   }
 }

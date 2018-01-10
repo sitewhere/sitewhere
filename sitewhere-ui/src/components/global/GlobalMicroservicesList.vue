@@ -1,10 +1,8 @@
 <template>
   <div v-if="topology">
-    <v-app>
-      <microservice-list title="Global Microservices" :topology="topology"
-        @microserviceClicked="onMicroserviceClicked">
-      </microservice-list>
-    </v-app>
+    <microservice-list title="Global Microservices" :topology="topology"
+      @microserviceClicked="onMicroserviceClicked">
+    </microservice-list>
   </div>
 </template>
 

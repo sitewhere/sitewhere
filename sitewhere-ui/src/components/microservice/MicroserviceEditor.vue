@@ -1,6 +1,6 @@
 <template>
   <span>
-    <v-card v-if="currentContext" class="elevation-1">
+    <v-card v-if="currentContext" flat>
       <v-card-text>
         <!-- Banner shown above microservice content -->
         <microservice-banner :currentContext="currentContext"
@@ -22,7 +22,7 @@
               @addComponent="onAddComponent">
             </element-placeholder>
             <v-toolbar v-else flat light class="grey lighten-4 pa-2">
-              <v-icon light fa class="fa-lg">{{contextElement.icon}}</v-icon>
+              <v-icon light class="fa-lg">fa-{{contextElement.icon}}</v-icon>
               <v-toolbar-title class="black--text">
                 {{ elementTitle(contextElement) }}
               </v-toolbar-title>
@@ -31,8 +31,8 @@
                 @elementDeleted="onDeleteElement(contextElement)">
               </element-delete-dialog>
               <v-btn class="green darken-2 white--text mr-3"
-                @click.native="onPushContext(contextElement)">
-                <v-icon fa class="white--text mr-2 mt-0">arrow-right</v-icon>
+                @click="onPushContext(contextElement)">
+                <v-icon class="white--text mr-2 mt-0">fa-arrow-right</v-icon>
                 Open
               </v-btn>
             </v-toolbar>

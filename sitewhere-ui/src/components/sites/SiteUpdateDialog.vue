@@ -3,10 +3,13 @@
     <site-dialog title="Edit Site" width="600" resetOnOpen="true"
       createLabel="Update" cancelLabel="Cancel" @payload="onCommit">
     </site-dialog>
-    <v-btn icon v-tooltip:top="{ html: 'Edit Site' }"
-      @click.native.stop="onOpenDialog">
-      <v-icon class="grey--text">edit</v-icon>
-    </v-btn>
+    <v-tooltip top>
+      <v-btn dark icon small
+        @click.stop="onOpenDialog" slot="activator">
+        <v-icon class="grey--text">fa-edit</v-icon>
+      </v-btn>
+      <span>Edit Site</span>
+    </v-tooltip>
   </div>
 </template>
 

@@ -6,10 +6,13 @@
         Are you sure you want to delete this site?
       </v-card-text>
     </delete-dialog>
-    <v-btn icon v-tooltip:top="{ html: 'Delete Site' }"
-      @click.native.stop="showDeleteDialog">
-      <v-icon class="grey--text">delete</v-icon>
-    </v-btn>
+    <v-tooltip top>
+      <v-btn dark icon small
+        @click.stop="showDeleteDialog" slot="activator">
+        <v-icon class="grey--text">fa-times</v-icon>
+      </v-btn>
+      <span>Delete Site</span>
+    </v-tooltip>
   </span>
 </template>
 

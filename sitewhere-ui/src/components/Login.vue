@@ -2,7 +2,7 @@
 <v-app>
   <main>
     <v-container>
-      <v-card raised class="grey lighten-4 white--text mt-5"
+      <v-card raised class="grey lighten-4 white--text mt-4"
         style="width: 600px; margin-left: auto; margin-right: auto;">
         <v-card-text class="white">
           <img src="../assets/sitewhere.png" style="height: 185px;"/>
@@ -12,8 +12,8 @@
         </v-progress-linear>
         <error-banner :error="error"></error-banner>
         <v-card-text>
-          <v-layout row wrap pl-0 pr-0 mb-0 style="width: 100%">
-            <v-flex xs12 pa-0>
+          <v-layout row wrap style="width: 100%">
+            <v-flex xs12>
               <div style="width: 100%; text-align: center; color: #333; font-size: 28px;">
                 SiteWhere Server Administration
               </div>
@@ -22,21 +22,21 @@
         </v-card-text>
         <v-divider></v-divider>
         <v-card-text>
-          <v-layout row wrap pl-3 pr-0 mb-2 style="width: 100%">
-            <v-flex xs12 pt-4>
+          <v-layout row wrap class="pa-3">
+            <v-flex xs12 class="mb-4">
               <v-text-field hide-details label="Username" v-model="username">
               </v-text-field>
             </v-flex>
-            <v-flex xs12>
+            <v-flex xs12 class="mb-4">
               <v-text-field hide-details label="Password" v-model="password"
                 type="password">
               </v-text-field>
             </v-flex>
-            <v-flex xs3>
+            <v-flex xs3 class="pr-3">
               <v-select required :items="protocols" v-model="protocol"
                 label="Protocol"></v-select>
             </v-flex>
-            <v-flex xs5>
+            <v-flex xs5 class="pr-3">
               <v-text-field hide-details label="Server" v-model="server">
               </v-text-field>
             </v-flex>

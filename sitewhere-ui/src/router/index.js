@@ -36,7 +36,14 @@ import BatchOperationDetail from '@/components/batch/BatchOperationDetail'
 import SchedulesList from '@/components/schedules/SchedulesList'
 
 Vue.use(Router)
-Vue.use(Vuetify)
+Vue.use(Vuetify, {
+  theme: {
+    primary: '#1565c0',
+    secondary: '#b0bec5',
+    accent: '#8c9eff',
+    error: '#b71c1c'
+  }
+})
 Vue.use(VueMoment)
 Vue.use(VueClipboards)
 Vue.use(VueHighlightJS)

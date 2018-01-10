@@ -1,8 +1,11 @@
 <template>
-  <v-btn fab fixed bottom right dark class="add-button red darken-1 elevation-5"
-    v-tooltip:top="{ html: label }" @click.native.stop="onButtonClicked">
-    <v-icon>{{ icon }}</v-icon>
-  </v-btn>
+  <v-tooltip left>
+    <v-btn fab fixed bottom right dark color="red darken-2" class="elevation-5"
+      @click.stop="onButtonClicked" slot="activator">
+      <v-icon>{{ icon }}</v-icon>
+    </v-btn>
+    <span>{{ label }}</span>
+  </v-tooltip>
 </template>
 
 <script>

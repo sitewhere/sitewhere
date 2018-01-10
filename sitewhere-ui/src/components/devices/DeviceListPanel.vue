@@ -60,8 +60,8 @@ export default {
   methods: {
     styleForDevice: function () {
       let style = {}
-      style['background-color'] = (this.device.assignment ? '#eee' : '#cff')
-      style['border'] = '1px solid' + (this.device.assignment ? '#ddd' : '#6cc')
+      style['background-color'] = (this.device.assignment ? '#fff' : '#cff')
+      style['border'] = '1px solid' + (this.device.assignment ? 'none' : '#6cc')
       return style
     },
     // Create background image style.
@@ -110,9 +110,9 @@ export default {
 }
 .device-image {
   position: absolute;
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
+  top: 5px;
+  left: 5px;
+  bottom: 5px;
   width: 90px;
   background-color: #fff;
   border-right: 1px solid #eee;
@@ -120,7 +120,7 @@ export default {
 .device-specification {
   position: absolute;
   top: 6px;
-  left: 100px;
+  left: 110px;
   font-size: 18px;
   color: #333;
   font-weight: 700;
@@ -130,7 +130,7 @@ export default {
 .device-hardware-id {
   position: absolute;
   top: 40px;
-  left: 100px;
+  left: 110px;
   font-size: 14px;
   color: #333;
   font-weight: 700;
@@ -140,7 +140,7 @@ export default {
 .device-comments {
   position: absolute;
   top: 68px;
-  left: 100px;
+  left: 110px;
   font-size: 12px;
   color: #333;
   white-space: nowrap;

@@ -5,8 +5,7 @@
     <v-container fluid grid-list-md  v-if="devices">
       <v-layout row wrap>
          <v-flex xs6 v-for="(device, index) in devices" :key="device.hardwareId">
-          <device-list-panel :device="device"
-            @click.native="onOpenDevice(device)"
+          <device-list-panel :device="device" @click="onOpenDevice(device)"
             @assigned="refresh">
           </device-list-panel>
         </v-flex>

@@ -1,15 +1,13 @@
 <template>
   <div v-if="tenant">
     <v-app>
-      <tenant-detail-header class="mb-3" :tenant="tenant" @refresh="refresh">
+      <tenant-detail-header :tenant="tenant" @refresh="refresh">
         <span slot="buttons">
-          <v-btn class="red darken-2 white--text"
-            @click.native="onDeleteTenant">
-            Delete <v-icon fa class="white--text pl-2">times</v-icon>
+          <v-btn class="red darken-2 white--text" @click="onDeleteTenant">
+            Delete <v-icon class="white--text pl-2">fa-times</v-icon>
           </v-btn>
-          <v-btn class="blue white--text"
-            @click.native="onEditTenant">
-            Edit <v-icon fa class="white--text pl-2">edit</v-icon>
+          <v-btn class="blue white--text" @click="onEditTenant">
+            Edit <v-icon class="white--text pl-2">fa-edit</v-icon>
           </v-btn>
         </span>
       </tenant-detail-header>
