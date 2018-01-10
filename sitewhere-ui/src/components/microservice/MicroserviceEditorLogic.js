@@ -302,8 +302,10 @@ function buildAttributeGroups (context) {
       attributes.push({
         'localName': modelAttr.localName,
         'name': modelAttr.name,
+        'type': modelAttr.type,
         'icon': modelAttr.icon,
         'description': modelAttr.description,
+        'choices': modelAttr.choices,
         'value': value,
         'required': modelAttr.required
       })

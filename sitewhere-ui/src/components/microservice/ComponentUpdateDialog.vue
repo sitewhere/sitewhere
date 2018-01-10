@@ -1,14 +1,14 @@
 <template>
   <span>
-    <configuration-element-dialog ref="dialog" :title="title"
+    <component-dialog ref="dialog" :title="title"
       width="600" resetOnOpen="true" createLabel="Update" cancelLabel="Cancel"
-      @payload="onCommit" :model="model" :config="config">
-    </configuration-element-dialog>
+      @payload="onCommit" :context="context">
+    </component-dialog>
   </span>
 </template>
 
 <script>
-import ConfigurationElementDialog from './ConfigurationElementDialog'
+import ComponentDialog from './ComponentDialog'
 
 export default {
 
@@ -16,10 +16,10 @@ export default {
   }),
 
   components: {
-    ConfigurationElementDialog
+    ComponentDialog
   },
 
-  props: ['model', 'config'],
+  props: ['context'],
 
   computed: {
     title: function () {

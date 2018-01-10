@@ -40,14 +40,12 @@
         </v-card>
       </v-card-text>
     </v-card>
-    <configuration-element-create-dialog ref="create"
-      :model="elementDialogModel"
+    <component-create-dialog ref="create" :context="dialogContext"
       @elementAdded="onComponentAdded">
-    </configuration-element-create-dialog>
-    <configuration-element-update-dialog ref="update"
-      :model="elementDialogModel" :config="elementDialogConfig"
+    </component-create-dialog>
+    <component-update-dialog ref="update" :context="dialogContext"
       @elementUpdated="onConfigurationElementUpdated">
-    </configuration-element-update-dialog>
+    </component-update-dialog>
   </span>
 </template>
 
@@ -57,8 +55,8 @@ import MicroserviceBanner from './MicroserviceBanner'
 import ComponentAttributes from './ComponentAttributes'
 import ElementPlaceholder from './ElementPlaceholder'
 import ElementDeleteDialog from './ElementDeleteDialog'
-import ConfigurationElementCreateDialog from './ConfigurationElementCreateDialog'
-import ConfigurationElementUpdateDialog from './ConfigurationElementUpdateDialog'
+import ComponentCreateDialog from './ComponentCreateDialog'
+import ComponentUpdateDialog from './ComponentUpdateDialog'
 import {wizard} from './MicroserviceEditorLogic'
 
 export default {
@@ -66,8 +64,7 @@ export default {
   data: () => ({
     currentContext: null,
     wizardContexts: [],
-    elementDialogModel: null,
-    elementDialogConfig: null,
+    dialogContext: null,
     dirty: false
   }),
 
@@ -79,8 +76,8 @@ export default {
     ComponentAttributes,
     ElementPlaceholder,
     ElementDeleteDialog,
-    ConfigurationElementCreateDialog,
-    ConfigurationElementUpdateDialog
+    ComponentCreateDialog,
+    ComponentUpdateDialog
   },
 
   computed: {
@@ -118,15 +115,8 @@ export default {
     onAddComponent: function (option) {
       let relative = wizard.getRelativeContext(option.localName)
       if (relative.model) {
-        if (!relative.model.attributes) {
-          this.onComponentAdded({
-            'name': option.localName,
-            'attributes': null
-          })
-        } else {
-          this.$data.elementDialogModel = relative.model
-          this.$refs['create'].onOpenDialog()
-        }
+        this.$data.dialogContext = relative
+        this.$refs['create'].onOpenDialog()
       }
     },
 
@@ -159,8 +149,7 @@ export default {
 
     // Called to configure the current context.
     onConfigureCurrent: function () {
-      this.$data.elementDialogModel = this.$data.currentContext.model
-      this.$data.elementDialogConfig = this.$data.currentContext.config
+      this.$data.dialogContext = this.$data.currentContext
       this.$refs['update'].onOpenDialog()
     },
 

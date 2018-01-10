@@ -1,8 +1,7 @@
 <template>
   <div v-if="currentContext.groups && currentContext.groups.length">
     <v-card class="grey lighten-4 mb-3"
-      v-for="group in currentContext.groups"
-      :key="group.id">
+      v-for="group in currentContext.groups" :key="group.id">
       <v-card-text
         class="subheading blue darken-2 white--text pa-2">
         <strong>
@@ -14,7 +13,8 @@
           <attribute-field
             v-for="attribute in group.attributes"
             :key="attribute.name" :attribute="attribute"
-            :attrValues="attributeValues" :readOnly="readOnly">
+            :attrValue="attrValues[attribute.localName]"
+            :readOnly="readOnly" @valueUpdated="onAttributeValueUpdated">
           </attribute-field>
         </v-container>
       </v-card-text>
@@ -29,6 +29,7 @@ import AttributeField from './AttributeField'
 export default {
 
   data: () => ({
+    attrValues: null
   }),
 
   props: ['currentContext', 'readOnly'],
@@ -37,18 +38,27 @@ export default {
     AttributeField
   },
 
-  computed: {
-    // Compute attribute values for current context.
-    attributeValues: function () {
-      if (this.currentContext) {
-        var attributes = this.currentContext['config'].attributes
-        return Utils.arrayToMetadata(attributes)
+  watch: {
+    // Compute initial attribute values for current context.
+    currentContext: function (context) {
+      if (context) {
+        var attributes = context['config'].attributes
+        this.$data.attrValues = Utils.arrayToMetadata(attributes)
       }
-      return {}
     }
   },
 
   methods: {
+    // Get updated values for attributes.
+    getValues: function () {
+      return this.$data.values
+    },
+
+    // Called when attribute value is updated.
+    onAttributeValueUpdated: function (update) {
+      this.$data.attrValues[update.attribute.localName] = update.newValue
+      this.$emit('valuesUpdated', this.$data.attrValues)
+    }
   }
 }
 </script>
