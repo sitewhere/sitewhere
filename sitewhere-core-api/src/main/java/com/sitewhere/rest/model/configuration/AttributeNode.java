@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
 import com.sitewhere.spi.microservice.configuration.model.IAttributeNode;
+import com.sitewhere.spi.microservice.configuration.model.IAttributeChoice;
 import com.sitewhere.spi.microservice.configuration.model.NodeType;
 
 /**
@@ -34,7 +35,7 @@ public class AttributeNode extends XmlNode implements IAttributeNode {
     private boolean index;
 
     /** Choices available for attribute */
-    private List<String> choices;
+    private List<IAttributeChoice> choices;
 
     /** Indicates if attribute is required */
     private boolean required;
@@ -91,11 +92,11 @@ public class AttributeNode extends XmlNode implements IAttributeNode {
      * )
      */
     @Override
-    public List<String> getChoices() {
+    public List<IAttributeChoice> getChoices() {
 	return choices;
     }
 
-    public void setChoices(List<String> choices) {
+    public void setChoices(List<IAttributeChoice> choices) {
 	this.choices = choices;
     }
 
@@ -162,11 +163,11 @@ public class AttributeNode extends XmlNode implements IAttributeNode {
 	    return this;
 	}
 
-	public Builder choice(String choice) {
+	public Builder choice(String name, String value) {
 	    if (attribute.getChoices() == null) {
-		attribute.setChoices(new ArrayList<String>());
+		attribute.setChoices(new ArrayList<IAttributeChoice>());
 	    }
-	    attribute.getChoices().add(choice);
+	    attribute.getChoices().add(new AttributeChoice(name, value));
 	    return this;
 	}
 

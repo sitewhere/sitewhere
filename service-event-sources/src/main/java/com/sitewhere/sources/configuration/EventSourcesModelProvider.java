@@ -383,8 +383,8 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 	builder.attribute((new AttributeNode.Builder("Web socket URL", "webSocketUrl", AttributeType.String)
 		.description("URL of the web socket to connect to.").makeRequired().build()));
 	builder.attribute((new AttributeNode.Builder("Payload type", "payloadType", AttributeType.String)
-		.description("Chooses whether payload is processed as binary or string.").choice("binary")
-		.choice("string").defaultValue("binary").build()));
+		.description("Chooses whether payload is processed as binary or string.").choice("Binary", "binary")
+		.choice("String", "string").defaultValue("binary").build()));
 
 	return builder.build();
     }

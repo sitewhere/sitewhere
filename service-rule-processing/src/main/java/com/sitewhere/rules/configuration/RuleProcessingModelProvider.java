@@ -107,13 +107,13 @@ public class RuleProcessingModelProvider extends ConfigurationModelProvider {
 	builder.attribute((new AttributeNode.Builder("Zone token", "zoneToken", AttributeType.String)
 		.description("Unique token for zone locations are to be tested against.").build()));
 	builder.attribute((new AttributeNode.Builder("Condition", "condition", AttributeType.String)
-		.description("Condition under which alert should be generated.").choice("inside").choice("outside")
-		.build()));
+		.description("Condition under which alert should be generated.")
+		.choice("Location Inside Zone", "inside").choice("Location Outside Zone", "outside").build()));
 	builder.attribute((new AttributeNode.Builder("Alert type", "alertType", AttributeType.String)
 		.description("Identifier that indicates alert type.").build()));
 	builder.attribute((new AttributeNode.Builder("Alert level", "alertLevel", AttributeType.String)
-		.description("Level value of alert.").choice("info").choice("warning").choice("error")
-		.choice("critical").build()));
+		.description("Level value of alert.").choice("Information", "info").choice("Warning", "warning")
+		.choice("Error", "error").choice("Critical", "critical").build()));
 	builder.attribute((new AttributeNode.Builder("Alert message", "alertMessage", AttributeType.String)
 		.description("Message shown for alert.").build()));
 	return builder.build();

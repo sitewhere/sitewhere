@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitewhere.grpc.model.CommonModel.GOptionalString;
+import com.sitewhere.grpc.model.MicroserviceModel.GAttributeChoice;
 import com.sitewhere.grpc.model.MicroserviceModel.GAttributeNode;
 import com.sitewhere.grpc.model.MicroserviceModel.GAttributeType;
 import com.sitewhere.grpc.model.MicroserviceModel.GElementNode;
@@ -21,6 +22,7 @@ import com.sitewhere.grpc.model.MicroserviceModel.GMicroserviceConfiguration;
 import com.sitewhere.grpc.model.MicroserviceModel.GMicroserviceDetails;
 import com.sitewhere.grpc.model.MicroserviceModel.GNodeType;
 import com.sitewhere.grpc.model.MicroserviceModel.GXmlNode;
+import com.sitewhere.rest.model.configuration.AttributeChoice;
 import com.sitewhere.rest.model.configuration.AttributeNode;
 import com.sitewhere.rest.model.configuration.ConfigurationModel;
 import com.sitewhere.rest.model.configuration.ElementNode;
@@ -29,6 +31,7 @@ import com.sitewhere.rest.model.configuration.XmlNode;
 import com.sitewhere.rest.model.microservice.state.MicroserviceDetails;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
+import com.sitewhere.spi.microservice.configuration.model.IAttributeChoice;
 import com.sitewhere.spi.microservice.configuration.model.IAttributeNode;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.configuration.model.IElementNode;
@@ -173,6 +176,66 @@ public class MicroserviceModelConverter {
     }
 
     /**
+     * Convert attribute choice from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static AttributeChoice asApiAttributeChoice(GAttributeChoice grpc) throws SiteWhereException {
+	AttributeChoice api = new AttributeChoice();
+	api.setName(grpc.getName());
+	api.setValue(grpc.getValue());
+	return api;
+    }
+
+    /**
+     * Convert attribute choice list from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<IAttributeChoice> asApiAttributeChoiceList(List<GAttributeChoice> grpc)
+	    throws SiteWhereException {
+	List<IAttributeChoice> api = new ArrayList<IAttributeChoice>();
+	for (GAttributeChoice choice : grpc) {
+	    api.add(MicroserviceModelConverter.asApiAttributeChoice(choice));
+	}
+	return api;
+    }
+
+    /**
+     * Convert attribute choice from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GAttributeChoice asGrpcAttributeChoice(IAttributeChoice api) throws SiteWhereException {
+	GAttributeChoice.Builder grpc = GAttributeChoice.newBuilder();
+	grpc.setName(api.getName());
+	grpc.setValue(api.getValue());
+	return grpc.build();
+    }
+
+    /**
+     * Convert attribute choice list from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<GAttributeChoice> asGrpcAttributeChoiceList(List<IAttributeChoice> api)
+	    throws SiteWhereException {
+	List<GAttributeChoice> grpc = new ArrayList<GAttributeChoice>();
+	for (IAttributeChoice element : api) {
+	    grpc.add(MicroserviceModelConverter.asGrpcAttributeChoice(element));
+	}
+	return grpc;
+    }
+
+    /**
      * Convert attribute node from GRPC to API.
      * 
      * @param grpc
@@ -184,7 +247,9 @@ public class MicroserviceModelConverter {
 	api.setType(MicroserviceModelConverter.asApiAttributeType(grpc.getType()));
 	api.setDefaultValue(grpc.hasDefaultValue() ? grpc.getDefaultValue().getValue() : null);
 	api.setIndex(grpc.getIndex());
-	api.setChoices((grpc.getChoicesList().size() > 0) ? grpc.getChoicesList() : null);
+	api.setChoices((grpc.getChoicesList().size() > 0)
+		? MicroserviceModelConverter.asApiAttributeChoiceList(grpc.getChoicesList())
+		: null);
 	api.setRequired(grpc.getRequired());
 	api.setGroup(grpc.hasGroup() ? grpc.getGroup().getValue() : null);
 	updateFromGrpcXmlNode(api, grpc.getNode());
@@ -206,7 +271,7 @@ public class MicroserviceModelConverter {
 	}
 	grpc.setIndex(api.isIndex());
 	if (api.getChoices() != null) {
-	    grpc.addAllChoices(api.getChoices());
+	    grpc.addAllChoices(MicroserviceModelConverter.asGrpcAttributeChoiceList(api.getChoices()));
 	}
 	grpc.setRequired(api.isRequired());
 	if (api.getGroup() != null) {

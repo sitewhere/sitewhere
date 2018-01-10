@@ -348,7 +348,7 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 		.description("Site filter applies to.").makeIndex().build()));
 	builder.attribute((new AttributeNode.Builder("Include/Exclude", "operation", AttributeType.String)
 		.description("Indicates whether events from the site should be included or excluded from processing.")
-		.choice("include").choice("exclude").defaultValue("include").build()));
+		.choice("Include", "include").choice("Exclude", "exclude").defaultValue("include").build()));
 	return builder.build();
     }
 
@@ -368,7 +368,7 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 			.description("Specification filter applies to.").makeIndex().build()));
 	builder.attribute((new AttributeNode.Builder("Include/Exclude", "operation", AttributeType.String).description(
 		"Indicates whether events from the specification should be included or excluded from processing.")
-		.choice("include").choice("exclude").defaultValue("include").build()));
+		.choice("Include", "include").choice("Exclude", "exclude").defaultValue("include").build()));
 	return builder.build();
     }
 

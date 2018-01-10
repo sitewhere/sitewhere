@@ -372,6 +372,7 @@ function buildContent (context) {
 /** Build placeholder entry */
 function buildPlaceholder (childRole) {
   let placeholder = {}
+  placeholder.id = childRole.name
   placeholder.name = childRole.name
   placeholder.multiple = childRole.multiple
   placeholder.optional = childRole.optional

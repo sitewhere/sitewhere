@@ -22,7 +22,7 @@ public interface IAttributeNode extends IXmlNode {
 
     public boolean isIndex();
 
-    public List<String> getChoices();
+    public List<IAttributeChoice> getChoices();
 
     public boolean isRequired();
 

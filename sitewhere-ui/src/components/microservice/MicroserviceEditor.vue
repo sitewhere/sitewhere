@@ -8,34 +8,15 @@
           @configureCurrent="onConfigureCurrent"
           @deleteCurrent="onDeleteCurrent">
         </microservice-banner>
-        <!-- Attributes -->
-        <div
-          v-if="currentContext.groups && currentContext.groups.length">
-          <v-card class="grey lighten-4 mb-3"
-            v-for="group in currentContext.groups"
-            :key="group.id">
-            <v-card-text
-              class="subheading blue darken-2 white--text pa-2">
-              <strong>
-                {{ group.id ? group.description : 'Component Settings' }}
-              </strong>
-            </v-card-text>
-            <v-card-text class="subheading pa-0 pl-2">
-              <v-container fluid>
-                <attribute-field
-                  v-for="attribute in group.attributes"
-                  :key="attribute.name" :attribute="attribute"
-                  :attrValues="attributeValues" :readOnly="true">
-                </attribute-field>
-              </v-container>
-            </v-card-text>
-          </v-card>
-        </div>
+        <!-- Grouped attributes for current context -->
+        <component-attributes :currentContext="currentContext"
+          :readOnly="true">
+        </component-attributes>
         <!-- Elements -->
         <v-card v-if="currentContext.content">
           <v-card-text class="pa-0"
             v-for="contextElement in currentContext.content.elements"
-            :key="contextElement.name">
+            :key="contextElement.id">
             <element-placeholder v-if="!contextElement.hasContent"
               :contextElement="contextElement"
               @addComponent="onAddComponent">
@@ -71,11 +52,10 @@
 </template>
 
 <script>
-import Utils from '../common/Utils'
 import FloatingActionButton from '../common/FloatingActionButton'
 import MicroserviceBanner from './MicroserviceBanner'
+import ComponentAttributes from './ComponentAttributes'
 import ElementPlaceholder from './ElementPlaceholder'
-import AttributeField from './AttributeField'
 import ElementDeleteDialog from './ElementDeleteDialog'
 import ConfigurationElementCreateDialog from './ConfigurationElementCreateDialog'
 import ConfigurationElementUpdateDialog from './ConfigurationElementUpdateDialog'
@@ -96,8 +76,8 @@ export default {
   components: {
     FloatingActionButton,
     MicroserviceBanner,
+    ComponentAttributes,
     ElementPlaceholder,
-    AttributeField,
     ElementDeleteDialog,
     ConfigurationElementCreateDialog,
     ConfigurationElementUpdateDialog
@@ -106,15 +86,6 @@ export default {
   computed: {
     configDataAvailable: function () {
       return this.config && this.configModel
-    },
-
-    // Compute attribute values for current context.
-    attributeValues: function () {
-      if (this.$data.currentContext) {
-        var attributes = this.$data.currentContext['config'].attributes
-        return Utils.arrayToMetadata(attributes)
-      }
-      return {}
     }
   },
 

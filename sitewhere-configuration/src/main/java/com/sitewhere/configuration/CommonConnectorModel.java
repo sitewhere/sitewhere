@@ -25,8 +25,8 @@ public class CommonConnectorModel {
      */
     public static void addMqttConnectivityAttributes(ElementNode.Builder builder) {
 	builder.attribute((new AttributeNode.Builder("Transport protocol", "protocol", AttributeType.String)
-		.description("Protocol used for establishing MQTT connection").defaultValue("tcp").choice("tcp")
-		.choice("tls").build()));
+		.description("Protocol used for establishing MQTT connection").defaultValue("tcp")
+		.choice("TCP (No Security)", "tcp").choice("TLS (Secure)", "tls").build()));
 	builder.attribute((new AttributeNode.Builder("MQTT broker hostname", "hostname", AttributeType.String)
 		.description("Hostname used for creating the MQTT broker connection.").defaultValue("localhost")
 		.build()));

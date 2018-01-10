@@ -9,7 +9,7 @@
       <v-btn dark class="grey mr-0" slot="activator">Add Component</v-btn>
       <v-list dense>
         <v-list-tile v-for="option in contextElement.options"
-          :key="option.role"
+          :key="option.name"
           @click.native="onAddComponent(option)">
           <v-list-tile-title class="subheading">
             <v-icon fa class="mr-1">{{ option.icon }}</v-icon>
@@ -29,7 +29,7 @@
       <v-btn dark class="red darken-3 mr-0" slot="activator">Add Required Component</v-btn>
       <v-list dense>
         <v-list-tile v-for="option in contextElement.options"
-          :key="option.role"
+          :key="option.name"
           @click.native="onAddComponent(option)">
           <v-list-tile-title class="subheading">
             <v-icon fa class="mr-1">{{ option.icon }}</v-icon>
