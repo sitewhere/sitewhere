@@ -31,7 +31,7 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
     /** Serialization version identifier */
     private static final long serialVersionUID = -5108019932881896046L;
 
-    /** Unique device specification id */
+    /** Unique zone id */
     private UUID id;
 
     /** Unique zone token */
@@ -172,6 +172,7 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
      */
     public static Zone copy(IZone input) throws SiteWhereException {
 	Zone result = new Zone();
+	result.setId(input.getId());
 	result.setToken(input.getToken());
 	result.setSiteId(input.getSiteId());
 	result.setName(input.getName());

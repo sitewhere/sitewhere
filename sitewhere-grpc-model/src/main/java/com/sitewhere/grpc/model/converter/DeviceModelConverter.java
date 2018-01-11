@@ -895,8 +895,10 @@ public class DeviceModelConverter {
     public static List<GDeviceElementMapping> asGrpcDeviceElementMappings(List<IDeviceElementMapping> apis)
 	    throws SiteWhereException {
 	List<GDeviceElementMapping> grpcs = new ArrayList<GDeviceElementMapping>();
-	for (IDeviceElementMapping api : apis) {
-	    grpcs.add(DeviceModelConverter.asGrpcDeviceElementMapping(api));
+	if (apis != null) {
+	    for (IDeviceElementMapping api : apis) {
+		grpcs.add(DeviceModelConverter.asGrpcDeviceElementMapping(api));
+	    }
 	}
 	return grpcs;
     }
@@ -956,11 +958,11 @@ public class DeviceModelConverter {
     public static DeviceCreateRequest asApiDeviceCreateRequest(GDeviceCreateRequest grpc) throws SiteWhereException {
 	DeviceCreateRequest api = new DeviceCreateRequest();
 	api.setHardwareId(grpc.getHardwareId());
-	api.setParentHardwareId(grpc.getParentHardwareId());
+	api.setParentHardwareId(grpc.hasParentHardwareId() ? grpc.getParentHardwareId().getValue() : null);
 	api.setSpecificationToken(grpc.getSpecificationToken());
 	api.setSiteToken(grpc.getSiteToken());
-	api.setStatus(grpc.getStatus());
-	api.setComments(grpc.getComments());
+	api.setStatus(grpc.hasStatus() ? grpc.getStatus().getValue() : null);
+	api.setComments(grpc.hasComments() ? grpc.getComments().getValue() : null);
 	api.setDeviceElementMappings(
 		DeviceModelConverter.asApiDeviceElementMappings(grpc.getDeviceElementMappingsList()));
 	api.setMetadata(grpc.getMetadataMap());
@@ -977,11 +979,17 @@ public class DeviceModelConverter {
     public static GDeviceCreateRequest asGrpcDeviceCreateRequest(IDeviceCreateRequest api) throws SiteWhereException {
 	GDeviceCreateRequest.Builder grpc = GDeviceCreateRequest.newBuilder();
 	grpc.setHardwareId(api.getHardwareId());
-	grpc.setParentHardwareId(api.getParentHardwareId());
+	if (api.getParentHardwareId() != null) {
+	    grpc.setParentHardwareId(GOptionalString.newBuilder().setValue(api.getParentHardwareId()));
+	}
 	grpc.setSpecificationToken(api.getSpecificationToken());
 	grpc.setSiteToken(api.getSiteToken());
-	grpc.setStatus(api.getStatus());
-	grpc.setComments(api.getComments());
+	if (api.getStatus() != null) {
+	    grpc.setStatus(GOptionalString.newBuilder().setValue(api.getStatus()));
+	}
+	if (api.getComments() != null) {
+	    grpc.setComments(GOptionalString.newBuilder().setValue(api.getComments()));
+	}
 	grpc.addAllDeviceElementMappings(
 		DeviceModelConverter.asGrpcDeviceElementMappings(api.getDeviceElementMappings()));
 	if (api.getMetadata() != null) {
@@ -2014,6 +2022,7 @@ public class DeviceModelConverter {
     public static Zone asApiZone(GZone grpc) throws SiteWhereException {
 	Zone api = new Zone();
 	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
+	api.setToken(grpc.getToken());
 	api.setName(grpc.getName());
 	api.setCoordinates(CommonModelConverter.asApiLocations(grpc.getCoordinatesList()));
 	api.setFillColor(grpc.getFillColor());
@@ -2034,6 +2043,7 @@ public class DeviceModelConverter {
     public static GZone asGrpcZone(IZone api) throws SiteWhereException {
 	GZone.Builder grpc = GZone.newBuilder();
 	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
+	grpc.setToken(api.getToken());
 	grpc.setName(api.getName());
 	grpc.addAllCoordinates(CommonModelConverter.asGrpcLocations(api.getCoordinates()));
 	grpc.setFillColor(api.getFillColor());

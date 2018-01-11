@@ -361,7 +361,7 @@ public class DeviceManagementPersistence extends Persistence {
 	device.setSiteId(site.getId());
 	device.setDeviceSpecificationId(spec.getId());
 	device.setComments(request.getComments());
-	device.setStatus(null);
+	device.setStatus(request.getStatus());
 
 	MetadataProvider.copy(request.getMetadata(), device);
 	DeviceManagementPersistence.initializeEntityMetadata(device);

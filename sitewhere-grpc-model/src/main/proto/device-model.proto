@@ -160,10 +160,10 @@ message GDeviceCreateRequest {
 	string hardwareId = 1;
 	string siteToken = 2;
 	string specificationToken = 3;
-	string parentHardwareId = 4;
+	GOptionalString parentHardwareId = 4;
 	repeated GDeviceElementMapping deviceElementMappings = 5;
-	string comments = 6;
-	string status = 7;
+	GOptionalString comments = 6;
+	GOptionalString status = 7;
 	map<string, string> metadata = 8;
 }
 
