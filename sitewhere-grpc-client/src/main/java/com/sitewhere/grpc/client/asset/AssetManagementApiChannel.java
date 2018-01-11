@@ -462,7 +462,9 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
 	try {
 	    GrpcUtils.logClientMethodEntry(AssetManagementGrpc.METHOD_LIST_ASSET_MODULE_DESCRIPTORS);
 	    GListAssetModuleDescriptorsRequest.Builder grequest = GListAssetModuleDescriptorsRequest.newBuilder();
-	    grequest.setAssetType(AssetModelConverter.asGrpcAssetType(type));
+	    if (type != null) {
+		grequest.setAssetType(AssetModelConverter.asGrpcAssetType(type));
+	    }
 	    GListAssetModuleDescriptorsResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .listAssetModuleDescriptors(grequest.build());
 	    List<IAssetModuleDescriptor> results = new ArrayList<IAssetModuleDescriptor>();

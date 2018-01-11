@@ -1558,7 +1558,7 @@ public class DeviceModelConverter {
     public static DeviceAssignmentCreateRequest asApiDeviceAssignmentCreateRequest(GDeviceAssignmentCreateRequest grpc)
 	    throws SiteWhereException {
 	DeviceAssignmentCreateRequest api = new DeviceAssignmentCreateRequest();
-	api.setToken(grpc.getToken());
+	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
 	api.setAssignmentType(DeviceModelConverter.asApiDeviceAssignmentType(grpc.getAssignmentType()));
 	api.setDeviceHardwareId(grpc.getDeviceHardwareId());
 	api.setAssetReference(AssetModelConverter.asApiAssetReference(grpc.getAssetReference()));
@@ -1576,7 +1576,9 @@ public class DeviceModelConverter {
     public static GDeviceAssignmentCreateRequest asGrpcDeviceAssignmentCreateRequest(IDeviceAssignmentCreateRequest api)
 	    throws SiteWhereException {
 	GDeviceAssignmentCreateRequest.Builder grpc = GDeviceAssignmentCreateRequest.newBuilder();
-	grpc.setToken(api.getToken());
+	if (api.getToken() != null) {
+	    grpc.setToken(GOptionalString.newBuilder().setValue(api.getToken()));
+	}
 	grpc.setAssignmentType(DeviceModelConverter.asGrpcDeviceAssignmentType(api.getAssignmentType()));
 	grpc.setDeviceHardwareId(api.getDeviceHardwareId());
 	grpc.setAssetReference(AssetModelConverter.asGrpcAssetReference(api.getAssetReference()));

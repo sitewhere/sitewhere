@@ -98,7 +98,7 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
 	return assetReference;
     }
 
-    public void setAssetReference(IAssetReference assetReference) {
+    public void setAssetReference(AssetReference assetReference) {
 	this.assetReference = assetReference;
     }
 

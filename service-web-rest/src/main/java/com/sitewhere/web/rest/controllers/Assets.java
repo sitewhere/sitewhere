@@ -123,11 +123,11 @@ public class Assets extends RestControllerBase {
     @ApiOperation(value = "Get an asset by unique id")
     @Secured({ SiteWhereRoles.REST })
     public IAsset getAssetById(
-	    @ApiParam(value = "Unique asset module id", required = true) @PathVariable String moduleId,
+	    @ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
 	    @ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	return getAssetResolver().getAssetModuleManagement()
-		.getAsset(new AssetReference.Builder(moduleId, assetId).build());
+		.getAsset(new AssetReference.Builder(assetModuleId, assetId).build());
     }
 
     /**

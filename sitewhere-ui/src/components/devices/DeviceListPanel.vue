@@ -15,12 +15,13 @@
       <div v-if="isAssociated" class="device-asset"
         :style="backgroundImageStyle(device.assignment.assetImageUrl)"></div>
       <div v-else-if="!device.assignment" class="device-assign-button">
-        <v-btn dark icon
-          class="blue ml-0"
-          v-tooltip:left="{ html: 'Assign Device' }"
-          @click.native.stop="onAssignDevice">
-          <v-icon fa class="fa-lg">tag</v-icon>
-        </v-btn>
+        <v-tooltip top>
+          <v-btn dark icon class="blue ml-0"
+            @click.stop="onAssignDevice" slot="activator">
+            <v-icon>fa-tag</v-icon>
+          </v-btn>
+          <span>Assign Device</span>
+        </v-tooltip>
       </div>
       <assignment-create-dialog ref="assign" :hardwareId="device.hardwareId"
         @created="onDeviceAssigned"/>

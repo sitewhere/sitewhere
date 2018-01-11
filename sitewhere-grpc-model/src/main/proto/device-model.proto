@@ -275,7 +275,7 @@ message GDeviceGroup {
 
 // Request data for creating a device assignment.
 message GDeviceAssignmentCreateRequest {
-	string token = 1;
+	GOptionalString token = 1;
 	string deviceHardwareId = 2;
 	GDeviceAssignmentType assignmentType = 3;
 	GAssetReference assetReference = 4;
