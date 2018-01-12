@@ -29,4 +29,11 @@ public interface IInstanceMicroservice {
      * @return
      */
     public Map<String, IInstanceTenantEngine> getTenantEngines();
+
+    /**
+     * Get time the last microservice update was received.
+     * 
+     * @return
+     */
+    public long getLastUpdated();
 }

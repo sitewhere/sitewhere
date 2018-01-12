@@ -7,7 +7,7 @@
  */
 package com.sitewhere.spi.microservice.state;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * Snapshot of instance topology at a given point in time.
@@ -17,9 +17,9 @@ import java.util.List;
 public interface IInstanceTopologySnapshot {
 
     /**
-     * Get list of microservice topology entries.
+     * Get map of topology entries by module identifier.
      * 
      * @return
      */
-    public List<IInstanceTopologyEntry> getTopologyEntries();
+    public Map<String, IInstanceTopologyEntry> getTopologyEntriesByIdentifier();
 }

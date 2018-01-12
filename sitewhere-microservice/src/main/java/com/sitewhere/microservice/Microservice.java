@@ -19,8 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sitewhere.Version;
 import com.sitewhere.microservice.management.MicroserviceManagementGrpcServer;
-import com.sitewhere.microservice.state.InstanceTopologySnapshotsManager;
 import com.sitewhere.microservice.state.MicroserviceStateUpdatesKafkaProducer;
+import com.sitewhere.microservice.state.TopologyStateAggregator;
 import com.sitewhere.rest.model.configuration.ConfigurationModel;
 import com.sitewhere.rest.model.microservice.state.MicroserviceDetails;
 import com.sitewhere.rest.model.microservice.state.MicroserviceState;
@@ -39,11 +39,11 @@ import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
-import com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesManager;
 import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 import com.sitewhere.spi.microservice.state.IMicroserviceState;
 import com.sitewhere.spi.microservice.state.IMicroserviceStateUpdatesKafkaProducer;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
+import com.sitewhere.spi.microservice.state.ITopologyStateAggregator;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
@@ -67,6 +67,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
     /** Relative path to instance bootstrap marker */
     private static final String INSTANCE_BOOTSTRAP_MARKER = "/bootstrapped";
+
+    /** Heartbeat interval in seconds */
+    private static final int HEARTBEAT_INTERVAL_SECS = 20;
 
     /** Instance settings */
     @Autowired
@@ -108,17 +111,18 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     /** Kafka producer for microservice state updates */
     private IMicroserviceStateUpdatesKafkaProducer stateUpdatesKafkaProducer;
 
-    /** Consumes Kafka instance topology updates and broadcasts them */
-    private IInstanceTopologyUpdatesManager instanceTopologyUpdatesManager;
+    /** Kafka consumer for aggregating microservice/tenant engine state updates */
+    private ITopologyStateAggregator topologyStateAggregator;
 
     /** Lifecycle operations thread pool */
     private ExecutorService microserviceOperationsService;
 
+    /** Executor for heartbeat */
+    private ExecutorService microserviceHeartbeatService;
+
     public Microservice() {
 	this.microserviceOperationsService = Executors
 		.newSingleThreadExecutor(new MicroserviceOperationsThreadFactory());
-	this.stateUpdatesKafkaProducer = new MicroserviceStateUpdatesKafkaProducer(this);
-	this.instanceTopologyUpdatesManager = new InstanceTopologySnapshotsManager(this);
 	this.configurationModel = buildConfigurationModel();
 	((ConfigurationModel) configurationModel).setMicroserviceDetails(getMicroserviceDetails());
     }
@@ -133,6 +137,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Initialize GRPC components.
 	initializeGrpcComponents();
+
+	// Initialize state management components.
+	initializeStateManagement();
 
 	// Organizes steps for initializing microservice.
 	ICompositeLifecycleStep initialize = new CompositeLifecycleStep("Initialize " + getName());
@@ -152,11 +159,11 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	// Start microservice management GRPC server.
 	initialize.addStartStep(this, getMicroserviceManagementGrpcServer(), true);
 
-	// Initialize Kafka consumer for instance topology updates.
-	initialize.addInitializeStep(this, getInstanceTopologyUpdatesManager(), true);
+	// Initialize Kafka consumer for aggregating state.
+	initialize.addInitializeStep(this, getTopologyStateAggregator(), true);
 
-	// Start Kafka consumer for instance topology updates.
-	initialize.addStartStep(this, getInstanceTopologyUpdatesManager(), true);
+	// Start Kafka consumer for aggregating state.
+	initialize.addStartStep(this, getTopologyStateAggregator(), true);
 
 	// Initialize Kafka producer for reporting state.
 	initialize.addInitializeStep(this, getStateUpdatesKafkaProducer(), true);
@@ -166,6 +173,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
 	// Execute initialization steps.
 	initialize.execute(monitor);
+
+	// Start sending heartbeats.
+	getMicroserviceHeartbeatService().execute(new Heartbeat());
     }
 
     /**
@@ -173,6 +183,15 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
      */
     protected void initializeGrpcComponents() {
 	this.microserviceManagementGrpcServer = new MicroserviceManagementGrpcServer(this);
+    }
+
+    /**
+     * Initialize components related to state management.
+     */
+    protected void initializeStateManagement() {
+	this.stateUpdatesKafkaProducer = new MicroserviceStateUpdatesKafkaProducer(this);
+	this.topologyStateAggregator = new TopologyStateAggregator(this);
+	this.microserviceHeartbeatService = Executors.newSingleThreadExecutor(new MicroserviceHeartbeatThreadFactory());
     }
 
     /*
@@ -193,17 +212,22 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
      */
     @Override
     public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Stop sending heartbeats.
+	if (getMicroserviceHeartbeatService() != null) {
+	    getMicroserviceHeartbeatService().shutdownNow();
+	}
+
 	// Create step that will stop components.
 	ICompositeLifecycleStep terminate = new CompositeLifecycleStep("Stop " + getComponentName());
 
 	// Stop microservice management GRPC server.
 	terminate.addStopStep(this, getMicroserviceManagementGrpcServer());
 
-	// Stop Kafka consumer for instance topology updates.
-	terminate.addStopStep(this, getInstanceTopologyUpdatesManager());
-
 	// Stop Kafka producer for reporting state.
 	terminate.addStopStep(this, getStateUpdatesKafkaProducer());
+
+	// Stop Kafka consumer for aggregating state.
+	terminate.addStopStep(this, getTopologyStateAggregator());
 
 	// Terminate Zk manager.
 	terminate.addStopStep(this, getZookeeperManager());
@@ -316,12 +340,24 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     @Override
     public void setLifecycleStatus(LifecycleStatus lifecycleStatus) {
 	super.setLifecycleStatus(lifecycleStatus);
-	try {
-	    IMicroserviceState state = getCurrentState();
-	    getLogger().info("Sending state update for lifecycle status change (" + lifecycleStatus.name() + ").");
-	    getStateUpdatesKafkaProducer().send(state);
-	} catch (SiteWhereException e) {
-	    getLogger().error("Unable to report microservice state.", e);
+	getLogger().info("Sending state update for lifecycle status change (" + getLifecycleStatus().name() + ").");
+	sendCurrentState();
+    }
+
+    /**
+     * Send current state for microservice to Kafka topic.
+     */
+    protected void sendCurrentState() {
+	if ((getStateUpdatesKafkaProducer() != null)
+		&& (getStateUpdatesKafkaProducer().getLifecycleStatus() == LifecycleStatus.Started)) {
+	    try {
+		IMicroserviceState state = getCurrentState();
+		getStateUpdatesKafkaProducer().send(state);
+	    } catch (SiteWhereException e) {
+		getLogger().error("Unable to report microservice state.", e);
+	    }
+	} else {
+	    getLogger().warn("Unable to report state. Waiting on Kafka producer to become available.");
 	}
     }
 
@@ -477,16 +513,16 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#
-     * getInstanceTopologyUpdatesManager()
+     * @see
+     * com.sitewhere.spi.microservice.IMicroservice#getTopologyStateAggregator()
      */
     @Override
-    public IInstanceTopologyUpdatesManager getInstanceTopologyUpdatesManager() {
-	return instanceTopologyUpdatesManager;
+    public ITopologyStateAggregator getTopologyStateAggregator() {
+	return topologyStateAggregator;
     }
 
-    public void setInstanceTopologyUpdatesManager(IInstanceTopologyUpdatesManager instanceTopologyUpdatesManager) {
-	this.instanceTopologyUpdatesManager = instanceTopologyUpdatesManager;
+    public void setTopologyStateAggregator(ITopologyStateAggregator topologyStateAggregator) {
+	this.topologyStateAggregator = topologyStateAggregator;
     }
 
     /*
@@ -539,6 +575,47 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 	this.microserviceOperationsService = microserviceOperationsService;
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.IMicroservice#getMicroserviceHeartbeatService(
+     * )
+     */
+    @Override
+    public ExecutorService getMicroserviceHeartbeatService() {
+	return microserviceHeartbeatService;
+    }
+
+    public void setMicroserviceHeartbeatService(ExecutorService microserviceHeartbeatService) {
+	this.microserviceHeartbeatService = microserviceHeartbeatService;
+    }
+
+    /**
+     * Delivers microservice state as a heartbeat indication to other microservices.
+     * 
+     * @author Derek
+     */
+    private class Heartbeat implements Runnable {
+
+	@Override
+	public void run() {
+	    while (true) {
+		try {
+		    getLogger().debug("Sending heartbeat.");
+		    sendCurrentState();
+		} catch (Throwable t) {
+		    getLogger().error("Unable to send state for heartbeat.", t);
+		}
+
+		try {
+		    Thread.sleep(HEARTBEAT_INTERVAL_SECS * 1000);
+		} catch (InterruptedException e) {
+		    getLogger().warn("Heartbeat service shutting down.");
+		    return;
+		}
+	    }
+	}
+    }
+
     /** Used for naming microservice operation threads */
     private class MicroserviceOperationsThreadFactory implements ThreadFactory {
 
@@ -547,6 +624,17 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
 	public Thread newThread(Runnable r) {
 	    return new Thread(r, "Microservice Operations " + counter.incrementAndGet());
+	}
+    }
+
+    /** Used for naming microservice heartbeat thread */
+    private class MicroserviceHeartbeatThreadFactory implements ThreadFactory {
+
+	/** Counts threads */
+	private AtomicInteger counter = new AtomicInteger();
+
+	public Thread newThread(Runnable r) {
+	    return new Thread(r, "Microservice Heartbeat " + counter.incrementAndGet());
 	}
     }
 }

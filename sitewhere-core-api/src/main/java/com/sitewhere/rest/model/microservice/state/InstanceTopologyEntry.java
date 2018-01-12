@@ -7,8 +7,11 @@
  */
 package com.sitewhere.rest.model.microservice.state;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.sitewhere.spi.microservice.state.IInstanceMicroservice;
 import com.sitewhere.spi.microservice.state.IInstanceTopologyEntry;
-import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 
 /**
  * Entry for a microservice within the instance topology.
@@ -17,35 +20,19 @@ import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
  */
 public class InstanceTopologyEntry implements IInstanceTopologyEntry {
 
-    /** Microservice details */
-    private IMicroserviceDetails microserviceDetails;
-
-    /** Last updated timestamp */
-    private long lastUpdated;
+    /** Microservices by hostname */
+    private Map<String, IInstanceMicroservice> microservicesByHostname = new HashMap<>();
 
     /*
      * @see com.sitewhere.spi.microservice.state.IInstanceTopologyEntry#
-     * getMicroserviceDetails()
+     * getMicroservicesByHostname()
      */
     @Override
-    public IMicroserviceDetails getMicroserviceDetails() {
-	return microserviceDetails;
+    public Map<String, IInstanceMicroservice> getMicroservicesByHostname() {
+	return microservicesByHostname;
     }
 
-    public void setMicroserviceDetails(IMicroserviceDetails microserviceDetails) {
-	this.microserviceDetails = microserviceDetails;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.microservice.state.IInstanceTopologyEntry#getLastUpdated()
-     */
-    @Override
-    public long getLastUpdated() {
-	return lastUpdated;
-    }
-
-    public void setLastUpdated(long lastUpdated) {
-	this.lastUpdated = lastUpdated;
+    public void setMicroservicesByHostname(Map<String, IInstanceMicroservice> microservicesByHostname) {
+	this.microservicesByHostname = microservicesByHostname;
     }
 }

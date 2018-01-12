@@ -23,10 +23,13 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.IMicroserviceManagement;
 import com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordinator;
+import com.sitewhere.spi.microservice.state.IInstanceMicroservice;
 import com.sitewhere.spi.microservice.state.IInstanceTopologyEntry;
 import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
-import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshotsListener;
+import com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesListener;
 import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
+import com.sitewhere.spi.microservice.state.IMicroserviceState;
+import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
@@ -36,7 +39,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * @author Derek
  */
 public class MicroserviceManagementCoordinator extends LifecycleComponent
-	implements IMicroserviceManagementCoordinator, IInstanceTopologySnapshotsListener {
+	implements IMicroserviceManagementCoordinator, IInstanceTopologyUpdatesListener {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -46,9 +49,6 @@ public class MicroserviceManagementCoordinator extends LifecycleComponent
 
     /** API demuxes by service identifier */
     private Map<String, IMicroserviceManagementApiDemux> demuxesByServiceIdentifier = new HashMap<>();
-
-    /** Latest instance topology snapshot */
-    private IInstanceTopologySnapshot instanceTopologySnapshot;
 
     public MicroserviceManagementCoordinator(IMicroservice microservice) {
 	this.microservice = microservice;
@@ -61,7 +61,23 @@ public class MicroserviceManagementCoordinator extends LifecycleComponent
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	getMicroservice().getInstanceTopologyUpdatesManager().addListener(this);
+	getMicroservice().getTopologyStateAggregator().addInstanceTopologyUpdatesListener(this);
+	bootstrapFromExistingTopology();
+    }
+
+    /**
+     * Since the topology updates manager may have already captured information
+     * before the listener was registered, loop through existing members and
+     * register them.
+     */
+    protected void bootstrapFromExistingTopology() {
+	IInstanceTopologySnapshot topology = getMicroservice().getTopologyStateAggregator()
+		.getInstanceTopologySnapshot();
+	for (IInstanceTopologyEntry entry : topology.getTopologyEntriesByIdentifier().values()) {
+	    for (IInstanceMicroservice microservice : entry.getMicroservicesByHostname().values()) {
+		onMicroserviceAdded(microservice.getLatestState().getMicroserviceDetails());
+	    }
+	}
     }
 
     /*
@@ -71,7 +87,7 @@ public class MicroserviceManagementCoordinator extends LifecycleComponent
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	getMicroservice().getInstanceTopologyUpdatesManager().removeListener(this);
+	getMicroservice().getTopologyStateAggregator().removeInstanceTopologyUpdatesListener(this);
     }
 
     /*
@@ -89,33 +105,90 @@ public class MicroserviceManagementCoordinator extends LifecycleComponent
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.state.IInstanceTopologySnapshotsListener#
-     * onInstanceTopologySnapshot(com.sitewhere.spi.microservice.state.
-     * IInstanceTopologySnapshot)
+     * @see com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesListener#
+     * onMicroserviceAdded(com.sitewhere.spi.microservice.state.IMicroserviceState)
      */
     @Override
-    public void onInstanceTopologySnapshot(IInstanceTopologySnapshot snapshot) {
-	this.instanceTopologySnapshot = snapshot;
-	for (IInstanceTopologyEntry entry : snapshot.getTopologyEntries()) {
-	    IMicroserviceDetails microservice = entry.getMicroserviceDetails();
-	    IMicroserviceManagementApiDemux demux = getDemuxesByServiceIdentifier().get(microservice.getIdentifier());
-	    if (demux == null) {
-		demux = new MicroserviceManagementApiDemux(getMicroservice(), microservice.getIdentifier());
-		getDemuxesByServiceIdentifier().put(microservice.getIdentifier(), demux);
-		startDemux(demux, entry);
-	    }
+    public void onMicroserviceAdded(IMicroserviceState microservice) {
+	onMicroserviceAdded(microservice.getMicroserviceDetails());
+    }
+
+    /**
+     * Process added microservice if no demux is currently available.
+     * 
+     * @param microservice
+     */
+    protected void onMicroserviceAdded(IMicroserviceDetails microservice) {
+	IMicroserviceManagementApiDemux demux = getDemuxesByServiceIdentifier().get(microservice.getIdentifier());
+	if (demux == null) {
+	    demux = new MicroserviceManagementApiDemux(getMicroservice(), microservice.getIdentifier());
+	    getDemuxesByServiceIdentifier().put(microservice.getIdentifier(), demux);
+	    startDemux(demux, microservice);
 	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesListener#
+     * onMicroserviceUpdated(com.sitewhere.spi.microservice.state.
+     * IMicroserviceState, com.sitewhere.spi.microservice.state.IMicroserviceState)
+     */
+    @Override
+    public void onMicroserviceUpdated(IMicroserviceState previous, IMicroserviceState updated) {
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesListener#
+     * onMicroserviceRemoved(com.sitewhere.spi.microservice.state.
+     * IMicroserviceState)
+     */
+    @Override
+    public void onMicroserviceRemoved(IMicroserviceState microservice) {
+	String identifier = microservice.getMicroserviceDetails().getIdentifier();
+	IMicroserviceManagementApiDemux demux = getDemuxesByServiceIdentifier().get(identifier);
+	if (demux != null) {
+	    getDemuxesByServiceIdentifier().remove(identifier);
+	    stopDemux(demux, microservice.getMicroserviceDetails());
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesListener#
+     * onTenantEngineAdded(com.sitewhere.spi.microservice.state.IMicroserviceState,
+     * com.sitewhere.spi.microservice.state.ITenantEngineState)
+     */
+    @Override
+    public void onTenantEngineAdded(IMicroserviceState microservice, ITenantEngineState tenantEngine) {
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesListener#
+     * onTenantEngineUpdated(com.sitewhere.spi.microservice.state.
+     * IMicroserviceState, com.sitewhere.spi.microservice.state.ITenantEngineState,
+     * com.sitewhere.spi.microservice.state.ITenantEngineState)
+     */
+    @Override
+    public void onTenantEngineUpdated(IMicroserviceState microservice, ITenantEngineState previous,
+	    ITenantEngineState updated) {
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesListener#
+     * onTenantEngineRemoved(com.sitewhere.spi.microservice.state.
+     * IMicroserviceState, com.sitewhere.spi.microservice.state.ITenantEngineState)
+     */
+    @Override
+    public void onTenantEngineRemoved(IMicroserviceState microservice, ITenantEngineState tenantEngine) {
     }
 
     /**
      * Initialize and start the demux so that it can manage GRPC connections.
      * 
      * @param demux
-     * @param entry
+     * @param details
      */
-    protected void startDemux(IMicroserviceManagementApiDemux demux, IInstanceTopologyEntry entry) {
+    protected void startDemux(IMicroserviceManagementApiDemux demux, IMicroserviceDetails details) {
 	try {
-	    String identifier = entry.getMicroserviceDetails().getIdentifier();
+	    String identifier = details.getIdentifier();
 	    ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
 		    new LifecycleProgressContext(2, "Create microservice mangagement demux for '" + identifier + "'."),
 		    microservice);
@@ -129,18 +202,25 @@ public class MicroserviceManagementCoordinator extends LifecycleComponent
 	}
     }
 
-    /*
-     * @see
-     * com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordinator#
-     * getInstanceTopologySnapshot()
+    /**
+     * Stop and terminate the demux to release underlying resources.
+     * 
+     * @param demux
+     * @param details
      */
-    @Override
-    public IInstanceTopologySnapshot getInstanceTopologySnapshot() {
-	return instanceTopologySnapshot;
-    }
+    protected void stopDemux(IMicroserviceManagementApiDemux demux, IMicroserviceDetails details) {
+	try {
+	    String identifier = details.getIdentifier();
+	    ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
+		    new LifecycleProgressContext(2, "Shut down demux for '" + identifier + "'."), microservice);
+	    stopNestedComponent(demux, monitor);
+	    getLogger().info("Stopped microservice management demux for '" + identifier + "'.");
 
-    public void setInstanceTopologySnapshot(IInstanceTopologySnapshot instanceTopologySnapshot) {
-	this.instanceTopologySnapshot = instanceTopologySnapshot;
+	    demux.lifecycleTerminate(monitor);
+	    getLogger().info("Terminated microservice management demux for '" + identifier + "'.");
+	} catch (SiteWhereException e) {
+	    getLogger().error("Unable to shut down microservice management demux.", e);
+	}
     }
 
     /*

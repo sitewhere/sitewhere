@@ -20,4 +20,11 @@ public interface IInstanceTenantEngine {
      * @return
      */
     public ITenantEngineState getLatestState();
+
+    /**
+     * Get time the last microservice update was received.
+     * 
+     * @return
+     */
+    public long getLastUpdated();
 }

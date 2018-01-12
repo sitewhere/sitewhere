@@ -22,8 +22,6 @@ import com.sitewhere.grpc.client.user.UserManagementApiDemux;
 import com.sitewhere.instance.configuration.InstanceManagementModelProvider;
 import com.sitewhere.instance.initializer.GroovyTenantModelInitializer;
 import com.sitewhere.instance.initializer.GroovyUserModelInitializer;
-import com.sitewhere.instance.kafka.StateAggregatorKafkaConsumer;
-import com.sitewhere.instance.spi.kafka.IStateAggregatorKafkaConsumer;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.instance.spi.templates.IInstanceTemplate;
 import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
@@ -31,7 +29,6 @@ import com.sitewhere.instance.templates.InstanceTemplateManager;
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.groovy.InstanceScriptSynchronizer;
-import com.sitewhere.microservice.state.InstanceTopologySnapshotsKafkaProducer;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
@@ -39,7 +36,6 @@ import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
-import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshotsKafkaProducer;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
@@ -68,12 +64,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
 
     /** Tenant management API demux */
     private ITenantManagementApiDemux tenantManagementApiDemux;
-
-    /** State aggregator Kafka consumer */
-    private IStateAggregatorKafkaConsumer stateAggregatorKafkaConsumer;
-
-    /** Instance topology updates Kafka producer */
-    private IInstanceTopologySnapshotsKafkaProducer instanceTopologyUpdatesKafkaProducer;
 
     /*
      * (non-Javadoc)
@@ -159,12 +149,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
     public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create GRPC components.
 	createGrpcComponents();
-
-	// Create state aggregator.
-	this.stateAggregatorKafkaConsumer = new StateAggregatorKafkaConsumer(this);
-
-	// Create topology updates producer.
-	this.instanceTopologyUpdatesKafkaProducer = new InstanceTopologySnapshotsKafkaProducer(this);
     }
 
     /**
@@ -203,18 +187,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
 	// Start tenant mangement API channel.
 	start.addStartStep(this, getTenantManagementApiDemux(), true);
 
-	// Initialize state aggregator consumer.
-	start.addInitializeStep(this, getStateAggregatorKafkaConsumer(), true);
-
-	// Start state aggregator consumer.
-	start.addStartStep(this, getStateAggregatorKafkaConsumer(), true);
-
-	// Initialize instance topology updates producer.
-	start.addInitializeStep(this, getInstanceTopologyUpdatesKafkaProducer(), true);
-
-	// Start instance topology updates producer.
-	start.addStartStep(this, getInstanceTopologyUpdatesKafkaProducer(), true);
-
 	// Verify Zk node for instance configuration or bootstrap instance.
 	start.addStep(verifyOrBootstrapConfiguration());
 
@@ -231,12 +203,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
     public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
-
-	// Stop instance topology updates producer.
-	stop.addStopStep(this, getInstanceTopologyUpdatesKafkaProducer());
-
-	// Stop state aggregator consumer.
-	stop.addStopStep(this, getStateAggregatorKafkaConsumer());
 
 	// Stop tenant management API demux.
 	stop.addStopStep(this, getTenantManagementApiDemux());
@@ -477,32 +443,5 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
 
     public void setTenantManagementApiDemux(ITenantManagementApiDemux tenantManagementApiDemux) {
 	this.tenantManagementApiDemux = tenantManagementApiDemux;
-    }
-
-    /*
-     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
-     * getStateAggregatorKafkaConsumer()
-     */
-    @Override
-    public IStateAggregatorKafkaConsumer getStateAggregatorKafkaConsumer() {
-	return stateAggregatorKafkaConsumer;
-    }
-
-    public void setStateAggregatorKafkaConsumer(IStateAggregatorKafkaConsumer stateAggregatorKafkaConsumer) {
-	this.stateAggregatorKafkaConsumer = stateAggregatorKafkaConsumer;
-    }
-
-    /*
-     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
-     * getInstanceTopologyUpdatesKafkaProducer()
-     */
-    @Override
-    public IInstanceTopologySnapshotsKafkaProducer getInstanceTopologyUpdatesKafkaProducer() {
-	return instanceTopologyUpdatesKafkaProducer;
-    }
-
-    public void setInstanceTopologyUpdatesKafkaProducer(
-	    IInstanceTopologySnapshotsKafkaProducer instanceTopologyUpdatesKafkaProducer) {
-	this.instanceTopologyUpdatesKafkaProducer = instanceTopologyUpdatesKafkaProducer;
     }
 }

@@ -28,6 +28,7 @@ import com.sitewhere.spi.microservice.IMicroserviceManagement;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordinator;
 import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
+import com.sitewhere.spi.microservice.state.ITopologyStateAggregator;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestControllerBase;
 import com.sitewhere.web.rest.model.InstanceTopologySummary;
@@ -63,7 +64,7 @@ public class Instance extends RestControllerBase {
     @ApiOperation(value = "Get current instance topology")
     @Secured({ SiteWhereRoles.REST })
     public List<InstanceTopologySummary> getInstanceTopology() throws SiteWhereException {
-	IInstanceTopologySnapshot snapshot = getMicroserviceManagementCoordinator().getInstanceTopologySnapshot();
+	IInstanceTopologySnapshot snapshot = getTopologyStateAggregator().getInstanceTopologySnapshot();
 	return TopologySummaryBuilder.build(snapshot);
     }
 
@@ -77,7 +78,7 @@ public class Instance extends RestControllerBase {
     @ApiOperation(value = "Get global microservices in current instance topology")
     @Secured({ SiteWhereRoles.REST })
     public List<InstanceTopologySummary> getGlobalInstanceTopology() throws SiteWhereException {
-	IInstanceTopologySnapshot snapshot = getMicroserviceManagementCoordinator().getInstanceTopologySnapshot();
+	IInstanceTopologySnapshot snapshot = getTopologyStateAggregator().getInstanceTopologySnapshot();
 	List<InstanceTopologySummary> summary = TopologySummaryBuilder.build(snapshot);
 	List<InstanceTopologySummary> filtered = new ArrayList<>();
 	for (InstanceTopologySummary current : summary) {
@@ -98,7 +99,7 @@ public class Instance extends RestControllerBase {
     @ApiOperation(value = "Get tenant microservices in current instance topology")
     @Secured({ SiteWhereRoles.REST })
     public List<InstanceTopologySummary> getTenantInstanceTopology() throws SiteWhereException {
-	IInstanceTopologySnapshot snapshot = getMicroserviceManagementCoordinator().getInstanceTopologySnapshot();
+	IInstanceTopologySnapshot snapshot = getTopologyStateAggregator().getInstanceTopologySnapshot();
 	List<InstanceTopologySummary> summary = TopologySummaryBuilder.build(snapshot);
 	List<InstanceTopologySummary> filtered = new ArrayList<>();
 	for (InstanceTopologySummary current : summary) {
@@ -207,5 +208,9 @@ public class Instance extends RestControllerBase {
 
     public IMicroserviceManagementCoordinator getMicroserviceManagementCoordinator() {
 	return getMicroservice().getMicroserviceManagementCoordinator();
+    }
+
+    public ITopologyStateAggregator getTopologyStateAggregator() {
+	return getMicroservice().getTopologyStateAggregator();
     }
 }

@@ -20,6 +20,9 @@ public class InstanceTenantEngine implements IInstanceTenantEngine {
     /** Latest state */
     private ITenantEngineState latestState;
 
+    /** Time last update was received */
+    private long lastUpdated;
+
     /*
      * @see
      * com.sitewhere.spi.microservice.state.IInstanceTenantEngine#getLatestState()
@@ -31,5 +34,18 @@ public class InstanceTenantEngine implements IInstanceTenantEngine {
 
     public void setLatestState(ITenantEngineState latestState) {
 	this.latestState = latestState;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.state.IInstanceTenantEngine#getLastUpdated()
+     */
+    @Override
+    public long getLastUpdated() {
+	return lastUpdated;
+    }
+
+    public void setLastUpdated(long lastUpdated) {
+	this.lastUpdated = lastUpdated;
     }
 }

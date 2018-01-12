@@ -7,24 +7,19 @@
  */
 package com.sitewhere.spi.microservice.state;
 
+import java.util.Map;
+
 /**
- * Entry for a microservice within the instance topology.
+ * Entry that contains all microservices for a given module identifier.
  * 
  * @author Derek
  */
 public interface IInstanceTopologyEntry {
 
     /**
-     * Get microservice details.
+     * Get map of microservices by hostname.
      * 
      * @return
      */
-    public IMicroserviceDetails getMicroserviceDetails();
-
-    /**
-     * Get timestamp for last updated.
-     * 
-     * @return
-     */
-    public long getLastUpdated();
+    public Map<String, IInstanceMicroservice> getMicroservicesByHostname();
 }

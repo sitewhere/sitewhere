@@ -9,8 +9,6 @@ package com.sitewhere.grpc.model.converter;
 
 import com.sitewhere.grpc.kafka.model.KafkaModel.GEnrichedEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
-import com.sitewhere.grpc.kafka.model.KafkaModel.GInstanceTopologyEntry;
-import com.sitewhere.grpc.kafka.model.KafkaModel.GInstanceTopologySnapshot;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GLifecycleStatus;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GMicroserviceState;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GPersistedEventPayload;
@@ -20,16 +18,12 @@ import com.sitewhere.grpc.model.CommonModel.GOptionalString;
 import com.sitewhere.rest.model.microservice.kafka.payload.EnrichedEventPayload;
 import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
 import com.sitewhere.rest.model.microservice.kafka.payload.PersistedEventPayload;
-import com.sitewhere.rest.model.microservice.state.InstanceTopologyEntry;
-import com.sitewhere.rest.model.microservice.state.InstanceTopologySnapshot;
 import com.sitewhere.rest.model.microservice.state.MicroserviceState;
 import com.sitewhere.rest.model.microservice.state.TenantEngineState;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.kafka.payload.IEnrichedEventPayload;
 import com.sitewhere.spi.microservice.kafka.payload.IInboundEventPayload;
 import com.sitewhere.spi.microservice.kafka.payload.IPersistedEventPayload;
-import com.sitewhere.spi.microservice.state.IInstanceTopologyEntry;
-import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
 import com.sitewhere.spi.microservice.state.IMicroserviceState;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
@@ -287,68 +281,6 @@ public class KafkaModelConverter {
     public static GStateUpdate asGrpcGenericStateUpdate(ITenantEngineState api) throws SiteWhereException {
 	GStateUpdate.Builder grpc = GStateUpdate.newBuilder();
 	grpc.setTenantEngineState(KafkaModelConverter.asGrpcTenantEngineState(api));
-	return grpc.build();
-    }
-
-    /**
-     * Convert instance topology update from GRPC to API.
-     * 
-     * @param grpc
-     * @return
-     * @throws SiteWhereException
-     */
-    public static InstanceTopologyEntry asApiInstanceTopologyEntry(GInstanceTopologyEntry grpc)
-	    throws SiteWhereException {
-	InstanceTopologyEntry api = new InstanceTopologyEntry();
-	api.setMicroserviceDetails(MicroserviceModelConverter.asApiMicroserviceDetails(grpc.getMicroserviceDetails()));
-	api.setLastUpdated(grpc.getLastUpdated());
-	return api;
-    }
-
-    /**
-     * Convert instance topology update from API to GRPC.
-     * 
-     * @param api
-     * @return
-     * @throws SiteWhereException
-     */
-    public static GInstanceTopologyEntry asGrpcInstanceTopologyEntry(IInstanceTopologyEntry api)
-	    throws SiteWhereException {
-	GInstanceTopologyEntry.Builder grpc = GInstanceTopologyEntry.newBuilder();
-	grpc.setMicroserviceDetails(MicroserviceModelConverter.asGrpcMicroserviceDetails(api.getMicroserviceDetails()));
-	grpc.setLastUpdated(api.getLastUpdated());
-	return grpc.build();
-    }
-
-    /**
-     * Convert instance topology snapshot from GRPC to API.
-     * 
-     * @param grpc
-     * @return
-     * @throws SiteWhereException
-     */
-    public static InstanceTopologySnapshot asApiInstanceTopologySnapshot(GInstanceTopologySnapshot grpc)
-	    throws SiteWhereException {
-	InstanceTopologySnapshot api = new InstanceTopologySnapshot();
-	for (GInstanceTopologyEntry entry : grpc.getEntriesList()) {
-	    api.getTopologyEntries().add(KafkaModelConverter.asApiInstanceTopologyEntry(entry));
-	}
-	return api;
-    }
-
-    /**
-     * Convert instance topology snapshot from API to GRPC.
-     * 
-     * @param api
-     * @return
-     * @throws SiteWhereException
-     */
-    public static GInstanceTopologySnapshot asGrpcInstanceTopologySnapshot(IInstanceTopologySnapshot api)
-	    throws SiteWhereException {
-	GInstanceTopologySnapshot.Builder grpc = GInstanceTopologySnapshot.newBuilder();
-	for (IInstanceTopologyEntry entry : api.getTopologyEntries()) {
-	    grpc.addEntries(KafkaModelConverter.asGrpcInstanceTopologyEntry(entry));
-	}
 	return grpc.build();
     }
 }

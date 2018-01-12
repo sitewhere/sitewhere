@@ -27,6 +27,9 @@ public class InstanceMicroservice implements IInstanceMicroservice {
     /** Map of tenant engines by tenant id */
     private Map<String, IInstanceTenantEngine> tenantEngines = new HashMap<String, IInstanceTenantEngine>();
 
+    /** Time last update was received */
+    private long lastUpdated;
+
     /*
      * @see
      * com.sitewhere.spi.microservice.state.IInstanceMicroservice#getLatestState()
@@ -51,5 +54,18 @@ public class InstanceMicroservice implements IInstanceMicroservice {
 
     public void setTenantEngines(Map<String, IInstanceTenantEngine> tenantEngines) {
 	this.tenantEngines = tenantEngines;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.state.IInstanceMicroservice#getLastUpdated()
+     */
+    @Override
+    public long getLastUpdated() {
+	return lastUpdated;
+    }
+
+    public void setLastUpdated(long lastUpdated) {
+	this.lastUpdated = lastUpdated;
     }
 }

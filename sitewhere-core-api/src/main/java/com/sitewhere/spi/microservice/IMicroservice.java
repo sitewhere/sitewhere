@@ -18,11 +18,11 @@ import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
-import com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesManager;
 import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 import com.sitewhere.spi.microservice.state.IMicroserviceState;
 import com.sitewhere.spi.microservice.state.IMicroserviceStateUpdatesKafkaProducer;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
+import com.sitewhere.spi.microservice.state.ITopologyStateAggregator;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.tracing.ITracerProvider;
@@ -150,11 +150,12 @@ public interface IMicroservice extends ILifecycleComponent, ITracerProvider {
     public IMicroserviceStateUpdatesKafkaProducer getStateUpdatesKafkaProducer();
 
     /**
-     * Get mangager that allows for listening to instance topology updates.
+     * Get Kafka consumer that aggregates state updates for microservices/tenant
+     * engines to build an instance topology dynamically.
      * 
      * @return
      */
-    public IInstanceTopologyUpdatesManager getInstanceTopologyUpdatesManager();
+    public ITopologyStateAggregator getTopologyStateAggregator();
 
     /**
      * Code executed after microservice has been started.
@@ -218,4 +219,11 @@ public interface IMicroservice extends ILifecycleComponent, ITracerProvider {
      * @return
      */
     public ExecutorService getMicroserviceOperationsService();
+
+    /**
+     * Get executor service that handle heartbeat messages.
+     * 
+     * @return
+     */
+    public ExecutorService getMicroserviceHeartbeatService();
 }

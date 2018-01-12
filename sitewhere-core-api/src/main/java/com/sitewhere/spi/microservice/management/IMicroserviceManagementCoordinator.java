@@ -9,7 +9,6 @@ package com.sitewhere.spi.microservice.management;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroserviceManagement;
-import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
@@ -22,7 +21,7 @@ public interface IMicroserviceManagementCoordinator extends ILifecycleComponent 
 
     /**
      * Get management interface for a microservice based on service identifier. Note
-     * that if mutiple instances of the microservice are running, mulitple calls to
+     * that if mutiple instances of the microservice are running, mulitiple calls to
      * this method may interact with different services.
      * 
      * @param identifier
@@ -30,12 +29,4 @@ public interface IMicroserviceManagementCoordinator extends ILifecycleComponent 
      * @throws SiteWhereException
      */
     public IMicroserviceManagement getMicroserviceManagement(String identifier) throws SiteWhereException;
-
-    /**
-     * Gets the most recent instance topology snapshot.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public IInstanceTopologySnapshot getInstanceTopologySnapshot() throws SiteWhereException;
 }

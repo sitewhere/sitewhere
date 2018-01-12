@@ -504,7 +504,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 
 		    // Verify that multiple threads don't start duplicate engines.
 		    if (getInitializingTenantEngines().get(tenantId) != null) {
-			getLogger().info("Skipping initialization for existing tenant engine '" + tenantId + "'.");
+			getLogger().debug("Skipping initialization for existing tenant engine '" + tenantId + "'.");
 			continue;
 		    }
 

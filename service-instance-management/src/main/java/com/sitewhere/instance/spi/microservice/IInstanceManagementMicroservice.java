@@ -9,10 +9,8 @@ package com.sitewhere.instance.spi.microservice;
 
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IUserManagementApiDemux;
-import com.sitewhere.instance.spi.kafka.IStateAggregatorKafkaConsumer;
 import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
-import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshotsKafkaProducer;
 
 /**
  * API for instance management microservice.
@@ -41,19 +39,4 @@ public interface IInstanceManagementMicroservice extends IGlobalMicroservice {
      * @return
      */
     public ITenantManagementApiDemux getTenantManagementApiDemux();
-
-    /**
-     * Get Kafka consumer that aggregates state updates from microservices and
-     * tenant engines.
-     * 
-     * @return
-     */
-    public IStateAggregatorKafkaConsumer getStateAggregatorKafkaConsumer();
-
-    /**
-     * Get Kafka producer that posts updates as the instance topology is updated.
-     * 
-     * @return
-     */
-    public IInstanceTopologySnapshotsKafkaProducer getInstanceTopologyUpdatesKafkaProducer();
 }

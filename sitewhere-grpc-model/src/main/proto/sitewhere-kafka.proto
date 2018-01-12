@@ -90,14 +90,3 @@ message GStateUpdate {
 		GTenantEngineState tenantEngineState = 2;
 	}
 }
-
-// Instance topology update.
-message GInstanceTopologyEntry {
-	com.sitewhere.grpc.model.GMicroserviceDetails microserviceDetails = 1;
-	int64 lastUpdated = 2;
-}
-
-// Snapshot of latest instance topology.
-message GInstanceTopologySnapshot {
-	repeated GInstanceTopologyEntry entries = 1;
-}

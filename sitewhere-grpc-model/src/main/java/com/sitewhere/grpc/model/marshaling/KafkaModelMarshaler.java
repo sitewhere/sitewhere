@@ -17,7 +17,6 @@ import org.apache.logging.log4j.Logger;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GEnrichedEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
-import com.sitewhere.grpc.kafka.model.KafkaModel.GInstanceTopologySnapshot;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GPersistedEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GStateUpdate;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdate;
@@ -222,42 +221,6 @@ public class KafkaModelMarshaler {
 	    return GStateUpdate.parseFrom(payload);
 	} catch (InvalidProtocolBufferException e) {
 	    throw new SiteWhereException("Unable to parse state update message.", e);
-	}
-    }
-
-    /**
-     * Build binary message for GRPC instance topology snapshot.
-     * 
-     * @param grpc
-     * @return
-     * @throws SiteWhereException
-     */
-    public static byte[] buildInstanceTopologySnapshotMessage(GInstanceTopologySnapshot grpc)
-	    throws SiteWhereException {
-	ByteArrayOutputStream output = new ByteArrayOutputStream();
-	try {
-	    grpc.writeTo(output);
-	    return output.toByteArray();
-	} catch (IOException e) {
-	    throw new SiteWhereException("Unable to build instance topology snapshot message.", e);
-	} finally {
-	    closeQuietly(output);
-	}
-    }
-
-    /**
-     * Parse message that reflects an instance topology snapshot.
-     * 
-     * @param payload
-     * @return
-     * @throws SiteWhereException
-     */
-    public static GInstanceTopologySnapshot parseInstanceTopologySnapshotMessage(byte[] payload)
-	    throws SiteWhereException {
-	try {
-	    return GInstanceTopologySnapshot.parseFrom(payload);
-	} catch (InvalidProtocolBufferException e) {
-	    throw new SiteWhereException("Unable to parse instance topology snapshot message.", e);
 	}
     }
 

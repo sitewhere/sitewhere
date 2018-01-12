@@ -7,8 +7,8 @@
  */
 package com.sitewhere.rest.model.microservice.state;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.sitewhere.spi.microservice.state.IInstanceTopologyEntry;
 import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
@@ -20,15 +20,19 @@ import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
  */
 public class InstanceTopologySnapshot implements IInstanceTopologySnapshot {
 
-    /** Topology entries */
-    private List<IInstanceTopologyEntry> topologyEntries = new ArrayList<>();
+    /** Topology entries by module identifier */
+    private Map<String, IInstanceTopologyEntry> topologyEntriesByIdentifier = new HashMap<>();
 
+    /*
+     * @see com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot#
+     * getTopologyEntriesByIdentifier()
+     */
     @Override
-    public List<IInstanceTopologyEntry> getTopologyEntries() {
-	return topologyEntries;
+    public Map<String, IInstanceTopologyEntry> getTopologyEntriesByIdentifier() {
+	return topologyEntriesByIdentifier;
     }
 
-    public void setTopologyEntries(List<IInstanceTopologyEntry> topologyEntries) {
-	this.topologyEntries = topologyEntries;
+    public void setTopologyEntriesByIdentifier(Map<String, IInstanceTopologyEntry> topologyEntriesByIdentifier) {
+	this.topologyEntriesByIdentifier = topologyEntriesByIdentifier;
     }
 }

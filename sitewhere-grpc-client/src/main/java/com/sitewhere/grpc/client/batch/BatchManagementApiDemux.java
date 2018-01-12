@@ -7,6 +7,9 @@
  */
 package com.sitewhere.grpc.client.batch;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.sitewhere.grpc.client.ApiDemux;
 import com.sitewhere.grpc.client.spi.client.IBatchManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IBatchManagementApiDemux;
@@ -22,6 +25,9 @@ import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
  * @param <IAssetManagementApiChannel>
  */
 public class BatchManagementApiDemux extends ApiDemux<IBatchManagementApiChannel> implements IBatchManagementApiDemux {
+
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
     public BatchManagementApiDemux(IMicroservice microservice) {
 	super(microservice);
@@ -42,5 +48,13 @@ public class BatchManagementApiDemux extends ApiDemux<IBatchManagementApiChannel
     @Override
     public IBatchManagementApiChannel createApiChannel(String host) throws SiteWhereException {
 	return new BatchManagementApiChannel(this, getMicroservice(), host);
+    }
+
+    /*
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
     }
 }
