@@ -7,10 +7,14 @@
  */
 package com.sitewhere.web.microservice;
 
+import java.util.Arrays;
+
 import org.apache.catalina.Context;
 import org.apache.catalina.webresources.StandardRoot;
+import org.apache.tomcat.websocket.server.WsSci;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -33,6 +37,7 @@ import com.sitewhere.web.rest.RestApiSwaggerConfiguration;
 import com.sitewhere.web.security.RestSecurity;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 import com.sitewhere.web.vue.VueConfiguration;
+import com.sitewhere.web.ws.WebSocketApiConfiguration;
 
 import io.opentracing.contrib.web.servlet.filter.TracingFilter;
 
@@ -66,7 +71,18 @@ public class WebRestConfiguration {
 	};
 	tomcat.setContextPath("/sitewhere");
 	tomcat.setPort(8080);
+	tomcat.setTomcatContextCustomizers(Arrays.asList(new TomcatContextCustomizer[] { tomcatContextCustomizer() }));
 	return tomcat;
+    }
+
+    @Bean
+    public TomcatContextCustomizer tomcatContextCustomizer() {
+	return new TomcatContextCustomizer() {
+	    @Override
+	    public void customize(Context context) {
+		context.addServletContainerInitializer(new WsSci(), null);
+	    }
+	};
     }
 
     @Bean
@@ -118,6 +134,19 @@ public class WebRestConfiguration {
 		RestApiSwaggerConfiguration.SWAGGER_MATCHER);
 	registration.setName("sitewhereRestSwagger");
 	registration.setLoadOnStartup(3);
+	return registration;
+    }
+
+    @Bean
+    public ServletRegistrationBean sitewhereWebSocketAdminInterface() {
+	DispatcherServlet dispatcherServlet = new DispatcherServlet();
+	AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
+	applicationContext.register(WebSocketApiConfiguration.class);
+	dispatcherServlet.setApplicationContext(applicationContext);
+	ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet,
+		WebSocketApiConfiguration.WEB_SOCKET_MATCHER);
+	registration.setName("sitewhereWebSocketInterface");
+	registration.setLoadOnStartup(1);
 	return registration;
     }
 

@@ -176,6 +176,14 @@ export function createAuthApiUrl (store) {
 }
 
 /**
+ * Create websocket URL based on hostname/port settings.
+ */
+export function createAdminWebSocketUrl (store) {
+  return store.getters.protocol + '://' + store.getters.server + ':' +
+    store.getters.port + '/sitewhere/ws/admin/'
+}
+
+/**
  * Create JWT authenticated axios client based on store values.
  */
 export function createCoreApiCall (store) {

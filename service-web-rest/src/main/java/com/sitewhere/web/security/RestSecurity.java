@@ -105,6 +105,9 @@ public class RestSecurity extends WebSecurityConfigurerAdapter {
 		.antMatchers(HttpMethod.GET, "/authapi/v2/**").permitAll().antMatchers(HttpMethod.GET, "/authapi/**")
 		.authenticated();
 
+	http.antMatcher("/ws/**").authorizeRequests().antMatchers(HttpMethod.OPTIONS, "/ws/**").permitAll()
+		.antMatchers(HttpMethod.GET, "/ws/**").permitAll();
+
 	http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 	http.addFilterBefore(limitedBasicAuthFilter(), UsernamePasswordAuthenticationFilter.class);
     }

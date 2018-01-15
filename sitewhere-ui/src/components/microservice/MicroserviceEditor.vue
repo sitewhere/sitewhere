@@ -57,7 +57,10 @@ import ElementPlaceholder from './ElementPlaceholder'
 import ElementDeleteDialog from './ElementDeleteDialog'
 import ComponentCreateDialog from './ComponentCreateDialog'
 import ComponentUpdateDialog from './ComponentUpdateDialog'
-import {wizard} from './MicroserviceEditorLogic'
+import SockJS from 'sockjs-client'
+import Stomp from 'webstomp-client'
+import { wizard } from './MicroserviceEditorLogic'
+import { createAdminWebSocketUrl } from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -93,6 +96,11 @@ export default {
       wizard.editorContexts = this.$data.wizardContexts
       this.onWizardContextsUpdated(wizard.reset())
     }
+  },
+
+  // Attach WebSocket on mounted.
+  mounted: function () {
+    this.connectWebSocket()
   },
 
   methods: {
@@ -171,8 +179,30 @@ export default {
     onDeleteCurrent: function () {
     },
 
+    // Fire event indicating updates have been made.
     fireDirty: function () {
       this.$emit('dirty')
+    },
+
+    connectWebSocket: function () {
+      this.socket = new SockJS(createAdminWebSocketUrl(this.$store))
+      this.stompClient = Stomp.over(this.socket)
+      this.stompClient.connect({}, (frame) => {
+        this.connected = true
+        console.log(frame)
+        this.stompClient.subscribe('/topic/topology/microservices/**', (ms) => {
+          console.log(ms)
+        })
+      }, (error) => {
+        console.log(error)
+        this.connected = false
+      })
+    },
+    disconnectWebSocket: function () {
+      if (this.stompClient) {
+        this.stompClient.disconnect()
+      }
+      this.connected = false
     }
   }
 }

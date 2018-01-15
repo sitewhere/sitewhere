@@ -7,8 +7,8 @@
  */
 package com.sitewhere.rest.model.microservice.state;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.sitewhere.spi.microservice.state.IInstanceMicroservice;
 import com.sitewhere.spi.microservice.state.IInstanceTopologyEntry;
@@ -21,7 +21,7 @@ import com.sitewhere.spi.microservice.state.IInstanceTopologyEntry;
 public class InstanceTopologyEntry implements IInstanceTopologyEntry {
 
     /** Microservices by hostname */
-    private Map<String, IInstanceMicroservice> microservicesByHostname = new HashMap<>();
+    private Map<String, IInstanceMicroservice> microservicesByHostname = new ConcurrentHashMap<>();
 
     /*
      * @see com.sitewhere.spi.microservice.state.IInstanceTopologyEntry#

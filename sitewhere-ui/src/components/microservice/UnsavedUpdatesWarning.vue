@@ -1,13 +1,13 @@
 <template>
   <v-card v-if="unsaved" class="yellow lighten-4 elevation-1">
     <v-card-text class="subtitle">
-      <v-icon large class="yellow--text text--darken-3">warning</v-icon>
-      The microservice configuation has been updated.
+      <v-icon large class="yellow--text text--darken-3">fa-warning</v-icon>
+      The microservice configuration has been updated.
       <v-btn class="green white--text" @click.native="onSave">
-        Save Changes <v-icon fa class="white--text pl-2">cloud-upload</v-icon>
+        Save Changes <v-icon class="white--text pl-2">fa-cloud-upload</v-icon>
       </v-btn>
       <v-btn class="red white--text" @click.native="onRevert">
-        Revert Changes <v-icon fa class="white--text pl-2">times</v-icon>
+        Revert Changes <v-icon fa class="white--text pl-2">fa-times</v-icon>
       </v-btn>
     </v-card-text>
   </v-card>

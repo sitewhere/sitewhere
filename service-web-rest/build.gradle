@@ -22,7 +22,8 @@ dependencies {
 	compile project(':sitewhere-microservice')
 	
 	compile ('org.springframework.boot:spring-boot-starter-web')
-    compile group: 'org.springframework', name: 'spring-web'
+	compile ('org.springframework.boot:spring-boot-starter-websocket')    
+	compile group: 'org.springframework', name: 'spring-web'
 	
 	// Swagger
     compile group: 'io.swagger', name: 'swagger-annotations', version:'1.5.10'	

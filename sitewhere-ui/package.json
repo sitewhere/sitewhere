@@ -18,6 +18,7 @@
     "lodash": "^4.17.4",
     "mqtt": "^2.15.1",
     "resolve-url-loader": "^2.2.1",
+    "sockjs-client": "^1.1.4",
     "vee-validate": "^2.0.1",
     "vue": "^2.5.13",
     "vue-clipboards": "^1.2.1",
@@ -29,7 +30,8 @@
     "vue2-leaflet": "0.0.50",
     "vuedraggable": "^2.16.0",
     "vuex": "^2.5.0",
-    "vuex-persistedstate": "^2.4.2"
+    "vuex-persistedstate": "^2.4.2",
+    "webstomp-client": "^1.2.0"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.2",
