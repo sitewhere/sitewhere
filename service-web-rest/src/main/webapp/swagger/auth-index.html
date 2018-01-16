@@ -90,13 +90,11 @@ window.onload = function() {
     tagsSorter: "alpha",
     operationsSorter: "alpha",    
     presets: [
-      SwaggerUIBundle.presets.apis,
-      SwaggerUIStandalonePreset
+      SwaggerUIBundle.presets.apis
     ],
     plugins: [
       SwaggerUIBundle.plugins.DownloadUrl
-    ],
-    layout: "StandaloneLayout"
+    ]
   })
 
   window.ui = ui

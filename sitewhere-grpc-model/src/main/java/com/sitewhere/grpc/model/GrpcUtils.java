@@ -102,7 +102,7 @@ public class GrpcUtils {
 		return new NotAuthorizedException("Not authorized for operation.", sre);
 	    }
 	    case UNAUTHENTICATED: {
-		return new UnauthenticatedException("No credentials passed for authentication.", sre);
+		return new UnauthenticatedException(sre.getStatus().getDescription(), sre);
 	    }
 	    case UNAVAILABLE: {
 		return new ServiceNotAvailableException("The requested service is not available.", sre);

@@ -60,7 +60,7 @@ public class RestApiConfiguration extends WebMvcConfigurerAdapter {
     @Bean
     public Docket sitewhereApi() {
 	AuthorizationScope[] scopes = new AuthorizationScope[0];
-	SecurityReference apiKeyRef = SecurityReference.builder().reference("apiKey").scopes(scopes).build();
+	SecurityReference apiKeyRef = SecurityReference.builder().reference("JWT").scopes(scopes).build();
 
 	ArrayList<SecurityReference> reference = new ArrayList<SecurityReference>();
 	reference.add(apiKeyRef);
@@ -77,7 +77,7 @@ public class RestApiConfiguration extends WebMvcConfigurerAdapter {
 
     @Bean
     public ApiKey apiKey() {
-	return new ApiKey("apiKey", "Authorization", "header");
+	return new ApiKey("JWT", "Authorization", "header");
     }
 
     @Bean

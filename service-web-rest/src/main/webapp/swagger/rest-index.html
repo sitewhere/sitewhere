@@ -4,14 +4,13 @@
 <head>
 <meta charset="UTF-8">
 <title>SiteWhere | REST Services</title>
-<link
-	href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Source+Code+Pro:300,600|Titillium+Web:400,600,700"
-	rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Source+Code+Pro:300,600|Titillium+Web:400,600,700" rel="stylesheet">
+<link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="./vuetify.min.css">
 <link rel="stylesheet" type="text/css" href="./swagger-ui.css">
-<link rel="icon" type="image/png" href="./favicon-32x32.png"
-	sizes="32x32" />
-<link rel="icon" type="image/png" href="./favicon-16x16.png"
-	sizes="16x16" />
+<link rel="icon" type="image/png" href="./favicon-32x32.png" sizes="32x32" />
+<link rel="icon" type="image/png" href="./favicon-16x16.png" sizes="16x16" />
+<script src="https://use.fontawesome.com/f87d1cffdd.js"></script>
 <style>
 html {
 	box-sizing: border-box;
@@ -26,6 +25,10 @@ html {
 body {
 	margin: 0;
 	background: #fafafa;
+}
+
+#swagger-ui {
+	margin-top: 80px;
 }
 </style>
 </head>
@@ -74,32 +77,152 @@ body {
   </defs>
 </svg>
 
-	<div id="swagger-ui"></div>
+	<div id="vue">
+	  <v-app>
+		<v-toolbar fixed dark color="grey lighten-4">
+			<div style="background-image: url('sitewhere.png'); height: 50px; width: 200px; min-width: 200px; background-size: contain;"></div>
+			<v-toolbar-title class="grey--text text--darken-3 headline pt-1">
+				Core System and Data Model REST APIs
+			</v-toolbar-title>
+			<v-spacer></v-spacer>
+		    <v-menu open-on-hover offset-y>
+				<v-btn color="grey darken-2" dark slot="activator">
+					<v-icon left dark>fa-user</v-icon>
+					User: {{ username }}
+				</v-btn>
+				<v-card>
+					<v-card-text>
+						<v-form>
+						  <v-text-field label="Username"  v-model="username" required></v-text-field>
+						  <v-text-field type="password" label="Password" v-model="password" required></v-text-field>
+						  <v-btn block color="blue darken-2" dark @click="onUserUpdated">Update User</v-btn>
+						</v-form>
+					</v-card-text>
+				</v-card>
+  			</v-menu>
+		    <v-menu open-on-hover offset-y>
+				<v-btn color="grey darken-2" dark slot="activator">
+					<v-icon left dark>fa-server</v-icon>
+					Tenant: {{ tenantId }}
+				</v-btn>
+				<v-card>
+					<v-card-text>
+						<v-form>
+						  <v-text-field label="Tenant Id"  v-model="tenantId" required></v-text-field>
+						  <v-text-field type="password" label="Tenant Auth" v-model="tenantAuth" required></v-text-field>
+						  <v-btn block color="blue darken-2" dark @click="onTenantUpdated">Update Tenant</v-btn>
+						</v-form>
+					</v-card-text>
+				</v-card>
+  			</v-menu>
+		    <v-menu open-on-hover offset-y>
+				<v-btn color="green darken-2" dark @click="generateJwt" slot="activator">
+					<v-icon left dark>fa-refresh</v-icon>
+					Refresh JWT
+				</v-btn>
+				<v-card>
+					<v-card-text>
+						<v-form>
+						  <v-text-field label="JWT" v-model="jwt" multi-line readonly></v-text-field>
+						</v-form>
+					</v-card-text>
+				</v-card>
+  			</v-menu>
+		</v-toolbar>
+		<v-content>
+			<v-container>
+				<div id="swagger-ui"></div>
+			</v-container>
+		</v-content>
+	  </v-app>
+	</div>
 
 	<script src="./swagger-ui-bundle.js"> </script>
 	<script src="./swagger-ui-standalone-preset.js"> </script>
+	
+  	<script src="./vue.min.js"></script>
+  	<script src="./vuetify.js"></script>
+  	
+  	<script src="./axios.min.js"></script>
 	<script>
+	    const vue = new Vue({
+	      el: '#vue',
+	      data: {
+	    	  jwt: null,
+	    	  username: 'admin',
+	    	  password: 'password',
+	    	  tenantId: 'default',
+	    	  tenantAuth: 'sitewhere1234567890',
+	    	  txtUsername: 'admin',
+	    	  txtPassword: 'password',
+	    	  txtTenantId: 'default',
+	    	  txtTenantAuth: 'sitewhere1234567890'
+	      },
+	      methods: {
+	    	  // Called when user info is updated.
+	    	  onUserUpdated: function () {
+				this.$data.username = this.$data.txtUsername
+				this.$data.password = this.$data.txtPassword
+				this.generateJwt()
+	    	  },
+	    	  
+	    	  // Generate a new JWT based on user information.
+	    	  generateJwt: function () {
+				var component = this
+	    		var baseUrl = "http://" + window.location.hostname + ":" + window.location.port + "/sitewhere/authapi/"
+				var headers = {}
+				headers['Authorization'] = 'Basic ' + btoa(this.$data.username + ":" + this.$data.password)
+				var authsvc = axios.create({
+				  baseURL: baseUrl,
+				  headers: headers
+				})
+				authsvc.get("jwt").then(function (response) {
+					var jwt = response.headers['x-sitewhere-jwt']
+					component.$data.jwt = jwt
+					ui.authActions.authorize({JWT: {name: "JWT", schema: {type: "apiKey", in: "header", name: "Authorization", description: ""}, value: "Bearer " + jwt}})
+				}).catch(function (e) {
+					alert(e)
+				})
+	    	  },
+	    	  
+	    	  // Update tenant information.
+	    	  onTenantUpdated: function () {
+				this.$data.tenantId = this.$data.txtTenantId
+				this.$data.tenantAuth = this.$data.txtTenantAuth
+	    	  }
+	      }
+	    })
+	</script>
+	
+<script>
 window.onload = function() {
-  
-  // Build a system
-  const ui = SwaggerUIBundle({
-    url: window.location.protocol + "//" + window.location.host + "/sitewhere/api/v2/api-docs",
-    dom_id: '#swagger-ui',
-    deepLinking: false,
-    docExpansion : "none",
-    tagsSorter: "alpha",
-    operationsSorter: "alpha",    
-    presets: [
-      SwaggerUIBundle.presets.apis,
-      SwaggerUIStandalonePreset
-    ],
-    plugins: [
-      SwaggerUIBundle.plugins.DownloadUrl
-    ],
-    layout: "StandaloneLayout"
-  })
 
-  window.ui = ui
+	// Build a system
+	const ui = SwaggerUIBundle({
+	  url: window.location.protocol + "//" + window.location.host + "/sitewhere/api/v2/api-docs",
+	  dom_id: '#swagger-ui',
+	  deepLinking: false,
+	  docExpansion : "none",
+	  tagsSorter: "alpha",
+	  operationsSorter: "alpha",    
+	  requestInterceptor: function(request) {
+		if (vue) {
+			request.headers['X-SiteWhere-Tenant-Id'] = vue.tenantId
+			request.headers['X-SiteWhere-Tenant-Auth'] = vue.tenantAuth
+		}
+		return request
+	  },
+	  presets: [
+	    SwaggerUIBundle.presets.apis
+	  ],
+	  plugins: [
+	    SwaggerUIBundle.plugins.DownloadUrl
+	  ]
+	})
+	
+	window.ui = ui
+	window.Vue.prototype.$vuetify.theme.info = "transparent"
+	vue.generateJwt()
 }
 </script>
 </body>

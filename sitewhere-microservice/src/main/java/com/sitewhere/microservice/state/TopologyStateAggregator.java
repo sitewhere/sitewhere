@@ -7,6 +7,7 @@
  */
 package com.sitewhere.microservice.state;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
@@ -56,6 +57,26 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
 
     public TopologyStateAggregator(IMicroservice microservice) {
 	super(microservice);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.state.ITopologyStateAggregator#
+     * getTenantEngineState(java.lang.String, java.lang.String)
+     */
+    @Override
+    public List<ITenantEngineState> getTenantEngineState(String identifier, String tenantId) throws SiteWhereException {
+	IInstanceTopologyEntry entry = getInstanceTopologySnapshot().getTopologyEntriesByIdentifier().get(identifier);
+	if (entry == null) {
+	    throw new SiteWhereException("No microservices found for the given identifier.");
+	}
+	List<ITenantEngineState> result = new ArrayList<>();
+	for (IInstanceMicroservice microservice : entry.getMicroservicesByHostname().values()) {
+	    IInstanceTenantEngine tenantEngine = microservice.getTenantEngines().get(tenantId);
+	    if (tenantEngine != null) {
+		result.add(tenantEngine.getLatestState());
+	    }
+	}
+	return result;
     }
 
     /*

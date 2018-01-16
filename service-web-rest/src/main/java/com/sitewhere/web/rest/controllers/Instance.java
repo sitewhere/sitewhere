@@ -28,6 +28,7 @@ import com.sitewhere.spi.microservice.IMicroserviceManagement;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordinator;
 import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
+import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.microservice.state.ITopologyStateAggregator;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestControllerBase;
@@ -108,6 +109,24 @@ public class Instance extends RestControllerBase {
 	    }
 	}
 	return filtered;
+    }
+
+    /**
+     * For a given microservice identifier, find the state of all tenant engines
+     * (across all microservice instances) for a given tenant id.
+     * 
+     * @param identifier
+     * @param tenantId
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantId}/state", method = RequestMethod.GET)
+    @ApiOperation(value = "Get state information for specific tenant engine across all microservice instances")
+    @Secured({ SiteWhereRoles.REST })
+    public List<ITenantEngineState> getMicroserviceTenantRuntimeState(
+	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
+	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId) throws SiteWhereException {
+	return getTopologyStateAggregator().getTenantEngineState(identifier, tenantId);
     }
 
     /**

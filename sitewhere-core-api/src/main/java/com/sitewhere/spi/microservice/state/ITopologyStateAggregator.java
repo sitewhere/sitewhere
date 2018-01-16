@@ -7,6 +7,10 @@
  */
 package com.sitewhere.spi.microservice.state;
 
+import java.util.List;
+
+import com.sitewhere.spi.SiteWhereException;
+
 /**
  * Kafka consumer that listens for state updates and aggregates them to produce
  * an estimated topology of the SiteWhere instance.
@@ -21,6 +25,17 @@ public interface ITopologyStateAggregator extends IMicroserviceStateUpdatesKafka
      * @return
      */
     public IInstanceTopologySnapshot getInstanceTopologySnapshot();
+
+    /**
+     * For a given type of microservice, find all tenant engines running on the
+     * instance and return their state.
+     * 
+     * @param identifier
+     * @param tenantId
+     * @return
+     * @throws SiteWhereException
+     */
+    public List<ITenantEngineState> getTenantEngineState(String identifier, String tenantId) throws SiteWhereException;
 
     /**
      * Add listener for instance topology updates.
