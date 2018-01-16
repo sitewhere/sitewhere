@@ -127,7 +127,7 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
     @Override
     public void onTenantEngineStateUpdate(ITenantEngineState updated) {
 	MicroserviceState placeholder = new MicroserviceState();
-	placeholder.setMicroserviceDetails(updated.getMicroserviceDetails());
+	placeholder.setMicroservice(updated.getMicroservice());
 	placeholder.setLifecycleStatus(LifecycleStatus.Started);
 
 	// Get microservice and existing engine (creating if necessary.
@@ -185,7 +185,7 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
      * @return
      */
     protected IInstanceMicroservice getMicroservice(IMicroserviceState state) {
-	IMicroserviceDetails microservice = state.getMicroserviceDetails();
+	IMicroserviceDetails microservice = state.getMicroservice();
 	IInstanceTopologyEntry entry = getInstanceTopologySnapshot().getTopologyEntriesByIdentifier()
 		.get(microservice.getIdentifier());
 	if (entry == null) {
@@ -201,7 +201,7 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
      * @return
      */
     protected IInstanceMicroservice addMicroservice(IMicroserviceState state) {
-	IMicroserviceDetails details = state.getMicroserviceDetails();
+	IMicroserviceDetails details = state.getMicroservice();
 	IInstanceTopologyEntry entry = getInstanceTopologySnapshot().getTopologyEntriesByIdentifier()
 		.get(details.getIdentifier());
 	if (entry == null) {
@@ -227,7 +227,7 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
      * @param state
      */
     protected void removeMicroservice(IMicroserviceState state) {
-	IMicroserviceDetails microservice = state.getMicroserviceDetails();
+	IMicroserviceDetails microservice = state.getMicroservice();
 	getLogger().debug("Detected termination of microservice (" + microservice.getIdentifier() + ":"
 		+ microservice.getHostname() + ").");
 	IInstanceTopologyEntry entry = getInstanceTopologySnapshot().getTopologyEntriesByIdentifier()
@@ -249,8 +249,7 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
      * @return
      */
     protected String microserviceId(IMicroserviceState microservice) {
-	return microservice.getMicroserviceDetails().getIdentifier() + ":"
-		+ microservice.getMicroserviceDetails().getHostname();
+	return microservice.getMicroservice().getIdentifier() + ":" + microservice.getMicroservice().getHostname();
     }
 
     /**
@@ -261,8 +260,8 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
      * @return
      */
     protected String tenantId(IMicroserviceState microservice, ITenantEngineState tenantEngine) {
-	return microservice.getMicroserviceDetails().getIdentifier() + ":"
-		+ microservice.getMicroserviceDetails().getHostname() + ":" + tenantEngine.getTenantId();
+	return microservice.getMicroservice().getIdentifier() + ":" + microservice.getMicroservice().getHostname() + ":"
+		+ tenantEngine.getTenantId();
     }
 
     /**

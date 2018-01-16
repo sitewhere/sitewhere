@@ -30,7 +30,7 @@ public class TopologySummaryBuilder {
 	Map<String, InstanceTopologySummary> summaries = new HashMap<>();
 	for (IInstanceTopologyEntry entry : snapshot.getTopologyEntriesByIdentifier().values()) {
 	    for (IInstanceMicroservice microservice : entry.getMicroservicesByHostname().values()) {
-		IMicroserviceDetails details = microservice.getLatestState().getMicroserviceDetails();
+		IMicroserviceDetails details = microservice.getLatestState().getMicroservice();
 		InstanceTopologySummary summary = summaries.get(details.getIdentifier());
 		if (summary == null) {
 		    summary = new InstanceTopologySummary();

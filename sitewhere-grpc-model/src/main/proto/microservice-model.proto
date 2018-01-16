@@ -98,7 +98,7 @@ message GElementRole {
 
 // Microservice configuration information.
 message GMicroserviceConfiguration {
-	GMicroserviceDetails microserviceDetails = 1;
+	GMicroserviceDetails microservice = 1;
 	string defaultNamespace = 2;
 	string rootRoleId = 3;
 	map<string, GElementNodeList> elementsByRole = 4;

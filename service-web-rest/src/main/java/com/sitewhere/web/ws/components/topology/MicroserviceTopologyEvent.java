@@ -30,7 +30,7 @@ public class MicroserviceTopologyEvent {
 
     public MicroserviceTopologyEvent(TopologyEventType type, IMicroserviceState state) {
 	this.type = type;
-	this.microservice = state.getMicroserviceDetails();
+	this.microservice = state.getMicroservice();
 	this.status = state.getLifecycleStatus();
     }
 

@@ -306,7 +306,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     @Override
     public IMicroserviceState getCurrentState() throws SiteWhereException {
 	MicroserviceState state = new MicroserviceState();
-	state.setMicroserviceDetails(getMicroserviceDetails());
+	state.setMicroservice(getMicroserviceDetails());
 	state.setLifecycleStatus(getLifecycleStatus());
 	return state;
     }

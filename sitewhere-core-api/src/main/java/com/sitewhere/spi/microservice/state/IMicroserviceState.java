@@ -21,7 +21,7 @@ public interface IMicroserviceState {
      * 
      * @return
      */
-    public IMicroserviceDetails getMicroserviceDetails();
+    public IMicroserviceDetails getMicroservice();
 
     /**
      * Get current lifeycle status of tenant engine.

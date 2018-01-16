@@ -209,7 +209,7 @@ public class KafkaModelConverter {
      */
     public static MicroserviceState asApiMicroserviceState(GMicroserviceState grpc) throws SiteWhereException {
 	MicroserviceState api = new MicroserviceState();
-	api.setMicroserviceDetails(MicroserviceModelConverter.asApiMicroserviceDetails(grpc.getMicroserviceDetails()));
+	api.setMicroservice(MicroserviceModelConverter.asApiMicroserviceDetails(grpc.getMicroservice()));
 	api.setLifecycleStatus(KafkaModelConverter.asApiLifecycleStatus(grpc.getStatus()));
 	return api;
     }
@@ -223,7 +223,7 @@ public class KafkaModelConverter {
      */
     public static GMicroserviceState asGrpcMicroserviceState(IMicroserviceState api) throws SiteWhereException {
 	GMicroserviceState.Builder grpc = GMicroserviceState.newBuilder();
-	grpc.setMicroserviceDetails(MicroserviceModelConverter.asGrpcMicroserviceDetails(api.getMicroserviceDetails()));
+	grpc.setMicroservice(MicroserviceModelConverter.asGrpcMicroserviceDetails(api.getMicroservice()));
 	grpc.setStatus(KafkaModelConverter.asGrpcLifecycleStatus(api.getLifecycleStatus()));
 	return grpc.build();
     }
@@ -237,7 +237,7 @@ public class KafkaModelConverter {
      */
     public static TenantEngineState asApiTenantEngineState(GTenantEngineState grpc) throws SiteWhereException {
 	TenantEngineState api = new TenantEngineState();
-	api.setMicroserviceDetails(MicroserviceModelConverter.asApiMicroserviceDetails(grpc.getMicroserviceDetails()));
+	api.setMicroservice(MicroserviceModelConverter.asApiMicroserviceDetails(grpc.getMicroservice()));
 	api.setTenantId(grpc.getTenantId());
 	api.setLifecycleStatus(KafkaModelConverter.asApiLifecycleStatus(grpc.getStatus()));
 	return api;
@@ -252,7 +252,7 @@ public class KafkaModelConverter {
      */
     public static GTenantEngineState asGrpcTenantEngineState(ITenantEngineState api) throws SiteWhereException {
 	GTenantEngineState.Builder grpc = GTenantEngineState.newBuilder();
-	grpc.setMicroserviceDetails(MicroserviceModelConverter.asGrpcMicroserviceDetails(api.getMicroserviceDetails()));
+	grpc.setMicroservice(MicroserviceModelConverter.asGrpcMicroserviceDetails(api.getMicroservice()));
 	grpc.setTenantId(api.getTenantId());
 	grpc.setStatus(KafkaModelConverter.asGrpcLifecycleStatus(api.getLifecycleStatus()));
 	return grpc.build();

@@ -75,7 +75,7 @@ public class MicroserviceManagementCoordinator extends LifecycleComponent
 		.getInstanceTopologySnapshot();
 	for (IInstanceTopologyEntry entry : topology.getTopologyEntriesByIdentifier().values()) {
 	    for (IInstanceMicroservice microservice : entry.getMicroservicesByHostname().values()) {
-		onMicroserviceAdded(microservice.getLatestState().getMicroserviceDetails());
+		onMicroserviceAdded(microservice.getLatestState().getMicroservice());
 	    }
 	}
     }
@@ -109,8 +109,8 @@ public class MicroserviceManagementCoordinator extends LifecycleComponent
      * onMicroserviceAdded(com.sitewhere.spi.microservice.state.IMicroserviceState)
      */
     @Override
-    public void onMicroserviceAdded(IMicroserviceState microservice) {
-	onMicroserviceAdded(microservice.getMicroserviceDetails());
+    public void onMicroserviceAdded(IMicroserviceState state) {
+	onMicroserviceAdded(state.getMicroservice());
     }
 
     /**
@@ -142,12 +142,12 @@ public class MicroserviceManagementCoordinator extends LifecycleComponent
      * IMicroserviceState)
      */
     @Override
-    public void onMicroserviceRemoved(IMicroserviceState microservice) {
-	String identifier = microservice.getMicroserviceDetails().getIdentifier();
+    public void onMicroserviceRemoved(IMicroserviceState state) {
+	String identifier = state.getMicroservice().getIdentifier();
 	IMicroserviceManagementApiDemux demux = getDemuxesByServiceIdentifier().get(identifier);
 	if (demux != null) {
 	    getDemuxesByServiceIdentifier().remove(identifier);
-	    stopDemux(demux, microservice.getMicroserviceDetails());
+	    stopDemux(demux, state.getMicroservice());
 	}
     }
 

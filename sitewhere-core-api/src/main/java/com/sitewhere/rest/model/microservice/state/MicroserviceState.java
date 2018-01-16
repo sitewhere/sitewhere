@@ -19,22 +19,21 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 public class MicroserviceState implements IMicroserviceState {
 
     /** Microservice details */
-    private IMicroserviceDetails microserviceDetails;
+    private IMicroserviceDetails microservice;
 
     /** Lifecycle status */
     private LifecycleStatus lifecycleStatus;
 
     /*
-     * @see com.sitewhere.spi.microservice.state.IMicroserviceState#
-     * getMicroserviceDetails()
+     * @see com.sitewhere.spi.microservice.state.IMicroserviceState#getMicroservice()
      */
     @Override
-    public IMicroserviceDetails getMicroserviceDetails() {
-	return microserviceDetails;
+    public IMicroserviceDetails getMicroservice() {
+	return microservice;
     }
 
-    public void setMicroserviceDetails(IMicroserviceDetails microserviceDetails) {
-	this.microserviceDetails = microserviceDetails;
+    public void setMicroservice(IMicroserviceDetails microservice) {
+	this.microservice = microservice;
     }
 
     /*

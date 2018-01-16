@@ -82,7 +82,7 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 		.getInstanceTopologySnapshot();
 	for (IInstanceTopologyEntry entry : topology.getTopologyEntriesByIdentifier().values()) {
 	    for (IInstanceMicroservice microservice : entry.getMicroservicesByHostname().values()) {
-		detectServiceAdded(microservice.getLatestState().getMicroserviceDetails());
+		detectServiceAdded(microservice.getLatestState().getMicroservice());
 	    }
 	}
     }
@@ -172,7 +172,7 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
      */
     @Override
     public void onMicroserviceAdded(IMicroserviceState microservice) {
-	detectServiceAdded(microservice.getMicroserviceDetails());
+	detectServiceAdded(microservice.getMicroservice());
     }
 
     /*
@@ -190,8 +190,8 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
      * IMicroserviceState)
      */
     @Override
-    public void onMicroserviceRemoved(IMicroserviceState microservice) {
-	detectServiceRemoved(microservice.getMicroserviceDetails());
+    public void onMicroserviceRemoved(IMicroserviceState state) {
+	detectServiceRemoved(state.getMicroservice());
     }
 
     /*

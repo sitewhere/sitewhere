@@ -190,7 +190,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     @Override
     public ITenantEngineState getCurrentState() throws SiteWhereException {
 	TenantEngineState state = new TenantEngineState();
-	state.setMicroserviceDetails(getMicroservice().getMicroserviceDetails());
+	state.setMicroservice(getMicroservice().getMicroserviceDetails());
 	state.setLifecycleStatus(getLifecycleStatus());
 	state.setTenantId(getTenant().getId());
 	return state;

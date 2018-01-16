@@ -133,8 +133,8 @@ public class TopologyBroadcaster
      * @param microservice
      * @return
      */
-    protected String getPathForMicroservice(IMicroserviceState microservice) {
-	return BASE_MICROSERVICES_PATH + microservice.getMicroserviceDetails().getIdentifier();
+    protected String getPathForMicroservice(IMicroserviceState state) {
+	return BASE_MICROSERVICES_PATH + state.getMicroservice().getIdentifier();
     }
 
     /**

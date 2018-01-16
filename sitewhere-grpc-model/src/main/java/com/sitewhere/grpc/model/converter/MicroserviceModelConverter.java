@@ -458,7 +458,7 @@ public class MicroserviceModelConverter {
     public static ConfigurationModel asApiConfigurationModel(GMicroserviceConfiguration grpc)
 	    throws SiteWhereException {
 	ConfigurationModel api = new ConfigurationModel();
-	api.setMicroserviceDetails(MicroserviceModelConverter.asApiMicroserviceDetails(grpc.getMicroserviceDetails()));
+	api.setMicroserviceDetails(MicroserviceModelConverter.asApiMicroserviceDetails(grpc.getMicroservice()));
 	api.setDefaultXmlNamespace(grpc.getDefaultNamespace());
 	api.setRootRoleId(grpc.getRootRoleId());
 	Map<String, GElementNodeList> elementsByRole = grpc.getElementsByRoleMap();
@@ -484,7 +484,7 @@ public class MicroserviceModelConverter {
     public static GMicroserviceConfiguration asGrpcConfigurationModel(IConfigurationModel api)
 	    throws SiteWhereException {
 	GMicroserviceConfiguration.Builder grpc = GMicroserviceConfiguration.newBuilder();
-	grpc.setMicroserviceDetails(MicroserviceModelConverter.asGrpcMicroserviceDetails(api.getMicroserviceDetails()));
+	grpc.setMicroservice(MicroserviceModelConverter.asGrpcMicroserviceDetails(api.getMicroserviceDetails()));
 	grpc.setDefaultNamespace(api.getDefaultXmlNamespace());
 	grpc.setRootRoleId(api.getRootRoleId());
 	for (String role : api.getElementsByRole().keySet()) {

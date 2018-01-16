@@ -72,13 +72,13 @@ enum GLifecycleStatus {
 
 // Microservice state.
 message GMicroserviceState {
-	com.sitewhere.grpc.model.GMicroserviceDetails microserviceDetails = 1;
+	com.sitewhere.grpc.model.GMicroserviceDetails microservice = 1;
 	GLifecycleStatus status = 2;
 }
 
 // Tenant engine state.
 message GTenantEngineState {
-	com.sitewhere.grpc.model.GMicroserviceDetails microserviceDetails = 1;
+	com.sitewhere.grpc.model.GMicroserviceDetails microservice = 1;
 	string tenantId = 2;
 	GLifecycleStatus status = 3;
 }

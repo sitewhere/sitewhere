@@ -21,7 +21,7 @@ public interface ITenantEngineState {
      * 
      * @return
      */
-    public IMicroserviceDetails getMicroserviceDetails();
+    public IMicroserviceDetails getMicroservice();
 
     /**
      * Get tenant id.

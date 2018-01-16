@@ -33,7 +33,7 @@ public class TenantTopologyEvent {
 
     public TenantTopologyEvent(TopologyEventType type, ITenantEngineState state) {
 	this.type = type;
-	this.microservice = state.getMicroserviceDetails();
+	this.microservice = state.getMicroservice();
 	this.tenantId = state.getTenantId();
 	this.status = state.getLifecycleStatus();
     }

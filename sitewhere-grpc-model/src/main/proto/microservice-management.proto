@@ -16,7 +16,7 @@ service MicroserviceManagement {
 	// ### CONFIGURATION ###
 	// #####################
 
-	// Create a new batch operation.
+	// Get configuration model.
 	rpc GetConfigurationModel (GGetConfigurationModelRequest) returns (GGetConfigurationModelResponse) {}
 
 	// Get global configuration content.

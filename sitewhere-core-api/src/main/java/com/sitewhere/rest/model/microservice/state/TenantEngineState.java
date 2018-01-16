@@ -19,7 +19,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 public class TenantEngineState implements ITenantEngineState {
 
     /** Microservice details */
-    private IMicroserviceDetails microserviceDetails;
+    private IMicroserviceDetails microservice;
 
     /** Tenant id */
     private String tenantId;
@@ -28,16 +28,16 @@ public class TenantEngineState implements ITenantEngineState {
     private LifecycleStatus lifecycleStatus;
 
     /*
-     * @see com.sitewhere.spi.microservice.state.ITenantEngineState#
-     * getMicroserviceDetails()
+     * @see
+     * com.sitewhere.spi.microservice.state.ITenantEngineState#getMicroservice()
      */
     @Override
-    public IMicroserviceDetails getMicroserviceDetails() {
-	return microserviceDetails;
+    public IMicroserviceDetails getMicroservice() {
+	return microservice;
     }
 
-    public void setMicroserviceDetails(IMicroserviceDetails microserviceDetails) {
-	this.microserviceDetails = microserviceDetails;
+    public void setMicroservice(IMicroserviceDetails microservice) {
+	this.microservice = microservice;
     }
 
     /*
