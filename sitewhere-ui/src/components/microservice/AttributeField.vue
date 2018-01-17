@@ -30,6 +30,13 @@
         :label="attribute.name" v-model="attrConstValue"
         hide-details>
       </v-checkbox>
+      <site-selector v-else-if="attribute.type === 'SiteReference'"
+        selected="attrConstValue">
+      </site-selector>
+      <specification-selector
+        v-else-if="attribute.type === 'SpecificationReference'"
+        v-model="attrConstValue">
+      </specification-selector>
     </v-flex>
     <v-flex xs3 class="pl-2">
       <span v-if="readOnly && attrEnvVar">
@@ -51,6 +58,9 @@
 </template>
 
 <script>
+import SiteSelector from '../sites/SiteSelector'
+import SpecificationSelector from '../specifications/SpecificationSelector'
+
 export default {
 
   data: () => ({
@@ -58,16 +68,19 @@ export default {
     attrEnvVar: null
   }),
 
+  components: {
+    SiteSelector,
+    SpecificationSelector
+  },
+
   props: ['attribute', 'attrValues', 'readOnly'],
 
   created: function () {
-    console.log('values set')
     this.onLoadValue(this.attrValues)
   },
 
   watch: {
     attrValues: function (values) {
-      console.log('values set')
       this.onLoadValue(values)
     },
     // Send update if value changed.
@@ -84,7 +97,7 @@ export default {
     onLoadValue: function (values) {
       if (values) {
         let value = values[this.attribute.localName]
-        if (value.startsWith('${') && value.endsWith('}')) {
+        if (value && value.startsWith('${') && value.endsWith('}')) {
           let content = value.substring(2)
           content = content.substring(0, content.length - 1)
           let parts = content.split(':')

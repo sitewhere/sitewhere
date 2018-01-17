@@ -1,10 +1,12 @@
 <template>
   <div>
-    <v-breadcrumbs divider="/">
+    <v-breadcrumbs divider="/" class="pa-0 ma-0">
       <v-breadcrumbs-item v-for="context in wizardContexts"
-        :key="context.model.localName"
-        @click="onPopToContext(context.model.localName)">
-        {{ context.model.name }}
+        :key="context.model.localName">
+        <v-btn small flat @click="onPopToContext(context.model.localName)"
+          class="pa-0 ma-0">
+          {{ context.model.name }}
+        </v-btn>
       </v-breadcrumbs-item>
     </v-breadcrumbs>
     <v-card class="mb-3">
@@ -42,6 +44,11 @@ export default {
     // Pop context from stack.
     onPopContext: function () {
       this.$emit('popContext')
+    },
+    // Pop to a given context.
+    onPopToContext: function (context) {
+      console.log('pop to')
+      this.$emit('popToContext', context)
     },
     // Pop context from stack.
     onConfigureCurrent: function () {

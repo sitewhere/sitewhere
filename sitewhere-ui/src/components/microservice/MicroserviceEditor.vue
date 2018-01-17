@@ -5,6 +5,7 @@
         <!-- Banner shown above microservice content -->
         <microservice-banner :currentContext="currentContext"
           :wizardContexts="wizardContexts" @popContext="onPopContext"
+          @popToContext="onPopToContext"
           @configureCurrent="onConfigureCurrent"
           @deleteCurrent="onDeleteCurrent">
         </microservice-banner>

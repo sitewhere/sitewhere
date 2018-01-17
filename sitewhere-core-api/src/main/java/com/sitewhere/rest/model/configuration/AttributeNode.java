@@ -160,6 +160,7 @@ public class AttributeNode extends XmlNode implements IAttributeNode {
 
 	public Builder makeIndex() {
 	    attribute.setIndex(true);
+	    attribute.setRequired(true);
 	    return this;
 	}
 

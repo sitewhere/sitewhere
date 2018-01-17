@@ -150,7 +150,7 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
 		(new AttributeNode.Builder("Specification", "specification", AttributeType.SpecificationReference)
 			.description("Device specification for the mapping.").makeIndex().build()));
 	builder.attribute((new AttributeNode.Builder("Destination id", "destination", AttributeType.String)
-		.description("Unique id of command destination for the mapping.").build()));
+		.description("Unique id of command destination for the mapping.").makeRequired().build()));
 	return builder.build();
     }
 
