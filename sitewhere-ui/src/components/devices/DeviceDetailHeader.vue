@@ -131,6 +131,7 @@ export default {
 .device-headers {
   position: absolute;
   top: 20px;
-  left: 220px;
+  left: 200px;
+  right: 200px;
 }
 </style>

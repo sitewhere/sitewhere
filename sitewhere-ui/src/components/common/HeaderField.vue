@@ -1,12 +1,12 @@
 <template>
-  <div class="header-row">
-    <span class="header-label">
-      {{ label }}:
-    </span>
-    <span class="header-content">
+  <v-layout row wrap class="mb-1">
+    <v-flex xs4 class="text-xs-right subheading pr-4">
+      <strong>{{ label }}</strong>:
+    </v-flex>
+    <v-flex xs8>
       <slot></slot>
-    </span>
-  </div>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script>
@@ -24,19 +24,4 @@ export default {
 </script>
 
 <style scoped>
-.header-row {
-  height: 27px;
-}
-.header-label {
-  min-width: 160px;
-  font-weight: 700;
-  font-size: 14px;
-  display: inline-block;
-  vertical-align: top;
-}
-.header-content {
-  font-size: 14px;
-  vertical-align: top;
-  position: relative;
-}
 </style>

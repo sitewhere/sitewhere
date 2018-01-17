@@ -10,27 +10,27 @@
         Emulator
       </v-btn>
       <div class="assn-headers">
-        <header-field label="Token">
+        <header-field label="Assignment token">
           <clipboard-copy-field :field="assignment.token"
             message="Assignment token copied to clipboard">
           </clipboard-copy-field>
         </header-field>
-        <header-field label="Asset">
+        <header-field label="Assigned asset">
           <span>{{ assignment.assetName }}</span>
         </header-field>
-        <header-field label="Device">
+        <header-field label="Assigned device">
           <span>{{ assignment.device.specification.assetName }}</span>
         </header-field>
-        <header-field label="Created">
+        <header-field label="Created date">
           <span>{{ formatDate(assignment.createdDate) }}</span>
         </header-field>
-        <header-field label="Updated">
+        <header-field label="Last updated date">
           <span>{{ formatDate(assignment.updatedDate) }}</span>
         </header-field>
-        <header-field label="Active">
+        <header-field label="Active date">
           <span>{{ formatDate(assignment.activeDate) }}</span>
         </header-field>
-        <header-field label="Released">
+        <header-field label="Released date">
           <span>{{ formatDate(assignment.releasedDate) }}</span>
         </header-field>
       </div>
@@ -156,7 +156,8 @@ export default {
 .assn-headers {
   position: absolute;
   top: 20px;
-  left: 220px;
+  left: 200px;
+  right: 200px;
 }
 
 .assn-emulator {

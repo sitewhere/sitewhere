@@ -4,7 +4,7 @@
       <v-layout row wrap>
          <v-flex xs6 v-for="(category, index) in categories" :key="category.id">
           <asset-category-list-panel :category="category" class="mb-1"
-            @click.native="onOpenCategory(category)">
+            @categoryOpened="onOpenCategory">
           </asset-category-list-panel>
         </v-flex>
       </v-layout>

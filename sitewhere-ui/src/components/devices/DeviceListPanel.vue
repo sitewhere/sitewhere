@@ -1,6 +1,7 @@
 <template>
   <v-card hover class="white">
-    <v-card-text :style="styleForDevice()" class="device-root">
+    <v-card-text @click="onOpenDevice" :style="styleForDevice()"
+      class="device-root">
       <div class="device-image"
         :style="backgroundImageStyle(device.specification.assetImageUrl)"></div>
       <div class="device-hardware-id">
@@ -78,6 +79,11 @@ export default {
     // Fire event to have parent refresh content.
     refresh: function () {
       this.$emit('refresh')
+    },
+
+    // Called when a device is clicked.
+    onOpenDevice: function () {
+      this.$emit('deviceOpened', this.device.hardwareId)
     },
 
     // Open device assignment dialog.

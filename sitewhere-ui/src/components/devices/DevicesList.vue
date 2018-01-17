@@ -5,8 +5,8 @@
     <v-container fluid grid-list-md  v-if="devices">
       <v-layout row wrap>
          <v-flex xs6 v-for="(device, index) in devices" :key="device.hardwareId">
-          <device-list-panel :device="device" @click="onOpenDevice(device)"
-            @assigned="refresh">
+          <device-list-panel :device="device" @assigned="refresh"
+            @deviceOpened="onOpenDevice">
           </device-list-panel>
         </v-flex>
       </v-layout>
@@ -93,8 +93,8 @@ export default {
     },
 
     // Called to open detail page for device.
-    onOpenDevice: function (device) {
-      Utils.routeTo(this, '/devices/' + device.hardwareId)
+    onOpenDevice: function (hardwareId) {
+      Utils.routeTo(this, '/devices/' + hardwareId)
     }
   }
 }
