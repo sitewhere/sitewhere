@@ -4,8 +4,8 @@
       :visible="dialogVisible" createLabel="Update Filter" cancelLabel="Cancel"
       :error="error" @createClicked="onFilterUpdateClicked"
       @cancelClicked="onCancelClicked">
-      <v-tabs dark v-model="active">
-        <v-tabs-bar slot="activators">
+      <v-tabs v-model="active">
+        <v-tabs-bar dark color="primary">
           <v-tabs-slider></v-tabs-slider>
           <v-tabs-item key="site" href="#site">
             Site
@@ -21,81 +21,83 @@
           </v-tabs-item>
           <slot name="tabitem"></slot>
         </v-tabs-bar>
-        <slot name="tabcontent"></slot>
-        <v-tabs-content key="site" id="site">
-          <v-card flat>
-            <v-card-text>
-              <site-chooser :chosenText="siteChosenText"
-                :notChosenText="siteNotChosenText"
-                :selected="siteFilter"
-                @siteUpdated="onSiteUpdated">
-              </site-chooser>
-            </v-card-text>
-          </v-card>
-        </v-tabs-content>
-        <v-tabs-content key="specification" id="specification">
-          <v-card flat>
-            <v-card-text>
-              <specification-chooser :chosenText="specificationChosenText"
-                :notChosenText="specificationNotChosenText"
-                :selected="specificationFilter"
-                @specificationUpdated="onSpecificationUpdated">
-              </specification-chooser>
-            </v-card-text>
-          </v-card>
-        </v-tabs-content>
-        <v-tabs-content key="group" id="group">
-          <v-card flat>
-            <v-card-text>
-              <device-group-chooser :chosenText="groupChosenText"
-                :notChosenText="groupNotChosenText"
-                :selected="deviceGroupFilter"
-                @groupUpdated="onGroupUpdated">
-              </device-group-chooser>
-            </v-card-text>
-          </v-card>
-        </v-tabs-content>
-        <v-tabs-content key="created" id="created">
-          <v-card flat>
-            <v-card-text>
-              <v-container fluid>
-                <v-layout row wrap>
-                  <v-flex xs12>
-                    <v-select :items="createdDateRanges" v-model="createdDateFilter"
-                      label="Created Date" prepend-icon="insert_invitation"></v-select>
-                  </v-flex>
-                  <v-flex xs12 mb-2 pb-2>
-                    <v-divider></v-divider>
-                  </v-flex>
-                  <v-flex xs12>
-                    <v-card flat>
-                      <v-card-text v-if="createdDateFilter === 'all'">
-                        Include all devices in search without consideration
-                        of created date.
-                      </v-card-text>
-                      <v-card-text v-if="createdDateFilter === 'hour'">
-                        Include only devices created within the last hour.
-                      </v-card-text>
-                      <v-card-text v-if="createdDateFilter === 'day'">
-                        Include only devices created within the last day.
-                      </v-card-text>
-                      <v-card-text v-if="createdDateFilter === 'week'">
-                        Include only devices created within the last week.
-                      </v-card-text>
-                      <v-card-text v-if="createdDateFilter === 'after'">
-                        <date-time-picker
-                          label="Devices created after this date/time"
-                          :v-model="createdAfter"
-                          @input="onCreatedAfterUpdated">
-                        </date-time-picker>
-                      </v-card-text>
-                    </v-card>
-                  </v-flex>
-                </v-layout>
-              </v-container>
-            </v-card-text>
-          </v-card>
-        </v-tabs-content>
+        <v-tabs-items>
+          <slot name="tabcontent"></slot>
+          <v-tabs-content key="site" id="site">
+            <v-card flat>
+              <v-card-text>
+                <site-chooser :chosenText="siteChosenText"
+                  :notChosenText="siteNotChosenText"
+                  :selected="siteFilter"
+                  @siteUpdated="onSiteUpdated">
+                </site-chooser>
+              </v-card-text>
+            </v-card>
+          </v-tabs-content>
+          <v-tabs-content key="specification" id="specification">
+            <v-card flat>
+              <v-card-text>
+                <specification-chooser :chosenText="specificationChosenText"
+                  :notChosenText="specificationNotChosenText"
+                  :selected="specificationFilter"
+                  @specificationUpdated="onSpecificationUpdated">
+                </specification-chooser>
+              </v-card-text>
+            </v-card>
+          </v-tabs-content>
+          <v-tabs-content key="group" id="group">
+            <v-card flat>
+              <v-card-text>
+                <device-group-chooser :chosenText="groupChosenText"
+                  :notChosenText="groupNotChosenText"
+                  :selected="deviceGroupFilter"
+                  @groupUpdated="onGroupUpdated">
+                </device-group-chooser>
+              </v-card-text>
+            </v-card>
+          </v-tabs-content>
+          <v-tabs-content key="created" id="created">
+            <v-card flat>
+              <v-card-text>
+                <v-container fluid>
+                  <v-layout row wrap>
+                    <v-flex xs12>
+                      <v-select :items="createdDateRanges" v-model="createdDateFilter"
+                        label="Created Date" prepend-icon="insert_invitation"></v-select>
+                    </v-flex>
+                    <v-flex xs12 mb-2 pb-2>
+                      <v-divider></v-divider>
+                    </v-flex>
+                    <v-flex xs12>
+                      <v-card flat>
+                        <v-card-text v-if="createdDateFilter === 'all'">
+                          Include all devices in search without consideration
+                          of created date.
+                        </v-card-text>
+                        <v-card-text v-if="createdDateFilter === 'hour'">
+                          Include only devices created within the last hour.
+                        </v-card-text>
+                        <v-card-text v-if="createdDateFilter === 'day'">
+                          Include only devices created within the last day.
+                        </v-card-text>
+                        <v-card-text v-if="createdDateFilter === 'week'">
+                          Include only devices created within the last week.
+                        </v-card-text>
+                        <v-card-text v-if="createdDateFilter === 'after'">
+                          <date-time-picker
+                            label="Devices created after this date/time"
+                            :v-model="createdAfter"
+                            @input="onCreatedAfterUpdated">
+                          </date-time-picker>
+                        </v-card-text>
+                      </v-card>
+                    </v-flex>
+                  </v-layout>
+                </v-container>
+              </v-card-text>
+            </v-card>
+          </v-tabs-content>
+        </v-tabs-items>
       </v-tabs>
     </base-dialog>
     <v-tooltip top>
