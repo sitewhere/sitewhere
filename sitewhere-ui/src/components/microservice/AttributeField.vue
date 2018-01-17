@@ -1,6 +1,13 @@
 <template>
   <v-layout row wrap class="mb-2">
     <v-flex xs4 class="text-xs-right subheading mt-1 pr-4">
+      <v-tooltip top v-if="attribute.required">
+        <v-icon small slot="activator"
+          style="font-size: 8pt; vertical-align: top;" class="red--text">
+          fa-asterisk
+        </v-icon>
+        <span>Attribute is required</span>
+      </v-tooltip>
       <strong>{{ attribute.name }}</strong>:
     </v-flex>
     <v-flex xs4>
