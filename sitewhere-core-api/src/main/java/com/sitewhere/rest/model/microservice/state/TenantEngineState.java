@@ -7,6 +7,10 @@
  */
 package com.sitewhere.rest.model.microservice.state;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
@@ -16,6 +20,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  * 
  * @author Derek
  */
+@JsonInclude(Include.NON_NULL)
 public class TenantEngineState implements ITenantEngineState {
 
     /** Microservice details */
@@ -26,6 +31,9 @@ public class TenantEngineState implements ITenantEngineState {
 
     /** Lifecycle status */
     private LifecycleStatus lifecycleStatus;
+
+    /** Lifecycle error message stack */
+    private List<String> lifecycleErrorStack;
 
     /*
      * @see
@@ -63,5 +71,18 @@ public class TenantEngineState implements ITenantEngineState {
 
     public void setLifecycleStatus(LifecycleStatus lifecycleStatus) {
 	this.lifecycleStatus = lifecycleStatus;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.state.ITenantEngineState#
+     * getLifecycleErrorStack()
+     */
+    @Override
+    public List<String> getLifecycleErrorStack() {
+	return lifecycleErrorStack;
+    }
+
+    public void setLifecycleErrorStack(List<String> lifecycleErrorStack) {
+	this.lifecycleErrorStack = lifecycleErrorStack;
     }
 }

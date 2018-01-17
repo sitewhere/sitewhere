@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.microservice.state;
 
+import java.util.List;
+
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
@@ -36,4 +38,11 @@ public interface ITenantEngineState {
      * @return
      */
     public LifecycleStatus getLifecycleStatus();
+
+    /**
+     * If in an error state, returns the stack of error messages.
+     * 
+     * @return
+     */
+    public List<String> getLifecycleErrorStack();
 }

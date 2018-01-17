@@ -1,5 +1,5 @@
 <template>
-  <div v-if="currentContext.groups && currentContext.groups.length">
+  <div v-if="currentContext && currentContext.groups && currentContext.groups.length">
     <v-card class="grey lighten-4 mb-3"
       v-for="group in currentContext.groups" :key="group.id">
       <v-card-text
@@ -29,7 +29,7 @@ import AttributeField from './AttributeField'
 export default {
 
   data: () => ({
-    attrValues: null
+    attrValues: {}
   }),
 
   props: ['currentContext', 'readOnly'],
@@ -41,7 +41,8 @@ export default {
   watch: {
     // Compute initial attribute values for current context.
     currentContext: function (context) {
-      if (context) {
+      this.$data.attrValues = {}
+      if (context && context['config']) {
         var attributes = context['config'].attributes
         this.$data.attrValues = Utils.arrayToMetadata(attributes)
       }

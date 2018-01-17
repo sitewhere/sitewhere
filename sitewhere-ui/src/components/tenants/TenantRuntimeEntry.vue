@@ -1,12 +1,41 @@
 <template>
   <v-chip :color="backgroundColor" :text-color="foregroundColor">
-    <v-avatar :class="statusClass">
-      <v-icon :class="statusIconClass">{{ statusIcon }}</v-icon>
-    </v-avatar>
-    {{ tenantRuntime.microservice.hostname }} ({{ tenantRuntime.lifecycleStatus }})
-    <v-icon right :class="identClass">
-      fa-{{ tenantRuntime.microservice.icon }}
-    </v-icon>
+    <v-menu v-if="tenantRuntime.lifecycleErrorStack"
+      open-on-hover offset-y :nudge-width="700">
+      <div slot="activator">
+        <v-avatar :class="statusClass">
+          <v-icon :class="statusIconClass">{{ statusIcon }}</v-icon>
+        </v-avatar>
+        {{ tenantRuntime.microservice.hostname }} ({{ tenantRuntime.lifecycleStatus }})
+        <v-icon right :class="identClass">
+          fa-{{ tenantRuntime.microservice.icon }}
+        </v-icon>
+      </div>
+      <v-card>
+        <v-list dense>
+          <template v-for="error in tenantRuntime.lifecycleErrorStack">
+            <v-list-tile>
+              <v-icon class="red--text text--darken-3 pr-3">
+                fa-exclamation-circle
+              </v-icon>
+              <v-list-tile-content>
+                {{ error }}
+              </v-list-tile-content>
+            </v-list-tile>
+            <v-divider></v-divider>
+          </template>
+        </v-list>
+      </v-card>
+    </v-menu>
+    <div v-else>
+      <v-avatar :class="statusClass">
+        <v-icon :class="statusIconClass">{{ statusIcon }}</v-icon>
+      </v-avatar>
+      {{ tenantRuntime.microservice.hostname }} ({{ tenantRuntime.lifecycleStatus }})
+      <v-icon right :class="identClass">
+        fa-{{ tenantRuntime.microservice.icon }}
+      </v-icon>
+    </div>
   </v-chip>
 </template>
 
@@ -120,7 +149,7 @@ export default {
       if (status === 'Initializing') {
         return 'fa-gear'
       } else if (status === 'InitializationError') {
-        return 'fa-bolt'
+        return 'fa-exclamation-circle'
       } else if (status === 'Starting') {
         return 'fa-gear'
       } else if (status === 'Started') {

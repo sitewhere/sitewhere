@@ -66,15 +66,15 @@ export var wizard = {
    * Get context relative to current.
    */
   getRelativeContext: function (localName) {
-    var context = this.getLastContext()
-    var configNode = this.findConfigNodeByName(
-      context.config, localName)
-    var modelNode = this.findModelNodeByName(
-      context.model, localName)
-    return {
+    var last = this.getLastContext()
+    var configNode = this.findConfigNodeByName(last.config, localName)
+    var modelNode = this.findModelNodeByName(last.model, localName)
+    var context = {
       'config': configNode,
       'model': modelNode
     }
+    this.organizeContext(context)
+    return context
   },
 
   /**
@@ -105,6 +105,13 @@ export var wizard = {
       'model': modelNode
     }
 
+    this.organizeContext(context)
+    this.editorContexts.push(context)
+    return this.editorContexts
+  },
+
+  // Organize internal structures for context.
+  organizeContext: function (context) {
     // Build metadata for attributes.
     let groups = buildAttributeGroups(context)
     context.groups = groups
@@ -112,9 +119,6 @@ export var wizard = {
     // Build metadata for content.
     let content = buildContent(context)
     context.content = content
-
-    this.editorContexts.push(context)
-    return this.editorContexts
   },
 
   /** Pop elements off the stack until the given element name is found */
@@ -526,7 +530,7 @@ function getConfigChildrenByRole (modelNode, configNode) {
 
     let matches = []
     result[childRoleName] = matches
-    if (configNode.children) {
+    if (configNode && configNode.children) {
       for (let j = 0; j < configNode.children.length; j++) {
         let childConfig = configNode.children[j]
         if (modelNotFound.indexOf(childConfig.name) === -1) {

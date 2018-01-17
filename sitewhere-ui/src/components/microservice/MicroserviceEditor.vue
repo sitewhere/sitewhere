@@ -114,6 +114,7 @@ export default {
     // Add a component.
     onAddComponent: function (option) {
       let relative = wizard.getRelativeContext(option.localName)
+      console.log(relative)
       if (relative.model) {
         this.$data.dialogContext = relative
         this.$refs['create'].onOpenDialog()

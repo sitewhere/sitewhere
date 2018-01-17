@@ -81,6 +81,7 @@ message GTenantEngineState {
 	com.sitewhere.grpc.model.GMicroserviceDetails microservice = 1;
 	string tenantId = 2;
 	GLifecycleStatus status = 3;
+	repeated string error = 4;
 }
 
 // Wrapper for state update types.

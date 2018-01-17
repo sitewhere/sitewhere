@@ -7,6 +7,8 @@
  */
 package com.sitewhere.grpc.model.converter;
 
+import java.util.ArrayList;
+
 import com.sitewhere.grpc.kafka.model.KafkaModel.GEnrichedEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GLifecycleStatus;
@@ -240,6 +242,12 @@ public class KafkaModelConverter {
 	api.setMicroservice(MicroserviceModelConverter.asApiMicroserviceDetails(grpc.getMicroservice()));
 	api.setTenantId(grpc.getTenantId());
 	api.setLifecycleStatus(KafkaModelConverter.asApiLifecycleStatus(grpc.getStatus()));
+	if (grpc.getErrorList().size() > 0) {
+	    api.setLifecycleErrorStack(new ArrayList<String>());
+	    for (String error : grpc.getErrorList()) {
+		api.getLifecycleErrorStack().add(error);
+	    }
+	}
 	return api;
     }
 
@@ -255,6 +263,11 @@ public class KafkaModelConverter {
 	grpc.setMicroservice(MicroserviceModelConverter.asGrpcMicroserviceDetails(api.getMicroservice()));
 	grpc.setTenantId(api.getTenantId());
 	grpc.setStatus(KafkaModelConverter.asGrpcLifecycleStatus(api.getLifecycleStatus()));
+	if (api.getLifecycleErrorStack() != null) {
+	    for (String error : api.getLifecycleErrorStack()) {
+		grpc.addError(error);
+	    }
+	}
 	return grpc.build();
     }
 

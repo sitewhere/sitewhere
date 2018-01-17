@@ -7,6 +7,9 @@
  */
 package com.sitewhere.microservice.multitenant;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.curator.framework.CuratorFramework;
 import org.springframework.context.ApplicationContext;
 
@@ -170,14 +173,15 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 
     /*
      * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#setLifecycleStatus(com.
-     * sitewhere.spi.server.lifecycle.LifecycleStatus)
+     * com.sitewhere.server.lifecycle.LifecycleComponent#lifecycleStatusChanged(com.
+     * sitewhere.spi.server.lifecycle.LifecycleStatus,
+     * com.sitewhere.spi.server.lifecycle.LifecycleStatus)
      */
     @Override
-    public void setLifecycleStatus(LifecycleStatus lifecycleStatus) {
-	super.setLifecycleStatus(lifecycleStatus);
+    public void lifecycleStatusChanged(LifecycleStatus before, LifecycleStatus after) {
 	try {
-	    getMicroservice().onTenantEngineStateChanged(getCurrentState());
+	    ITenantEngineState state = getCurrentState();
+	    getMicroservice().onTenantEngineStateChanged(state);
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to calculate current state.", e);
 	}
@@ -192,8 +196,19 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	TenantEngineState state = new TenantEngineState();
 	state.setMicroservice(getMicroservice().getMicroserviceDetails());
 	state.setLifecycleStatus(getLifecycleStatus());
+	state.setLifecycleErrorStack(getLifecycleError() != null ? parseErrors(getLifecycleError()) : null);
 	state.setTenantId(getTenant().getId());
 	return state;
+    }
+
+    protected List<String> parseErrors(SiteWhereException e) {
+	List<String> errors = new ArrayList<>();
+	Throwable current = e;
+	while (current != null) {
+	    errors.add(current.getLocalizedMessage());
+	    current = current.getCause();
+	}
+	return errors;
     }
 
     /*
