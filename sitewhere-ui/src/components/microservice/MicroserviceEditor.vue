@@ -10,7 +10,7 @@
         </microservice-banner>
         <!-- Grouped attributes for current context -->
         <component-attributes :currentContext="currentContext"
-          :readOnly="true">
+          :readOnly="true" :dirty="dirty">
         </component-attributes>
         <!-- Elements -->
         <v-card v-if="currentContext.content">
@@ -21,7 +21,7 @@
               :contextElement="contextElement"
               @addComponent="onAddComponent">
             </element-placeholder>
-            <v-toolbar v-else flat light class="grey lighten-4 pa-2">
+            <v-toolbar v-else flat light class="grey lighten-4">
               <v-icon light class="fa-lg">fa-{{contextElement.icon}}</v-icon>
               <v-toolbar-title class="black--text">
                 {{ elementTitle(contextElement) }}
@@ -157,6 +157,7 @@ export default {
     // Called after configuraton element has been updated.
     onConfigurationElementUpdated: function (updated) {
       let contexts = wizard.onUpdateCurrent(updated.attributes)
+      console.log(contexts)
       this.onWizardContextsUpdated(contexts)
       this.fireDirty()
     },
@@ -174,6 +175,7 @@ export default {
 
     // Fire event indicating updates have been made.
     fireDirty: function () {
+      this.$data.dirty = true
       this.$emit('dirty')
     }
   }

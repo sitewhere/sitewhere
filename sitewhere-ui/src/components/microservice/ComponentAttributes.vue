@@ -2,19 +2,19 @@
   <div v-if="currentContext && currentContext.groups && currentContext.groups.length">
     <v-card class="grey lighten-4 mb-3"
       v-for="group in currentContext.groups" :key="group.id">
-      <v-card-text
-        class="subheading blue darken-2 white--text pa-2">
-        <strong>
+      <v-divider></v-divider>
+      <v-toolbar flat dark dense card class="primary">
+        <v-icon small dark>fa-info-circle</v-icon>
+        <v-toolbar-title class="white--text subheading">
           {{ group.id ? group.description : 'Component Attributes' }}
-        </strong>
-      </v-card-text>
+        </v-toolbar-title>
+      </v-toolbar>
       <v-card-text class="subheading pa-0 pl-2">
         <v-container fluid>
-          <attribute-field
-            v-for="attribute in group.attributes"
+          <attribute-field v-for="attribute in group.attributes"
             :key="attribute.name" :attribute="attribute"
-            :attrValue="attrValues[attribute.localName]"
-            :readOnly="readOnly" @valueUpdated="onAttributeValueUpdated">
+            :attrValues="attrValues" :readOnly="readOnly"
+            @valueUpdated="onAttributeValueUpdated">
           </attribute-field>
         </v-container>
       </v-card-text>
@@ -32,7 +32,7 @@ export default {
     attrValues: {}
   }),
 
-  props: ['currentContext', 'readOnly'],
+  props: ['currentContext', 'readOnly', 'dirty'],
 
   components: {
     AttributeField
@@ -41,18 +41,22 @@ export default {
   watch: {
     // Compute initial attribute values for current context.
     currentContext: function (context) {
-      this.$data.attrValues = {}
-      if (context && context['config']) {
-        var attributes = context['config'].attributes
-        this.$data.attrValues = Utils.arrayToMetadata(attributes)
-      }
+      this.updateFromContext()
+    },
+    // Track dirty flag to allow for updates.
+    dirty: function (value) {
+      this.updateFromContext()
     }
   },
 
   methods: {
-    // Get updated values for attributes.
-    getValues: function () {
-      return this.$data.values
+    // Update attribute values from context.
+    updateFromContext: function () {
+      this.$data.attrValues = {}
+      if (this.currentContext && this.currentContext['config']) {
+        var attributes = this.currentContext['config'].attributes
+        this.$data.attrValues = Utils.arrayToMetadata(attributes)
+      }
     },
 
     // Called when attribute value is updated.

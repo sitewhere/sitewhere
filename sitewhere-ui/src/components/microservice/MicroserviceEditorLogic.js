@@ -14,16 +14,6 @@ export var wizard = {
   configModel: null,
 
   /**
-   * List of sites.
-   */
-  sites: null,
-
-  /**
-   * List of specifications.
-   */
-  specifications: null,
-
-  /**
    * Stack of editor contexts.
    */
   editorContexts: [],
@@ -148,10 +138,10 @@ export var wizard = {
   onUpdateCurrent: function (attributes) {
     var context = wizard.getLastContext()
     let config = context['config']
+    let model = context['model']
     config.attributes = attributes
-    context.groups = buildAttributeGroups(context)
-    context.content = buildContent(context)
-    return this.editorContexts
+    this.popOne()
+    return this.pushContext(config, model)
   },
 
   /** Add child to current context */
@@ -294,13 +284,7 @@ function buildAttributeGroups (context) {
         groups.push(currentGroup)
       }
       let value = configByName[modelAttr.localName]
-      if (value) {
-        if ((modelAttr.type === 'SiteReference') && wizard.sites) {
-          value = getSiteNamesByToken()[value]
-        } else if ((modelAttr.type === 'SpecificationReference') && wizard.specifications) {
-          value = getSpecificationNamesByToken()[value]
-        }
-      } else if (modelAttr.defaultValue) {
+      if (modelAttr.defaultValue) {
         value = modelAttr.defaultValue
       }
       attributes.push({
@@ -418,30 +402,14 @@ function buildChild (childModel, childConfig, childRoleName, childRole,
 /** Resolve an index attribute */
 function resolveIndexAttribute (childModel, childConfig) {
   if (childModel.indexAttribute && childConfig.attributes) {
-    let modelAttr = null
-    for (let i = 0; i < childModel.attributes.length; i++) {
-      if (childModel.indexAttribute === childModel.attributes[i].localName) {
-        modelAttr = childModel.attributes[i]
-        break
-      }
-    }
     for (let j = 0; j < childConfig.attributes.length; j++) {
       let attrName = childConfig.attributes[j].name
       if (childModel.indexAttribute === attrName) {
-        if (modelAttr && ((modelAttr.type === 'SiteReference') && wizard.sites)) {
-          let siteName = getSiteNamesByToken()[childConfig.attributes[j].value]
-          return siteName || childConfig.attributes[j].value
-        } else if (modelAttr && ((modelAttr.type === 'SpecificationReference') && wizard.specifications)) {
-          let specName = getSpecificationNamesByToken()[childConfig.attributes[j].value]
-          return specName || childConfig.attributes[j].value
-        } else {
-          return childConfig.attributes[j].value
-        }
+        return childConfig.attributes[j].value
       }
     }
-  } else {
-    return null
   }
+  return null
 }
 
 /** Generate a unique id */
@@ -571,22 +539,4 @@ function getSpecializedRoleChildren (role, modelNode) {
     }
   }
   return specialized
-}
-
-/** Create lookup of site names by token */
-function getSiteNamesByToken () {
-  var mapped = {}
-  for (var i = 0; i < wizard.sites.length; i++) {
-    mapped[wizard.sites[i].token] = wizard.sites[i].name
-  }
-  return mapped
-}
-
-/** Create lookup of site names by token */
-function getSpecificationNamesByToken () {
-  var mapped = {}
-  for (var i = 0; i < wizard.specifications.length; i++) {
-    mapped[wizard.specifications[i].token] = wizard.specifications[i].name
-  }
-  return mapped
 }
