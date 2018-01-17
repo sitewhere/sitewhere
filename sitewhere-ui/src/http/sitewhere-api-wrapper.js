@@ -11,6 +11,7 @@ import {
   getTopology,
   getGlobalTopology,
   getTenantTopology,
+  getMicroserviceTenantRuntimeState,
   getConfigurationModel,
   getGlobalConfiguration,
   getTenantConfiguration,
@@ -254,6 +255,16 @@ export function _getGlobalTopology (store) {
 export function _getTenantTopology (store) {
   let axios = createCoreApiCall(store)
   let api = getTenantTopology(axios)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get the state of all tenant engines (across all microservice instances)
+ * for a given tenant id.
+ */
+export function _getMicroserviceTenantRuntimeState (store, identifier, tenantId) {
+  let axios = createCoreApiCall(store)
+  let api = getMicroserviceTenantRuntimeState(axios, identifier, tenantId)
   return loaderWrapper(store, api)
 }
 

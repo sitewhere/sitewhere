@@ -28,6 +28,15 @@ export function getTenantTopology (axios) {
 }
 
 /**
+ * Get the state of all tenant engines (across all microservice instances)
+ * for a given tenant id.
+ */
+export function getMicroserviceTenantRuntimeState (axios, identifier, tenantId) {
+  return restAuthGet(axios, 'instance/microservice/' + identifier +
+    '/tenants/' + tenantId + '/state')
+}
+
+/**
  * Get configuration model for a given microservice identifier.
  */
 export function getConfigurationModel (axios, identifier) {

@@ -17,7 +17,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  * 
  * @author Derek
  */
-public class TenantTopologyEvent {
+public class TenantTopologyEvent implements ITenantEngineState {
 
     /** Event type */
     private TopologyEventType type;
@@ -28,14 +28,14 @@ public class TenantTopologyEvent {
     /** Tenant id */
     private String tenantId;
 
-    /** Status of microservice */
-    private LifecycleStatus status;
+    /** Status of tenant */
+    private LifecycleStatus lifecycleStatus;
 
     public TenantTopologyEvent(TopologyEventType type, ITenantEngineState state) {
 	this.type = type;
 	this.microservice = state.getMicroservice();
 	this.tenantId = state.getTenantId();
-	this.status = state.getLifecycleStatus();
+	this.lifecycleStatus = state.getLifecycleStatus();
     }
 
     public TopologyEventType getType() {
@@ -46,6 +46,11 @@ public class TenantTopologyEvent {
 	this.type = type;
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.state.ITenantEngineState#getMicroservice()
+     */
+    @Override
     public IMicroserviceDetails getMicroservice() {
 	return microservice;
     }
@@ -54,6 +59,10 @@ public class TenantTopologyEvent {
 	this.microservice = microservice;
     }
 
+    /*
+     * @see com.sitewhere.spi.microservice.state.ITenantEngineState#getTenantId()
+     */
+    @Override
     public String getTenantId() {
 	return tenantId;
     }
@@ -62,11 +71,16 @@ public class TenantTopologyEvent {
 	this.tenantId = tenantId;
     }
 
-    public LifecycleStatus getStatus() {
-	return status;
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.state.ITenantEngineState#getLifecycleStatus()
+     */
+    @Override
+    public LifecycleStatus getLifecycleStatus() {
+	return lifecycleStatus;
     }
 
-    public void setStatus(LifecycleStatus status) {
-	this.status = status;
+    public void setLifecycleStatus(LifecycleStatus lifecycleStatus) {
+	this.lifecycleStatus = lifecycleStatus;
     }
 }

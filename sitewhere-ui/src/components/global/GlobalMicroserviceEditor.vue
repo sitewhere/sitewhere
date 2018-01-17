@@ -4,7 +4,7 @@
       @save="onSaveConfiguration" @revert="onRevertConfiguration">
     </unsaved-updates-warning>
     <microservice-editor :config="config" :configModel="configModel"
-      @dirty="onConfigurationUpdated">
+      :identifier="identifier" @dirty="onConfigurationUpdated">
     </microservice-editor>
   </v-app>
 </template>

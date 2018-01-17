@@ -8,7 +8,7 @@
       </v-breadcrumbs-item>
     </v-breadcrumbs>
     <v-card class="mb-3">
-      <v-toolbar flat dark card class="primary">
+      <v-toolbar flat dark dense card class="primary">
         <v-icon dark>fa-{{currentContext.model.icon}}</v-icon>
         <v-toolbar-title class="white--text">{{currentContext.model.name}}</v-toolbar-title>
         <v-spacer></v-spacer>

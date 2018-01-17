@@ -1,27 +1,28 @@
 <template>
   <div v-if="tenant">
-    <v-app>
-      <tenant-detail-header class="mb-3" :tenant="tenant" @refresh="refresh">
-        <span slot="buttons">
-          <v-btn :disabled="dirty" class="blue darken-2 white--text"
-            @click.native="onBackToList">
-            <v-icon fa class="white--text pr-2">arrow-left</v-icon>
-            Back To Tenant Microservices
-          </v-btn>
-        </span>
-      </tenant-detail-header>
-      <unsaved-updates-warning class="mb-3" :unsaved="dirty"
-        @save="onSaveConfiguration" @revert="onRevertConfiguration">
-      </unsaved-updates-warning>
-      <microservice-editor :config="config" :configModel="configModel"
-        @dirty="onConfigurationUpdated">
-      </microservice-editor>
-    </v-app>
+    <tenant-detail-header class="mb-3" :tenant="tenant" @refresh="refresh">
+      <span slot="buttons">
+        <v-btn :disabled="dirty" class="blue darken-2 white--text"
+          @click.native="onBackToList">
+          <v-icon class="white--text pr-2">fa-arrow-left</v-icon>
+          Back To Tenant Microservices
+        </v-btn>
+      </span>
+    </tenant-detail-header>
+    <unsaved-updates-warning class="mb-3" :unsaved="dirty"
+      @save="onSaveConfiguration" @revert="onRevertConfiguration">
+    </unsaved-updates-warning>
+    <tenant-runtimes-block :identifier="identifier" :tenantId="tenantId">
+    </tenant-runtimes-block>
+    <microservice-editor :config="config" :configModel="configModel"
+      :identifier="identifier" @dirty="onConfigurationUpdated">
+    </microservice-editor>
   </div>
 </template>
 
 <script>
 import TenantDetailHeader from './TenantDetailHeader'
+import TenantRuntimesBlock from './TenantRuntimesBlock'
 import MicroserviceEditor from '../microservice/MicroserviceEditor'
 import UnsavedUpdatesWarning from '../microservice/UnsavedUpdatesWarning'
 import {
@@ -39,13 +40,12 @@ export default {
     tenant: null,
     config: null,
     configModel: null,
-    tenantCommandPercent: 0,
-    tenantCommandRunning: false,
     dirty: false
   }),
 
   components: {
     TenantDetailHeader,
+    TenantRuntimesBlock,
     MicroserviceEditor,
     UnsavedUpdatesWarning
   },

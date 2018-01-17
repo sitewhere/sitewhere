@@ -413,7 +413,7 @@ function buildChild (childModel, childConfig, childRoleName, childRole,
 
 /** Resolve an index attribute */
 function resolveIndexAttribute (childModel, childConfig) {
-  if (childModel.indexAttribute) {
+  if (childModel.indexAttribute && childConfig.attributes) {
     let modelAttr = null
     for (let i = 0; i < childModel.attributes.length; i++) {
       if (childModel.indexAttribute === childModel.attributes[i].localName) {
