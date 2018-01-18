@@ -15,7 +15,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.configuration.ConfigurationUtils;
-import com.sitewhere.microservice.groovy.TenantEngineScriptSynchronizer;
+import com.sitewhere.microservice.scripting.TenantEngineScriptSynchronizer;
 import com.sitewhere.rest.model.microservice.state.TenantEngineState;
 import com.sitewhere.rest.model.tenant.TenantTemplate;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;

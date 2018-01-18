@@ -11,6 +11,9 @@ dependencies {
     
     compile group: 'org.codehaus.groovy', name: 'groovy'
     
+    // Used for generating ids.
+    compile group: 'com.google', name: 'bitcoinj', version:'0.11.3'
+    
     // Tracing support
     compile group: 'com.uber.jaeger', name: 'jaeger-core', version:'0.21.0'
 }

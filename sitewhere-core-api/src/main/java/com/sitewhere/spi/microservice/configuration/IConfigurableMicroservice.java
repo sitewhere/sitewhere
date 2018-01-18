@@ -11,6 +11,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.scripting.IMicroserviceScriptingManager;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
@@ -28,6 +29,13 @@ public interface IConfigurableMicroservice extends IMicroservice {
      * @return
      */
     public IConfigurationMonitor getConfigurationMonitor();
+
+    /**
+     * Get scripting manager.
+     * 
+     * @return
+     */
+    public IMicroserviceScriptingManager getScriptingManager();
 
     /**
      * Get current configuration state.
@@ -91,6 +99,15 @@ public interface IConfigurableMicroservice extends IMicroservice {
      * @throws SiteWhereException
      */
     public String getInstanceTenantsConfigurationPath() throws SiteWhereException;
+
+    /**
+     * Subpath of instance configuration that contains tenant script data.
+     * 
+     * @param tenantId
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getInstanceTenantScriptsPath(String tenantId) throws SiteWhereException;
 
     /**
      * Get path for tenant configuration.

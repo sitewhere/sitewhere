@@ -22,6 +22,7 @@ import com.sitewhere.microservice.operations.InitializeConfigurationOperation;
 import com.sitewhere.microservice.operations.StartConfigurationOperation;
 import com.sitewhere.microservice.operations.StopConfigurationOperation;
 import com.sitewhere.microservice.operations.TerminateConfigurationOperation;
+import com.sitewhere.microservice.scripting.MicroserviceScriptingManager;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
@@ -31,6 +32,7 @@ import com.sitewhere.spi.microservice.configuration.ConfigurationState;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.microservice.configuration.IConfigurationListener;
 import com.sitewhere.spi.microservice.configuration.IConfigurationMonitor;
+import com.sitewhere.spi.microservice.scripting.IMicroserviceScriptingManager;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -51,6 +53,9 @@ public abstract class ConfigurableMicroservice extends Microservice
     /** Relative path for tenant-specific data */
     private static final String INSTANCE_TENANTS_SUBPATH = "/tenants";
 
+    /** Relative path for script data */
+    private static final String SCRIPTS_SUBPATH = "/scripts";
+
     /** Relative path to tenant bootstrapped indicator data */
     private static final String INSTANCE_TENANT_BOOTSTRAPPED_INDICATOR = "bootstrapped";
 
@@ -63,6 +68,9 @@ public abstract class ConfigurableMicroservice extends Microservice
 
     /** Configuration monitor */
     private IConfigurationMonitor configurationMonitor;
+
+    /** Scripting manager implementation */
+    private IMicroserviceScriptingManager scriptingManager;
 
     /** Configuration state */
     private ConfigurationState configurationState = ConfigurationState.NotStarted;
@@ -150,6 +158,15 @@ public abstract class ConfigurableMicroservice extends Microservice
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getInstanceTenantScriptsPath(java.lang.String)
+     */
+    @Override
+    public String getInstanceTenantScriptsPath(String tenantId) throws SiteWhereException {
+	return getInstanceTenantConfigurationPath(tenantId) + SCRIPTS_SUBPATH;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
      * getInstanceTenantsStatePath()
      */
     @Override
@@ -187,18 +204,30 @@ public abstract class ConfigurableMicroservice extends Microservice
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.initialize(monitor);
 
+	// Create configuration monitor.
+	this.configurationMonitor = new ConfigurationMonitor(getZookeeperManager(), getInstanceConfigurationPath());
+	getConfigurationMonitor().getListeners().add(this);
+
+	// Create scripting manager.
+	this.scriptingManager = new MicroserviceScriptingManager(this);
+
 	// Make sure that instance is bootstrapped before configuring.
 	waitForInstanceInitialization();
 
 	// Organizes steps for initializing microservice.
 	ICompositeLifecycleStep initialize = new CompositeLifecycleStep("Initialize " + getName());
 
-	// Create and initialize configuration monitor.
-	createConfigurationMonitor();
+	// Initialize configuration monitor.
 	initialize.addInitializeStep(this, getConfigurationMonitor(), true);
 
 	// Start configuration monitor.
 	initialize.addStartStep(this, getConfigurationMonitor(), true);
+
+	// Initialize scripting manager.
+	initialize.addInitializeStep(this, getScriptingManager(), true);
+
+	// Start scripting manager.
+	initialize.addStartStep(this, getScriptingManager(), true);
 
 	// Execute initialization steps.
 	initialize.execute(monitor);
@@ -340,16 +369,6 @@ public abstract class ConfigurableMicroservice extends Microservice
 	};
     }
 
-    /**
-     * Create configuration monitor for microservice.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void createConfigurationMonitor() throws SiteWhereException {
-	this.configurationMonitor = new ConfigurationMonitor(getZookeeperManager(), getInstanceConfigurationPath());
-	getConfigurationMonitor().getListeners().add(this);
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -364,11 +383,17 @@ public abstract class ConfigurableMicroservice extends Microservice
 	// Organizes steps for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
+	// Stop scripting manager.
+	stop.addStopStep(this, getScriptingManager());
+
 	// Stop configuration monitor.
 	stop.addStopStep(this, getConfigurationMonitor());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
+
+	// Terminate scripting manager.
+	getScriptingManager().lifecycleTerminate(monitor);
 
 	// Terminate configuration monitor.
 	getConfigurationMonitor().lifecycleTerminate(monitor);
@@ -434,6 +459,19 @@ public abstract class ConfigurableMicroservice extends Microservice
 
     protected void setConfigurationMonitor(IConfigurationMonitor configurationMonitor) {
 	this.configurationMonitor = configurationMonitor;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getScriptingManager()
+     */
+    @Override
+    public IMicroserviceScriptingManager getScriptingManager() {
+	return scriptingManager;
+    }
+
+    public void setScriptingManager(IMicroserviceScriptingManager scriptingManager) {
+	this.scriptingManager = scriptingManager;
     }
 
     /*

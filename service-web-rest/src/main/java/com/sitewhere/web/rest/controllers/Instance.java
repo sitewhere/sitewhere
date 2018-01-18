@@ -23,10 +23,14 @@ import org.w3c.dom.Document;
 
 import com.sitewhere.configuration.ConfigurationContentParser;
 import com.sitewhere.configuration.content.ElementContent;
+import com.sitewhere.microservice.scripting.ScriptCloneRequest;
+import com.sitewhere.microservice.scripting.ScriptCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroserviceManagement;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordinator;
+import com.sitewhere.spi.microservice.scripting.IMicroserviceScriptingManager;
+import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
 import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.microservice.state.ITopologyStateAggregator;
@@ -225,11 +229,122 @@ public class Instance extends RestControllerBase {
 	management.updateTenantConfiguration(tenantId, config.getBytes());
     }
 
+    /**
+     * Get a list of script metadata for the given tenant.
+     * 
+     * @param tenantId
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/scripting/tenant/{tenantId}/scripts", method = RequestMethod.GET)
+    @ApiOperation(value = "Get list of script metadata for the given tenant")
+    @Secured({ SiteWhereRoles.REST })
+    public List<IScriptMetadata> listTenantScriptMetadata(
+	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId) throws SiteWhereException {
+	return getScriptingManager().getScriptMetadataList(tenantId);
+    }
+
+    /**
+     * Get metadata for a tenant script based on unique script id.
+     * 
+     * @param tenantId
+     * @param scriptId
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/scripting/tenant/{tenantId}/scripts/{scriptId}", method = RequestMethod.GET)
+    @ApiOperation(value = "Get metadata for a tenant script based on unique script id")
+    @Secured({ SiteWhereRoles.REST })
+    public IScriptMetadata getTenantScriptMetadata(
+	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
+	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId) throws SiteWhereException {
+	return getScriptingManager().getScriptMetadata(tenantId, scriptId);
+    }
+
+    /**
+     * Create a new tenant script.
+     * 
+     * @param tenantId
+     * @param request
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/scripting/tenant/{tenantId}/scripts", method = RequestMethod.POST)
+    @ApiOperation(value = "Create a new tenant script")
+    @Secured({ SiteWhereRoles.REST })
+    public IScriptMetadata createTenantScript(
+	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
+	    @RequestBody ScriptCreateRequest request) throws SiteWhereException {
+	return getScriptingManager().createScript(tenantId, request);
+    }
+
+    /**
+     * Get tenant script content based on unique script id and version identifier.
+     * 
+     * @param tenantId
+     * @param scriptId
+     * @param versionId
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/scripting/tenant/{tenantId}/scripts/{scriptId}/version/{versionId}/content", method = RequestMethod.GET)
+    @ApiOperation(value = "Get content for a tenant script based on unique script id and version id")
+    @Secured({ SiteWhereRoles.REST })
+    public String getTenantScriptContent(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
+	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId,
+	    @ApiParam(value = "Version id", required = true) @PathVariable String versionId) throws SiteWhereException {
+	return new String(getScriptingManager().getScriptContent(tenantId, scriptId, versionId));
+    }
+
+    /**
+     * Clone an existing tenant script version to create a new version.
+     * 
+     * @param tenantId
+     * @param scriptId
+     * @param versionId
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/scripting/tenant/{tenantId}/scripts/{scriptId}/version/{versionId}/clone", method = RequestMethod.POST)
+    @ApiOperation(value = "Clone an existing tenant script version to create a new version")
+    @Secured({ SiteWhereRoles.REST })
+    public IScriptMetadata cloneTenantScript(
+	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
+	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId,
+	    @ApiParam(value = "Version id", required = true) @PathVariable String versionId,
+	    @RequestBody ScriptCloneRequest request) throws SiteWhereException {
+	return getScriptingManager().cloneScript(tenantId, scriptId, versionId, request.getComment());
+    }
+
+    /**
+     * Activate a tenant script. This action causes the given version to become the
+     * active script and pushes the content out to all listening microservices.
+     * 
+     * @param tenantId
+     * @param scriptId
+     * @param versionId
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/scripting/tenant/{tenantId}/scripts/{scriptId}/version/{versionId}/activate", method = RequestMethod.POST)
+    @ApiOperation(value = "Activate a tenant script version")
+    @Secured({ SiteWhereRoles.REST })
+    public IScriptMetadata activateTenantScript(
+	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
+	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId,
+	    @ApiParam(value = "Version id", required = true) @PathVariable String versionId) throws SiteWhereException {
+	return getScriptingManager().activateScript(tenantId, scriptId, versionId);
+    }
+
     public IMicroserviceManagementCoordinator getMicroserviceManagementCoordinator() {
 	return getMicroservice().getMicroserviceManagementCoordinator();
     }
 
     public ITopologyStateAggregator getTopologyStateAggregator() {
 	return getMicroservice().getTopologyStateAggregator();
+    }
+
+    public IMicroserviceScriptingManager getScriptingManager() {
+	return getMicroservice().getScriptingManager();
     }
 }
