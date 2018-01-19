@@ -1,8 +1,5 @@
 <template>
   <span>
-    <v-toolbar flat card dark color="primary" v-if="topology">
-      <v-toolbar-title>{{title}}</v-toolbar-title>
-    </v-toolbar>
     <v-list v-if="topology" two-line dense>
       <template v-for="microservice in topology">
         <v-list-tile :key="microservice.identifier"
@@ -27,7 +24,7 @@ export default {
   data: () => ({
   }),
 
-  props: ['title', 'topology'],
+  props: ['topology'],
 
   methods: {
     // Called if a microservice is clicked.

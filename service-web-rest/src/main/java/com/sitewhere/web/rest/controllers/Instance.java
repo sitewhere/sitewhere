@@ -236,7 +236,7 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/scripting/tenant/{tenantId}/scripts", method = RequestMethod.GET)
+    @RequestMapping(value = "/scripting/tenants/{tenantId}/scripts", method = RequestMethod.GET)
     @ApiOperation(value = "Get list of script metadata for the given tenant")
     @Secured({ SiteWhereRoles.REST })
     public List<IScriptMetadata> listTenantScriptMetadata(
@@ -252,7 +252,7 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/scripting/tenant/{tenantId}/scripts/{scriptId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/scripting/tenants/{tenantId}/scripts/{scriptId}", method = RequestMethod.GET)
     @ApiOperation(value = "Get metadata for a tenant script based on unique script id")
     @Secured({ SiteWhereRoles.REST })
     public IScriptMetadata getTenantScriptMetadata(
@@ -268,7 +268,7 @@ public class Instance extends RestControllerBase {
      * @param request
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/scripting/tenant/{tenantId}/scripts", method = RequestMethod.POST)
+    @RequestMapping(value = "/scripting/tenants/{tenantId}/scripts", method = RequestMethod.POST)
     @ApiOperation(value = "Create a new tenant script")
     @Secured({ SiteWhereRoles.REST })
     public IScriptMetadata createTenantScript(
@@ -286,7 +286,7 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/scripting/tenant/{tenantId}/scripts/{scriptId}/version/{versionId}/content", method = RequestMethod.GET)
+    @RequestMapping(value = "/scripting/tenants/{tenantId}/scripts/{scriptId}/versions/{versionId}/content", method = RequestMethod.GET)
     @ApiOperation(value = "Get content for a tenant script based on unique script id and version id")
     @Secured({ SiteWhereRoles.REST })
     public String getTenantScriptContent(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
@@ -305,7 +305,7 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/scripting/tenant/{tenantId}/scripts/{scriptId}/version/{versionId}/clone", method = RequestMethod.POST)
+    @RequestMapping(value = "/scripting/tenants/{tenantId}/scripts/{scriptId}/versions/{versionId}/clone", method = RequestMethod.POST)
     @ApiOperation(value = "Clone an existing tenant script version to create a new version")
     @Secured({ SiteWhereRoles.REST })
     public IScriptMetadata cloneTenantScript(
@@ -326,7 +326,7 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/scripting/tenant/{tenantId}/scripts/{scriptId}/version/{versionId}/activate", method = RequestMethod.POST)
+    @RequestMapping(value = "/scripting/tenants/{tenantId}/scripts/{scriptId}/versions/{versionId}/activate", method = RequestMethod.POST)
     @ApiOperation(value = "Activate a tenant script version")
     @Secured({ SiteWhereRoles.REST })
     public IScriptMetadata activateTenantScript(

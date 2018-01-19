@@ -16,7 +16,13 @@ import {
   getGlobalConfiguration,
   getTenantConfiguration,
   updateGlobalConfiguration,
-  updateTenantConfiguration
+  updateTenantConfiguration,
+  listTenantScriptMetadata,
+  getTenantScriptMetadata,
+  createTenantScript,
+  getTenantScriptContent,
+  cloneTenantScript,
+  activateTenantScript
 } from './sitewhere-instance-api'
 
 // Users.
@@ -310,6 +316,60 @@ export function _updateGlobalConfiguration (store, identifier, content) {
 export function _updateTenantConfiguration (store, tenantId, identifier, content) {
   let axios = createCoreApiCall(store)
   let api = updateTenantConfiguration(axios, tenantId, identifier, content)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get a list of script metadata for the given tenant.
+ */
+export function _listTenantScriptMetadata (store, tenantId) {
+  let axios = createCoreApiCall(store)
+  let api = listTenantScriptMetadata(axios, tenantId)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get metadata for a tenant script based on unique script id.
+ */
+export function _getTenantScriptMetadata (store, tenantId, scriptId) {
+  let axios = createCoreApiCall(store)
+  let api = getTenantScriptMetadata(axios, tenantId, scriptId)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Create a new tenant script.
+ */
+export function _createTenantScript (store, tenantId, request) {
+  let axios = createCoreApiCall(store)
+  let api = createTenantScript(axios, tenantId, request)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get tenant script content based on unique script id and version identifier.
+ */
+export function _getTenantScriptContent (store, tenantId, scriptId, versionId) {
+  let axios = createCoreApiCall(store)
+  let api = getTenantScriptContent(axios, tenantId, scriptId, versionId)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Clone an existing tenant script version to create a new version.
+ */
+export function _cloneTenantScript (store, tenantId, scriptId, versionId, request) {
+  let axios = createCoreApiCall(store)
+  let api = cloneTenantScript(axios, tenantId, scriptId, versionId, request)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Activate a tenant script.
+ */
+export function _activateTenantScript (store, tenantId, scriptId, versionId) {
+  let axios = createCoreApiCall(store)
+  let api = activateTenantScript(axios, tenantId, scriptId, versionId)
   return loaderWrapper(store, api)
 }
 

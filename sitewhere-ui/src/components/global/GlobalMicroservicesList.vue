@@ -1,6 +1,9 @@
 <template>
   <div v-if="topology">
-    <microservice-list title="Global Microservices" :topology="topology"
+    <v-toolbar flat card dark color="primary" v-if="topology">
+      <v-toolbar-title>Global Microservices</v-toolbar-title>
+    </v-toolbar>
+    <microservice-list :topology="topology"
       @microserviceClicked="onMicroserviceClicked">
     </microservice-list>
   </div>

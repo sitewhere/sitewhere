@@ -89,6 +89,8 @@ public class MicroserviceScriptingManager extends LifecycleComponent implements 
 		}
 	    }
 	    return result;
+	} catch (NoNodeException e) {
+	    return new ArrayList<>();
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to retrieve script metadata list.", e);
 	}

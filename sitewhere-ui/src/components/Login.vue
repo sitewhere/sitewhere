@@ -21,40 +21,38 @@
           </v-layout>
         </v-card-text>
         <v-divider></v-divider>
-        <v-form>
-          <v-card-text>
-            <v-layout row wrap class="pa-3">
-              <v-flex xs12 class="mb-4">
-                <v-text-field hide-details label="Username" v-model="username">
-                </v-text-field>
-              </v-flex>
-              <v-flex xs12 class="mb-4">
-                <v-text-field hide-details label="Password" v-model="password"
-                  type="password">
-                </v-text-field>
-              </v-flex>
-              <v-flex xs3 class="pr-3">
-                <v-select required :items="protocols" v-model="protocol"
-                  label="Protocol"></v-select>
-              </v-flex>
-              <v-flex xs5 class="pr-3">
-                <v-text-field hide-details label="Server" v-model="server">
-                </v-text-field>
-              </v-flex>
-              <v-flex xs4>
-                <v-text-field hide-details label="Port" type="number"
-                  v-model="port">
-                </v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn type="submit" primary dark @click.native="onLogin">
-              Login
-            </v-btn>
-          </v-card-actions>
-        </v-form>
+        <v-card-text>
+          <v-layout row wrap class="pa-3">
+            <v-flex xs12 class="mb-4">
+              <v-text-field hide-details label="Username" v-model="username">
+              </v-text-field>
+            </v-flex>
+            <v-flex xs12 class="mb-4">
+              <v-text-field hide-details label="Password" v-model="password"
+                type="password">
+              </v-text-field>
+            </v-flex>
+            <v-flex xs3 class="pr-3">
+              <v-select required :items="protocols" v-model="protocol"
+                label="Protocol"></v-select>
+            </v-flex>
+            <v-flex xs5 class="pr-3">
+              <v-text-field hide-details label="Server" v-model="server">
+              </v-text-field>
+            </v-flex>
+            <v-flex xs4>
+              <v-text-field hide-details label="Port" type="number"
+                v-model="port">
+              </v-text-field>
+            </v-flex>
+          </v-layout>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn type="submit" primary dark @click.stop="onLogin">
+            Login
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-container>
   </main>
@@ -131,21 +129,22 @@ export default {
 
       _getJwt(this.$store)
         .then(function (response) {
-          let jwt = response.headers['x-sitewhere-jwt']
+          var jwt = response.headers['x-sitewhere-jwt']
           component.$store.commit('jwt', jwt)
           component.onJwtAcquired()
         }).catch(function (e) {
+          console.log(e)
         })
     },
 
     onJwtAcquired: function (jwt) {
       var component = this
-
       _getUser(this.$store, this.username)
         .then(function (response) {
           component.$store.commit('user', response.data)
           component.$router.push('/system')
         }).catch(function (e) {
+          console.log(e)
         })
     }
   }

@@ -3,17 +3,44 @@
     <v-app>
       <tenant-detail-header :tenant="tenant" @refresh="refresh">
         <span slot="buttons">
-          <v-btn class="red darken-2 white--text" @click="onDeleteTenant">
-            Delete <v-icon class="white--text pl-2">fa-times</v-icon>
-          </v-btn>
-          <v-btn class="blue white--text" @click="onEditTenant">
-            Edit <v-icon class="white--text pl-2">fa-edit</v-icon>
-          </v-btn>
+          <v-menu open-on-hover offset-y>
+    				<v-btn color="blue darken-2" dark slot="activator">
+    					<v-icon left dark>fa-bolt</v-icon>
+    					Tenant Actions
+    				</v-btn>
+    				<v-card>
+              <v-btn row class="red darken-2 white--text" @click="onDeleteTenant">
+                Delete Tenant<v-icon class="white--text pl-2">fa-times</v-icon>
+              </v-btn>
+              <v-btn row class="blue white--text" @click="onEditTenant">
+                Edit Tenant<v-icon class="white--text pl-2">fa-edit</v-icon>
+              </v-btn>
+    				</v-card>
+    			</v-menu>
         </span>
       </tenant-detail-header>
-      <microservice-list title="Tenant Microservices" :topology="tenantTopology"
-        @microserviceClicked="onMicroserviceClicked">
-      </microservice-list>
+      <v-tabs v-model="active">
+        <v-tabs-bar dark color="primary">
+          <v-tabs-item key="microservices" href="#microservices">
+            Microservices
+          </v-tabs-item>
+          <v-tabs-item key="scripts" href="#scripts">
+            Scripts
+          </v-tabs-item>
+          <v-tabs-slider></v-tabs-slider>
+        </v-tabs-bar>
+        <v-tabs-items>
+          <v-tabs-content key="microservices" id="microservices">
+            <microservice-list :topology="tenantTopology"
+              @microserviceClicked="onMicroserviceClicked">
+            </microservice-list>
+          </v-tabs-content>
+          <v-tabs-content key="scripts" id="scripts">
+            <scripts-manager :tenantId="tenantId">
+            </scripts-manager>
+          </v-tabs-content>
+        </v-tabs-items>
+      </v-tabs>
     </v-app>
     <tenant-update-dialog ref="update" :tenantId="tenant.id"
       @tenantUpdated="onTenantEdited">
@@ -28,6 +55,7 @@
 import FloatingActionButton from '../common/FloatingActionButton'
 import TenantDetailHeader from './TenantDetailHeader'
 import MicroserviceList from '../microservice/MicroserviceList'
+import ScriptsManager from './ScriptsManager'
 import TenantUpdateDialog from './TenantUpdateDialog'
 import TenantDeleteDialog from './TenantDeleteDialog'
 import {
@@ -48,6 +76,7 @@ export default {
     FloatingActionButton,
     TenantDetailHeader,
     MicroserviceList,
+    ScriptsManager,
     TenantUpdateDialog,
     TenantDeleteDialog
   },
