@@ -110,6 +110,15 @@ export function getTenantScriptContent (axios, tenantId, scriptId, versionId) {
 }
 
 /**
+ * Update an existing script.
+ */
+export function updateTenantScript (axios, tenantId, scriptId, versionId, request) {
+  return restAuthPost(axios, 'instance/scripting/tenants/' +
+    tenantId + '/scripts/' + scriptId + '/versions/' +
+    versionId, request)
+}
+
+/**
  * Clone an existing tenant script version to create a new version.
  */
 export function cloneTenantScript (axios, tenantId, scriptId, versionId, request) {

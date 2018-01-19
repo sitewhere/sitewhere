@@ -62,6 +62,19 @@ public interface IMicroserviceScriptingManager extends ILifecycleComponent {
     public byte[] getScriptContent(String tenantId, String scriptId, String versionId) throws SiteWhereException;
 
     /**
+     * Update an existing script.
+     * 
+     * @param tenantId
+     * @param scriptId
+     * @param versionId
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public IScriptMetadata updateScript(String tenantId, String scriptId, String versionId,
+	    IScriptCreateRequest request) throws SiteWhereException;
+
+    /**
      * Creates a new version of a script that is a clone of the given version.
      * 
      * @param tenantId

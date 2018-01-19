@@ -2,7 +2,15 @@
   <v-container fluid fill-height style="border: 1px solid #ccc;" class="pa-0">
     <v-layout row>
       <v-flex xs4 style="border-right: 1px solid #ccc;">
-        <scripts-manager-toolbar title="Scripts"></scripts-manager-toolbar>
+        <scripts-manager-toolbar title="Scripts">
+          <v-spacer></v-spacer>
+          <v-tooltip right>
+            <v-btn icon slot="activator">
+              <v-icon color="green darken-1" @click="refresh">fa-refresh</v-icon>
+            </v-btn>
+            <span>Refresh Scripts</span>
+          </v-tooltip>
+        </scripts-manager-toolbar>
         <v-list dense two-line style="min-height: 350px;">
           <template v-for="script in scripts">
             <v-list-tile v-bind:key="script.id"
@@ -30,17 +38,26 @@
       </v-flex>
       <v-flex xs8>
         <v-card v-if="selectedVersion" height="100%">
-          <v-toolbar flat dense color="grey lighten-3">
-            <scripts-manager-toolbar
-              :title="selectedScript.name + '.' + selectedScript.type">
-            </scripts-manager-toolbar>
-          </v-toolbar>
-          <codemirror style="min-height: 650px;"
-            :value="content" :options="options">
+          <scripts-manager-toolbar
+            :title="selectedScript.name + '.' + selectedScript.type + ' (' + formatDate(selectedVersion.createdDate) + ')'">
+            <v-spacer></v-spacer>
+            <v-tooltip left>
+              <v-btn icon slot="activator" @click="saveContent">
+                <v-icon color="blue darken-1">
+                  fa-cloud-upload
+                </v-icon>
+              </v-btn>
+              <span>Upload Changes</span>
+            </v-tooltip>
+          </scripts-manager-toolbar>
+          <codemirror v-model="content" :options="options">
           </codemirror>
         </v-card>
       </v-flex>
     </v-layout>
+    <v-snackbar :timeout="2000" success v-model="showMessage">{{ message }}
+      <v-btn dark flat @click.native="showMessage = false">Close</v-btn>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -52,7 +69,8 @@ import Utils from '../common/Utils'
 import ScriptsManagerToolbar from './ScriptsManagerToolbar'
 import {
   _listTenantScriptMetadata,
-  _getTenantScriptContent
+  _getTenantScriptContent,
+  _updateTenantScript
 } from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -62,10 +80,12 @@ export default {
     selectedScript: null,
     versions: null,
     selectedVersion: null,
-    content: null,
+    content: '',
     options: {
       mode: 'groovy'
-    }
+    },
+    message: null,
+    showMessage: false
   }),
 
   props: ['tenantId'],
@@ -113,6 +133,33 @@ export default {
         })
     },
 
+    // Save editor content.
+    saveContent: function () {
+      var script = this.$data.selectedScript
+      console.log(this.$data.content)
+      var updated = {
+        'id': script.id,
+        'name': script.name,
+        'description': script.description,
+        'type': script.type,
+        'content': btoa(this.$data.content)
+      }
+      _updateTenantScript(this.$store, this.tenantId,
+        this.$data.selectedScript.id, this.$data.selectedVersion.versionId,
+        updated)
+        .then(function (response) {
+          this.showMessage('Content Saved Successfully.')
+        }).catch(function (e) {
+          console.log(e)
+        })
+    },
+
+    // Show snackbar message.
+    showMesssage: function (message) {
+      this.$data.message = message
+      this.$data.showMessage = true
+    },
+
     // Format date.
     formatDate: function (date) {
       return Utils.formatDate(date)
@@ -122,4 +169,8 @@ export default {
 </script>
 
 <style scoped>
+.CodeMirror {
+  border: 1px solid #eee;
+  height: auto;
+}
 </style>

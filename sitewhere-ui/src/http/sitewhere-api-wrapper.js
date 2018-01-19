@@ -21,6 +21,7 @@ import {
   getTenantScriptMetadata,
   createTenantScript,
   getTenantScriptContent,
+  updateTenantScript,
   cloneTenantScript,
   activateTenantScript
 } from './sitewhere-instance-api'
@@ -352,6 +353,15 @@ export function _createTenantScript (store, tenantId, request) {
 export function _getTenantScriptContent (store, tenantId, scriptId, versionId) {
   let axios = createCoreApiCall(store)
   let api = getTenantScriptContent(axios, tenantId, scriptId, versionId)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Update an existing tenant script.
+ */
+export function _updateTenantScript (store, tenantId, scriptId, versionId, request) {
+  let axios = createCoreApiCall(store)
+  let api = updateTenantScript(axios, tenantId, scriptId, versionId, request)
   return loaderWrapper(store, api)
 }
 

@@ -126,24 +126,7 @@ public class MicroserviceScriptingManager extends LifecycleComponent implements 
 	}
 	ScriptMetadata created = createScriptMetadata(request);
 	try {
-	    // Store metadata.
-	    String metaPath = getScriptMetadataZkPath(tenantId) + "/" + getMetadataFilePath(created);
-	    byte[] metaContent = MarshalUtils.marshalJson(created);
-	    if (getZookeeperManager().getCurator().checkExists().forPath(metaPath) == null) {
-		getZookeeperManager().getCurator().create().creatingParentsIfNeeded().forPath(metaPath, metaContent);
-	    } else {
-		getZookeeperManager().getCurator().setData().forPath(metaPath, metaContent);
-	    }
-
-	    // Store version content.
-	    String contentPath = getScriptMetadataZkPath(tenantId) + "/"
-		    + getVersionContentPath(created, created.getVersions().get(0));
-	    byte[] content = Base64.decode(request.getContent());
-	    if (getZookeeperManager().getCurator().checkExists().forPath(contentPath) == null) {
-		getZookeeperManager().getCurator().create().creatingParentsIfNeeded().forPath(contentPath, content);
-	    } else {
-		getZookeeperManager().getCurator().setData().forPath(contentPath, content);
-	    }
+	    store(tenantId, created, created.getVersions().get(0), request.getContent());
 	    return created;
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to store script metadata.", e);
@@ -163,6 +146,24 @@ public class MicroserviceScriptingManager extends LifecycleComponent implements 
 	    return getZookeeperManager().getCurator().getData().forPath(contentPath);
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to read script content for '" + versionId + "'.");
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.scripting.IMicroserviceScriptingManager#
+     * updateScript(java.lang.String, java.lang.String, java.lang.String,
+     * com.sitewhere.spi.microservice.scripting.IScriptCreateRequest)
+     */
+    @Override
+    public IScriptMetadata updateScript(String tenantId, String scriptId, String versionId,
+	    IScriptCreateRequest request) throws SiteWhereException {
+	IScriptMetadata meta = assureScriptMetadata(tenantId, scriptId);
+	IScriptVersion version = assureScriptVersion(meta, versionId);
+	try {
+	    store(tenantId, meta, version, request.getContent());
+	    return meta;
+	} catch (Exception e) {
+	    throw new SiteWhereException("Unable to store script metadata.", e);
 	}
     }
 
@@ -274,6 +275,40 @@ public class MicroserviceScriptingManager extends LifecycleComponent implements 
 	    throw new SiteWhereException("No version of '" + meta.getId() + "' matches '" + versionId + "'.");
 	}
 	return version;
+    }
+
+    /**
+     * Store updated metadata and content for a script/version.
+     * 
+     * @param tenantId
+     * @param meta
+     * @param version
+     * @param contentStr
+     * @throws SiteWhereException
+     */
+    protected void store(String tenantId, IScriptMetadata meta, IScriptVersion version, String contentStr)
+	    throws SiteWhereException {
+	try {
+	    // Store metadata.
+	    String metaPath = getScriptMetadataZkPath(tenantId) + "/" + getMetadataFilePath(meta);
+	    byte[] metaContent = MarshalUtils.marshalJson(meta);
+	    if (getZookeeperManager().getCurator().checkExists().forPath(metaPath) == null) {
+		getZookeeperManager().getCurator().create().creatingParentsIfNeeded().forPath(metaPath, metaContent);
+	    } else {
+		getZookeeperManager().getCurator().setData().forPath(metaPath, metaContent);
+	    }
+
+	    // Store version content.
+	    String contentPath = getScriptMetadataZkPath(tenantId) + "/" + getVersionContentPath(meta, version);
+	    byte[] content = Base64.decode(contentStr);
+	    if (getZookeeperManager().getCurator().checkExists().forPath(contentPath) == null) {
+		getZookeeperManager().getCurator().create().creatingParentsIfNeeded().forPath(contentPath, content);
+	    } else {
+		getZookeeperManager().getCurator().setData().forPath(contentPath, content);
+	    }
+	} catch (Exception e) {
+	    throw new SiteWhereException("Unable to store script metadata.", e);
+	}
     }
 
     /**

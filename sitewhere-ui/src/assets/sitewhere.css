@@ -7,3 +7,9 @@
 .menu__content {
   z-index: 1020;
 }
+
+div.CodeMirror {
+  border: 1px solid #eee;
+  height: auto;
+  overflow-y: auto;
+}

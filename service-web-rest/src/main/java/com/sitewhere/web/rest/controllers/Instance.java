@@ -296,6 +296,24 @@ public class Instance extends RestControllerBase {
     }
 
     /**
+     * Update an existing script.
+     * 
+     * @param tenantId
+     * @param request
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/scripting/tenants/{tenantId}/scripts/{scriptId}/versions/{versionId}", method = RequestMethod.POST)
+    @ApiOperation(value = "Create a new tenant script")
+    @Secured({ SiteWhereRoles.REST })
+    public IScriptMetadata updateTenantScript(
+	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
+	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId,
+	    @ApiParam(value = "Version id", required = true) @PathVariable String versionId,
+	    @RequestBody ScriptCreateRequest request) throws SiteWhereException {
+	return getScriptingManager().updateScript(tenantId, scriptId, versionId, request);
+    }
+
+    /**
      * Clone an existing tenant script version to create a new version.
      * 
      * @param tenantId
