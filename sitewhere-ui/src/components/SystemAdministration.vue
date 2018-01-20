@@ -45,6 +45,7 @@
 <script>
 import Navigation from './common/Navigation'
 import ErrorBanner from './common/ErrorBanner'
+import {_getJwt} from '../http/sitewhere-api-wrapper'
 
 export default {
   data: () => ({
@@ -122,6 +123,9 @@ export default {
   },
 
   created: function () {
+    // Set up JWT auto-refresh.
+    this.refreshJwt()
+
     // Verify that user is logged in.
     var user = this.$store.getters.user
     if (!user) {
@@ -148,6 +152,22 @@ export default {
       console.log('Logging out!')
       this.$store.commit('logOut')
       this.$router.push('/')
+    },
+
+    // Set up timer for reloading JWT.
+    refreshJwt: function () {
+      var component = this
+      _getJwt(this.$store)
+        .then(function (response) {
+          console.log('Refreshed JWT.')
+          var jwt = response.headers['x-sitewhere-jwt']
+          component.$store.commit('jwt', jwt)
+          setTimeout(function () {
+            component.refreshJwt()
+          }, (1000 * 60 * 5))
+        }).catch(function (e) {
+          console.log(e)
+        })
     }
   }
 }

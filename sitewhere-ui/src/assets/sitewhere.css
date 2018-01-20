@@ -9,7 +9,5 @@
 }
 
 div.CodeMirror {
-  border: 1px solid #eee;
   height: auto;
-  overflow-y: auto;
 }

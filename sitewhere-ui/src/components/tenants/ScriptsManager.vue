@@ -4,6 +4,8 @@
       <v-flex xs4 style="border-right: 1px solid #ccc;">
         <scripts-manager-toolbar title="Scripts">
           <v-spacer></v-spacer>
+          <scripts-create-dialog :tenantId="tenantId">
+          </scripts-create-dialog>
           <v-tooltip right>
             <v-btn icon slot="activator">
               <v-icon color="green darken-1" @click="refresh">fa-refresh</v-icon>
@@ -67,6 +69,7 @@ import 'codemirror/lib/codemirror.css'
 import 'codemirror/mode/groovy/groovy'
 import Utils from '../common/Utils'
 import ScriptsManagerToolbar from './ScriptsManagerToolbar'
+import ScriptsCreateDialog from './ScriptsCreateDialog'
 import {
   _listTenantScriptMetadata,
   _getTenantScriptContent,
@@ -92,7 +95,8 @@ export default {
 
   components: {
     codemirror,
-    ScriptsManagerToolbar
+    ScriptsManagerToolbar,
+    ScriptsCreateDialog
   },
 
   created: function () {

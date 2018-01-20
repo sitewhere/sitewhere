@@ -1,27 +1,31 @@
 <template>
   <div>
-    <site-dialog ref="dialog" title="Create Site" width="600" resetOnOpen="true"
+    <scripts-dialog ref="dialog" title="Create Script" width="600" resetOnOpen="true"
       createLabel="Create" cancelLabel="Cancel" @payload="onCommit">
-    </site-dialog>
-    <floating-action-button label="Add Site" icon="fa-plus"
-      @action="onOpenDialog">
-    </floating-action-button>
+    </scripts-dialog>
+    <v-tooltip top>
+      <v-btn dark icon small
+        @click.stop="onOpenDialog" slot="activator">
+        <v-icon class="green--text tax--darken-2">fa-plus</v-icon>
+      </v-btn>
+      <span>Create Script</span>
+    </v-tooltip>
   </div>
 </template>
 
 <script>
-import FloatingActionButton from '../common/FloatingActionButton'
-import SiteDialog from './SiteDialog'
-import {_createSite} from '../../http/sitewhere-api-wrapper'
+import ScriptsDialog from './ScriptsDialog'
+import {_createTenantScript} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
   data: () => ({
   }),
 
+  props: ['tenantId'],
+
   components: {
-    SiteDialog,
-    FloatingActionButton
+    ScriptsDialog
   },
 
   methods: {
@@ -38,8 +42,9 @@ export default {
 
     // Handle payload commit.
     onCommit: function (payload) {
+      payload.content = 'This is a test'
       var component = this
-      _createSite(this.$store, payload)
+      _createTenantScript(this.$store, this.tenantId, payload)
         .then(function (response) {
           component.onCommitted(response)
         }).catch(function (e) {
