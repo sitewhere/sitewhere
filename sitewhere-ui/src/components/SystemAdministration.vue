@@ -166,7 +166,9 @@ export default {
             component.refreshJwt()
           }, (1000 * 60 * 5))
         }).catch(function (e) {
+          console.log('Could not update JWT.')
           console.log(e)
+          component.onLogOut()
         })
     }
   }
