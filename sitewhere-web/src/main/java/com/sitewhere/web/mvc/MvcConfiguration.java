@@ -19,6 +19,7 @@ import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
 import com.sitewhere.web.mvc.controllers.AdminInterfaceController;
 
 @Configuration
+@SuppressWarnings("deprecation")
 @ComponentScan(basePackageClasses = { AdminInterfaceController.class })
 public class MvcConfiguration extends WebMvcConfigurationSupport {
 

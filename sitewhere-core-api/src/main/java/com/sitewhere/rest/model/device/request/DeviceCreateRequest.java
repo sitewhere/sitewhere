@@ -156,6 +156,11 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
 	this.comments = comments;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.spi.device.request.IDeviceCreateRequest#getStatus()
+     */
     public String getStatus() {
 	return status;
     }

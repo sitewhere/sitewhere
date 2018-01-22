@@ -71,13 +71,14 @@ public class MqttTests {
     @Test
     public void sendLocationOverMqtt() throws SiteWhereException {
 	DeviceRequest request = new DeviceRequest();
-	request.setHardwareId("3cad8d84-faca-4a4e-86f3-9a900e6c21c9");
+	request.setHardwareId("c23e7a22-b98d-4dcf-80db-e95e6990fe41");
 	request.setType(Type.DeviceLocation);
 	DeviceLocationCreateRequest location = new DeviceLocationCreateRequest();
 	location.setEventDate(new Date());
 	location.setLatitude(34.10469794977326);
 	location.setLongitude(-84.23966646194458);
 	location.setElevation(0.0);
+	// location.setAlternateId("my_alternate_id");
 	Map<String, String> metadata = new HashMap<String, String>();
 	metadata.put("fromMQTT", "true");
 	location.setMetadata(metadata);
@@ -94,6 +95,17 @@ public class MqttTests {
 	    throw new SiteWhereException(e);
 	} catch (Exception e) {
 	    throw new SiteWhereException(e);
+	}
+    }
+
+    @Test
+    public void sendMany() throws SiteWhereException {
+	for (int i = 0; i < 5000; i++) {
+	    sendLocationOverMqtt();
+	    try {
+		Thread.sleep(25);
+	    } catch (InterruptedException e) {
+	    }
 	}
     }
 

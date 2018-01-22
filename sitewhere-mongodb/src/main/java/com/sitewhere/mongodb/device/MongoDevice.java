@@ -41,6 +41,9 @@ public class MongoDevice implements MongoConverter<IDevice> {
     /** Property for device element mappings */
     public static final String PROP_DEVICE_ELEMENT_MAPPINGS = "deviceElementMappings";
 
+    /** Property for device status */
+    public static final String PROP_STATUS = "status";
+
     /** Property for comments */
     public static final String PROP_COMMENTS = "comments";
 
@@ -76,6 +79,7 @@ public class MongoDevice implements MongoConverter<IDevice> {
 	target.append(PROP_SITE_TOKEN, source.getSiteToken());
 	target.append(PROP_SPECIFICATION_TOKEN, source.getSpecificationToken());
 	target.append(PROP_PARENT_HARDWARE_ID, source.getParentHardwareId());
+	target.append(PROP_STATUS, source.getStatus());
 	target.append(PROP_COMMENTS, source.getComments());
 	target.append(PROP_ASSIGNMENT_TOKEN, source.getAssignmentToken());
 
@@ -102,6 +106,7 @@ public class MongoDevice implements MongoConverter<IDevice> {
 	String siteToken = (String) source.get(PROP_SITE_TOKEN);
 	String specificationToken = (String) source.get(PROP_SPECIFICATION_TOKEN);
 	String parentHardwareId = (String) source.get(PROP_PARENT_HARDWARE_ID);
+	String status = (String) source.get(PROP_STATUS);
 	String comments = (String) source.get(PROP_COMMENTS);
 	String assignmentToken = (String) source.get(PROP_ASSIGNMENT_TOKEN);
 
@@ -109,6 +114,7 @@ public class MongoDevice implements MongoConverter<IDevice> {
 	target.setSiteToken(siteToken);
 	target.setSpecificationToken(specificationToken);
 	target.setParentHardwareId(parentHardwareId);
+	target.setStatus(status);
 	target.setComments(comments);
 	target.setAssignmentToken(assignmentToken);
 

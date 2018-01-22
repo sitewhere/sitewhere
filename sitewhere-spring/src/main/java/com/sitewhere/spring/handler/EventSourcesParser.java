@@ -266,6 +266,31 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	    mqtt.addPropertyValue("trustStorePassword", trustStorePassword.getValue());
 	}
 
+	Attr keyStorePath = element.getAttributeNode("keyStorePath");
+	if (keyStorePath != null) {
+	    mqtt.addPropertyValue("keyStorePath", keyStorePath.getValue());
+	}
+
+	Attr keyStorePassword = element.getAttributeNode("keyStorePassword");
+	if (keyStorePassword != null) {
+	    mqtt.addPropertyValue("keyStorePassword", keyStorePassword.getValue());
+	}
+
+	Attr clientId = element.getAttributeNode("clientId");
+	if (clientId != null) {
+	    mqtt.addPropertyValue("clientId", clientId.getValue());
+	}
+
+	Attr cleanSession = element.getAttributeNode("cleanSession");
+	if (cleanSession != null) {
+	    mqtt.addPropertyValue("cleanSession", cleanSession.getValue());
+	}
+
+	Attr qos = element.getAttributeNode("qos");
+	if (qos != null) {
+	    mqtt.addPropertyValue("qos", qos.getValue());
+	}
+
 	return mqtt.getBeanDefinition();
     }
 

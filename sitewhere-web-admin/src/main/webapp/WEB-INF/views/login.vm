@@ -120,7 +120,7 @@
 			</div>
 			<div class="" style="width: 750px;margin-left: auto;margin-right: auto;text-align: center;margin-top: 40px;font-size: 20px;font-weight: 700;">
 				A beta release of the next-generation SiteWhere Administrative Console is available!
-				<a href="/sitewhere/beta/" class="btn btn-sw-red beta-submit-button">
+				<a href="/sitewhere/vueadmin/index.html" class="btn btn-sw-red beta-submit-button">
 					Use the New Interface Instead!
 				</a>
 			</div>		

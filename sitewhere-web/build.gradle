@@ -11,7 +11,9 @@ dependencies {
     compile project(':sitewhere-core')
     compile project(':sitewhere-rest')
     
-	compile ('org.springframework.boot:spring-boot-starter-web')
+    compile group: 'org.springframework.boot', name: 'spring-boot'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+
  	compile ('org.apache.velocity:velocity')
  	
     compile group: 'org.springframework.security', name: 'spring-security-web'

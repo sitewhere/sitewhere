@@ -29,7 +29,6 @@ import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfigura
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
-import org.springframework.boot.autoconfigure.velocity.VelocityAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.websocket.WebSocketAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
@@ -53,7 +52,7 @@ import com.sitewhere.spi.system.IVersion;
 	DataSourceTransactionManagerAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
 	GsonAutoConfiguration.class, HazelcastAutoConfiguration.class, HazelcastJpaDependencyAutoConfiguration.class,
 	JmxAutoConfiguration.class, MongoAutoConfiguration.class, SolrAutoConfiguration.class,
-	VelocityAutoConfiguration.class, WebSocketAutoConfiguration.class })
+	WebSocketAutoConfiguration.class })
 public class SiteWhereApplication implements ISiteWhereApplication {
 
     /** Static logger instance */

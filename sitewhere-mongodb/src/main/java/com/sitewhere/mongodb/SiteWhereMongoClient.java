@@ -57,6 +57,9 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
     /** Default authentication database name */
     private static final String DEFAULT_AUTH_DATABASE_NAME = "admin";
 
+    /** Default whether to enable ssl for connection */
+    private static final boolean DEFAULT_USE_SSL = false;
+
     /** Mongo client */
     private MongoClient client;
 
@@ -80,6 +83,9 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 
     /** Database that holds sitewhere collections */
     private String databaseName = DEFAULT_DATABASE_NAME;
+
+    /** Use ssl for connection */
+    private boolean ssl = DEFAULT_USE_SSL;
 
     /** Database that holds user credentials */
     private String authDatabaseName = DEFAULT_AUTH_DATABASE_NAME;
@@ -166,11 +172,12 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	try {
-	    MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
+        MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
+	    builder.sslEnabled(getSsl());
 	    builder.maxConnectionIdleTime(60 * 60 * 1000); // 1hour
 
 	    LOGGER.info("MongoDB Connection: hosts=" + getHostname() + " ports=" + getPort() + " replicaSet="
-		    + getReplicaSetName());
+		    + getReplicaSetName() + " ssl = " + getSsl());
 
 	    // Parse hostname(s) and port(s) into address list.
 	    List<ServerAddress> addresses = parseServerAddresses();
@@ -347,6 +354,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 	messages.add("Hostname: " + hostname);
 	messages.add("Port: " + port);
 	messages.add("Database Name: " + databaseName);
+	messages.add("Use SSL: " + ssl);
 	messages.add("");
 	messages.add("-----------------------");
 	messages.add("-- Device Management --");
@@ -742,6 +750,14 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent
 
     public void setAuthDatabaseName(String authDatabaseName) {
 	this.authDatabaseName = authDatabaseName;
+    }
+
+    public void setSsl(boolean ssl){
+    this.ssl = ssl;
+    }
+
+    public boolean getSsl(){
+    return this.ssl;
     }
 
     public String getDeviceSpecificationsCollectionName() {

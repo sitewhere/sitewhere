@@ -163,6 +163,12 @@
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="ssl" type="xsd:boolean">
+			<xsd:annotation>
+				<xsd:documentation>Indicates whether to use ssl for the connection
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:attributeGroup>
 
 	<!-- Configuration data for an HBase datastore -->

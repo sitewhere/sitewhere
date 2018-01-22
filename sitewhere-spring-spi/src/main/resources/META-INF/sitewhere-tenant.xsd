@@ -2160,6 +2160,14 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<xsd:simpleType name="mqttQOS">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="AT_LEAST_ONCE" />
+			<xsd:enumeration value="AT_MOST_ONCE" />
+			<xsd:enumeration value="EXACTLY_ONCE" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
 	<!-- Attributes used for inbound MQTT processing -->
 	<xsd:attributeGroup name="mqtt-broker-attributes">
 		<xsd:attribute name="protocol" type="xsd:string" use="optional">
@@ -2215,6 +2223,45 @@
 					For secured connections. Provides the password to
 					the Java
 					TrustStore used for the secure connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="keyStorePath" type="xsd:string"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					For secured connections. Provides the full path
+					to the Java keystore used for the secure connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="keyStorePassword" type="xsd:string"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					For secured connections. Provides the password to
+					the Java keystore used for the secure connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="clientId" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					Client id to use for session.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="cleanSession" type="xsd:boolean">
+			<xsd:annotation>
+				<xsd:documentation>
+					Sets whether to use clean session.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="qos" type="mqttQOS" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					MQTT quality of service setting.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>

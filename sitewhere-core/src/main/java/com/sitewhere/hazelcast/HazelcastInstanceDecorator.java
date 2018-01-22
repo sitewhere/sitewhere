@@ -12,6 +12,7 @@ import com.hazelcast.core.Endpoint;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IAtomicLong;
 import com.hazelcast.core.IAtomicReference;
+import com.hazelcast.core.ICacheManager;
 import com.hazelcast.core.ICountDownLatch;
 import com.hazelcast.core.IExecutorService;
 import com.hazelcast.core.IList;
@@ -26,6 +27,7 @@ import com.hazelcast.core.LifecycleService;
 import com.hazelcast.core.MultiMap;
 import com.hazelcast.core.PartitionService;
 import com.hazelcast.core.ReplicatedMap;
+import com.hazelcast.durableexecutor.DurableExecutorService;
 import com.hazelcast.logging.LoggingService;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.quorum.QuorumService;
@@ -98,12 +100,6 @@ public class HazelcastInstanceDecorator implements HazelcastInstance {
 
     @Override
     public ILock getLock(String key) {
-	return delegate.getLock(key);
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public ILock getLock(Object key) {
 	return delegate.getLock(key);
     }
 
@@ -223,12 +219,6 @@ public class HazelcastInstanceDecorator implements HazelcastInstance {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public <T extends DistributedObject> T getDistributedObject(String serviceName, Object id) {
-	return delegate.getDistributedObject(serviceName, id);
-    }
-
-    @Override
     public <T extends DistributedObject> T getDistributedObject(String serviceName, String name) {
 	return getDistributedObject(serviceName, name);
     }
@@ -241,6 +231,16 @@ public class HazelcastInstanceDecorator implements HazelcastInstance {
     @Override
     public HazelcastXAResource getXAResource() {
 	return delegate.getXAResource();
+    }
+
+    @Override
+    public DurableExecutorService getDurableExecutorService(String name) {
+	return delegate.getDurableExecutorService(name);
+    }
+
+    @Override
+    public ICacheManager getCacheManager() {
+	return delegate.getCacheManager();
     }
 
     @Override

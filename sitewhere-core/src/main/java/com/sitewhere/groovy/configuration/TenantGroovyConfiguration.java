@@ -1,10 +1,14 @@
 package com.sitewhere.groovy.configuration;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.groovy.TenantResourceConnector;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.resource.SiteWhereHomeResourceManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.groovy.ITenantGroovyConfiguration;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -21,9 +25,6 @@ public class TenantGroovyConfiguration extends TenantLifecycleComponent implemen
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
-
-    /** Used to connect Groovy engine to SiteWhere resource manager */
-    private TenantResourceConnector resourceConnector;
 
     /** Groovy script engine */
     private GroovyScriptEngine groovyScriptEngine;
@@ -47,8 +48,21 @@ public class TenantGroovyConfiguration extends TenantLifecycleComponent implemen
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	resourceConnector = new TenantResourceConnector(getTenant().getId());
-	groovyScriptEngine = new GroovyScriptEngine(resourceConnector);
+	File root = SiteWhereHomeResourceManager.calculateConfigurationPath();
+	File groovy = new File(root, "tenants/" + getTenant().getId() + "/scripts/groovy");
+	if (!groovy.exists()) {
+	    getLogger().warn("Tenant Groovy scripts folder did not exist. Creating.");
+	    groovy.mkdirs();
+	}
+
+	URL[] roots = null;
+	try {
+	    roots = new URL[] { groovy.toURI().toURL() };
+	} catch (MalformedURLException e) {
+	    throw new SiteWhereException("Invalid Groovy script root.", e);
+	}
+
+	groovyScriptEngine = new GroovyScriptEngine(roots);
 
 	groovyScriptEngine.getConfig().setVerbose(isVerbose());
 	groovyScriptEngine.getConfig().setDebug(isDebug());
