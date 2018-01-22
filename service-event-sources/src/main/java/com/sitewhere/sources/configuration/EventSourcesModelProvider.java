@@ -526,8 +526,8 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 		EventSourcesRoleKeys.BinaryEventDecoder, this);
 
 	builder.description("Decoder that uses a Groovy script to parse a binary payload into decoded events.");
-	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
-		.description("Relative path to script used for decoding payload.").makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Script", "scriptPath", AttributeType.Script)
+		.description("Script used for decoding payload.").makeRequired().build()));
 	return builder.build();
     }
 
@@ -542,8 +542,8 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 		EventSourcesRoleKeys.StringEventDecoder, this);
 
 	builder.description("Decoder that uses a Groovy script to parse a String payload into decoded events.");
-	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
-		.description("Relative path to script used for decoding payload.").makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Script", "scriptPath", AttributeType.Script)
+		.description("Script used for decoding payload.").makeRequired().build()));
 	return builder.build();
     }
 

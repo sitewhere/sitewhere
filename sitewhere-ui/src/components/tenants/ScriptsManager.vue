@@ -7,8 +7,8 @@
           <scripts-create-dialog :tenantId="tenantId">
           </scripts-create-dialog>
           <v-tooltip right>
-            <v-btn icon slot="activator">
-              <v-icon color="green darken-1" @click="refresh">fa-refresh</v-icon>
+            <v-btn icon small slot="activator">
+              <v-icon @click="refresh">fa-refresh</v-icon>
             </v-btn>
             <span>Refresh Scripts</span>
           </v-tooltip>
@@ -18,10 +18,11 @@
             <v-list-tile v-bind:key="script.id"
               @click="onScriptClicked(script)">
               <v-list-tile-content>
-                <v-list-tile-title v-html="script.name"></v-list-tile-title>
+                <v-list-tile-title class="subheading" v-html="script.name"></v-list-tile-title>
                 <v-list-tile-sub-title v-html="script.description"></v-list-tile-sub-title>
               </v-list-tile-content>
             </v-list-tile>
+            <v-divider></v-divider>
           </template>
         </v-list>
         <v-divider></v-divider>
@@ -31,10 +32,11 @@
             <v-list-tile v-bind:key="version.versionId"
               @click="onVersionClicked(version)">
               <v-list-tile-content>
-                <v-list-tile-title>{{ formatDate(version.createdDate) }}</v-list-tile-title>
+                <v-list-tile-title class="subheading">{{ formatDate(version.createdDate) }}</v-list-tile-title>
                 <v-list-tile-sub-title v-html="version.comment"></v-list-tile-sub-title>
               </v-list-tile-content>
             </v-list-tile>
+            <v-divider></v-divider>
           </template>
         </v-list>
       </v-flex>
@@ -52,8 +54,11 @@
               <span>Upload Changes</span>
             </v-tooltip>
           </scripts-manager-toolbar>
-          <codemirror v-model="content" :options="options">
-          </codemirror>
+          <v-card
+            style="height: 800px; max-height: 800px; overflow-y: auto;">
+            <codemirror v-model="content" :options="options">
+            </codemirror>
+          </v-card>
         </v-card>
       </v-flex>
     </v-layout>

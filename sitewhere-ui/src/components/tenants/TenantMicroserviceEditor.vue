@@ -15,7 +15,8 @@
     <tenant-runtimes-block :identifier="identifier" :tenantId="tenantId">
     </tenant-runtimes-block>
     <microservice-editor :config="config" :configModel="configModel"
-      :identifier="identifier" @dirty="onConfigurationUpdated">
+      :identifier="identifier" :tenantId="tenantId"
+      @dirty="onConfigurationUpdated">
     </microservice-editor>
   </div>
 </template>

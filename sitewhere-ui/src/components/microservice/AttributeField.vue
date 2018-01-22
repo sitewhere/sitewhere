@@ -37,6 +37,9 @@
         v-else-if="attribute.type === 'SpecificationReference'"
         v-model="attrConstValue">
       </specification-selector>
+      <scripts-selector v-else-if="attribute.type === 'Script'"
+        v-model="attrConstValue" :tenantId="tenantId">
+      </scripts-selector>
     </v-flex>
     <v-flex xs3 class="pl-2">
       <span v-if="readOnly && attrEnvVar">
@@ -60,6 +63,7 @@
 <script>
 import SiteSelector from '../sites/SiteSelector'
 import SpecificationSelector from '../specifications/SpecificationSelector'
+import ScriptsSelector from '../tenants/ScriptsSelector'
 
 export default {
 
@@ -70,10 +74,11 @@ export default {
 
   components: {
     SiteSelector,
-    SpecificationSelector
+    SpecificationSelector,
+    ScriptsSelector
   },
 
-  props: ['attribute', 'attrValues', 'readOnly'],
+  props: ['attribute', 'attrValues', 'readOnly', 'tenantId'],
 
   created: function () {
     this.onLoadValue(this.attrValues)

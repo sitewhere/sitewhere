@@ -13,7 +13,7 @@
         <v-card-text class="subheading pa-0 pl-2">
           <v-container fluid>
             <attribute-field v-for="attribute in group.attributes"
-              :key="attribute.name" :attribute="attribute"
+              :key="attribute.name" :attribute="attribute" :tenantId="tenantId"
               :attrValues="attrValues" :readOnly="readOnly"
               @valueUpdated="onAttributeValueUpdated">
             </attribute-field>
@@ -35,7 +35,7 @@ export default {
     formValid: true
   }),
 
-  props: ['currentContext', 'readOnly', 'dirty'],
+  props: ['currentContext', 'readOnly', 'dirty', 'tenantId'],
 
   components: {
     AttributeField

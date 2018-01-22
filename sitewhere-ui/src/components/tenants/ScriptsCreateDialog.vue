@@ -4,9 +4,9 @@
       createLabel="Create" cancelLabel="Cancel" @payload="onCommit">
     </scripts-dialog>
     <v-tooltip top>
-      <v-btn dark icon small
+      <v-btn icon small
         @click.stop="onOpenDialog" slot="activator">
-        <v-icon class="green--text tax--darken-2">fa-plus</v-icon>
+        <v-icon>fa-plus</v-icon>
       </v-btn>
       <span>Create Script</span>
     </v-tooltip>

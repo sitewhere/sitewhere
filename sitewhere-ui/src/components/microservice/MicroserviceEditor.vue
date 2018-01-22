@@ -11,7 +11,7 @@
         </microservice-banner>
         <!-- Grouped attributes for current context -->
         <component-attributes :currentContext="currentContext"
-          :readOnly="true" :dirty="dirty">
+          :tenantId="tenantId" :readOnly="true" :dirty="dirty">
         </component-attributes>
         <!-- Elements -->
         <v-card v-if="currentContext.content">
@@ -69,7 +69,7 @@ export default {
     dirty: false
   }),
 
-  props: ['config', 'configModel', 'identifier'],
+  props: ['config', 'configModel', 'identifier', 'tenantId'],
 
   components: {
     FloatingActionButton,
