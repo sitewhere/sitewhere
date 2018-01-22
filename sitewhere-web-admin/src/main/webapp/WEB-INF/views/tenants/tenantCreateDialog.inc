@@ -139,7 +139,7 @@
 								return response;
 							}
 						},
-						pageSize : 10
+						pageSize : 1000
 					},
 				}).data("kendoMultiSelect");
 

@@ -77,12 +77,12 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 	LOGGER.info("Receiver connected to MQTT broker.");
 
 	// Subscribe to chosen topic.
-	Topic[] topics = { new Topic(getTopic(), QoS.AT_LEAST_ONCE) };
+	Topic[] topics = { new Topic(getTopic(), QoS.valueOf(getQos())) };
 	try {
 	    Future<byte[]> future = connection.subscribe(topics);
 	    future.await();
 
-	    LOGGER.info("Subscribed to events on MQTT topic: " + getTopic());
+	    LOGGER.info("Subscribed to events on MQTT topic: " + getTopic() + " with QOS " + getQos());
 	} catch (Exception e) {
 	    throw new SiteWhereException("Exception while attempting to subscribe to MQTT topic: " + getTopic(), e);
 	}

@@ -509,7 +509,7 @@ public class SiteWherePersistence {
 	device.setSpecificationToken(request.getSpecificationToken());
 
 	device.setComments(request.getComments());
-	device.setStatus(null);
+	device.setStatus(request.getStatus());
 
 	MetadataProvider.copy(request.getMetadata(), device);
 	SiteWherePersistence.initializeEntityMetadata(device);

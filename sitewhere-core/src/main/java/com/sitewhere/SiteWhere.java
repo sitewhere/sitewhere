@@ -42,6 +42,7 @@ public class SiteWhere {
      */
     public static void start(ISiteWhereApplication application, ILifecycleProgressMonitor monitor)
 	    throws SiteWhereException {
+	System.setProperty("groovy.use.classvalue", "true");
 	Class<? extends IVersion> version = application.getVersionClass();
 	Class<? extends ISiteWhereServer> server = application.getServerClass();
 	try {

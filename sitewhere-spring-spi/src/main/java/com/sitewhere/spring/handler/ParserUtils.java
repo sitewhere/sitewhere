@@ -63,5 +63,10 @@ public class ParserUtils {
 	if (autoConfigureReplication != null) {
 	    client.addPropertyValue("autoConfigureReplication", autoConfigureReplication.getValue());
 	}
+
+	Attr ssl = element.getAttributeNode("ssl");
+	if(ssl != null){
+	    client.addPropertyValue("ssl", ssl.getValue());
+	}
     }
 }

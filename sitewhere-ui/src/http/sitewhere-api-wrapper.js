@@ -154,8 +154,8 @@ import {
  * Create base URL based on hostname/port settings.
  */
 export function createBaseUrl (store) {
-  return 'http://' + store.getters.server + ':' + store.getters.port +
-    '/sitewhere/api/'
+  return store.getters.protocol + '://' + store.getters.server + ':' +
+    store.getters.port + '/sitewhere/api/'
 }
 
 /**

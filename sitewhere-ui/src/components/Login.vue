@@ -40,11 +40,15 @@
                 type="password">
               </v-text-field>
             </v-flex>
-            <v-flex xs7>
+            <v-flex xs3>
+              <v-select required :items="protocols" v-model="protocol"
+                label="Protocol"></v-select>
+            </v-flex>
+            <v-flex xs5>
               <v-text-field hide-details label="Server" v-model="server">
               </v-text-field>
             </v-flex>
-            <v-flex xs5>
+            <v-flex xs4>
               <v-text-field hide-details label="Port" type="number"
                 v-model="port">
               </v-text-field>
@@ -70,8 +74,17 @@ export default {
   data: () => ({
     username: '',
     password: '',
+    protocol: null,
     server: null,
-    port: null
+    port: null,
+    protocols: [
+      {
+        'text': 'http',
+        'value': 'http'
+      }, {
+        'text': 'https',
+        'value': 'https'
+      }]
   }),
 
   components: {
@@ -79,11 +92,17 @@ export default {
   },
 
   created: function () {
+    this.$data.protocol = this.$store.getters.protocol
     this.$data.server = this.$store.getters.server
     this.$data.port = this.$store.getters.port
   },
 
   watch: {
+    // Push protocol value to store.
+    protocol: function (value) {
+      this.$store.commit('protocol', value)
+    },
+
     // Push server value to store.
     server: function (value) {
       this.$store.commit('server', value)
