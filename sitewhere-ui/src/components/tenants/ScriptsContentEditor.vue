@@ -16,8 +16,10 @@
         </v-tooltip>
       </v-toolbar>
       <v-card>
-        <codemirror v-model="content" :options="options">
-        </codemirror>
+        <div style="height: 500px; overflow-y: auto;">
+          <codemirror ref="cm" v-model="content" :options="options">
+          </codemirror>
+        </div>
       </v-card>
     </v-card-text>
   </v-card>
@@ -58,6 +60,9 @@ export default {
           this.formatDate(this.$data.selectedVersion.createdDate) + ')'
       }
       return null
+    },
+    codemirror: function () {
+      return this.$refs.cm.codemirror
     }
   },
 

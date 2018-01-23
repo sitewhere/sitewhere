@@ -38,15 +38,15 @@ export default {
       var component = this
       _createTenantScript(this.$store, this.tenantId, payload)
         .then(function (response) {
-          component.onCommitted(response)
+          component.onCommitted(payload, response)
         }).catch(function (e) {
         })
     },
 
     // Handle successful commit.
-    onCommitted: function (result) {
+    onCommitted: function (payload, response) {
       this.getDialogComponent().closeDialog()
-      this.$emit('scriptAdded')
+      this.$emit('scriptAdded', payload.id)
     }
   }
 }

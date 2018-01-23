@@ -19,24 +19,22 @@
               <v-container fluid>
                 <v-layout row wrap>
                   <v-flex xs12>
-                    <v-text-field label="Id"
-                      v-model="scriptId" prepend-icon="fa-info">
+                    <v-text-field label="Id" v-model="scriptId">
                     </v-text-field>
                   </v-flex>
                   <v-flex xs12>
-                    <v-text-field label="Name"
-                      v-model="scriptName" prepend-icon="fa-info">
+                    <v-text-field label="Name" v-model="scriptName">
                     </v-text-field>
                   </v-flex>
                   <v-flex xs12>
                     <v-text-field multi-line label="Description"
-                      v-model="scriptDescription" prepend-icon="fa-info">
+                      v-model="scriptDescription">
                     </v-text-field>
                   </v-flex>
                   <v-flex xs12>
                     <v-select :items="scriptTypes" v-model="scriptType"
                       label="Script Type" light single-line auto
-                      prepend-icon="fa-info" hide-details>
+                      hide-details>
                     </v-select>
                   </v-flex>
                 </v-layout>
@@ -50,8 +48,8 @@
               <v-container fluid>
                 <v-layout row wrap>
                   <v-flex xs12>
-                    <v-text-field multi-line label="Script Content"
-                      v-model="scriptContent" prepend-icon="fa-info">
+                    <v-text-field textarea multi-line :rows="15"
+                      label="Script Content" v-model="scriptContent">
                     </v-text-field>
                   </v-flex>
                 </v-layout>

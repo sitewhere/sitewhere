@@ -5,8 +5,11 @@
         <v-card-text>
           <span v-if="scripts && scripts.length > 0">
             <v-menu offset-y>
-              <v-btn outline color="primary" dark slot="activator">
+              <v-btn v-if="selectedScript" outline color="primary" dark slot="activator">
                 Script:<span style="color: #333; margin-left: 10px;">{{ selectedScript.name }}</span>
+              </v-btn>
+              <v-btn v-else outline color="primary" dark slot="activator">
+                Click to Select Script
               </v-btn>
               <v-list dense two-line>
                 <template v-for="script in scripts">
@@ -21,7 +24,7 @@
                 </template>
               </v-list>
             </v-menu>
-            <v-menu offset-y>
+            <v-menu v-if="selectedScript" offset-y>
               <v-btn outline color="primary" dark slot="activator">
                 Version:<span style="color: #333; margin-left: 10px;">{{ selectedVersion.versionId }}</span>
               </v-btn>
@@ -70,7 +73,7 @@
       <v-btn dark flat @click.native="showMessage = false">Close</v-btn>
     </v-snackbar>
     <scripts-create-dialog ref="create" :tenantId="tenantId"
-      @scriptAdded="refresh">
+      @scriptAdded="onScriptAdded">
     </scripts-create-dialog>
   </div>
 </template>
@@ -88,6 +91,7 @@ export default {
   data: () => ({
     scripts: null,
     selectedScript: null,
+    selectedAfterRefresh: null,
     versions: null,
     selectedVersion: null,
     message: null,
@@ -108,14 +112,19 @@ export default {
   methods: {
     // Refresh list of scripts.
     refresh: function () {
-      console.log('refresh scripts')
       var component = this
       _listTenantScriptMetadata(this.$store, this.tenantId)
         .then(function (response) {
           let scripts = response.data
+          let selectId = component.$data.selectedAfterRefresh
           component.$data.scripts = scripts
-          if (scripts.length > 0) {
-            component.onScriptClicked(scripts[0])
+          if (selectId) {
+            for (var i = 0; i < scripts.length; i++) {
+              if (selectId === scripts[i].id) {
+                component.onScriptClicked(scripts[i])
+              }
+            }
+            component.$data.selectedAfterRefresh = null
           }
         }).catch(function (e) {
         })
@@ -123,13 +132,19 @@ export default {
 
     // Called when content is saved successfully.
     onContentSaved: function () {
-      this.displaySnackbarMessage('Content Saved Successfully.')
+      this.displaySnackbarMessage('Script Content Saved Successfully.')
     },
 
     // Called when script create button is pressed.
     onScriptCreate: function () {
       let createDialog = this.$refs['create']
       createDialog.onOpenDialog()
+    },
+
+    // Indicates that a new script was added.
+    onScriptAdded: function (scriptId) {
+      this.$data.selectedAfterRefresh = scriptId
+      this.refresh()
     },
 
     // Called when a script is clicked.
