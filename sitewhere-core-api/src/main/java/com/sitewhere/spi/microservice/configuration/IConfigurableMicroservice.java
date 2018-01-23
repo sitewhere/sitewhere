@@ -11,7 +11,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.scripting.IMicroserviceScriptingManager;
+import com.sitewhere.spi.microservice.scripting.IScriptManagement;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
@@ -31,11 +31,11 @@ public interface IConfigurableMicroservice extends IMicroservice {
     public IConfigurationMonitor getConfigurationMonitor();
 
     /**
-     * Get scripting manager.
+     * Get scripting management interface.
      * 
      * @return
      */
-    public IMicroserviceScriptingManager getScriptingManager();
+    public IScriptManagement getScriptManagement();
 
     /**
      * Get current configuration state.

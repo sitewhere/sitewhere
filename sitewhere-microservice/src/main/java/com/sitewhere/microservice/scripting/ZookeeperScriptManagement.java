@@ -25,17 +25,18 @@ import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
-import com.sitewhere.spi.microservice.scripting.IMicroserviceScriptingManager;
 import com.sitewhere.spi.microservice.scripting.IScriptCreateRequest;
+import com.sitewhere.spi.microservice.scripting.IScriptManagement;
 import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
 import com.sitewhere.spi.microservice.scripting.IScriptVersion;
 
 /**
- * Base class for {@link IMicroserviceScriptingManager} implementations.
+ * Default {@link IScriptManagement} implementation. Stores scripts in
+ * Zookeeper.
  * 
  * @author Derek
  */
-public class MicroserviceScriptingManager extends LifecycleComponent implements IMicroserviceScriptingManager {
+public class ZookeeperScriptManagement extends LifecycleComponent implements IScriptManagement {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -52,7 +53,7 @@ public class MicroserviceScriptingManager extends LifecycleComponent implements 
     /** Microservice */
     private IConfigurableMicroservice microservice;
 
-    public MicroserviceScriptingManager(IConfigurableMicroservice microservice) {
+    public ZookeeperScriptManagement(IConfigurableMicroservice microservice) {
 	this.microservice = microservice;
     }
 

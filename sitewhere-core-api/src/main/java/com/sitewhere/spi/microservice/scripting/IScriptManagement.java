@@ -13,13 +13,11 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
- * Manages scripting subsystem by coordinating storage with Zookeeper and
- * providing a standard API for interacting with scripts and their associated
- * metadata.
+ * Management interface for interacting with scripts.
  * 
  * @author Derek
  */
-public interface IMicroserviceScriptingManager extends ILifecycleComponent {
+public interface IScriptManagement extends ILifecycleComponent {
 
     /**
      * Get list of metadata entries for all scripts.

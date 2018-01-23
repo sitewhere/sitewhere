@@ -29,7 +29,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroserviceManagement;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordinator;
-import com.sitewhere.spi.microservice.scripting.IMicroserviceScriptingManager;
+import com.sitewhere.spi.microservice.scripting.IScriptManagement;
 import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
 import com.sitewhere.spi.microservice.scripting.IScriptVersion;
 import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
@@ -242,7 +242,7 @@ public class Instance extends RestControllerBase {
     @Secured({ SiteWhereRoles.REST })
     public List<IScriptMetadata> listTenantScriptMetadata(
 	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId) throws SiteWhereException {
-	return getScriptingManager().getScriptMetadataList(tenantId);
+	return getScriptManagement().getScriptMetadataList(tenantId);
     }
 
     /**
@@ -259,7 +259,7 @@ public class Instance extends RestControllerBase {
     public IScriptMetadata getTenantScriptMetadata(
 	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId) throws SiteWhereException {
-	return getScriptingManager().getScriptMetadata(tenantId, scriptId);
+	return getScriptManagement().getScriptMetadata(tenantId, scriptId);
     }
 
     /**
@@ -275,7 +275,7 @@ public class Instance extends RestControllerBase {
     public IScriptMetadata createTenantScript(
 	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    @RequestBody ScriptCreateRequest request) throws SiteWhereException {
-	return getScriptingManager().createScript(tenantId, request);
+	return getScriptManagement().createScript(tenantId, request);
     }
 
     /**
@@ -293,7 +293,7 @@ public class Instance extends RestControllerBase {
     public String getTenantScriptContent(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId,
 	    @ApiParam(value = "Version id", required = true) @PathVariable String versionId) throws SiteWhereException {
-	return new String(getScriptingManager().getScriptContent(tenantId, scriptId, versionId));
+	return new String(getScriptManagement().getScriptContent(tenantId, scriptId, versionId));
     }
 
     /**
@@ -311,7 +311,7 @@ public class Instance extends RestControllerBase {
 	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId,
 	    @ApiParam(value = "Version id", required = true) @PathVariable String versionId,
 	    @RequestBody ScriptCreateRequest request) throws SiteWhereException {
-	return getScriptingManager().updateScript(tenantId, scriptId, versionId, request);
+	return getScriptManagement().updateScript(tenantId, scriptId, versionId, request);
     }
 
     /**
@@ -332,7 +332,7 @@ public class Instance extends RestControllerBase {
 	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId,
 	    @ApiParam(value = "Version id", required = true) @PathVariable String versionId,
 	    @RequestBody ScriptCloneRequest request) throws SiteWhereException {
-	return getScriptingManager().cloneScript(tenantId, scriptId, versionId, request.getComment());
+	return getScriptManagement().cloneScript(tenantId, scriptId, versionId, request.getComment());
     }
 
     /**
@@ -352,7 +352,7 @@ public class Instance extends RestControllerBase {
 	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId,
 	    @ApiParam(value = "Version id", required = true) @PathVariable String versionId) throws SiteWhereException {
-	return getScriptingManager().activateScript(tenantId, scriptId, versionId);
+	return getScriptManagement().activateScript(tenantId, scriptId, versionId);
     }
 
     public IMicroserviceManagementCoordinator getMicroserviceManagementCoordinator() {
@@ -363,7 +363,7 @@ public class Instance extends RestControllerBase {
 	return getMicroservice().getTopologyStateAggregator();
     }
 
-    public IMicroserviceScriptingManager getScriptingManager() {
-	return getMicroservice().getScriptingManager();
+    public IScriptManagement getScriptManagement() {
+	return getMicroservice().getScriptManagement();
     }
 }
