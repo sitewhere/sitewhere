@@ -10,6 +10,7 @@ package com.sitewhere.spi.microservice.groovy;
 import java.io.File;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
  * Common interface for synchronizing scripts from Zookeeper to the local
@@ -17,7 +18,7 @@ import com.sitewhere.spi.SiteWhereException;
  * 
  * @author Derek
  */
-public interface IScriptSynchronizer {
+public interface IScriptSynchronizer extends ILifecycleComponent {
 
     /**
      * Get root folder on filesystem where scripts will be stored.

@@ -3,13 +3,13 @@
 	"name": "Construction Site Example",
 	"initializers": {
 		"deviceManagement": [
-			"scripts/groovy/initializer/deviceModel.groovy"
+			"initializer/deviceModel.groovy"
 		],
 		"assetManagement": [
-			"scripts/groovy/initializer/assetModel.groovy"
+			"initializer/assetModel.groovy"
 		],
 		"scheduleManagement": [
-			"scripts/groovy/initializer/scheduleModel.groovy"
+			"initializer/scheduleModel.groovy"
 		]
 	}
 }

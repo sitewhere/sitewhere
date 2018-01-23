@@ -19,8 +19,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.microservice.groovy.IScriptSynchronizer;
 
 /**
@@ -28,23 +29,22 @@ import com.sitewhere.spi.microservice.groovy.IScriptSynchronizer;
  * 
  * @author Derek
  */
-public abstract class ScriptSynchronizer implements IScriptSynchronizer {
+public abstract class ScriptSynchronizer extends LifecycleComponent implements IScriptSynchronizer {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Microservice reference */
-    private IMicroservice microsevice;
+    private IConfigurableMicroservice microservice;
 
-    public ScriptSynchronizer(IMicroservice microservice) {
-	this.microsevice = microservice;
+    public ScriptSynchronizer(IConfigurableMicroservice microservice) {
+	this.microservice = microservice;
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.groovy.IScriptSynchronizer#add(java.lang.
+     * @see com.sitewhere.microservice.spi.groovy.IScriptSynchronizer#add(java.lang.
      * String)
      */
     @Override
@@ -55,8 +55,7 @@ public abstract class ScriptSynchronizer implements IScriptSynchronizer {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.groovy.IScriptSynchronizer#update(java.
+     * @see com.sitewhere.microservice.spi.groovy.IScriptSynchronizer#update(java.
      * lang.String)
      */
     @Override
@@ -67,8 +66,7 @@ public abstract class ScriptSynchronizer implements IScriptSynchronizer {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.groovy.IScriptSynchronizer#delete(java.
+     * @see com.sitewhere.microservice.spi.groovy.IScriptSynchronizer#delete(java.
      * lang.String)
      */
     @Override
@@ -118,15 +116,15 @@ public abstract class ScriptSynchronizer implements IScriptSynchronizer {
      */
     protected byte[] getZkContent(String zkPath) throws SiteWhereException {
 	try {
-	    return getMicrosevice().getZookeeperManager().getCurator().getData().forPath(zkPath);
+	    return getMicroservice().getZookeeperManager().getCurator().getData().forPath(zkPath);
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to get Zookeeper content for path '" + zkPath + "'.");
 	}
     }
 
     /**
-     * Get the file (relative to filesystem root) that corresponds to the
-     * Zookeeper path.
+     * Get the file (relative to filesystem root) that corresponds to the Zookeeper
+     * path.
      * 
      * @param zkPath
      * @return
@@ -143,11 +141,11 @@ public abstract class ScriptSynchronizer implements IScriptSynchronizer {
 	}
     }
 
-    public IMicroservice getMicrosevice() {
-	return microsevice;
+    protected IConfigurableMicroservice getMicroservice() {
+	return microservice;
     }
 
-    public void setMicrosevice(IMicroservice microsevice) {
-	this.microsevice = microsevice;
+    protected void setMicroservice(IConfigurableMicroservice microservice) {
+	this.microservice = microservice;
     }
 }

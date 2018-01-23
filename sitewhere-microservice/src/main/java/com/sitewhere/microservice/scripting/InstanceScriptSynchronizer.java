@@ -9,7 +9,10 @@ package com.sitewhere.microservice.scripting;
 
 import java.io.File;
 
-import com.sitewhere.spi.microservice.IMicroservice;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.microservice.groovy.IScriptSynchronizer;
 
 /**
@@ -20,16 +23,19 @@ import com.sitewhere.spi.microservice.groovy.IScriptSynchronizer;
  */
 public class InstanceScriptSynchronizer extends ScriptSynchronizer {
 
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
+
     /** File system root */
     private File fileSystemRoot;
 
     /** Zookeeper root path */
     private String zkScriptRootPath;
 
-    public InstanceScriptSynchronizer(IMicroservice microservice) {
+    public InstanceScriptSynchronizer(IConfigurableMicroservice microservice) {
 	super(microservice);
-	setFileSystemRoot(new File(getMicrosevice().getInstanceSettings().getFileSystemStorageRoot()));
-	setZkScriptRootPath(getMicrosevice().getInstanceZkPath());
+	setFileSystemRoot(new File(getMicroservice().getInstanceSettings().getFileSystemStorageRoot()));
+	setZkScriptRootPath(getMicroservice().getInstanceZkPath());
     }
 
     /*
@@ -60,5 +66,13 @@ public class InstanceScriptSynchronizer extends ScriptSynchronizer {
 
     public void setZkScriptRootPath(String zkScriptRootPath) {
 	this.zkScriptRootPath = zkScriptRootPath;
+    }
+
+    /*
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
     }
 }

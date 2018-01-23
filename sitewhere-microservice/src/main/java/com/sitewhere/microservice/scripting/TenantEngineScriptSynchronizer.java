@@ -9,9 +9,13 @@ package com.sitewhere.microservice.scripting;
 
 import java.io.File;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.groovy.IScriptSynchronizer;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Implementation of {@link IScriptSynchronizer} that copies tenant-level
@@ -20,6 +24,9 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
  * @author Derek
  */
 public class TenantEngineScriptSynchronizer extends ScriptSynchronizer {
+
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
     /** Subpath that holds tenant scripts */
     private static final String TENANTS_SUBPATH = "tenants";
@@ -36,8 +43,18 @@ public class TenantEngineScriptSynchronizer extends ScriptSynchronizer {
     public TenantEngineScriptSynchronizer(IMicroserviceTenantEngine tenantEngine) {
 	super(tenantEngine.getMicroservice());
 	this.tenantEngine = tenantEngine;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
 	setFileSystemRoot(computeFilesystemPathForTenant());
-	setZkScriptRootPath(computeZkScriptRootPathForTenant());
+	setZkScriptRootPath(getMicroservice().getInstanceTenantScriptsPath(getTenantEngine().getTenant().getId()));
     }
 
     /**
@@ -46,26 +63,13 @@ public class TenantEngineScriptSynchronizer extends ScriptSynchronizer {
      * @return
      */
     protected File computeFilesystemPathForTenant() {
-	File root = new File(getMicrosevice().getInstanceSettings().getFileSystemStorageRoot());
+	File root = new File(getMicroservice().getInstanceSettings().getFileSystemStorageRoot());
 	File tenants = new File(root, TENANTS_SUBPATH);
 	File tenant = new File(tenants, getTenantEngine().getTenant().getId());
 	if (!tenant.getParentFile().exists()) {
 	    tenant.getParentFile().mkdirs();
 	}
 	return tenant;
-    }
-
-    /**
-     * Compute Zk path for tenant scripts.
-     * 
-     * @return
-     */
-    protected String computeZkScriptRootPathForTenant() {
-	try {
-	    return getTenantEngine().getTenantConfigurationPath();
-	} catch (SiteWhereException e) {
-	    throw new RuntimeException("Unable to calculate Zk script root path for tenant.", e);
-	}
     }
 
     /*
@@ -98,11 +102,19 @@ public class TenantEngineScriptSynchronizer extends ScriptSynchronizer {
 	this.zkScriptRootPath = zkScriptRootPath;
     }
 
-    public IMicroserviceTenantEngine getTenantEngine() {
+    /*
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
+    }
+
+    protected IMicroserviceTenantEngine getTenantEngine() {
 	return tenantEngine;
     }
 
-    public void setTenantEngine(IMicroserviceTenantEngine tenantEngine) {
+    protected void setTenantEngine(IMicroserviceTenantEngine tenantEngine) {
 	this.tenantEngine = tenantEngine;
     }
 }

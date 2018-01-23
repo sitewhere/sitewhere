@@ -18,12 +18,14 @@ import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.microservice.scripting.TenantEngineScriptSynchronizer;
 import com.sitewhere.rest.model.microservice.state.TenantEngineState;
 import com.sitewhere.rest.model.tenant.TenantTemplate;
+import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
+import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.tenant.ITenant;
@@ -76,6 +78,15 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	loadModuleConfiguration();
+
+	// Create step that will initialize components.
+	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize tenant engine " + getTenant().getName());
+
+	// Initialize script synchronizer.
+	init.addInitializeStep(this, getTenantScriptSynchronizer(), true);
+
+	// Execute initialization steps.
+	init.execute(monitor);
 
 	// Allow subclass to execute initialization logic.
 	tenantInitialize(monitor);
@@ -143,6 +154,16 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+
+	// Create step that will start components.
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start tenant engine " + getTenant().getName());
+
+	// Start tenant script synchronizer.
+	start.addStartStep(this, getTenantScriptSynchronizer(), true);
+
+	// Execute startup steps.
+	start.execute(monitor);
+
 	// Allow subclass to execute startup logic.
 	tenantStart(monitor);
     }
@@ -158,6 +179,15 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Allow subclass to execute shutdown logic.
 	tenantStop(monitor);
+
+	// Create step that will stop components.
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop tenant engine " + getTenant().getName());
+
+	// Stop tenant script synchronizer.
+	stop.addStopStep(this, getTenantScriptSynchronizer());
+
+	// Execute shutdown steps.
+	stop.execute(monitor);
     }
 
     /*
@@ -169,6 +199,14 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
      */
     @Override
     public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create step that will terminate components.
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Terminate tenant engine " + getTenant().getName());
+
+	// Terminate tenant script synchronizer.
+	stop.addTerminateStep(this, getTenantScriptSynchronizer());
+
+	// Execute terminate steps.
+	stop.execute(monitor);
     }
 
     /*
