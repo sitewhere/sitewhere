@@ -1,16 +1,26 @@
 <template>
   <v-card v-if="selectedVersion">
     <v-card-text>
-      <v-toolbar dense color="grey lighten-2">
+      <v-toolbar dense dark color="primary">
         <v-toolbar-title class="subheading">
           {{ scriptTitle }}
         </v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-tooltip left>
-          <v-btn icon slot="activator" @click="saveContent">
-            <v-icon color="blue darken-1">
+        <v-tooltip top>
+          <v-btn dark color="blue" slot="activator" @click="onClone">
+            <v-icon left>
+              fa-clone
+            </v-icon>
+            Clone
+          </v-btn>
+          <span>Clone as New Version</span>
+        </v-tooltip>
+        <v-tooltip top>
+          <v-btn dark color="green" slot="activator" @click="onSave">
+            <v-icon left>
               fa-cloud-upload
             </v-icon>
+            Save
           </v-btn>
           <span>Upload Changes</span>
         </v-tooltip>
@@ -32,7 +42,8 @@ import 'codemirror/mode/groovy/groovy'
 import Utils from '../common/Utils'
 import {
   _getTenantScriptContent,
-  _updateTenantScript
+  _updateTenantScript,
+  _cloneTenantScript
 } from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -97,7 +108,7 @@ export default {
     },
 
     // Save editor content.
-    saveContent: function () {
+    onSave: function () {
       var component = this
       var script = this.$data.selectedScript
       var updated = {
@@ -112,6 +123,22 @@ export default {
         updated)
         .then(function (response) {
           component.$emit('saved')
+        }).catch(function (e) {
+          console.log(e)
+        })
+    },
+
+    // Create clone of edited version.
+    onClone: function () {
+      var component = this
+      var request = {
+        'comment': 'I am a clone.'
+      }
+      _cloneTenantScript(this.$store, this.tenantId,
+        this.$data.selectedScript.id, this.$data.selectedVersion.versionId,
+        request)
+        .then(function (response) {
+          component.$emit('cloned', response.data)
         }).catch(function (e) {
           console.log(e)
         })

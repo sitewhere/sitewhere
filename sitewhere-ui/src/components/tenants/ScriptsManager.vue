@@ -67,7 +67,8 @@
       </v-card>
     </v-card>
     <scripts-content-editor :script="selectedScript"
-      :version="selectedVersion" :tenantId="tenantId" @saved="onContentSaved">
+      :version="selectedVersion" :tenantId="tenantId"
+      @saved="onContentSaved" @cloned="onVersionCloned">
     </scripts-content-editor>
     <v-snackbar :timeout="2000" success v-model="showMessage">{{ message }}
       <v-btn dark flat @click.native="showMessage = false">Close</v-btn>
@@ -91,9 +92,10 @@ export default {
   data: () => ({
     scripts: null,
     selectedScript: null,
-    selectedAfterRefresh: null,
+    scriptAfterRefresh: null,
     versions: null,
     selectedVersion: null,
+    versionAfterRefresh: null,
     message: null,
     showMessage: false
   }),
@@ -116,15 +118,15 @@ export default {
       _listTenantScriptMetadata(this.$store, this.tenantId)
         .then(function (response) {
           let scripts = response.data
-          let selectId = component.$data.selectedAfterRefresh
+          let scriptId = component.$data.scriptAfterRefresh
           component.$data.scripts = scripts
-          if (selectId) {
+          if (scriptId) {
             for (var i = 0; i < scripts.length; i++) {
-              if (selectId === scripts[i].id) {
+              if (scriptId === scripts[i].id) {
                 component.onScriptClicked(scripts[i])
               }
             }
-            component.$data.selectedAfterRefresh = null
+            component.$data.scriptAfterRefresh = null
           }
         }).catch(function (e) {
         })
@@ -143,7 +145,7 @@ export default {
 
     // Indicates that a new script was added.
     onScriptAdded: function (scriptId) {
-      this.$data.selectedAfterRefresh = scriptId
+      this.$data.scriptAfterRefresh = scriptId
       this.refresh()
     },
 
@@ -151,14 +153,32 @@ export default {
     onScriptClicked: function (script) {
       this.$data.selectedScript = script
       this.$data.versions = script.versions
-      if (script.versions.length > 0) {
-        this.$data.selectedVersion = script.versions[0]
+      let versionId = this.$data.versionAfterRefresh
+      if (versionId) {
+        for (var i = 0; i < script.versions.length; i++) {
+          if (versionId === script.versions[i].versionId) {
+            this.$data.selectedVersion = script.versions[i]
+            this.$data.versionAfterRefresh = null
+          }
+        }
+      } else {
+        if (script.versions.length > 0) {
+          this.$data.selectedVersion = script.versions[0]
+        }
       }
     },
 
     // Called when a version is clicked.
     onVersionClicked: function (version) {
       this.$data.selectedVersion = version
+    },
+
+    // Called after a script version has been cloned.
+    onVersionCloned: function (version) {
+      this.$data.scriptAfterRefresh = this.$data.selectedScript.id
+      this.$data.versionAfterRefresh = version.versionId
+      this.refresh()
+      this.displaySnackbarMessage('Version Cloned Successfully.')
     },
 
     // Show snackbar message.

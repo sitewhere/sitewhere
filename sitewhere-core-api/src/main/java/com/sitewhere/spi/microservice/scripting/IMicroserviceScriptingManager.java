@@ -84,7 +84,7 @@ public interface IMicroserviceScriptingManager extends ILifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public IScriptMetadata cloneScript(String tenantId, String scriptId, String versionId, String comment)
+    public IScriptVersion cloneScript(String tenantId, String scriptId, String versionId, String comment)
 	    throws SiteWhereException;
 
     /**

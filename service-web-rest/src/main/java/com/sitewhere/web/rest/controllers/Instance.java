@@ -31,6 +31,7 @@ import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordinator;
 import com.sitewhere.spi.microservice.scripting.IMicroserviceScriptingManager;
 import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
+import com.sitewhere.spi.microservice.scripting.IScriptVersion;
 import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.microservice.state.ITopologyStateAggregator;
@@ -326,7 +327,7 @@ public class Instance extends RestControllerBase {
     @RequestMapping(value = "/scripting/tenants/{tenantId}/scripts/{scriptId}/versions/{versionId}/clone", method = RequestMethod.POST)
     @ApiOperation(value = "Clone an existing tenant script version to create a new version")
     @Secured({ SiteWhereRoles.REST })
-    public IScriptMetadata cloneTenantScript(
+    public IScriptVersion cloneTenantScript(
 	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId,
 	    @ApiParam(value = "Version id", required = true) @PathVariable String versionId,

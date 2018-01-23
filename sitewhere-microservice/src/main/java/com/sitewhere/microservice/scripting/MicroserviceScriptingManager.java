@@ -181,7 +181,7 @@ public class MicroserviceScriptingManager extends LifecycleComponent implements 
      * java.lang.String)
      */
     @Override
-    public IScriptMetadata cloneScript(String tenantId, String scriptId, String versionId, String comment)
+    public IScriptVersion cloneScript(String tenantId, String scriptId, String versionId, String comment)
 	    throws SiteWhereException {
 	IScriptMetadata meta = assureScriptMetadata(tenantId, scriptId);
 	assureScriptVersion(meta, versionId);
@@ -194,7 +194,7 @@ public class MicroserviceScriptingManager extends LifecycleComponent implements 
 	try {
 	    // Save updated metadata.
 	    String metaPath = getScriptMetadataZkPath(tenantId) + "/" + getMetadataFilePath(meta);
-	    byte[] metaContent = MarshalUtils.marshalJson(created);
+	    byte[] metaContent = MarshalUtils.marshalJson(meta);
 	    if (getZookeeperManager().getCurator().checkExists().forPath(metaPath) == null) {
 		getZookeeperManager().getCurator().create().creatingParentsIfNeeded().forPath(metaPath, metaContent);
 	    } else {
@@ -209,7 +209,7 @@ public class MicroserviceScriptingManager extends LifecycleComponent implements 
 	    } else {
 		getZookeeperManager().getCurator().setData().forPath(contentPath, content);
 	    }
-	    return meta;
+	    return created;
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to clone script.", e);
 	}
