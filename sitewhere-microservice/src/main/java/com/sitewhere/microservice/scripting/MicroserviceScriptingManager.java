@@ -9,6 +9,7 @@ package com.sitewhere.microservice.scripting;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -88,6 +89,13 @@ public class MicroserviceScriptingManager extends LifecycleComponent implements 
 		    result.add(getScriptMetadata(tenantId, child.substring(0, child.indexOf(METADATA_SUFFIX))));
 		}
 	    }
+	    result.sort(new Comparator<IScriptMetadata>() {
+
+		@Override
+		public int compare(IScriptMetadata o1, IScriptMetadata o2) {
+		    return o1.getName().compareTo(o2.getName());
+		}
+	    });
 	    return result;
 	} catch (NoNodeException e) {
 	    return new ArrayList<>();

@@ -1,16 +1,9 @@
 <template>
-  <div>
+  <span>
     <scripts-dialog ref="dialog" title="Create Script" width="600" resetOnOpen="true"
       createLabel="Create" cancelLabel="Cancel" @payload="onCommit">
     </scripts-dialog>
-    <v-tooltip top>
-      <v-btn icon small
-        @click.stop="onOpenDialog" slot="activator">
-        <v-icon>fa-plus</v-icon>
-      </v-btn>
-      <span>Create Script</span>
-    </v-tooltip>
-  </div>
+  </span>
 </template>
 
 <script>
@@ -42,7 +35,6 @@ export default {
 
     // Handle payload commit.
     onCommit: function (payload) {
-      payload.content = 'This is a test'
       var component = this
       _createTenantScript(this.$store, this.tenantId, payload)
         .then(function (response) {
@@ -54,7 +46,7 @@ export default {
     // Handle successful commit.
     onCommitted: function (result) {
       this.getDialogComponent().closeDialog()
-      this.$emit('siteAdded')
+      this.$emit('scriptAdded')
     }
   }
 }

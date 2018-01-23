@@ -3,7 +3,7 @@
     :createLabel="createLabel" :cancelLabel="cancelLabel" :error="error"
     @createClicked="onCreateClicked" @cancelClicked="onCancelClicked">
     <component-attributes :currentContext="context" :readOnly="false"
-      @valuesUpdated="onValuesUpdated">
+      :tenantId="tenantId" @valuesUpdated="onValuesUpdated">
     </component-attributes>
   </base-dialog>
 </template>
@@ -27,7 +27,7 @@ export default {
     ComponentAttributes
   },
 
-  props: ['context', 'title', 'createLabel', 'cancelLabel'],
+  props: ['context', 'title', 'createLabel', 'cancelLabel', 'tenantId'],
 
   methods: {
     // Generate payload from UI.

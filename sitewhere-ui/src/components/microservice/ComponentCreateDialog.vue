@@ -2,7 +2,8 @@
   <div>
     <component-dialog ref="dialog" width="600"
       createLabel="Create" cancelLabel="Cancel"
-      :title="title" @payload="onCommit" :context="context">
+      :title="title" @payload="onCommit" :context="context"
+      :tenantId="tenantId">
     </component-dialog>
   </div>
 </template>
@@ -19,7 +20,7 @@ export default {
     ComponentDialog
   },
 
-  props: ['context'],
+  props: ['context', 'tenantId'],
 
   computed: {
     title: function () {

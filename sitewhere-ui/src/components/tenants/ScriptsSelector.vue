@@ -29,7 +29,6 @@ export default {
   created: function () {
     this.$data.selectedId = this.value
     var component = this
-    console.log('tenant id is ' + this.tenantId)
     _listTenantScriptMetadata(component.$store, this.tenantId)
       .then(function (response) {
         component.$data.scripts = response.data

@@ -1,61 +1,67 @@
 <template>
-  <div>
-    <base-dialog :title="title" :width="width" :visible="dialogVisible"
-      :createLabel="createLabel" :cancelLabel="cancelLabel" :error="error"
-      @createClicked="onCreateClicked" @cancelClicked="onCancelClicked">
-      <v-tabs v-model="active">
-        <v-tabs-bar dark color="primary">
-          <v-tabs-item key="details" href="#details">
-            Script Details
-          </v-tabs-item>
-          <v-tabs-item key="content" href="#content">
-            Script Content
-          </v-tabs-item>
-          <v-tabs-slider></v-tabs-slider>
-        </v-tabs-bar>
-        <v-tabs-items>
-          <v-tabs-content key="details" id="details">
-            <v-card flat>
-              <v-card-text>
-                <v-container fluid>
-                  <v-layout row wrap>
-                    <v-flex xs12>
-                      <v-text-field label="Id"
-                        v-model="scriptId" prepend-icon="fa-info">
-                      </v-text-field>
-                    </v-flex>
-                    <v-flex xs12>
-                      <v-text-field label="Name"
-                        v-model="scriptName" prepend-icon="fa-info">
-                      </v-text-field>
-                    </v-flex>
-                    <v-flex xs12>
-                      <v-text-field multi-line label="Description"
-                        v-model="scriptDescription" prepend-icon="fa-info">
-                      </v-text-field>
-                    </v-flex>
-                    <v-flex xs12>
-                      <v-select :items="scriptTypes" v-model="scriptType"
-                        label="Script Type" light single-line auto
-                        prepend-icon="fa-info" hide-details>
-                      </v-select>
-                    </v-flex>
-                  </v-layout>
-                </v-container>
-              </v-card-text>
-            </v-card>
-          </v-tabs-content>
-          <v-tabs-content key="content" id="content">
-            <v-card>
-              <v-text-field multi-line label="Script Content"
-                v-model="scriptContent" prepend-icon="fa-info">
-              </v-text-field>
-            </v-card>
-          </v-tabs-content>
-        </v-tabs-items>
-      </v-tabs>
-    </base-dialog>
-  </div>
+  <base-dialog :title="title" :width="width" :visible="dialogVisible"
+    :createLabel="createLabel" :cancelLabel="cancelLabel" :error="error"
+    @createClicked="onCreateClicked" @cancelClicked="onCancelClicked">
+    <v-tabs v-model="active">
+      <v-tabs-bar dark color="primary">
+        <v-tabs-item key="details" href="#details">
+          Script Details
+        </v-tabs-item>
+        <v-tabs-item key="content" href="#content">
+          Script Content
+        </v-tabs-item>
+        <v-tabs-slider></v-tabs-slider>
+      </v-tabs-bar>
+      <v-tabs-items>
+        <v-tabs-content key="details" id="details">
+          <v-card flat>
+            <v-card-text>
+              <v-container fluid>
+                <v-layout row wrap>
+                  <v-flex xs12>
+                    <v-text-field label="Id"
+                      v-model="scriptId" prepend-icon="fa-info">
+                    </v-text-field>
+                  </v-flex>
+                  <v-flex xs12>
+                    <v-text-field label="Name"
+                      v-model="scriptName" prepend-icon="fa-info">
+                    </v-text-field>
+                  </v-flex>
+                  <v-flex xs12>
+                    <v-text-field multi-line label="Description"
+                      v-model="scriptDescription" prepend-icon="fa-info">
+                    </v-text-field>
+                  </v-flex>
+                  <v-flex xs12>
+                    <v-select :items="scriptTypes" v-model="scriptType"
+                      label="Script Type" light single-line auto
+                      prepend-icon="fa-info" hide-details>
+                    </v-select>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-card-text>
+          </v-card>
+        </v-tabs-content>
+        <v-tabs-content key="content" id="content">
+          <v-card>
+            <v-card-text>
+              <v-container fluid>
+                <v-layout row wrap>
+                  <v-flex xs12>
+                    <v-text-field multi-line label="Script Content"
+                      v-model="scriptContent" prepend-icon="fa-info">
+                    </v-text-field>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-card-text>
+          </v-card>
+        </v-tabs-content>
+      </v-tabs-items>
+    </v-tabs>
+  </base-dialog>
 </template>
 
 <script>
@@ -94,7 +100,7 @@ export default {
       payload.name = this.$data.scriptName
       payload.description = this.$data.scriptDescription
       payload.type = this.$data.scriptType
-      payload.content = this.$data.scriptContent
+      payload.content = btoa(this.$data.scriptContent)
       return payload
     },
 
@@ -116,7 +122,7 @@ export default {
         this.$data.scriptName = payload.name
         this.$data.scriptDescription = payload.description
         this.$data.scriptType = payload.type
-        this.$data.scriptContent = payload.content
+        this.$data.scriptContent = atob(payload.content)
       }
     },
 

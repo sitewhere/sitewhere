@@ -42,10 +42,10 @@
       </v-card-text>
     </v-card>
     <component-create-dialog ref="create" :context="dialogContext"
-      @elementAdded="onComponentAdded">
+      :tenantId="tenantId" @elementAdded="onComponentAdded">
     </component-create-dialog>
     <component-update-dialog ref="update" :context="dialogContext"
-      @elementUpdated="onConfigurationElementUpdated">
+      :tenantId="tenantId" @elementUpdated="onConfigurationElementUpdated">
     </component-update-dialog>
   </span>
 </template>

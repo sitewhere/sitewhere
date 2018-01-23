@@ -8,7 +8,7 @@
         </v-icon>
         <span>Attribute is required</span>
       </v-tooltip>
-      <strong>{{ attribute.name }}</strong>:
+      <strong>{{ attribute.name }} {{ tenantId }}</strong>:
     </v-flex>
     <v-flex xs4>
       <v-text-field v-if="readOnly" :required="attribute.required"
