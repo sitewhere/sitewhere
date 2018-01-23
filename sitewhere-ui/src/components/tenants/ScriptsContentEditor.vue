@@ -1,7 +1,7 @@
 <template>
-  <v-card v-if="version">
+  <v-card v-if="selectedVersion">
     <v-card-text>
-      <v-toolbar dense color="grey lighten-3">
+      <v-toolbar dense color="grey lighten-2">
         <v-toolbar-title class="subheading">
           {{ scriptTitle }}
         </v-toolbar-title>
@@ -67,6 +67,20 @@ export default {
     },
     version: function (updated) {
       this.$data.selectedVersion = updated
+    },
+    selectedVersion: function (updated) {
+      this.updateContent()
+    }
+  },
+
+  methods: {
+    // Format date.
+    formatDate: function (date) {
+      return Utils.formatDate(date)
+    },
+
+    // Update content.
+    updateContent: function () {
       var component = this
       _getTenantScriptContent(this.$store, this.tenantId,
         this.$data.selectedScript.id, this.$data.selectedVersion.versionId)
@@ -75,13 +89,6 @@ export default {
         }).catch(function (e) {
           console.log(e)
         })
-    }
-  },
-
-  methods: {
-    // Format date.
-    formatDate: function (date) {
-      return Utils.formatDate(date)
     },
 
     // Save editor content.
@@ -99,7 +106,7 @@ export default {
         this.$data.selectedScript.id, this.$data.selectedVersion.versionId,
         updated)
         .then(function (response) {
-          component.displaySnackbarMessage('Content Saved Successfully.')
+          component.$emit('saved')
         }).catch(function (e) {
           console.log(e)
         })
