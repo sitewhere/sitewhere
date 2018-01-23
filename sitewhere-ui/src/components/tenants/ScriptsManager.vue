@@ -33,7 +33,10 @@
                   <v-list-tile v-bind:key="version.versionId"
                     @click="onVersionClicked(version)">
                     <v-list-tile-content>
-                      <v-list-tile-title class="subheading">
+                      <v-list-tile-title v-if="selectedScript.activeVersion === version.versionId" class="subheading">
+                        <strong>{{ formatDate(version.createdDate) }} (Active)</strong>
+                      </v-list-tile-title>
+                      <v-list-tile-title v-else class="subheading">
                         {{ formatDate(version.createdDate) }}
                       </v-list-tile-title>
                       <v-list-tile-sub-title v-html="version.comment"></v-list-tile-sub-title>
@@ -68,9 +71,10 @@
     </v-card>
     <scripts-content-editor :script="selectedScript"
       :version="selectedVersion" :tenantId="tenantId"
-      @saved="onContentSaved" @cloned="onVersionCloned">
+      @saved="onContentSaved" @cloned="onVersionCloned"
+      @activated="onVersionActivated">
     </scripts-content-editor>
-    <v-snackbar :timeout="2000" success v-model="showMessage">{{ message }}
+    <v-snackbar :timeout="1500" success v-model="showMessage">{{ message }}
       <v-btn dark flat @click.native="showMessage = false">Close</v-btn>
     </v-snackbar>
     <scripts-create-dialog ref="create" :tenantId="tenantId"
@@ -179,6 +183,14 @@ export default {
       this.$data.versionAfterRefresh = version.versionId
       this.refresh()
       this.displaySnackbarMessage('Version Cloned Successfully.')
+    },
+
+    // Called after version has been activated.
+    onVersionActivated: function () {
+      this.$data.scriptAfterRefresh = this.$data.selectedScript.id
+      this.$data.versionAfterRefresh = this.$data.selectedVersion.versionId
+      this.refresh()
+      this.displaySnackbarMessage('Version Activated Successfully.')
     },
 
     // Show snackbar message.

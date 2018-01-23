@@ -7,6 +7,15 @@
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-tooltip top>
+          <v-btn dark color="red darken-3" slot="activator" @click="onActivate">
+            <v-icon left>
+              fa-bolt
+            </v-icon>
+            Activate
+          </v-btn>
+          <span>Make Version Active</span>
+        </v-tooltip>
+        <v-tooltip top>
           <v-btn dark color="blue" slot="activator" @click="onClone">
             <v-icon left>
               fa-clone
@@ -43,7 +52,8 @@ import Utils from '../common/Utils'
 import {
   _getTenantScriptContent,
   _updateTenantScript,
-  _cloneTenantScript
+  _cloneTenantScript,
+  _activateTenantScript
 } from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -139,6 +149,18 @@ export default {
         request)
         .then(function (response) {
           component.$emit('cloned', response.data)
+        }).catch(function (e) {
+          console.log(e)
+        })
+    },
+
+    // Activate current version.
+    onActivate: function () {
+      var component = this
+      _activateTenantScript(this.$store, this.tenantId,
+        this.$data.selectedScript.id, this.$data.selectedVersion.versionId)
+        .then(function (response) {
+          component.$emit('activated', response.data)
         }).catch(function (e) {
           console.log(e)
         })
