@@ -15,4 +15,7 @@ import com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria;
  * @author Derek
  */
 public class GrantedAuthoritySearchCriteria implements IGrantedAuthoritySearchCriteria {
+
+    /** Serial version UID */
+    private static final long serialVersionUID = 3724218780869528660L;
 }

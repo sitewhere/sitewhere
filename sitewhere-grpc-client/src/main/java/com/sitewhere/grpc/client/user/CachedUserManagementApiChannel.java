@@ -7,10 +7,13 @@
  */
 package com.sitewhere.grpc.client.user;
 
+import java.util.List;
+
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.cache.ICacheProvider;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 
 /**
@@ -23,9 +26,13 @@ public class CachedUserManagementApiChannel extends UserManagementApiChannel {
     /** User cache */
     private ICacheProvider<String, IUser> userCache;
 
+    /** Granted authority cache */
+    private ICacheProvider<String, List<IGrantedAuthority>> grantedAuthorityCache;
+
     public CachedUserManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
 	super(demux, microservice, host);
 	this.userCache = new UserManagementCacheProviders.UserCache(microservice, false);
+	this.grantedAuthorityCache = new UserManagementCacheProviders.GrantedAuthoritiesCache(microservice, false);
     }
 
     /*
@@ -45,11 +52,36 @@ public class CachedUserManagementApiChannel extends UserManagementApiChannel {
 	return super.getUserByUsername(username);
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.client.user.UserManagementApiChannel#getGrantedAuthorities
+     * (java.lang.String)
+     */
+    @Override
+    public List<IGrantedAuthority> getGrantedAuthorities(String username) throws SiteWhereException {
+	List<IGrantedAuthority> auths = getGrantedAuthorityCache().getCacheEntry(null, username);
+	if (auths != null) {
+	    getLogger().trace("Using cached authorities for user '" + username + "'.");
+	    return auths;
+	} else {
+	    getLogger().trace("No cached authorities for user '" + username + "'.");
+	}
+	return super.getGrantedAuthorities(username);
+    }
+
     public ICacheProvider<String, IUser> getUserCache() {
 	return userCache;
     }
 
     public void setUserCache(ICacheProvider<String, IUser> userCache) {
 	this.userCache = userCache;
+    }
+
+    public ICacheProvider<String, List<IGrantedAuthority>> getGrantedAuthorityCache() {
+	return grantedAuthorityCache;
+    }
+
+    public void setGrantedAuthorityCache(ICacheProvider<String, List<IGrantedAuthority>> grantedAuthorityCache) {
+	this.grantedAuthorityCache = grantedAuthorityCache;
     }
 }

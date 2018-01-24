@@ -19,6 +19,9 @@ import com.sitewhere.spi.user.IGrantedAuthority;
 @JsonInclude(Include.NON_NULL)
 public class GrantedAuthority implements IGrantedAuthority {
 
+    /** Serial version UID */
+    private static final long serialVersionUID = 872647505610555428L;
+
     /** Authority */
     private String authority;
 

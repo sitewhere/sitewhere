@@ -7,10 +7,13 @@
  */
 package com.sitewhere.microservice.hazelcast.server;
 
+import java.util.List;
+
 import com.sitewhere.grpc.client.user.UserManagementCacheProviders;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.cache.ICacheProvider;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
@@ -26,9 +29,13 @@ public class CacheAwareUserManagement extends UserManagementDecorator {
     /** User cache */
     private ICacheProvider<String, IUser> userCache;
 
+    /** Granted authority cache */
+    private ICacheProvider<String, List<IGrantedAuthority>> grantedAuthorityCache;
+
     public CacheAwareUserManagement(IUserManagement delegate, IMicroservice microservice) {
 	super(delegate);
 	this.userCache = new UserManagementCacheProviders.UserCache(microservice, true);
+	this.grantedAuthorityCache = new UserManagementCacheProviders.GrantedAuthoritiesCache(microservice, true);
     }
 
     /*
@@ -53,6 +60,7 @@ public class CacheAwareUserManagement extends UserManagementDecorator {
 	    throws SiteWhereException {
 	IUser result = super.updateUser(username, request, encodePassword);
 	getUserCache().setCacheEntry(null, result.getUsername(), result);
+	getGrantedAuthorityCache().removeCacheEntry(null, result.getUsername());
 	getLogger().trace("Updated user in cache.");
 	return result;
     }
@@ -66,6 +74,7 @@ public class CacheAwareUserManagement extends UserManagementDecorator {
 	IUser result = super.getUserByUsername(username);
 	if ((result != null) && (getUserCache().getCacheEntry(null, username) == null)) {
 	    getUserCache().setCacheEntry(null, result.getUsername(), result);
+	    getGrantedAuthorityCache().removeCacheEntry(null, result.getUsername());
 	    getLogger().trace("Added user to cache.");
 	}
 	return result;
@@ -79,15 +88,39 @@ public class CacheAwareUserManagement extends UserManagementDecorator {
     public IUser deleteUser(String username, boolean force) throws SiteWhereException {
 	IUser result = super.deleteUser(username, force);
 	getUserCache().removeCacheEntry(null, result.getUsername());
+	getGrantedAuthorityCache().removeCacheEntry(null, result.getUsername());
 	getLogger().trace("Removed user from cache.");
 	return result;
     }
 
-    public ICacheProvider<String, IUser> getUserCache() {
+    /*
+     * @see
+     * com.sitewhere.user.UserManagementDecorator#getGrantedAuthorities(java.lang.
+     * String)
+     */
+    @Override
+    public List<IGrantedAuthority> getGrantedAuthorities(String username) throws SiteWhereException {
+	List<IGrantedAuthority> result = super.getGrantedAuthorities(username);
+	if ((result != null) && (getGrantedAuthorityCache().getCacheEntry(null, username) == null)) {
+	    getGrantedAuthorityCache().setCacheEntry(null, username, result);
+	    getLogger().trace("Added granted authorities to cache.");
+	}
+	return result;
+    }
+
+    protected ICacheProvider<String, IUser> getUserCache() {
 	return userCache;
     }
 
-    public void setUserCache(ICacheProvider<String, IUser> userCache) {
+    protected void setUserCache(ICacheProvider<String, IUser> userCache) {
 	this.userCache = userCache;
+    }
+
+    protected ICacheProvider<String, List<IGrantedAuthority>> getGrantedAuthorityCache() {
+	return grantedAuthorityCache;
+    }
+
+    protected void setGrantedAuthorityCache(ICacheProvider<String, List<IGrantedAuthority>> grantedAuthorityCache) {
+	this.grantedAuthorityCache = grantedAuthorityCache;
     }
 }

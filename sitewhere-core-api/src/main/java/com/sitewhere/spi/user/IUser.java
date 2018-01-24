@@ -7,6 +7,7 @@
  */
 package com.sitewhere.spi.user;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +18,7 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
  * 
  * @author Derek
  */
-public interface IUser extends IMetadataProviderEntity {
+public interface IUser extends IMetadataProviderEntity, Serializable {
 
     /**
      * Get the username.

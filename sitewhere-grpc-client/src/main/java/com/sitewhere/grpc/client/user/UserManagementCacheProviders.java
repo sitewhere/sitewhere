@@ -7,11 +7,14 @@
  */
 package com.sitewhere.grpc.client.user;
 
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.grpc.client.cache.CacheProvider;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 
 /**
@@ -23,6 +26,9 @@ public class UserManagementCacheProviders {
 
     /** Cache id for user cache */
     public static final String ID_USER_CACHE = "us";
+
+    /** Cache id for granted authorities cache */
+    public static final String ID_GRANTED_AUTHORITIES_CACHE = "ga";
 
     /**
      * Cache for users.
@@ -36,6 +42,29 @@ public class UserManagementCacheProviders {
 
 	public UserCache(IMicroservice microservice, boolean createOnStartup) {
 	    super(microservice, ID_USER_CACHE, createOnStartup);
+	}
+
+	/*
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+	    return LOGGER;
+	}
+    }
+
+    /**
+     * Cache for user granted authorities.
+     * 
+     * @author Derek
+     */
+    public static class GrantedAuthoritiesCache extends CacheProvider<String, List<IGrantedAuthority>> {
+
+	/** Static logger instance */
+	private static Logger LOGGER = LogManager.getLogger();
+
+	public GrantedAuthoritiesCache(IMicroservice microservice, boolean createOnStartup) {
+	    super(microservice, ID_GRANTED_AUTHORITIES_CACHE, createOnStartup);
 	}
 
 	/*

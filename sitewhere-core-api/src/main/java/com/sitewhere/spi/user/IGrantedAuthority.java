@@ -7,12 +7,14 @@
  */
 package com.sitewhere.spi.user;
 
+import java.io.Serializable;
+
 /**
  * Interface for granted authority information.
  * 
  * @author Derek
  */
-public interface IGrantedAuthority {
+public interface IGrantedAuthority extends Serializable {
 
     /**
      * Get the authority name.
