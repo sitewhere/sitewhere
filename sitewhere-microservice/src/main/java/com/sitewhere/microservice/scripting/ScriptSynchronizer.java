@@ -19,10 +19,12 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.microservice.zookeeper.ZkUtils;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.microservice.groovy.IScriptSynchronizer;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Base class for script synchronizers.
@@ -39,6 +41,20 @@ public abstract class ScriptSynchronizer extends LifecycleComponent implements I
 
     public ScriptSynchronizer(IConfigurableMicroservice microservice) {
 	this.microservice = microservice;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+
+	// Copy all scipts from Zk to local.
+	ZkUtils.copyFolderRecursivelyFromZk(getMicroservice().getZookeeperManager().getCurator(), getZkScriptRootPath(),
+		getFileSystemRoot(), getZkScriptRootPath());
     }
 
     /*
