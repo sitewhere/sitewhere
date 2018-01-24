@@ -16,8 +16,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.zookeeper.ZkUtils;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
@@ -33,14 +31,22 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  */
 public abstract class ScriptSynchronizer extends LifecycleComponent implements IScriptSynchronizer {
 
-    /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
-
     /** Microservice reference */
     private IConfigurableMicroservice microservice;
 
     public ScriptSynchronizer(IConfigurableMicroservice microservice) {
 	this.microservice = microservice;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+	getMicroservice().getConfigurationMonitor().getListeners().add(this);
     }
 
     /*
@@ -55,6 +61,17 @@ public abstract class ScriptSynchronizer extends LifecycleComponent implements I
 	// Copy all scipts from Zk to local.
 	ZkUtils.copyFolderRecursivelyFromZk(getMicroservice().getZookeeperManager().getCurator(), getZkScriptRootPath(),
 		getFileSystemRoot(), getZkScriptRootPath());
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#terminate(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.terminate(monitor);
+	getMicroservice().getConfigurationMonitor().getListeners().remove(this);
     }
 
     /*
@@ -91,11 +108,92 @@ public abstract class ScriptSynchronizer extends LifecycleComponent implements I
 	if (existing.exists()) {
 	    try {
 		Files.delete(existing.toPath());
-		LOGGER.info("Deleted script at path '" + existing.getAbsolutePath() + "'.");
+		getLogger().info("Deleted script at path '" + existing.getAbsolutePath() + "'.");
 	    } catch (IOException e) {
 		throw new SiteWhereException("Unable to delete script from filesystem.", e);
 	    }
 	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurationListener#
+     * onConfigurationCacheInitialized()
+     */
+    @Override
+    public void onConfigurationCacheInitialized() {
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurationListener#
+     * onConfigurationAdded(java.lang.String, byte[])
+     */
+    @Override
+    public void onConfigurationAdded(String path, byte[] data) {
+	try {
+	    if (isScriptContent(path)) {
+		add(getRelativePath(path));
+	    }
+	} catch (SiteWhereException e) {
+	    getLogger().error("Error processing added script.", e);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurationListener#
+     * onConfigurationUpdated(java.lang.String, byte[])
+     */
+    @Override
+    public void onConfigurationUpdated(String path, byte[] data) {
+	try {
+	    if (isScriptContent(path)) {
+		// Handle updated script.
+	    }
+	} catch (SiteWhereException e) {
+	    getLogger().error("Error processing updated script.", e);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurationListener#
+     * onConfigurationDeleted(java.lang.String)
+     */
+    @Override
+    public void onConfigurationDeleted(String path) {
+	try {
+	    if (isScriptContent(path)) {
+		// Handle deleted script.
+	    }
+	} catch (SiteWhereException e) {
+	    getLogger().error("Error processing deleted script.", e);
+	}
+    }
+
+    /**
+     * Checks whether path is script content.
+     * 
+     * @param path
+     * @return
+     * @throws SiteWhereException
+     */
+    protected boolean isScriptContent(String path) throws SiteWhereException {
+	if (path.startsWith(getZkScriptRootPath())) {
+	    if (path.substring(getZkScriptRootPath().length()).length() == 0) {
+		return false;
+	    }
+	    return true;
+	}
+	return false;
+    }
+
+    /**
+     * Get path relative to content root.
+     * 
+     * @param path
+     * @return
+     * @throws SiteWhereException
+     */
+    protected String getRelativePath(String path) throws SiteWhereException {
+	return path.substring(getZkScriptRootPath().length() + 1);
     }
 
     /**
@@ -115,7 +213,7 @@ public abstract class ScriptSynchronizer extends LifecycleComponent implements I
 	    output = new FileOutputStream(out);
 	    ByteArrayInputStream input = new ByteArrayInputStream(content);
 	    IOUtils.copy(input, output);
-	    LOGGER.info("Copied script from '" + zkPath + "' to '" + out.getAbsolutePath() + "'.");
+	    getLogger().info("Copied script from '" + zkPath + "' to '" + out.getAbsolutePath() + "'.");
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to copy script from Zookeeper to filesystem.", e);
 	} finally {
