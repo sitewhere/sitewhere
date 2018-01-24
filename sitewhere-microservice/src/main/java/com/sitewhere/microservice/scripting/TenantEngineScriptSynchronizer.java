@@ -54,7 +54,8 @@ public class TenantEngineScriptSynchronizer extends ScriptSynchronizer {
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.initialize(monitor);
 	setFileSystemRoot(computeFilesystemPathForTenant());
-	setZkScriptRootPath(getMicroservice().getInstanceTenantScriptsPath(getTenantEngine().getTenant().getId()));
+	setZkScriptRootPath(
+		getMicroservice().getScriptManagement().getScriptContentZkPath(getTenantEngine().getTenant().getId()));
     }
 
     /**

@@ -8,14 +8,21 @@
 package com.sitewhere.spi.microservice.scripting;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Manages runtime scripting support for a microservice.
  * 
  * @author Derek
  */
-public interface IScriptManager extends ILifecycleComponent {
+public interface IScriptManager extends ITenantEngineLifecycleComponent {
 
+    /**
+     * Resolve a script id.
+     * 
+     * @param scriptId
+     * @return
+     * @throws SiteWhereException
+     */
     public IScriptMetadata resolve(String scriptId) throws SiteWhereException;
 }
