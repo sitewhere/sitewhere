@@ -50,6 +50,7 @@ import com.sitewhere.grpc.service.GUpdateLocationAssetResponse;
 import com.sitewhere.grpc.service.GUpdatePersonAssetRequest;
 import com.sitewhere.grpc.service.GUpdatePersonAssetResponse;
 import com.sitewhere.microservice.grpc.TenantTokenServerInterceptor;
+import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
 
 import io.grpc.stub.StreamObserver;
@@ -86,6 +87,7 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
 	try {
 	    IAssetManagementTenantEngine engine = getMicroservice().getTenantEngineByTenantId(tenantId);
 	    if (engine != null) {
+		UserContextManager.setCurrentTenant(engine.getTenant());
 		return engine.getAssetManagementImpl();
 	    }
 	    throw new RuntimeException("Tenant engine not found.");

@@ -10,6 +10,7 @@ package com.sitewhere.asset.modules;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.asset.AssetManagementDecorator;
 import com.sitewhere.asset.spi.modules.IAssetModuleManager;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;

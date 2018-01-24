@@ -47,7 +47,7 @@ public class AssetManagementApiDemux extends ApiDemux<IAssetManagementApiChannel
      */
     @Override
     public IAssetManagementApiChannel createApiChannel(String host) throws SiteWhereException {
-	return new AssetManagementApiChannel(this, getMicroservice(), host);
+	return new CachedAssetManagementApiChannel(this, getMicroservice(), host);
     }
 
     /*

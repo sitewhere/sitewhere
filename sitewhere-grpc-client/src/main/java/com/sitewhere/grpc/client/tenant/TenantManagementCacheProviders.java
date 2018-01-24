@@ -22,7 +22,7 @@ import com.sitewhere.spi.tenant.ITenant;
 public class TenantManagementCacheProviders {
 
     /** Cache id for tenant cache */
-    public static final String ID_TENANT_CACHE = "tn";
+    public static final String ID_TENANT_CACHE = "tent";
 
     /**
      * Cache for tenants.

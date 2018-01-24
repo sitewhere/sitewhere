@@ -7,11 +7,9 @@
  */
 package com.sitewhere.asset.grpc;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.sitewhere.asset.spi.modules.IAssetModule;
-import com.sitewhere.asset.spi.modules.IAssetModuleManager;
 import com.sitewhere.grpc.model.AssetModel.GAssetCategorySearchResults;
 import com.sitewhere.grpc.model.AssetModel.GAssetSearchResults;
 import com.sitewhere.grpc.model.GrpcUtils;
@@ -55,10 +53,11 @@ import com.sitewhere.grpc.service.GUpdateLocationAssetResponse;
 import com.sitewhere.grpc.service.GUpdatePersonAssetRequest;
 import com.sitewhere.grpc.service.GUpdatePersonAssetResponse;
 import com.sitewhere.rest.model.asset.AssetModuleDescriptor;
+import com.sitewhere.rest.model.asset.AssetReference;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
-import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleDescriptor;
+import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.asset.IHardwareAsset;
 import com.sitewhere.spi.asset.ILocationAsset;
 import com.sitewhere.spi.asset.IPersonAsset;
@@ -77,15 +76,11 @@ import io.grpc.stub.StreamObserver;
  */
 public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImplBase {
 
-    /** Asset management persistence */
-    private IAssetManagement assetManagement;
+    /** Asset resolver */
+    private IAssetResolver assetResolver;
 
-    /** Asset module manager */
-    private IAssetModuleManager assetModuleManager;
-
-    public AssetManagementImpl(IAssetManagement assetManagement, IAssetModuleManager assetModuleManager) {
-	this.assetManagement = assetManagement;
-	this.assetModuleManager = assetModuleManager;
+    public AssetManagementImpl(IAssetResolver assetResolver) {
+	this.assetResolver = assetResolver;
     }
 
     /*
@@ -102,7 +97,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_CREATE_ASSET_CATEGORY);
 	    IAssetCategoryCreateRequest apiRequest = AssetModelConverter
 		    .asApiAssetCategoryCreateRequest(request.getRequest());
-	    IAssetCategory apiResult = getAssetManagement().createAssetCategory(apiRequest);
+	    IAssetCategory apiResult = getAssetResolver().getAssetManagement().createAssetCategory(apiRequest);
 	    GCreateAssetCategoryResponse.Builder response = GCreateAssetCategoryResponse.newBuilder();
 	    response.setAssetCategory(AssetModelConverter.asGrpcAssetCategory(apiResult));
 	    responseObserver.onNext(response.build());
@@ -125,7 +120,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    StreamObserver<GGetAssetCategoryByIdResponse> responseObserver) {
 	try {
 	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_CATEGORY_BY_ID);
-	    IAssetCategory apiResult = getAssetManagement().getAssetCategory(request.getId());
+	    IAssetCategory apiResult = getAssetResolver().getAssetManagement().getAssetCategory(request.getId());
 	    GGetAssetCategoryByIdResponse.Builder response = GGetAssetCategoryByIdResponse.newBuilder();
 	    if (apiResult != null) {
 		response.setAssetCategory(AssetModelConverter.asGrpcAssetCategory(apiResult));
@@ -152,7 +147,8 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_UPDATE_ASSET_CATEGORY);
 	    IAssetCategoryCreateRequest apiRequest = AssetModelConverter
 		    .asApiAssetCategoryCreateRequest(request.getRequest());
-	    IAssetCategory apiResult = getAssetManagement().updateAssetCategory(request.getId(), apiRequest);
+	    IAssetCategory apiResult = getAssetResolver().getAssetManagement().updateAssetCategory(request.getId(),
+		    apiRequest);
 	    GUpdateAssetCategoryResponse.Builder response = GUpdateAssetCategoryResponse.newBuilder();
 	    response.setAssetCategory(AssetModelConverter.asGrpcAssetCategory(apiResult));
 	    responseObserver.onNext(response.build());
@@ -175,7 +171,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    StreamObserver<GListAssetCategoriesResponse> responseObserver) {
 	try {
 	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_LIST_ASSET_CATEGORIES);
-	    ISearchResults<IAssetCategory> apiResult = getAssetManagement()
+	    ISearchResults<IAssetCategory> apiResult = getAssetResolver().getAssetManagement()
 		    .listAssetCategories(CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
 	    GListAssetCategoriesResponse.Builder response = GListAssetCategoriesResponse.newBuilder();
 	    GAssetCategorySearchResults.Builder results = GAssetCategorySearchResults.newBuilder();
@@ -204,7 +200,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    StreamObserver<GDeleteAssetCategoryResponse> responseObserver) {
 	try {
 	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_DELETE_ASSET_CATEGORY);
-	    IAssetCategory apiResult = getAssetManagement().deleteAssetCategory(request.getId());
+	    IAssetCategory apiResult = getAssetResolver().getAssetManagement().deleteAssetCategory(request.getId());
 	    GDeleteAssetCategoryResponse.Builder response = GDeleteAssetCategoryResponse.newBuilder();
 	    response.setAssetCategory(AssetModelConverter.asGrpcAssetCategory(apiResult));
 	    responseObserver.onNext(response.build());
@@ -229,7 +225,8 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_CREATE_HARDWARE_ASSET);
 	    IHardwareAssetCreateRequest apiRequest = AssetModelConverter
 		    .asApiHardwareAssetCreateRequest(request.getRequest());
-	    IHardwareAsset apiResult = getAssetManagement().createHardwareAsset(request.getCategoryId(), apiRequest);
+	    IHardwareAsset apiResult = getAssetResolver().getAssetManagement()
+		    .createHardwareAsset(request.getCategoryId(), apiRequest);
 	    GCreateHardwareAssetResponse.Builder response = GCreateHardwareAssetResponse.newBuilder();
 	    response.setAsset(AssetModelConverter.asGrpcHardwareAsset(apiResult));
 	    responseObserver.onNext(response.build());
@@ -254,8 +251,8 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_UPDATE_HARDWARE_ASSET);
 	    IHardwareAssetCreateRequest apiRequest = AssetModelConverter
 		    .asApiHardwareAssetCreateRequest(request.getRequest());
-	    IHardwareAsset apiResult = getAssetManagement().updateHardwareAsset(request.getCategoryId(),
-		    request.getAssetId(), apiRequest);
+	    IHardwareAsset apiResult = getAssetResolver().getAssetManagement()
+		    .updateHardwareAsset(request.getCategoryId(), request.getAssetId(), apiRequest);
 	    GUpdateHardwareAssetResponse.Builder response = GUpdateHardwareAssetResponse.newBuilder();
 	    response.setAsset(AssetModelConverter.asGrpcHardwareAsset(apiResult));
 	    responseObserver.onNext(response.build());
@@ -280,7 +277,8 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_CREATE_PERSON_ASSET);
 	    IPersonAssetCreateRequest apiRequest = AssetModelConverter
 		    .asApiPersonAssetCreateRequest(request.getRequest());
-	    IPersonAsset apiResult = getAssetManagement().createPersonAsset(request.getCategoryId(), apiRequest);
+	    IPersonAsset apiResult = getAssetResolver().getAssetManagement().createPersonAsset(request.getCategoryId(),
+		    apiRequest);
 	    GCreatePersonAssetResponse.Builder response = GCreatePersonAssetResponse.newBuilder();
 	    response.setAsset(AssetModelConverter.asGrpcPersonAsset(apiResult));
 	    responseObserver.onNext(response.build());
@@ -305,7 +303,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_UPDATE_PERSON_ASSET);
 	    IPersonAssetCreateRequest apiRequest = AssetModelConverter
 		    .asApiPersonAssetCreateRequest(request.getRequest());
-	    IPersonAsset apiResult = getAssetManagement().updatePersonAsset(request.getCategoryId(),
+	    IPersonAsset apiResult = getAssetResolver().getAssetManagement().updatePersonAsset(request.getCategoryId(),
 		    request.getAssetId(), apiRequest);
 	    GUpdatePersonAssetResponse.Builder response = GUpdatePersonAssetResponse.newBuilder();
 	    response.setAsset(AssetModelConverter.asGrpcPersonAsset(apiResult));
@@ -331,7 +329,8 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_CREATE_LOCATION_ASSET);
 	    ILocationAssetCreateRequest apiRequest = AssetModelConverter
 		    .asApiLocationAssetCreateRequest(request.getRequest());
-	    ILocationAsset apiResult = getAssetManagement().createLocationAsset(request.getCategoryId(), apiRequest);
+	    ILocationAsset apiResult = getAssetResolver().getAssetManagement()
+		    .createLocationAsset(request.getCategoryId(), apiRequest);
 	    GCreateLocationAssetResponse.Builder response = GCreateLocationAssetResponse.newBuilder();
 	    response.setAsset(AssetModelConverter.asGrpcLocationAsset(apiResult));
 	    responseObserver.onNext(response.build());
@@ -356,8 +355,8 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_UPDATE_LOCATION_ASSET);
 	    ILocationAssetCreateRequest apiRequest = AssetModelConverter
 		    .asApiLocationAssetCreateRequest(request.getRequest());
-	    ILocationAsset apiResult = getAssetManagement().updateLocationAsset(request.getCategoryId(),
-		    request.getAssetId(), apiRequest);
+	    ILocationAsset apiResult = getAssetResolver().getAssetManagement()
+		    .updateLocationAsset(request.getCategoryId(), request.getAssetId(), apiRequest);
 	    GUpdateLocationAssetResponse.Builder response = GUpdateLocationAssetResponse.newBuilder();
 	    response.setAsset(AssetModelConverter.asGrpcLocationAsset(apiResult));
 	    responseObserver.onNext(response.build());
@@ -379,7 +378,8 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
     public void getAssetById(GGetAssetByIdRequest request, StreamObserver<GGetAssetByIdResponse> responseObserver) {
 	try {
 	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_BY_ID);
-	    IAsset apiResult = getAssetManagement().getAsset(request.getCategoryId(), request.getAssetId());
+	    IAsset apiResult = getAssetResolver().getAssetManagement().getAsset(request.getCategoryId(),
+		    request.getAssetId());
 	    GGetAssetByIdResponse.Builder response = GGetAssetByIdResponse.newBuilder();
 	    if (apiResult != null) {
 		response.setAsset(AssetModelConverter.asGrpcGenericAsset(apiResult));
@@ -403,7 +403,8 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
     public void deleteAsset(GDeleteAssetRequest request, StreamObserver<GDeleteAssetResponse> responseObserver) {
 	try {
 	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_DELETE_ASSET);
-	    IAsset apiResult = getAssetManagement().deleteAsset(request.getCategoryId(), request.getAssetId());
+	    IAsset apiResult = getAssetResolver().getAssetManagement().deleteAsset(request.getCategoryId(),
+		    request.getAssetId());
 	    GDeleteAssetResponse.Builder response = GDeleteAssetResponse.newBuilder();
 	    response.setAsset(AssetModelConverter.asGrpcGenericAsset(apiResult));
 	    responseObserver.onNext(response.build());
@@ -425,7 +426,8 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
     public void listAssets(GListAssetsRequest request, StreamObserver<GListAssetsResponse> responseObserver) {
 	try {
 	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_LIST_ASSETS);
-	    ISearchResults<IAsset> apiResult = getAssetManagement().listAssets(request.getCategoryId(),
+	    ISearchResults<IAsset> apiResult = getAssetResolver().getAssetManagement().listAssets(
+		    request.getCategoryId(),
 		    CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
 	    GListAssetsResponse.Builder response = GListAssetsResponse.newBuilder();
 	    GAssetSearchResults.Builder results = GAssetSearchResults.newBuilder();
@@ -452,14 +454,11 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    StreamObserver<GListAssetModuleDescriptorsResponse> responseObserver) {
 	try {
 	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_LIST_ASSET_MODULE_DESCRIPTORS);
-	    List<IAssetModule<?>> apiResult = getAssetModuleManager().listModules();
-	    List<IAssetModuleDescriptor> descriptors = new ArrayList<IAssetModuleDescriptor>();
-	    for (IAssetModule<?> result : apiResult) {
-		descriptors.add(getDescriptorFor(result));
-	    }
+	    List<IAssetModuleDescriptor> apiResult = getAssetResolver().getAssetModuleManagement()
+		    .listAssetModuleDescriptors(null);
 
 	    GListAssetModuleDescriptorsResponse.Builder response = GListAssetModuleDescriptorsResponse.newBuilder();
-	    for (IAssetModuleDescriptor api : descriptors) {
+	    for (IAssetModuleDescriptor api : apiResult) {
 		response.addAssetModuleDescriptor(AssetModelConverter.asGrpcAssetModuleDescriptor(api));
 	    }
 	    responseObserver.onNext(response.build());
@@ -494,12 +493,12 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    StreamObserver<GGetAssetModuleDescriptorByModuleIdResponse> responseObserver) {
 	try {
 	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_DESCRIPTOR_BY_MODULE_ID);
-	    IAssetModule<?> apiResult = getAssetModuleManager().getModule(request.getModuleId());
-	    IAssetModuleDescriptor descriptor = getDescriptorFor(apiResult);
+	    IAssetModuleDescriptor apiResult = getAssetResolver().getAssetModuleManagement()
+		    .getAssetModuleDescriptor(request.getModuleId());
 	    GGetAssetModuleDescriptorByModuleIdResponse.Builder response = GGetAssetModuleDescriptorByModuleIdResponse
 		    .newBuilder();
 	    if (apiResult != null) {
-		response.setAssetModuleDescriptor(AssetModelConverter.asGrpcAssetModuleDescriptor(descriptor));
+		response.setAssetModuleDescriptor(AssetModelConverter.asGrpcAssetModuleDescriptor(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
@@ -519,8 +518,8 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    StreamObserver<GGetAssetModuleAssetsByCriteriaResponse> responseObserver) {
 	try {
 	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_ASSETS_BY_CRITERIA);
-	    List<? extends IAsset> apiResult = getAssetModuleManager().search(request.getModuleId(),
-		    request.getCriteria());
+	    List<? extends IAsset> apiResult = getAssetResolver().getAssetModuleManagement()
+		    .searchAssetModule(request.getModuleId(), request.getCriteria());
 
 	    GGetAssetModuleAssetsByCriteriaResponse.Builder response = GGetAssetModuleAssetsByCriteriaResponse
 		    .newBuilder();
@@ -545,7 +544,10 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    StreamObserver<GGetAssetModuleAssetResponse> responseObserver) {
 	try {
 	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_ASSET);
-	    IAsset apiResult = getAssetModuleManager().getAssetById(request.getModuleId(), request.getAssetId());
+	    AssetReference reference = new AssetReference();
+	    reference.setModule(request.getModuleId());
+	    reference.setId(request.getAssetId());
+	    IAsset apiResult = getAssetResolver().getAssetModuleManagement().getAsset(reference);
 	    GGetAssetModuleAssetResponse.Builder response = GGetAssetModuleAssetResponse.newBuilder();
 	    if (apiResult != null) {
 		response.setAsset(AssetModelConverter.asGrpcGenericAsset(apiResult));
@@ -558,19 +560,11 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	}
     }
 
-    public IAssetManagement getAssetManagement() {
-	return assetManagement;
+    public IAssetResolver getAssetResolver() {
+	return assetResolver;
     }
 
-    public void setAssetManagement(IAssetManagement assetManagement) {
-	this.assetManagement = assetManagement;
-    }
-
-    public IAssetModuleManager getAssetModuleManager() {
-	return assetModuleManager;
-    }
-
-    public void setAssetModuleManager(IAssetModuleManager assetModuleManager) {
-	this.assetModuleManager = assetModuleManager;
+    public void setAssetResolver(IAssetResolver assetResolver) {
+	this.assetResolver = assetResolver;
     }
 }

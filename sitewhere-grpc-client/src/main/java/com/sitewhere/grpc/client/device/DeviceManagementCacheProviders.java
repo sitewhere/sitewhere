@@ -27,28 +27,28 @@ import com.sitewhere.spi.microservice.IMicroservice;
 public class DeviceManagementCacheProviders {
 
     /** Cache id for site cache */
-    public static final String ID_SITE_CACHE = "si";
+    public static final String ID_SITE_CACHE = "site";
 
     /** Cache id for site by id cache */
-    public static final String ID_SITE_ID_CACHE = "sii";
+    public static final String ID_SITE_ID_CACHE = "stid";
 
     /** Cache id for device specification cache */
-    public static final String ID_SPECIFICATION_CACHE = "sp";
+    public static final String ID_SPECIFICATION_CACHE = "spex";
 
     /** Cache id for device specification by id cache */
-    public static final String ID_SPECIFICATION_ID_CACHE = "spi";
+    public static final String ID_SPECIFICATION_ID_CACHE = "spid";
 
     /** Cache id for device cache */
-    public static final String ID_DEVICE_CACHE = "dv";
+    public static final String ID_DEVICE_CACHE = "devc";
 
     /** Cache id for device by id cache */
-    public static final String ID_DEVICE_ID_CACHE = "dvi";
+    public static final String ID_DEVICE_ID_CACHE = "dvid";
 
     /** Cache id for device assignment cache */
-    public static final String ID_ASSIGNMENT_CACHE = "as";
+    public static final String ID_ASSIGNMENT_CACHE = "assn";
 
     /** Cache id for device assignment by id cache */
-    public static final String ID_ASSIGNMENT_ID_CACHE = "asi";
+    public static final String ID_ASSIGNMENT_ID_CACHE = "anid";
 
     /**
      * Cache for sites.

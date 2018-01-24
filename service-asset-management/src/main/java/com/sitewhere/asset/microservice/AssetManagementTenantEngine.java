@@ -21,6 +21,8 @@ import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
 import com.sitewhere.asset.spi.modules.IAssetModuleManager;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
+import com.sitewhere.microservice.hazelcast.server.CacheAwareAssetManagement;
+import com.sitewhere.microservice.hazelcast.server.CacheAwareAssetModuleManagement;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
@@ -72,18 +74,8 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Create management interfaces.
-	IAssetManagement implementation = (IAssetManagement) getModuleContext()
-		.getBean(AssetManagementBeans.BEAN_ASSET_MANAGEMENT);
-	this.assetModuleManager = (IAssetModuleManager) getModuleContext()
-		.getBean(AssetManagementBeans.BEAN_ASSET_MODULE_MANAGER);
-
-	getAssetModuleManager().setAssetManagement(implementation);
-
-	this.assetManagement = new AssetManagementTriggers(implementation, getAssetModuleManager(), getMicroservice());
-	this.assetManagementImpl = new AssetManagementImpl(getAssetManagement(), getAssetModuleManager());
-	this.assetResolver = new DirectAssetResolver(getAssetManagement(),
-		new AssetModuleManagementAdapter(getAssetModuleManager()));
+	// Initialize underlying APIs.
+	initializeAssetManagementApis();
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
@@ -99,6 +91,26 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
 
 	// Execute initialization steps.
 	init.execute(monitor);
+    }
+
+    /**
+     * Initialize underlying APIs from Spring.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void initializeAssetManagementApis() throws SiteWhereException {
+	// Load Spring bean implementations.
+	IAssetManagement implementation = (IAssetManagement) getModuleContext()
+		.getBean(AssetManagementBeans.BEAN_ASSET_MANAGEMENT);
+	this.assetModuleManager = (IAssetModuleManager) getModuleContext()
+		.getBean(AssetManagementBeans.BEAN_ASSET_MODULE_MANAGER);
+	getAssetModuleManager().setAssetManagement(implementation);
+
+	this.assetManagement = new CacheAwareAssetManagement(
+		new AssetManagementTriggers(implementation, getAssetModuleManager(), getMicroservice()));
+	this.assetResolver = new DirectAssetResolver(getAssetManagement(), new CacheAwareAssetModuleManagement(
+		new AssetModuleManagementAdapter(getAssetModuleManager()), getMicroservice()));
+	this.assetManagementImpl = new AssetManagementImpl(getAssetResolver());
     }
 
     /*

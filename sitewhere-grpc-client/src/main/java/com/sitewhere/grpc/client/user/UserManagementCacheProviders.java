@@ -25,10 +25,10 @@ import com.sitewhere.spi.user.IUser;
 public class UserManagementCacheProviders {
 
     /** Cache id for user cache */
-    public static final String ID_USER_CACHE = "us";
+    public static final String ID_USER_CACHE = "user";
 
     /** Cache id for granted authorities cache */
-    public static final String ID_GRANTED_AUTHORITIES_CACHE = "ga";
+    public static final String ID_GRANTED_AUTHORITIES_CACHE = "grau";
 
     /**
      * Cache for users.

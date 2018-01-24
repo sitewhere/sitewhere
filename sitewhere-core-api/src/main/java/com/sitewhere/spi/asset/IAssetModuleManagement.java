@@ -10,13 +10,14 @@ package com.sitewhere.spi.asset;
 import java.util.List;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Asset management interface for interacting with asset modules.
  * 
  * @author Derek
  */
-public interface IAssetModuleManagement {
+public interface IAssetModuleManagement extends ITenantEngineLifecycleComponent {
 
     /**
      * Get list of asset module descriptors.

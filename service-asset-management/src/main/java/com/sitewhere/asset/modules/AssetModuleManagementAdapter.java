@@ -10,9 +10,13 @@ package com.sitewhere.asset.modules;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.sitewhere.asset.spi.modules.IAssetModule;
 import com.sitewhere.asset.spi.modules.IAssetModuleManager;
 import com.sitewhere.rest.model.asset.AssetModuleDescriptor;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAsset;
@@ -26,7 +30,10 @@ import com.sitewhere.spi.asset.IAssetReference;
  * 
  * @author Derek
  */
-public class AssetModuleManagementAdapter implements IAssetModuleManagement {
+public class AssetModuleManagementAdapter extends TenantEngineLifecycleComponent implements IAssetModuleManagement {
+
+    /** Static logger instance */
+    private static Logger LOGGER = LogManager.getLogger();
 
     /** Asset module manager */
     private IAssetModuleManager assetModuleManager;
@@ -94,6 +101,14 @@ public class AssetModuleManagementAdapter implements IAssetModuleManagement {
     @Override
     public IAsset getAsset(IAssetReference reference) throws SiteWhereException {
 	return getAssetModuleManager().getAssetById(reference.getModule(), reference.getId());
+    }
+
+    /*
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public Logger getLogger() {
+	return LOGGER;
     }
 
     public IAssetModuleManager getAssetModuleManager() {
