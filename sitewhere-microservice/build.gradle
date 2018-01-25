@@ -9,8 +9,6 @@ dependencies {
 	// GRPC server components.
 	compile group: 'io.grpc', name: 'grpc-netty', version: "${rootProject.ext['grpc.version']}"
     
-    compile group: 'org.codehaus.groovy', name: 'groovy'
-    
     // Used for generating ids.
     compile group: 'com.google', name: 'bitcoinj', version:'0.11.3'
     

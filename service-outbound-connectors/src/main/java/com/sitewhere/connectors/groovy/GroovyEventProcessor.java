@@ -11,7 +11,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.connectors.FilteredOutboundConnector;
-import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventRequestBuilder;
 import com.sitewhere.rest.model.device.event.scripting.DeviceEventSupport;
 import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequestBuilder;
@@ -29,8 +28,6 @@ import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 import groovy.lang.Binding;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
 
 /**
  * Outbound event processor that uses a Groovy script to process events.
@@ -41,12 +38,6 @@ public class GroovyEventProcessor extends FilteredOutboundConnector {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
-
-    /** Groovy configuration */
-    private GroovyConfiguration groovyConfiguration;
-
-    /** Relative path to Groovy script */
-    private String scriptPath;
 
     /** Supports building device management entities */
     private DeviceManagementRequestBuilder deviceBuilder;
@@ -155,14 +146,6 @@ public class GroovyEventProcessor extends FilteredOutboundConnector {
 	binding.setVariable("device", device);
 	binding.setVariable("deviceBuilder", deviceBuilder);
 	binding.setVariable("eventBuilder", eventsBuilder);
-
-	try {
-	    getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
-	} catch (ResourceException e) {
-	    throw new SiteWhereException("Unable to access Groovy script. " + e.getMessage(), e);
-	} catch (ScriptException e) {
-	    throw new SiteWhereException("Unable to run Groovy script.", e);
-	}
     }
 
     /*
@@ -173,21 +156,5 @@ public class GroovyEventProcessor extends FilteredOutboundConnector {
     @Override
     public Logger getLogger() {
 	return LOGGER;
-    }
-
-    public GroovyConfiguration getGroovyConfiguration() {
-	return groovyConfiguration;
-    }
-
-    public void setGroovyConfiguration(GroovyConfiguration groovyConfiguration) {
-	this.groovyConfiguration = groovyConfiguration;
-    }
-
-    public String getScriptPath() {
-	return scriptPath;
-    }
-
-    public void setScriptPath(String scriptPath) {
-	this.scriptPath = scriptPath;
     }
 }

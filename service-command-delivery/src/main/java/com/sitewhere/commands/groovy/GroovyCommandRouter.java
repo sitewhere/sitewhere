@@ -11,13 +11,11 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.codehaus.groovy.control.CompilationFailedException;
 
 import com.sitewhere.commands.spi.ICommandDestination;
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
 import com.sitewhere.groovy.IGroovyVariables;
-import com.sitewhere.microservice.groovy.GroovyConfiguration;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -26,8 +24,6 @@ import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 import groovy.lang.Binding;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
 
 /**
  * Implementation of {@link IOutboundCommandRouter} that uses Groovy scripts to
@@ -35,19 +31,13 @@ import groovy.util.ScriptException;
  * 
  * @author Derek
  */
-public class GroovyCommandRouter extends TenantEngineLifecycleComponent implements IOutboundCommandRouter {
+public class GroovyCommandRouter extends GroovyComponent implements IOutboundCommandRouter {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
     /** List of available command destinations */
     private List<ICommandDestination<?, ?>> commandDestinations;
-
-    /** Groovy configuration */
-    private GroovyConfiguration groovyConfiguration;
-
-    /** Path to script used for routing custom commands */
-    private String scriptPath;
 
     public GroovyCommandRouter() {
 	super(LifecycleComponentType.CommandRouter);
@@ -112,8 +102,8 @@ public class GroovyCommandRouter extends TenantEngineLifecycleComponent implemen
 	    binding.setVariable(IGroovyVariables.VAR_NESTING_CONTEXT, nesting);
 	    binding.setVariable(IGroovyVariables.VAR_ASSIGNMENT, assignment);
 	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
-	    LOGGER.debug("About to route command using script '" + getScriptPath() + "'");
-	    String target = (String) getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
+	    LOGGER.debug("About to route command using script '" + getScriptId() + "'");
+	    String target = (String) run(binding);
 	    if (target != null) {
 		for (ICommandDestination<?, ?> destination : getCommandDestinations()) {
 		    if (target.equals(destination.getDestinationId())) {
@@ -127,14 +117,8 @@ public class GroovyCommandRouter extends TenantEngineLifecycleComponent implemen
 	    } else {
 		LOGGER.warn("Groovy command router did not return a command destination id.");
 	    }
-	} catch (ResourceException e) {
-	    throw new SiteWhereException("Unable to access Groovy command router script.", e);
-	} catch (ScriptException e) {
-	    throw new SiteWhereException("Unable to run Groovy command router script.", e);
-	} catch (CompilationFailedException e) {
-	    throw new SiteWhereException("Error compiling Groovy script.", e);
-	} catch (Throwable e) {
-	    throw new SiteWhereException("Unhandled exception in Groovy command router script.", e);
+	} catch (SiteWhereException e) {
+	    throw new SiteWhereException("Unable to run router script.", e);
 	}
     }
 
@@ -146,22 +130,6 @@ public class GroovyCommandRouter extends TenantEngineLifecycleComponent implemen
     @Override
     public Logger getLogger() {
 	return LOGGER;
-    }
-
-    public GroovyConfiguration getGroovyConfiguration() {
-	return groovyConfiguration;
-    }
-
-    public void setGroovyConfiguration(GroovyConfiguration groovyConfiguration) {
-	this.groovyConfiguration = groovyConfiguration;
-    }
-
-    public String getScriptPath() {
-	return scriptPath;
-    }
-
-    public void setScriptPath(String scriptPath) {
-	this.scriptPath = scriptPath;
     }
 
     public List<ICommandDestination<?, ?>> getCommandDestinations() {

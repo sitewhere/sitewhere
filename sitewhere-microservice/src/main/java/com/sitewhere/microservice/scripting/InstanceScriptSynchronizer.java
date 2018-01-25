@@ -13,7 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
-import com.sitewhere.spi.microservice.groovy.IScriptSynchronizer;
+import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
 
 /**
  * Implementation of {@link IScriptSynchronizer} that copies instance-level

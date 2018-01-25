@@ -530,8 +530,8 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
     }
 
     /**
-     * Parse an event source that uses ActiveMQ to connect to a remote broker
-     * and ingest messages.
+     * Parse an event source that uses ActiveMQ to connect to a remote broker and
+     * ingest messages.
      * 
      * @param element
      * @param context
@@ -678,8 +678,7 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
     }
 
     /**
-     * Parse a socket interaction handler factory from the list of
-     * possibilities.
+     * Parse a socket interaction handler factory from the list of possibilities.
      * 
      * @param decoder
      * @param context
@@ -717,8 +716,7 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
     }
 
     /**
-     * Parse reference to an external {@link ISocketInteractionHandlerFactory}
-     * bean.
+     * Parse reference to an external {@link ISocketInteractionHandlerFactory} bean.
      * 
      * @param parent
      * @param decoder
@@ -1213,11 +1211,11 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
     protected AbstractBeanDefinition parseGroovyDecoder(Element parent, Element decoder, ParserContext context) {
 	BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(GroovyEventDecoder.class);
 
-	Attr scriptPath = decoder.getAttributeNode("scriptPath");
-	if (scriptPath == null) {
-	    throw new RuntimeException("Script path not set for Groovy event decoder.");
+	Attr scriptId = decoder.getAttributeNode("scriptId");
+	if (scriptId == null) {
+	    throw new RuntimeException("Script id not set for Groovy event decoder.");
 	}
-	builder.addPropertyValue("scriptPath", scriptPath.getValue());
+	builder.addPropertyValue("scriptId", scriptId.getValue());
 
 	return builder.getBeanDefinition();
     }
@@ -1353,8 +1351,7 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
     }
 
     /**
-     * Parse the message metadata extractor for a composite device event
-     * decoder.
+     * Parse the message metadata extractor for a composite device event decoder.
      * 
      * @param element
      * @param context

@@ -15,6 +15,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.configuration.ConfigurationUtils;
+import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.scripting.TenantEngineScriptManager;
 import com.sitewhere.microservice.scripting.TenantEngineScriptSynchronizer;
 import com.sitewhere.rest.model.microservice.state.TenantEngineState;
@@ -22,6 +23,7 @@ import com.sitewhere.rest.model.tenant.TenantTemplate;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
@@ -61,7 +63,11 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     /** Tenant script synchronizer */
     private TenantEngineScriptSynchronizer tenantScriptSynchronizer;
 
+    /** Script manager */
     private TenantEngineScriptManager scriptManager;
+
+    /** Groovy configuration */
+    private IGroovyConfiguration groovyConfiguration;
 
     /** Module context information */
     private ApplicationContext moduleContext;
@@ -71,6 +77,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	this.tenant = tenant;
 	this.tenantScriptSynchronizer = new TenantEngineScriptSynchronizer(this);
 	this.scriptManager = new TenantEngineScriptManager();
+	this.groovyConfiguration = new GroovyConfiguration(getTenantScriptSynchronizer());
     }
 
     /*
@@ -91,6 +98,9 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 
 	// Initialize script manager.
 	init.addInitializeStep(this, getScriptManager(), true);
+
+	// Initialize Groovy configuration.
+	init.addInitializeStep(this, getGroovyConfiguration(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -171,6 +181,9 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	// Start tenant script manager.
 	start.addStartStep(this, getScriptManager(), true);
 
+	// Start Groovy configuration.
+	start.addStartStep(this, getGroovyConfiguration(), true);
+
 	// Execute startup steps.
 	start.execute(monitor);
 
@@ -193,6 +206,9 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop tenant engine " + getTenant().getName());
 
+	// Stop Groovy configuration.
+	stop.addStopStep(this, getGroovyConfiguration());
+
 	// Stop tenant script manager.
 	stop.addStopStep(this, getScriptManager());
 
@@ -214,6 +230,9 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will terminate components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Terminate tenant engine " + getTenant().getName());
+
+	// Terminate Groovy configuration.
+	stop.addTerminateStep(this, getGroovyConfiguration());
 
 	// Terminate tenant script manager.
 	stop.addTerminateStep(this, getScriptManager());
@@ -483,6 +502,19 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 
     public void setScriptManager(TenantEngineScriptManager scriptManager) {
 	this.scriptManager = scriptManager;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getGroovyConfiguration()
+     */
+    @Override
+    public IGroovyConfiguration getGroovyConfiguration() {
+	return groovyConfiguration;
+    }
+
+    public void setGroovyConfiguration(IGroovyConfiguration groovyConfiguration) {
+	this.groovyConfiguration = groovyConfiguration;
     }
 
     /*

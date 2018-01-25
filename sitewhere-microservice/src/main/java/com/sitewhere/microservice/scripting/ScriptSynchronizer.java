@@ -21,7 +21,7 @@ import com.sitewhere.microservice.zookeeper.ZkUtils;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
-import com.sitewhere.spi.microservice.groovy.IScriptSynchronizer;
+import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**

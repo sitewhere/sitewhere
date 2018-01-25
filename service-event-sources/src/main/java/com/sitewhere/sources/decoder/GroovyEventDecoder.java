@@ -13,26 +13,21 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.codehaus.groovy.control.CompilationFailedException;
 
 import com.sitewhere.groovy.IGroovyVariables;
-import com.sitewhere.microservice.groovy.GroovyConfiguration;
+import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventRequestBuilder;
 import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequestBuilder;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IDeviceEventDecoder;
+import com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.tenant.ITenant;
 
 import groovy.lang.Binding;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
 
 /**
  * Implementation of {@link IDeviceEventDecoder} that uses a Groovy script to
@@ -40,16 +35,10 @@ import groovy.util.ScriptException;
  * 
  * @author Derek
  */
-public class GroovyEventDecoder extends TenantEngineLifecycleComponent implements IDeviceEventDecoder<byte[]> {
+public class GroovyEventDecoder extends GroovyComponent implements IDeviceEventDecoder<byte[]> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
-
-    /** Groovy configuration */
-    private GroovyConfiguration groovyConfiguration;
-
-    /** Path to script used for decoder */
-    private String scriptPath;
 
     public GroovyEventDecoder() {
 	super(LifecycleComponentType.DeviceEventDecoder);
@@ -69,47 +58,19 @@ public class GroovyEventDecoder extends TenantEngineLifecycleComponent implement
 	    Binding binding = new Binding();
 	    List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();
 	    binding.setVariable(IGroovyVariables.VAR_DEVICE_MANAGEMENT_BUILDER,
-		    new DeviceManagementRequestBuilder(getDeviceManagement(getTenantEngine().getTenant())));
+		    new DeviceManagementRequestBuilder(getDeviceManagement()));
 	    binding.setVariable(IGroovyVariables.VAR_EVENT_MANAGEMENT_BUILDER,
-		    new DeviceEventRequestBuilder(getDeviceManagement(getTenantEngine().getTenant()),
-			    getDeviceEventManagement(getTenantEngine().getTenant())));
+		    new DeviceEventRequestBuilder(getDeviceManagement(), getDeviceEventManagement()));
 	    binding.setVariable(IGroovyVariables.VAR_DECODED_EVENTS, events);
 	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD, payload);
 	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD_METADATA, metadata);
 	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
-	    LOGGER.debug("About to execute '" + getScriptPath() + "' with payload: " + payload);
-	    getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
+	    LOGGER.debug("About to execute '" + getScriptId() + "' with payload: " + payload);
+	    run(binding);
 	    return (List<IDecodedDeviceRequest<?>>) binding.getVariable(IGroovyVariables.VAR_DECODED_EVENTS);
-	} catch (ResourceException e) {
-	    throw new EventDecodeException("Unable to access Groovy decoder script.", e);
-	} catch (ScriptException e) {
-	    throw new EventDecodeException("Unable to run Groovy decoder script.", e);
-	} catch (CompilationFailedException e) {
-	    throw new EventDecodeException("Error compiling Groovy script.", e);
-	} catch (Throwable e) {
-	    throw new EventDecodeException("Unhandled exception in Groovy decoder script.", e);
+	} catch (SiteWhereException e) {
+	    throw new EventDecodeException("Unable to execute event decoder script.", e);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
-     * .spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
     }
 
     /*
@@ -122,27 +83,13 @@ public class GroovyEventDecoder extends TenantEngineLifecycleComponent implement
 	return LOGGER;
     }
 
-    public GroovyConfiguration getGroovyConfiguration() {
-	return groovyConfiguration;
+    private IDeviceManagement getDeviceManagement() {
+	return ((IEventSourcesMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiDemux()
+		.getApiChannel();
     }
 
-    public void setGroovyConfiguration(GroovyConfiguration groovyConfiguration) {
-	this.groovyConfiguration = groovyConfiguration;
-    }
-
-    public String getScriptPath() {
-	return scriptPath;
-    }
-
-    public void setScriptPath(String scriptPath) {
-	this.scriptPath = scriptPath;
-    }
-
-    private IDeviceManagement getDeviceManagement(ITenant tenant) {
-	return null;
-    }
-
-    private IDeviceEventManagement getDeviceEventManagement(ITenant tenant) {
-	return null;
+    private IDeviceEventManagement getDeviceEventManagement() {
+	return ((IEventSourcesMicroservice) getTenantEngine().getMicroservice()).getDeviceEventManagementApiDemux()
+		.getApiChannel();
     }
 }

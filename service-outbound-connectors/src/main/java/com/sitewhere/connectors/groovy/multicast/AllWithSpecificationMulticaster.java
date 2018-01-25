@@ -16,9 +16,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.connectors.spi.multicast.IDeviceEventMulticaster;
+import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -30,8 +30,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.tenant.ITenant;
 
 import groovy.lang.Binding;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
 
 /**
  * Routes events to all devices that use a given specification. The list of
@@ -41,8 +39,7 @@ import groovy.util.ScriptException;
  *
  * @param <T>
  */
-public abstract class AllWithSpecificationMulticaster<T> extends TenantEngineLifecycleComponent
-	implements IDeviceEventMulticaster<T> {
+public abstract class AllWithSpecificationMulticaster<T> extends GroovyComponent implements IDeviceEventMulticaster<T> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -55,9 +52,6 @@ public abstract class AllWithSpecificationMulticaster<T> extends TenantEngineLif
 
     /** Token for specification */
     private String specificationToken;
-
-    /** Path to filtering script */
-    private String scriptPath;
 
     /** Executor for refresh thread */
     private ExecutorService executor;
@@ -98,27 +92,23 @@ public abstract class AllWithSpecificationMulticaster<T> extends TenantEngineLif
 	List<T> routes = new ArrayList<T>();
 	IDeviceManagement dm = getDeviceManagement(getTenantEngine().getTenant());
 	for (IDevice targetDevice : matches) {
-	    if (getScriptPath() != null) {
-		IDeviceAssignment targetAssignment = dm.getDeviceAssignment(targetDevice.getDeviceAssignmentId());
-		Binding binding = new Binding();
-		binding.setVariable("logger", getLogger());
-		binding.setVariable("event", event);
-		binding.setVariable("device", device);
-		binding.setVariable("assignment", assignment);
-		if (device.getDeviceAssignmentId() != null) {
-		    binding.setVariable("targetAssignment", targetAssignment);
-		    binding.setVariable("targetDevice", targetDevice);
+	    IDeviceAssignment targetAssignment = dm.getDeviceAssignment(targetDevice.getDeviceAssignmentId());
+	    Binding binding = new Binding();
+	    binding.setVariable("logger", getLogger());
+	    binding.setVariable("event", event);
+	    binding.setVariable("device", device);
+	    binding.setVariable("assignment", assignment);
+	    if (device.getDeviceAssignmentId() != null) {
+		binding.setVariable("targetAssignment", targetAssignment);
+		binding.setVariable("targetDevice", targetDevice);
+	    }
+	    try {
+		Object result = run(binding);
+		if (result != null) {
+		    routes.add(convertRoute(result));
 		}
-		try {
-		    Object result = getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
-		    if (result != null) {
-			routes.add(convertRoute(result));
-		    }
-		} catch (ResourceException e) {
-		    LOGGER.error("Unable to access Groovy decoder script.", e);
-		} catch (ScriptException e) {
-		    LOGGER.error("Unable to run Groovy decoder script.", e);
-		}
+	    } catch (SiteWhereException e) {
+		LOGGER.error("Unable to run route calculator script.", e);
 	    }
 	}
 	return routes;
@@ -157,14 +147,6 @@ public abstract class AllWithSpecificationMulticaster<T> extends TenantEngineLif
 
     public void setSpecificationToken(String specificationToken) {
 	this.specificationToken = specificationToken;
-    }
-
-    public String getScriptPath() {
-	return scriptPath;
-    }
-
-    public void setScriptPath(String scriptPath) {
-	this.scriptPath = scriptPath;
     }
 
     /**

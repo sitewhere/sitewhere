@@ -23,8 +23,6 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 
 import groovy.lang.Binding;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
 
 /**
  * Implementation of {@link IDeviceModelInitializer} that delegates creation
@@ -51,8 +49,7 @@ public class GroovyDeviceModelInitializer extends ModelInitializer implements ID
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.device.spi.initializer.IDeviceModelInitializer#initialize(
+     * @see com.sitewhere.device.spi.initializer.IDeviceModelInitializer#initialize(
      * com.sitewhere.spi.device.IDeviceManagement,
      * com.sitewhere.spi.device.event.IDeviceEventManagement,
      * com.sitewhere.spi.asset.IAssetManagement,
@@ -76,11 +73,9 @@ public class GroovyDeviceModelInitializer extends ModelInitializer implements ID
 		new AssetManagementRequestBuilder(assetResolver));
 
 	try {
-	    getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
-	} catch (ResourceException e) {
-	    throw new SiteWhereException("Unable to access Groovy script. " + e.getMessage(), e);
-	} catch (ScriptException e) {
-	    throw new SiteWhereException("Unable to run Groovy script.", e);
+	    getGroovyConfiguration().run(getScriptPath(), binding);
+	} catch (SiteWhereException e) {
+	    throw new SiteWhereException("Unable to run device model initializer. " + e.getMessage(), e);
 	}
     }
 

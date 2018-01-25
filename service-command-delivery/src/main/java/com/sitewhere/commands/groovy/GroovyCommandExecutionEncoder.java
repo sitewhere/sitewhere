@@ -9,13 +9,11 @@ package com.sitewhere.commands.groovy;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.codehaus.groovy.control.CompilationFailedException;
 
 import com.sitewhere.commands.spi.CommandEncodeException;
 import com.sitewhere.commands.spi.ICommandExecutionEncoder;
 import com.sitewhere.groovy.IGroovyVariables;
-import com.sitewhere.microservice.groovy.GroovyConfiguration;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -24,8 +22,6 @@ import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 import groovy.lang.Binding;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
 
 /**
  * Implementation of {@link ICommandExecutionEncoder} that defers encoding to a
@@ -33,14 +29,7 @@ import groovy.util.ScriptException;
  * 
  * @author Derek
  */
-public class GroovyCommandExecutionEncoder extends TenantEngineLifecycleComponent
-	implements ICommandExecutionEncoder<byte[]> {
-
-    /** Groovy configuration */
-    private GroovyConfiguration groovyConfiguration;
-
-    /** Path to script used for decoder */
-    private String scriptPath;
+public class GroovyCommandExecutionEncoder extends GroovyComponent implements ICommandExecutionEncoder<byte[]> {
 
     public GroovyCommandExecutionEncoder() {
 	super(LifecycleComponentType.CommandExecutionEncoder);
@@ -66,15 +55,9 @@ public class GroovyCommandExecutionEncoder extends TenantEngineLifecycleComponen
 	    binding.setVariable(IGroovyVariables.VAR_NESTING_CONTEXT, nested);
 	    binding.setVariable(IGroovyVariables.VAR_ASSIGNMENT, assignment);
 	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
-	    return (byte[]) getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
-	} catch (ResourceException e) {
-	    throw new CommandEncodeException("Unable to access Groovy decoder script.", e);
-	} catch (ScriptException e) {
-	    throw new CommandEncodeException("Unable to run Groovy decoder script.", e);
-	} catch (CompilationFailedException e) {
-	    throw new CommandEncodeException("Error compiling Groovy script.", e);
-	} catch (Throwable e) {
-	    throw new CommandEncodeException("Unhandled exception in Groovy decoder script.", e);
+	    return (byte[]) run(binding);
+	} catch (SiteWhereException e) {
+	    throw new CommandEncodeException("Unable to run encoder script.", e);
 	}
     }
 
@@ -95,15 +78,9 @@ public class GroovyCommandExecutionEncoder extends TenantEngineLifecycleComponen
 	    binding.setVariable(IGroovyVariables.VAR_NESTING_CONTEXT, nested);
 	    binding.setVariable(IGroovyVariables.VAR_ASSIGNMENT, assignment);
 	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
-	    return (byte[]) getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
-	} catch (ResourceException e) {
-	    throw new CommandEncodeException("Unable to access Groovy decoder script.", e);
-	} catch (ScriptException e) {
-	    throw new CommandEncodeException("Unable to run Groovy decoder script.", e);
-	} catch (CompilationFailedException e) {
-	    throw new CommandEncodeException("Error compiling Groovy script.", e);
-	} catch (Throwable e) {
-	    throw new CommandEncodeException("Unhandled exception in Groovy decoder script.", e);
+	    return (byte[]) run(binding);
+	} catch (SiteWhereException e) {
+	    throw new CommandEncodeException("Unable to run encoder script.", e);
 	}
     }
 
@@ -115,21 +92,5 @@ public class GroovyCommandExecutionEncoder extends TenantEngineLifecycleComponen
     @Override
     public Logger getLogger() {
 	return LOGGER;
-    }
-
-    public GroovyConfiguration getGroovyConfiguration() {
-	return groovyConfiguration;
-    }
-
-    public void setGroovyConfiguration(GroovyConfiguration groovyConfiguration) {
-	this.groovyConfiguration = groovyConfiguration;
-    }
-
-    public String getScriptPath() {
-	return scriptPath;
-    }
-
-    public void setScriptPath(String scriptPath) {
-	this.scriptPath = scriptPath;
     }
 }

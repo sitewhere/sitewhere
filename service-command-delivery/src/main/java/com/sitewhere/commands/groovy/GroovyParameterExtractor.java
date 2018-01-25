@@ -9,12 +9,10 @@ package com.sitewhere.commands.groovy;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.codehaus.groovy.control.CompilationFailedException;
 
 import com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor;
 import com.sitewhere.groovy.IGroovyVariables;
-import com.sitewhere.microservice.groovy.GroovyConfiguration;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -22,8 +20,6 @@ import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 import groovy.lang.Binding;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
 
 /**
  * Common base class for Groovy command delivery parameter extractors.
@@ -32,17 +28,10 @@ import groovy.util.ScriptException;
  *
  * @param <T>
  */
-public class GroovyParameterExtractor<T> extends TenantEngineLifecycleComponent
-	implements ICommandDeliveryParameterExtractor<T> {
+public class GroovyParameterExtractor<T> extends GroovyComponent implements ICommandDeliveryParameterExtractor<T> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
-
-    /** Groovy configuration */
-    private GroovyConfiguration groovyConfiguration;
-
-    /** Path to script used for decoder */
-    private String scriptPath;
 
     public GroovyParameterExtractor() {
 	super(LifecycleComponentType.CommandParameterExtractor);
@@ -66,15 +55,9 @@ public class GroovyParameterExtractor<T> extends TenantEngineLifecycleComponent
 	    binding.setVariable(IGroovyVariables.VAR_NESTING_CONTEXT, nesting);
 	    binding.setVariable(IGroovyVariables.VAR_ASSIGNMENT, assignment);
 	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
-	    return (T) getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
-	} catch (ResourceException e) {
-	    throw new SiteWhereException("Unable to access Groovy decoder script.", e);
-	} catch (ScriptException e) {
-	    throw new SiteWhereException("Unable to run Groovy decoder script.", e);
-	} catch (CompilationFailedException e) {
-	    throw new SiteWhereException("Error compiling Groovy script.", e);
-	} catch (Throwable e) {
-	    throw new SiteWhereException("Unhandled exception in Groovy decoder script.", e);
+	    return (T) run(binding);
+	} catch (SiteWhereException e) {
+	    throw new SiteWhereException("Unable to run parameter extractor script.", e);
 	}
     }
 
@@ -86,21 +69,5 @@ public class GroovyParameterExtractor<T> extends TenantEngineLifecycleComponent
     @Override
     public Logger getLogger() {
 	return LOGGER;
-    }
-
-    public GroovyConfiguration getGroovyConfiguration() {
-	return groovyConfiguration;
-    }
-
-    public void setGroovyConfiguration(GroovyConfiguration groovyConfiguration) {
-	this.groovyConfiguration = groovyConfiguration;
-    }
-
-    public String getScriptPath() {
-	return scriptPath;
-    }
-
-    public void setScriptPath(String scriptPath) {
-	this.scriptPath = scriptPath;
     }
 }

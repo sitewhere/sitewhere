@@ -12,21 +12,27 @@ import java.net.URL;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.codehaus.groovy.control.CompilationFailedException;
 
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.groovy.IScriptSynchronizer;
+import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
+import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
+import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
+import groovy.lang.Binding;
 import groovy.util.GroovyScriptEngine;
+import groovy.util.ResourceException;
+import groovy.util.ScriptException;
 
 /**
  * Provides common Groovy configuration for core server components.
  * 
  * @author Derek
  */
-public class GroovyConfiguration extends LifecycleComponent {
+public class GroovyConfiguration extends LifecycleComponent implements IGroovyConfiguration {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -68,17 +74,34 @@ public class GroovyConfiguration extends LifecycleComponent {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.groovy.IGroovyConfiguration#
-     * getGroovyScriptEngine()
+     * @see
+     * com.sitewhere.spi.microservice.groovy.IGroovyConfiguration#run(java.lang.
+     * String, groovy.lang.Binding)
      */
-    public GroovyScriptEngine getGroovyScriptEngine() {
-	return groovyScriptEngine;
+    @Override
+    public Object run(IScriptMetadata script, Binding binding) throws SiteWhereException {
+	String scriptPath = script.getId() + "." + script.getType();
+	return run(scriptPath, binding);
     }
 
-    public void setGroovyScriptEngine(GroovyScriptEngine groovyScriptEngine) {
-	this.groovyScriptEngine = groovyScriptEngine;
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.groovy.IGroovyConfiguration#run(java.lang.
+     * String, groovy.lang.Binding)
+     */
+    @Override
+    public Object run(String scriptPath, Binding binding) throws SiteWhereException {
+	try {
+	    return getGroovyScriptEngine().run(scriptPath, binding);
+	} catch (ResourceException e) {
+	    throw new SiteWhereException("Unable to access Groovy script.", e);
+	} catch (ScriptException e) {
+	    throw new SiteWhereException("Unable to run Groovy script.", e);
+	} catch (CompilationFailedException e) {
+	    throw new SiteWhereException("Error compiling Groovy script.", e);
+	} catch (Throwable e) {
+	    throw new SiteWhereException("Unhandled exception in Groovy script.", e);
+	}
     }
 
     /*
@@ -97,6 +120,14 @@ public class GroovyConfiguration extends LifecycleComponent {
 
     public void setScriptSynchronizer(IScriptSynchronizer scriptSynchronizer) {
 	this.scriptSynchronizer = scriptSynchronizer;
+    }
+
+    protected GroovyScriptEngine getGroovyScriptEngine() {
+	return groovyScriptEngine;
+    }
+
+    protected void setGroovyScriptEngine(GroovyScriptEngine groovyScriptEngine) {
+	this.groovyScriptEngine = groovyScriptEngine;
     }
 
     public boolean isVerbose() {

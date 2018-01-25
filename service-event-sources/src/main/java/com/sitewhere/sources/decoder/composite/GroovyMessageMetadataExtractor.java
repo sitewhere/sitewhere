@@ -11,23 +11,18 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.codehaus.groovy.control.CompilationFailedException;
 
 import com.sitewhere.groovy.IGroovyVariables;
-import com.sitewhere.microservice.groovy.GroovyConfiguration;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.ICompositeDeviceEventDecoder.IMessageMetadata;
 import com.sitewhere.sources.spi.ICompositeDeviceEventDecoder.IMessageMetadataExtractor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.tenant.ITenant;
 
 import groovy.lang.Binding;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
 
 /**
  * Implements {@link IMessageMetadataExtractor} by using a Groovy script to
@@ -35,17 +30,10 @@ import groovy.util.ScriptException;
  * 
  * @author Derek
  */
-public class GroovyMessageMetadataExtractor extends TenantEngineLifecycleComponent
-	implements IMessageMetadataExtractor<byte[]> {
+public class GroovyMessageMetadataExtractor extends GroovyComponent implements IMessageMetadataExtractor<byte[]> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
-
-    /** Groovy configuration */
-    private GroovyConfiguration groovyConfiguration;
-
-    /** Path to script used for decoder */
-    private String scriptPath;
 
     public GroovyMessageMetadataExtractor() {
 	super(LifecycleComponentType.Other);
@@ -68,39 +56,11 @@ public class GroovyMessageMetadataExtractor extends TenantEngineLifecycleCompone
 	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD, payload);
 	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD_METADATA, eventSourceMetadata);
 	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
-	    LOGGER.debug("About to execute '" + getScriptPath() + "' with payload: " + payload);
-	    return (IMessageMetadata<byte[]>) getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(),
-		    binding);
-	} catch (ResourceException e) {
-	    throw new EventDecodeException("Unable to access Groovy metadata extractor script.", e);
-	} catch (ScriptException e) {
-	    throw new EventDecodeException("Unable to run Groovy metadata extractor script.", e);
-	} catch (CompilationFailedException e) {
-	    throw new EventDecodeException("Error compiling Groovy metadata extractor script.", e);
-	} catch (Throwable e) {
-	    throw new EventDecodeException("Unhandled exception in Groovy metadata extractor script.", e);
+	    LOGGER.debug("About to execute '" + getScriptId() + "' with payload: " + payload);
+	    return (IMessageMetadata<byte[]>) run(binding);
+	} catch (SiteWhereException e) {
+	    throw new EventDecodeException("Unable to run metadata extractor.", e);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
-     * .spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
     }
 
     /*
@@ -111,22 +71,6 @@ public class GroovyMessageMetadataExtractor extends TenantEngineLifecycleCompone
     @Override
     public Logger getLogger() {
 	return LOGGER;
-    }
-
-    public GroovyConfiguration getGroovyConfiguration() {
-	return groovyConfiguration;
-    }
-
-    public void setGroovyConfiguration(GroovyConfiguration groovyConfiguration) {
-	this.groovyConfiguration = groovyConfiguration;
-    }
-
-    public String getScriptPath() {
-	return scriptPath;
-    }
-
-    public void setScriptPath(String scriptPath) {
-	this.scriptPath = scriptPath;
     }
 
     private IDeviceManagement getDeviceManagement(ITenant tenant) {

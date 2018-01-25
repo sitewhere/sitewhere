@@ -11,8 +11,9 @@ import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.IConfigurationListener;
-import com.sitewhere.spi.microservice.groovy.IScriptSynchronizer;
+import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.microservice.scripting.IScriptManager;
+import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
@@ -69,6 +70,14 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
      * @throws SiteWhereException
      */
     public IScriptManager getScriptManager() throws SiteWhereException;
+
+    /**
+     * Get Groovy configuration.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public IGroovyConfiguration getGroovyConfiguration() throws SiteWhereException;
 
     /**
      * Get Zk configuration path for tenant.

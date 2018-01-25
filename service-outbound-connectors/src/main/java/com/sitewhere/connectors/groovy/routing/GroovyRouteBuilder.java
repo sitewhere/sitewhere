@@ -11,8 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.connectors.spi.routing.IRouteBuilder;
-import com.sitewhere.microservice.groovy.GroovyConfiguration;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -20,24 +19,16 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 import groovy.lang.Binding;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
 
 /**
  * Uses Groovy script to build routes for event processor routing.
  * 
  * @author Derek
  */
-public class GroovyRouteBuilder extends TenantEngineLifecycleComponent implements IRouteBuilder<String> {
+public class GroovyRouteBuilder extends GroovyComponent implements IRouteBuilder<String> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
-
-    /** Groovy configuration */
-    private GroovyConfiguration groovyConfiguration;
-
-    /** Relative path to Groovy script */
-    private String scriptPath;
 
     public GroovyRouteBuilder() {
 	super(LifecycleComponentType.OutboundEventProcessorFilter);
@@ -48,8 +39,7 @@ public class GroovyRouteBuilder extends TenantEngineLifecycleComponent implement
      * 
      * @see
      * com.sitewhere.spi.device.event.processor.routing.IRouteBuilder#build(com.
-     * sitewhere .spi.device.event.IDeviceEvent,
-     * com.sitewhere.spi.device.IDevice,
+     * sitewhere .spi.device.event.IDeviceEvent, com.sitewhere.spi.device.IDevice,
      * com.sitewhere.spi.device.IDeviceAssignment)
      */
     @Override
@@ -60,15 +50,13 @@ public class GroovyRouteBuilder extends TenantEngineLifecycleComponent implement
 	binding.setVariable("device", device);
 	binding.setVariable("assignment", assignment);
 	try {
-	    Object result = getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
+	    Object result = run(binding);
 	    if (!(result instanceof String)) {
 		throw new SiteWhereException("Groovy route builder expected script to return a String.");
 	    }
 	    return (String) result;
-	} catch (ResourceException e) {
-	    throw new SiteWhereException("Unable to access Groovy route builder script.", e);
-	} catch (ScriptException e) {
-	    throw new SiteWhereException("Unable to run Groovy route builder script.", e);
+	} catch (SiteWhereException e) {
+	    throw new SiteWhereException("Unable to run route builder script.", e);
 	}
     }
 
@@ -80,21 +68,5 @@ public class GroovyRouteBuilder extends TenantEngineLifecycleComponent implement
     @Override
     public Logger getLogger() {
 	return LOGGER;
-    }
-
-    public GroovyConfiguration getGroovyConfiguration() {
-	return groovyConfiguration;
-    }
-
-    public void setGroovyConfiguration(GroovyConfiguration groovyConfiguration) {
-	this.groovyConfiguration = groovyConfiguration;
-    }
-
-    public String getScriptPath() {
-	return scriptPath;
-    }
-
-    public void setScriptPath(String scriptPath) {
-	this.scriptPath = scriptPath;
     }
 }

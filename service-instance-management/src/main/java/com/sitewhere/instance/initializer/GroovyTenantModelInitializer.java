@@ -19,8 +19,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenantManagement;
 
 import groovy.lang.Binding;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
 
 /**
  * Implementation of {@link ITenantModelInitializer} that delegates creation
@@ -47,8 +45,7 @@ public class GroovyTenantModelInitializer extends ModelInitializer implements IT
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.tenant.ITenantModelInitializer#initialize(com.
+     * @see com.sitewhere.spi.server.tenant.ITenantModelInitializer#initialize(com.
      * sitewhere. spi.tenant.ITenantManagement)
      */
     @Override
@@ -64,11 +61,9 @@ public class GroovyTenantModelInitializer extends ModelInitializer implements IT
 		new TenantManagementRequestBuilder(tenantManagement));
 
 	try {
-	    getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
-	} catch (ResourceException e) {
-	    throw new SiteWhereException("Unable to access Groovy script. " + e.getMessage(), e);
-	} catch (ScriptException e) {
-	    throw new SiteWhereException("Unable to run Groovy script.", e);
+	    getGroovyConfiguration().run(getScriptPath(), binding);
+	} catch (SiteWhereException e) {
+	    throw new SiteWhereException("Unable to run tenant model initializer.", e);
 	}
     }
 

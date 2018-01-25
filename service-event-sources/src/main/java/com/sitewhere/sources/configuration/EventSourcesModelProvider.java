@@ -315,8 +315,8 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 		"cog", EventSourcesRoleKeys.SocketInteractionHandlerFactory, this);
 
 	builder.description("Interaction handler uses a Groovy script to handle socket interactions.");
-	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
-		.description("Path to Groovy script which handles socket interactions.").makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script)
+		.description("Script which handles socket interactions.").makeRequired().build()));
 
 	return builder.build();
     }
@@ -448,9 +448,8 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 		+ "A groovy script is used to make the REST call(s) and parse the responses "
 		+ "into payloads to be decoded.");
 	addEventSourceAttributes(builder);
-	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
-		.description("Path to Groovy script which makes REST calls and parses responses.").makeRequired()
-		.build()));
+	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script)
+		.description("Script which makes REST calls and parses responses.").makeRequired().build()));
 	builder.attribute((new AttributeNode.Builder("Base REST url", "baseUrl", AttributeType.String)
 		.description(
 			"Base URL for REST calls. All calls in the Groovy script are made " + "relative to this URL.")
@@ -526,7 +525,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 		EventSourcesRoleKeys.BinaryEventDecoder, this);
 
 	builder.description("Decoder that uses a Groovy script to parse a binary payload into decoded events.");
-	builder.attribute((new AttributeNode.Builder("Script", "scriptPath", AttributeType.Script)
+	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script)
 		.description("Script used for decoding payload.").makeRequired().build()));
 	return builder.build();
     }
@@ -542,7 +541,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 		EventSourcesRoleKeys.StringEventDecoder, this);
 
 	builder.description("Decoder that uses a Groovy script to parse a String payload into decoded events.");
-	builder.attribute((new AttributeNode.Builder("Script", "scriptPath", AttributeType.Script)
+	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script)
 		.description("Script used for decoding payload.").makeRequired().build()));
 	return builder.build();
     }
@@ -624,8 +623,8 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 	builder.description("Metadata extractor that uses a Groovy script to parse a binary payload and extract "
 		+ " information such as the unique hardware id and payload. This data will be forwarded to the list "
 		+ " of nested decoder choices for further processing.");
-	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
-		.description("Relative path to script used for extracting metadata.").makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script)
+		.description("Script used for extracting metadata.").makeRequired().build()));
 	return builder.build();
     }
 
@@ -654,8 +653,8 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 		EventSourcesRoleKeys.EventDeduplicator, this);
 
 	builder.description("Deduplicator that uses a Groovy script to check for duplicate events.");
-	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
-		.description("Relative path to script used for testing for duplicates.").makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script)
+		.description("Script used for testing for duplicates.").makeRequired().build()));
 	return builder.build();
     }
 }

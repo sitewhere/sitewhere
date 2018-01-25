@@ -18,8 +18,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 
 import groovy.lang.Binding;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
 
 /**
  * Implementation of {@link IScheduleModelInitializer} that delegates creation
@@ -62,11 +60,9 @@ public class GroovyScheduleModelInitializer extends ModelInitializer implements 
 	binding.setVariable("scheduleBuilder", new ScheduleManagementRequestBuilder(scheduleManagement));
 
 	try {
-	    getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
-	} catch (ResourceException e) {
-	    throw new SiteWhereException("Unable to access Groovy script. " + e.getMessage(), e);
-	} catch (ScriptException e) {
-	    throw new SiteWhereException("Unable to run Groovy script.", e);
+	    getGroovyConfiguration().run(getScriptPath(), binding);
+	} catch (SiteWhereException e) {
+	    throw new SiteWhereException("Unable to run schedule model initializer.", e);
 	}
     }
 

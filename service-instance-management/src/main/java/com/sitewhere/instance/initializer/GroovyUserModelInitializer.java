@@ -18,8 +18,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.user.IUserManagement;
 
 import groovy.lang.Binding;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
 
 /**
  * Implementation of {@link IUserModelInitializer} that delegates creation logic
@@ -61,11 +59,9 @@ public class GroovyUserModelInitializer extends ModelInitializer implements IUse
 	binding.setVariable("userBuilder", new UserManagementRequestBuilder(userManagement));
 
 	try {
-	    getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
-	} catch (ResourceException e) {
-	    throw new SiteWhereException("Unable to access Groovy script. " + e.getMessage(), e);
-	} catch (ScriptException e) {
-	    throw new SiteWhereException("Unable to run Groovy script.", e);
+	    getGroovyConfiguration().run(getScriptPath(), binding);
+	} catch (SiteWhereException e) {
+	    throw new SiteWhereException("Unable to run user model initializer.", e);
 	}
     }
 

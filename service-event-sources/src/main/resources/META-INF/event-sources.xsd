@@ -117,19 +117,17 @@
 		substitutionGroup="abstract-decoder">
 		<xsd:annotation>
 			<xsd:documentation>Decoder that uses a Groovy script to parse a
-				binary payload into
-				decoded events.
+				binary payload into decoded events.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
 	<xsd:complexType name="swGroovyDecoderType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractDecoderType">
-				<xsd:attribute name="scriptPath" type="xsd:string"
-					use="required">
+				<xsd:attribute name="scriptId" type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							Path to script used for decoding payload.
+							Unique script id for decoder.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -150,11 +148,10 @@
 	<xsd:complexType name="swGroovyStringDecoderType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractDecoderType">
-				<xsd:attribute name="scriptPath" type="xsd:string"
-					use="required">
+				<xsd:attribute name="scriptId" type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							Path to script used for decoding payload.
+							Unique script id for decoder.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -205,12 +202,10 @@
 	<xsd:complexType name="swGroovyDeviceMetadataExtractorType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractDeviceMetadataExtractorType">
-				<xsd:attribute name="scriptPath" type="xsd:string"
-					use="required">
+				<xsd:attribute name="scriptId" type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							Path to a Groovy script that extracts metadata
-							such as hardware id from the message.
+							Unique script is for extractor.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -326,11 +321,10 @@
 	<xsd:complexType name="swGroovyDeduplicatorType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractDeduplicatorType">
-				<xsd:attribute name="scriptPath" type="xsd:string"
-					use="required">
+				<xsd:attribute name="scriptId" type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							Path to script used for deduplicating event.
+							Unique script id for deduplicator.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -688,11 +682,10 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="scriptPath" type="xsd:string"
-					use="required">
+				<xsd:attribute name="scriptId" type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							Path to a Groovy script that executes logic
+							Unique id for Groovy script that executes logic
 							needed to generate REST request and parse response.
 						</xsd:documentation>
 					</xsd:annotation>
@@ -748,10 +741,10 @@
 
 	<!-- Hands off socket interaction processing to a Groovy script -->
 	<xsd:complexType name="groovyInteractionHandlerFactoryType">
-		<xsd:attribute name="scriptPath" type="xsd:string" use="required">
+		<xsd:attribute name="scriptId" type="xsd:string" use="required">
 			<xsd:annotation>
 				<xsd:documentation>
-					Path to a Groovy script that handles socket
+					Unique id for Groovy script that handles socket
 					interactions.
 				</xsd:documentation>
 			</xsd:annotation>

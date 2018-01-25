@@ -19,8 +19,6 @@ import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 import groovy.lang.Binding;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
 
 /**
  * Implementatoin of {@link IDeviceEventFilter} that uses a Groovy script to
@@ -68,18 +66,7 @@ public class GroovyFilter extends DeviceEventFilter {
 	binding.setVariable("logger", getLogger());
 	binding.setVariable("context", context);
 	binding.setVariable("event", event);
-
-	try {
-	    Object result = getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
-	    if (!(result instanceof Boolean)) {
-		throw new SiteWhereException("Groovy filter script returned non-boolean result.");
-	    }
-	    return !((Boolean) result).booleanValue();
-	} catch (ResourceException e) {
-	    throw new SiteWhereException("Unable to access Groovy filter script. " + e.getMessage(), e);
-	} catch (ScriptException e) {
-	    throw new SiteWhereException("Unable to run Groovy filter script.", e);
-	}
+	return true;
     }
 
     /*

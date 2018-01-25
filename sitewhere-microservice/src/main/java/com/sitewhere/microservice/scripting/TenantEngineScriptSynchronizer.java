@@ -13,8 +13,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.groovy.IScriptSynchronizer;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
+import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**

@@ -18,8 +18,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetResolver;
 
 import groovy.lang.Binding;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
 
 /**
  * Implementation of {@link IAssetModelInitializer} that delegates creation
@@ -46,8 +44,7 @@ public class GroovyAssetModelInitializer extends ModelInitializer implements IAs
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.asset.spi.IAssetModelInitializer#initialize(com.sitewhere.
+     * @see com.sitewhere.asset.spi.IAssetModelInitializer#initialize(com.sitewhere.
      * spi.asset.IAssetResolver)
      */
     @Override
@@ -62,11 +59,9 @@ public class GroovyAssetModelInitializer extends ModelInitializer implements IAs
 	binding.setVariable("assetBuilder", new AssetManagementRequestBuilder(assetResolver));
 
 	try {
-	    getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
-	} catch (ResourceException e) {
-	    throw new SiteWhereException("Unable to access Groovy script. " + e.getMessage(), e);
-	} catch (ScriptException e) {
-	    throw new SiteWhereException("Unable to run Groovy script.", e);
+	    getGroovyConfiguration().run(getScriptPath(), binding);
+	} catch (SiteWhereException e) {
+	    throw new SiteWhereException("Unable to run asset model initializer.", e);
 	}
     }
 

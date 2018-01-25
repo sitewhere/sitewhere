@@ -9,13 +9,11 @@ package com.sitewhere.sources.deduplicator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.codehaus.groovy.control.CompilationFailedException;
 
 import com.sitewhere.groovy.IGroovyVariables;
-import com.sitewhere.microservice.groovy.GroovyConfiguration;
+import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventRequestBuilder;
 import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequestBuilder;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IDeviceEventDeduplicator;
@@ -26,8 +24,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.tenant.ITenant;
 
 import groovy.lang.Binding;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
 
 /**
  * Implementation of {@link IDeviceEventDeduplicator} that uses a Groovy script
@@ -36,16 +32,10 @@ import groovy.util.ScriptException;
  * 
  * @author Derek
  */
-public class GroovyEventDeduplicator extends TenantEngineLifecycleComponent implements IDeviceEventDeduplicator {
+public class GroovyEventDeduplicator extends GroovyComponent implements IDeviceEventDeduplicator {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
-
-    /** Groovy configuration */
-    private GroovyConfiguration groovyConfiguration;
-
-    /** Path to script used for decoder */
-    private String scriptPath;
 
     public GroovyEventDeduplicator() {
 	super(LifecycleComponentType.DeviceEventDeduplicator);
@@ -68,18 +58,11 @@ public class GroovyEventDeduplicator extends TenantEngineLifecycleComponent impl
 			    getDeviceEventManagement(getTenantEngine().getTenant())));
 	    binding.setVariable(IGroovyVariables.VAR_DECODED_DEVICE_REQUEST, request);
 	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
-	    LOGGER.debug("About to execute '" + getScriptPath() + "' for event request: " + request);
-	    Boolean isDuplicate = (Boolean) getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(),
-		    binding);
+	    LOGGER.debug("About to execute '" + getScriptId() + "' for event request: " + request);
+	    Boolean isDuplicate = (Boolean) run(binding);
 	    return isDuplicate;
-	} catch (ResourceException e) {
-	    throw new EventDecodeException("Unable to access Groovy deduplicator script.", e);
-	} catch (ScriptException e) {
-	    throw new EventDecodeException("Unable to run Groovy deduplicator script.", e);
-	} catch (CompilationFailedException e) {
-	    throw new EventDecodeException("Error compiling Groovy script.", e);
-	} catch (Throwable e) {
-	    throw new EventDecodeException("Unhandled exception in Groovy deduplicator script.", e);
+	} catch (SiteWhereException e) {
+	    throw new EventDecodeException("Unable to run deduplicator script.", e);
 	}
     }
 
@@ -91,22 +74,6 @@ public class GroovyEventDeduplicator extends TenantEngineLifecycleComponent impl
     @Override
     public Logger getLogger() {
 	return LOGGER;
-    }
-
-    public GroovyConfiguration getGroovyConfiguration() {
-	return groovyConfiguration;
-    }
-
-    public void setGroovyConfiguration(GroovyConfiguration groovyConfiguration) {
-	this.groovyConfiguration = groovyConfiguration;
-    }
-
-    public String getScriptPath() {
-	return scriptPath;
-    }
-
-    public void setScriptPath(String scriptPath) {
-	this.scriptPath = scriptPath;
     }
 
     private IDeviceManagement getDeviceManagement(ITenant tenant) {

@@ -13,8 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.groovy.IGroovyVariables;
-import com.sitewhere.microservice.groovy.GroovyConfiguration;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.sources.spi.socket.ISocketInteractionHandler;
 import com.sitewhere.sources.spi.socket.ISocketInteractionHandlerFactory;
@@ -23,8 +22,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 import groovy.lang.Binding;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
 
 /**
  * Implementation of {@link ISocketInteractionHandler} that defers processing
@@ -44,21 +41,16 @@ public class GroovySocketInteractionHandler implements ISocketInteractionHandler
     public static final String VAR_EVENT_RECEIVER = "receiver";
 
     /** Injected global Groovy configuration */
-    private GroovyConfiguration configuration;
+    private Factory factory;
 
-    /** Path to script used for decoder */
-    private String scriptPath;
-
-    public GroovySocketInteractionHandler(GroovyConfiguration configuration, String scriptPath) {
-	this.configuration = configuration;
-	this.scriptPath = scriptPath;
+    public GroovySocketInteractionHandler(Factory factory) {
+	this.factory = factory;
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.communication.socket.ISocketInteractionHandler#
+     * @see com.sitewhere.spi.device.communication.socket.ISocketInteractionHandler#
      * process( java.net.Socket,
      * com.sitewhere.spi.device.communication.IInboundEventReceiver)
      */
@@ -69,29 +61,11 @@ public class GroovySocketInteractionHandler implements ISocketInteractionHandler
 	    binding.setVariable(VAR_SOCKET, socket);
 	    binding.setVariable(VAR_EVENT_RECEIVER, receiver);
 	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
-	    LOGGER.info("About to execute '" + getScriptPath() + "' to interact with socket.");
-	    getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
-	} catch (ResourceException e) {
-	    throw new SiteWhereException("Unable to access Groovy decoder script.", e);
-	} catch (ScriptException e) {
-	    throw new SiteWhereException("Unable to run Groovy decoder script.", e);
+	    LOGGER.info("About to execute '" + factory.getScriptId() + "' to interact with socket.");
+	    factory.run(binding);
+	} catch (SiteWhereException e) {
+	    throw new SiteWhereException("Unable to run socket interaction handler script.", e);
 	}
-    }
-
-    public GroovyConfiguration getConfiguration() {
-	return configuration;
-    }
-
-    public void setConfiguration(GroovyConfiguration configuration) {
-	this.configuration = configuration;
-    }
-
-    public String getScriptPath() {
-	return scriptPath;
-    }
-
-    public void setScriptPath(String scriptPath) {
-	this.scriptPath = scriptPath;
     }
 
     /**
@@ -99,16 +73,10 @@ public class GroovySocketInteractionHandler implements ISocketInteractionHandler
      * 
      * @author Derek
      */
-    public static class Factory extends TenantEngineLifecycleComponent implements ISocketInteractionHandlerFactory<byte[]> {
+    public static class Factory extends GroovyComponent implements ISocketInteractionHandlerFactory<byte[]> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = LogManager.getLogger();
-
-	/** Groovy configuration */
-	private GroovyConfiguration groovyConfiguration;
-
-	/** Path to script used for decoder */
-	private String scriptPath;
 
 	public Factory() {
 	    super(LifecycleComponentType.Other);
@@ -117,8 +85,7 @@ public class GroovySocketInteractionHandler implements ISocketInteractionHandler
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
 	 * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
 	 */
 	@Override
@@ -148,23 +115,7 @@ public class GroovySocketInteractionHandler implements ISocketInteractionHandler
 	 */
 	@Override
 	public ISocketInteractionHandler<byte[]> newInstance() {
-	    return new GroovySocketInteractionHandler(getGroovyConfiguration(), getScriptPath());
-	}
-
-	public GroovyConfiguration getGroovyConfiguration() {
-	    return groovyConfiguration;
-	}
-
-	public void setGroovyConfiguration(GroovyConfiguration groovyConfiguration) {
-	    this.groovyConfiguration = groovyConfiguration;
-	}
-
-	public String getScriptPath() {
-	    return scriptPath;
-	}
-
-	public void setScriptPath(String scriptPath) {
-	    this.scriptPath = scriptPath;
+	    return new GroovySocketInteractionHandler(this);
 	}
     }
 }

@@ -21,8 +21,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 import groovy.lang.Binding;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
 
 /**
  * Performs polling on a REST endpoint at a given interval.
@@ -79,24 +77,19 @@ public class PollingRestInboundEventReceiver extends PollingInboundEventReceiver
     @Override
     @SuppressWarnings("unchecked")
     public void doPoll() throws SiteWhereException {
-	try {
-	    Binding binding = new Binding();
-	    List<byte[]> payloads = new ArrayList<byte[]>();
-	    binding.setVariable(VAR_REST_CLIENT, rest);
-	    binding.setVariable(VAR_PAYLOADS, payloads);
-	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
-	    LOGGER.debug("About to execute '" + getScriptPath() + "'");
-	    getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
-	    payloads = (List<byte[]>) binding.getVariable(VAR_PAYLOADS);
+	Binding binding = new Binding();
+	List<byte[]> payloads = new ArrayList<byte[]>();
+	binding.setVariable(VAR_REST_CLIENT, rest);
+	binding.setVariable(VAR_PAYLOADS, payloads);
+	binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
+	LOGGER.debug("About to execute '" + getScriptPath() + "'");
+	// getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(),
+	// binding);
+	payloads = (List<byte[]>) binding.getVariable(VAR_PAYLOADS);
 
-	    // Process each payload individually.
-	    for (byte[] payload : payloads) {
-		onEventPayloadReceived(payload, null);
-	    }
-	} catch (ResourceException e) {
-	    throw new SiteWhereException("Unable to access Groovy decoder script.", e);
-	} catch (ScriptException e) {
-	    throw new SiteWhereException("Unable to run Groovy decoder script.", e);
+	// Process each payload individually.
+	for (byte[] payload : payloads) {
+	    onEventPayloadReceived(payload, null);
 	}
     }
 

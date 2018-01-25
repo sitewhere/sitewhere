@@ -23,6 +23,9 @@ dependencies {
 		exclude (module: 'log4j')   
  		exclude (module: 'slf4j-log4j12')   
     }
+    
+    // Groovy for dynamic processing.
+    compile group: 'org.codehaus.groovy', name: 'groovy'
 	
 	// Hazelcast for distributed caching.
 	compile group: 'com.hazelcast', name: 'hazelcast', version: "${rootProject.ext['hazelcast.version']}"
