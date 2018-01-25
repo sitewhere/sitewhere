@@ -1460,11 +1460,11 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 	    ParserContext context) {
 	BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(GroovyEventDeduplicator.class);
 
-	Attr scriptPath = decoder.getAttributeNode("scriptPath");
-	if (scriptPath == null) {
-	    throw new RuntimeException("Script path not set for Groovy event deduplicator.");
+	Attr scriptId = decoder.getAttributeNode("scriptId");
+	if (scriptId == null) {
+	    throw new RuntimeException("Script id not set for Groovy event deduplicator.");
 	}
-	builder.addPropertyValue("scriptPath", scriptPath.getValue());
+	builder.addPropertyValue("scriptId", scriptId.getValue());
 
 	return builder.getBeanDefinition();
     }

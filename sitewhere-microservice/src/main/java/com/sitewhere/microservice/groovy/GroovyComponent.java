@@ -44,6 +44,9 @@ public abstract class GroovyComponent extends TenantEngineLifecycleComponent imp
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.initialize(monitor);
+	if (getScriptId() == null) {
+	    throw new SiteWhereException("Script id was not initialized properly.");
+	}
 	this.scriptMetadata = getTenantEngine().getMicroservice().getScriptManagement()
 		.getScriptMetadata(getTenantEngine().getTenant().getId(), getScriptId());
     }
