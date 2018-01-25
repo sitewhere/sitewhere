@@ -7,6 +7,13 @@
  */
 package com.sitewhere.microservice.groovy;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
+import com.sitewhere.microservice.security.SystemUserCallable;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.groovy.IGroovyComponent;
@@ -23,11 +30,20 @@ import groovy.lang.Binding;
  */
 public abstract class GroovyComponent extends TenantEngineLifecycleComponent implements IGroovyComponent {
 
+    /** Default number of threads for script processing */
+    private static final int DEFAULT_NUM_THREADS = 3;
+
     /** Unique script id to execute */
     private String scriptId;
 
+    /** Number of threads used for processing */
+    private int numThreads = DEFAULT_NUM_THREADS;
+
     /** Script metadata */
     private IScriptMetadata scriptMetadata;
+
+    /** Executor for multithreading */
+    private ExecutorService executor;
 
     public GroovyComponent() {
     }
@@ -44,11 +60,28 @@ public abstract class GroovyComponent extends TenantEngineLifecycleComponent imp
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.initialize(monitor);
+
 	if (getScriptId() == null) {
 	    throw new SiteWhereException("Script id was not initialized properly.");
 	}
 	this.scriptMetadata = getTenantEngine().getMicroservice().getScriptManagement()
 		.getScriptMetadata(getTenantEngine().getTenant().getId(), getScriptId());
+	if (getScriptMetadata() == null) {
+	    throw new SiteWhereException("Script '" + getScriptId() + "' was not found.");
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+
+	// Create thread pool for processing requests.
+	this.executor = Executors.newFixedThreadPool(getNumThreads());
     }
 
     /*
@@ -58,10 +91,43 @@ public abstract class GroovyComponent extends TenantEngineLifecycleComponent imp
      */
     @Override
     public Object run(Binding binding) throws SiteWhereException {
-	if (getScriptMetadata() != null) {
-	    return getTenantEngine().getGroovyConfiguration().run(getScriptMetadata(), binding);
-	} else {
-	    throw new SiteWhereException("Unable to run Groovy script. Initialization failed.");
+	Future<Object> result = executor.submit(
+		new SystemUserCallable<Object>(getTenantEngine().getMicroservice(), getTenantEngine().getTenant()) {
+
+		    /*
+		     * @see com.sitewhere.microservice.security.SystemUserCallable#runAsSystemUser()
+		     */
+		    @Override
+		    public Object runAsSystemUser() throws SiteWhereException {
+			return getTenantEngine().getGroovyConfiguration().run(getScriptMetadata(), binding);
+		    }
+		});
+	try {
+	    // TODO: Handle this in a non-blocking way.
+	    return result.get();
+	} catch (InterruptedException e) {
+	    throw new SiteWhereException("Script execution interrupted.", e);
+	} catch (ExecutionException e) {
+	    throw new SiteWhereException(e.getCause());
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.stop(monitor);
+
+	if (executor != null) {
+	    executor.shutdown();
+	    try {
+		executor.awaitTermination(2, TimeUnit.SECONDS);
+	    } catch (InterruptedException e) {
+		return;
+	    }
 	}
     }
 
@@ -75,6 +141,18 @@ public abstract class GroovyComponent extends TenantEngineLifecycleComponent imp
 
     public void setScriptId(String scriptId) {
 	this.scriptId = scriptId;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.groovy.IGroovyComponent#getNumThreads()
+     */
+    @Override
+    public int getNumThreads() {
+	return numThreads;
+    }
+
+    public void setNumThreads(int numThreads) {
+	this.numThreads = numThreads;
     }
 
     public IScriptMetadata getScriptMetadata() {

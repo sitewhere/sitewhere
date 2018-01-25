@@ -146,7 +146,7 @@ public abstract class ScriptSynchronizer extends LifecycleComponent implements I
     public void onConfigurationUpdated(String path, byte[] data) {
 	try {
 	    if (isScriptContent(path)) {
-		// Handle updated script.
+		update(getRelativePath(path));
 	    }
 	} catch (SiteWhereException e) {
 	    getLogger().error("Error processing updated script.", e);
@@ -161,7 +161,7 @@ public abstract class ScriptSynchronizer extends LifecycleComponent implements I
     public void onConfigurationDeleted(String path) {
 	try {
 	    if (isScriptContent(path)) {
-		// Handle deleted script.
+		delete(getRelativePath(path));
 	    }
 	} catch (SiteWhereException e) {
 	    getLogger().error("Error processing deleted script.", e);

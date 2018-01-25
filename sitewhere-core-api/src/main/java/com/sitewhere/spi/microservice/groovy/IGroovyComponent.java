@@ -27,6 +27,13 @@ public interface IGroovyComponent extends ILifecycleComponent {
     public String getScriptId();
 
     /**
+     * Get number of threads used for script processing.
+     * 
+     * @return
+     */
+    public int getNumThreads();
+
+    /**
      * Run script with the given binding and potentially return a result.
      * 
      * @param binding

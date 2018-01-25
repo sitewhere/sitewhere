@@ -17,11 +17,11 @@ import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequest
 import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IDeviceEventDeduplicator;
+import com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.tenant.ITenant;
 
 import groovy.lang.Binding;
 
@@ -52,10 +52,9 @@ public class GroovyEventDeduplicator extends GroovyComponent implements IDeviceE
 	try {
 	    Binding binding = new Binding();
 	    binding.setVariable(IGroovyVariables.VAR_DEVICE_MANAGEMENT_BUILDER,
-		    new DeviceManagementRequestBuilder(getDeviceManagement(getTenantEngine().getTenant())));
+		    new DeviceManagementRequestBuilder(getDeviceManagement()));
 	    binding.setVariable(IGroovyVariables.VAR_EVENT_MANAGEMENT_BUILDER,
-		    new DeviceEventRequestBuilder(getDeviceManagement(getTenantEngine().getTenant()),
-			    getDeviceEventManagement(getTenantEngine().getTenant())));
+		    new DeviceEventRequestBuilder(getDeviceManagement(), getDeviceEventManagement()));
 	    binding.setVariable(IGroovyVariables.VAR_DECODED_DEVICE_REQUEST, request);
 	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
 	    LOGGER.debug("About to execute '" + getScriptId() + "' for event request: " + request);
@@ -76,11 +75,13 @@ public class GroovyEventDeduplicator extends GroovyComponent implements IDeviceE
 	return LOGGER;
     }
 
-    private IDeviceManagement getDeviceManagement(ITenant tenant) {
-	return null;
+    private IDeviceManagement getDeviceManagement() {
+	return ((IEventSourcesMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiDemux()
+		.getApiChannel();
     }
 
-    private IDeviceEventManagement getDeviceEventManagement(ITenant tenant) {
-	return null;
+    private IDeviceEventManagement getDeviceEventManagement() {
+	return ((IEventSourcesMicroservice) getTenantEngine().getMicroservice()).getDeviceEventManagementApiDemux()
+		.getApiChannel();
     }
 }

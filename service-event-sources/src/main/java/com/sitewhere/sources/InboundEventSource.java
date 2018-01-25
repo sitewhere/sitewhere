@@ -58,6 +58,37 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
     }
 
     /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+
+	if ((getInboundEventReceivers() == null) || (getInboundEventReceivers().size() == 0)) {
+	    throw new SiteWhereException("No inbound event receivers registered for event source.");
+	}
+	if (getDeviceEventDecoder() == null) {
+	    throw new SiteWhereException("No device event decoder assigned.");
+	}
+
+	// Initialize device event decoder.
+	initializeNestedComponent(getDeviceEventDecoder(), monitor, true);
+
+	// Initialize device event deduplicator if provided.
+	if (getDeviceEventDeduplicator() != null) {
+	    initializeNestedComponent(getDeviceEventDeduplicator(), monitor, true);
+	}
+
+	// Initialize event receivers.
+	for (IInboundEventReceiver<T> receiver : getInboundEventReceivers()) {
+	    receiver.setEventSource(this);
+	    initializeNestedComponent(receiver, monitor, true);
+	}
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see
@@ -66,14 +97,7 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	getLifecycleComponents().clear();
-
-	if ((getInboundEventReceivers() == null) || (getInboundEventReceivers().size() == 0)) {
-	    throw new SiteWhereException("No inbound event receivers registered for event source.");
-	}
-	if (getDeviceEventDecoder() == null) {
-	    throw new SiteWhereException("No device event decoder assigned.");
-	}
+	super.start(monitor);
 
 	// Start device event decoder.
 	startNestedComponent(getDeviceEventDecoder(), monitor, true);
@@ -83,23 +107,9 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
 	    startNestedComponent(getDeviceEventDeduplicator(), monitor, true);
 	}
 
-	startEventReceivers(monitor);
-    }
-
-    /**
-     * Start event receivers for this event source.
-     * 
-     * @param monitor
-     * @throws SiteWhereException
-     */
-    protected void startEventReceivers(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	if (getInboundEventReceivers().size() > 0) {
-	    for (IInboundEventReceiver<T> receiver : getInboundEventReceivers()) {
-		receiver.setEventSource(this);
-		startNestedComponent(receiver, monitor, true);
-	    }
-	} else {
-	    LOGGER.warn("No device event receivers configured for event source!");
+	// Start event receivers.
+	for (IInboundEventReceiver<T> receiver : getInboundEventReceivers()) {
+	    startNestedComponent(receiver, monitor, true);
 	}
     }
 
@@ -112,19 +122,45 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.stop(monitor);
+
 	// Stop all inbound event receivers.
 	if (getInboundEventReceivers().size() > 0) {
 	    for (IInboundEventReceiver<T> receiver : getInboundEventReceivers()) {
-		receiver.lifecycleStop(monitor);
+		stopNestedComponent(receiver, monitor);
 	    }
 	}
 
 	// Stop device event decoder.
-	getDeviceEventDecoder().lifecycleStop(monitor);
+	stopNestedComponent(getDeviceEventDecoder(), monitor);
 
 	// Stop device event deduplicator if present.
 	if (getDeviceEventDeduplicator() != null) {
-	    getDeviceEventDeduplicator().lifecycleStop(monitor);
+	    stopNestedComponent(getDeviceEventDeduplicator(), monitor);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#terminate(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.terminate(monitor);
+	// Terminate all inbound event receivers.
+	if (getInboundEventReceivers().size() > 0) {
+	    for (IInboundEventReceiver<T> receiver : getInboundEventReceivers()) {
+		receiver.lifecycleTerminate(monitor);
+	    }
+	}
+
+	// Terminate device event decoder.
+	getDeviceEventDecoder().lifecycleTerminate(monitor);
+
+	// Terminate device event deduplicator if present.
+	if (getDeviceEventDeduplicator() != null) {
+	    getDeviceEventDeduplicator().lifecycleTerminate(monitor);
 	}
     }
 
@@ -198,7 +234,7 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
 	    }
 	    return !isDuplicate;
 	} catch (SiteWhereException e) {
-	    getLogger().error("Error determining whether request should be processed. Skipping.");
+	    getLogger().error("Error determining whether request should be processed. Skipping.", e);
 	    return false;
 	}
     }
