@@ -10,8 +10,6 @@ package com.sitewhere.microservice.state;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,7 +30,6 @@ import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 import com.sitewhere.spi.microservice.state.IMicroserviceState;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.microservice.state.ITopologyStateAggregator;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
@@ -51,9 +48,6 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
 
     /** List of listeners for topology updates */
     private List<IInstanceTopologyUpdatesListener> listeners = new CopyOnWriteArrayList<>();
-
-    /** Executor service */
-    private ExecutorService executor;
 
     public TopologyStateAggregator(IMicroservice microservice) {
 	super(microservice);
@@ -80,29 +74,6 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
     }
 
     /*
-     * @see com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer#start(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	super.start(monitor);
-	executor = Executors.newSingleThreadExecutor();
-    }
-
-    /*
-     * @see
-     * com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer#stop(com.sitewhere
-     * .spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	super.stop(monitor);
-	if (executor != null) {
-	    executor.shutdownNow();
-	}
-    }
-
-    /*
      * @see
      * com.sitewhere.spi.microservice.state.IMicroserviceStateUpdatesKafkaConsumer#
      * onMicroserviceStateUpdate(com.sitewhere.spi.microservice.state.
@@ -110,6 +81,7 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
      */
     @Override
     public void onMicroserviceStateUpdate(IMicroserviceState state) {
+	getLogger().debug("Received microservice update from '" + state.getMicroservice().getIdentifier() + "'.");
 	if ((state.getLifecycleStatus() == LifecycleStatus.Terminating)
 		|| (state.getLifecycleStatus() == LifecycleStatus.Terminated)) {
 	    removeMicroservice(state);
@@ -126,6 +98,7 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
      */
     @Override
     public void onTenantEngineStateUpdate(ITenantEngineState updated) {
+	getLogger().debug("Received tenant update from '" + updated.getMicroservice().getIdentifier() + "'.");
 	MicroserviceState placeholder = new MicroserviceState();
 	placeholder.setMicroservice(updated.getMicroservice());
 	placeholder.setLifecycleStatus(LifecycleStatus.Started);
@@ -172,6 +145,9 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
 	    ((InstanceMicroservice) microservice).setLatestState(updated);
 	    if (existing.getLifecycleStatus() != updated.getLifecycleStatus()) {
 		onMicroserviceUpdated(existing, updated);
+	    } else {
+		getLogger().debug(
+			"Ignored update of '" + updated.getMicroservice().getIdentifier() + "' due to same status.");
 	    }
 	}
 	((InstanceMicroservice) microservice).setLastUpdated(System.currentTimeMillis());
@@ -235,7 +211,7 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
 	if (entry != null) {
 	    IInstanceMicroservice removed = entry.getMicroservicesByHostname().remove(microservice.getHostname());
 	    if (removed != null) {
-		getLogger().info("Removed terminated microservice (" + microservice.getIdentifier() + ":"
+		getLogger().debug("Removed terminated microservice (" + microservice.getIdentifier() + ":"
 			+ microservice.getHostname() + ").");
 		onMicroserviceRemoved(state);
 	    }
@@ -270,16 +246,9 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
      * @param microservice
      */
     protected void onMicroserviceAdded(IMicroserviceState microservice) {
-	getLogger().debug("Microservice added for '" + microserviceId(microservice) + "'.");
-	executor.execute(new Runnable() {
-
-	    @Override
-	    public void run() {
-		for (IInstanceTopologyUpdatesListener listener : listeners) {
-		    listener.onMicroserviceAdded(microservice);
-		}
-	    }
-	});
+	for (IInstanceTopologyUpdatesListener listener : listeners) {
+	    listener.onMicroserviceAdded(microservice);
+	}
     }
 
     /**
@@ -289,17 +258,9 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
      * @param updated
      */
     protected void onMicroserviceUpdated(IMicroserviceState previous, IMicroserviceState updated) {
-	getLogger().debug("Microservice updated for '" + microserviceId(previous) + "'. State is "
-		+ updated.getLifecycleStatus().name() + ".");
-	executor.execute(new Runnable() {
-
-	    @Override
-	    public void run() {
-		for (IInstanceTopologyUpdatesListener listener : listeners) {
-		    listener.onMicroserviceUpdated(previous, updated);
-		}
-	    }
-	});
+	for (IInstanceTopologyUpdatesListener listener : listeners) {
+	    listener.onMicroserviceUpdated(previous, updated);
+	}
     }
 
     /**
@@ -308,16 +269,9 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
      * @param microservice
      */
     protected void onMicroserviceRemoved(IMicroserviceState microservice) {
-	getLogger().debug("Microservice removed for '" + microserviceId(microservice) + "'.");
-	executor.execute(new Runnable() {
-
-	    @Override
-	    public void run() {
-		for (IInstanceTopologyUpdatesListener listener : listeners) {
-		    listener.onMicroserviceRemoved(microservice);
-		}
-	    }
-	});
+	for (IInstanceTopologyUpdatesListener listener : listeners) {
+	    listener.onMicroserviceRemoved(microservice);
+	}
     }
 
     /**
@@ -327,16 +281,9 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
      * @param tenantEngine
      */
     protected void onTenantEngineAdded(IMicroserviceState microservice, ITenantEngineState tenantEngine) {
-	getLogger().debug("Tenant engine added for '" + tenantId(microservice, tenantEngine) + "'.");
-	executor.execute(new Runnable() {
-
-	    @Override
-	    public void run() {
-		for (IInstanceTopologyUpdatesListener listener : listeners) {
-		    listener.onTenantEngineAdded(microservice, tenantEngine);
-		}
-	    }
-	});
+	for (IInstanceTopologyUpdatesListener listener : listeners) {
+	    listener.onTenantEngineAdded(microservice, tenantEngine);
+	}
     }
 
     /**
@@ -348,17 +295,9 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
      */
     protected void onTenantEngineUpdated(IMicroserviceState microservice, ITenantEngineState previous,
 	    ITenantEngineState updated) {
-	getLogger().debug("Tenant engine updated for '" + tenantId(microservice, previous) + "'. State is "
-		+ updated.getLifecycleStatus().name() + ".");
-	executor.execute(new Runnable() {
-
-	    @Override
-	    public void run() {
-		for (IInstanceTopologyUpdatesListener listener : listeners) {
-		    listener.onTenantEngineUpdated(microservice, previous, updated);
-		}
-	    }
-	});
+	for (IInstanceTopologyUpdatesListener listener : listeners) {
+	    listener.onTenantEngineUpdated(microservice, previous, updated);
+	}
     }
 
     /**
@@ -368,16 +307,9 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
      * @param tenantEngine
      */
     protected void onTenantEngineRemoved(IMicroserviceState microservice, ITenantEngineState tenantEngine) {
-	getLogger().debug("Tenant engine removed for '" + tenantId(microservice, tenantEngine) + "'.");
-	executor.execute(new Runnable() {
-
-	    @Override
-	    public void run() {
-		for (IInstanceTopologyUpdatesListener listener : listeners) {
-		    listener.onTenantEngineRemoved(microservice, tenantEngine);
-		}
-	    }
-	});
+	for (IInstanceTopologyUpdatesListener listener : listeners) {
+	    listener.onTenantEngineRemoved(microservice, tenantEngine);
+	}
     }
 
     /*

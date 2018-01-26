@@ -98,7 +98,8 @@ public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
     protected ReplicatedMap<K, V> getCache(ITenant tenant) throws SiteWhereException {
 	String tenantId = (tenant != null) ? tenant.getId() : GLOBAL_CACHE_INDICATOR;
 	ReplicatedMap<K, V> cache = getCachesByTenantId().get(tenantId);
-	if (cache == null) {
+	boolean hzInitialized = getMicroservice().getHazelcastManager().getHazelcastInstance() != null;
+	if ((hzInitialized) && (cache == null)) {
 	    String cacheName = getCacheNameForTenant(tenantId);
 	    cache = getMicroservice().getHazelcastManager().getHazelcastInstance().getReplicatedMap(cacheName);
 	    getCachesByTenantId().put(tenantId, cache);

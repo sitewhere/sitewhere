@@ -7,6 +7,12 @@
  */
 package com.sitewhere.microservice.hazelcast;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,8 +27,10 @@ import com.hazelcast.core.HazelcastInstance;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.spi.microservice.hazelcast.IHazelcastManager;
+import com.sitewhere.spi.microservice.state.IInstanceMicroservice;
+import com.sitewhere.spi.microservice.state.IInstanceTopologyEntry;
+import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
@@ -31,6 +39,9 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * @author Derek
  */
 public class HazelcastManager extends LifecycleComponent implements IHazelcastManager {
+
+    /** Hazelcast communication port */
+    private static final int HZ_PORT = 5701;
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -47,6 +58,9 @@ public class HazelcastManager extends LifecycleComponent implements IHazelcastMa
     /** Singleton hazelcast instance */
     private HazelcastInstance hazelcastInstance;
 
+    /** For background threads */
+    private ExecutorService executor;
+
     public HazelcastManager(IMicroservice microservice) {
 	this.microservice = microservice;
     }
@@ -58,6 +72,17 @@ public class HazelcastManager extends LifecycleComponent implements IHazelcastMa
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	executor = Executors.newSingleThreadExecutor();
+	executor.execute(new TopologyMonitor());
+    }
+
+    /**
+     * Establishes Hazelcast connection with known list of live microservices.
+     * 
+     * @param members
+     * @throws SiteWhereException
+     */
+    protected void connect(String members) throws SiteWhereException {
 	try {
 	    Config config = new Config();
 	    config.setInstanceName(getMicroservice().getHostname());
@@ -69,11 +94,13 @@ public class HazelcastManager extends LifecycleComponent implements IHazelcastMa
 	    multicastConfig.setEnabled(false);
 	    joinConfig.setMulticastConfig(multicastConfig);
 	    TcpIpConfig tcpIpConfig = new TcpIpConfig();
-	    tcpIpConfig.addMember(IMicroserviceIdentifiers.INSTANCE_MANAGEMENT);
+	    tcpIpConfig.addMember(members);
 	    tcpIpConfig.setEnabled(true);
 	    joinConfig.setTcpIpConfig(tcpIpConfig);
+	    networkConfig.setPort(HZ_PORT);
 	    networkConfig.setJoin(joinConfig);
 	    networkConfig.setPortAutoIncrement(false);
+	    networkConfig.setPublicAddress(getMicroservice().getHostname() + ":" + String.valueOf(HZ_PORT));
 	    config.setNetworkConfig(networkConfig);
 
 	    HazelcastManager.configureManagementCenter(config);
@@ -93,6 +120,9 @@ public class HazelcastManager extends LifecycleComponent implements IHazelcastMa
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	if (executor != null) {
+	    executor.shutdownNow();
+	}
 	if (getHazelcastInstance() != null) {
 	    getHazelcastInstance().shutdown();
 	}
@@ -153,6 +183,54 @@ public class HazelcastManager extends LifecycleComponent implements IHazelcastMa
     public static void performPropertyOverrides(Config config) {
 	config.setProperty("hazelcast.logging.type", "slf4j");
 	config.setProperty("hazelcast.shutdownhook.enabled", "false");
+    }
+
+    /**
+     * Waits for other microservices to enter the topology before establishing
+     * Hazelcast grid.
+     * 
+     * @author Derek
+     */
+    public class TopologyMonitor implements Runnable {
+
+	@Override
+	public void run() {
+	    getLogger().info("Hazelcast waiting for other microservices to enter topology...");
+	    while (true) {
+		IInstanceTopologySnapshot topology = getMicroservice().getTopologyStateAggregator()
+			.getInstanceTopologySnapshot();
+		if (topology != null) {
+		    Map<String, IInstanceTopologyEntry> byIdent = topology.getTopologyEntriesByIdentifier();
+		    List<String> members = new ArrayList<>();
+		    for (String identifier : byIdent.keySet()) {
+			IInstanceTopologyEntry entry = byIdent.get(identifier);
+			Map<String, IInstanceMicroservice> byHostname = entry.getMicroservicesByHostname();
+			for (String hostname : byHostname.keySet()) {
+			    String member = hostname + ":" + HZ_PORT;
+			    members.add(member);
+			}
+		    }
+
+		    // Only attempt to connect if members were found.
+		    if (members.size() > 0) {
+			try {
+			    String delimited = String.join(",", members);
+			    getLogger().info("Hazelcast will connect to members: " + delimited);
+			    connect(delimited);
+			    return;
+			} catch (SiteWhereException e) {
+			    getLogger().error("Error establishing Hazelcast node.", e);
+			}
+		    }
+		}
+		try {
+		    Thread.sleep(3000);
+		} catch (InterruptedException e) {
+		    getLogger().warn("Hazelcast topology monitor thread shutting down.");
+		    return;
+		}
+	    }
+	}
     }
 
     protected IMicroservice getMicroservice() {
