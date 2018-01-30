@@ -133,6 +133,137 @@
 		</xsd:attribute>
 	</xsd:attributeGroup>
 
+	<!-- Default InfluxDB datastore reference -->
+	<xsd:element name="default-influxdb-datastore" type="defaultInfluxDatastoreType"
+		substitutionGroup="abstract-datastore">
+		<xsd:annotation>
+			<xsd:documentation>
+				Connects to InfluxDB using the default global
+				configuration.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="defaultInfluxDatastoreType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDatastoreType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Alternate InfluxDB datastore reference -->
+	<xsd:element name="alternate-influxdb-datastore" type="alternateInfluxDatastoreType"
+		substitutionGroup="abstract-datastore">
+		<xsd:annotation>
+			<xsd:documentation>
+				Connects to InfluxDB using an alternate MongoDB
+				datastore configuration.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="alternateInfluxDatastoreType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDatastoreType">
+				<xsd:attribute name="id" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>
+							Unique id for alternate datastore
+							configuration.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Custom InfluxDB datastore definition -->
+	<xsd:element name="custom-influxdb-datastore" type="customInfluxDatastoreType"
+		substitutionGroup="abstract-datastore">
+		<xsd:annotation>
+			<xsd:documentation>
+				Creates a custom InfluxDB datastore that does not
+				reference a global configuration.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="customInfluxDatastoreType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDatastoreType">
+				<xsd:attributeGroup ref="influx-attributes" />
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Filter operation type -->
+	<xsd:simpleType name="influxDbLogLevels">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="none" />
+			<xsd:enumeration value="basic" />
+			<xsd:enumeration value="headers" />
+			<xsd:enumeration value="full" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<!-- Attributes for configuring InfluxDB event storage -->
+	<xsd:attributeGroup name="influx-attributes">
+		<xsd:attribute name="connectUrl" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Url used to connect.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="username" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Username used to connect.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="password" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Password used to connect.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="database" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Database where events are stored.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="retention" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Retention identifier for events.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="logLevel" type="influxDbLogLevels"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					Indicates the amount of logging output for
+					debugging interactions with InfluxDB.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="enableBatch" type="xsd:boolean">
+			<xsd:annotation>
+				<xsd:documentation>Enable batch delvery of events.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="batchChunkSize" type="xsd:int">
+			<xsd:annotation>
+				<xsd:documentation>Max number of events to cache before writing.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="batchIntervalMs" type="xsd:int">
+			<xsd:annotation>
+				<xsd:documentation>Max interval (in ms) to wait before writing.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
+
 	<!-- HBase datastore attributes -->
 	<xsd:attributeGroup name="hbase-attributes">
 		<xsd:attribute name="quorum" type="xsd:string">
