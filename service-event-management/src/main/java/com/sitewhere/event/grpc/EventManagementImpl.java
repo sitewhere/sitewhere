@@ -7,6 +7,7 @@
  */
 package com.sitewhere.event.grpc;
 
+import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceAlertSearchResults;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceCommandInvocationSearchResults;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceCommandResponseSearchResults;
@@ -15,7 +16,6 @@ import com.sitewhere.grpc.model.DeviceEventModel.GDeviceLocationSearchResults;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceMeasurementsSearchResults;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStateChangeSearchResults;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStreamDataSearchResults;
-import com.sitewhere.grpc.model.GrpcUtils;
 import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.grpc.model.converter.DeviceModelConverter;
 import com.sitewhere.grpc.model.converter.EventModelConverter;

@@ -82,7 +82,7 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 		.getInstanceTopologySnapshot();
 	for (IInstanceTopologyEntry entry : topology.getTopologyEntriesByIdentifier().values()) {
 	    for (IInstanceMicroservice microservice : entry.getMicroservicesByHostname().values()) {
-		detectServiceAdded(microservice.getLatestState().getMicroservice());
+		detectServiceAdded(microservice.getLatestState());
 	    }
 	}
     }
@@ -171,8 +171,8 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
      * onMicroserviceAdded(com.sitewhere.spi.microservice.state.IMicroserviceState)
      */
     @Override
-    public void onMicroserviceAdded(IMicroserviceState microservice) {
-	detectServiceAdded(microservice.getMicroservice());
+    public void onMicroserviceAdded(IMicroserviceState state) {
+	detectServiceAdded(state);
     }
 
     /*
@@ -228,12 +228,13 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
      * 
      * @param snapshot
      */
-    protected void detectServiceAdded(IMicroserviceDetails microservice) {
+    protected void detectServiceAdded(IMicroserviceState state) {
+	IMicroserviceDetails microservice = state.getMicroservice();
 	if (getTargetIdentifier().equals(microservice.getIdentifier())) {
 	    T existing = getApiChannelForHost(microservice.getHostname());
 	    if (existing == null) {
-		getLogger().info("Microservice for '" + getTargetIdentifier() + "' discovered at hostname "
-			+ microservice.getHostname());
+		getLogger().info("Microservice for '" + getTargetIdentifier() + "' at hostname "
+			+ microservice.getHostname() + " added. Initializing API channel.");
 		try {
 		    initializeApiChannel(microservice.getHostname());
 		} catch (SiteWhereException e) {

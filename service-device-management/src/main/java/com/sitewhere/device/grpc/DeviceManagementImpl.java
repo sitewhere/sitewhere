@@ -10,6 +10,7 @@ package com.sitewhere.device.grpc;
 import java.util.List;
 import java.util.UUID;
 
+import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceAssignmentSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupElementsSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupSearchResults;
@@ -18,7 +19,6 @@ import com.sitewhere.grpc.model.DeviceModel.GDeviceSpecificationSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceStreamSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GSiteSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GZoneSearchResults;
-import com.sitewhere.grpc.model.GrpcUtils;
 import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.grpc.model.converter.DeviceModelConverter;
 import com.sitewhere.grpc.service.*;

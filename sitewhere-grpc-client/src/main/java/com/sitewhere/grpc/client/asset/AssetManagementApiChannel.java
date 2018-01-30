@@ -15,11 +15,11 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.grpc.client.ApiChannel;
 import com.sitewhere.grpc.client.GrpcChannel;
+import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.model.AssetModel.GAnyAsset;
 import com.sitewhere.grpc.model.AssetModel.GAssetModuleDescriptor;
-import com.sitewhere.grpc.model.GrpcUtils;
 import com.sitewhere.grpc.model.converter.AssetModelConverter;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
 import com.sitewhere.grpc.service.GCreateAssetCategoryRequest;
@@ -112,7 +112,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     @Override
     public IAssetCategory createAssetCategory(IAssetCategoryCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(AssetManagementGrpc.METHOD_CREATE_ASSET_CATEGORY);
+	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_CREATE_ASSET_CATEGORY);
 	    GCreateAssetCategoryRequest.Builder grequest = GCreateAssetCategoryRequest.newBuilder();
 	    grequest.setRequest(AssetModelConverter.asGrpcAssetCategoryCreateRequest(request));
 	    GCreateAssetCategoryResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -136,7 +136,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     @Override
     public IAssetCategory getAssetCategory(String categoryId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_CATEGORY_BY_ID);
+	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_GET_ASSET_CATEGORY_BY_ID);
 	    GGetAssetCategoryByIdRequest.Builder grequest = GGetAssetCategoryByIdRequest.newBuilder();
 	    grequest.setId(categoryId);
 	    GGetAssetCategoryByIdResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -161,7 +161,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     public IAssetCategory updateAssetCategory(String categoryId, IAssetCategoryCreateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(AssetManagementGrpc.METHOD_UPDATE_ASSET_CATEGORY);
+	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_UPDATE_ASSET_CATEGORY);
 	    GUpdateAssetCategoryRequest.Builder grequest = GUpdateAssetCategoryRequest.newBuilder();
 	    grequest.setId(categoryId);
 	    grequest.setRequest(AssetModelConverter.asGrpcAssetCategoryCreateRequest(request));
@@ -186,7 +186,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     @Override
     public ISearchResults<IAssetCategory> listAssetCategories(ISearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(AssetManagementGrpc.METHOD_LIST_ASSET_CATEGORIES);
+	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_LIST_ASSET_CATEGORIES);
 	    GListAssetCategoriesRequest.Builder grequest = GListAssetCategoriesRequest.newBuilder();
 	    grequest.setCriteria(AssetModelConverter.asApiAssetCategorySearchCriteria(criteria));
 	    GListAssetCategoriesResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -209,7 +209,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     @Override
     public IAssetCategory deleteAssetCategory(String categoryId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(AssetManagementGrpc.METHOD_DELETE_ASSET_CATEGORY);
+	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_DELETE_ASSET_CATEGORY);
 	    GDeleteAssetCategoryRequest.Builder grequest = GDeleteAssetCategoryRequest.newBuilder();
 	    grequest.setId(categoryId);
 	    GDeleteAssetCategoryResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -234,7 +234,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     public IPersonAsset createPersonAsset(String categoryId, IPersonAssetCreateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(AssetManagementGrpc.METHOD_CREATE_PERSON_ASSET);
+	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_CREATE_PERSON_ASSET);
 	    GCreatePersonAssetRequest.Builder grequest = GCreatePersonAssetRequest.newBuilder();
 	    grequest.setCategoryId(categoryId);
 	    grequest.setRequest(AssetModelConverter.asGrpcPersonAssetCreateRequest(request));
@@ -260,7 +260,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     public IPersonAsset updatePersonAsset(String categoryId, String assetId, IPersonAssetCreateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(AssetManagementGrpc.METHOD_UPDATE_PERSON_ASSET);
+	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_UPDATE_PERSON_ASSET);
 	    GUpdatePersonAssetRequest.Builder grequest = GUpdatePersonAssetRequest.newBuilder();
 	    grequest.setCategoryId(categoryId);
 	    grequest.setAssetId(assetId);
@@ -286,7 +286,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     public IHardwareAsset createHardwareAsset(String categoryId, IHardwareAssetCreateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(AssetManagementGrpc.METHOD_CREATE_PERSON_ASSET);
+	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_CREATE_PERSON_ASSET);
 	    GCreateHardwareAssetRequest.Builder grequest = GCreateHardwareAssetRequest.newBuilder();
 	    grequest.setCategoryId(categoryId);
 	    grequest.setRequest(AssetModelConverter.asGrpcHardwareAssetCreateRequest(request));
@@ -313,7 +313,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     public IHardwareAsset updateHardwareAsset(String categoryId, String assetId, IHardwareAssetCreateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(AssetManagementGrpc.METHOD_UPDATE_HARDWARE_ASSET);
+	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_UPDATE_HARDWARE_ASSET);
 	    GUpdateHardwareAssetRequest.Builder grequest = GUpdateHardwareAssetRequest.newBuilder();
 	    grequest.setCategoryId(categoryId);
 	    grequest.setAssetId(assetId);
@@ -340,7 +340,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     public ILocationAsset createLocationAsset(String categoryId, ILocationAssetCreateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(AssetManagementGrpc.METHOD_CREATE_LOCATION_ASSET);
+	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_CREATE_LOCATION_ASSET);
 	    GCreateLocationAssetRequest.Builder grequest = GCreateLocationAssetRequest.newBuilder();
 	    grequest.setCategoryId(categoryId);
 	    grequest.setRequest(AssetModelConverter.asGrpcLocationAssetCreateRequest(request));
@@ -367,7 +367,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     public ILocationAsset updateLocationAsset(String categoryId, String assetId, ILocationAssetCreateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(AssetManagementGrpc.METHOD_UPDATE_LOCATION_ASSET);
+	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_UPDATE_LOCATION_ASSET);
 	    GUpdateLocationAssetRequest.Builder grequest = GUpdateLocationAssetRequest.newBuilder();
 	    grequest.setCategoryId(categoryId);
 	    grequest.setAssetId(assetId);
@@ -393,7 +393,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     @Override
     public IAsset getAsset(String categoryId, String assetId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_BY_ID);
+	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_GET_ASSET_BY_ID);
 	    GGetAssetByIdRequest.Builder grequest = GGetAssetByIdRequest.newBuilder();
 	    grequest.setCategoryId(categoryId);
 	    grequest.setAssetId(assetId);
@@ -416,7 +416,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     @Override
     public IAsset deleteAsset(String categoryId, String assetId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(AssetManagementGrpc.METHOD_DELETE_ASSET);
+	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_DELETE_ASSET);
 	    GDeleteAssetRequest.Builder grequest = GDeleteAssetRequest.newBuilder();
 	    grequest.setCategoryId(categoryId);
 	    grequest.setAssetId(assetId);
@@ -439,7 +439,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     @Override
     public ISearchResults<IAsset> listAssets(String categoryId, ISearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(AssetManagementGrpc.METHOD_LIST_ASSETS);
+	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_LIST_ASSETS);
 	    GListAssetsRequest.Builder grequest = GListAssetsRequest.newBuilder();
 	    grequest.setCategoryId(categoryId);
 	    grequest.setCriteria(AssetModelConverter.asGrpcAssetSearchCriteria(criteria));
@@ -460,7 +460,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     @Override
     public List<IAssetModuleDescriptor> listAssetModuleDescriptors(AssetType type) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(AssetManagementGrpc.METHOD_LIST_ASSET_MODULE_DESCRIPTORS);
+	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_LIST_ASSET_MODULE_DESCRIPTORS);
 	    GListAssetModuleDescriptorsRequest.Builder grequest = GListAssetModuleDescriptorsRequest.newBuilder();
 	    if (type != null) {
 		grequest.setAssetType(AssetModelConverter.asGrpcAssetType(type));
@@ -486,7 +486,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     @Override
     public IAssetModuleDescriptor getAssetModuleDescriptor(String moduleId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_DESCRIPTOR_BY_MODULE_ID);
+	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_GET_ASSET_MODULE_DESCRIPTOR_BY_MODULE_ID);
 	    GGetAssetModuleDescriptorByModuleIdRequest.Builder grequest = GGetAssetModuleDescriptorByModuleIdRequest
 		    .newBuilder();
 	    grequest.setModuleId(moduleId);
@@ -512,7 +512,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     @Override
     public List<IAsset> searchAssetModule(String moduleId, String criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_ASSETS_BY_CRITERIA);
+	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_GET_ASSET_MODULE_ASSETS_BY_CRITERIA);
 	    GGetAssetModuleAssetsByCriteriaRequest.Builder grequest = GGetAssetModuleAssetsByCriteriaRequest
 		    .newBuilder();
 	    grequest.setModuleId(moduleId);
@@ -539,7 +539,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
     @Override
     public IAsset getAsset(IAssetReference reference) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_ASSET);
+	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_GET_ASSET_MODULE_ASSET);
 	    GGetAssetModuleAssetRequest.Builder grequest = GGetAssetModuleAssetRequest.newBuilder();
 	    grequest.setModuleId(reference.getModule());
 	    grequest.setAssetId(reference.getId());

@@ -12,9 +12,9 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.grpc.client.ApiChannel;
 import com.sitewhere.grpc.client.GrpcChannel;
+import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
-import com.sitewhere.grpc.model.GrpcUtils;
 import com.sitewhere.grpc.model.converter.ScheduleModelConverter;
 import com.sitewhere.grpc.service.GCreateScheduleRequest;
 import com.sitewhere.grpc.service.GCreateScheduleResponse;
@@ -82,7 +82,7 @@ public class ScheduleManagementApiChannel extends ApiChannel<ScheduleManagementG
     @Override
     public ISchedule createSchedule(IScheduleCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(ScheduleManagementGrpc.METHOD_CREATE_SCHEDULE);
+	    GrpcUtils.logClientMethodEntry(this, ScheduleManagementGrpc.METHOD_CREATE_SCHEDULE);
 	    GCreateScheduleRequest.Builder grequest = GCreateScheduleRequest.newBuilder();
 	    grequest.setRequest(ScheduleModelConverter.asGrpcScheduleCreateRequest(request));
 	    GCreateScheduleResponse gresponse = getGrpcChannel().getBlockingStub().createSchedule(grequest.build());
@@ -104,7 +104,7 @@ public class ScheduleManagementApiChannel extends ApiChannel<ScheduleManagementG
     @Override
     public ISchedule updateSchedule(String token, IScheduleCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(ScheduleManagementGrpc.METHOD_UPDATE_SCHEDULE);
+	    GrpcUtils.logClientMethodEntry(this, ScheduleManagementGrpc.METHOD_UPDATE_SCHEDULE);
 	    GUpdateScheduleRequest.Builder grequest = GUpdateScheduleRequest.newBuilder();
 	    grequest.setToken(token);
 	    grequest.setRequest(ScheduleModelConverter.asGrpcScheduleCreateRequest(request));
@@ -127,7 +127,7 @@ public class ScheduleManagementApiChannel extends ApiChannel<ScheduleManagementG
     @Override
     public ISchedule getScheduleByToken(String token) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(ScheduleManagementGrpc.METHOD_GET_SCHEDULE_BY_TOKEN);
+	    GrpcUtils.logClientMethodEntry(this, ScheduleManagementGrpc.METHOD_GET_SCHEDULE_BY_TOKEN);
 	    GGetScheduleByTokenRequest.Builder grequest = GGetScheduleByTokenRequest.newBuilder();
 	    grequest.setToken(token);
 	    GGetScheduleByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -150,7 +150,7 @@ public class ScheduleManagementApiChannel extends ApiChannel<ScheduleManagementG
     @Override
     public ISearchResults<ISchedule> listSchedules(ISearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(ScheduleManagementGrpc.METHOD_LIST_SCHEDULES);
+	    GrpcUtils.logClientMethodEntry(this, ScheduleManagementGrpc.METHOD_LIST_SCHEDULES);
 	    GListSchedulesRequest.Builder grequest = GListSchedulesRequest.newBuilder();
 	    grequest.setCriteria(ScheduleModelConverter.asGrpcScheduleSearchCriteria(criteria));
 	    GListSchedulesResponse gresponse = getGrpcChannel().getBlockingStub().listSchedules(grequest.build());
@@ -171,7 +171,7 @@ public class ScheduleManagementApiChannel extends ApiChannel<ScheduleManagementG
     @Override
     public ISchedule deleteSchedule(String token, boolean force) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(ScheduleManagementGrpc.METHOD_DELETE_SCHEDULE);
+	    GrpcUtils.logClientMethodEntry(this, ScheduleManagementGrpc.METHOD_DELETE_SCHEDULE);
 	    GDeleteScheduleRequest.Builder grequest = GDeleteScheduleRequest.newBuilder();
 	    grequest.setToken(token);
 	    grequest.setForce(force);
@@ -193,7 +193,7 @@ public class ScheduleManagementApiChannel extends ApiChannel<ScheduleManagementG
     @Override
     public IScheduledJob createScheduledJob(IScheduledJobCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(ScheduleManagementGrpc.METHOD_CREATE_SCHEDULED_JOB);
+	    GrpcUtils.logClientMethodEntry(this, ScheduleManagementGrpc.METHOD_CREATE_SCHEDULED_JOB);
 	    GCreateScheduledJobRequest.Builder grequest = GCreateScheduledJobRequest.newBuilder();
 	    grequest.setRequest(ScheduleModelConverter.asGrpcScheduledJobCreateRequest(request));
 	    GCreateScheduledJobResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -217,7 +217,7 @@ public class ScheduleManagementApiChannel extends ApiChannel<ScheduleManagementG
     public IScheduledJob updateScheduledJob(String token, IScheduledJobCreateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(ScheduleManagementGrpc.METHOD_UPDATE_SCHEDULED_JOB);
+	    GrpcUtils.logClientMethodEntry(this, ScheduleManagementGrpc.METHOD_UPDATE_SCHEDULED_JOB);
 	    GUpdateScheduledJobRequest.Builder grequest = GUpdateScheduledJobRequest.newBuilder();
 	    grequest.setToken(token);
 	    grequest.setRequest(ScheduleModelConverter.asGrpcScheduledJobCreateRequest(request));
@@ -241,7 +241,7 @@ public class ScheduleManagementApiChannel extends ApiChannel<ScheduleManagementG
     @Override
     public IScheduledJob getScheduledJobByToken(String token) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(ScheduleManagementGrpc.METHOD_GET_SCHEDULED_JOB_BY_TOKEN);
+	    GrpcUtils.logClientMethodEntry(this, ScheduleManagementGrpc.METHOD_GET_SCHEDULED_JOB_BY_TOKEN);
 	    GGetScheduledJobByTokenRequest.Builder grequest = GGetScheduledJobByTokenRequest.newBuilder();
 	    grequest.setToken(token);
 	    GGetScheduledJobByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -263,7 +263,7 @@ public class ScheduleManagementApiChannel extends ApiChannel<ScheduleManagementG
     @Override
     public ISearchResults<IScheduledJob> listScheduledJobs(ISearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(ScheduleManagementGrpc.METHOD_LIST_SCHEDULED_JOBS);
+	    GrpcUtils.logClientMethodEntry(this, ScheduleManagementGrpc.METHOD_LIST_SCHEDULED_JOBS);
 	    GListScheduledJobsRequest.Builder grequest = GListScheduledJobsRequest.newBuilder();
 	    grequest.setCriteria(ScheduleModelConverter.asGrpcScheduledJobSearchCriteria(criteria));
 	    GListScheduledJobsResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -285,7 +285,7 @@ public class ScheduleManagementApiChannel extends ApiChannel<ScheduleManagementG
     @Override
     public IScheduledJob deleteScheduledJob(String token, boolean force) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(ScheduleManagementGrpc.METHOD_DELETE_SCHEDULED_JOB);
+	    GrpcUtils.logClientMethodEntry(this, ScheduleManagementGrpc.METHOD_DELETE_SCHEDULED_JOB);
 	    GDeleteScheduledJobRequest.Builder grequest = GDeleteScheduledJobRequest.newBuilder();
 	    grequest.setToken(token);
 	    grequest.setForce(force);

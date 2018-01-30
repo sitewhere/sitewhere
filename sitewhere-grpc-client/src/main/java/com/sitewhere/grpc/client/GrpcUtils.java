@@ -5,12 +5,13 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.grpc.model;
+package com.sitewhere.grpc.client;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.common.MarshalUtils;
+import com.sitewhere.grpc.client.spi.IApiChannel;
 import com.sitewhere.grpc.model.security.NotAuthorizedException;
 import com.sitewhere.grpc.model.security.UnauthenticatedException;
 import com.sitewhere.grpc.model.tracing.DebugParameter;
@@ -25,9 +26,10 @@ public class GrpcUtils {
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    public static void logClientMethodEntry(MethodDescriptor<?, ?> method, DebugParameter... parameters)
-	    throws SiteWhereException {
-	LOGGER.debug("Client received call to  " + method.getFullMethodName() + ".");
+    public static void logClientMethodEntry(IApiChannel<?> channel, MethodDescriptor<?, ?> method,
+	    DebugParameter... parameters) throws SiteWhereException {
+	LOGGER.debug(channel.getClass().getSimpleName() + " connected to '" + channel.getHostname()
+		+ "' received call to  " + method.getFullMethodName() + ".");
 	if (LOGGER.isTraceEnabled()) {
 	    for (DebugParameter parameter : parameters) {
 		if (parameter.getContent() instanceof String) {

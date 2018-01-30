@@ -10,9 +10,9 @@ package com.sitewhere.asset.grpc;
 import java.util.List;
 
 import com.sitewhere.asset.spi.modules.IAssetModule;
+import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.model.AssetModel.GAssetCategorySearchResults;
 import com.sitewhere.grpc.model.AssetModel.GAssetSearchResults;
-import com.sitewhere.grpc.model.GrpcUtils;
 import com.sitewhere.grpc.model.converter.AssetModelConverter;
 import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.grpc.service.AssetManagementGrpc;

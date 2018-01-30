@@ -12,9 +12,9 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.grpc.client.ApiChannel;
 import com.sitewhere.grpc.client.GrpcChannel;
+import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IBatchManagementApiChannel;
-import com.sitewhere.grpc.model.GrpcUtils;
 import com.sitewhere.grpc.model.converter.BatchModelConverter;
 import com.sitewhere.grpc.service.BatchManagementGrpc;
 import com.sitewhere.grpc.service.GCreateBatchCommandInvocationRequest;
@@ -81,7 +81,7 @@ public class BatchManagementApiChannel extends ApiChannel<BatchManagementGrpcCha
     @Override
     public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(BatchManagementGrpc.METHOD_CREATE_BATCH_OPERATION);
+	    GrpcUtils.logClientMethodEntry(this, BatchManagementGrpc.METHOD_CREATE_BATCH_OPERATION);
 	    GCreateBatchOperationRequest.Builder grequest = GCreateBatchOperationRequest.newBuilder();
 	    grequest.setRequest(BatchModelConverter.asGrpcBatchOperationCreateRequest(request));
 	    GCreateBatchOperationResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -105,7 +105,7 @@ public class BatchManagementApiChannel extends ApiChannel<BatchManagementGrpcCha
     public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(BatchManagementGrpc.METHOD_CREATE_BATCH_COMMAND_INVOCATION);
+	    GrpcUtils.logClientMethodEntry(this, BatchManagementGrpc.METHOD_CREATE_BATCH_COMMAND_INVOCATION);
 	    GCreateBatchCommandInvocationRequest.Builder grequest = GCreateBatchCommandInvocationRequest.newBuilder();
 	    grequest.setRequest(BatchModelConverter.asGrpcBatchCommandInvocationRequest(request));
 	    GCreateBatchCommandInvocationResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -128,7 +128,7 @@ public class BatchManagementApiChannel extends ApiChannel<BatchManagementGrpcCha
     public IBatchOperation updateBatchOperation(String token, IBatchOperationUpdateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(BatchManagementGrpc.METHOD_UPDATE_BATCH_OPERATION);
+	    GrpcUtils.logClientMethodEntry(this, BatchManagementGrpc.METHOD_UPDATE_BATCH_OPERATION);
 	    GUpdateBatchOperationRequest.Builder grequest = GUpdateBatchOperationRequest.newBuilder();
 	    grequest.setToken(token);
 	    grequest.setRequest(BatchModelConverter.asGrpcBatchOperationUpdateRequest(request));
@@ -151,7 +151,7 @@ public class BatchManagementApiChannel extends ApiChannel<BatchManagementGrpcCha
     @Override
     public IBatchOperation getBatchOperation(String token) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(BatchManagementGrpc.METHOD_GET_BATCH_OPERATION_BY_TOKEN);
+	    GrpcUtils.logClientMethodEntry(this, BatchManagementGrpc.METHOD_GET_BATCH_OPERATION_BY_TOKEN);
 	    GGetBatchOperationByTokenRequest.Builder grequest = GGetBatchOperationByTokenRequest.newBuilder();
 	    grequest.setToken(token);
 	    GGetBatchOperationByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -175,7 +175,7 @@ public class BatchManagementApiChannel extends ApiChannel<BatchManagementGrpcCha
     public ISearchResults<IBatchOperation> listBatchOperations(IBatchOperationSearchCriteria criteria)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(BatchManagementGrpc.METHOD_LIST_BATCH_OPERATIONS);
+	    GrpcUtils.logClientMethodEntry(this, BatchManagementGrpc.METHOD_LIST_BATCH_OPERATIONS);
 	    GListBatchOperationsRequest.Builder grequest = GListBatchOperationsRequest.newBuilder();
 	    grequest.setCriteria(BatchModelConverter.asGrpcBatchOperationSearchCriteria(criteria));
 	    GListBatchOperationsResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -196,7 +196,7 @@ public class BatchManagementApiChannel extends ApiChannel<BatchManagementGrpcCha
     @Override
     public IBatchOperation deleteBatchOperation(String token, boolean force) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(BatchManagementGrpc.METHOD_DELETE_BATCH_OPERATION);
+	    GrpcUtils.logClientMethodEntry(this, BatchManagementGrpc.METHOD_DELETE_BATCH_OPERATION);
 	    GDeleteBatchOperationRequest.Builder grequest = GDeleteBatchOperationRequest.newBuilder();
 	    grequest.setToken(token);
 	    grequest.setForce(force);
@@ -221,7 +221,7 @@ public class BatchManagementApiChannel extends ApiChannel<BatchManagementGrpcCha
     public ISearchResults<IBatchElement> listBatchElements(String batchToken, IBatchElementSearchCriteria criteria)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(BatchManagementGrpc.METHOD_LIST_BATCH_OPERATION_ELEMENTS);
+	    GrpcUtils.logClientMethodEntry(this, BatchManagementGrpc.METHOD_LIST_BATCH_OPERATION_ELEMENTS);
 	    GListBatchOperationElementsRequest.Builder grequest = GListBatchOperationElementsRequest.newBuilder();
 	    grequest.setToken(batchToken);
 	    grequest.setCriteria(BatchModelConverter.asGrpcBatchElementSearchCriteria(criteria));
@@ -245,7 +245,7 @@ public class BatchManagementApiChannel extends ApiChannel<BatchManagementGrpcCha
     public IBatchElement updateBatchElement(String operationToken, long index, IBatchElementUpdateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(BatchManagementGrpc.METHOD_UPDATE_BATCH_OPERATION_ELEMENT);
+	    GrpcUtils.logClientMethodEntry(this, BatchManagementGrpc.METHOD_UPDATE_BATCH_OPERATION_ELEMENT);
 	    GUpdateBatchOperationElementRequest.Builder grequest = GUpdateBatchOperationElementRequest.newBuilder();
 	    grequest.setToken(operationToken);
 	    grequest.setIndex(index);

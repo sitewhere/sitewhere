@@ -14,9 +14,9 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.grpc.client.ApiChannel;
 import com.sitewhere.grpc.client.GrpcChannel;
+import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
-import com.sitewhere.grpc.model.GrpcUtils;
 import com.sitewhere.grpc.model.converter.TenantModelConverter;
 import com.sitewhere.grpc.service.GCreateTenantRequest;
 import com.sitewhere.grpc.service.GCreateTenantResponse;
@@ -79,7 +79,7 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
     @Override
     public ITenant createTenant(ITenantCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(TenantManagementGrpc.METHOD_CREATE_TENANT);
+	    GrpcUtils.logClientMethodEntry(this, TenantManagementGrpc.METHOD_CREATE_TENANT);
 	    GCreateTenantRequest.Builder grequest = GCreateTenantRequest.newBuilder();
 	    grequest.setRequest(TenantModelConverter.asGrpcTenantCreateRequest(request));
 	    GCreateTenantResponse gresponse = getGrpcChannel().getBlockingStub().createTenant(grequest.build());
@@ -101,7 +101,7 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
     @Override
     public ITenant updateTenant(String id, ITenantCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(TenantManagementGrpc.METHOD_UPDATE_TENANT);
+	    GrpcUtils.logClientMethodEntry(this, TenantManagementGrpc.METHOD_UPDATE_TENANT);
 	    GUpdateTenantRequest.Builder grequest = GUpdateTenantRequest.newBuilder();
 	    grequest.setId(id);
 	    grequest.setRequest(TenantModelConverter.asGrpcTenantCreateRequest(request));
@@ -123,7 +123,7 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
     @Override
     public ITenant getTenantById(String id) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(TenantManagementGrpc.METHOD_GET_TENANT_BY_ID);
+	    GrpcUtils.logClientMethodEntry(this, TenantManagementGrpc.METHOD_GET_TENANT_BY_ID);
 	    GGetTenantByIdRequest.Builder grequest = GGetTenantByIdRequest.newBuilder();
 	    grequest.setId(id);
 	    GGetTenantByIdResponse gresponse = getGrpcChannel().getBlockingStub().getTenantById(grequest.build());
@@ -145,7 +145,7 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
     @Override
     public ITenant getTenantByAuthenticationToken(String token) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(TenantManagementGrpc.METHOD_GET_TENANT_BY_AUTHENTICATION_TOKEN);
+	    GrpcUtils.logClientMethodEntry(this, TenantManagementGrpc.METHOD_GET_TENANT_BY_AUTHENTICATION_TOKEN);
 	    GGetTenantByAuthenticationTokenRequest.Builder grequest = GGetTenantByAuthenticationTokenRequest
 		    .newBuilder();
 	    grequest.setToken(token);
@@ -170,7 +170,7 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
     @Override
     public ISearchResults<ITenant> listTenants(ITenantSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(TenantManagementGrpc.METHOD_LIST_TENANTS);
+	    GrpcUtils.logClientMethodEntry(this, TenantManagementGrpc.METHOD_LIST_TENANTS);
 	    GListTenantsRequest.Builder grequest = GListTenantsRequest.newBuilder();
 	    grequest.setCriteria(TenantModelConverter.asGrpcTenantSearchCriteria(criteria));
 	    GListTenantsResponse gresponse = getGrpcChannel().getBlockingStub().listTenants(grequest.build());
@@ -192,7 +192,7 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
     @Override
     public ITenant deleteTenant(String tenantId, boolean force) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(TenantManagementGrpc.METHOD_DELETE_TENANT);
+	    GrpcUtils.logClientMethodEntry(this, TenantManagementGrpc.METHOD_DELETE_TENANT);
 	    GDeleteTenantRequest.Builder grequest = GDeleteTenantRequest.newBuilder();
 	    grequest.setId(tenantId);
 	    grequest.setForce(force);
@@ -211,7 +211,7 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
     @Override
     public List<ITenantTemplate> getTenantTemplates() throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(TenantManagementGrpc.METHOD_GET_TENANT_TEMPLATES);
+	    GrpcUtils.logClientMethodEntry(this, TenantManagementGrpc.METHOD_GET_TENANT_TEMPLATES);
 	    GGetTenantTemplatesRequest.Builder grequest = GGetTenantTemplatesRequest.newBuilder();
 	    GGetTenantTemplatesResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getTenantTemplates(grequest.build());

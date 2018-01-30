@@ -13,9 +13,9 @@ import org.apache.logging.log4j.Logger;
 import com.google.protobuf.ByteString;
 import com.sitewhere.grpc.client.ApiChannel;
 import com.sitewhere.grpc.client.GrpcChannel;
+import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IMicroserviceManagementApiChannel;
-import com.sitewhere.grpc.model.GrpcUtils;
 import com.sitewhere.grpc.model.MicroserviceModel.GConfigurationContent;
 import com.sitewhere.grpc.model.converter.MicroserviceModelConverter;
 import com.sitewhere.grpc.service.GGetConfigurationModelRequest;
@@ -67,7 +67,7 @@ public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceMan
     @Override
     public IConfigurationModel getConfigurationModel() throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(MicroserviceManagementGrpc.METHOD_GET_CONFIGURATION_MODEL);
+	    GrpcUtils.logClientMethodEntry(this, MicroserviceManagementGrpc.METHOD_GET_CONFIGURATION_MODEL);
 	    GGetConfigurationModelRequest.Builder grequest = GGetConfigurationModelRequest.newBuilder();
 	    GGetConfigurationModelResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getConfigurationModel(grequest.build());
@@ -87,7 +87,7 @@ public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceMan
     @Override
     public byte[] getGlobalConfiguration() throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(MicroserviceManagementGrpc.METHOD_GET_GLOBAL_CONFIGURATION);
+	    GrpcUtils.logClientMethodEntry(this, MicroserviceManagementGrpc.METHOD_GET_GLOBAL_CONFIGURATION);
 	    GGetGlobalConfigurationRequest.Builder grequest = GGetGlobalConfigurationRequest.newBuilder();
 	    GGetGlobalConfigurationResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getGlobalConfiguration(grequest.build());
@@ -107,7 +107,7 @@ public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceMan
     @Override
     public byte[] getTenantConfiguration(String tenantId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(MicroserviceManagementGrpc.METHOD_GET_TENANT_CONFIGURATION);
+	    GrpcUtils.logClientMethodEntry(this, MicroserviceManagementGrpc.METHOD_GET_TENANT_CONFIGURATION);
 	    GGetTenantConfigurationRequest.Builder grequest = GGetTenantConfigurationRequest.newBuilder();
 	    grequest.setTenantId(tenantId);
 	    GGetTenantConfigurationResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -127,7 +127,7 @@ public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceMan
     @Override
     public void updateGlobalConfiguration(byte[] config) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(MicroserviceManagementGrpc.METHOD_UPDATE_GLOBAL_CONFIGURATION);
+	    GrpcUtils.logClientMethodEntry(this, MicroserviceManagementGrpc.METHOD_UPDATE_GLOBAL_CONFIGURATION);
 	    GUpdateGlobalConfigurationRequest.Builder grequest = GUpdateGlobalConfigurationRequest.newBuilder();
 	    GConfigurationContent content = GConfigurationContent.newBuilder().setContent(ByteString.copyFrom(config))
 		    .build();
@@ -147,7 +147,7 @@ public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceMan
     @Override
     public void updateTenantConfiguration(String tenantId, byte[] config) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(MicroserviceManagementGrpc.METHOD_UPDATE_TENANT_CONFIGURATION);
+	    GrpcUtils.logClientMethodEntry(this, MicroserviceManagementGrpc.METHOD_UPDATE_TENANT_CONFIGURATION);
 	    GUpdateTenantConfigurationRequest.Builder grequest = GUpdateTenantConfigurationRequest.newBuilder();
 	    GConfigurationContent content = GConfigurationContent.newBuilder().setContent(ByteString.copyFrom(config))
 		    .build();

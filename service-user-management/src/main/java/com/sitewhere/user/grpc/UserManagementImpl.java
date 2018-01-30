@@ -9,7 +9,7 @@ package com.sitewhere.user.grpc;
 
 import java.util.List;
 
-import com.sitewhere.grpc.model.GrpcUtils;
+import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.model.converter.UserModelConverter;
 import com.sitewhere.grpc.service.GAddGrantedAuthoritiesRequest;
 import com.sitewhere.grpc.service.GAddGrantedAuthoritiesResponse;

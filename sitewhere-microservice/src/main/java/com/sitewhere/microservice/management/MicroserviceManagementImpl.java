@@ -11,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.protobuf.ByteString;
-import com.sitewhere.grpc.model.GrpcUtils;
+import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.model.MicroserviceModel.GConfigurationContent;
 import com.sitewhere.grpc.model.converter.MicroserviceModelConverter;
 import com.sitewhere.grpc.service.GGetConfigurationModelRequest;

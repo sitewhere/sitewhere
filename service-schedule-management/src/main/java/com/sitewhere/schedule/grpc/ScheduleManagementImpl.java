@@ -7,7 +7,7 @@
  */
 package com.sitewhere.schedule.grpc;
 
-import com.sitewhere.grpc.model.GrpcUtils;
+import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.model.ScheduleModel.GScheduleSearchResults;
 import com.sitewhere.grpc.model.ScheduleModel.GScheduledJobSearchResults;
 import com.sitewhere.grpc.model.converter.ScheduleModelConverter;
