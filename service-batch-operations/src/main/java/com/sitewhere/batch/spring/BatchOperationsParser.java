@@ -60,9 +60,6 @@ public class BatchOperationsParser extends AbstractBeanDefinitionParser {
 	    case BatchOperationManager: {
 		break;
 	    }
-	    case DefaultBatchOperationManager: {
-		break;
-	    }
 	    }
 	}
 	return null;

@@ -20,6 +20,10 @@
 			<ds:mongodb-datastore-reference id="tenant" />
 		</ds:device-management-datastore>
 
+		<!-- Batch operation manager configuration -->
+		<bop:batch-operation-manager
+			throttleDelayMs="100" />
+
 	</bop:batch-operations>
 
 </beans>

@@ -90,7 +90,7 @@ public class BatchOperationsModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createBatchOperationManagerElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Batch Operation Manager",
-		IBatchOperationsParser.Elements.DefaultBatchOperationManager.getLocalName(), "server",
+		IBatchOperationsParser.Elements.BatchOperationManager.getLocalName(), "server",
 		BatchOperationsRoleKeys.BatchOperationManager, this);
 
 	builder.description("Manages how batch operations are processed.");

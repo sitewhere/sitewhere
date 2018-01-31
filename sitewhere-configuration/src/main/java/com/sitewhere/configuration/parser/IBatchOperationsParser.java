@@ -22,9 +22,6 @@ public interface IBatchOperationsParser {
 	/** Device management datastore */
 	DeviceManagementDatastore("device-management-datastore"),
 
-	/** Default batch operation manager */
-	DefaultBatchOperationManager("default-batch-operation-manager"),
-
 	/** Batch operation manager reference */
 	BatchOperationManager("batch-operation-manager");
 
