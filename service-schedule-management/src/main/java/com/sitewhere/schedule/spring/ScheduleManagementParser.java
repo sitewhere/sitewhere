@@ -23,7 +23,6 @@ import com.sitewhere.configuration.datastore.DatastoreConfigurationParser;
 import com.sitewhere.configuration.parser.IScheduleManagementParser.Elements;
 import com.sitewhere.schedule.persistence.mongodb.MongoScheduleManagement;
 import com.sitewhere.schedule.persistence.mongodb.ScheduleManagementMongoClient;
-import com.sitewhere.spi.microservice.spring.AssetManagementBeans;
 import com.sitewhere.spi.microservice.spring.ScheduleManagementBeans;
 
 /**
@@ -75,7 +74,7 @@ public class ScheduleManagementParser extends AbstractBeanDefinitionParser {
 	    BeanDefinitionBuilder client = BeanDefinitionBuilder
 		    .rootBeanDefinition(ScheduleManagementMongoClient.class);
 	    client.addConstructorArgValue(config.getConfiguration());
-	    context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
+	    context.getRegistry().registerBeanDefinition(ScheduleManagementBeans.BEAN_MONGODB_CLIENT,
 		    client.getBeanDefinition());
 	    break;
 	}
@@ -83,7 +82,7 @@ public class ScheduleManagementParser extends AbstractBeanDefinitionParser {
 	    BeanDefinitionBuilder client = BeanDefinitionBuilder
 		    .rootBeanDefinition(ScheduleManagementMongoClient.class);
 	    client.addConstructorArgReference((String) config.getConfiguration());
-	    context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
+	    context.getRegistry().registerBeanDefinition(ScheduleManagementBeans.BEAN_MONGODB_CLIENT,
 		    client.getBeanDefinition());
 	    break;
 	}

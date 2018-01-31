@@ -21,7 +21,7 @@
 
 	<xsd:complexType name="eventManagementType">
 		<xsd:all>
-			<xsd:element ref="ds:device-management-datastore" />
+			<xsd:element ref="ds:event-management-datastore" />
 		</xsd:all>
 	</xsd:complexType>
 </xsd:schema>

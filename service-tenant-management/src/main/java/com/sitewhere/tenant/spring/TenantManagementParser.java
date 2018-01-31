@@ -19,7 +19,6 @@ import org.w3c.dom.Element;
 import com.sitewhere.configuration.datastore.DatastoreConfiguration;
 import com.sitewhere.configuration.datastore.DatastoreConfigurationParser;
 import com.sitewhere.configuration.parser.ITenantManagementParser.Elements;
-import com.sitewhere.spi.microservice.spring.AssetManagementBeans;
 import com.sitewhere.spi.microservice.spring.TenantManagementBeans;
 import com.sitewhere.tenant.persistence.mongodb.MongoTenantManagement;
 import com.sitewhere.tenant.persistence.mongodb.TenantManagementMongoClient;
@@ -68,14 +67,14 @@ public class TenantManagementParser extends AbstractBeanDefinitionParser {
 	case MongoDB: {
 	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(TenantManagementMongoClient.class);
 	    client.addConstructorArgValue(config.getConfiguration());
-	    context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
+	    context.getRegistry().registerBeanDefinition(TenantManagementBeans.BEAN_MONGODB_CLIENT,
 		    client.getBeanDefinition());
 	    break;
 	}
 	case MongoDBReference: {
 	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(TenantManagementMongoClient.class);
 	    client.addConstructorArgReference((String) config.getConfiguration());
-	    context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
+	    context.getRegistry().registerBeanDefinition(TenantManagementBeans.BEAN_MONGODB_CLIENT,
 		    client.getBeanDefinition());
 	    break;
 	}

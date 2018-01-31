@@ -21,7 +21,6 @@ import com.sitewhere.configuration.datastore.DatastoreConfigurationParser;
 import com.sitewhere.configuration.parser.IDeviceManagementParser.Elements;
 import com.sitewhere.device.persistence.mongodb.DeviceManagementMongoClient;
 import com.sitewhere.device.persistence.mongodb.MongoDeviceManagement;
-import com.sitewhere.spi.microservice.spring.AssetManagementBeans;
 import com.sitewhere.spi.microservice.spring.DeviceManagementBeans;
 
 /**
@@ -68,14 +67,14 @@ public class DeviceManagementParser extends AbstractBeanDefinitionParser {
 	case MongoDB: {
 	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(DeviceManagementMongoClient.class);
 	    client.addConstructorArgValue(config.getConfiguration());
-	    context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
+	    context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_MONGODB_CLIENT,
 		    client.getBeanDefinition());
 	    break;
 	}
 	case MongoDBReference: {
 	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(DeviceManagementMongoClient.class);
 	    client.addConstructorArgReference((String) config.getConfiguration());
-	    context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
+	    context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_MONGODB_CLIENT,
 		    client.getBeanDefinition());
 	    break;
 	}

@@ -17,6 +17,7 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import com.sitewhere.configuration.datastore.DatastoreConfigurationParser;
 import com.sitewhere.configuration.instance.influxdb.InfluxConfiguration;
 import com.sitewhere.configuration.parser.IInstanceManagementParser.InfluxDbElements;
 import com.sitewhere.spi.microservice.spring.InstanceManagementBeans;
@@ -61,7 +62,7 @@ public class InfluxConfigurationsParser extends AbstractBeanDefinitionParser {
      */
     protected void parseInfluxConfiguration(Element element, ParserContext context) {
 	BeanDefinitionBuilder configuration = BeanDefinitionBuilder.rootBeanDefinition(InfluxConfiguration.class);
-	parseInfluxAttributes(element, context, configuration);
+	DatastoreConfigurationParser.parseInfluxAttributes(element, context, configuration);
 
 	Attr id = element.getAttributeNode("id");
 	if (id == null) {
@@ -71,50 +72,5 @@ public class InfluxConfigurationsParser extends AbstractBeanDefinitionParser {
 	// Register bean using id as part of name.
 	String beanName = InstanceManagementBeans.BEAN_INFLUX_CONFIGURATION_BASE + id.getValue();
 	context.getRegistry().registerBeanDefinition(beanName, configuration.getBeanDefinition());
-    }
-
-    /**
-     * Parse common InfluxDB configuration attributes.
-     * 
-     * @param element
-     * @param context
-     */
-    protected void parseInfluxAttributes(Element element, ParserContext context, BeanDefinitionBuilder configuration) {
-	Attr connectUrl = element.getAttributeNode("connectUrl");
-	if (connectUrl != null) {
-	    configuration.addPropertyValue("connectUrl", connectUrl.getValue());
-	}
-	Attr username = element.getAttributeNode("username");
-	if (username != null) {
-	    configuration.addPropertyValue("username", username.getValue());
-	}
-	Attr password = element.getAttributeNode("password");
-	if (password != null) {
-	    configuration.addPropertyValue("password", password.getValue());
-	}
-	Attr database = element.getAttributeNode("database");
-	if (database != null) {
-	    configuration.addPropertyValue("database", database.getValue());
-	}
-	Attr retention = element.getAttributeNode("retention");
-	if (retention != null) {
-	    configuration.addPropertyValue("retention", retention.getValue());
-	}
-	Attr enableBatch = element.getAttributeNode("enableBatch");
-	if (enableBatch != null) {
-	    configuration.addPropertyValue("enableBatch", enableBatch.getValue());
-	}
-	Attr batchChunkSize = element.getAttributeNode("batchChunkSize");
-	if (retention != null) {
-	    configuration.addPropertyValue("batchChunkSize", batchChunkSize.getValue());
-	}
-	Attr batchIntervalMs = element.getAttributeNode("batchIntervalMs");
-	if (retention != null) {
-	    configuration.addPropertyValue("batchIntervalMs", batchIntervalMs.getValue());
-	}
-	Attr logLevel = element.getAttributeNode("logLevel");
-	if (logLevel != null) {
-	    configuration.addPropertyValue("logLevel", logLevel.getValue());
-	}
     }
 }

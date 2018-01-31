@@ -21,7 +21,9 @@ public enum CommonDatastoreRoles implements IConfigurationRoleProvider {
 
     /** Top-level common role. */
     Datastore(ConfigurationRole.build(CommonDatastoreRoleKeys.Datastore, "Datastore", false, false, false,
-	    new IRoleKey[] { CommonDatastoreRoleKeys.DeviceManagementDatastore }, new IRoleKey[0])),
+	    new IRoleKey[] { CommonDatastoreRoleKeys.DeviceManagementDatastore,
+		    CommonDatastoreRoleKeys.EventManagementDatastore },
+	    new IRoleKey[0])),
 
     /** Device management datastore */
     DeviceManagementDatastore(
@@ -33,12 +35,31 @@ public enum CommonDatastoreRoles implements IConfigurationRoleProvider {
 	    "Datastore", false, false, false, new IRoleKey[0],
 	    new IRoleKey[] { CommonDatastoreRoleKeys.MongoDBDatastore, CommonDatastoreRoleKeys.MongoDBReference })),
 
+    /** Event management datastore */
+    EventManagementDatastore(
+	    ConfigurationRole.build(CommonDatastoreRoleKeys.EventManagementDatastore, "Datastore", false, false, false,
+		    new IRoleKey[] { CommonDatastoreRoleKeys.DeviceManagementDatastoreElement }, new IRoleKey[0])),
+
+    /** Elements that can be added to a event management datastore */
+    EventManagementDatastoreElement(ConfigurationRole.build(CommonDatastoreRoleKeys.EventManagementDatastoreElement,
+	    "Datastore", false, false, false, new IRoleKey[0],
+	    new IRoleKey[] { CommonDatastoreRoleKeys.MongoDBDatastore, CommonDatastoreRoleKeys.MongoDBReference,
+		    CommonDatastoreRoleKeys.InfluxDBDatastore, CommonDatastoreRoleKeys.InfluxDBReference })),
+
     /** MongoDB datastore */
     MongoDBDatastore(ConfigurationRole.build(CommonDatastoreRoleKeys.MongoDBDatastore, "MongoDB Datastore", false,
 	    false, false)),
 
     /** MongoDB global reference */
     MongoDBReference(ConfigurationRole.build(CommonDatastoreRoleKeys.MongoDBReference, "MongoDB Global Reference",
+	    false, false, false)),
+
+    /** InfluxDB datastore */
+    InfluxDBDatastore(ConfigurationRole.build(CommonDatastoreRoleKeys.InfluxDBDatastore, "InfluxDB Datastore", false,
+	    false, false)),
+
+    /** InfluxDB global reference */
+    InfluxDBReference(ConfigurationRole.build(CommonDatastoreRoleKeys.InfluxDBReference, "InfluxDB Global Reference",
 	    false, false, false));
 
     private ConfigurationRole role;

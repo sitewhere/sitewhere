@@ -15,8 +15,10 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import com.sitewhere.configuration.instance.influxdb.InfluxConfiguration;
 import com.sitewhere.configuration.instance.mongodb.MongoConfiguration;
 import com.sitewhere.configuration.parser.IDatastoreCommonParser.DeviceManagementDatastoreElements;
+import com.sitewhere.configuration.parser.IDatastoreCommonParser.EventManagementDatastoreElements;
 import com.sitewhere.spi.microservice.spring.InstanceManagementBeans;
 
 /**
@@ -48,6 +50,40 @@ public class DatastoreConfigurationParser {
 	    }
 	    case MongoDBReference: {
 		return parseMongoDbReference(child, context);
+	    }
+	    }
+	}
+	return null;
+    }
+
+    /**
+     * Parse potential configuration options for a event management datastore and
+     * return configuration details.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    public static DatastoreConfiguration parseEventManagementDatastore(Element element, ParserContext context) {
+	List<Element> children = DomUtils.getChildElements(element);
+	for (Element child : children) {
+	    EventManagementDatastoreElements type = EventManagementDatastoreElements
+		    .getByLocalName(child.getLocalName());
+	    if (type == null) {
+		throw new RuntimeException("Unknown datastore element: " + child.getLocalName());
+	    }
+	    switch (type) {
+	    case MongoDBDatastore: {
+		return parseMongoDbDatastore(child, context);
+	    }
+	    case MongoDBReference: {
+		return parseMongoDbReference(child, context);
+	    }
+	    case InfluxDBDatastore: {
+		return parseInfluxDbDatastore(child, context);
+	    }
+	    case InfluxDBReference: {
+		return parseInfluxDbReference(child, context);
 	    }
 	    }
 	}
@@ -133,6 +169,81 @@ public class DatastoreConfigurationParser {
 	Attr autoConfigureReplication = element.getAttributeNode("autoConfigureReplication");
 	if (autoConfigureReplication != null) {
 	    client.addPropertyValue("autoConfigureReplication", autoConfigureReplication.getValue());
+	}
+    }
+
+    /**
+     * Parse configuration for a InfluxDB datastore.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected static DatastoreConfiguration parseInfluxDbDatastore(Element element, ParserContext context) {
+	BeanDefinitionBuilder configuration = BeanDefinitionBuilder.rootBeanDefinition(InfluxConfiguration.class);
+	parseInfluxAttributes(element, context, configuration);
+	return new DatastoreConfiguration(DatastoreConfigurationType.InfluxDB, configuration);
+    }
+
+    /**
+     * Parse configuration reference for a InfluxDB datastore.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected static DatastoreConfiguration parseInfluxDbReference(Element element, ParserContext context) {
+	Attr id = element.getAttributeNode("id");
+	if (id == null) {
+	    throw new RuntimeException("No id specified for InfluxDB configuration.");
+	}
+	String reference = InstanceManagementBeans.BEAN_INFLUX_CONFIGURATION_BASE + id.getValue();
+	return new DatastoreConfiguration(DatastoreConfigurationType.InfluxDBReference, reference);
+    }
+
+    /**
+     * Parse common InfluxDB configuration attributes.
+     * 
+     * @param element
+     * @param context
+     */
+    public static void parseInfluxAttributes(Element element, ParserContext context,
+	    BeanDefinitionBuilder configuration) {
+	Attr connectUrl = element.getAttributeNode("connectUrl");
+	if (connectUrl != null) {
+	    configuration.addPropertyValue("connectUrl", connectUrl.getValue());
+	}
+	Attr username = element.getAttributeNode("username");
+	if (username != null) {
+	    configuration.addPropertyValue("username", username.getValue());
+	}
+	Attr password = element.getAttributeNode("password");
+	if (password != null) {
+	    configuration.addPropertyValue("password", password.getValue());
+	}
+	Attr database = element.getAttributeNode("database");
+	if (database != null) {
+	    configuration.addPropertyValue("database", database.getValue());
+	}
+	Attr retention = element.getAttributeNode("retention");
+	if (retention != null) {
+	    configuration.addPropertyValue("retention", retention.getValue());
+	}
+	Attr enableBatch = element.getAttributeNode("enableBatch");
+	if (enableBatch != null) {
+	    configuration.addPropertyValue("enableBatch", enableBatch.getValue());
+	}
+	Attr batchChunkSize = element.getAttributeNode("batchChunkSize");
+	if (retention != null) {
+	    configuration.addPropertyValue("batchChunkSize", batchChunkSize.getValue());
+	}
+	Attr batchIntervalMs = element.getAttributeNode("batchIntervalMs");
+	if (retention != null) {
+	    configuration.addPropertyValue("batchIntervalMs", batchIntervalMs.getValue());
+	}
+	Attr logLevel = element.getAttributeNode("logLevel");
+	if (logLevel != null) {
+	    configuration.addPropertyValue("logLevel", logLevel.getValue());
 	}
     }
 }

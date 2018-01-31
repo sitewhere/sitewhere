@@ -23,7 +23,6 @@ import com.sitewhere.batch.persistence.mongodb.MongoBatchManagement;
 import com.sitewhere.configuration.datastore.DatastoreConfiguration;
 import com.sitewhere.configuration.datastore.DatastoreConfigurationParser;
 import com.sitewhere.configuration.parser.IBatchOperationsParser.Elements;
-import com.sitewhere.spi.microservice.spring.AssetManagementBeans;
 import com.sitewhere.spi.microservice.spring.BatchManagementBeans;
 
 /**
@@ -77,14 +76,14 @@ public class BatchOperationsParser extends AbstractBeanDefinitionParser {
 	case MongoDB: {
 	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(BatchManagementMongoClient.class);
 	    client.addConstructorArgValue(config.getConfiguration());
-	    context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
+	    context.getRegistry().registerBeanDefinition(BatchManagementBeans.BEAN_MONGODB_CLIENT,
 		    client.getBeanDefinition());
 	    break;
 	}
 	case MongoDBReference: {
 	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(BatchManagementMongoClient.class);
 	    client.addConstructorArgReference((String) config.getConfiguration());
-	    context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
+	    context.getRegistry().registerBeanDefinition(BatchManagementBeans.BEAN_MONGODB_CLIENT,
 		    client.getBeanDefinition());
 	    break;
 	}

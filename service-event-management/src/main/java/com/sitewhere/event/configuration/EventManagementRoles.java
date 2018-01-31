@@ -22,7 +22,7 @@ public enum EventManagementRoles implements IConfigurationRoleProvider {
 
     /** Root schedule management role. */
     EventManagement(ConfigurationRole.build(EventManagementRoleKeys.EventManagement, "Event Management", false, false,
-	    false, new IRoleKey[] { CommonDatastoreRoleKeys.DeviceManagementDatastore }, new IRoleKey[0], true));
+	    false, new IRoleKey[] { CommonDatastoreRoleKeys.EventManagementDatastore }, new IRoleKey[0], true));
 
     private ConfigurationRole role;
 

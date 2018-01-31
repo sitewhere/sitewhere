@@ -8,7 +8,6 @@
 package com.sitewhere.instance.configuration;
 
 import com.sitewhere.configuration.CommonConnectorModel;
-import com.sitewhere.configuration.CommonDatastoreModel;
 import com.sitewhere.configuration.model.CommonDatastoreProvider;
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.configuration.parser.IInstanceManagementParser;
@@ -177,7 +176,7 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
 
 	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String)
 		.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
-	CommonDatastoreModel.addInfluxDbAttributes(builder);
+	CommonDatastoreProvider.addInfluxDbAttributes(builder);
 
 	return builder.build();
     }

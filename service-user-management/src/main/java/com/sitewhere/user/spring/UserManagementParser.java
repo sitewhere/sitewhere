@@ -19,7 +19,6 @@ import org.w3c.dom.Element;
 import com.sitewhere.configuration.datastore.DatastoreConfiguration;
 import com.sitewhere.configuration.datastore.DatastoreConfigurationParser;
 import com.sitewhere.configuration.parser.IUserManagementParser.Elements;
-import com.sitewhere.spi.microservice.spring.AssetManagementBeans;
 import com.sitewhere.spi.microservice.spring.UserManagementBeans;
 import com.sitewhere.user.persistence.mongodb.MongoUserManagement;
 import com.sitewhere.user.persistence.mongodb.UserManagementMongoClient;
@@ -68,14 +67,14 @@ public class UserManagementParser extends AbstractBeanDefinitionParser {
 	case MongoDB: {
 	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(UserManagementMongoClient.class);
 	    client.addConstructorArgValue(config.getConfiguration());
-	    context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
+	    context.getRegistry().registerBeanDefinition(UserManagementBeans.BEAN_MONGODB_CLIENT,
 		    client.getBeanDefinition());
 	    break;
 	}
 	case MongoDBReference: {
 	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(UserManagementMongoClient.class);
 	    client.addConstructorArgReference((String) config.getConfiguration());
-	    context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
+	    context.getRegistry().registerBeanDefinition(UserManagementBeans.BEAN_MONGODB_CLIENT,
 		    client.getBeanDefinition());
 	    break;
 	}

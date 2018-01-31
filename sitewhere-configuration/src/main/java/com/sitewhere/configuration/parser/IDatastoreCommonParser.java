@@ -17,7 +17,10 @@ public interface IDatastoreCommonParser {
     public static enum Elements {
 
 	/** Device management datastore */
-	DeviceManagementDatastore("device-management-datastore");
+	DeviceManagementDatastore("device-management-datastore"),
+
+	/** Event management datastore */
+	EventManagementDatastore("event-management-datastore");
 
 	/** Event code */
 	private String localName;
@@ -61,6 +64,45 @@ public interface IDatastoreCommonParser {
 
 	public static DeviceManagementDatastoreElements getByLocalName(String localName) {
 	    for (DeviceManagementDatastoreElements value : DeviceManagementDatastoreElements.values()) {
+		if (value.getLocalName().equals(localName)) {
+		    return value;
+		}
+	    }
+	    return null;
+	}
+
+	public String getLocalName() {
+	    return localName;
+	}
+
+	public void setLocalName(String localName) {
+	    this.localName = localName;
+	}
+    }
+
+    public static enum EventManagementDatastoreElements {
+
+	/** MongoDB datastore */
+	MongoDBDatastore("mongodb-datastore"),
+
+	/** MongoDB datastore reference */
+	MongoDBReference("mongodb-datastore-reference"),
+
+	/** InfluxDB datastore */
+	InfluxDBDatastore("influxdb-datastore"),
+
+	/** InfluxDB datastore reference */
+	InfluxDBReference("influxdb-datastore-reference");
+
+	/** Event code */
+	private String localName;
+
+	private EventManagementDatastoreElements(String localName) {
+	    this.localName = localName;
+	}
+
+	public static EventManagementDatastoreElements getByLocalName(String localName) {
+	    for (EventManagementDatastoreElements value : EventManagementDatastoreElements.values()) {
 		if (value.getLocalName().equals(localName)) {
 		    return value;
 		}

@@ -19,9 +19,10 @@ import org.w3c.dom.Element;
 import com.sitewhere.configuration.datastore.DatastoreConfiguration;
 import com.sitewhere.configuration.datastore.DatastoreConfigurationParser;
 import com.sitewhere.configuration.parser.IEventManagementParser.Elements;
+import com.sitewhere.event.persistence.influxdb.InfluxDbDeviceEventManagement;
 import com.sitewhere.event.persistence.mongodb.DeviceEventManagementMongoClient;
 import com.sitewhere.event.persistence.mongodb.MongoDeviceEventManagement;
-import com.sitewhere.spi.microservice.spring.AssetManagementBeans;
+import com.sitewhere.influxdb.InfluxDbClient;
 import com.sitewhere.spi.microservice.spring.EventManagementBeans;
 
 /**
@@ -47,8 +48,8 @@ public class EventManagementParser extends AbstractBeanDefinitionParser {
 		throw new RuntimeException("Unknown event management element: " + child.getLocalName());
 	    }
 	    switch (type) {
-	    case DeviceManagementDatastore: {
-		parseDeviceManagementDatastore(child, context);
+	    case EventManagementDatastore: {
+		parseEventManagementDatastore(child, context);
 		break;
 	    }
 	    }
@@ -62,35 +63,70 @@ public class EventManagementParser extends AbstractBeanDefinitionParser {
      * @param element
      * @param context
      */
-    protected void parseDeviceManagementDatastore(Element element, ParserContext context) {
-	DatastoreConfiguration config = DatastoreConfigurationParser.parseDeviceManagementDatastore(element, context);
+    protected void parseEventManagementDatastore(Element element, ParserContext context) {
+	DatastoreConfiguration config = DatastoreConfigurationParser.parseEventManagementDatastore(element, context);
 	switch (config.getType()) {
 	case MongoDB: {
 	    BeanDefinitionBuilder client = BeanDefinitionBuilder
 		    .rootBeanDefinition(DeviceEventManagementMongoClient.class);
 	    client.addConstructorArgValue(config.getConfiguration());
-	    context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
+	    context.getRegistry().registerBeanDefinition(EventManagementBeans.BEAN_MONGODB_CLIENT,
 		    client.getBeanDefinition());
+
+	    BeanDefinitionBuilder management = BeanDefinitionBuilder
+		    .rootBeanDefinition(MongoDeviceEventManagement.class);
+	    management.addPropertyReference("mongoClient", EventManagementBeans.BEAN_MONGODB_CLIENT);
+
+	    context.getRegistry().registerBeanDefinition(EventManagementBeans.BEAN_EVENT_MANAGEMENT,
+		    management.getBeanDefinition());
 	    break;
 	}
 	case MongoDBReference: {
 	    BeanDefinitionBuilder client = BeanDefinitionBuilder
 		    .rootBeanDefinition(DeviceEventManagementMongoClient.class);
 	    client.addConstructorArgReference((String) config.getConfiguration());
-	    context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
+	    context.getRegistry().registerBeanDefinition(EventManagementBeans.BEAN_MONGODB_CLIENT,
 		    client.getBeanDefinition());
+
+	    BeanDefinitionBuilder management = BeanDefinitionBuilder
+		    .rootBeanDefinition(MongoDeviceEventManagement.class);
+	    management.addPropertyReference("mongoClient", EventManagementBeans.BEAN_MONGODB_CLIENT);
+
+	    context.getRegistry().registerBeanDefinition(EventManagementBeans.BEAN_EVENT_MANAGEMENT,
+		    management.getBeanDefinition());
+	    break;
+	}
+	case InfluxDB: {
+	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(InfluxDbClient.class);
+	    client.addConstructorArgValue(config.getConfiguration());
+	    context.getRegistry().registerBeanDefinition(EventManagementBeans.BEAN_INFLUXDB_CLIENT,
+		    client.getBeanDefinition());
+
+	    BeanDefinitionBuilder management = BeanDefinitionBuilder
+		    .rootBeanDefinition(InfluxDbDeviceEventManagement.class);
+	    management.addPropertyReference("client", EventManagementBeans.BEAN_INFLUXDB_CLIENT);
+
+	    context.getRegistry().registerBeanDefinition(EventManagementBeans.BEAN_EVENT_MANAGEMENT,
+		    management.getBeanDefinition());
+	    break;
+	}
+	case InfluxDBReference: {
+	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(InfluxDbClient.class);
+	    client.addConstructorArgReference((String) config.getConfiguration());
+	    context.getRegistry().registerBeanDefinition(EventManagementBeans.BEAN_INFLUXDB_CLIENT,
+		    client.getBeanDefinition());
+
+	    BeanDefinitionBuilder management = BeanDefinitionBuilder
+		    .rootBeanDefinition(InfluxDbDeviceEventManagement.class);
+	    management.addPropertyReference("client", EventManagementBeans.BEAN_INFLUXDB_CLIENT);
+
+	    context.getRegistry().registerBeanDefinition(EventManagementBeans.BEAN_EVENT_MANAGEMENT,
+		    management.getBeanDefinition());
 	    break;
 	}
 	default: {
 	    throw new RuntimeException("Invalid datastore configured: " + config.getType());
 	}
 	}
-
-	// Build device mangement implementation.
-	BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(MongoDeviceEventManagement.class);
-	management.addPropertyReference("mongoClient", EventManagementBeans.BEAN_MONGODB_CLIENT);
-
-	context.getRegistry().registerBeanDefinition(EventManagementBeans.BEAN_EVENT_MANAGEMENT,
-		management.getBeanDefinition());
     }
 }

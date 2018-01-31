@@ -17,6 +17,9 @@ public class EventManagementBeans {
     /** Bean id for event mangement MongoDB client */
     public static final String BEAN_MONGODB_CLIENT = "mongoClient";
 
+    /** Bean id for asset mangement MongoDB client */
+    public static final String BEAN_INFLUXDB_CLIENT = "influxClient";
+
     /** Bean id for event management in server configuration */
     public static final String BEAN_EVENT_MANAGEMENT = "eventManagement";
 }

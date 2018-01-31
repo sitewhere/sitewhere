@@ -14,7 +14,7 @@ package com.sitewhere.spi.microservice.spring;
  */
 public class AssetManagementBeans {
 
-    /** Bean id for device mangement MongoDB client */
+    /** Bean id for asset mangement MongoDB client */
     public static final String BEAN_MONGODB_CLIENT = "mongoClient";
 
     /** Bean id for asset management in server configuration */

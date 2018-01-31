@@ -19,8 +19,8 @@ public interface IEventManagementParser {
 
     public static enum Elements {
 
-	/** Device management datastore */
-	DeviceManagementDatastore("device-management-datastore");
+	/** Event management datastore */
+	EventManagementDatastore("event-management-datastore");
 
 	/** Event code */
 	private String localName;
