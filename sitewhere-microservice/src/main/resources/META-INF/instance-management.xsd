@@ -79,8 +79,8 @@
 		substitutionGroup="abstract-persistence-configuration">
 		<xsd:annotation>
 			<xsd:documentation>
-				Provides global datastore configuration using
-				MongoDB for persistence.
+				Provides global configuration for MongoDB that can
+				be referenced by microservices.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -88,21 +88,11 @@
 		<xsd:complexContent>
 			<xsd:extension base="abstractPersistenceConfigurationType">
 				<xsd:sequence>
-					<xsd:element name="default-mongodb-configuration"
-						type="defaultMongoDatastoreConfigurationType" minOccurs="1">
+					<xsd:element name="mongodb-configuration" type="mongoDatastoreConfigurationType"
+						minOccurs="0" maxOccurs="unbounded">
 						<xsd:annotation>
 							<xsd:documentation>
-								Default configuration data for MongoDB
-								datastores.
-							</xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
-					<xsd:element name="alternate-mongodb-configuration"
-						type="alternateMongoDatastoreConfigurationType" minOccurs="0">
-						<xsd:annotation>
-							<xsd:documentation>
-								Alternate configuration data for MongoDB
-								datastores.
+								Configuration data for MongoDB datastores.
 							</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
@@ -111,14 +101,9 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
-	<!-- Default MongoDB datastore configuration -->
-	<xsd:complexType name="defaultMongoDatastoreConfigurationType">
-		<xsd:attributeGroup ref="ds:mongo-attributes" />
-	</xsd:complexType>
-
 	<!-- Alternate MongoDB datastore configuration -->
-	<xsd:complexType name="alternateMongoDatastoreConfigurationType">
-		<xsd:attribute name="id" type="xsd:string">
+	<xsd:complexType name="mongoDatastoreConfigurationType">
+		<xsd:attribute name="id" type="xsd:string" use="required">
 			<xsd:annotation>
 				<xsd:documentation>
 					Unique id for datastore configuration.
@@ -126,6 +111,45 @@
 			</xsd:annotation>
 		</xsd:attribute>
 		<xsd:attributeGroup ref="ds:mongo-attributes" />
+	</xsd:complexType>
+
+	<!-- InfluxDB persistence configuration elements -->
+	<xsd:element name="influxdb-configurations" type="influxConfigurationsType"
+		substitutionGroup="abstract-persistence-configuration">
+		<xsd:annotation>
+			<xsd:documentation>
+				Provides global configuration for InfluxDB that
+				can be referenced by microservices.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="influxConfigurationsType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractPersistenceConfigurationType">
+				<xsd:sequence>
+					<xsd:element name="influxdb-configuration" type="influxDatastoreConfigurationType"
+						minOccurs="0" maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:documentation>
+								Configuration data for MongoDB datastores.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- InfluxDB datastore configuration -->
+	<xsd:complexType name="influxDatastoreConfigurationType">
+		<xsd:attribute name="id" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Unique id for datastore configuration.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attributeGroup ref="ds:influx-attributes" />
 	</xsd:complexType>
 
 	<!-- Connector configurations -->

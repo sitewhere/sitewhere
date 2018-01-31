@@ -7,8 +7,9 @@
  */
 package com.sitewhere.event.configuration;
 
+import com.sitewhere.configuration.model.CommonDatastoreProvider;
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
-import com.sitewhere.configuration.parser.IDeviceRegistrationParser;
+import com.sitewhere.configuration.parser.IEventManagementParser;
 import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
@@ -52,7 +53,7 @@ public class EventManagementModelProvider extends ConfigurationModelProvider {
      * @return
      */
     protected ElementNode createEventManagementElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Event Management", IDeviceRegistrationParser.ROOT,
+	ElementNode.Builder builder = new ElementNode.Builder("Event Management", IEventManagementParser.ROOT,
 		"exchange", EventManagementRoleKeys.EventManagement, this);
 
 	builder.description("Handles operations related to the device event management model including persistence.");
@@ -69,5 +70,14 @@ public class EventManagementModelProvider extends ConfigurationModelProvider {
 	for (EventManagementRoles role : EventManagementRoles.values()) {
 	    getRolesById().put(role.getRole().getKey().getId(), role.getRole());
 	}
+    }
+
+    /*
+     * @see com.sitewhere.configuration.model.ConfigurationModelProvider#
+     * initializeDependencies()
+     */
+    @Override
+    public void initializeDependencies() {
+	getDependencies().add(new CommonDatastoreProvider());
     }
 }

@@ -8,6 +8,7 @@
 package com.sitewhere.batch.configuration;
 
 import com.sitewhere.configuration.ConfigurationRole;
+import com.sitewhere.configuration.model.CommonDatastoreRoleKeys;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRole;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 import com.sitewhere.spi.microservice.configuration.model.IRoleKey;
@@ -20,8 +21,10 @@ import com.sitewhere.spi.microservice.configuration.model.IRoleKey;
 public enum BatchOperationsRoles implements IConfigurationRoleProvider {
 
     /** Root event sources role. */
-    BatchOperations(ConfigurationRole.build(BatchOperationsRoleKeys.BatchOperations, "Batch Operations", false, false,
-	    false, new IRoleKey[] { BatchOperationsRoleKeys.BatchOperationManager }, new IRoleKey[0], true)),
+    BatchOperations(ConfigurationRole.build(
+	    BatchOperationsRoleKeys.BatchOperations, "Batch Operations", false, false, false, new IRoleKey[] {
+		    CommonDatastoreRoleKeys.DeviceManagementDatastore, BatchOperationsRoleKeys.BatchOperationManager },
+	    new IRoleKey[0], true)),
 
     /** Batch operation manager. */
     BatchOperationManager(ConfigurationRole.build(BatchOperationsRoleKeys.BatchOperationManager,

@@ -16,8 +16,10 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
+import com.sitewhere.configuration.datastore.DatastoreConfiguration;
+import com.sitewhere.configuration.datastore.DatastoreConfigurationParser;
 import com.sitewhere.configuration.parser.IUserManagementParser.Elements;
-import com.sitewhere.spi.microservice.spring.InstanceManagementBeans;
+import com.sitewhere.spi.microservice.spring.AssetManagementBeans;
 import com.sitewhere.spi.microservice.spring.UserManagementBeans;
 import com.sitewhere.user.persistence.mongodb.MongoUserManagement;
 import com.sitewhere.user.persistence.mongodb.UserManagementMongoClient;
@@ -45,8 +47,8 @@ public class UserManagementParser extends AbstractBeanDefinitionParser {
 		throw new RuntimeException("Unknown user management element: " + child.getLocalName());
 	    }
 	    switch (type) {
-	    case DefaultMongoDatastore: {
-		parseDefaultMongoDatastore(child, context);
+	    case DeviceManagementDatastore: {
+		parseDeviceManagementDatastore(child, context);
 		break;
 	    }
 	    }
@@ -55,20 +57,34 @@ public class UserManagementParser extends AbstractBeanDefinitionParser {
     }
 
     /**
-     * Parse the default MongoDB datastore element.
+     * Parse device management datastore element.
      * 
      * @param element
      * @param context
      */
-    protected void parseDefaultMongoDatastore(Element element, ParserContext context) {
-	// Build MongoDB client using default global configuration.
-	BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(UserManagementMongoClient.class);
-	client.addConstructorArgReference(InstanceManagementBeans.BEAN_MONGO_CONFIGURATION_DEFAULT);
+    protected void parseDeviceManagementDatastore(Element element, ParserContext context) {
+	DatastoreConfiguration config = DatastoreConfigurationParser.parseDeviceManagementDatastore(element, context);
+	switch (config.getType()) {
+	case MongoDB: {
+	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(UserManagementMongoClient.class);
+	    client.addConstructorArgValue(config.getConfiguration());
+	    context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
+		    client.getBeanDefinition());
+	    break;
+	}
+	case MongoDBReference: {
+	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(UserManagementMongoClient.class);
+	    client.addConstructorArgReference((String) config.getConfiguration());
+	    context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
+		    client.getBeanDefinition());
+	    break;
+	}
+	default: {
+	    throw new RuntimeException("Invalid datastore configured: " + config.getType());
+	}
+	}
 
-	context.getRegistry().registerBeanDefinition(UserManagementBeans.BEAN_MONGODB_CLIENT,
-		client.getBeanDefinition());
-
-	// Build tenant management implementation.
+	// Build user management implementation.
 	BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(MongoUserManagement.class);
 	management.addPropertyReference("mongoClient", UserManagementBeans.BEAN_MONGODB_CLIENT);
 

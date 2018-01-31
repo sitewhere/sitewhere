@@ -7,6 +7,7 @@
  */
 package com.sitewhere.spi.microservice;
 
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 import com.sitewhere.spi.SiteWhereException;
@@ -68,6 +69,13 @@ public interface IMicroservice extends ILifecycleComponent, ITracerProvider {
      * @return
      */
     public boolean isGlobal();
+
+    /**
+     * Get properties that should be passed into Spring context.
+     * 
+     * @return
+     */
+    public Map<String, Object> getSpringProperties();
 
     /**
      * Build configuration model.

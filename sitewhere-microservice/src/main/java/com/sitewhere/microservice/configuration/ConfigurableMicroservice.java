@@ -7,6 +7,7 @@
  */
 package com.sitewhere.microservice.configuration;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -114,6 +115,16 @@ public abstract class ConfigurableMicroservice extends Microservice
 	    throw new SiteWhereException("Configuration cache not initialized.");
 	}
 	return getConfigurationMonitor().getConfigurationDataFor(path);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getSpringProperties()
+     */
+    @Override
+    public Map<String, Object> getSpringProperties() {
+	Map<String, Object> properties = new HashMap<>();
+	properties.put("sitewhere.edition", getVersion().getEditionIdentifier().toLowerCase());
+	return properties;
     }
 
     /*
@@ -553,7 +564,7 @@ public abstract class ConfigurableMicroservice extends Microservice
 		if (global == null) {
 		    throw new SiteWhereException("Global instance management file not found.");
 		}
-		ApplicationContext globalContext = ConfigurationUtils.buildGlobalContext(global, getVersion(),
+		ApplicationContext globalContext = ConfigurationUtils.buildGlobalContext(global, getSpringProperties(),
 			getMicroserviceContext());
 
 		String path = getConfigurationPath();
@@ -563,7 +574,7 @@ public abstract class ConfigurableMicroservice extends Microservice
 		    getLogger().debug("Loading configuration at path: " + fullPath);
 		    byte[] data = getConfigurationMonitor().getConfigurationDataFor(fullPath);
 		    if (data != null) {
-			localContext = ConfigurationUtils.buildSubcontext(data, getVersion(), globalContext);
+			localContext = ConfigurationUtils.buildSubcontext(data, getSpringProperties(), globalContext);
 		    } else {
 			throw new SiteWhereException("Required microservice configuration not found: " + fullPath);
 		    }

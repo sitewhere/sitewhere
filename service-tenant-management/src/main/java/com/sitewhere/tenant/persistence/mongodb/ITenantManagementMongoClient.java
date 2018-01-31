@@ -29,12 +29,4 @@ public interface ITenantManagementMongoClient extends ILifecycleComponent {
      * @return
      */
     public MongoCollection<Document> getTenantsCollection() throws SiteWhereException;
-
-    /**
-     * Deletes all tenant data. (non recoverable)
-     * 
-     * @param tenantId
-     * @throws SiteWhereException
-     */
-    public void deleteTenantData(String tenantId) throws SiteWhereException;
 }

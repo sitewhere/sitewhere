@@ -25,11 +25,12 @@ import com.mongodb.client.MongoDatabase;
 import com.sitewhere.configuration.instance.mongodb.MongoConfiguration;
 import com.sitewhere.core.Boilerplate;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.server.lifecycle.parameters.StringComponentParameter;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponentParameter;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Spring wrapper for initializing a Mongo client used by SiteWhere components.
@@ -44,6 +45,9 @@ public abstract class BaseMongoClient extends TenantEngineLifecycleComponent
 
     /** MongoDB Configuration */
     private MongoConfiguration configuration;
+
+    /** Get database parameter */
+    private ILifecycleComponentParameter<String> databaseName;
 
     public BaseMongoClient(MongoConfiguration configuration) {
 	super(LifecycleComponentType.DataStore);
@@ -60,6 +64,17 @@ public abstract class BaseMongoClient extends TenantEngineLifecycleComponent
     @Override
     public boolean isRequired() {
 	return true;
+    }
+
+    /*
+     * @see com.sitewhere.server.lifecycle.LifecycleComponent#initializeParameters()
+     */
+    @Override
+    public void initializeParameters() throws SiteWhereException {
+	// Add database name.
+	this.databaseName = StringComponentParameter.newBuilder(this, "Database")
+		.value(getConfiguration().getDatabaseName()).makeRequired().build();
+	getParameters().add(databaseName);
     }
 
     /*
@@ -116,7 +131,7 @@ public abstract class BaseMongoClient extends TenantEngineLifecycleComponent
 	    }
 
 	    // Force interaction to test connectivity.
-	    getGlobalDatabase().listCollectionNames();
+	    getDatabase().listCollectionNames();
 	} catch (MongoTimeoutException e) {
 	    throw new SiteWhereException("Timed out connecting to MongoDB instance. "
 		    + "Verify that MongoDB is running on " + getConfiguration().getHostname() + ":"
@@ -281,36 +296,13 @@ public abstract class BaseMongoClient extends TenantEngineLifecycleComponent
     }
 
     /**
-     * Get database associated with a tenant.
+     * Get MongoDB database client.
      * 
-     * @param tenant
      * @return
      * @throws SiteWhereException
      */
-    public MongoDatabase getTenantDatabase(ITenant tenant) throws SiteWhereException {
-	if (tenant != null) {
-	    return getTenantDatabase(tenant.getId());
-	}
-	throw new SiteWhereException("Called getTenantDatabase() with null tenant.");
-    }
-
-    /**
-     * Get database associated with a tenant id.
-     * 
-     * @param tenantId
-     * @return
-     */
-    public MongoDatabase getTenantDatabase(String tenantId) throws SiteWhereException {
-	return getMongoClient().getDatabase("tenant-" + tenantId);
-    }
-
-    /**
-     * Get database for storing global model objects.
-     * 
-     * @return
-     */
-    public MongoDatabase getGlobalDatabase() throws SiteWhereException {
-	return getMongoClient().getDatabase(getConfiguration().getDatabaseName());
+    public MongoDatabase getDatabase() throws SiteWhereException {
+	return getMongoClient().getDatabase(getDatabaseName().getValue());
     }
 
     public MongoConfiguration getConfiguration() {
@@ -319,5 +311,13 @@ public abstract class BaseMongoClient extends TenantEngineLifecycleComponent
 
     public void setConfiguration(MongoConfiguration configuration) {
 	this.configuration = configuration;
+    }
+
+    public ILifecycleComponentParameter<String> getDatabaseName() {
+	return databaseName;
+    }
+
+    public void setDatabaseName(ILifecycleComponentParameter<String> databaseName) {
+	this.databaseName = databaseName;
     }
 }

@@ -11,7 +11,6 @@ import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Mongo client that provides schedule management collections.
@@ -29,18 +28,16 @@ public interface IScheduleManagementMongoClient {
     /**
      * Get collection for schedules.
      * 
-     * @param tenant
      * @return
      * @throws SiteWhereException
      */
-    public MongoCollection<Document> getSchedulesCollection(ITenant tenant) throws SiteWhereException;
+    public MongoCollection<Document> getSchedulesCollection() throws SiteWhereException;
 
     /**
      * Get collection for scheduled jobs.
      * 
-     * @param tenant
      * @return
      * @throws SiteWhereException
      */
-    public MongoCollection<Document> getScheduledJobsCollection(ITenant tenant) throws SiteWhereException;
+    public MongoCollection<Document> getScheduledJobsCollection() throws SiteWhereException;
 }

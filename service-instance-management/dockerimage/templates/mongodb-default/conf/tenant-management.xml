@@ -12,8 +12,10 @@
 	<!-- Tenant Management Configuration -->
 	<tm:tenant-management>
 
-		<!-- Use default MongoDB configuration -->
-		<ds:default-mongodb-datastore />
+		<!-- Use global MongoDB configuration -->
+		<ds:device-management-datastore>
+			<ds:mongodb-datastore-reference id="global" />
+		</ds:device-management-datastore>
 
 	</tm:tenant-management>
 

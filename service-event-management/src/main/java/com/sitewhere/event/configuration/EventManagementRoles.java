@@ -8,6 +8,7 @@
 package com.sitewhere.event.configuration;
 
 import com.sitewhere.configuration.ConfigurationRole;
+import com.sitewhere.configuration.model.CommonDatastoreRoleKeys;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRole;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 import com.sitewhere.spi.microservice.configuration.model.IRoleKey;
@@ -21,7 +22,7 @@ public enum EventManagementRoles implements IConfigurationRoleProvider {
 
     /** Root schedule management role. */
     EventManagement(ConfigurationRole.build(EventManagementRoleKeys.EventManagement, "Event Management", false, false,
-	    false, new IRoleKey[0], new IRoleKey[0], true));
+	    false, new IRoleKey[] { CommonDatastoreRoleKeys.DeviceManagementDatastore }, new IRoleKey[0], true));
 
     private ConfigurationRole role;
 

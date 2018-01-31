@@ -18,10 +18,12 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
+import com.sitewhere.configuration.datastore.DatastoreConfiguration;
+import com.sitewhere.configuration.datastore.DatastoreConfigurationParser;
 import com.sitewhere.configuration.parser.IScheduleManagementParser.Elements;
 import com.sitewhere.schedule.persistence.mongodb.MongoScheduleManagement;
 import com.sitewhere.schedule.persistence.mongodb.ScheduleManagementMongoClient;
-import com.sitewhere.spi.microservice.spring.InstanceManagementBeans;
+import com.sitewhere.spi.microservice.spring.AssetManagementBeans;
 import com.sitewhere.spi.microservice.spring.ScheduleManagementBeans;
 
 /**
@@ -51,8 +53,8 @@ public class ScheduleManagementParser extends AbstractBeanDefinitionParser {
 		throw new RuntimeException("Unknown schedule management element: " + child.getLocalName());
 	    }
 	    switch (type) {
-	    case DefaultMongoDatastore: {
-		parseDefaultMongoDatastore(child, context);
+	    case DeviceManagementDatastore: {
+		parseDeviceManagementDatastore(child, context);
 		break;
 	    }
 	    }
@@ -61,18 +63,34 @@ public class ScheduleManagementParser extends AbstractBeanDefinitionParser {
     }
 
     /**
-     * Parse the default MongoDB datastore element.
+     * Parse device management datastore element.
      * 
      * @param element
      * @param context
      */
-    protected void parseDefaultMongoDatastore(Element element, ParserContext context) {
-	// Build MongoDB client using default global configuration.
-	BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(ScheduleManagementMongoClient.class);
-	client.addConstructorArgReference(InstanceManagementBeans.BEAN_MONGO_CONFIGURATION_DEFAULT);
-
-	context.getRegistry().registerBeanDefinition(ScheduleManagementBeans.BEAN_MONGODB_CLIENT,
-		client.getBeanDefinition());
+    protected void parseDeviceManagementDatastore(Element element, ParserContext context) {
+	DatastoreConfiguration config = DatastoreConfigurationParser.parseDeviceManagementDatastore(element, context);
+	switch (config.getType()) {
+	case MongoDB: {
+	    BeanDefinitionBuilder client = BeanDefinitionBuilder
+		    .rootBeanDefinition(ScheduleManagementMongoClient.class);
+	    client.addConstructorArgValue(config.getConfiguration());
+	    context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
+		    client.getBeanDefinition());
+	    break;
+	}
+	case MongoDBReference: {
+	    BeanDefinitionBuilder client = BeanDefinitionBuilder
+		    .rootBeanDefinition(ScheduleManagementMongoClient.class);
+	    client.addConstructorArgReference((String) config.getConfiguration());
+	    context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
+		    client.getBeanDefinition());
+	    break;
+	}
+	default: {
+	    throw new RuntimeException("Invalid datastore configured: " + config.getType());
+	}
+	}
 
 	// Build schedule management implementation.
 	BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(MongoScheduleManagement.class);

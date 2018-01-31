@@ -218,7 +218,6 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
 	if (force) {
 	    MongoCollection<Document> tenants = getMongoClient().getTenantsCollection();
 	    MongoPersistence.delete(tenants, existing);
-	    getMongoClient().deleteTenantData(tenantId);
 	    return MongoTenant.fromDocument(existing);
 	} else {
 	    MongoSiteWhereEntity.setDeleted(existing, true);

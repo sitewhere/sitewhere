@@ -11,7 +11,6 @@ import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Mongo client that provides asset management collections.
@@ -29,18 +28,16 @@ public interface IAssetManagementMongoClient {
     /**
      * Get asset categories collection.
      * 
-     * @param tenant
      * @return
      * @throws SiteWhereException
      */
-    public MongoCollection<Document> getAssetCategoriesCollection(ITenant tenant) throws SiteWhereException;
+    public MongoCollection<Document> getAssetCategoriesCollection() throws SiteWhereException;
 
     /**
      * Get assets collection.
      * 
-     * @param tenant
      * @return
      * @throws SiteWhereException
      */
-    public MongoCollection<Document> getAssetsCollection(ITenant tenant) throws SiteWhereException;
+    public MongoCollection<Document> getAssetsCollection() throws SiteWhereException;
 }

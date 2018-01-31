@@ -58,6 +58,20 @@ public interface ILifecycleComponent {
     public SiteWhereException getLifecycleError();
 
     /**
+     * Get list of parameters associated with component.
+     * 
+     * @return
+     */
+    public List<ILifecycleComponentParameter<?>> getParameters();
+
+    /**
+     * Overridden in subclasses to initialize parameters.
+     * 
+     * @throws SiteWhereException
+     */
+    public void initializeParameters() throws SiteWhereException;
+
+    /**
      * Get map of contained {@link ILifecycleComponent} elements by unique id.
      * 
      * @return

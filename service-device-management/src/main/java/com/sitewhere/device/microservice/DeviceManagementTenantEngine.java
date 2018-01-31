@@ -79,7 +79,7 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
 
 	// Initialize discoverable lifecycle components.
-	init.addStep(getMicroservice().initializeDiscoverableBeans(getModuleContext()));
+	init.addStep(initializeDiscoverableBeans(getModuleContext()));
 
 	// Initialize device management persistence.
 	init.addInitializeStep(this, getDeviceManagement(), true);
@@ -98,6 +98,9 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
+
+	// Start discoverable lifecycle components.
+	start.addStep(startDiscoverableBeans(getModuleContext()));
 
 	// Start device management persistence.
 	start.addStartStep(this, getDeviceManagement(), true);
@@ -154,6 +157,9 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 
 	// Stop device management persistence.
 	stop.addStopStep(this, getDeviceManagement());
+
+	// Stop discoverable lifecycle components.
+	stop.addStep(stopDiscoverableBeans(getModuleContext()));
 
 	// Execute shutdown steps.
 	stop.execute(monitor);

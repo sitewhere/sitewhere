@@ -15,7 +15,9 @@ import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.microservice.scripting.IScriptManager;
 import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
+import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -190,4 +192,44 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
      * @throws SiteWhereException
      */
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException;
+
+    /**
+     * Initialize components from the given context marked as
+     * {@link IDiscoverableTenantLifecycleComponent}.
+     * 
+     * @param context
+     * @return
+     * @throws SiteWhereException
+     */
+    public ILifecycleStep initializeDiscoverableBeans(ApplicationContext context) throws SiteWhereException;
+
+    /**
+     * Start components from the given context marked as
+     * {@link IDiscoverableTenantLifecycleComponent}.
+     * 
+     * @param context
+     * @return
+     * @throws SiteWhereException
+     */
+    public ILifecycleStep startDiscoverableBeans(ApplicationContext context) throws SiteWhereException;
+
+    /**
+     * Stop components from the given context marked as
+     * {@link IDiscoverableTenantLifecycleComponent}.
+     * 
+     * @param context
+     * @return
+     * @throws SiteWhereException
+     */
+    public ILifecycleStep stopDiscoverableBeans(ApplicationContext context) throws SiteWhereException;
+
+    /**
+     * Terminate components from the given context marked as
+     * {@link IDiscoverableTenantLifecycleComponent}.
+     * 
+     * @param context
+     * @return
+     * @throws SiteWhereException
+     */
+    public ILifecycleStep terminateDiscoverableBeans(ApplicationContext context) throws SiteWhereException;
 }

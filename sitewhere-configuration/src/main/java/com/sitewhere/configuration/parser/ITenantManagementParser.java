@@ -19,8 +19,8 @@ public interface ITenantManagementParser {
 
     public static enum Elements {
 
-	/** Default MongoDB datastore */
-	DefaultMongoDatastore("default-mongodb-datastore");
+	/** Device management datastore */
+	DeviceManagementDatastore("device-management-datastore");
 
 	/** Event code */
 	private String localName;

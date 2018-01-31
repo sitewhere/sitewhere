@@ -130,48 +130,45 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     protected void ensureIndexes() throws SiteWhereException {
 	// Site indexes.
-	getMongoClient().getSitesCollection(getTenantEngine().getTenant())
-		.createIndex(new Document(MongoSite.PROP_ID, 1), new IndexOptions().unique(true));
-	getMongoClient().getSitesCollection(getTenantEngine().getTenant())
-		.createIndex(new Document(MongoSite.PROP_TOKEN, 1), new IndexOptions().unique(true));
+	getMongoClient().getSitesCollection().createIndex(new Document(MongoSite.PROP_ID, 1),
+		new IndexOptions().unique(true));
+	getMongoClient().getSitesCollection().createIndex(new Document(MongoSite.PROP_TOKEN, 1),
+		new IndexOptions().unique(true));
 
 	// Specification-related indexes.
-	getMongoClient().getDeviceSpecificationsCollection(getTenantEngine().getTenant())
+	getMongoClient().getDeviceSpecificationsCollection()
 		.createIndex(new Document(MongoDeviceSpecification.PROP_ID, 1), new IndexOptions().unique(true));
-	getMongoClient().getDeviceSpecificationsCollection(getTenantEngine().getTenant())
+	getMongoClient().getDeviceSpecificationsCollection()
 		.createIndex(new Document(MongoDeviceSpecification.PROP_TOKEN, 1), new IndexOptions().unique(true));
-	getMongoClient().getDeviceStatusesCollection(getTenantEngine().getTenant()).createIndex(
+	getMongoClient().getDeviceStatusesCollection().createIndex(
 		new Document(MongoDeviceStatus.PROP_SPEC_ID, 1).append(MongoDeviceStatus.PROP_CODE, 1),
 		new IndexOptions().unique(true));
 
 	// Devices.
-	getMongoClient().getDevicesCollection(getTenantEngine().getTenant())
-		.createIndex(new Document(MongoDevice.PROP_ID, 1), new IndexOptions().unique(true));
-	getMongoClient().getDevicesCollection(getTenantEngine().getTenant())
-		.createIndex(new Document(MongoDevice.PROP_HARDWARE_ID, 1), new IndexOptions().unique(true));
+	getMongoClient().getDevicesCollection().createIndex(new Document(MongoDevice.PROP_ID, 1),
+		new IndexOptions().unique(true));
+	getMongoClient().getDevicesCollection().createIndex(new Document(MongoDevice.PROP_HARDWARE_ID, 1),
+		new IndexOptions().unique(true));
 
 	// Device assignments.
-	getMongoClient().getDeviceAssignmentsCollection(getTenantEngine().getTenant())
-		.createIndex(new Document(MongoDeviceAssignment.PROP_ID, 1), new IndexOptions().unique(true));
-	getMongoClient().getDeviceAssignmentsCollection(getTenantEngine().getTenant())
-		.createIndex(new Document(MongoDeviceAssignment.PROP_TOKEN, 1), new IndexOptions().unique(true));
-	getMongoClient().getDeviceAssignmentsCollection(getTenantEngine().getTenant())
+	getMongoClient().getDeviceAssignmentsCollection().createIndex(new Document(MongoDeviceAssignment.PROP_ID, 1),
+		new IndexOptions().unique(true));
+	getMongoClient().getDeviceAssignmentsCollection().createIndex(new Document(MongoDeviceAssignment.PROP_TOKEN, 1),
+		new IndexOptions().unique(true));
+	getMongoClient().getDeviceAssignmentsCollection()
 		.createIndex(new Document(MongoDeviceAssignment.PROP_SITE_ID, 1)
 			.append(MongoDeviceAssignment.PROP_ASSET_REFERENCE, 1)
 			.append(MongoDeviceAssignment.PROP_STATUS, 1));
 
 	// Device group indexes.
-	getMongoClient().getDeviceGroupsCollection(getTenantEngine().getTenant())
-		.createIndex(new Document(MongoDeviceGroup.PROP_ID, 1), new IndexOptions().unique(true));
-	getMongoClient().getDeviceGroupsCollection(getTenantEngine().getTenant())
-		.createIndex(new Document(MongoDeviceGroup.PROP_TOKEN, 1), new IndexOptions().unique(true));
-	getMongoClient().getDeviceGroupsCollection(getTenantEngine().getTenant())
-		.createIndex(new Document(MongoDeviceGroup.PROP_ROLES, 1));
-	getMongoClient().getGroupElementsCollection(getTenantEngine().getTenant())
-		.createIndex(new Document(MongoDeviceGroupElement.PROP_GROUP_ID, 1)
-			.append(MongoDeviceGroupElement.PROP_TYPE, 1)
-			.append(MongoDeviceGroupElement.PROP_ELEMENT_ID, 1));
-	getMongoClient().getGroupElementsCollection(getTenantEngine().getTenant()).createIndex(
+	getMongoClient().getDeviceGroupsCollection().createIndex(new Document(MongoDeviceGroup.PROP_ID, 1),
+		new IndexOptions().unique(true));
+	getMongoClient().getDeviceGroupsCollection().createIndex(new Document(MongoDeviceGroup.PROP_TOKEN, 1),
+		new IndexOptions().unique(true));
+	getMongoClient().getDeviceGroupsCollection().createIndex(new Document(MongoDeviceGroup.PROP_ROLES, 1));
+	getMongoClient().getGroupElementsCollection().createIndex(new Document(MongoDeviceGroupElement.PROP_GROUP_ID, 1)
+		.append(MongoDeviceGroupElement.PROP_TYPE, 1).append(MongoDeviceGroupElement.PROP_ELEMENT_ID, 1));
+	getMongoClient().getGroupElementsCollection().createIndex(
 		new Document(MongoDeviceGroupElement.PROP_GROUP_ID, 1).append(MongoDeviceGroupElement.PROP_ROLES, 1));
     }
 
@@ -195,8 +192,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	// Use common logic so all backend implementations work the same.
 	DeviceSpecification spec = DeviceManagementPersistence.deviceSpecificationCreateLogic(request, uuid);
 
-	MongoCollection<Document> specs = getMongoClient()
-		.getDeviceSpecificationsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> specs = getMongoClient().getDeviceSpecificationsCollection();
 	Document created = MongoDeviceSpecification.toDocument(spec);
 	MongoPersistence.insert(specs, created, ErrorCode.DuplicateDeviceSpecificationToken);
 
@@ -250,8 +246,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	Document updated = MongoDeviceSpecification.toDocument(spec);
 
 	Document query = new Document(MongoDeviceSpecification.PROP_ID, id);
-	MongoCollection<Document> specs = getMongoClient()
-		.getDeviceSpecificationsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> specs = getMongoClient().getDeviceSpecificationsCollection();
 	MongoPersistence.update(specs, query, updated);
 
 	return MongoDeviceSpecification.fromDocument(updated);
@@ -266,8 +261,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     @Override
     public ISearchResults<IDeviceSpecification> listDeviceSpecifications(boolean includeDeleted,
 	    ISearchCriteria criteria) throws SiteWhereException {
-	MongoCollection<Document> specs = getMongoClient()
-		.getDeviceSpecificationsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> specs = getMongoClient().getDeviceSpecificationsCollection();
 	Document dbCriteria = new Document();
 	if (!includeDeleted) {
 	    MongoSiteWhereEntity.setDeleted(dbCriteria, false);
@@ -284,8 +278,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     @Override
     public IDeviceSpecification deleteDeviceSpecification(UUID id, boolean force) throws SiteWhereException {
 	Document existing = assertDeviceSpecification(id);
-	MongoCollection<Document> specs = getMongoClient()
-		.getDeviceSpecificationsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> specs = getMongoClient().getDeviceSpecificationsCollection();
 	if (force) {
 	    MongoPersistence.delete(specs, existing);
 	    return MongoDeviceSpecification.fromDocument(existing);
@@ -306,8 +299,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      * @throws SiteWhereException
      */
     protected Document getDeviceSpecificationDocumentByToken(String token) throws SiteWhereException {
-	MongoCollection<Document> specs = getMongoClient()
-		.getDeviceSpecificationsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> specs = getMongoClient().getDeviceSpecificationsCollection();
 	Document query = new Document(MongoDeviceSpecification.PROP_TOKEN, token);
 	return specs.find(query).first();
     }
@@ -320,8 +312,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      * @throws SiteWhereException
      */
     protected Document getDeviceSpecificationDocumentById(UUID id) throws SiteWhereException {
-	MongoCollection<Document> specs = getMongoClient()
-		.getDeviceSpecificationsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> specs = getMongoClient().getDeviceSpecificationsCollection();
 	Document query = new Document(MongoDeviceSpecification.PROP_ID, id);
 	return specs.find(query).first();
     }
@@ -373,8 +364,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	IDeviceSpecification spec = getDeviceSpecification(specificationId);
 	DeviceCommand command = DeviceManagementPersistence.deviceCommandCreateLogic(spec, request, uuid, existing);
 
-	MongoCollection<Document> commands = getMongoClient()
-		.getDeviceCommandsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> commands = getMongoClient().getDeviceCommandsCollection();
 	Document created = MongoDeviceCommand.toDocument(command);
 	MongoPersistence.insert(commands, created, ErrorCode.DeviceCommandExists);
 	return MongoDeviceCommand.fromDocument(created);
@@ -426,8 +416,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	Document updated = MongoDeviceCommand.toDocument(command);
 
 	Document query = new Document(MongoDeviceCommand.PROP_ID, id);
-	MongoCollection<Document> commands = getMongoClient()
-		.getDeviceCommandsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> commands = getMongoClient().getDeviceCommandsCollection();
 	MongoPersistence.update(commands, query, updated);
 	return MongoDeviceCommand.fromDocument(updated);
     }
@@ -440,8 +429,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     @Override
     public List<IDeviceCommand> listDeviceCommands(UUID specificationId, boolean includeDeleted)
 	    throws SiteWhereException {
-	MongoCollection<Document> commands = getMongoClient()
-		.getDeviceCommandsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> commands = getMongoClient().getDeviceCommandsCollection();
 	Document dbCriteria = new Document();
 	dbCriteria.put(MongoDeviceCommand.PROP_SPEC_ID, specificationId);
 	if (!includeDeleted) {
@@ -459,8 +447,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     @Override
     public IDeviceCommand deleteDeviceCommand(UUID id, boolean force) throws SiteWhereException {
 	Document existing = assertDeviceCommand(id);
-	MongoCollection<Document> commands = getMongoClient()
-		.getDeviceCommandsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> commands = getMongoClient().getDeviceCommandsCollection();
 	if (force) {
 	    MongoPersistence.delete(commands, existing);
 	    return MongoDeviceCommand.fromDocument(existing);
@@ -480,8 +467,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      * @throws SiteWhereException
      */
     protected Document getDeviceCommandDocumentByToken(String token) throws SiteWhereException {
-	MongoCollection<Document> commands = getMongoClient()
-		.getDeviceCommandsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> commands = getMongoClient().getDeviceCommandsCollection();
 	Document query = new Document(MongoDeviceCommand.PROP_TOKEN, token);
 	return commands.find(query).first();
     }
@@ -494,8 +480,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      * @throws SiteWhereException
      */
     protected Document getDeviceCommandDocumentById(UUID id) throws SiteWhereException {
-	MongoCollection<Document> commands = getMongoClient()
-		.getDeviceCommandsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> commands = getMongoClient().getDeviceCommandsCollection();
 	Document query = new Document(MongoDeviceCommand.PROP_ID, id);
 	return commands.find(query).first();
     }
@@ -534,8 +519,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	// Use common logic so all backend implementations work the same.
 	DeviceStatus status = DeviceManagementPersistence.deviceStatusCreateLogic(specification, request, existing);
 
-	MongoCollection<Document> statuses = getMongoClient()
-		.getDeviceStatusesCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> statuses = getMongoClient().getDeviceStatusesCollection();
 	Document created = MongoDeviceStatus.toDocument(status);
 	MongoPersistence.insert(statuses, created, ErrorCode.DeviceStatusExists);
 	return MongoDeviceStatus.fromDocument(created);
@@ -575,8 +559,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 
 	Document query = new Document(MongoDeviceStatus.PROP_SPEC_ID, specificationId)
 		.append(MongoDeviceStatus.PROP_CODE, code);
-	MongoCollection<Document> statuses = getMongoClient()
-		.getDeviceStatusesCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> statuses = getMongoClient().getDeviceStatusesCollection();
 	MongoPersistence.update(statuses, query, updated);
 	return MongoDeviceStatus.fromDocument(updated);
     }
@@ -587,8 +570,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     @Override
     public List<IDeviceStatus> listDeviceStatuses(UUID specificationId) throws SiteWhereException {
-	MongoCollection<Document> statuses = getMongoClient()
-		.getDeviceStatusesCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> statuses = getMongoClient().getDeviceStatusesCollection();
 	Document dbCriteria = new Document();
 	dbCriteria.put(MongoDeviceStatus.PROP_SPEC_ID, specificationId);
 	Document sort = new Document(MongoDeviceStatus.PROP_NAME, 1);
@@ -603,8 +585,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     @Override
     public IDeviceStatus deleteDeviceStatus(UUID specificationId, String code) throws SiteWhereException {
 	Document existing = assertDeviceStatus(specificationId, code);
-	MongoCollection<Document> statuses = getMongoClient()
-		.getDeviceStatusesCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> statuses = getMongoClient().getDeviceStatusesCollection();
 	MongoPersistence.delete(statuses, existing);
 	return MongoDeviceStatus.fromDocument(existing);
     }
@@ -619,8 +600,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      * @throws SiteWhereException
      */
     protected Document getDeviceStatusDocument(UUID specificationId, String code) throws SiteWhereException {
-	MongoCollection<Document> statuses = getMongoClient()
-		.getDeviceStatusesCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> statuses = getMongoClient().getDeviceStatusesCollection();
 	Document query = new Document(MongoDeviceStatus.PROP_SPEC_ID, specificationId)
 		.append(MongoDeviceStatus.PROP_CODE, code);
 	return statuses.find(query).first();
@@ -663,7 +643,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	Device newDevice = DeviceManagementPersistence.deviceCreateLogic(request, site, spec);
 
 	// Convert and save device data.
-	MongoCollection<Document> devices = getMongoClient().getDevicesCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
 	Document created = MongoDevice.toDocument(newDevice);
 	MongoPersistence.insert(devices, created, ErrorCode.DuplicateHardwareId);
 
@@ -706,7 +686,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	DeviceManagementPersistence.deviceUpdateLogic(request, site, spec, parent, updatedDevice);
 	Document updated = MongoDevice.toDocument(updatedDevice);
 
-	MongoCollection<Document> devices = getMongoClient().getDevicesCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
 	Document query = new Document(MongoDevice.PROP_ID, id);
 	MongoPersistence.update(devices, query, updated);
 
@@ -763,7 +743,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     @Override
     public SearchResults<IDevice> listDevices(boolean includeDeleted, IDeviceSearchCriteria criteria)
 	    throws SiteWhereException {
-	MongoCollection<Document> devices = getMongoClient().getDevicesCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
 	Document dbCriteria = new Document();
 	if (!includeDeleted) {
 	    MongoSiteWhereEntity.setDeleted(dbCriteria, false);
@@ -823,13 +803,13 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    throw new SiteWhereSystemException(ErrorCode.DeviceCanNotBeDeletedIfAssigned, ErrorLevel.ERROR);
 	}
 	if (force) {
-	    MongoCollection<Document> devices = getMongoClient().getDevicesCollection(getTenantEngine().getTenant());
+	    MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
 	    MongoPersistence.delete(devices, existing);
 	    return MongoDevice.fromDocument(existing);
 	} else {
 	    MongoSiteWhereEntity.setDeleted(existing, true);
 	    Document query = new Document(MongoDevice.PROP_ID, id);
-	    MongoCollection<Document> devices = getMongoClient().getDevicesCollection(getTenantEngine().getTenant());
+	    MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
 	    MongoPersistence.update(devices, query, existing);
 	    return MongoDevice.fromDocument(existing);
 	}
@@ -859,7 +839,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      * @throws SiteWhereException
      */
     protected Document getDeviceDocumentByHardwareId(String hardwareId) throws SiteWhereException {
-	MongoCollection<Document> devices = getMongoClient().getDevicesCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
 	Document query = new Document(MongoDevice.PROP_HARDWARE_ID, hardwareId);
 	return devices.find(query).first();
     }
@@ -873,7 +853,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      * @throws SiteWhereException
      */
     protected Document getDeviceDocumentById(UUID id) throws SiteWhereException {
-	MongoCollection<Document> devices = getMongoClient().getDevicesCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
 	Document query = new Document(MongoDevice.PROP_ID, id);
 	return devices.find(query).first();
     }
@@ -898,13 +878,12 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    newAssignment.setToken(UUID.randomUUID().toString());
 	}
 
-	MongoCollection<Document> assignments = getMongoClient()
-		.getDeviceAssignmentsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
 	Document created = MongoDeviceAssignment.toDocument(newAssignment);
 	MongoPersistence.insert(assignments, created, ErrorCode.DuplicateDeviceAssignment);
 
 	// Update device to point to created assignment.
-	MongoCollection<Document> devices = getMongoClient().getDevicesCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
 	Document query = new Document(MongoDevice.PROP_HARDWARE_ID, request.getDeviceHardwareId());
 	deviceDb.put(MongoDevice.PROP_ASSIGNMENT_ID, newAssignment.getId());
 	MongoPersistence.update(devices, query, deviceDb);
@@ -951,15 +930,13 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	Document existing = assertDeviceAssignment(id);
 	DeviceManagementPersistence.deviceAssignmentDeleteLogic(MongoDeviceAssignment.fromDocument(existing));
 	if (force) {
-	    MongoCollection<Document> assignments = getMongoClient()
-		    .getDeviceAssignmentsCollection(getTenantEngine().getTenant());
+	    MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
 	    MongoPersistence.delete(assignments, existing);
 	    return MongoDeviceAssignment.fromDocument(existing);
 	} else {
 	    MongoSiteWhereEntity.setDeleted(existing, true);
 	    Document query = new Document(MongoDeviceAssignment.PROP_ID, id);
-	    MongoCollection<Document> assignments = getMongoClient()
-		    .getDeviceAssignmentsCollection(getTenantEngine().getTenant());
+	    MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
 	    MongoPersistence.update(assignments, query, existing);
 	    return MongoDeviceAssignment.fromDocument(existing);
 	}
@@ -980,8 +957,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	}
 	DeviceManagementPersistence.setUpdatedEntityMetadata(assignment);
 	Document query = new Document(MongoDeviceAssignment.PROP_ID, id);
-	MongoCollection<Document> assignments = getMongoClient()
-		.getDeviceAssignmentsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
 	MongoPersistence.update(assignments, query, MongoDeviceAssignment.toDocument(assignment));
 
 	return MongoDeviceAssignment.fromDocument(match);
@@ -997,8 +973,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    throws SiteWhereException {
 	Document match = assertDeviceAssignment(id);
 	match.put(MongoDeviceAssignment.PROP_STATUS, status.name());
-	MongoCollection<Document> assignments = getMongoClient()
-		.getDeviceAssignmentsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
 	Document query = new Document(MongoDeviceAssignment.PROP_ID, id);
 	MongoPersistence.update(assignments, query, match);
 	return MongoDeviceAssignment.fromDocument(match);
@@ -1014,13 +989,12 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	Document match = assertDeviceAssignment(id);
 	match.put(MongoDeviceAssignment.PROP_RELEASED_DATE, Calendar.getInstance().getTime());
 	match.put(MongoDeviceAssignment.PROP_STATUS, DeviceAssignmentStatus.Released.name());
-	MongoCollection<Document> assignments = getMongoClient()
-		.getDeviceAssignmentsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
 	Document query = new Document(MongoDeviceAssignment.PROP_ID, id);
 	MongoPersistence.update(assignments, query, match);
 
 	// Remove device assignment reference.
-	MongoCollection<Document> devices = getMongoClient().getDevicesCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
 	UUID deviceId = (UUID) match.get(MongoDeviceAssignment.PROP_DEVICE_ID);
 	Document deviceMatch = getDeviceDocumentById(deviceId);
 	deviceMatch.put(MongoDevice.PROP_ASSIGNMENT_ID, null);
@@ -1039,8 +1013,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     @Override
     public SearchResults<IDeviceAssignment> getDeviceAssignmentHistory(UUID deviceId, ISearchCriteria criteria)
 	    throws SiteWhereException {
-	MongoCollection<Document> assignments = getMongoClient()
-		.getDeviceAssignmentsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
 	Document query = new Document(MongoDeviceAssignment.PROP_DEVICE_ID, deviceId);
 	Document sort = new Document(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);
 	return MongoPersistence.search(IDeviceAssignment.class, assignments, query, sort, criteria, LOOKUP);
@@ -1054,8 +1027,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     @Override
     public SearchResults<IDeviceAssignment> getDeviceAssignmentsForSite(UUID siteId, IAssignmentSearchCriteria criteria)
 	    throws SiteWhereException {
-	MongoCollection<Document> assignments = getMongoClient()
-		.getDeviceAssignmentsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
 	Document query = new Document(MongoDeviceAssignment.PROP_SITE_ID, siteId);
 	if (criteria.getStatus() != null) {
 	    query.append(MongoDeviceAssignment.PROP_STATUS, criteria.getStatus().name());
@@ -1073,8 +1045,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     @Override
     public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(IAssetReference assetReference,
 	    IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException {
-	MongoCollection<Document> assignments = getMongoClient()
-		.getDeviceAssignmentsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
 	Document query = new Document(MongoDeviceAssignment.PROP_ASSET_REFERENCE, assetReference);
 	if (criteria.getSiteToken() != null) {
 	    ISite site = getSiteByToken(criteria.getSiteToken());
@@ -1095,8 +1066,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      * @throws SiteWhereException
      */
     protected Document getDeviceAssignmentDocumentByToken(String token) throws SiteWhereException {
-	MongoCollection<Document> assignments = getMongoClient()
-		.getDeviceAssignmentsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
 	Document query = new Document(MongoDeviceAssignment.PROP_TOKEN, token);
 	return assignments.find(query).first();
     }
@@ -1109,8 +1079,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      * @throws SiteWhereException
      */
     protected Document getDeviceAssignmentDocumentById(UUID id) throws SiteWhereException {
-	MongoCollection<Document> assignments = getMongoClient()
-		.getDeviceAssignmentsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
 	Document query = new Document(MongoDeviceAssignment.PROP_ID, id);
 	return assignments.find(query).first();
     }
@@ -1127,7 +1096,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentId);
 	DeviceStream stream = DeviceManagementPersistence.deviceStreamCreateLogic(assignment, request);
 
-	MongoCollection<Document> streams = getMongoClient().getStreamsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> streams = getMongoClient().getStreamsCollection();
 	Document created = MongoDeviceStream.toDocument(stream);
 	MongoPersistence.insert(streams, created, ErrorCode.DuplicateStreamId);
 	return MongoDeviceStream.fromDocument(created);
@@ -1155,7 +1124,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     @Override
     public ISearchResults<IDeviceStream> listDeviceStreams(UUID assignmentId, ISearchCriteria criteria)
 	    throws SiteWhereException {
-	MongoCollection<Document> streams = getMongoClient().getStreamsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> streams = getMongoClient().getStreamsCollection();
 	Document query = new Document(MongoDeviceStream.PROP_ASSIGNMENT_ID, assignmentId);
 	Document sort = new Document(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
 	return MongoPersistence.search(IDeviceStream.class, streams, query, sort, criteria, LOOKUP);
@@ -1172,7 +1141,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	// Use common logic so all backend implementations work the same.
 	Site site = DeviceManagementPersistence.siteCreateLogic(request);
 
-	MongoCollection<Document> sites = getMongoClient().getSitesCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> sites = getMongoClient().getSitesCollection();
 	Document created = MongoSite.toDocument(site);
 	MongoPersistence.insert(sites, created, ErrorCode.DeuplicateSiteToken);
 	return MongoSite.fromDocument(created);
@@ -1191,7 +1160,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 
 	Document updated = MongoSite.toDocument(site);
 
-	MongoCollection<Document> sites = getMongoClient().getSitesCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> sites = getMongoClient().getSitesCollection();
 	Document query = new Document(MongoSite.PROP_ID, id);
 	MongoPersistence.update(sites, query, updated);
 	return MongoSite.fromDocument(updated);
@@ -1235,13 +1204,13 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 	}
 	if (force) {
-	    MongoCollection<Document> sites = getMongoClient().getSitesCollection(getTenantEngine().getTenant());
+	    MongoCollection<Document> sites = getMongoClient().getSitesCollection();
 	    MongoPersistence.delete(sites, existing);
 	    return MongoSite.fromDocument(existing);
 	} else {
 	    MongoSiteWhereEntity.setDeleted(existing, true);
 	    Document query = new Document(MongoSite.PROP_ID, id);
-	    MongoCollection<Document> sites = getMongoClient().getSitesCollection(getTenantEngine().getTenant());
+	    MongoCollection<Document> sites = getMongoClient().getSitesCollection();
 	    MongoPersistence.update(sites, query, existing);
 	    return MongoSite.fromDocument(existing);
 	}
@@ -1255,7 +1224,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      * @throws SiteWhereException
      */
     protected Document getSiteDocumentByToken(String token) throws SiteWhereException {
-	MongoCollection<Document> sites = getMongoClient().getSitesCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> sites = getMongoClient().getSitesCollection();
 	Document query = new Document(MongoSite.PROP_TOKEN, token);
 	return sites.find(query).first();
     }
@@ -1268,7 +1237,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      * @throws SiteWhereException
      */
     protected Document getSiteDocumentById(UUID id) throws SiteWhereException {
-	MongoCollection<Document> sites = getMongoClient().getSitesCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> sites = getMongoClient().getSitesCollection();
 	Document query = new Document(MongoSite.PROP_ID, id);
 	return sites.find(query).first();
     }
@@ -1296,7 +1265,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     @Override
     public SearchResults<ISite> listSites(ISearchCriteria criteria) throws SiteWhereException {
-	MongoCollection<Document> sites = getMongoClient().getSitesCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> sites = getMongoClient().getSitesCollection();
 	Document query = new Document();
 	Document sort = new Document(MongoSite.PROP_NAME, 1);
 	return MongoPersistence.search(ISite.class, sites, query, sort, criteria, LOOKUP);
@@ -1311,7 +1280,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	ISite site = assertApiSite(siteId);
 	Zone zone = DeviceManagementPersistence.zoneCreateLogic(request, site, UUID.randomUUID().toString());
 
-	MongoCollection<Document> zones = getMongoClient().getZonesCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> zones = getMongoClient().getZonesCollection();
 	Document created = MongoZone.toDocument(zone);
 	MongoPersistence.insert(zones, created, ErrorCode.DuplicateZoneToken);
 	return MongoZone.fromDocument(created);
@@ -1323,7 +1292,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     @Override
     public IZone updateZone(UUID id, IZoneCreateRequest request) throws SiteWhereException {
-	MongoCollection<Document> zones = getMongoClient().getZonesCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> zones = getMongoClient().getZonesCollection();
 	Document match = assertZone(id);
 
 	Zone zone = MongoZone.fromDocument(match);
@@ -1367,7 +1336,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     @Override
     public SearchResults<IZone> listZones(UUID siteId, ISearchCriteria criteria) throws SiteWhereException {
-	MongoCollection<Document> zones = getMongoClient().getZonesCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> zones = getMongoClient().getZonesCollection();
 	Document query = new Document(MongoZone.PROP_SITE_ID, siteId);
 	Document sort = new Document(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
 	return MongoPersistence.search(IZone.class, zones, query, sort, criteria, LOOKUP);
@@ -1381,13 +1350,13 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     public IZone deleteZone(UUID id, boolean force) throws SiteWhereException {
 	Document existing = assertZone(id);
 	if (force) {
-	    MongoCollection<Document> zones = getMongoClient().getZonesCollection(getTenantEngine().getTenant());
+	    MongoCollection<Document> zones = getMongoClient().getZonesCollection();
 	    MongoPersistence.delete(zones, existing);
 	    return MongoZone.fromDocument(existing);
 	} else {
 	    MongoSiteWhereEntity.setDeleted(existing, true);
 	    Document query = new Document(MongoZone.PROP_ID, id);
-	    MongoCollection<Document> zones = getMongoClient().getZonesCollection(getTenantEngine().getTenant());
+	    MongoCollection<Document> zones = getMongoClient().getZonesCollection();
 	    MongoPersistence.update(zones, query, existing);
 	    return MongoZone.fromDocument(existing);
 	}
@@ -1404,7 +1373,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
 	DeviceGroup group = DeviceManagementPersistence.deviceGroupCreateLogic(request, uuid);
 
-	MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection();
 	Document created = MongoDeviceGroup.toDocument(group);
 	created.put(MongoDeviceGroup.PROP_LAST_INDEX, new Long(0));
 
@@ -1419,7 +1388,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     @Override
     public IDeviceGroup updateDeviceGroup(UUID id, IDeviceGroupCreateRequest request) throws SiteWhereException {
-	MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection();
 	Document match = assertDeviceGroup(id);
 
 	DeviceGroup group = MongoDeviceGroup.fromDocument(match);
@@ -1471,7 +1440,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     @Override
     public ISearchResults<IDeviceGroup> listDeviceGroups(boolean includeDeleted, ISearchCriteria criteria)
 	    throws SiteWhereException {
-	MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection();
 	Document dbCriteria = new Document();
 	if (!includeDeleted) {
 	    MongoSiteWhereEntity.setDeleted(dbCriteria, false);
@@ -1490,7 +1459,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     @Override
     public ISearchResults<IDeviceGroup> listDeviceGroupsWithRole(String role, boolean includeDeleted,
 	    ISearchCriteria criteria) throws SiteWhereException {
-	MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection();
 	Document dbCriteria = new Document(MongoDeviceGroup.PROP_ROLES, role);
 	if (!includeDeleted) {
 	    MongoSiteWhereEntity.setDeleted(dbCriteria, false);
@@ -1508,13 +1477,11 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     public IDeviceGroup deleteDeviceGroup(UUID id, boolean force) throws SiteWhereException {
 	Document existing = assertDeviceGroup(id);
 	if (force) {
-	    MongoCollection<Document> groups = getMongoClient()
-		    .getDeviceGroupsCollection(getTenantEngine().getTenant());
+	    MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection();
 	    MongoPersistence.delete(groups, existing);
 
 	    // Delete group elements as well.
-	    MongoCollection<Document> elements = getMongoClient()
-		    .getGroupElementsCollection(getTenantEngine().getTenant());
+	    MongoCollection<Document> elements = getMongoClient().getGroupElementsCollection();
 	    Document match = new Document(MongoDeviceGroupElement.PROP_GROUP_ID, id);
 	    MongoPersistence.delete(elements, match);
 
@@ -1522,8 +1489,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	} else {
 	    MongoSiteWhereEntity.setDeleted(existing, true);
 	    Document query = new Document(MongoDeviceGroup.PROP_ID, id);
-	    MongoCollection<Document> groups = getMongoClient()
-		    .getDeviceGroupsCollection(getTenantEngine().getTenant());
+	    MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection();
 	    MongoPersistence.update(groups, query, existing);
 	    return MongoDeviceGroup.fromDocument(existing);
 	}
@@ -1563,8 +1529,8 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 			index, elementId);
 		Document created = MongoDeviceGroupElement.toDocument(element);
 		try {
-		    MongoPersistence.insert(getMongoClient().getGroupElementsCollection(getTenantEngine().getTenant()),
-			    created, ErrorCode.DuplicateId);
+		    MongoPersistence.insert(getMongoClient().getGroupElementsCollection(), created,
+			    ErrorCode.DuplicateId);
 		    results.add(MongoDeviceGroupElement.fromDocument(created));
 		} catch (ResourceExistsException e) {
 		    if (!ignoreDuplicates) {
@@ -1589,14 +1555,12 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    Document match = new Document(MongoDeviceGroupElement.PROP_GROUP_ID, groupId)
 		    .append(MongoDeviceGroupElement.PROP_TYPE, request.getType().name())
 		    .append(MongoDeviceGroupElement.PROP_ELEMENT_ID, request.getElementId());
-	    FindIterable<Document> found = getMongoClient().getGroupElementsCollection(getTenantEngine().getTenant())
-		    .find(match);
+	    FindIterable<Document> found = getMongoClient().getGroupElementsCollection().find(match);
 	    MongoCursor<Document> cursor = found.iterator();
 
 	    while (cursor.hasNext()) {
 		Document current = cursor.next();
-		DeleteResult result = MongoPersistence
-			.delete(getMongoClient().getGroupElementsCollection(getTenantEngine().getTenant()), current);
+		DeleteResult result = MongoPersistence.delete(getMongoClient().getGroupElementsCollection(), current);
 		if (result.getDeletedCount() > 0) {
 		    deleted.add(MongoDeviceGroupElement.fromDocument(current));
 		}
@@ -1615,9 +1579,8 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    throws SiteWhereException {
 	Document match = new Document(MongoDeviceGroupElement.PROP_GROUP_ID, groupId);
 	Document sort = new Document(MongoDeviceGroupElement.PROP_INDEX, 1);
-	return MongoPersistence.search(IDeviceGroupElement.class,
-		getMongoClient().getGroupElementsCollection(getTenantEngine().getTenant()), match, sort, criteria,
-		LOOKUP);
+	return MongoPersistence.search(IDeviceGroupElement.class, getMongoClient().getGroupElementsCollection(), match,
+		sort, criteria, LOOKUP);
     }
 
     /**
@@ -1705,7 +1668,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     protected Document getZoneDocumentByToken(String token) throws SiteWhereException {
 	try {
-	    MongoCollection<Document> zones = getMongoClient().getZonesCollection(getTenantEngine().getTenant());
+	    MongoCollection<Document> zones = getMongoClient().getZonesCollection();
 	    Document query = new Document(MongoZone.PROP_TOKEN, token);
 	    return zones.find(query).first();
 	} catch (MongoTimeoutException e) {
@@ -1722,7 +1685,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     protected Document getZoneDocumentById(UUID id) throws SiteWhereException {
 	try {
-	    MongoCollection<Document> zones = getMongoClient().getZonesCollection(getTenantEngine().getTenant());
+	    MongoCollection<Document> zones = getMongoClient().getZonesCollection();
 	    Document query = new Document(MongoZone.PROP_ID, id);
 	    return zones.find(query).first();
 	} catch (MongoTimeoutException e) {
@@ -1788,7 +1751,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     protected Document getDeviceStreamDocument(UUID assignmentId, String streamId) throws SiteWhereException {
 	try {
-	    MongoCollection<Document> streams = getMongoClient().getStreamsCollection(getTenantEngine().getTenant());
+	    MongoCollection<Document> streams = getMongoClient().getStreamsCollection();
 	    Document query = new Document(MongoDeviceStream.PROP_ASSIGNMENT_ID, assignmentId)
 		    .append(MongoDeviceStream.PROP_STREAM_ID, streamId);
 	    return streams.find(query).first();
@@ -1807,8 +1770,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     protected Document getDeviceGroupDocumentByToken(String token) throws SiteWhereException {
 	try {
-	    MongoCollection<Document> groups = getMongoClient()
-		    .getDeviceGroupsCollection(getTenantEngine().getTenant());
+	    MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection();
 	    Document query = new Document(MongoDeviceGroup.PROP_TOKEN, token);
 	    return groups.find(query).first();
 	} catch (MongoTimeoutException e) {
@@ -1818,8 +1780,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 
     protected Document getDeviceGroupDocumentById(UUID id) throws SiteWhereException {
 	try {
-	    MongoCollection<Document> groups = getMongoClient()
-		    .getDeviceGroupsCollection(getTenantEngine().getTenant());
+	    MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection();
 	    Document query = new Document(MongoDeviceGroup.PROP_ID, id);
 	    return groups.find(query).first();
 	} catch (MongoTimeoutException e) {

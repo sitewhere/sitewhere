@@ -15,7 +15,6 @@ import com.mongodb.client.MongoCollection;
 import com.sitewhere.configuration.instance.mongodb.MongoConfiguration;
 import com.sitewhere.mongodb.BaseMongoClient;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Mongo client for interacting with batch management object model.
@@ -38,23 +37,19 @@ public class BatchManagementMongoClient extends BaseMongoClient implements IBatc
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
-     * getBatchOperationsCollection (com.sitewhere.spi.user.ITenant)
+     * @see com.sitewhere.batch.persistence.mongodb.IBatchManagementMongoClient#
+     * getBatchOperationsCollection()
      */
-    public MongoCollection<Document> getBatchOperationsCollection(ITenant tenant) throws SiteWhereException {
-	return getTenantDatabase(tenant).getCollection(getBatchOperationsCollectionName());
+    public MongoCollection<Document> getBatchOperationsCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getBatchOperationsCollectionName());
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
-     * getBatchOperationElementsCollection (com.sitewhere.spi.user.ITenant)
+     * @see com.sitewhere.batch.persistence.mongodb.IBatchManagementMongoClient#
+     * getBatchOperationElementsCollection()
      */
-    public MongoCollection<Document> getBatchOperationElementsCollection(ITenant tenant) throws SiteWhereException {
-	return getTenantDatabase(tenant).getCollection(getBatchOperationElementsCollectionName());
+    public MongoCollection<Document> getBatchOperationElementsCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getBatchOperationElementsCollectionName());
     }
 
     /*

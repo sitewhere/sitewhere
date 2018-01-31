@@ -19,8 +19,8 @@ public interface IBatchOperationsParser {
 
     public static enum Elements {
 
-	/** Default MongoDB datastore */
-	DefaultMongoDatastore("default-mongodb-datastore"),
+	/** Device management datastore */
+	DeviceManagementDatastore("device-management-datastore"),
 
 	/** Default batch operation manager */
 	DefaultBatchOperationManager("default-batch-operation-manager"),

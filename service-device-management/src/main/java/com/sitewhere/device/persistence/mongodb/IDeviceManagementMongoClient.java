@@ -11,7 +11,6 @@ import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Mongo client that provides device management collections.
@@ -56,99 +55,88 @@ public interface IDeviceManagementMongoClient {
     /**
      * Collection for device specifications.
      * 
-     * @param tenant
      * @return
      * @throws SiteWhereException
      */
-    public MongoCollection<Document> getDeviceSpecificationsCollection(ITenant tenant) throws SiteWhereException;
+    public MongoCollection<Document> getDeviceSpecificationsCollection() throws SiteWhereException;
 
     /**
      * Collection for device commands.
      * 
-     * @param tenant
      * @return
      * @throws SiteWhereException
      */
-    public MongoCollection<Document> getDeviceCommandsCollection(ITenant tenant) throws SiteWhereException;
+    public MongoCollection<Document> getDeviceCommandsCollection() throws SiteWhereException;
 
     /**
      * Collection for device statuses.
      * 
-     * @param tenant
      * @return
      * @throws SiteWhereException
      */
-    public MongoCollection<Document> getDeviceStatusesCollection(ITenant tenant) throws SiteWhereException;
+    public MongoCollection<Document> getDeviceStatusesCollection() throws SiteWhereException;
 
     /**
      * Collection for devices.
      * 
-     * @param tenant
      * @return
      * @throws SiteWhereException
      */
-    public MongoCollection<Document> getDevicesCollection(ITenant tenant) throws SiteWhereException;
+    public MongoCollection<Document> getDevicesCollection() throws SiteWhereException;
 
     /**
      * Collection for device assignments.
      * 
-     * @param tenant
      * @return
      * @throws SiteWhereException
      */
-    public MongoCollection<Document> getDeviceAssignmentsCollection(ITenant tenant) throws SiteWhereException;
+    public MongoCollection<Document> getDeviceAssignmentsCollection() throws SiteWhereException;
 
     /**
      * Collection for sites.
      * 
-     * @param tenant
      * @return
      * @throws SiteWhereException
      */
-    public MongoCollection<Document> getSitesCollection(ITenant tenant) throws SiteWhereException;
+    public MongoCollection<Document> getSitesCollection() throws SiteWhereException;
 
     /**
      * Collection for zones.
      * 
-     * @param tenant
      * @return
      * @throws SiteWhereException
      */
-    public MongoCollection<Document> getZonesCollection(ITenant tenant) throws SiteWhereException;
+    public MongoCollection<Document> getZonesCollection() throws SiteWhereException;
 
     /**
      * Collection for device groups.
      * 
-     * @param tenant
      * @return
      * @throws SiteWhereException
      */
-    public MongoCollection<Document> getDeviceGroupsCollection(ITenant tenant) throws SiteWhereException;
+    public MongoCollection<Document> getDeviceGroupsCollection() throws SiteWhereException;
 
     /**
      * Collection for device group elements.
      * 
-     * @param tenant
      * @return
      * @throws SiteWhereException
      */
-    public MongoCollection<Document> getGroupElementsCollection(ITenant tenant) throws SiteWhereException;
+    public MongoCollection<Document> getGroupElementsCollection() throws SiteWhereException;
 
     /**
      * Collection for streams.
      * 
-     * @param tenant
      * @return
      * @throws SiteWhereException
      */
-    public MongoCollection<Document> getStreamsCollection(ITenant tenant) throws SiteWhereException;
+    public MongoCollection<Document> getStreamsCollection() throws SiteWhereException;
 
     /**
      * Collection for stream data.
      * 
-     * @param tenant
      * @return
      * @throws SiteWhereException
      */
-    public MongoCollection<Document> getStreamDataCollection(ITenant tenant) throws SiteWhereException;
+    public MongoCollection<Document> getStreamDataCollection() throws SiteWhereException;
 }

@@ -19,6 +19,7 @@ import java.util.UUID;
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponentParameter;
 import com.sitewhere.spi.server.lifecycle.ILifecycleConstraints;
 import com.sitewhere.spi.server.lifecycle.ILifecycleHierarchyRoot;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -48,6 +49,9 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 
     /** Last error encountered in lifecycle operations */
     private SiteWhereException lifecycleError;
+
+    /** List of parameters associated with the component */
+    private List<ILifecycleComponentParameter<?>> parameters = new ArrayList<>();
 
     /** Map of contained lifecycle components */
     private Map<String, ILifecycleComponent> lifecycleComponents = new HashMap<String, ILifecycleComponent>();
@@ -101,6 +105,29 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
     }
 
     /*
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#initializeParameters()
+     */
+    @Override
+    public void initializeParameters() throws SiteWhereException {
+    }
+
+    /**
+     * Perform validations on configured parameters.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void validateParameters() throws SiteWhereException {
+	for (ILifecycleComponentParameter<?> parameter : getParameters()) {
+	    // Validate that required parameters were provided.
+	    if ((parameter.isRequired()) && (parameter.getValue() == null)) {
+		throw new SiteWhereException("No value provided for required parameter '" + parameter.getName()
+			+ "'. Unable to initialize component.");
+	    }
+	}
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
@@ -113,6 +140,10 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	try {
 	    // Create tracer span for operation.
 	    span = monitor.createTracerSpan("Initialize " + getComponentName());
+
+	    // Initialize parameters before component initialization.
+	    initializeParameters();
+	    validateParameters();
 
 	    // Verify that component can be initialized.
 	    if (!canInitialize()) {
@@ -496,6 +527,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#logState()
      */
+    @Override
     public void logState() {
 	getLogger().info("\n\n" + getComponentName() + " State:\n" + logState("", this) + "\n");
     }
@@ -559,6 +591,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      * @see
      * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleStatus ()
      */
+    @Override
     public LifecycleStatus getLifecycleStatus() {
 	return lifecycleStatus;
     }
@@ -578,6 +611,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
      * @see
      * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleError( )
      */
+    @Override
     public SiteWhereException getLifecycleError() {
 	return lifecycleError;
     }
@@ -587,11 +621,24 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
     }
 
     /*
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getParameters()
+     */
+    @Override
+    public List<ILifecycleComponentParameter<?>> getParameters() {
+	return parameters;
+    }
+
+    public void setParameters(List<ILifecycleComponentParameter<?>> parameters) {
+	this.parameters = parameters;
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
      * getLifecycleComponents()
      */
+    @Override
     public Map<String, ILifecycleComponent> getLifecycleComponents() {
 	return lifecycleComponents;
     }

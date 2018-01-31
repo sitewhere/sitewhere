@@ -12,8 +12,10 @@
 	<!-- User Management Configuration -->
 	<um:user-management>
 
-		<!-- Use default MongoDB configuration -->
-		<ds:default-mongodb-datastore />
+		<!-- Use global MongoDB configuration -->
+		<ds:device-management-datastore>
+			<ds:mongodb-datastore-reference id="global" />
+		</ds:device-management-datastore>
 
 	</um:user-management>
 

@@ -8,7 +8,6 @@
 package com.sitewhere.configuration;
 
 import java.io.ByteArrayInputStream;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -20,7 +19,6 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.InputStreamResource;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.system.IVersion;
 
 /**
  * Utility class for managing server configuration.
@@ -34,23 +32,20 @@ public class ConfigurationUtils {
     private static Logger LOGGER = LogManager.getLogger();
 
     /**
-     * Builds a Spring {@link ApplicationContext} from a byte array containing
-     * the XML configuration.
+     * Builds a Spring {@link ApplicationContext} from a byte array containing the
+     * XML configuration.
      * 
      * @param configuration
-     * @param version
+     * @param properties
      * @param microservice
      * @return
      * @throws SiteWhereException
      */
-    public static ApplicationContext buildGlobalContext(byte[] configuration, IVersion version,
+    public static ApplicationContext buildGlobalContext(byte[] configuration, Map<String, Object> properties,
 	    ApplicationContext microservice) throws SiteWhereException {
 	GenericApplicationContext context = new GenericApplicationContext(microservice);
 
 	// Plug in custom property source.
-	Map<String, Object> properties = new HashMap<String, Object>();
-	properties.put("sitewhere.edition", version.getEditionIdentifier().toLowerCase());
-
 	MapPropertySource source = new MapPropertySource("sitewhere", properties);
 	context.getEnvironment().getPropertySources().addLast(source);
 
@@ -64,23 +59,20 @@ public class ConfigurationUtils {
     }
 
     /**
-     * Build a Spring {@link ApplicationContext} from a byte[] containing a
-     * tenant configuration. The context will inherit from the global context.
+     * Build a Spring {@link ApplicationContext} from a byte[] containing a tenant
+     * configuration. The context will inherit from the global context.
      * 
      * @param configuration
-     * @param version
+     * @param properties
      * @param global
      * @return
      * @throws SiteWhereException
      */
-    public static ApplicationContext buildSubcontext(byte[] configuration, IVersion version, ApplicationContext global)
-	    throws SiteWhereException {
+    public static ApplicationContext buildSubcontext(byte[] configuration, Map<String, Object> properties,
+	    ApplicationContext global) throws SiteWhereException {
 	GenericApplicationContext context = new GenericApplicationContext(global);
 
 	// Plug in custom property source.
-	Map<String, Object> properties = new HashMap<String, Object>();
-	properties.put("sitewhere.edition", version.getEditionIdentifier().toLowerCase());
-
 	MapPropertySource source = new MapPropertySource("sitewhere", properties);
 	context.getEnvironment().getPropertySources().addLast(source);
 

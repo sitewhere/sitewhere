@@ -19,30 +19,37 @@ import com.sitewhere.spi.microservice.configuration.model.AttributeType;
 public class CommonDatastoreModel {
 
     /**
-     * Adds MongoDB configuration attributes.
+     * Adds InfluxDB configuration attributes.
      * 
      * @param builder
      */
-    public static void addMongoDbAttributes(ElementNode.Builder builder) {
-	builder.attribute((new AttributeNode.Builder("Hostname", "hostname", AttributeType.String)
-		.description("Hostname for MongoDB instance").defaultValue("${datastore.host:mongodb}").build()));
-	builder.attribute((new AttributeNode.Builder("Port", "port", AttributeType.Integer)
-		.description("Port on which MongoDB is running").defaultValue("${datastore.port:27017}").build()));
-	builder.attribute((new AttributeNode.Builder("Database name", "databaseName", AttributeType.String)
-		.description("Database name").defaultValue("${datastore.database:sitewhere}").build()));
+    public static void addInfluxDbAttributes(ElementNode.Builder builder) {
+	builder.attributeGroup("conn", "InfluxDB Connectivity");
+	builder.attribute((new AttributeNode.Builder("Connection URL", "connectUrl", AttributeType.String)
+		.description("Specifies URL used to connect to InfluxDB.").group("conn")
+		.defaultValue("http://localhost:8086").build()));
 	builder.attribute((new AttributeNode.Builder("Username", "username", AttributeType.String)
-		.description("Database authentication username").build()));
+		.description("Username for InfluxDB authentication.").group("conn").defaultValue("root").build()));
 	builder.attribute((new AttributeNode.Builder("Password", "password", AttributeType.String)
-		.description("Database authentication password").build()));
-	builder.attribute((new AttributeNode.Builder("Authentication DB name", "authDatabaseName", AttributeType.String)
-		.description("Authentication database name").build()));
-	builder.attribute((new AttributeNode.Builder("Replica set name", "replicaSetName", AttributeType.String)
-		.description("Name of replica set if using replication.").defaultValue("${datastore.replicaset:}")
+		.description("Password for InfluxDB authentication.").group("conn").defaultValue("root").build()));
+	builder.attribute((new AttributeNode.Builder("Database", "database", AttributeType.String)
+		.description("InfluxDB database name.").group("conn").defaultValue("sitewhere").build()));
+	builder.attribute((new AttributeNode.Builder("Retention policy", "retention", AttributeType.String)
+		.description("InfluxDB retention policy name.").group("conn").defaultValue("autogen").build()));
+	builder.attribute((new AttributeNode.Builder("Log level", "logLevel", AttributeType.String)
+		.description("Log level for debugging InfluxDB interactions.").group("conn").choice("None", "none")
+		.choice("Basic", "basic").choice("Headers", "headers").choice("Full", "full").defaultValue("none")
 		.build()));
-	builder.attribute((new AttributeNode.Builder("Auto-configure replication", "autoConfigureReplication",
-		AttributeType.Boolean)
-			.description("Indicates whether replication should be configured automatically "
-				+ "when multiple hosts/ports are specified.")
-			.build()));
+
+	builder.attributeGroup("batch", "InfluxDB Batch Event Processing");
+	builder.attribute((new AttributeNode.Builder("Enable batch processing", "enableBatch", AttributeType.Boolean)
+		.description("Enable delivery of events in batches.").group("batch").defaultValue("true").build()));
+	builder.attribute((new AttributeNode.Builder("Max batch chunk size", "batchChunkSize", AttributeType.Integer)
+		.description("Maximum number of events to send in a batch.").group("batch").defaultValue("1000")
+		.build()));
+	builder.attribute(
+		(new AttributeNode.Builder("Max batch send interval (ms)", "batchIntervalMs", AttributeType.Integer)
+			.description("Maximum amount of time (in ms) to wait before sending a batch.").group("batch")
+			.defaultValue("100").build()));
     }
 }

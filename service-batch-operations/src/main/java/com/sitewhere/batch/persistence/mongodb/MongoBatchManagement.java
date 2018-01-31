@@ -62,9 +62,9 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
      */
     protected void ensureIndexes() throws SiteWhereException {
 	// Batch operation indexes.
-	getMongoClient().getBatchOperationsCollection(getTenantEngine().getTenant())
-		.createIndex(new Document(MongoBatchOperation.PROP_TOKEN, 1), new IndexOptions().unique(true));
-	getMongoClient().getBatchOperationElementsCollection(getTenantEngine().getTenant())
+	getMongoClient().getBatchOperationsCollection().createIndex(new Document(MongoBatchOperation.PROP_TOKEN, 1),
+		new IndexOptions().unique(true));
+	getMongoClient().getBatchOperationElementsCollection()
 		.createIndex(new Document(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, 1));
     }
 
@@ -79,15 +79,13 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
 	String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
 	BatchOperation batch = BatchManagementPersistence.batchOperationCreateLogic(request, uuid);
 
-	MongoCollection<Document> batches = getMongoClient()
-		.getBatchOperationsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> batches = getMongoClient().getBatchOperationsCollection();
 	Document created = MongoBatchOperation.toDocument(batch);
 	MongoPersistence.insert(batches, created, ErrorCode.DuplicateBatchOperationToken);
 
 	// Insert element for each hardware id.
 	long index = 0;
-	MongoCollection<Document> elements = getMongoClient()
-		.getBatchOperationElementsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> elements = getMongoClient().getBatchOperationElementsCollection();
 	for (String hardwareId : request.getHardwareIds()) {
 	    BatchElement element = BatchManagementPersistence.batchElementCreateLogic(batch.getToken(), hardwareId,
 		    ++index);
@@ -107,8 +105,7 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
     @Override
     public IBatchOperation updateBatchOperation(String token, IBatchOperationUpdateRequest request)
 	    throws SiteWhereException {
-	MongoCollection<Document> batchops = getMongoClient()
-		.getBatchOperationsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> batchops = getMongoClient().getBatchOperationsCollection();
 	Document match = assertBatchOperation(token);
 
 	BatchOperation operation = MongoBatchOperation.fromDocument(match);
@@ -144,7 +141,7 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
     @Override
     public ISearchResults<IBatchOperation> listBatchOperations(IBatchOperationSearchCriteria criteria)
 	    throws SiteWhereException {
-	MongoCollection<Document> ops = getMongoClient().getBatchOperationsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> ops = getMongoClient().getBatchOperationsCollection();
 	Document dbCriteria = new Document();
 	if (!criteria.isIncludeDeleted()) {
 	    MongoSiteWhereEntity.setDeleted(dbCriteria, false);
@@ -163,13 +160,11 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
     public IBatchOperation deleteBatchOperation(String token, boolean force) throws SiteWhereException {
 	Document existing = assertBatchOperation(token);
 	if (force) {
-	    MongoCollection<Document> ops = getMongoClient()
-		    .getBatchOperationsCollection(getTenantEngine().getTenant());
+	    MongoCollection<Document> ops = getMongoClient().getBatchOperationsCollection();
 	    MongoPersistence.delete(ops, existing);
 
 	    // Delete operation elements as well.
-	    MongoCollection<Document> elements = getMongoClient()
-		    .getBatchOperationElementsCollection(getTenantEngine().getTenant());
+	    MongoCollection<Document> elements = getMongoClient().getBatchOperationElementsCollection();
 	    Document match = new Document(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, token);
 	    MongoPersistence.delete(elements, match);
 
@@ -177,8 +172,7 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
 	} else {
 	    MongoSiteWhereEntity.setDeleted(existing, true);
 	    Document query = new Document(MongoBatchOperation.PROP_TOKEN, token);
-	    MongoCollection<Document> ops = getMongoClient()
-		    .getBatchOperationsCollection(getTenantEngine().getTenant());
+	    MongoCollection<Document> ops = getMongoClient().getBatchOperationsCollection();
 	    MongoPersistence.update(ops, query, existing);
 	    return MongoBatchOperation.fromDocument(existing);
 	}
@@ -193,8 +187,7 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
     @Override
     public SearchResults<IBatchElement> listBatchElements(String batchToken, IBatchElementSearchCriteria criteria)
 	    throws SiteWhereException {
-	MongoCollection<Document> elements = getMongoClient()
-		.getBatchOperationElementsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> elements = getMongoClient().getBatchOperationElementsCollection();
 	Document dbCriteria = new Document(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, batchToken);
 	if (criteria.getProcessingStatus() != null) {
 	    dbCriteria.put(MongoBatchElement.PROP_PROCESSING_STATUS, criteria.getProcessingStatus());
@@ -212,8 +205,7 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
     @Override
     public IBatchElement updateBatchElement(String operationToken, long index, IBatchElementUpdateRequest request)
 	    throws SiteWhereException {
-	MongoCollection<Document> elements = getMongoClient()
-		.getBatchOperationElementsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> elements = getMongoClient().getBatchOperationElementsCollection();
 	Document dbElement = assertBatchElement(operationToken, index);
 
 	BatchElement element = MongoBatchElement.fromDocument(dbElement);
@@ -253,8 +245,7 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
      */
     protected Document getBatchOperationDocumentByToken(String token) throws SiteWhereException {
 	try {
-	    MongoCollection<Document> ops = getMongoClient()
-		    .getBatchOperationsCollection(getTenantEngine().getTenant());
+	    MongoCollection<Document> ops = getMongoClient().getBatchOperationsCollection();
 	    Document query = new Document(MongoBatchOperation.PROP_TOKEN, token);
 	    return ops.find(query).first();
 	} catch (MongoTimeoutException e) {
@@ -289,8 +280,7 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
      */
     protected Document getBatchElementDocumentByIndex(String operationToken, long index) throws SiteWhereException {
 	try {
-	    MongoCollection<Document> ops = getMongoClient()
-		    .getBatchOperationElementsCollection(getTenantEngine().getTenant());
+	    MongoCollection<Document> ops = getMongoClient().getBatchOperationElementsCollection();
 	    Document query = new Document(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, operationToken)
 		    .append(MongoBatchElement.PROP_INDEX, index);
 	    return ops.find(query).first();

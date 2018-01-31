@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponentParameter;
 import com.sitewhere.spi.server.lifecycle.ILifecycleConstraints;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
@@ -97,6 +98,23 @@ public class LifecycleComponentDecorator<T extends ILifecycleComponent> implemen
     @Override
     public Date getCreatedDate() {
 	return getDelegate().getCreatedDate();
+    }
+
+    /*
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getParameters()
+     */
+    @Override
+    public List<ILifecycleComponentParameter<?>> getParameters() {
+	return getDelegate().getParameters();
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#initializeParameters()
+     */
+    @Override
+    public void initializeParameters() throws SiteWhereException {
+	getDelegate().initializeParameters();
     }
 
     /*

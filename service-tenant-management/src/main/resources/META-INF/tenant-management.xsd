@@ -21,13 +21,7 @@
 
 	<xsd:complexType name="tenantManagementType">
 		<xsd:all>
-			<xsd:element ref="ds:abstract-datastore">
-				<xsd:annotation>
-					<xsd:documentation>
-						Datastore used for persistence.
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
+			<xsd:element ref="ds:device-management-datastore" />
 		</xsd:all>
 	</xsd:complexType>
 </xsd:schema>

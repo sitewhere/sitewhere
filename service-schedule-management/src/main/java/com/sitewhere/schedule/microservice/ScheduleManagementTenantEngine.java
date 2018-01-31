@@ -71,7 +71,7 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
 
 	// Initialize discoverable lifecycle components.
-	init.addStep(getMicroservice().initializeDiscoverableBeans(getModuleContext()));
+	init.addStep(initializeDiscoverableBeans(getModuleContext()));
 
 	// Initialize schedule management persistence.
 	init.addInitializeStep(this, getScheduleManagement(), true);
@@ -88,6 +88,9 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
+
+	// Start discoverable lifecycle components.
+	start.addStep(startDiscoverableBeans(getModuleContext()));
 
 	// Start schedule management persistence.
 	start.addStartStep(this, getScheduleManagement(), true);
@@ -136,6 +139,9 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine
 
 	// Stop schedule management persistence.
 	stop.addStopStep(this, getScheduleManagement());
+
+	// Stop discoverable lifecycle components.
+	stop.addStep(stopDiscoverableBeans(getModuleContext()));
 
 	// Execute shutdown steps.
 	stop.execute(monitor);

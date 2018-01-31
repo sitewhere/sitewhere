@@ -19,12 +19,26 @@
 			<!-- MongoDB global configuration management -->
 			<im:mongodb-configurations>
 
-				<!-- Default configuration for MongoDB data access -->
-				<im:default-mongodb-configuration
-					hostname="${datastore.host:mongodb}" port="${datastore.port:27017}"
-					databaseName="${datastore.database:sitewhere}" replicaSetName="${datastore.replicaset:}" />
+				<!-- Configuration used for global services -->
+				<im:mongodb-configuration id="global"
+					hostname="${mongodb.host:mongodb}" port="${mongodb.port:27017}"
+					databaseName="${mongodb.database:sitewhere}" replicaSetName="${mongodb.replicaset:}" />
+
+				<!-- Configuration used for tenant microservices -->
+				<im:mongodb-configuration id="tenant"
+					hostname="${mongodb.host:mongodb}" port="${mongodb.port:27017}"
+					databaseName="${mongodb.tenant.prefix:tenant-[[tenant.id]]}"
+					replicaSetName="${mongodb.replicaset:}" />
 
 			</im:mongodb-configurations>
+
+			<!-- InfluxDB global configuration management -->
+			<im:influxdb-configurations>
+
+				<!-- Default configuration for InfluxDB data access -->
+				<im:influxdb-configuration id="tenant" />
+
+			</im:influxdb-configurations>
 
 		</im:persistence-configurations>
 

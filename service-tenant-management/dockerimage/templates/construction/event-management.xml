@@ -16,8 +16,10 @@
 	<!-- Event Management Configuration -->
 	<em:event-management>
 
-		<!-- Use default MongoDB configuration -->
-		<ds:default-mongodb-datastore />
+		<!-- Use global MongoDB tenant configuration -->
+		<ds:device-management-datastore>
+			<ds:mongodb-datastore-reference id="tenant" />
+		</ds:device-management-datastore>
 
 	</em:event-management>
 

@@ -15,7 +15,6 @@ import com.mongodb.client.MongoCollection;
 import com.sitewhere.configuration.instance.mongodb.MongoConfiguration;
 import com.sitewhere.mongodb.BaseMongoClient;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Mongo client for interacting with device management object model.
@@ -65,118 +64,92 @@ public class DeviceManagementMongoClient extends BaseMongoClient implements IDev
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
-     * getDeviceSpecificationsCollection(com.sitewhere.spi.tenant.ITenant)
+     * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
+     * getDeviceSpecificationsCollection()
      */
-    public MongoCollection<Document> getDeviceSpecificationsCollection(ITenant tenant) throws SiteWhereException {
-	return getTenantDatabase(tenant).getCollection(getDeviceSpecificationsCollectionName());
+    public MongoCollection<Document> getDeviceSpecificationsCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getDeviceSpecificationsCollectionName());
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
-     * getDeviceCommandsCollection( com.sitewhere.spi.user.ITenant)
+     * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
+     * getDeviceCommandsCollection()
      */
-    public MongoCollection<Document> getDeviceCommandsCollection(ITenant tenant) throws SiteWhereException {
-	return getTenantDatabase(tenant).getCollection(getDeviceCommandsCollectionName());
+    public MongoCollection<Document> getDeviceCommandsCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getDeviceCommandsCollectionName());
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
-     * getDeviceStatusesCollection(com.sitewhere.spi.tenant.ITenant)
+     * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
+     * getDeviceStatusesCollection()
      */
     @Override
-    public MongoCollection<Document> getDeviceStatusesCollection(ITenant tenant) throws SiteWhereException {
-	return getTenantDatabase(tenant).getCollection(getDeviceStatusesCollectionName());
+    public MongoCollection<Document> getDeviceStatusesCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getDeviceStatusesCollectionName());
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.mongodb.IDeviceManagementMongoClient#getDevicesCollection(
-     * com. sitewhere .spi.user.ITenant)
+     * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
+     * getDevicesCollection()
      */
-    public MongoCollection<Document> getDevicesCollection(ITenant tenant) throws SiteWhereException {
-	return getTenantDatabase(tenant).getCollection(getDevicesCollectionName());
+    public MongoCollection<Document> getDevicesCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getDevicesCollectionName());
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
-     * getDeviceAssignmentsCollection (com.sitewhere.spi.user.ITenant)
+     * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
+     * getDeviceAssignmentsCollection()
      */
-    public MongoCollection<Document> getDeviceAssignmentsCollection(ITenant tenant) throws SiteWhereException {
-	return getTenantDatabase(tenant).getCollection(getDeviceAssignmentsCollectionName());
+    public MongoCollection<Document> getDeviceAssignmentsCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getDeviceAssignmentsCollectionName());
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.mongodb.IDeviceManagementMongoClient#getSitesCollection(com
-     * .sitewhere .spi.user.ITenant)
+     * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
+     * getSitesCollection()
      */
-    public MongoCollection<Document> getSitesCollection(ITenant tenant) throws SiteWhereException {
-	return getTenantDatabase(tenant).getCollection(getSitesCollectionName());
+    public MongoCollection<Document> getSitesCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getSitesCollectionName());
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.mongodb.IDeviceManagementMongoClient#getZonesCollection(com
-     * .sitewhere .spi.user.ITenant)
+     * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
+     * getZonesCollection()
      */
-    public MongoCollection<Document> getZonesCollection(ITenant tenant) throws SiteWhereException {
-	return getTenantDatabase(tenant).getCollection(getZonesCollectionName());
+    public MongoCollection<Document> getZonesCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getZonesCollectionName());
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
-     * getDeviceGroupsCollection(com .sitewhere.spi.user.ITenant)
+     * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
+     * getDeviceGroupsCollection()
      */
-    public MongoCollection<Document> getDeviceGroupsCollection(ITenant tenant) throws SiteWhereException {
-	return getTenantDatabase(tenant).getCollection(getDeviceGroupsCollectionName());
+    public MongoCollection<Document> getDeviceGroupsCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getDeviceGroupsCollectionName());
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
-     * getGroupElementsCollection(com .sitewhere.spi.user.ITenant)
+     * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
+     * getGroupElementsCollection()
      */
-    public MongoCollection<Document> getGroupElementsCollection(ITenant tenant) throws SiteWhereException {
-	return getTenantDatabase(tenant).getCollection(getGroupElementsCollectionName());
+    public MongoCollection<Document> getGroupElementsCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getGroupElementsCollectionName());
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.mongodb.IDeviceManagementMongoClient#getStreamsCollection(
-     * com. sitewhere .spi.user.ITenant)
+     * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
+     * getStreamsCollection()
      */
-    public MongoCollection<Document> getStreamsCollection(ITenant tenant) throws SiteWhereException {
-	return getTenantDatabase(tenant).getCollection(getStreamsCollectionName());
+    public MongoCollection<Document> getStreamsCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getStreamsCollectionName());
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
-     * getStreamDataCollection(com. sitewhere.spi.user.ITenant)
+     * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
+     * getStreamDataCollection()
      */
-    public MongoCollection<Document> getStreamDataCollection(ITenant tenant) throws SiteWhereException {
-	return getTenantDatabase(tenant).getCollection(getStreamDataCollectionName());
+    public MongoCollection<Document> getStreamDataCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getStreamDataCollectionName());
     }
 
     /*

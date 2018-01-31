@@ -7,7 +7,7 @@
  */
 package com.sitewhere.asset.configuration;
 
-import com.sitewhere.configuration.model.CommonModelProvider;
+import com.sitewhere.configuration.model.CommonDatastoreProvider;
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.configuration.parser.IAssetManagementParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
@@ -68,7 +68,7 @@ public class AssetManagementModelProvider extends ConfigurationModelProvider {
      */
     @Override
     public void initializeDependencies() {
-	getDependencies().add(new CommonModelProvider());
+	getDependencies().add(new CommonDatastoreProvider());
     }
 
     /**

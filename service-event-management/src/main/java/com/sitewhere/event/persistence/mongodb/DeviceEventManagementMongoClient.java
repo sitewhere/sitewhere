@@ -15,7 +15,6 @@ import com.mongodb.client.MongoCollection;
 import com.sitewhere.configuration.instance.mongodb.MongoConfiguration;
 import com.sitewhere.mongodb.BaseMongoClient;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Mongo client for interacting with device managment object model.
@@ -35,14 +34,12 @@ public class DeviceEventManagementMongoClient extends BaseMongoClient implements
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.mongodb.IDeviceManagementMongoClient#getEventsCollection(
-     * com. sitewhere .spi.user.ITenant)
+     * com.sitewhere.event.persistence.mongodb.IDeviceEventManagementMongoClient#
+     * getEventsCollection()
      */
-    public MongoCollection<Document> getEventsCollection(ITenant tenant) throws SiteWhereException {
-	return getTenantDatabase(tenant).getCollection(getEventsCollectionName());
+    public MongoCollection<Document> getEventsCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getEventsCollectionName());
     }
 
     /*

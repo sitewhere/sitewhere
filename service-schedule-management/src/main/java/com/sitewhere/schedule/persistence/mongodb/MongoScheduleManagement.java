@@ -86,10 +86,10 @@ public class MongoScheduleManagement extends TenantEngineLifecycleComponent impl
      * @throws SiteWhereException
      */
     protected void ensureIndexes() throws SiteWhereException {
-	getMongoClient().getSchedulesCollection(getTenantEngine().getTenant())
-		.createIndex(new Document(MongoSchedule.PROP_TOKEN, 1), new IndexOptions().unique(true));
-	getMongoClient().getScheduledJobsCollection(getTenantEngine().getTenant())
-		.createIndex(new Document(MongoScheduledJob.PROP_TOKEN, 1), new IndexOptions().unique(true));
+	getMongoClient().getSchedulesCollection().createIndex(new Document(MongoSchedule.PROP_TOKEN, 1),
+		new IndexOptions().unique(true));
+	getMongoClient().getScheduledJobsCollection().createIndex(new Document(MongoScheduledJob.PROP_TOKEN, 1),
+		new IndexOptions().unique(true));
     }
 
     /*
@@ -110,7 +110,7 @@ public class MongoScheduleManagement extends TenantEngineLifecycleComponent impl
 	// Use common logic so all backend implementations work the same.
 	Schedule schedule = ScheduleManagementPersistence.scheduleCreateLogic(request, uuid);
 
-	MongoCollection<Document> schedules = getMongoClient().getSchedulesCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> schedules = getMongoClient().getSchedulesCollection();
 	Document created = MongoSchedule.toDocument(schedule);
 	MongoPersistence.insert(schedules, created, ErrorCode.DuplicateScheduleToken);
 
@@ -134,7 +134,7 @@ public class MongoScheduleManagement extends TenantEngineLifecycleComponent impl
 	Document updated = MongoSchedule.toDocument(schedule);
 
 	Document query = new Document(MongoSchedule.PROP_TOKEN, token);
-	MongoCollection<Document> schedules = getMongoClient().getSchedulesCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> schedules = getMongoClient().getSchedulesCollection();
 	MongoPersistence.update(schedules, query, updated);
 
 	return MongoSchedule.fromDocument(updated);
@@ -164,7 +164,7 @@ public class MongoScheduleManagement extends TenantEngineLifecycleComponent impl
      */
     @Override
     public ISearchResults<ISchedule> listSchedules(ISearchCriteria criteria) throws SiteWhereException {
-	MongoCollection<Document> schedules = getMongoClient().getSchedulesCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> schedules = getMongoClient().getSchedulesCollection();
 	Document dbCriteria = new Document();
 	MongoSiteWhereEntity.setDeleted(dbCriteria, false);
 	Document sort = new Document(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
@@ -181,7 +181,7 @@ public class MongoScheduleManagement extends TenantEngineLifecycleComponent impl
     @Override
     public ISchedule deleteSchedule(String token, boolean force) throws SiteWhereException {
 	Document existing = assertSchedule(token);
-	MongoCollection<Document> schedules = getMongoClient().getSchedulesCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> schedules = getMongoClient().getSchedulesCollection();
 	if (force) {
 	    MongoPersistence.delete(schedules, existing);
 	    return MongoSchedule.fromDocument(existing);
@@ -211,7 +211,7 @@ public class MongoScheduleManagement extends TenantEngineLifecycleComponent impl
 	// Use common logic so all backend implementations work the same.
 	ScheduledJob job = ScheduleManagementPersistence.scheduledJobCreateLogic(request, uuid);
 
-	MongoCollection<Document> jobs = getMongoClient().getScheduledJobsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> jobs = getMongoClient().getScheduledJobsCollection();
 	Document created = MongoScheduledJob.toDocument(job);
 	MongoPersistence.insert(jobs, created, ErrorCode.DuplicateScheduledJobToken);
 
@@ -237,7 +237,7 @@ public class MongoScheduleManagement extends TenantEngineLifecycleComponent impl
 	Document updated = MongoScheduledJob.toDocument(job);
 
 	Document query = new Document(MongoScheduledJob.PROP_TOKEN, token);
-	MongoCollection<Document> jobs = getMongoClient().getScheduledJobsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> jobs = getMongoClient().getScheduledJobsCollection();
 	MongoPersistence.update(jobs, query, updated);
 
 	return MongoScheduledJob.fromDocument(updated);
@@ -266,7 +266,7 @@ public class MongoScheduleManagement extends TenantEngineLifecycleComponent impl
      */
     @Override
     public ISearchResults<IScheduledJob> listScheduledJobs(ISearchCriteria criteria) throws SiteWhereException {
-	MongoCollection<Document> jobs = getMongoClient().getScheduledJobsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> jobs = getMongoClient().getScheduledJobsCollection();
 	Document dbCriteria = new Document();
 	MongoSiteWhereEntity.setDeleted(dbCriteria, false);
 	Document sort = new Document(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
@@ -283,7 +283,7 @@ public class MongoScheduleManagement extends TenantEngineLifecycleComponent impl
     @Override
     public IScheduledJob deleteScheduledJob(String token, boolean force) throws SiteWhereException {
 	Document existing = assertScheduledJob(token);
-	MongoCollection<Document> jobs = getMongoClient().getScheduledJobsCollection(getTenantEngine().getTenant());
+	MongoCollection<Document> jobs = getMongoClient().getScheduledJobsCollection();
 	if (force) {
 	    MongoPersistence.delete(jobs, existing);
 	    return MongoScheduledJob.fromDocument(existing);
@@ -321,8 +321,7 @@ public class MongoScheduleManagement extends TenantEngineLifecycleComponent impl
      */
     protected Document getScheduleDocumentByToken(String token) throws SiteWhereException {
 	try {
-	    MongoCollection<Document> collection = getMongoClient()
-		    .getSchedulesCollection(getTenantEngine().getTenant());
+	    MongoCollection<Document> collection = getMongoClient().getSchedulesCollection();
 	    Document query = new Document(MongoSchedule.PROP_TOKEN, token);
 	    return collection.find(query).first();
 	} catch (MongoTimeoutException e) {
@@ -356,8 +355,7 @@ public class MongoScheduleManagement extends TenantEngineLifecycleComponent impl
      */
     protected Document getScheduledJobDocumentByToken(String token) throws SiteWhereException {
 	try {
-	    MongoCollection<Document> collection = getMongoClient()
-		    .getScheduledJobsCollection(getTenantEngine().getTenant());
+	    MongoCollection<Document> collection = getMongoClient().getScheduledJobsCollection();
 	    Document query = new Document(MongoSchedule.PROP_TOKEN, token);
 	    return collection.find(query).first();
 	} catch (MongoTimeoutException e) {

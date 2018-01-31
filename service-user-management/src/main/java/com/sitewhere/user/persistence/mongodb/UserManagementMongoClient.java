@@ -39,12 +39,11 @@ public class UserManagementMongoClient extends BaseMongoClient implements IUserM
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.mongodb.IGlobalManagementMongoClient#getUsersCollection()
+     * @see com.sitewhere.mongodb.IGlobalManagementMongoClient#getUsersCollection()
      */
     @Override
     public MongoCollection<Document> getUsersCollection() throws SiteWhereException {
-	return getGlobalDatabase().getCollection(getUsersCollectionName());
+	return getDatabase().getCollection(getUsersCollectionName());
     }
 
     /*
@@ -55,7 +54,7 @@ public class UserManagementMongoClient extends BaseMongoClient implements IUserM
      */
     @Override
     public MongoCollection<Document> getAuthoritiesCollection() throws SiteWhereException {
-	return getGlobalDatabase().getCollection(getAuthoritiesCollectionName());
+	return getDatabase().getCollection(getAuthoritiesCollectionName());
     }
 
     /*

@@ -74,6 +74,10 @@ public class InstanceManagementParser extends AbstractBeanDefinitionParser {
 		(new MongoConfigurationsParser()).parse(child, context);
 		break;
 	    }
+	    case InfluxConfigurations: {
+		(new InfluxConfigurationsParser()).parse(child, context);
+		break;
+	    }
 	    }
 	}
     }

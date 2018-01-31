@@ -15,7 +15,6 @@ import com.mongodb.client.MongoCollection;
 import com.sitewhere.configuration.instance.mongodb.MongoConfiguration;
 import com.sitewhere.mongodb.BaseMongoClient;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Mongo client that provides access to asset management resources.
@@ -38,24 +37,17 @@ public class AssetManagementMongoClient extends BaseMongoClient implements IAsse
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.mongodb.IAssetManagementMongoClient#
-     * getAssetCategoriesCollection( com.sitewhere.spi.user.ITenant)
+     * @see com.sitewhere.asset.persistence.mongodb.IAssetManagementMongoClient#getAssetCategoriesCollection()
      */
-    public MongoCollection<Document> getAssetCategoriesCollection(ITenant tenant) throws SiteWhereException {
-	return getTenantDatabase(tenant).getCollection(getAssetCategoriesCollectionName());
+    public MongoCollection<Document> getAssetCategoriesCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getAssetCategoriesCollectionName());
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.mongodb.IAssetManagementMongoClient#getAssetsCollection(com
-     * .sitewhere .spi.user.ITenant)
+     * @see com.sitewhere.asset.persistence.mongodb.IAssetManagementMongoClient#getAssetsCollection()
      */
-    public MongoCollection<Document> getAssetsCollection(ITenant tenant) throws SiteWhereException {
-	return getTenantDatabase(tenant).getCollection(getAssetsCollectionName());
+    public MongoCollection<Document> getAssetsCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getAssetsCollectionName());
     }
 
     /*

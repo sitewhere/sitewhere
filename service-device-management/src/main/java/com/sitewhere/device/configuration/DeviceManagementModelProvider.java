@@ -7,6 +7,7 @@
  */
 package com.sitewhere.device.configuration;
 
+import com.sitewhere.configuration.model.CommonDatastoreProvider;
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.configuration.parser.IDeviceManagementParser;
 import com.sitewhere.rest.model.configuration.ElementNode;
@@ -69,5 +70,14 @@ public class DeviceManagementModelProvider extends ConfigurationModelProvider {
 	for (DeviceManagementRoles role : DeviceManagementRoles.values()) {
 	    getRolesById().put(role.getRole().getKey().getId(), role.getRole());
 	}
+    }
+
+    /*
+     * @see com.sitewhere.configuration.model.ConfigurationModelProvider#
+     * initializeDependencies()
+     */
+    @Override
+    public void initializeDependencies() {
+	getDependencies().add(new CommonDatastoreProvider());
     }
 }

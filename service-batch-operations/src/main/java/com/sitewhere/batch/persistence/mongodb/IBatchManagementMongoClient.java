@@ -11,7 +11,6 @@ import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Mongo client that provides batch management collections.
@@ -29,18 +28,16 @@ public interface IBatchManagementMongoClient {
     /**
      * Collection for batch operations.
      * 
-     * @param tenant
      * @return
      * @throws SiteWhereException
      */
-    public MongoCollection<Document> getBatchOperationsCollection(ITenant tenant) throws SiteWhereException;
+    public MongoCollection<Document> getBatchOperationsCollection() throws SiteWhereException;
 
     /**
      * Collection for batch operation elements.
      * 
-     * @param tenant
      * @return
      * @throws SiteWhereException
      */
-    public MongoCollection<Document> getBatchOperationElementsCollection(ITenant tenant) throws SiteWhereException;
+    public MongoCollection<Document> getBatchOperationElementsCollection() throws SiteWhereException;
 }

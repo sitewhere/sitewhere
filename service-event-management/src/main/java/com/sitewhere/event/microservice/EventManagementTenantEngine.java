@@ -69,7 +69,7 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
 
 	// Initialize discoverable lifecycle components.
-	init.addStep(getMicroservice().initializeDiscoverableBeans(getModuleContext()));
+	init.addStep(initializeDiscoverableBeans(getModuleContext()));
 
 	// Initialize event management persistence.
 	init.addInitializeStep(this, getEventManagement(), true);
@@ -107,6 +107,9 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
 
+	// Start discoverable lifecycle components.
+	start.addStep(startDiscoverableBeans(getModuleContext()));
+
 	// Start event management persistence.
 	start.addStartStep(this, getEventManagement(), true);
 
@@ -137,16 +140,19 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
     @Override
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will stop components.
-	ICompositeLifecycleStep start = new CompositeLifecycleStep("Stop " + getComponentName());
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
 
 	// Stop event management persistence.
-	start.addStopStep(this, getEventManagement());
+	stop.addStopStep(this, getEventManagement());
 
 	// Stop inbound persisted events producer.
-	start.addStopStep(this, getInboundPersistedEventsProducer());
+	stop.addStopStep(this, getInboundPersistedEventsProducer());
+
+	// Stop discoverable lifecycle components.
+	stop.addStep(stopDiscoverableBeans(getModuleContext()));
 
 	// Execute shutdown steps.
-	start.execute(monitor);
+	stop.execute(monitor);
     }
 
     /*

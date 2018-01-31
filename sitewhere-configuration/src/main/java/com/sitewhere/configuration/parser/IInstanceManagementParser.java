@@ -53,7 +53,10 @@ public interface IInstanceManagementParser {
     public static enum PersistenceConfigurationsElements {
 
 	/** MongoDB configuration elements */
-	MongoConfigurations("mongodb-configurations");
+	MongoConfigurations("mongodb-configurations"),
+
+	/** InfluxDB configuration elements */
+	InfluxConfigurations("influxdb-configurations");
 
 	/** Event code */
 	private String localName;
@@ -82,11 +85,8 @@ public interface IInstanceManagementParser {
 
     public static enum MongoDbElements {
 
-	/** Default MongoDB configuration */
-	DefaultMongoConfiguration("default-mongodb-configuration"),
-
-	/** Alternate MongoDB configuration */
-	AlternateMongoConfiguration("alternate-mongodb-configuration");
+	/** MongoDB configuration */
+	MongoConfiguration("mongodb-configuration");
 
 	/** Event code */
 	private String localName;
@@ -97,6 +97,36 @@ public interface IInstanceManagementParser {
 
 	public static MongoDbElements getByLocalName(String localName) {
 	    for (MongoDbElements value : MongoDbElements.values()) {
+		if (value.getLocalName().equals(localName)) {
+		    return value;
+		}
+	    }
+	    return null;
+	}
+
+	public String getLocalName() {
+	    return localName;
+	}
+
+	public void setLocalName(String localName) {
+	    this.localName = localName;
+	}
+    }
+
+    public static enum InfluxDbElements {
+
+	/** InfluxDB configuration */
+	InfluxConfiguration("influxdb-configuration");
+
+	/** Event code */
+	private String localName;
+
+	private InfluxDbElements(String localName) {
+	    this.localName = localName;
+	}
+
+	public static InfluxDbElements getByLocalName(String localName) {
+	    for (InfluxDbElements value : InfluxDbElements.values()) {
 		if (value.getLocalName().equals(localName)) {
 		    return value;
 		}

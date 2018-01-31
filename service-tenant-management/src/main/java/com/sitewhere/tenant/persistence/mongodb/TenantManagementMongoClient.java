@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 import com.sitewhere.configuration.instance.mongodb.MongoConfiguration;
 import com.sitewhere.mongodb.BaseMongoClient;
 import com.sitewhere.spi.SiteWhereException;
@@ -38,26 +37,11 @@ public class TenantManagementMongoClient extends BaseMongoClient implements ITen
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.mongodb.IGlobalManagementMongoClient#deleteTenantData(java.
-     * lang.String)
-     */
-    @Override
-    public void deleteTenantData(String tenantId) throws SiteWhereException {
-	MongoDatabase tenantDatabase = getTenantDatabase(tenantId);
-	if (tenantDatabase != null) {
-	    tenantDatabase.drop();
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
      * com.sitewhere.mongodb.IGlobalManagementMongoClient#getTenantsCollection()
      */
     @Override
     public MongoCollection<Document> getTenantsCollection() throws SiteWhereException {
-	return getGlobalDatabase().getCollection(getTenantsCollectionName());
+	return getDatabase().getCollection(getTenantsCollectionName());
     }
 
     /*

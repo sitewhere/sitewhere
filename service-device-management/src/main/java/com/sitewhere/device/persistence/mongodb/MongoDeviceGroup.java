@@ -142,7 +142,7 @@ public class MongoDeviceGroup implements MongoConverter<IDeviceGroup> {
 	Document query = new Document(MongoDeviceGroup.PROP_ID, groupId);
 	Document update = new Document(MongoDeviceGroup.PROP_LAST_INDEX, (long) 1);
 	Document increment = new Document("$inc", update);
-	Document updated = mongo.getDeviceGroupsCollection(tenant).findOneAndUpdate(query, increment);
+	Document updated = mongo.getDeviceGroupsCollection().findOneAndUpdate(query, increment);
 	return (Long) updated.get(PROP_LAST_INDEX);
     }
 }

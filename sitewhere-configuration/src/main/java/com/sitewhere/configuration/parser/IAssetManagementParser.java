@@ -19,8 +19,8 @@ public interface IAssetManagementParser {
 
     public static enum Elements {
 
-	/** Default MongoDB datastore */
-	DefaultMongoDatastore("default-mongodb-datastore"),
+	/** Device management datastore */
+	DeviceManagementDatastore("device-management-datastore"),
 
 	/** Asset modules section */
 	AssetModules("asset-modules");

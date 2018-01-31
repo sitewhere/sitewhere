@@ -15,7 +15,6 @@ import com.mongodb.client.MongoCollection;
 import com.sitewhere.configuration.instance.mongodb.MongoConfiguration;
 import com.sitewhere.mongodb.BaseMongoClient;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Mongo client for interacting with schedule management object model.
@@ -38,25 +37,23 @@ public class ScheduleManagementMongoClient extends BaseMongoClient implements IS
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.mongodb.IScheduleManagementMongoClient#
-     * getSchedulesCollection(com .sitewhere.spi.user.ITenant)
+     * @see
+     * com.sitewhere.schedule.persistence.mongodb.IScheduleManagementMongoClient#
+     * getSchedulesCollection()
      */
     @Override
-    public MongoCollection<Document> getSchedulesCollection(ITenant tenant) throws SiteWhereException {
-	return getTenantDatabase(tenant).getCollection(getSchedulesCollectionName());
+    public MongoCollection<Document> getSchedulesCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getSchedulesCollectionName());
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.mongodb.IScheduleManagementMongoClient#
-     * getScheduledJobsCollection (com.sitewhere.spi.user.ITenant)
+     * @see
+     * com.sitewhere.schedule.persistence.mongodb.IScheduleManagementMongoClient#
+     * getScheduledJobsCollection()
      */
     @Override
-    public MongoCollection<Document> getScheduledJobsCollection(ITenant tenant) throws SiteWhereException {
-	return getTenantDatabase(tenant).getCollection(getScheduledJobsCollectionName());
+    public MongoCollection<Document> getScheduledJobsCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getScheduledJobsCollectionName());
     }
 
     /*

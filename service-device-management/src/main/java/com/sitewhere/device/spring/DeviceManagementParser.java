@@ -16,11 +16,13 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
-import com.sitewhere.configuration.parser.IUserManagementParser.Elements;
+import com.sitewhere.configuration.datastore.DatastoreConfiguration;
+import com.sitewhere.configuration.datastore.DatastoreConfigurationParser;
+import com.sitewhere.configuration.parser.IDeviceManagementParser.Elements;
 import com.sitewhere.device.persistence.mongodb.DeviceManagementMongoClient;
 import com.sitewhere.device.persistence.mongodb.MongoDeviceManagement;
+import com.sitewhere.spi.microservice.spring.AssetManagementBeans;
 import com.sitewhere.spi.microservice.spring.DeviceManagementBeans;
-import com.sitewhere.spi.microservice.spring.InstanceManagementBeans;
 
 /**
  * Parses configuration data for the SiteWhere device management microservice.
@@ -45,8 +47,8 @@ public class DeviceManagementParser extends AbstractBeanDefinitionParser {
 		throw new RuntimeException("Unknown device management element: " + child.getLocalName());
 	    }
 	    switch (type) {
-	    case DefaultMongoDatastore: {
-		parseDefaultMongoDatastore(child, context);
+	    case DeviceManagementDatastore: {
+		parseDeviceManagementDatastore(child, context);
 		break;
 	    }
 	    }
@@ -55,18 +57,32 @@ public class DeviceManagementParser extends AbstractBeanDefinitionParser {
     }
 
     /**
-     * Parse the default MongoDB datastore element.
+     * Parse device management datastore element.
      * 
      * @param element
      * @param context
      */
-    protected void parseDefaultMongoDatastore(Element element, ParserContext context) {
-	// Build MongoDB client using default global configuration.
-	BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(DeviceManagementMongoClient.class);
-	client.addConstructorArgReference(InstanceManagementBeans.BEAN_MONGO_CONFIGURATION_DEFAULT);
-
-	context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_MONGODB_CLIENT,
-		client.getBeanDefinition());
+    protected void parseDeviceManagementDatastore(Element element, ParserContext context) {
+	DatastoreConfiguration config = DatastoreConfigurationParser.parseDeviceManagementDatastore(element, context);
+	switch (config.getType()) {
+	case MongoDB: {
+	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(DeviceManagementMongoClient.class);
+	    client.addConstructorArgValue(config.getConfiguration());
+	    context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
+		    client.getBeanDefinition());
+	    break;
+	}
+	case MongoDBReference: {
+	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(DeviceManagementMongoClient.class);
+	    client.addConstructorArgReference((String) config.getConfiguration());
+	    context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
+		    client.getBeanDefinition());
+	    break;
+	}
+	default: {
+	    throw new RuntimeException("Invalid datastore configured: " + config.getType());
+	}
+	}
 
 	// Build device management implementation.
 	BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(MongoDeviceManagement.class);

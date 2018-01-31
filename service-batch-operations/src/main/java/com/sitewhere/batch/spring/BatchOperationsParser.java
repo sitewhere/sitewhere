@@ -20,9 +20,11 @@ import org.w3c.dom.Element;
 
 import com.sitewhere.batch.persistence.mongodb.BatchManagementMongoClient;
 import com.sitewhere.batch.persistence.mongodb.MongoBatchManagement;
+import com.sitewhere.configuration.datastore.DatastoreConfiguration;
+import com.sitewhere.configuration.datastore.DatastoreConfigurationParser;
 import com.sitewhere.configuration.parser.IBatchOperationsParser.Elements;
+import com.sitewhere.spi.microservice.spring.AssetManagementBeans;
 import com.sitewhere.spi.microservice.spring.BatchManagementBeans;
-import com.sitewhere.spi.microservice.spring.InstanceManagementBeans;
 
 /**
  * Parses elements related to batch operations.
@@ -51,8 +53,8 @@ public class BatchOperationsParser extends AbstractBeanDefinitionParser {
 		throw new RuntimeException("Unknown batch operations element: " + child.getLocalName());
 	    }
 	    switch (type) {
-	    case DefaultMongoDatastore: {
-		parseDefaultMongoDatastore(child, context);
+	    case DeviceManagementDatastore: {
+		parseDeviceManagementDatastore(child, context);
 		break;
 	    }
 	    case BatchOperationManager: {
@@ -67,18 +69,32 @@ public class BatchOperationsParser extends AbstractBeanDefinitionParser {
     }
 
     /**
-     * Parse the default MongoDB datastore element.
+     * Parse device management datastore element.
      * 
      * @param element
      * @param context
      */
-    protected void parseDefaultMongoDatastore(Element element, ParserContext context) {
-	// Build MongoDB client using default global configuration.
-	BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(BatchManagementMongoClient.class);
-	client.addConstructorArgReference(InstanceManagementBeans.BEAN_MONGO_CONFIGURATION_DEFAULT);
-
-	context.getRegistry().registerBeanDefinition(BatchManagementBeans.BEAN_MONGODB_CLIENT,
-		client.getBeanDefinition());
+    protected void parseDeviceManagementDatastore(Element element, ParserContext context) {
+	DatastoreConfiguration config = DatastoreConfigurationParser.parseDeviceManagementDatastore(element, context);
+	switch (config.getType()) {
+	case MongoDB: {
+	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(BatchManagementMongoClient.class);
+	    client.addConstructorArgValue(config.getConfiguration());
+	    context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
+		    client.getBeanDefinition());
+	    break;
+	}
+	case MongoDBReference: {
+	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(BatchManagementMongoClient.class);
+	    client.addConstructorArgReference((String) config.getConfiguration());
+	    context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
+		    client.getBeanDefinition());
+	    break;
+	}
+	default: {
+	    throw new RuntimeException("Invalid datastore configured: " + config.getType());
+	}
+	}
 
 	// Build batch management implementation.
 	BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(MongoBatchManagement.class);

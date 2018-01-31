@@ -21,41 +21,45 @@
 	<!-- Common datastore information -->
 	<xsd:complexType name="abstractDatastoreType" />
 
-	<!-- Default MongoDB datastore reference -->
-	<xsd:element name="default-mongodb-datastore" type="defaultMongoDatastoreType"
+	<!-- Choices for potential device management datastores -->
+	<xsd:element name="device-management-datastore">
+		<xsd:complexType>
+			<xsd:choice>
+				<xsd:element ref="mongodb-datastore" />
+				<xsd:element ref="mongodb-datastore-reference" />
+			</xsd:choice>
+		</xsd:complexType>
+	</xsd:element>
+
+	<!-- Choices for potential event management datastores -->
+	<xsd:element name="event-management-datastore">
+		<xsd:complexType>
+			<xsd:choice>
+				<xsd:element ref="mongodb-datastore" />
+				<xsd:element ref="mongodb-datastore-reference" />
+				<xsd:element ref="influxdb-datastore" />
+				<xsd:element ref="influxdb-datastore-reference" />
+			</xsd:choice>
+		</xsd:complexType>
+	</xsd:element>
+
+	<!-- Alternate MongoDB datastore reference -->
+	<xsd:element name="mongodb-datastore-reference" type="mongoDatastoreReferenceType"
 		substitutionGroup="abstract-datastore">
 		<xsd:annotation>
 			<xsd:documentation>
-				Connects to MongoDB using the default global
+				Connects to MongoDB using a globally defined
 				configuration.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:complexType name="defaultMongoDatastoreType">
+	<xsd:complexType name="mongoDatastoreReferenceType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractDatastoreType">
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-
-	<!-- Alternate MongoDB datastore reference -->
-	<xsd:element name="alternate-mongodb-datastore" type="alternateMongoDatastoreType"
-		substitutionGroup="abstract-datastore">
-		<xsd:annotation>
-			<xsd:documentation>
-				Connects to MongoDB using an alternate MongoDB
-				datastore configuration.
-			</xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="alternateMongoDatastoreType">
-		<xsd:complexContent>
-			<xsd:extension base="abstractDatastoreType">
-				<xsd:attribute name="id" type="xsd:string">
+				<xsd:attribute name="id" type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							Unique id for alternate datastore
-							configuration.
+							Unique id for global datastore configuration.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -64,7 +68,7 @@
 	</xsd:complexType>
 
 	<!-- Custom MongoDB datastore definition -->
-	<xsd:element name="custom-mongodb-datastore" type="customMongoDatastoreType"
+	<xsd:element name="mongodb-datastore" type="mongoDatastoreType"
 		substitutionGroup="abstract-datastore">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -73,7 +77,7 @@
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:complexType name="customMongoDatastoreType">
+	<xsd:complexType name="mongoDatastoreType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractDatastoreType">
 				<xsd:attributeGroup ref="mongo-attributes" />
@@ -133,41 +137,23 @@
 		</xsd:attribute>
 	</xsd:attributeGroup>
 
-	<!-- Default InfluxDB datastore reference -->
-	<xsd:element name="default-influxdb-datastore" type="defaultInfluxDatastoreType"
+	<!-- Alternate InfluxDB datastore reference -->
+	<xsd:element name="influxdb-datastore-reference" type="influxDatastoreReferenceType"
 		substitutionGroup="abstract-datastore">
 		<xsd:annotation>
 			<xsd:documentation>
-				Connects to InfluxDB using the default global
+				Connects to InfluxDB using a globally defined
 				configuration.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:complexType name="defaultInfluxDatastoreType">
+	<xsd:complexType name="influxDatastoreReferenceType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractDatastoreType">
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-
-	<!-- Alternate InfluxDB datastore reference -->
-	<xsd:element name="alternate-influxdb-datastore" type="alternateInfluxDatastoreType"
-		substitutionGroup="abstract-datastore">
-		<xsd:annotation>
-			<xsd:documentation>
-				Connects to InfluxDB using an alternate MongoDB
-				datastore configuration.
-			</xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="alternateInfluxDatastoreType">
-		<xsd:complexContent>
-			<xsd:extension base="abstractDatastoreType">
-				<xsd:attribute name="id" type="xsd:string">
+				<xsd:attribute name="id" type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							Unique id for alternate datastore
-							configuration.
+							Unique id for global datastore configuration.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -176,7 +162,7 @@
 	</xsd:complexType>
 
 	<!-- Custom InfluxDB datastore definition -->
-	<xsd:element name="custom-influxdb-datastore" type="customInfluxDatastoreType"
+	<xsd:element name="influxdb-datastore" type="influxDatastoreType"
 		substitutionGroup="abstract-datastore">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -185,7 +171,7 @@
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:complexType name="customInfluxDatastoreType">
+	<xsd:complexType name="influxDatastoreType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractDatastoreType">
 				<xsd:attributeGroup ref="influx-attributes" />

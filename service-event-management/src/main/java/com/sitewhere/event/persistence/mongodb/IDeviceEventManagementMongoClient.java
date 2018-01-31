@@ -11,7 +11,6 @@ import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Mongo client that provides device event management collections.
@@ -26,9 +25,8 @@ public interface IDeviceEventManagementMongoClient {
     /**
      * Collection for events.
      * 
-     * @param tenant
      * @return
      * @throws SiteWhereException
      */
-    public MongoCollection<Document> getEventsCollection(ITenant tenant) throws SiteWhereException;
+    public MongoCollection<Document> getEventsCollection() throws SiteWhereException;
 }

@@ -23,11 +23,14 @@ public enum InstanceManagementRoleKeys implements IRoleKey {
     /** MongoDB persistence configurations */
     MongoDBConfigurations("mongo_confs"),
 
-    /** MongoDB default configuration element */
-    DefaultMongoDBConfiguration("def_mongo_conf"),
+    /** MongoDB configuration element */
+    MongoDBConfiguration("mongo_conf"),
 
-    /** MongoDB alternate configuration element */
-    AltMongoDBConfiguration("alt_mongo_conf"),
+    /** InfluxDB persistence configurations */
+    InfluxDBConfigurations("influx_confs"),
+
+    /** InfluxDB configuration element */
+    InfluxDBConfiguration("influx_conf"),
 
     /** Connector configurations */
     ConnectorConfigurations("connector_confs"),
@@ -35,7 +38,7 @@ public enum InstanceManagementRoleKeys implements IRoleKey {
     /** Connector configuration element */
     ConnectorConfigurationsElement("conn_conf_elm"),
 
-    /**Apache Solr connector configurations */
+    /** Apache Solr connector configurations */
     SolrConfigurations("solr_confs"),
 
     /** Solr default configuration element */

@@ -14,15 +14,11 @@ package com.sitewhere.spi.microservice.spring;
  */
 public interface InstanceManagementBeans {
 
-    /** Suffix used for default MongoDB configuration */
-    public static final String BEAN_MONGO_SUFFIX_DEFAULT = "_default";
-
     /** Bean id base for MongoDB configurations */
     public static final String BEAN_MONGO_CONFIGURATION_BASE = "mongodb_";
 
-    /** Bean id for default MongoDB configuration */
-    public static final String BEAN_MONGO_CONFIGURATION_DEFAULT = BEAN_MONGO_CONFIGURATION_BASE
-	    + BEAN_MONGO_SUFFIX_DEFAULT;
+    /** Bean id base for InfluxDB configurations */
+    public static final String BEAN_INFLUX_CONFIGURATION_BASE = "influxdb_";
 
     /** Suffix used for default configuration */
     public static final String BEAN_SOLR_SUFFIX_DEFAULT = "_default";

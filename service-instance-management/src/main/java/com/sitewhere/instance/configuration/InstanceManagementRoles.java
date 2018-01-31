@@ -28,21 +28,26 @@ public enum InstanceManagementRoles implements IConfigurationRoleProvider {
     /** Persistence configurations. */
     PersistenceConfigurations(
 	    ConfigurationRole.build(InstanceManagementRoleKeys.PersistenceConfigurations, "Persistence Configurations",
-		    false, false, false, new IRoleKey[] { InstanceManagementRoleKeys.MongoDBConfigurations })),
+		    false, false, false, new IRoleKey[] { InstanceManagementRoleKeys.MongoDBConfigurations,
+			    InstanceManagementRoleKeys.InfluxDBConfigurations })),
 
     /** MongoDB persistence configurations. */
     MongoDBConfigurations(ConfigurationRole.build(InstanceManagementRoleKeys.MongoDBConfigurations,
-	    "MongoDB Persistence Configuration", true, false, false,
-	    new IRoleKey[] { InstanceManagementRoleKeys.DefaultMongoDBConfiguration,
-		    InstanceManagementRoleKeys.AltMongoDBConfiguration })),
+	    "MongoDB Persistence Configurations", true, false, false,
+	    new IRoleKey[] { InstanceManagementRoleKeys.MongoDBConfiguration })),
 
-    /** MongoDB default datastore configuration. */
-    DefaultMongoDBConfiguration(ConfigurationRole.build(InstanceManagementRoleKeys.DefaultMongoDBConfiguration,
-	    "Default MongoDB Configuration", false, false, false)),
+    /** MongoDB datastore configuration. */
+    MongoDBConfiguration(ConfigurationRole.build(InstanceManagementRoleKeys.MongoDBConfiguration,
+	    "MongoDB Configuration", true, true, true)),
 
-    /** MongoDB alternate datastore configuration. */
-    AltMongoDBConfiguration(ConfigurationRole.build(InstanceManagementRoleKeys.AltMongoDBConfiguration,
-	    "Alternate MongoDB Configuration", true, true, true)),
+    /** InfluxDB persistence configurations. */
+    InfluxDBConfigurations(ConfigurationRole.build(InstanceManagementRoleKeys.InfluxDBConfigurations,
+	    "InfluxDB Persistence Configurations", true, false, false,
+	    new IRoleKey[] { InstanceManagementRoleKeys.InfluxDBConfiguration })),
+
+    /** InfluxDB datastore configuration. */
+    InfluxDBConfiguration(ConfigurationRole.build(InstanceManagementRoleKeys.InfluxDBConfiguration,
+	    "InfluxDB Configuration", true, true, true)),
 
     /** Connector configurations. */
     ConnectorConfigurations(

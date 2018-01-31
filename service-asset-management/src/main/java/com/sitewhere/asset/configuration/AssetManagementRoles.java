@@ -8,7 +8,7 @@
 package com.sitewhere.asset.configuration;
 
 import com.sitewhere.configuration.ConfigurationRole;
-import com.sitewhere.configuration.model.CommonModelRoleKeys;
+import com.sitewhere.configuration.model.CommonDatastoreRoleKeys;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRole;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 import com.sitewhere.spi.microservice.configuration.model.IRoleKey;
@@ -22,7 +22,8 @@ public enum AssetManagementRoles implements IConfigurationRoleProvider {
 
     /** Asset management. */
     AssetManagement(ConfigurationRole.build(AssetManagementRoleKeys.AssetManagement, "Asset Management", false, false,
-	    false, new IRoleKey[] { CommonModelRoleKeys.Datastore, AssetManagementRoleKeys.AssetModules },
+	    false,
+	    new IRoleKey[] { CommonDatastoreRoleKeys.DeviceManagementDatastore, AssetManagementRoleKeys.AssetModules },
 	    new IRoleKey[0], true)),
 
     /** Asset modules. */

@@ -81,7 +81,7 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
 
 	// Initialize discoverable lifecycle components.
-	init.addStep(getMicroservice().initializeDiscoverableBeans(getModuleContext()));
+	init.addStep(initializeDiscoverableBeans(getModuleContext()));
 
 	// Initialize asset management persistence.
 	init.addInitializeStep(this, getAssetManagement(), true);
@@ -123,6 +123,9 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
+
+	// Start discoverable lifecycle components.
+	start.addStep(startDiscoverableBeans(getModuleContext()));
 
 	// Start asset management persistence.
 	start.addStartStep(this, getAssetManagement(), true);
@@ -173,6 +176,9 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
 
 	// Stop asset module manager.
 	stop.addStopStep(this, getAssetModuleManager());
+
+	// Stop discoverable lifecycle components.
+	stop.addStep(stopDiscoverableBeans(getModuleContext()));
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
