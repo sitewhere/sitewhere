@@ -44,6 +44,9 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
     /** Name for template descriptor */
     private static final String TEMPLATE_JSON_FILE_NAME = "template.json";
 
+    /** Folder that contains default content shared by all tenants */
+    private static final String DEFAULT_TENANT_CONTENT_FOLDER = "default";
+
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
@@ -133,7 +136,17 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
 	if (template == null) {
 	    throw new SiteWhereException("Tenant template not found: " + templateId);
 	}
+
 	File root = getMicroservice().getTenantTemplatesRoot();
+
+	// Copy default content shared by all tenants.
+	File defaultFolder = new File(root, DEFAULT_TENANT_CONTENT_FOLDER);
+	if (!defaultFolder.exists()) {
+	    throw new SiteWhereException("Default folder not found at '" + defaultFolder.getAbsolutePath() + "'.");
+	}
+	ZkUtils.copyFolderRecursivelytoZk(curator, tenantPath, defaultFolder, defaultFolder);
+
+	// Copy template contents on top of default.
 	File templateFolder = new File(root, templateId);
 	if (!templateFolder.exists()) {
 	    throw new SiteWhereException("Template folder not found at '" + templateFolder.getAbsolutePath() + "'.");

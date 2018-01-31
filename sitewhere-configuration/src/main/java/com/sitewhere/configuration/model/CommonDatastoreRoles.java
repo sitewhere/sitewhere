@@ -38,7 +38,7 @@ public enum CommonDatastoreRoles implements IConfigurationRoleProvider {
     /** Event management datastore */
     EventManagementDatastore(
 	    ConfigurationRole.build(CommonDatastoreRoleKeys.EventManagementDatastore, "Datastore", false, false, false,
-		    new IRoleKey[] { CommonDatastoreRoleKeys.DeviceManagementDatastoreElement }, new IRoleKey[0])),
+		    new IRoleKey[] { CommonDatastoreRoleKeys.EventManagementDatastoreElement }, new IRoleKey[0])),
 
     /** Elements that can be added to a event management datastore */
     EventManagementDatastoreElement(ConfigurationRole.build(CommonDatastoreRoleKeys.EventManagementDatastoreElement,

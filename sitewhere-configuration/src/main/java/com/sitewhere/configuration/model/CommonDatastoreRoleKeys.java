@@ -27,16 +27,16 @@ public enum CommonDatastoreRoleKeys implements IRoleKey {
     MongoDBReference("mongo_ref"),
 
     /** Event management datastores */
-    EventManagementDatastore("dev_mgmt_ds"),
+    EventManagementDatastore("evt_mgmt_ds"),
 
     /** Event management datastore element */
-    EventManagementDatastoreElement("dev_mgmt_ds_elm"),
+    EventManagementDatastoreElement("evt_mgmt_ds_elm"),
 
     /** InfluxDB datastore */
-    InfluxDBDatastore("mongo_ds"),
+    InfluxDBDatastore("influx_ds"),
 
     /** InfluxDB global reference */
-    InfluxDBReference("mongo_ref");
+    InfluxDBReference("influx_ref");
 
     private String id;
 
