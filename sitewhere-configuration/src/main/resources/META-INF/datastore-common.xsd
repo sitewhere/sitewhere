@@ -191,9 +191,15 @@
 
 	<!-- Attributes for configuring InfluxDB event storage -->
 	<xsd:attributeGroup name="influx-attributes">
-		<xsd:attribute name="connectUrl" type="xsd:string">
+		<xsd:attribute name="hostname" type="xsd:string">
 			<xsd:annotation>
-				<xsd:documentation>Url used to connect.
+				<xsd:documentation>Hostname for InfluxDB instance.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="port" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Server port for InfluxDB instance.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>

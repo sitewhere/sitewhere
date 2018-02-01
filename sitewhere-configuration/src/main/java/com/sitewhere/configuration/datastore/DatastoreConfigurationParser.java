@@ -209,9 +209,13 @@ public class DatastoreConfigurationParser {
      */
     public static void parseInfluxAttributes(Element element, ParserContext context,
 	    BeanDefinitionBuilder configuration) {
-	Attr connectUrl = element.getAttributeNode("connectUrl");
-	if (connectUrl != null) {
-	    configuration.addPropertyValue("connectUrl", connectUrl.getValue());
+	Attr hostname = element.getAttributeNode("hostname");
+	if (hostname != null) {
+	    configuration.addPropertyValue("hostname", hostname.getValue());
+	}
+	Attr port = element.getAttributeNode("port");
+	if (port != null) {
+	    configuration.addPropertyValue("port", port.getValue());
 	}
 	Attr username = element.getAttributeNode("username");
 	if (username != null) {

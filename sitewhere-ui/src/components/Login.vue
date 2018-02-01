@@ -126,6 +126,7 @@ export default {
 
       var token = btoa(this.username + ':' + this.password)
       this.$store.commit('authToken', token)
+      this.$store.commit('selectedTenant', null)
 
       _getJwt(this.$store)
         .then(function (response) {

@@ -201,9 +201,7 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
 	if (policy == null) {
 	    return getClient().getConfiguration().getRetention();
 	}
-
 	return policy;
-
     }
 
     /*

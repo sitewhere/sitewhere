@@ -61,13 +61,18 @@ public class ZkUtils {
 		    input = new FileInputStream(file);
 		    byte[] data = IOUtils.toByteArray(input);
 		    try {
-			curator.create().forPath(subFile, data);
+			if (curator.checkExists().forPath(subFile) == null) {
+			    curator.create().creatingParentsIfNeeded().forPath(subFile, data);
+			} else {
+			    curator.setData().forPath(subFile, data);
+			}
 			LOGGER.debug("Created file for '" + file.getAbsolutePath() + "' in '" + subFile + "'.");
 		    } catch (Exception e) {
 			throw new SiteWhereException(
 				"Unable to copy file '" + file.getAbsolutePath() + "' into '" + subFile + "'.", e);
 		    }
 		} catch (IOException e) {
+		    LOGGER.error("Error copying tenant template file to Zk: " + file.getAbsolutePath(), e);
 		    IOUtils.closeQuietly(input);
 		}
 	    }

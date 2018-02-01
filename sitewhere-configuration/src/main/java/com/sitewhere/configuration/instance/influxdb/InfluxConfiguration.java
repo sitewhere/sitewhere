@@ -14,20 +14,41 @@ package com.sitewhere.configuration.instance.influxdb;
  */
 public class InfluxConfiguration {
 
-    /** Connection URL */
-    private String connectUrl = "http://localhost:8086";
+    /** Default hostname */
+    private static final String DEFAULT_HOSTNAME = "influxdb";
+
+    /** Default port */
+    private static final int DEFAULT_PORT = 8086;
+
+    /** Default username */
+    private static final String DEFAULT_USERNAME = "root";
+
+    /** Default password */
+    private static final String DEFAULT_PASSWORD = "root";
+
+    /** Default database */
+    private static final String DEFAULT_DATABASE = "sitewhere";
+
+    /** Default retention */
+    private static final String DEFAULT_RETENTION = "autogen";
+
+    /** InfluxDB hostname */
+    private String hostname = DEFAULT_HOSTNAME;
+
+    /** InfluxDB port */
+    private int port = DEFAULT_PORT;
 
     /** Username */
-    private String username = "root";
+    private String username = DEFAULT_USERNAME;
 
     /** Password */
-    private String password = "root";
+    private String password = DEFAULT_PASSWORD;
 
     /** Database name */
-    private String database = "sitewhere";
+    private String database = DEFAULT_DATABASE;
 
     /** Retention policy */
-    private String retention = "autogen";
+    private String retention = DEFAULT_RETENTION;
 
     /** Indicates if batch delivery is enabled */
     private boolean enableBatch = true;
@@ -41,12 +62,20 @@ public class InfluxConfiguration {
     /** Log level */
     private String logLevel;
 
-    public String getConnectUrl() {
-	return connectUrl;
+    public String getHostname() {
+	return hostname;
     }
 
-    public void setConnectUrl(String connectUrl) {
-	this.connectUrl = connectUrl;
+    public void setHostname(String hostname) {
+	this.hostname = hostname;
+    }
+
+    public int getPort() {
+	return port;
+    }
+
+    public void setPort(int port) {
+	this.port = port;
     }
 
     public String getUsername() {

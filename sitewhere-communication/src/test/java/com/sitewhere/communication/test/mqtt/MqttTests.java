@@ -36,10 +36,10 @@ import com.sitewhere.spi.SiteWhereException;
 public class MqttTests {
 
     /** Nunber of threads for multithreaded tests */
-    private static final int NUM_THREADS = 10;
+    private static final int NUM_THREADS = 1;
 
     /** Nunber of calls performed per thread */
-    private static final int NUM_CALLS_PER_THREAD = 1000;
+    private static final int NUM_CALLS_PER_THREAD = 10;
 
     @Test
     public void runMqttTest() throws Exception {
@@ -104,7 +104,7 @@ public class MqttTests {
 	 */
 	public void sendLocationOverMqtt() throws SiteWhereException {
 	    DeviceRequest request = new DeviceRequest();
-	    request.setHardwareId("98c66a73-b029-47f7-9165-4ea7b126a0b7");
+	    request.setHardwareId("bd4aa5a7-d2b3-4475-b6cd-7aed49d04da8");
 	    request.setType(Type.DeviceLocation);
 	    DeviceLocationCreateRequest location = new DeviceLocationCreateRequest();
 	    location.setEventDate(new Date());

@@ -36,7 +36,8 @@
 			<im:influxdb-configurations>
 
 				<!-- Default configuration for InfluxDB data access -->
-				<im:influxdb-configuration id="tenant" />
+				<im:influxdb-configuration hostname="${influxdb.host:influxdb}"
+					port="${influxdb.port:8086}" id="tenant" />
 
 			</im:influxdb-configurations>
 

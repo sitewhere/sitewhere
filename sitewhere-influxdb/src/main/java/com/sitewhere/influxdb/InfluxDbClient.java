@@ -52,7 +52,8 @@ public class InfluxDbClient extends TenantEngineLifecycleComponent implements ID
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.start(monitor);
 
-	this.influx = InfluxDBFactory.connect(getConfiguration().getConnectUrl(), getConfiguration().getUsername(),
+	String connectionUrl = "http://" + getConfiguration().getHostname() + ":" + getConfiguration().getPort();
+	this.influx = InfluxDBFactory.connect(connectionUrl, getConfiguration().getUsername(),
 		getConfiguration().getPassword());
 	influx.createDatabase(getConfiguration().getDatabase());
 	if (getConfiguration().isEnableBatch()) {

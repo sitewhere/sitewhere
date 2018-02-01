@@ -172,11 +172,11 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
      */
     public static void addMongoDbAttributes(ElementNode.Builder builder) {
 	builder.attribute((new AttributeNode.Builder("Hostname", "hostname", AttributeType.String)
-		.description("Hostname for MongoDB instance").defaultValue("${datastore.host:mongodb}").build()));
+		.description("Hostname for MongoDB instance").defaultValue("${mongodb.host:mongodb}").build()));
 	builder.attribute((new AttributeNode.Builder("Port", "port", AttributeType.Integer)
-		.description("Port on which MongoDB is running").defaultValue("${datastore.port:27017}").build()));
+		.description("Port on which MongoDB is running").defaultValue("${mongodb.port:27017}").build()));
 	builder.attribute((new AttributeNode.Builder("Database name", "databaseName", AttributeType.String)
-		.description("Database name").defaultValue("${datastore.database:sitewhere}").build()));
+		.description("Database name").defaultValue("${mongodb.database:sitewhere}").build()));
 	builder.attribute((new AttributeNode.Builder("Username", "username", AttributeType.String)
 		.description("Database authentication username").build()));
 	builder.attribute((new AttributeNode.Builder("Password", "password", AttributeType.String)
@@ -184,7 +184,7 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 	builder.attribute((new AttributeNode.Builder("Authentication DB name", "authDatabaseName", AttributeType.String)
 		.description("Authentication database name").build()));
 	builder.attribute((new AttributeNode.Builder("Replica set name", "replicaSetName", AttributeType.String)
-		.description("Name of replica set if using replication.").defaultValue("${datastore.replicaset:}")
+		.description("Name of replica set if using replication.").defaultValue("${mongodb.replicaset:}")
 		.build()));
 	builder.attribute((new AttributeNode.Builder("Auto-configure replication", "autoConfigureReplication",
 		AttributeType.Boolean)
@@ -200,9 +200,12 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
      */
     public static void addInfluxDbAttributes(ElementNode.Builder builder) {
 	builder.attributeGroup("conn", "InfluxDB Connectivity");
-	builder.attribute((new AttributeNode.Builder("Connection URL", "connectUrl", AttributeType.String)
-		.description("Specifies URL used to connect to InfluxDB.").group("conn")
-		.defaultValue("http://localhost:8086").build()));
+	builder.attribute((new AttributeNode.Builder("Hostname", "hostname", AttributeType.String)
+		.description("Specifies hostname for InfluxDB instance.").group("conn").defaultValue("influxdb")
+		.build()));
+	builder.attribute((new AttributeNode.Builder("Port", "port", AttributeType.Integer)
+		.description("Port on which InfluxDB is running").group("conn").defaultValue("${influxdb.port:8086}")
+		.build()));
 	builder.attribute((new AttributeNode.Builder("Username", "username", AttributeType.String)
 		.description("Username for InfluxDB authentication.").group("conn").defaultValue("root").build()));
 	builder.attribute((new AttributeNode.Builder("Password", "password", AttributeType.String)
