@@ -60,9 +60,6 @@ public abstract class ConfigurableMicroservice extends Microservice
     /** Relative path to tenant bootstrapped indicator data */
     private static final String INSTANCE_TENANT_BOOTSTRAPPED_INDICATOR = "bootstrapped";
 
-    /** Max wait time for configuration in seconds */
-    private static final int MAX_CONFIGURATION_WAIT_SEC = 30;
-
     /** Injected Spring context for microservice */
     @Autowired
     private ApplicationContext microserviceContext;
@@ -438,11 +435,7 @@ public abstract class ConfigurableMicroservice extends Microservice
     @Override
     public void waitForConfigurationReady() throws SiteWhereException {
 	getLogger().info("Waiting for configuration to be loaded...");
-	long deadline = System.currentTimeMillis() + (1000 * MAX_CONFIGURATION_WAIT_SEC);
 	while (true) {
-	    if ((deadline - System.currentTimeMillis()) < 0) {
-		throw new SiteWhereException("Microservice not configured within allowable timeframe.");
-	    }
 	    if (getConfigurationState() == ConfigurationState.Failed) {
 		throw new SiteWhereException("Microservice configuration failed.");
 	    }
