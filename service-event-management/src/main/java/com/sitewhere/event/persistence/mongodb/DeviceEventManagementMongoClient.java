@@ -13,7 +13,7 @@ import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
 import com.sitewhere.configuration.instance.mongodb.MongoConfiguration;
-import com.sitewhere.mongodb.BaseMongoClient;
+import com.sitewhere.mongodb.MongoDbClient;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
@@ -21,7 +21,7 @@ import com.sitewhere.spi.SiteWhereException;
  * 
  * @author Derek
  */
-public class DeviceEventManagementMongoClient extends BaseMongoClient implements IDeviceEventManagementMongoClient {
+public class DeviceEventManagementMongoClient extends MongoDbClient implements IDeviceEventManagementMongoClient {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

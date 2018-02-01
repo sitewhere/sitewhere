@@ -33,11 +33,11 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
- * Spring wrapper for initializing a Mongo client used by SiteWhere components.
+ * Client used for connecting to and interacting with an MongoDB server.
  * 
- * @author dadams
+ * @author Derek
  */
-public abstract class BaseMongoClient extends TenantEngineLifecycleComponent
+public abstract class MongoDbClient extends TenantEngineLifecycleComponent
 	implements IDiscoverableTenantLifecycleComponent {
 
     /** MongoDB client */
@@ -46,10 +46,13 @@ public abstract class BaseMongoClient extends TenantEngineLifecycleComponent
     /** MongoDB Configuration */
     private MongoConfiguration configuration;
 
-    /** Get database parameter */
+    /** Hostname parameter */
+    private ILifecycleComponentParameter<String> hostname;
+
+    /** Database parameter */
     private ILifecycleComponentParameter<String> databaseName;
 
-    public BaseMongoClient(MongoConfiguration configuration) {
+    public MongoDbClient(MongoConfiguration configuration) {
 	super(LifecycleComponentType.DataStore);
 	this.configuration = configuration;
     }
@@ -71,6 +74,11 @@ public abstract class BaseMongoClient extends TenantEngineLifecycleComponent
      */
     @Override
     public void initializeParameters() throws SiteWhereException {
+	// Add hostname.
+	this.hostname = StringComponentParameter.newBuilder(this, "Hostname").value(getConfiguration().getHostname())
+		.makeRequired().build();
+	getParameters().add(hostname);
+
 	// Add database name.
 	this.databaseName = StringComponentParameter.newBuilder(this, "Database")
 		.value(getConfiguration().getDatabaseName()).makeRequired().build();
@@ -89,7 +97,7 @@ public abstract class BaseMongoClient extends TenantEngineLifecycleComponent
 	    MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
 	    builder.maxConnectionIdleTime(60 * 60 * 1000); // 1hour
 
-	    getLogger().info("MongoDB Connection: hosts=" + getConfiguration().getHostname() + " ports="
+	    getLogger().info("MongoDB Connection: hosts=" + getHostname().getValue() + " ports="
 		    + getConfiguration().getPort() + " replicaSet=" + getConfiguration().getReplicaSetName());
 
 	    // Parse hostname(s) and port(s) into address list.
@@ -133,9 +141,10 @@ public abstract class BaseMongoClient extends TenantEngineLifecycleComponent
 	    // Force interaction to test connectivity.
 	    getDatabase().listCollectionNames();
 	} catch (MongoTimeoutException e) {
-	    throw new SiteWhereException("Timed out connecting to MongoDB instance. "
-		    + "Verify that MongoDB is running on " + getConfiguration().getHostname() + ":"
-		    + getConfiguration().getPort() + " and restart server.", e);
+	    throw new SiteWhereException(
+		    "Timed out connecting to MongoDB instance. " + "Verify that MongoDB is running on "
+			    + getHostname().getValue() + ":" + getConfiguration().getPort() + " and restart server.",
+		    e);
 	}
     }
 
@@ -235,7 +244,7 @@ public abstract class BaseMongoClient extends TenantEngineLifecycleComponent
      * @throws SiteWhereException
      */
     protected List<ServerAddress> parseServerAddresses() throws SiteWhereException {
-	String[] hosts = getConfiguration().getHostname().split(",");
+	String[] hosts = getHostname().getValue().split(",");
 	String[] ports = getConfiguration().getPort().split(",");
 
 	if (hosts.length != ports.length) {
@@ -264,9 +273,9 @@ public abstract class BaseMongoClient extends TenantEngineLifecycleComponent
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	List<String> messages = new ArrayList<String>();
-	messages.add("Hostname: " + getConfiguration().getHostname());
+	messages.add("Hostname: " + getHostname().getValue());
 	messages.add("Port: " + getConfiguration().getPort());
-	messages.add("Database Name: " + getConfiguration().getDatabaseName());
+	messages.add("Database Name: " + getDatabaseName().getValue());
 	String message = Boilerplate.boilerplate(messages, "*");
 	getLogger().info("\n" + message + "\n");
     }
@@ -311,6 +320,14 @@ public abstract class BaseMongoClient extends TenantEngineLifecycleComponent
 
     public void setConfiguration(MongoConfiguration configuration) {
 	this.configuration = configuration;
+    }
+
+    public ILifecycleComponentParameter<String> getHostname() {
+	return hostname;
+    }
+
+    public void setHostname(ILifecycleComponentParameter<String> hostname) {
+	this.hostname = hostname;
     }
 
     public ILifecycleComponentParameter<String> getDatabaseName() {

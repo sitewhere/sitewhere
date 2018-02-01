@@ -100,7 +100,7 @@ public class DatastoreConfigurationParser {
     protected static DatastoreConfiguration parseMongoDbDatastore(Element element, ParserContext context) {
 	BeanDefinitionBuilder configuration = BeanDefinitionBuilder.rootBeanDefinition(MongoConfiguration.class);
 	parseMongoAttributes(element, context, configuration);
-	return new DatastoreConfiguration(DatastoreConfigurationType.MongoDB, configuration);
+	return new DatastoreConfiguration(DatastoreConfigurationType.MongoDB, configuration.getBeanDefinition());
     }
 
     /**
@@ -182,7 +182,7 @@ public class DatastoreConfigurationParser {
     protected static DatastoreConfiguration parseInfluxDbDatastore(Element element, ParserContext context) {
 	BeanDefinitionBuilder configuration = BeanDefinitionBuilder.rootBeanDefinition(InfluxConfiguration.class);
 	parseInfluxAttributes(element, context, configuration);
-	return new DatastoreConfiguration(DatastoreConfigurationType.InfluxDB, configuration);
+	return new DatastoreConfiguration(DatastoreConfigurationType.InfluxDB, configuration.getBeanDefinition());
     }
 
     /**

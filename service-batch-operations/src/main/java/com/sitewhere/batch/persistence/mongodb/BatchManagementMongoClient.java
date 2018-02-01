@@ -13,7 +13,7 @@ import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
 import com.sitewhere.configuration.instance.mongodb.MongoConfiguration;
-import com.sitewhere.mongodb.BaseMongoClient;
+import com.sitewhere.mongodb.MongoDbClient;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
@@ -21,7 +21,7 @@ import com.sitewhere.spi.SiteWhereException;
  * 
  * @author Derek
  */
-public class BatchManagementMongoClient extends BaseMongoClient implements IBatchManagementMongoClient {
+public class BatchManagementMongoClient extends MongoDbClient implements IBatchManagementMongoClient {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();

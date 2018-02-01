@@ -17,8 +17,10 @@ import org.influxdb.InfluxDBFactory;
 
 import com.sitewhere.configuration.instance.influxdb.InfluxConfiguration;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.server.lifecycle.parameters.StringComponentParameter;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponentParameter;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
@@ -37,25 +39,45 @@ public class InfluxDbClient extends TenantEngineLifecycleComponent implements ID
     /** InfluxDB handle */
     private InfluxDB influx;
 
+    /** Hostname parameter */
+    private ILifecycleComponentParameter<String> hostname;
+
+    /** Database parameter */
+    private ILifecycleComponentParameter<String> database;
+
     public InfluxDbClient(InfluxConfiguration configuration) {
 	this.configuration = configuration;
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
-     * .server.lifecycle.ILifecycleProgressMonitor)
+     * @see com.sitewhere.server.lifecycle.LifecycleComponent#initializeParameters()
      */
     @Override
-    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void initializeParameters() throws SiteWhereException {
+	// Add hostname.
+	this.hostname = StringComponentParameter.newBuilder(this, "Hostname").value(getConfiguration().getHostname())
+		.makeRequired().build();
+	getParameters().add(hostname);
+
+	// Add database.
+	this.database = StringComponentParameter.newBuilder(this, "Database").value(getConfiguration().getDatabase())
+		.makeRequired().build();
+	getParameters().add(database);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.start(monitor);
 
-	String connectionUrl = "http://" + getConfiguration().getHostname() + ":" + getConfiguration().getPort();
+	String connectionUrl = "http://" + getHostname().getValue() + ":" + getConfiguration().getPort();
 	this.influx = InfluxDBFactory.connect(connectionUrl, getConfiguration().getUsername(),
 		getConfiguration().getPassword());
-	influx.createDatabase(getConfiguration().getDatabase());
+	influx.createDatabase(getDatabase().getValue());
 	if (getConfiguration().isEnableBatch()) {
 	    influx.enableBatch(getConfiguration().getBatchChunkSize(), getConfiguration().getBatchIntervalMs(),
 		    TimeUnit.MILLISECONDS);
@@ -116,5 +138,21 @@ public class InfluxDbClient extends TenantEngineLifecycleComponent implements ID
 
     public void setInflux(InfluxDB influx) {
 	this.influx = influx;
+    }
+
+    public ILifecycleComponentParameter<String> getHostname() {
+	return hostname;
+    }
+
+    public void setHostname(ILifecycleComponentParameter<String> hostname) {
+	this.hostname = hostname;
+    }
+
+    public ILifecycleComponentParameter<String> getDatabase() {
+	return database;
+    }
+
+    public void setDatabase(ILifecycleComponentParameter<String> database) {
+	this.database = database;
     }
 }
