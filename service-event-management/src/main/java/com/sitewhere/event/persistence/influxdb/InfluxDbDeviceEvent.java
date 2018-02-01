@@ -25,11 +25,14 @@ import org.influxdb.dto.QueryResult.Result;
 import org.influxdb.dto.QueryResult.Series;
 import org.joda.time.format.ISODateTimeFormat;
 
+import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.rest.model.asset.DefaultAssetReferenceEncoder;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.DeviceAssignmentType;
+import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
@@ -109,7 +112,7 @@ public class InfluxDbDeviceEvent {
     /**
      * Search for of events of a given type associated with an assignment.
      * 
-     * @param assignmentToken
+     * @param assignment
      * @param type
      * @param criteria
      * @param influx
@@ -118,14 +121,14 @@ public class InfluxDbDeviceEvent {
      * @return
      * @throws SiteWhereException
      */
-    public static <T> SearchResults<T> searchByAssignment(String assignmentToken, DeviceEventType type,
+    public static <T> SearchResults<T> searchByAssignment(IDeviceAssignment assignment, DeviceEventType type,
 	    ISearchCriteria criteria, InfluxDB influx, String database, Class<T> clazz) throws SiteWhereException {
-	Query query = InfluxDbDeviceEvent.queryEventsOfTypeForAssignment(type, assignmentToken, criteria, database);
+	Query query = InfluxDbDeviceEvent.queryEventsOfTypeForAssignment(type, assignment, criteria, database);
 	LOGGER.debug("Query: " + query.getCommand());
 	QueryResult response = influx.query(query, TimeUnit.MILLISECONDS);
 	List<T> results = InfluxDbDeviceEvent.eventsOfType(response, clazz);
 
-	Query countQuery = InfluxDbDeviceEvent.queryEventsOfTypeForAssignmentCount(type, assignmentToken, criteria,
+	Query countQuery = InfluxDbDeviceEvent.queryEventsOfTypeForAssignmentCount(type, assignment, criteria,
 		database);
 	LOGGER.debug("Count: " + countQuery.getCommand());
 	QueryResult countResponse = influx.query(countQuery);
@@ -145,14 +148,14 @@ public class InfluxDbDeviceEvent {
      * @return
      * @throws SiteWhereException
      */
-    public static <T> SearchResults<T> searchBySite(String siteToken, DeviceEventType type, ISearchCriteria criteria,
+    public static <T> SearchResults<T> searchBySite(ISite site, DeviceEventType type, ISearchCriteria criteria,
 	    InfluxDB influx, String database, Class<T> clazz) throws SiteWhereException {
-	Query query = InfluxDbDeviceEvent.queryEventsOfTypeForSite(type, siteToken, criteria, database);
+	Query query = InfluxDbDeviceEvent.queryEventsOfTypeForSite(type, site, criteria, database);
 	LOGGER.debug("Query: " + query.getCommand());
 	QueryResult response = influx.query(query, TimeUnit.MILLISECONDS);
 	List<T> results = InfluxDbDeviceEvent.eventsOfType(response, clazz);
 
-	Query countQuery = InfluxDbDeviceEvent.queryEventsOfTypeForSiteCount(type, siteToken, criteria, database);
+	Query countQuery = InfluxDbDeviceEvent.queryEventsOfTypeForSiteCount(type, site, criteria, database);
 	LOGGER.debug("Count: " + countQuery.getCommand());
 	QueryResult countResponse = influx.query(countQuery);
 	long count = parseCount(countResponse);
@@ -164,16 +167,16 @@ public class InfluxDbDeviceEvent {
      * meet the search criteria.
      * 
      * @param type
-     * @param assignmentToken
+     * @param assignment
      * @param criteria
      * @param database
      * @return
      * @throws SiteWhereException
      */
-    public static Query queryEventsOfTypeForAssignment(DeviceEventType type, String assignmentToken,
+    public static Query queryEventsOfTypeForAssignment(DeviceEventType type, IDeviceAssignment assignment,
 	    ISearchCriteria criteria, String database) throws SiteWhereException {
 	return new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where type='" + type.name()
-		+ "' and " + InfluxDbDeviceEvent.EVENT_ASSIGNMENT + "='" + assignmentToken + "'"
+		+ "' and " + InfluxDbDeviceEvent.EVENT_ASSIGNMENT + "='" + assignment.getId() + "'"
 		+ buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_ASSIGNMENT + " ORDER BY time DESC"
 		+ buildPagingCriteria(criteria), database);
     }
@@ -183,17 +186,18 @@ public class InfluxDbDeviceEvent {
      * and that meet the search criteria.
      * 
      * @param type
-     * @param assignmentToken
+     * @param assignment
      * @param criteria
      * @param database
      * @return
      * @throws SiteWhereException
      */
-    public static Query queryEventsOfTypeForAssignmentCount(DeviceEventType type, String assignmentToken,
+    public static Query queryEventsOfTypeForAssignmentCount(DeviceEventType type, IDeviceAssignment assignment,
 	    ISearchCriteria criteria, String database) throws SiteWhereException {
 	return new Query("SELECT count(" + EVENT_ID + ") FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS
 		+ " where type='" + type.name() + "' and " + InfluxDbDeviceEvent.EVENT_ASSIGNMENT + "='"
-		+ assignmentToken + "'" + buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_ASSIGNMENT, database);
+		+ assignment.getId() + "'" + buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_ASSIGNMENT,
+		database);
     }
 
     /**
@@ -201,16 +205,16 @@ public class InfluxDbDeviceEvent {
      * search criteria.
      * 
      * @param type
-     * @param siteToken
+     * @param site
      * @param criteria
      * @param database
      * @return
      * @throws SiteWhereException
      */
-    public static Query queryEventsOfTypeForSite(DeviceEventType type, String siteToken, ISearchCriteria criteria,
+    public static Query queryEventsOfTypeForSite(DeviceEventType type, ISite site, ISearchCriteria criteria,
 	    String database) throws SiteWhereException {
 	return new Query("SELECT * FROM " + COLLECTION_EVENTS + " where type='" + type.name() + "' and " + EVENT_SITE
-		+ "='" + siteToken + "'" + buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_SITE
+		+ "='" + site.getId() + "'" + buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_SITE
 		+ " ORDER BY time DESC" + buildPagingCriteria(criteria), database);
     }
 
@@ -219,16 +223,16 @@ public class InfluxDbDeviceEvent {
      * meeting the search criteria.
      * 
      * @param type
-     * @param siteToken
+     * @param site
      * @param criteria
      * @param database
      * @return
      * @throws SiteWhereException
      */
-    public static Query queryEventsOfTypeForSiteCount(DeviceEventType type, String siteToken, ISearchCriteria criteria,
+    public static Query queryEventsOfTypeForSiteCount(DeviceEventType type, ISite site, ISearchCriteria criteria,
 	    String database) throws SiteWhereException {
 	return new Query("SELECT count(" + EVENT_ID + ") FROM " + COLLECTION_EVENTS + " where type='" + type.name()
-		+ "' and " + EVENT_SITE + "='" + siteToken + "'" + buildDateRangeCriteria(criteria) + " GROUP BY "
+		+ "' and " + EVENT_SITE + "='" + site.getId() + "'" + buildDateRangeCriteria(criteria) + " GROUP BY "
 		+ EVENT_SITE, database);
     }
 
@@ -311,40 +315,45 @@ public class InfluxDbDeviceEvent {
 	    if (result.getSeries() != null) {
 		for (Series series : result.getSeries()) {
 		    for (List<Object> values : series.getValues()) {
-			Map<String, Object> valueMap = getValueMap(series.getColumns(), values);
+			Map<String, Object> valueMap = getValueMap(series, values);
 			String eventType = (String) valueMap.get(EVENT_TYPE);
 			DeviceEventType type = DeviceEventType.valueOf(eventType);
 			if (type == null) {
 			    throw new SiteWhereException("Unknown event type: " + type);
 			}
-			switch (type) {
-			case Location: {
-			    results.add(InfluxDbDeviceLocation.parse(valueMap));
-			    break;
-			}
-			case Measurements: {
-			    results.add(InfluxDbDeviceMeasurements.parse(valueMap));
-			    break;
-			}
-			case Alert: {
-			    results.add(InfluxDbDeviceAlert.parse(valueMap));
-			    break;
-			}
-			case CommandInvocation: {
-			    results.add(InfluxDbDeviceCommandInvocation.parse(valueMap));
-			    break;
-			}
-			case CommandResponse: {
-			    results.add(InfluxDbDeviceCommandResponse.parse(valueMap));
-			    break;
-			}
-			case StateChange: {
-			    results.add(InfluxDbDeviceStateChange.parse(valueMap));
-			    break;
-			}
-			default: {
-			    throw new SiteWhereException("No parser found for type: " + type);
-			}
+			try {
+			    switch (type) {
+			    case Location: {
+				results.add(InfluxDbDeviceLocation.parse(valueMap));
+				break;
+			    }
+			    case Measurements: {
+				results.add(InfluxDbDeviceMeasurements.parse(valueMap));
+				break;
+			    }
+			    case Alert: {
+				results.add(InfluxDbDeviceAlert.parse(valueMap));
+				break;
+			    }
+			    case CommandInvocation: {
+				results.add(InfluxDbDeviceCommandInvocation.parse(valueMap));
+				break;
+			    }
+			    case CommandResponse: {
+				results.add(InfluxDbDeviceCommandResponse.parse(valueMap));
+				break;
+			    }
+			    case StateChange: {
+				results.add(InfluxDbDeviceStateChange.parse(valueMap));
+				break;
+			    }
+			    default: {
+				throw new SiteWhereException("No parser found for type: " + type);
+			    }
+			    }
+			} catch (SiteWhereException e) {
+			    LOGGER.error("Unable to parse value map. (" + e.getMessage() + ").\n\n"
+				    + MarshalUtils.marshalJsonAsPrettyString(valueMap));
 			}
 		    }
 		}
@@ -367,7 +376,7 @@ public class InfluxDbDeviceEvent {
 	    if (result.getSeries() != null) {
 		for (Series series : result.getSeries()) {
 		    for (List<Object> values : series.getValues()) {
-			Map<String, Object> valueMap = getValueMap(series.getColumns(), values);
+			Map<String, Object> valueMap = getValueMap(series, values);
 			return ((Double) valueMap.get("count")).longValue();
 		    }
 		}
@@ -430,7 +439,8 @@ public class InfluxDbDeviceEvent {
      * @param values
      * @return
      */
-    protected static Map<String, Object> getValueMap(List<String> columns, List<Object> values) {
+    protected static Map<String, Object> getValueMap(Series series, List<Object> values) {
+	List<String> columns = series.getColumns();
 	Map<String, Object> map = new HashMap<String, Object>();
 	for (int i = 0; i < columns.size(); i++) {
 	    String key = columns.get(i);
@@ -439,6 +449,7 @@ public class InfluxDbDeviceEvent {
 		map.put(key, value);
 	    }
 	}
+	map.putAll(series.getTags());
 	return map;
     }
 
@@ -451,22 +462,12 @@ public class InfluxDbDeviceEvent {
      */
     public static void loadFromMap(DeviceEvent event, Map<String, Object> values) throws SiteWhereException {
 	event.setId((String) values.get(EVENT_ID));
-	event.setDeviceAssignmentId(UUID.fromString((String) values.get(EVENT_ASSIGNMENT)));
-	event.setSiteId(UUID.fromString((String) values.get(EVENT_SITE)));
+	event.setDeviceAssignmentId(validateUUID((String) values.get(EVENT_ASSIGNMENT)));
+	event.setSiteId(validateUUID((String) values.get(EVENT_SITE)));
 	event.setAssetReference(
 		new DefaultAssetReferenceEncoder().decode(((String) values.get(EVENT_ASSET_REFERENCE))));
 
-	Object assignmentType = values.get(ASSIGNMENT_TYPE);
-	// handle old events without the tag 'assignmenttype'
-	if (assignmentType == null || String.valueOf(assignmentType).equals("null")) {
-	    if (event.getAssetReference() == null) {
-		event.setAssignmentType(DeviceAssignmentType.Unassociated);
-	    } else {
-		event.setAssignmentType(DeviceAssignmentType.Associated);
-	    }
-	} else {
-	    event.setAssignmentType(DeviceAssignmentType.valueOf((String) (assignmentType)));
-	}
+	event.setAssignmentType(DeviceAssignmentType.valueOf((String) values.get(ASSIGNMENT_TYPE)));
 	event.setReceivedDate(parseDateField(values, RECEIVED_DATE));
 	event.setEventDate(parseDateField(values, "time"));
 
@@ -478,6 +479,13 @@ public class InfluxDbDeviceEvent {
 		event.addOrReplaceMetadata(name, value);
 	    }
 	}
+    }
+
+    protected static UUID validateUUID(String value) throws SiteWhereException {
+	if (value == null) {
+	    throw new SiteWhereException("Invalid UUID in map.");
+	}
+	return UUID.fromString(value);
     }
 
     /**

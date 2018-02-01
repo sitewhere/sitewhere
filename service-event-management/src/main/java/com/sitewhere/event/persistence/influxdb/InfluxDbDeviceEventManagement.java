@@ -235,7 +235,7 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public ISearchResults<IDeviceMeasurements> listDeviceMeasurements(IDeviceAssignment assignment,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchByAssignment(assignment.getToken(), DeviceEventType.Measurements, criteria,
+	return InfluxDbDeviceEvent.searchByAssignment(assignment, DeviceEventType.Measurements, criteria,
 		getClient().getInflux(), getClient().getConfiguration().getDatabase(), IDeviceMeasurements.class);
     }
 
@@ -249,8 +249,8 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForSite(ISite site,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchBySite(site.getToken(), DeviceEventType.Measurements, criteria,
-		getClient().getInflux(), getClient().getConfiguration().getDatabase(), IDeviceMeasurements.class);
+	return InfluxDbDeviceEvent.searchBySite(site, DeviceEventType.Measurements, criteria, getClient().getInflux(),
+		getClient().getConfiguration().getDatabase(), IDeviceMeasurements.class);
     }
 
     /*
@@ -284,7 +284,7 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public ISearchResults<IDeviceLocation> listDeviceLocations(IDeviceAssignment assignment,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchByAssignment(assignment.getToken(), DeviceEventType.Location, criteria,
+	return InfluxDbDeviceEvent.searchByAssignment(assignment, DeviceEventType.Location, criteria,
 		getClient().getInflux(), getClient().getConfiguration().getDatabase(), IDeviceLocation.class);
     }
 
@@ -298,8 +298,8 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public ISearchResults<IDeviceLocation> listDeviceLocationsForSite(ISite site, IDateRangeSearchCriteria criteria)
 	    throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchBySite(site.getToken(), DeviceEventType.Location, criteria,
-		getClient().getInflux(), getClient().getConfiguration().getDatabase(), IDeviceLocation.class);
+	return InfluxDbDeviceEvent.searchBySite(site, DeviceEventType.Location, criteria, getClient().getInflux(),
+		getClient().getConfiguration().getDatabase(), IDeviceLocation.class);
     }
 
     /*
@@ -333,7 +333,7 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public ISearchResults<IDeviceAlert> listDeviceAlerts(IDeviceAssignment assignment,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchByAssignment(assignment.getToken(), DeviceEventType.Alert, criteria,
+	return InfluxDbDeviceEvent.searchByAssignment(assignment, DeviceEventType.Alert, criteria,
 		getClient().getInflux(), getClient().getConfiguration().getDatabase(), IDeviceAlert.class);
     }
 
@@ -347,8 +347,8 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public ISearchResults<IDeviceAlert> listDeviceAlertsForSite(ISite site, IDateRangeSearchCriteria criteria)
 	    throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchBySite(site.getToken(), DeviceEventType.Alert, criteria,
-		getClient().getInflux(), getClient().getConfiguration().getDatabase(), IDeviceAlert.class);
+	return InfluxDbDeviceEvent.searchBySite(site, DeviceEventType.Alert, criteria, getClient().getInflux(),
+		getClient().getConfiguration().getDatabase(), IDeviceAlert.class);
     }
 
     /*
@@ -425,9 +425,8 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocations(IDeviceAssignment assignment,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchByAssignment(assignment.getToken(), DeviceEventType.CommandInvocation,
-		criteria, getClient().getInflux(), getClient().getConfiguration().getDatabase(),
-		IDeviceCommandInvocation.class);
+	return InfluxDbDeviceEvent.searchByAssignment(assignment, DeviceEventType.CommandInvocation, criteria,
+		getClient().getInflux(), getClient().getConfiguration().getDatabase(), IDeviceCommandInvocation.class);
     }
 
     /*
@@ -440,7 +439,7 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(ISite site,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchBySite(site.getToken(), DeviceEventType.CommandInvocation, criteria,
+	return InfluxDbDeviceEvent.searchBySite(site, DeviceEventType.CommandInvocation, criteria,
 		getClient().getInflux(), getClient().getConfiguration().getDatabase(), IDeviceCommandInvocation.class);
     }
 
@@ -488,7 +487,7 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponses(IDeviceAssignment assignment,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchByAssignment(assignment.getToken(), DeviceEventType.CommandResponse, criteria,
+	return InfluxDbDeviceEvent.searchByAssignment(assignment, DeviceEventType.CommandResponse, criteria,
 		getClient().getInflux(), getClient().getConfiguration().getDatabase(), IDeviceCommandResponse.class);
     }
 
@@ -502,7 +501,7 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(ISite site,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchBySite(site.getToken(), DeviceEventType.CommandResponse, criteria,
+	return InfluxDbDeviceEvent.searchBySite(site, DeviceEventType.CommandResponse, criteria,
 		getClient().getInflux(), getClient().getConfiguration().getDatabase(), IDeviceCommandResponse.class);
     }
 
@@ -536,7 +535,7 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public ISearchResults<IDeviceStateChange> listDeviceStateChanges(IDeviceAssignment assignment,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchByAssignment(assignment.getToken(), DeviceEventType.StateChange, criteria,
+	return InfluxDbDeviceEvent.searchByAssignment(assignment, DeviceEventType.StateChange, criteria,
 		getClient().getInflux(), getClient().getConfiguration().getDatabase(), IDeviceStateChange.class);
     }
 
@@ -550,8 +549,8 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(ISite site,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchBySite(site.getToken(), DeviceEventType.StateChange, criteria,
-		getClient().getInflux(), getClient().getConfiguration().getDatabase(), IDeviceStateChange.class);
+	return InfluxDbDeviceEvent.searchBySite(site, DeviceEventType.StateChange, criteria, getClient().getInflux(),
+		getClient().getConfiguration().getDatabase(), IDeviceStateChange.class);
     }
 
     /*
