@@ -2,6 +2,8 @@
 
 ---
 
+## NOTE: SiteWhere 2.0 EA1 is an early access release of the new architecture and is considered an "alpha" quality preview. This release is not intended for production use! Some of the core functionality will change significantly before the 2.0 GA release
+
 SiteWhere is an industrial-strength open source IoT Application Enablement Platform 
 that facilitates the ingestion, storage, processing, and integration of device data 
 at massive scale. SiteWhere is based on a modern microservices architecture and has 
@@ -17,14 +19,17 @@ a completely distributed approach using microservices to allow scaling at the
 component level so that the system may be tailored to the customer
 use case. The system is built with a framework approach using clearly defined
 APIs so that new technologies can easily be integrated as the IoT ecosystem
-evolves. The remainder of this guide covers the core technologies used by 
+evolves. The remainder of this document covers the core technologies used by 
 SiteWhere and how they fit together to build a comprehensive system.
 
 ## Microservices
 SiteWhere 2.0 introduces a much different architectural approach than was used
 in the 1.x platform. While the core APIs are mostly unchanged, the system implementation
-has moved from a monolithic approach to one based on microservices. This approach
-provides a number of advantages over the previous architecture.
+has moved from a monolithic approach to one based on microservices. 
+
+![SiteWhere Architecture](http://sitewhere.io/docs/en/2.0.EA1/_images/microservices-diagram.png "SiteWhere 2.0 Architecture")
+
+This approach provides a number of advantages over the previous architecture.
 
 ### Separation of Concerns
 Each microservice is a completely self-contained entity that has its
