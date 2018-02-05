@@ -10,7 +10,7 @@ package com.sitewhere.grpc.client.cache;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.hazelcast.core.ReplicatedMap;
+import com.hazelcast.core.IMap;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.cache.ICacheProvider;
 import com.sitewhere.spi.microservice.IMicroservice;
@@ -39,7 +39,7 @@ public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
     boolean createIfNotFound;
 
     /** Cache handle */
-    private Map<String, ReplicatedMap<K, V>> cachesByTenantId = new HashMap<String, ReplicatedMap<K, V>>();
+    private Map<String, IMap<K, V>> cachesByTenantId = new HashMap<String, IMap<K, V>>();
 
     public CacheProvider(IMicroservice microservice, String identifier, boolean createIfNotFound) {
 	this.microservice = microservice;
@@ -73,6 +73,8 @@ public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
 		getLogger().trace("Found cached value for '" + key.toString() + "'.");
 		return result;
 	    }
+	} else {
+	    getLogger().warn("Accessing cache before Hazelcast has been initialized.");
 	}
 	return null;
     }
@@ -95,13 +97,13 @@ public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
      * @return
      * @throws SiteWhereException
      */
-    protected ReplicatedMap<K, V> getCache(ITenant tenant) throws SiteWhereException {
+    protected IMap<K, V> getCache(ITenant tenant) throws SiteWhereException {
 	String tenantId = (tenant != null) ? tenant.getId() : GLOBAL_CACHE_INDICATOR;
-	ReplicatedMap<K, V> cache = getCachesByTenantId().get(tenantId);
+	IMap<K, V> cache = getCachesByTenantId().get(tenantId);
 	boolean hzInitialized = getMicroservice().getHazelcastManager().getHazelcastInstance() != null;
 	if ((hzInitialized) && (cache == null)) {
 	    String cacheName = getCacheNameForTenant(tenantId);
-	    cache = getMicroservice().getHazelcastManager().getHazelcastInstance().getReplicatedMap(cacheName);
+	    cache = getMicroservice().getHazelcastManager().getHazelcastInstance().getMap(cacheName);
 	    getCachesByTenantId().put(tenantId, cache);
 	}
 	return cache;
@@ -141,11 +143,11 @@ public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
 	this.createIfNotFound = createIfNotFound;
     }
 
-    protected Map<String, ReplicatedMap<K, V>> getCachesByTenantId() {
+    public Map<String, IMap<K, V>> getCachesByTenantId() {
 	return cachesByTenantId;
     }
 
-    protected void setCachesByTenantId(Map<String, ReplicatedMap<K, V>> cachesByTenantId) {
+    public void setCachesByTenantId(Map<String, IMap<K, V>> cachesByTenantId) {
 	this.cachesByTenantId = cachesByTenantId;
     }
 }

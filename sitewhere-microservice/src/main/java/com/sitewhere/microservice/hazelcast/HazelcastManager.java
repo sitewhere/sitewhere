@@ -27,6 +27,7 @@ import com.hazelcast.core.HazelcastInstance;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.spi.microservice.hazelcast.IHazelcastManager;
 import com.sitewhere.spi.microservice.state.IInstanceMicroservice;
 import com.sitewhere.spi.microservice.state.IInstanceTopologyEntry;
@@ -195,36 +196,36 @@ public class HazelcastManager extends LifecycleComponent implements IHazelcastMa
 
 	@Override
 	public void run() {
-	    getLogger().info("Hazelcast waiting for other microservices to enter topology...");
+	    getLogger().info("Hazelcast waiting for tenant management microservice to enter topology...");
 	    while (true) {
 		IInstanceTopologySnapshot topology = getMicroservice().getTopologyStateAggregator()
 			.getInstanceTopologySnapshot();
 		if (topology != null) {
 		    Map<String, IInstanceTopologyEntry> byIdent = topology.getTopologyEntriesByIdentifier();
-		    List<String> members = new ArrayList<>();
-		    for (String identifier : byIdent.keySet()) {
-			IInstanceTopologyEntry entry = byIdent.get(identifier);
-			Map<String, IInstanceMicroservice> byHostname = entry.getMicroservicesByHostname();
+		    IInstanceTopologyEntry tenantManagement = byIdent.get(IMicroserviceIdentifiers.TENANT_MANAGEMENT);
+		    if (tenantManagement != null) {
+			List<String> members = new ArrayList<>();
+			Map<String, IInstanceMicroservice> byHostname = tenantManagement.getMicroservicesByHostname();
 			for (String hostname : byHostname.keySet()) {
 			    String member = hostname + ":" + HZ_PORT;
 			    members.add(member);
 			}
-		    }
 
-		    // Only attempt to connect if members were found.
-		    if (members.size() > 0) {
-			try {
-			    String delimited = String.join(",", members);
-			    getLogger().info("Hazelcast will connect to members: " + delimited);
-			    connect(delimited);
-			    return;
-			} catch (SiteWhereException e) {
-			    getLogger().error("Error establishing Hazelcast node.", e);
+			// Only attempt to connect if members were found.
+			if (members.size() > 0) {
+			    try {
+				String delimited = String.join(",", members);
+				getLogger().info("Hazelcast will connect to members: " + delimited);
+				connect(delimited);
+				return;
+			    } catch (SiteWhereException e) {
+				getLogger().error("Error establishing Hazelcast node.", e);
+			    }
 			}
 		    }
 		}
 		try {
-		    Thread.sleep(3000);
+		    Thread.sleep(1000);
 		} catch (InterruptedException e) {
 		    getLogger().warn("Hazelcast topology monitor thread shutting down.");
 		    return;
