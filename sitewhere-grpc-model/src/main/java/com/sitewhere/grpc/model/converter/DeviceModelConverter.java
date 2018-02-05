@@ -904,35 +904,6 @@ public class DeviceModelConverter {
     }
 
     /**
-     * Convert device status search critreia from API to GRPC.
-     * 
-     * @param code
-     * @return
-     * @throws SiteWhereException
-     */
-    public static GDeviceSearchCriteria asApiDeviceSearchCriteria(IDeviceSearchCriteria criteria)
-	    throws SiteWhereException {
-	GDeviceSearchCriteria.Builder gcriteria = GDeviceSearchCriteria.newBuilder();
-	if (criteria.getSpecificationToken() != null) {
-	    gcriteria.setSpecification(
-		    GDeviceSpecificationReference.newBuilder().setToken(criteria.getSpecificationToken()));
-	}
-	if (criteria.getSiteToken() != null) {
-	    gcriteria.setSite(GSiteReference.newBuilder().setToken(criteria.getSiteToken()));
-	}
-	if (criteria.getStartDate() != null) {
-	    gcriteria.setCreatedAfter(CommonModelConverter.asGrpcTimestamp(criteria.getStartDate()));
-	}
-	if (criteria.getEndDate() != null) {
-	    gcriteria.setCreatedBefore(CommonModelConverter.asGrpcTimestamp(criteria.getEndDate()));
-	}
-	if (criteria.isExcludeAssigned()) {
-	    gcriteria.setExcludeAssigned(GOptionalBoolean.newBuilder().setValue(true));
-	}
-	return gcriteria.build();
-    }
-
-    /**
      * Convert device search results from GRPC to API.
      * 
      * @param response
@@ -1088,14 +1059,18 @@ public class DeviceModelConverter {
 	    throws SiteWhereException {
 	GDeviceSearchCriteria.Builder grpc = GDeviceSearchCriteria.newBuilder();
 	grpc.setPaging(CommonModelConverter.asGrpcPaging(api));
-	grpc.setCreatedAfter(CommonModelConverter.asGrpcTimestamp(api.getStartDate()));
-	grpc.setCreatedBefore(CommonModelConverter.asGrpcTimestamp(api.getEndDate()));
 	if (api.getSpecificationToken() != null) {
 	    grpc.setSpecification(
 		    GDeviceSpecificationReference.newBuilder().setToken(api.getSpecificationToken()).build());
 	}
 	if (api.getSiteToken() != null) {
 	    grpc.setSite(GSiteReference.newBuilder().setToken(api.getSiteToken()).build());
+	}
+	if (api.getStartDate() != null) {
+	    grpc.setCreatedAfter(CommonModelConverter.asGrpcTimestamp(api.getStartDate()));
+	}
+	if (api.getEndDate() != null) {
+	    grpc.setCreatedBefore(CommonModelConverter.asGrpcTimestamp(api.getEndDate()));
 	}
 	if (api.isExcludeAssigned()) {
 	    grpc.setExcludeAssigned(GOptionalBoolean.newBuilder().setValue(true));

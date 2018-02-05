@@ -591,7 +591,7 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	try {
 	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_DEVICES);
 	    GListDevicesRequest.Builder grequest = GListDevicesRequest.newBuilder();
-	    grequest.setCriteria(DeviceModelConverter.asApiDeviceSearchCriteria(criteria));
+	    grequest.setCriteria(DeviceModelConverter.asGrpcDeviceSearchCriteria(criteria));
 	    GListDevicesResponse gresponse = getGrpcChannel().getBlockingStub().listDevices(grequest.build());
 	    ISearchResults<IDevice> results = DeviceModelConverter.asApiDeviceSearchResults(gresponse.getResults());
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_DEVICES, results);
