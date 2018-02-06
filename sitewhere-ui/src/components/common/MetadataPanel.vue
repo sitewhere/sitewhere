@@ -3,7 +3,7 @@
     <v-card-text>
       <v-data-table class="elevation-0" :headers="headers" :items="metadata"
         :rows-per-page-items="pagesize" :no-data-text="noDataText">
-        <template slot="items" scope="props">
+        <template slot="items" slot-scope="props">
           <td width="250px" :title="props.item.name">
             {{ (props.item.name.length > 25) ? props.item.name.substring(0, 25) + "..." : props.item.name }}
           </td>
@@ -11,10 +11,12 @@
             {{ (props.item.value.length > 50) ? props.item.value.substring(0, 50) + "..." : props.item.value }}
           </td>
           <td v-if="!readOnly" width="20px">
-            <v-btn icon @click.native="onDeleteItem(props.item.name)"
-              v-tooltip:left="{ html: 'Delete Item' }">
-              <v-icon class="grey--text">delete</v-icon>
-            </v-btn>
+            <v-tooltip left>
+              <v-btn icon @click="onDeleteItem(props.item.name)" slot="activator">
+                <v-icon class="grey--text">delete</v-icon>
+              </v-btn>
+              <span>Delete Item</span>
+            </v-tooltip>
           </td>
         </template>
       </v-data-table>
@@ -32,9 +34,12 @@
             <v-text-field light label="Value" v-model="newItemValue"></v-text-field>
           </v-flex>
           <v-flex xs1 class="pt-3">
-            <v-btn icon @click.native="onAddItem" v-tooltip:left="{ html: 'Add Item' }">
-              <v-icon large class="blue--text text--darken-2">add_circle</v-icon>
-            </v-btn>
+            <v-tooltip left>
+              <v-btn icon @click.native="onAddItem" slot="activator">
+                <v-icon large class="blue--text text--darken-2">add_circle</v-icon>
+              </v-btn>
+              <span>Add Item</span>
+            </v-tooltip>
           </v-flex>
         </v-layout>
       </v-container>

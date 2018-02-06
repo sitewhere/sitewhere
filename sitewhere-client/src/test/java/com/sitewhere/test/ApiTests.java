@@ -23,11 +23,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.sitewhere.rest.client.SiteWhereClient;
+import com.sitewhere.rest.model.asset.AssetReference;
 import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.Zone;
-import com.sitewhere.rest.model.device.batch.BatchOperation;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
@@ -160,8 +160,7 @@ public class ApiTests {
 	// Create a device assignment.
 	DeviceAssignmentCreateRequest assnRequest = new DeviceAssignmentCreateRequest();
 	assnRequest.setAssignmentType(DeviceAssignmentType.Associated);
-	assnRequest.setAssetModuleId("testAssetModuleId");
-	assnRequest.setAssetId(TEST_ASSET_ID);
+	assnRequest.setAssetReference(new AssetReference.Builder("testAssetModuleId", TEST_ASSET_ID).build());
 	assnRequest.setDeviceHardwareId(device.getHardwareId());
 	metadata = new HashMap<String, String>();
 	metadata.put("name1", "value1");
@@ -316,21 +315,6 @@ public class ApiTests {
     }
 
     @Test
-    public void sendBatchCommandInvocation() throws SiteWhereException {
-	SiteWhereClient client = new SiteWhereClient();
-	List<Device> androids = getDevicesForSpecification(ANDROID_SPEC_TOKEN);
-	List<String> hwids = new ArrayList<String>();
-	for (Device device : androids) {
-	    hwids.add(device.getHardwareId());
-	}
-	Map<String, String> parameters = new HashMap<String, String>();
-	parameters.put("color", "#ff0000");
-	BatchOperation op = client.createBatchCommandInvocation(null, "17340bb1-8673-4fc9-8ed0-4f818acedaa5",
-		parameters, hwids);
-	System.out.println("Created operation: " + op.getToken());
-    }
-
-    @Test
     public void listCommandsForSpecification() throws SiteWhereException {
 	SiteWhereClient client = new SiteWhereClient();
 	DeviceCommandSearchResults results = client.listDeviceCommands(ANDROID_SPEC_TOKEN, true);
@@ -365,27 +349,6 @@ public class ApiTests {
 	Assert.assertNotNull(deleted);
 	DeviceGroupSearchResults after = client.listDeviceGroups(null, new SearchCriteria(1, 0), false);
 	Assert.assertEquals(before.getNumResults(), after.getNumResults() + 1);
-    }
-
-    /**
-     * Get all devices for a given specification. NOTE: Logic only looks at the
-     * first 100 devices.
-     * 
-     * @param token
-     * @return
-     * @throws SiteWhereException
-     */
-    protected List<Device> getDevicesForSpecification(String token) throws SiteWhereException {
-	SiteWhereClient client = new SiteWhereClient();
-	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 100, null, null);
-	SearchResults<Device> devices = client.listDevices(false, true, true, true, criteria);
-	List<Device> results = new ArrayList<Device>();
-	for (Device device : devices.getResults()) {
-	    if (device.getSpecificationToken().equals(token)) {
-		results.add(device);
-	    }
-	}
-	return results;
     }
 
     /**

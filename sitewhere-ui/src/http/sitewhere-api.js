@@ -1,15 +1,32 @@
 import axios from 'axios'
 
 /**
- * Create authorized axios client based on values.
+ * Create basic auth axios client for retrieving JWT based on credentials.
  */
-export function createAxiosAuthorized (baseUrl, authToken, tenantToken) {
+export function createAxiosBasicAuth (baseUrl, authToken) {
   let headers = {}
   if (authToken) {
     headers['Authorization'] = 'Basic ' + authToken
   }
-  if (tenantToken) {
-    headers['X-SiteWhere-Tenant'] = tenantToken
+  return axios.create({
+    baseURL: baseUrl,
+    headers: headers
+  })
+}
+
+/**
+ * Create basic auth axios client for retrieving JWT based on credentials.
+ */
+export function createAxiosJwt (baseUrl, jwt, tenantId, tenantAuth) {
+  let headers = {}
+  if (jwt) {
+    headers['Authorization'] = 'Bearer ' + jwt
+  }
+  if (tenantId) {
+    headers['X-SiteWhere-Tenant-Id'] = tenantId
+  }
+  if (tenantAuth) {
+    headers['X-SiteWhere-Tenant-Auth'] = tenantAuth
   }
   return axios.create({
     baseURL: baseUrl,

@@ -1,0 +1,917 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.service;
+
+option java_multiple_files = true;
+option java_package = "com.sitewhere.grpc.service";
+option java_outer_classname = "DeviceServices";
+
+import "device-model.proto";
+import "sitewhere-common.proto";
+
+// Device management APIs.
+service DeviceManagement {
+
+	// #############################
+	// ### DEVICE SPECIFICATIONS ###
+	// #############################
+	
+	// Create a new device specification.
+	rpc CreateDeviceSpecification (GCreateDeviceSpecificationRequest) returns (GCreateDeviceSpecificationResponse) {}
+
+	// Get device specification by id.
+	rpc GetDeviceSpecification (GGetDeviceSpecificationRequest) returns (GGetDeviceSpecificationResponse) {}
+
+	// Get device specification by unique token.
+	rpc GetDeviceSpecificationByToken (GGetDeviceSpecificationByTokenRequest) returns (GGetDeviceSpecificationByTokenResponse) {}
+
+	// Update an existing device specification.
+	rpc UpdateDeviceSpecification (GUpdateDeviceSpecificationRequest) returns (GUpdateDeviceSpecificationResponse) {}
+
+	// List device specifications that meet criteria.
+	rpc ListDeviceSpecifications (GListDeviceSpecificationsRequest) returns (GListDeviceSpecificationsResponse) {}
+
+	// Delete an existing device specification.
+	rpc DeleteDeviceSpecification (GDeleteDeviceSpecificationRequest) returns (GDeleteDeviceSpecificationResponse) {}
+
+	// #######################
+	// ### DEVICE COMMANDS ###
+	// #######################
+	
+	// Create a new device command.
+	rpc CreateDeviceCommand (GCreateDeviceCommandRequest) returns (GCreateDeviceCommandResponse) {}
+	
+	// Get device command by id.
+	rpc GetDeviceCommand (GGetDeviceCommandRequest) returns (GGetDeviceCommandResponse) {}
+	
+	// Get device command by unique token.
+	rpc GetDeviceCommandByToken (GGetDeviceCommandByTokenRequest) returns (GGetDeviceCommandByTokenResponse) {}
+	
+	// Update an existing device command.
+	rpc UpdateDeviceCommand (GUpdateDeviceCommandRequest) returns (GUpdateDeviceCommandResponse) {}
+
+	// List device commands that meet criteria.
+	rpc ListDeviceCommands (GListDeviceCommandsRequest) returns (GListDeviceCommandsResponse) {}
+
+	// Delete an existing device command.
+	rpc DeleteDeviceCommand (GDeleteDeviceCommandRequest) returns (GDeleteDeviceCommandResponse) {}
+
+	// #######################
+	// ### DEVICE STATUSES ###
+	// #######################
+	
+	// Create a new device status.
+	rpc CreateDeviceStatus (GCreateDeviceStatusRequest) returns (GCreateDeviceStatusResponse) {}
+	
+	// Get device status by unique code.
+	rpc GetDeviceStatusByCode (GGetDeviceStatusByCodeRequest) returns (GGetDeviceStatusByCodeResponse) {}
+	
+	// Update an existing device status.
+	rpc UpdateDeviceStatus (GUpdateDeviceStatusRequest) returns (GUpdateDeviceStatusResponse) {}
+
+	// List device statuses that meet criteria.
+	rpc ListDeviceStatuses (GListDeviceStatusesRequest) returns (GListDeviceStatusesResponse) {}
+
+	// Delete an existing device status.
+	rpc DeleteDeviceStatus (GDeleteDeviceStatusRequest) returns (GDeleteDeviceStatusResponse) {}
+
+	// ###############
+	// ### DEVICES ###
+	// ###############
+	
+	// Create a new device.
+	rpc CreateDevice (GCreateDeviceRequest) returns (GCreateDeviceResponse) {}
+		
+	// Get a device id.
+	rpc GetDevice (GGetDeviceRequest) returns (GGetDeviceResponse) {}
+	
+	// Get a device by unique hardware id.
+	rpc GetDeviceByHardwareId (GGetDeviceByHardwareIdRequest) returns (GGetDeviceByHardwareIdResponse) {}
+	
+	// Update an existing device.
+	rpc UpdateDevice (GUpdateDeviceRequest) returns (GUpdateDeviceResponse) {}
+
+	// List devices that meet criteria.
+	rpc ListDevices (GListDevicesRequest) returns (GListDevicesResponse) {}
+
+	// Create a device element mapping.
+	rpc CreateDeviceElementMapping (GCreateDeviceElementMappingRequest) returns (GCreateDeviceElementMappingResponse) {}
+
+	// Delete a device element mapping.
+	rpc DeleteDeviceElementMapping (GDeleteDeviceElementMappingRequest) returns (GDeleteDeviceElementMappingResponse) {}
+
+	// Delete an existing device.
+	rpc DeleteDevice (GDeleteDeviceRequest) returns (GDeleteDeviceResponse) {}
+	
+	// #####################
+	// ### DEVICE GROUPS ###
+	// #####################
+	
+	// Create a new device group.
+	rpc CreateDeviceGroup (GCreateDeviceGroupRequest) returns (GCreateDeviceGroupResponse) {}
+	
+	// Get a device group by id.
+	rpc GetDeviceGroup (GGetDeviceGroupRequest) returns (GGetDeviceGroupResponse) {}
+	
+	// Get a device group by unique token.
+	rpc GetDeviceGroupByToken (GGetDeviceGroupByTokenRequest) returns (GGetDeviceGroupByTokenResponse) {}
+	
+	// Update an existing device group.
+	rpc UpdateDeviceGroup (GUpdateDeviceGroupRequest) returns (GUpdateDeviceGroupResponse) {}
+
+	// List device groups that meet criteria.
+	rpc ListDeviceGroups (GListDeviceGroupsRequest) returns (GListDeviceGroupsResponse) {}
+
+	// List device groups with a role that meet criteria.
+	rpc ListDeviceGroupsWithRole (GListDeviceGroupsWithRoleRequest) returns (GListDeviceGroupsWithRoleResponse) {}
+
+	// Delete an existing device group.
+	rpc DeleteDeviceGroup (GDeleteDeviceGroupRequest) returns (GDeleteDeviceGroupResponse) {}
+
+	// Add elements to an existing device group.
+	rpc AddDeviceGroupElements (GAddDeviceGroupElementsRequest) returns (GAddDeviceGroupElementsResponse) {}
+
+	// Remove elements from an existing device group.
+	rpc RemoveDeviceGroupElements (GRemoveDeviceGroupElementsRequest) returns (GRemoveDeviceGroupElementsResponse) {}
+
+	// List elements from an existing device group.
+	rpc ListDeviceGroupElements (GListDeviceGroupElementsRequest) returns (GListDeviceGroupElementsResponse) {}
+
+	// ##########################
+	// ### DEVICE ASSIGNMENTS ###
+	// ##########################
+	
+	// Create a new device assignment.
+	rpc CreateDeviceAssignment (GCreateDeviceAssignmentRequest) returns (GCreateDeviceAssignmentResponse) {}
+		
+	// Get a device assignment by id.
+	rpc GetDeviceAssignment (GGetDeviceAssignmentRequest) returns (GGetDeviceAssignmentResponse) {}
+	
+	// Get a device assignment by unique token.
+	rpc GetDeviceAssignmentByToken (GGetDeviceAssignmentByTokenRequest) returns (GGetDeviceAssignmentByTokenResponse) {}
+	
+	// Get current assignment for a device.
+	rpc GetCurrentAssignmentForDevice (GGetCurrentAssignmentForDeviceRequest) returns (GGetCurrentAssignmentForDeviceResponse) {}
+
+	// Delete an existing device assignment.
+	rpc DeleteDeviceAssignment (GDeleteDeviceAssignmentRequest) returns (GDeleteDeviceAssignmentResponse) {}
+	
+	// Update metadata for a device assignment.
+	rpc UpdateDeviceAssignmentMetadata (GUpdateDeviceAssignmentMetadataRequest) returns (GUpdateDeviceAssignmentMetadataResponse) {}
+	
+	// Update status for a device assignment.
+	rpc UpdateDeviceAssignmentStatus (GUpdateDeviceAssignmentStatusRequest) returns (GUpdateDeviceAssignmentStatusResponse) {}
+	
+	// End a device assignment.
+	rpc EndDeviceAssignment (GEndDeviceAssignmentRequest) returns (GEndDeviceAssignmentResponse) {}
+	
+	// Get device assignment history.
+	rpc GetDeviceAssignmentHistory (GGetDeviceAssignmentHistoryRequest) returns (GGetDeviceAssignmentHistoryResponse) {}
+	
+	// Get device assignments for a site.
+	rpc GetDeviceAssignmentsForSite (GGetDeviceAssignmentsForSiteRequest) returns (GGetDeviceAssignmentsForSiteResponse) {}
+	
+	// Get device assignments linked to an asset.
+	rpc GetDeviceAssignmentsForAsset (GGetDeviceAssignmentsForAssetRequest) returns (GGetDeviceAssignmentsForAssetResponse) {}
+
+	// ######################
+	// ### DEVICE STREAMS ###
+	// ######################
+	
+	// Create a new device stream.
+	rpc CreateDeviceStream (GCreateDeviceStreamRequest) returns (GCreateDeviceStreamResponse) {}	
+	
+	// Get device stream by stream id.
+	rpc GetDeviceStreamByStreamId (GGetDeviceStreamByStreamIdRequest) returns (GGetDeviceStreamByStreamIdResponse) {}
+
+	// List devices streams that meet criteria.
+	rpc ListDeviceStreams (GListDeviceStreamsRequest) returns (GListDeviceStreamsResponse) {}
+
+	// #############
+	// ### SITES ###
+	// #############
+	
+	// Create a new site.
+	rpc CreateSite (GCreateSiteRequest) returns (GCreateSiteResponse) {}
+		
+	// Get site by id.
+	rpc GetSite (GGetSiteRequest) returns (GGetSiteResponse) {}
+	
+	// Get site by unique token.
+	rpc GetSiteByToken (GGetSiteByTokenRequest) returns (GGetSiteByTokenResponse) {}
+	
+	// Update an existing site.
+	rpc UpdateSite (GUpdateSiteRequest) returns (GUpdateSiteResponse) {}
+	
+	// List sites that meet criteria.
+	rpc ListSites (GListSitesRequest) returns (GListSitesResponse) {}
+	
+	// Delete an existing site.
+	rpc DeleteSite (GDeleteSiteRequest) returns (GDeleteSiteResponse) {}
+	
+	// #############
+	// ### ZONES ###
+	// #############
+	
+	// Create a new zone.
+	rpc CreateZone (GCreateZoneRequest) returns (GCreateZoneResponse) {}
+	
+	// Get zone by id.
+	rpc GetZone (GGetZoneRequest) returns (GGetZoneResponse) {}
+	
+	// Get zone by unique token.
+	rpc GetZoneByToken (GGetZoneByTokenRequest) returns (GGetZoneByTokenResponse) {}
+	
+	// Update an existing zone.
+	rpc UpdateZone (GUpdateZoneRequest) returns (GUpdateZoneResponse) {}
+	
+	// List zones that meet criteria.
+	rpc ListZones (GListZonesRequest) returns (GListZonesResponse) {}
+	
+	// Delete an existing zone.
+	rpc DeleteZone (GDeleteZoneRequest) returns (GDeleteZoneResponse) {}
+}
+
+// #############################
+// ### DEVICE SPECIFICATIONS ###
+// #############################
+	
+// Request for creating a device specification.
+message GCreateDeviceSpecificationRequest {
+	com.sitewhere.grpc.model.GDeviceSpecificationCreateRequest request = 1;
+}
+
+// Response from creating a device specification.
+message GCreateDeviceSpecificationResponse {
+	com.sitewhere.grpc.model.GDeviceSpecification specification = 1;
+}
+	
+// Request for getting a device specification by id.
+message GGetDeviceSpecificationRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+}
+	
+// Response for getting a device specification by id.
+message GGetDeviceSpecificationResponse {
+	com.sitewhere.grpc.model.GDeviceSpecification specification = 1;
+}
+	
+// Request for getting a device specification by token.
+message GGetDeviceSpecificationByTokenRequest {
+	string token = 1;
+}
+	
+// Response for getting a device specification by token.
+message GGetDeviceSpecificationByTokenResponse {
+	com.sitewhere.grpc.model.GDeviceSpecification specification = 1;
+}
+	
+// Request for updating an existing device specification.
+message GUpdateDeviceSpecificationRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	com.sitewhere.grpc.model.GDeviceSpecificationCreateRequest request = 2;
+}
+	
+// Response for updating an existing device specification.
+message GUpdateDeviceSpecificationResponse {
+	com.sitewhere.grpc.model.GDeviceSpecification specification = 1;
+}
+	
+// Request for listing device specifications that meet criteria.
+message GListDeviceSpecificationsRequest {
+	com.sitewhere.grpc.model.GDeviceSpecificationSearchCriteria criteria = 1;
+}
+	
+// Response for listing device specifications that meet criteria.
+message GListDeviceSpecificationsResponse {
+	com.sitewhere.grpc.model.GDeviceSpecificationSearchResults results = 1;
+}
+	
+// Request for deleting a device specification.
+message GDeleteDeviceSpecificationRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	bool force = 2;
+}
+	
+// Response for deleting a device specification.
+message GDeleteDeviceSpecificationResponse {
+	com.sitewhere.grpc.model.GDeviceSpecification specification = 1;
+}
+
+// #######################
+// ### DEVICE COMMANDS ###
+// #######################
+	
+// Request for creating a device specification.
+message GCreateDeviceCommandRequest {
+	com.sitewhere.grpc.model.GUUID specificationId = 1;
+	com.sitewhere.grpc.model.GDeviceCommandCreateRequest request = 2;
+}
+
+// Response from creating a device specification.
+message GCreateDeviceCommandResponse {
+	com.sitewhere.grpc.model.GDeviceCommand command = 1;
+}
+
+// Request for getting a device command by id.
+message GGetDeviceCommandRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+}
+	
+// Response for getting a device command by id.
+message GGetDeviceCommandResponse {
+	com.sitewhere.grpc.model.GDeviceCommand command = 1;
+}
+
+// Request for getting a device command by token.
+message GGetDeviceCommandByTokenRequest {
+	string token = 2;
+}
+	
+// Response for getting a device command by token.
+message GGetDeviceCommandByTokenResponse {
+	com.sitewhere.grpc.model.GDeviceCommand command = 1;
+}
+	
+// Request for updating an existing device command.
+message GUpdateDeviceCommandRequest {
+	com.sitewhere.grpc.model.GUUID id = 2;
+	com.sitewhere.grpc.model.GDeviceCommandCreateRequest request = 3;
+}
+	
+// Response for updating an existing device command.
+message GUpdateDeviceCommandResponse {
+	com.sitewhere.grpc.model.GDeviceCommand command = 1;
+}
+	
+// Request for listing device commands that meet criteria.
+message GListDeviceCommandsRequest {
+	com.sitewhere.grpc.model.GDeviceCommandSearchCriteria criteria = 2;
+}
+	
+// Response for listing device commands that meet criteria.
+message GListDeviceCommandsResponse {
+	repeated com.sitewhere.grpc.model.GDeviceCommand commands = 1;
+}
+	
+// Request for deleting a device command.
+message GDeleteDeviceCommandRequest {
+	com.sitewhere.grpc.model.GUUID id = 2;
+	bool force = 3;
+}
+	
+// Response for deleting a device command.
+message GDeleteDeviceCommandResponse {
+	com.sitewhere.grpc.model.GDeviceCommand command = 1;
+}
+
+// #######################
+// ### DEVICE STATUSES ###
+// #######################
+	
+// Request for creating a device status.
+message GCreateDeviceStatusRequest {
+	com.sitewhere.grpc.model.GUUID specificationId = 1;
+	com.sitewhere.grpc.model.GDeviceStatusCreateRequest request = 2;
+}
+
+// Response from creating a device status.
+message GCreateDeviceStatusResponse {
+	com.sitewhere.grpc.model.GDeviceStatus status = 1;
+}
+
+// Request for getting a device status by code.
+message GGetDeviceStatusByCodeRequest {
+	com.sitewhere.grpc.model.GUUID specificationId = 1;
+	string code = 2;
+}
+	
+// Response for getting a device status by code.
+message GGetDeviceStatusByCodeResponse {
+	com.sitewhere.grpc.model.GDeviceStatus status = 1;
+}
+	
+// Request for updating an existing device status.
+message GUpdateDeviceStatusRequest {
+	com.sitewhere.grpc.model.GUUID specificationId = 1;
+	string code = 2;
+	com.sitewhere.grpc.model.GDeviceStatusCreateRequest request = 3;
+}
+	
+// Response for updating an existing device status.
+message GUpdateDeviceStatusResponse {
+	com.sitewhere.grpc.model.GDeviceStatus status = 1;
+}
+	
+// Request for listing device statuses that meet criteria.
+message GListDeviceStatusesRequest {
+	com.sitewhere.grpc.model.GDeviceStatusSearchCriteria criteria = 2;
+}
+	
+// Response for listing device statuses that meet criteria.
+message GListDeviceStatusesResponse {
+	repeated com.sitewhere.grpc.model.GDeviceStatus status = 1;
+}
+	
+// Request for deleting a device status.
+message GDeleteDeviceStatusRequest {
+	com.sitewhere.grpc.model.GUUID specificationId = 1;
+	string code = 2;
+}
+	
+// Response for deleting a device status.
+message GDeleteDeviceStatusResponse {
+	com.sitewhere.grpc.model.GDeviceStatus status = 1;
+}
+
+// ###############
+// ### DEVICES ###
+// ###############
+	
+// Request for creating a device.
+message GCreateDeviceRequest {
+	com.sitewhere.grpc.model.GDeviceCreateRequest request = 1;
+}
+
+// Response from creating a device.
+message GCreateDeviceResponse {
+	com.sitewhere.grpc.model.GDevice device = 1;
+}
+		
+// Request for getting a device id.
+message GGetDeviceRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+}
+	
+// Response for getting a device id.
+message GGetDeviceResponse {
+	com.sitewhere.grpc.model.GDevice device = 1;
+}
+	
+// Request for getting a device by hardware id.
+message GGetDeviceByHardwareIdRequest {
+	string hardwareId = 1;
+}
+	
+// Response for getting a device by hardware id.
+message GGetDeviceByHardwareIdResponse {
+	com.sitewhere.grpc.model.GDevice device = 1;
+}
+	
+// Request for updating an existing device.
+message GUpdateDeviceRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	com.sitewhere.grpc.model.GDeviceCreateRequest request = 2;
+}
+	
+// Response for updating an existing device.
+message GUpdateDeviceResponse {
+	com.sitewhere.grpc.model.GDevice device = 1;
+}
+	
+// Request for listing devices that meet criteria.
+message GListDevicesRequest {
+	com.sitewhere.grpc.model.GDeviceSearchCriteria criteria = 1;
+}
+	
+// Response for listing devices that meet criteria.
+message GListDevicesResponse {
+	com.sitewhere.grpc.model.GDeviceSearchResults results = 1;
+}
+	
+// Request for creating a device element mapping.
+message GCreateDeviceElementMappingRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	com.sitewhere.grpc.model.GDeviceElementMapping mapping = 2;
+}
+	
+// Response for creating a device element mapping.
+message GCreateDeviceElementMappingResponse {
+	com.sitewhere.grpc.model.GDevice device = 1;
+}
+	
+// Request for creating a device element mapping.
+message GDeleteDeviceElementMappingRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	string path = 2;
+}
+	
+// Response for creating a device element mapping.
+message GDeleteDeviceElementMappingResponse {
+	com.sitewhere.grpc.model.GDevice device = 1;
+}
+	
+// Request for deleting a device.
+message GDeleteDeviceRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	bool force = 2;
+}
+	
+// Response for deleting a device.
+message GDeleteDeviceResponse {
+	com.sitewhere.grpc.model.GDevice device = 1;
+}
+
+// ##########################
+// ### DEVICE ASSIGNMENTS ###
+// ##########################
+	
+// Request for creating a device assignment.
+message GCreateDeviceAssignmentRequest {
+	com.sitewhere.grpc.model.GDeviceAssignmentCreateRequest request = 1;
+}
+
+// Response from creating a device assignment.
+message GCreateDeviceAssignmentResponse {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+}
+	
+// Request for getting a device assignment by id.
+message GGetDeviceAssignmentRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+}
+	
+// Response for getting a device assignment by id.
+message GGetDeviceAssignmentResponse {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+}
+	
+// Request for getting a device assignment by token.
+message GGetDeviceAssignmentByTokenRequest {
+	string token = 1;
+}
+	
+// Response for getting a device assignment by token.
+message GGetDeviceAssignmentByTokenResponse {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+}
+	
+// Request for getting the current assignment for a device.
+message GGetCurrentAssignmentForDeviceRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+}
+		
+// Response for getting the current assignment for a device.
+message GGetCurrentAssignmentForDeviceResponse {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+}
+	
+// Request for deleting a device assignment.
+message GDeleteDeviceAssignmentRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	bool force = 2;
+}
+	
+// Response for deleting a device assignment.
+message GDeleteDeviceAssignmentResponse {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+}
+	
+// Request for updating metadata for a device assignment.
+message GUpdateDeviceAssignmentMetadataRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	map<string, string> metadata = 2;
+}
+	
+// Response for updating metadata for a device assignment.
+message GUpdateDeviceAssignmentMetadataResponse {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+}
+	
+// Request for updating status for a device assignment.
+message GUpdateDeviceAssignmentStatusRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	com.sitewhere.grpc.model.GDeviceAssignmentStatus status = 2;
+}
+	
+// Response for updating status for a device assignment.
+message GUpdateDeviceAssignmentStatusResponse {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+}
+	
+// Request for ending a device assignment.
+message GEndDeviceAssignmentRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+}
+	
+// Response for ending a device assignment.
+message GEndDeviceAssignmentResponse {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+}
+	
+// Request for getting device assignment history.
+message GGetDeviceAssignmentHistoryRequest {
+	com.sitewhere.grpc.model.GUUID deviceId = 1;
+	com.sitewhere.grpc.model.GDeviceAssignmentHistoryCriteria criteria = 2;
+}
+	
+// Response for getting device assignment history.
+message GGetDeviceAssignmentHistoryResponse {
+	com.sitewhere.grpc.model.GDeviceAssignmentSearchResults results = 1;
+}
+	
+// Request for getting device assignments for a site.
+message GGetDeviceAssignmentsForSiteRequest {
+	com.sitewhere.grpc.model.GUUID siteId = 1;
+	com.sitewhere.grpc.model.GDeviceAssignmentSearchCriteria criteria = 2;
+}
+	
+// Response for getting device assignments for a site.
+message GGetDeviceAssignmentsForSiteResponse {
+	com.sitewhere.grpc.model.GDeviceAssignmentSearchResults results = 1;
+}
+	
+// Request for getting device assignments linked to an asset.
+message GGetDeviceAssignmentsForAssetRequest {
+	string assetModuleId = 1;
+	string assetId = 2;
+	com.sitewhere.grpc.model.GAssetsForAssignmentSearchCriteria criteria = 3;
+}
+	
+// Response for getting device assignments linked to an asset.
+message GGetDeviceAssignmentsForAssetResponse {
+	com.sitewhere.grpc.model.GDeviceAssignmentSearchResults results = 1;
+}
+
+// ######################
+// ### DEVICE STREAMS ###
+// ######################
+	
+// Request for creating a device stream.
+message GCreateDeviceStreamRequest {
+	com.sitewhere.grpc.model.GUUID assignmentId = 1;
+	com.sitewhere.grpc.model.GDeviceStreamCreateRequest request = 2;
+}
+
+// Response from creating a device stream.
+message GCreateDeviceStreamResponse {
+	com.sitewhere.grpc.model.GDeviceStream deviceStream = 1;
+}
+
+// Request for getting a device stream by stream id.
+message GGetDeviceStreamByStreamIdRequest {
+	com.sitewhere.grpc.model.GUUID assignmentId = 1;
+	string streamId = 2;
+}
+	
+// Response for getting a device stream by stream id.
+message GGetDeviceStreamByStreamIdResponse {
+	com.sitewhere.grpc.model.GDeviceStream deviceStream = 1;
+}
+	
+// Request for listing device streams that meet criteria.
+message GListDeviceStreamsRequest {
+	com.sitewhere.grpc.model.GUUID assignmentId = 1;
+	com.sitewhere.grpc.model.GDeviceStreamSearchCriteria criteria = 2;
+}
+	
+// Response for listing device streams that meet criteria.
+message GListDeviceStreamsResponse {
+	com.sitewhere.grpc.model.GDeviceStreamSearchResults results = 1;
+}
+
+// #############
+// ### SITES ###
+// #############
+
+// Request for creating a site.
+message GCreateSiteRequest {
+	com.sitewhere.grpc.model.GSiteCreateRequest request = 1;
+}
+
+// Response from creating a site.
+message GCreateSiteResponse {
+	com.sitewhere.grpc.model.GSite site = 1;
+}
+	
+// Request for getting a site by id.
+message GGetSiteRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+}
+	
+// Response for getting a site by id.
+message GGetSiteResponse {
+	com.sitewhere.grpc.model.GSite site = 1;
+}
+	
+// Request for getting a site by token.
+message GGetSiteByTokenRequest {
+	string token = 1;
+}
+	
+// Response for getting a site by token.
+message GGetSiteByTokenResponse {
+	com.sitewhere.grpc.model.GSite site = 1;
+}
+	
+// Request for updating an existing site.
+message GUpdateSiteRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	com.sitewhere.grpc.model.GSiteCreateRequest request = 2;
+}
+	
+// Response for updating an existing site.
+message GUpdateSiteResponse {
+	com.sitewhere.grpc.model.GSite site = 1;
+}
+	
+// Request for listing sites that meet criteria.
+message GListSitesRequest {
+	com.sitewhere.grpc.model.GSiteSearchCriteria criteria = 1;
+}
+	
+// Response for listing sites that meet criteria.
+message GListSitesResponse {
+	com.sitewhere.grpc.model.GSiteSearchResults results = 1;
+}
+	
+// Request for deleting a site.
+message GDeleteSiteRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	bool force = 2;
+}
+	
+// Response for deleting a site.
+message GDeleteSiteResponse {
+	com.sitewhere.grpc.model.GSite site = 1;
+}
+
+// #############
+// ### ZONES ###
+// #############
+
+// Request for creating a zone.
+message GCreateZoneRequest {
+	com.sitewhere.grpc.model.GUUID siteId = 1;
+	com.sitewhere.grpc.model.GZoneCreateRequest request = 2;
+}
+
+// Response from creating a zone.
+message GCreateZoneResponse {
+	com.sitewhere.grpc.model.GZone zone = 1;
+}
+	
+// Request for getting a zone by id.
+message GGetZoneRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+}
+	
+// Response for getting a zone by id.
+message GGetZoneResponse {
+	com.sitewhere.grpc.model.GZone zone = 1;
+}
+	
+// Request for getting a zone by token.
+message GGetZoneByTokenRequest {
+	string token = 1;
+}
+	
+// Response for getting a zone by token.
+message GGetZoneByTokenResponse {
+	com.sitewhere.grpc.model.GZone zone = 1;
+}
+	
+// Request for updating an existing zone.
+message GUpdateZoneRequest {
+	com.sitewhere.grpc.model.GUUID siteId = 1;
+	com.sitewhere.grpc.model.GUUID id = 2;
+	com.sitewhere.grpc.model.GZoneCreateRequest request = 3;
+}
+	
+// Response for updating an existing zone.
+message GUpdateZoneResponse {
+	com.sitewhere.grpc.model.GZone zone = 1;
+}
+	
+// Request for listing zones that meet criteria.
+message GListZonesRequest {
+	com.sitewhere.grpc.model.GUUID siteId = 1;
+	com.sitewhere.grpc.model.GZoneSearchCriteria criteria = 2;
+}
+	
+// Response for listing zones that meet criteria.
+message GListZonesResponse {
+	com.sitewhere.grpc.model.GZoneSearchResults results = 1;
+}
+	
+// Request for deleting a zone.
+message GDeleteZoneRequest {
+	com.sitewhere.grpc.model.GUUID siteId = 1;
+	com.sitewhere.grpc.model.GUUID id = 2;
+	bool force = 3;
+}
+	
+// Response for deleting a zone.
+message GDeleteZoneResponse {
+	com.sitewhere.grpc.model.GZone zone = 1;
+}
+	
+// #####################
+// ### DEVICE GROUPS ###
+// #####################
+
+// Request for creating a device group.
+message GCreateDeviceGroupRequest {
+	com.sitewhere.grpc.model.GDeviceGroupCreateRequest request = 1;
+}
+
+// Response from creating a device group.
+message GCreateDeviceGroupResponse {
+	com.sitewhere.grpc.model.GDeviceGroup group = 1;
+}
+		
+// Request for getting a device group by id.
+message GGetDeviceGroupRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+}
+	
+// Response for getting a device group by id.
+message GGetDeviceGroupResponse {
+	com.sitewhere.grpc.model.GDeviceGroup group = 1;
+}
+	
+// Request for getting a device group by token.
+message GGetDeviceGroupByTokenRequest {
+	string token = 1;
+}
+	
+// Response for getting a device group by token.
+message GGetDeviceGroupByTokenResponse {
+	com.sitewhere.grpc.model.GDeviceGroup group = 1;
+}
+	
+// Request for updating an existing device group.
+message GUpdateDeviceGroupRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	com.sitewhere.grpc.model.GDeviceGroupCreateRequest request = 2;
+}
+	
+// Response for updating an existing device group.
+message GUpdateDeviceGroupResponse {
+	com.sitewhere.grpc.model.GDeviceGroup group = 1;
+}
+	
+// Request for listing device groups that meet criteria.
+message GListDeviceGroupsRequest {
+	com.sitewhere.grpc.model.GDeviceGroupSearchCriteria criteria = 1;
+}
+	
+// Response for listing device groups that meet criteria.
+message GListDeviceGroupsResponse {
+	com.sitewhere.grpc.model.GDeviceGroupSearchResults results = 1;
+}
+	
+// Request for listing device groups with a role that meet criteria.
+message GListDeviceGroupsWithRoleRequest {
+	com.sitewhere.grpc.model.GDeviceGroupsWithRoleSearchCriteria criteria = 1;
+}
+	
+// Response for listing device groups with a role that meet criteria.
+message GListDeviceGroupsWithRoleResponse {
+	com.sitewhere.grpc.model.GDeviceGroupSearchResults results = 1;
+}
+	
+// Request for deleting a device group.
+message GDeleteDeviceGroupRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	bool force = 2;
+}
+	
+// Response for deleting a device group.
+message GDeleteDeviceGroupResponse {
+	com.sitewhere.grpc.model.GDeviceGroup group = 1;
+}
+	
+// Request for adding device group elements.
+message GAddDeviceGroupElementsRequest {
+	com.sitewhere.grpc.model.GUUID groupId = 1;
+	repeated com.sitewhere.grpc.model.GDeviceGroupElementCreateRequest requests = 2;
+	bool ignoreDuplicates = 3;
+}
+	
+// Response for adding device group elements.
+message GAddDeviceGroupElementsResponse {
+	repeated com.sitewhere.grpc.model.GDeviceGroupElement elements = 1;
+}
+	
+// Request for removing device group elements.
+message GRemoveDeviceGroupElementsRequest {
+	com.sitewhere.grpc.model.GUUID groupId = 1;
+	repeated com.sitewhere.grpc.model.GDeviceGroupElementCreateRequest requests = 2;
+}
+	
+// Response for removing device group elements.
+message GRemoveDeviceGroupElementsResponse {
+	repeated com.sitewhere.grpc.model.GDeviceGroupElement elements = 1;
+}
+	
+// Request for listing device group elements.
+message GListDeviceGroupElementsRequest {
+	com.sitewhere.grpc.model.GUUID groupId = 1;
+	com.sitewhere.grpc.model.GDeviceGroupElementsSearchCriteria criteria = 2;
+}
+	
+// Response for listing device group elements.
+message GListDeviceGroupElementsResponse {
+	com.sitewhere.grpc.model.GDeviceGroupElementsSearchResults results = 1;
+}

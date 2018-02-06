@@ -58,8 +58,8 @@ public class DeviceEventRequestBuilder {
 	    if (targetAssignment == null) {
 		throw new SiteWhereException("Target assignment not found: " + target);
 	    }
-	    IDevice targetDevice = deviceManagement.getDeviceForAssignment(targetAssignment);
-	    List<IDeviceCommand> commands = deviceManagement.listDeviceCommands(targetDevice.getSpecificationToken(),
+	    IDevice targetDevice = deviceManagement.getDevice(targetAssignment.getDeviceId());
+	    List<IDeviceCommand> commands = deviceManagement.listDeviceCommands(targetDevice.getDeviceSpecificationId(),
 		    false);
 	    IDeviceCommand match = null;
 	    for (IDeviceCommand command : commands) {
@@ -77,16 +77,17 @@ public class DeviceEventRequestBuilder {
     }
 
     public AssignmentScope forSameAssignmentAs(DeviceEventSupport support) {
-	return new AssignmentScope(getDeviceManagement(), getEventManagement(),
-		support.data().getDeviceAssignmentToken());
+	return new AssignmentScope(getEventManagement(), support.getDeviceAssignment());
     }
 
-    public AssignmentScope forSameAssignmentAs(IDeviceEvent event) {
-	return new AssignmentScope(getDeviceManagement(), getEventManagement(), event.getDeviceAssignmentToken());
+    public AssignmentScope forSameAssignmentAs(IDeviceEvent event) throws SiteWhereException {
+	return new AssignmentScope(getEventManagement(),
+		getDeviceManagement().getDeviceAssignment(event.getDeviceAssignmentId()));
     }
 
-    public AssignmentScope forAssignment(String assignmentToken) {
-	return new AssignmentScope(getDeviceManagement(), getEventManagement(), assignmentToken);
+    public AssignmentScope forAssignment(String assignmentToken) throws SiteWhereException {
+	return new AssignmentScope(getEventManagement(),
+		getDeviceManagement().getDeviceAssignmentByToken(assignmentToken));
     }
 
     public IDeviceManagement getDeviceManagement() {
@@ -107,53 +108,47 @@ public class DeviceEventRequestBuilder {
 
     public static class AssignmentScope {
 
-	/** Device management interface */
-	private IDeviceManagement deviceManagement;
-
 	/** Event management interface */
 	private IDeviceEventManagement events;
 
-	/** Assignment token */
-	private String assignmentToken;
+	/** Device assignment */
+	private IDeviceAssignment deviceAssignment;
 
-	public AssignmentScope(IDeviceManagement deviceManagement, IDeviceEventManagement events,
-		String assignmentToken) {
-	    this.deviceManagement = deviceManagement;
+	public AssignmentScope(IDeviceEventManagement events, IDeviceAssignment deviceAssignment) {
 	    this.events = events;
-	    this.assignmentToken = assignmentToken;
+	    this.deviceAssignment = deviceAssignment;
 	}
 
 	public AssignmentScope persist(DeviceLocationCreateRequest.Builder builder) throws SiteWhereException {
 	    DeviceLocationCreateRequest request = builder.build();
-	    events.addDeviceLocation(getAssignmentToken(), request);
+	    events.addDeviceLocation(getDeviceAssignment(), request);
 	    return this;
 	}
 
 	public AssignmentScope persist(DeviceMeasurementsCreateRequest.Builder builder) throws SiteWhereException {
 	    DeviceMeasurementsCreateRequest request = builder.build();
-	    events.addDeviceMeasurements(getAssignmentToken(), request);
+	    events.addDeviceMeasurements(getDeviceAssignment(), request);
 	    return this;
 	}
 
 	public AssignmentScope persist(DeviceAlertCreateRequest.Builder builder) throws SiteWhereException {
 	    DeviceAlertCreateRequest request = builder.build();
-	    events.addDeviceAlert(getAssignmentToken(), request);
+	    events.addDeviceAlert(getDeviceAssignment(), request);
 	    return this;
 	}
 
 	public AssignmentScope persist(DeviceCommandInvocationCreateRequest.Builder builder) throws SiteWhereException {
 	    DeviceCommandInvocationCreateRequest request = builder.build();
-	    IDeviceCommand command = deviceManagement.getDeviceCommandByToken(request.getCommandToken());
-	    events.addDeviceCommandInvocation(getAssignmentToken(), command, request);
+	    events.addDeviceCommandInvocation(getDeviceAssignment(), request);
 	    return this;
 	}
 
-	public String getAssignmentToken() {
-	    return assignmentToken;
+	public IDeviceAssignment getDeviceAssignment() {
+	    return deviceAssignment;
 	}
 
-	public void setAssignmentToken(String assignmentToken) {
-	    this.assignmentToken = assignmentToken;
+	public void setDeviceAssignment(IDeviceAssignment deviceAssignment) {
+	    this.deviceAssignment = deviceAssignment;
 	}
     }
 }

@@ -57,7 +57,7 @@ public class DeviceManagementRequestBuilder {
     }
 
     public IZone persist(ISite site, ZoneCreateRequest.Builder builder) throws SiteWhereException {
-	return getDeviceManagement().createZone(site, builder.build());
+	return getDeviceManagement().createZone(site.getId(), builder.build());
     }
 
     public DeviceSpecificationCreateRequest.Builder newSpecification(String token, String name, String assetModuleId,
@@ -75,23 +75,23 @@ public class DeviceManagementRequestBuilder {
 
     public IDeviceCommand persist(IDeviceSpecification specification, DeviceCommandCreateRequest.Builder builder)
 	    throws SiteWhereException {
-	return getDeviceManagement().createDeviceCommand(specification, builder.build());
+	return getDeviceManagement().createDeviceCommand(specification.getId(), builder.build());
     }
 
     public DeviceCreateRequest.Builder newDevice(String siteToken, String specificationToken, String hardwareId) {
 	return new DeviceCreateRequest.Builder(siteToken, specificationToken, hardwareId);
     }
 
-    public DeviceCreateRequest.Builder fromDevice(IDevice device) {
-	return new DeviceCreateRequest.Builder(device);
-    }
+    // public DeviceCreateRequest.Builder fromDevice(IDevice device) {
+    // return new DeviceCreateRequest.Builder(device);
+    // }
 
     public IDevice persist(DeviceCreateRequest.Builder builder) throws SiteWhereException {
 	return getDeviceManagement().createDevice(builder.build());
     }
 
     public IDevice update(IDevice device, DeviceCreateRequest.Builder builder) throws SiteWhereException {
-	return getDeviceManagement().updateDevice(device.getHardwareId(), builder.build());
+	return getDeviceManagement().updateDevice(device.getId(), builder.build());
     }
 
     public DeviceAssignmentCreateRequest.Builder newAssignment(String hardwareId, String assetModuleId,
@@ -121,7 +121,7 @@ public class DeviceManagementRequestBuilder {
 	for (DeviceGroupElementCreateRequest.Builder builder : builders) {
 	    elements.add(builder.build());
 	}
-	return getDeviceManagement().addDeviceGroupElements(group.getToken(), elements, true);
+	return getDeviceManagement().addDeviceGroupElements(group.getId(), elements, true);
     }
 
     public IDeviceManagement getDeviceManagement() {

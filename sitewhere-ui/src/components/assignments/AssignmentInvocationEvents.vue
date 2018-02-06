@@ -1,15 +1,15 @@
 <template>
   <div>
-    <v-layout row wrap v-if="alerts">
+    <v-layout row wrap v-if="invocations">
       <v-flex xs12>
-        <no-results-panel v-if="alerts.length === 0"
+        <no-results-panel v-if="invocations.length === 0"
           text="No Command Invocation Events Found for Assignment">
         </no-results-panel>
-        <v-data-table v-if="alerts.length > 0" class="elevation-2 pa-0"
-          :headers="headers" :items="alerts" :hide-actions="true"
+        <v-data-table v-if="invocations.length > 0" class="elevation-2 pa-0"
+          :headers="headers" :items="invocations" :hide-actions="true"
           no-data-text="No Command Invocations Found for Assignment"
           total-items="0">
-          <template slot="items" scope="props">
+          <template slot="items" slot-scope="props">
             <td width="20%" :title="props.item.command.name">
               {{ props.item.command.name }}
             </td>
@@ -44,7 +44,7 @@ export default {
   data: () => ({
     results: null,
     paging: null,
-    alerts: null,
+    invocations: null,
     headers: [
       {
         align: 'left',
@@ -115,7 +115,7 @@ export default {
       _listCommandInvocationsForAssignment(this.$store, this.token, query)
         .then(function (response) {
           component.results = response.data
-          component.alerts = response.data.results
+          component.invocations = response.data.results
         }).catch(function (e) {
         })
     },

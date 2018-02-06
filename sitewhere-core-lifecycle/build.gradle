@@ -1,0 +1,7 @@
+description = 'SiteWhere Lifecycle Library'
+
+dependencies {
+	compile project(':sitewhere-core-api')
+	
+    compile group: 'org.apache.commons', name: 'commons-text', version: '1.2'
+}

@@ -9,9 +9,9 @@ package com.sitewhere.device.marshaling;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.sitewhere.rest.model.batch.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
-import com.sitewhere.rest.model.device.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
@@ -95,7 +95,7 @@ public class CommandHtmlHelper {
 	html += " with specification <a href=\"" + relativePath + "/specifications/" + specification.getToken()
 		+ ".html\">" + specification.getName() + "</a>";
 	if (!StringUtils.isEmpty(criteria.getGroupToken())) {
-	    IDeviceGroup group = devices.getDeviceGroup(criteria.getGroupToken());
+	    IDeviceGroup group = devices.getDeviceGroupByToken(criteria.getGroupToken());
 	    if (group == null) {
 		throw new SiteWhereException("Invalid group reference: " + criteria.getGroupToken());
 	    }

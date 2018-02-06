@@ -8,7 +8,6 @@
 package com.sitewhere.rest.model.device.request;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +15,6 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
-import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 
@@ -61,8 +59,7 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.request.IDeviceCreateRequest#getHardwareId()
+     * @see com.sitewhere.spi.device.request.IDeviceCreateRequest#getHardwareId()
      */
     public String getHardwareId() {
 	return hardwareId;
@@ -103,8 +100,7 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.device.request.IDeviceCreateRequest#getParentHardwareId
-     * ()
+     * com.sitewhere.spi.device.request.IDeviceCreateRequest#getParentHardwareId ()
      */
     public String getParentHardwareId() {
 	return parentHardwareId;
@@ -156,11 +152,6 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
 	this.comments = comments;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.request.IDeviceCreateRequest#getStatus()
-     */
     public String getStatus() {
 	return status;
     }
@@ -187,22 +178,22 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
 	/** Request being built */
 	private DeviceCreateRequest request = new DeviceCreateRequest();
 
-	public Builder(IDevice api) {
-	    request.setSiteToken(api.getSiteToken());
-	    request.setSpecificationToken(api.getSpecificationToken());
-	    request.setHardwareId(api.getHardwareId());
-	    request.setStatus(api.getStatus());
-	    request.setComments(api.getComments());
-	    request.setParentHardwareId(api.getParentHardwareId());
-	    if (api.getDeviceElementMappings() != null) {
-		request.setDeviceElementMappings(new ArrayList<DeviceElementMapping>());
-		request.getDeviceElementMappings().addAll(api.getDeviceElementMappings());
-	    }
-	    if (api.getMetadata() != null) {
-		request.setMetadata(new HashMap<String, String>());
-		request.getMetadata().putAll(api.getMetadata());
-	    }
-	}
+	// public Builder(IDevice api) {
+	// request.setSiteToken(api.getSiteToken());
+	// request.setSpecificationToken(api.getSpecificationToken());
+	// request.setHardwareId(api.getHardwareId());
+	// request.setStatus(api.getStatus());
+	// request.setComments(api.getComments());
+	// request.setParentHardwareId(api.getParentHardwareId());
+	// if (api.getDeviceElementMappings() != null) {
+	// request.setDeviceElementMappings(new ArrayList<DeviceElementMapping>());
+	// request.getDeviceElementMappings().addAll(api.getDeviceElementMappings());
+	// }
+	// if (api.getMetadata() != null) {
+	// request.setMetadata(new HashMap<String, String>());
+	// request.getMetadata().putAll(api.getMetadata());
+	// }
+	// }
 
 	public Builder(String siteToken, String specificationToken, String hardwareId) {
 	    request.setSiteToken(siteToken);

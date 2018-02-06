@@ -2,97 +2,150 @@
 
 ---
 
-#### SiteWhere is an open source platform for capturing, storing, integrating, and analyzing data from IoT devices. ####
-SiteWhere is a server application and framework used to develop applications for the Internet of Things. 
-The core server uses the [Spring Boot](http://projects.spring.io/spring-boot/) architecture and provides
-the following list of features:
+## NOTE: SiteWhere 2.0 EA1 is an early access release of the new architecture and is considered an "alpha" quality preview. This release is not intended for production use! Some of the core functionality will change significantly before the 2.0 GA release
 
-* Support for multiple tenants with separate data storage and processing pipelines
-* Device management including specifications, device groups, asset assignment, and much more
-* Device connectivity via JSON, MQTT, AMQP, and most other common protocols
-* Big data storage for device event data with support for MongoDB, HBase, and InfluxDB
-* Configurable event-processing pipline with support for alerting, scripting, and other advanced functions
-* Integration with Apache Sprark, Apache Solr, Mule Anypoint, Amazon SQS, Azure EventHubs, and many others
+SiteWhere is an industrial-strength open source IoT Application Enablement Platform 
+that facilitates the ingestion, storage, processing, and integration of device data 
+at massive scale. The platform is based on a modern microservices architecture and has 
+been designed from the ground up for reliable, high throughput, low latency processing
+and dynamic scalability. SiteWhere takes advantage of proven technologies such as
+Apache Kafka and Docker in order to scale efficiently to the loads expected in large IoT
+projects. Rather than using a monolithic architecture, SiteWhere embraces a completely 
+distributed approach using microservices to allow scaling at the component level so 
+that the system may be tailored to the customer use case.
 
-### Installing a Packaged Version
-To download the latest version of SiteWhere server check out the [downloads] (http://www.sitewhere.org/downloads) page on [sitewhere.org] (http://www.sitewhere.org/).
+![SiteWhere Administration](http://sitewhere.io/docs/en/2.0.EA1/_images/vue-user-interface.png "SiteWhere Administration")
 
-### Building from Source
-If you want to customize SiteWhere or otherwise have a need to build it from source code, use the following steps.
+The SiteWhere microservices are built with a framework approach using clearly defined
+APIs so that new technologies can easily be integrated as the IoT ecosystem
+evolves. The remainder of this document covers the core technologies used by 
+SiteWhere and how they fit together to build a comprehensive system.
 
-#### Required Tools #####
-* [Gradle] (http://gradle.org/)
-* A [GIT] (http://git-scm.com/) client
+## Microservices
+SiteWhere 2.0 introduces a much different architectural approach than was used
+in the 1.x platform. While the core APIs are mostly unchanged, the system implementation
+has moved from a monolithic approach to one based on microservices. 
 
-#### Clone and Build #####
-Clone this repository locally using:
+![SiteWhere Architecture](http://sitewhere.io/docs/en/2.0.EA1/_images/microservices-diagram.png "SiteWhere 2.0 Architecture")
 
-    git clone https://github.com/sitewhere/sitewhere.git
-    
-Navigate to the newly created directory and execute:
+This approach provides a number of advantages over the previous architecture.
 
-    gradle clean serverZip **For Windows**
-    gradle clean serverTar **For Unix**
+### Separation of Concerns
+Each microservice is a completely self-contained entity that has its
+own unique configuration schema, internal components, data persistence,
+and interactions with the event processing pipeline. SiteWhere microservices
+are built on top of a custom microservice framework and run as separate
+[Spring Boot](https://projects.spring.io/spring-boot) processes, each
+contained in its own [Docker](https://www.docker.com) image.
 
-After the build completes, a file named **sitewhere-server-x.x.x.zip/tar** will have been created in the 
-**build/distributions** folder. This archive is the equivalent of the archive that can be downloaded from
-the website. It can be installed by unzipping into a folder and running the startup script in the **bin**
-folder.
+Separating the system logic into microservices allows the interactions
+between various areas of the system to be more clearly defined. This
+transition has already resulted in a more understandable and maintainable
+system and should continue to pay dividends as more features are added.
 
-SiteWhere Complete Install for Ubuntu
--------------------------------------
+### Scale What You Need. Leave Out What You Don't
+The microservice architecture allows individual functional areas of the system to be scaled
+independently or left out completely. In use cases where REST processing tends to
+be a bottleneck, multiple REST microservices can be run concurrently to handle the load.
+Conversely, services such as presence management that may not be required can be left
+out so that processing power can be dedicated to other aspects of the system.
 
-    sudo su
-    apt-get install -y software-properties-common
-    add-apt-repository ppa:openjdk-r/ppa
-    apt-get update -y
-    apt-get install -y unzip wget openjdk-8-jdk
+## Instance Management
+The 2.0 architecture introduces the concept of a SiteWhere *instance*, which
+allows the distributed system to act as a cohesive unit with some aspects
+addressed at the global level. All of the microservices for a single SiteWhere
+instance must be running on the same Docker infrastucture, though the system
+can be spread across tens or hundreds of machines using technologies such as
+[Docker Swarm](https://github.com/docker/swarm) or [Kubernetes](https://kubernetes.io).
 
-###Install MongoDB
+## Configuration Management with Apache ZooKeeper
+SiteWhere 2.0 moves system configuration from the filesystem into
+[Apache ZooKeeper](https://zookeeper.apache.org) to allow for a centralized,
+coordinated approach to configuration management. ZooKeeper contains a
+hierarchical structure which represents the configuration for a SiteWhere instance
+and all of the microservices that are used to realize it.
 
-    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
-    echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' | sudo tee /etc/apt/sources.list.d/mongodb.list
-    apt-get update
-    apt-get install -y mongodb-org
-    echo "mongodb-org hold" | sudo dpkg --set-selections
-    echo "mongodb-org-server hold" | sudo dpkg --set-selections
-    echo "mongodb-org-shell hold" | sudo dpkg --set-selections
-    echo "mongodb-org-mongos hold" | sudo dpkg --set-selections
-    echo "mongodb-org-tools hold" | sudo dpkg --set-selections
-    service mongod start
+Each microservice has a direct connection to ZooKeeper and uses the
+hierarchy to determine information such as the instance it belongs to
+and the configuration it should use. Microservices listen for changes to
+the configuration data and react dynamically to updates. No configuration
+is stored locally within the microservice, which prevents problems with
+keeping services in sync as system configuration is updated.
 
-###Install HiveMQ
+## Event Processing with Apache Kafka
+The event processing pipeline in SiteWhere 2.0 has been completely redesigned and uses
+[Apache Kafka](https://kafka.apache.org) to provide a resilient, high-performance
+mechanism for progressively processing device event data. Each microservice plugs into
+key points in the event processing pipeline, reading data from well-known inbound topics,
+processing data, then sending data to well-known outbound topics. External entites that
+are interested in data at any point in the pipeline can act as consumers of the SiteWhere
+topics to use the data as it move through the system.
 
-    cd /opt
-    wget --content-disposition https://s3.amazonaws.com/sitewhere-hivemq/hivemq-3.0.2.zip
-    unzip hivemq-3.0.2.zip
-    cd hivemq-3.0.2/bin
-    ./run.sh &
+In the SiteWhere 1.x architecture, the pipeline for outbound processing used a blocking
+approach which meant that any single outbound processor could block the outbound pipeline.
+In SiteWhere 2.0, each outbound consumer is a true Kafka consumer with its own offset 
+marker into the event stream. This mechanism allows for outbound processors to process data
+at their own pace without slowing down other processors.
 
-###Install Sitewhere Release Version
+Using Kafka also has other advantages that are leveraged by SiteWhere. Since all data for 
+the distributed log is stored on disk, it is possible to "replay" the event stream based 
+on previously gathered data. This is extremely valuable for aspects such as debugging
+processing logic or load testing the system.
 
-> Download a SiteWhere server release from the sitewhere.org website
+## Inter-Microservice Communication with GRPC
+While device event data generally flows in a pipeline from microservice to microservice on
+Kafka topics, there are some operations that need to occur directly between microservices.
+For instance, device management and event management persistence are each contained in
+separate microservices, so as new events come in to the system, the inbound processing microservice
+has to connect with the event persistence microservice to store the events. SiteWhere 2.0
+uses [GRPC](https://grpc.io/) to establish a long-lived connection between microservices
+that need to communicate with each other. Since GRPC uses persistent HTTP2 connections,
+the overhead for interactions is greatly reduced, allowing for decoupling without a
+significant performance penalty.
 
-    cd /opt
-    wget https://s3.amazonaws.com/sitewhere/sitewhere-server-1.9.0.tgz
-    tar -zxvf sitewhere-server-1.9.0.tgz
-    mv sitewhere-server-1.9.0 /opt/sitewhere
-    export SITEWHERE_HOME=/opt/sitewhere
-    cd /opt/sitewhere/bin
-    ./startup.sh
+The entire SiteWhere data model has been captured in 
+[Google Protocol Buffers](https://developers.google.com/protocol-buffers/) format so that
+it can be used within GRPC services. All of the SiteWhere APIs are now exposed directly as
+GRPC services as well, allowing for high-performance, low-latency access to what was previously
+only accessible via REST. The REST APIs are still made available via the Web/REST microservice,
+but they use the GRPC APIs underneath to provide a consistent approach to accessing data.
 
-> To build and install latest code from GitHub
+Since the number of instances of a given microservice can change over time as the service is
+scaled up or down, SiteWhere automatically handles the process of connecting/disconnecting the 
+GRPC pipes between microservices. Each outbound GRPC client is demulitplexed across the pool 
+of services that can satisfy the requests, allowing the requests to be processed in parallel.
 
-    apt-get install maven git unzip -y
-    apt-get install openjdk-7-jdk tomcat7 -y
-    service tomcat7 stop
-    git clone https://github.com/sitewhere/sitewhere.git
-    cd sitewhere
-    mvn clean install
-    cp deploy/sitewhere $(YOUR_TOMCAT_PATH)/webapps/.
-    cp -R sitewhere-core/config/* /var/lib/tomcat7/config
-    service tomcat7 start
+## Distributed Multitenancy
+The SiteWhere 1.x approach to multitenancy was to use a separate "tenant engine" for each tenant.
+The engine supported all tenant-specific tasks such as data persistence, event processing, etc.
+Since SiteWhere 2.0 has moved to a microservices architecture, the multitenant model has been
+distributed as well. SiteWhere supports two types of microservices: global and multitenant.
+
+### Global Microservices
+Global microservices do not handle tenant-specific tasks. These services handle aspects such
+as instance-wide user management and tenant management that are not specific to individual
+system tenants. The Web/REST microservice that supports the administrative application and 
+REST services is a global service, since supporting a separate web container for each tenant
+would be cumbersome and would break existing SiteWhere 1.x applications. There is also a 
+global instance management microservice that monitors various aspects of the entire instance
+and reports updates to the individual microservces via Kafka.
+
+### Multitenant Microservices
+Most of the SiteWhere 2.0 services are multitenant microservices which delegate traffic
+to tenant engines that do the actual processing. For instance, the inbound processing microservice
+actually consists of many inbound processing tenant engines, each of which is configured separately 
+and can be started/stopped/reconfigured without affecting other tenant engines.
+
+The new approach to tenant engines changes the dynamics of SiteWhere event processing. It is now
+possible to stop a single tenant engine without the need for stopping tenant engines running in 
+other microservices. For instance, inbound processing for a tenant can be stopped 
+and reconfigured while the rest of the tenant pipeline continues processing. 
+Since new events can be allowed to stack up in Kafka, the tenant engine can be stopped, reconfigured,
+and restarted, then resume where it left off with no data loss.
+
+## Release Documentation
+More documentation for this "early access" release can be found [here](http://sitewhere.io/docs/en/2.0.EA1/index.html).
 
 * * * *
 
-Copyright (c) 2009-2017, [SiteWhere LLC](http://www.sitewhere.com). All rights reserved.
+Copyright (c) 2009-2018 [SiteWhere LLC](http://www.sitewhere.com). All rights reserved.

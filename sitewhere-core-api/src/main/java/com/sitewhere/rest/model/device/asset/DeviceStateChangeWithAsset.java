@@ -10,7 +10,7 @@ package com.sitewhere.rest.model.device.asset;
 import java.util.Map;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.state.StateChangeCategory;
 import com.sitewhere.spi.device.event.state.StateChangeType;
@@ -26,9 +26,9 @@ public class DeviceStateChangeWithAsset extends DeviceEventWithAsset implements 
     /** Serial version UID */
     private static final long serialVersionUID = -8012486373686574551L;
 
-    public DeviceStateChangeWithAsset(IDeviceStateChange wrapped, IAssetModuleManager assets)
+    public DeviceStateChangeWithAsset(IDeviceStateChange wrapped, IAssetResolver assetResolver)
 	    throws SiteWhereException {
-	super(wrapped, assets);
+	super(wrapped, assetResolver);
     }
 
     /*

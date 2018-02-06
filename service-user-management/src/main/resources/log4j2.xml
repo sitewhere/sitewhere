@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" shutdownHook="disable">
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{ISO8601} [%t] %-5p [%c{1}] %m%n" />
+		</Console>
+		<File name="Service" fileName="/opt/service.log"
+			append="false">
+			<PatternLayout pattern="%d{ISO8601} [%t] %-5p [%c{1}] %m%n" />
+		</File>
+	</Appenders>
+	<Loggers>
+		<Root level="INFO">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="Service" />
+		</Root>
+	</Loggers>
+</Configuration>

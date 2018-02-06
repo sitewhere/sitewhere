@@ -1,0 +1,35 @@
+description = 'SiteWhere Event Search Microservice'
+
+dependencies {
+	compile project(':sitewhere-microservice')
+}
+
+apply plugin: 'org.springframework.boot'
+springBoot {
+    mainClass = 'com.sitewhere.search.EventSearchApplication'
+}
+
+// Create a Dockerfile.
+task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, dependsOn: bootRepackage) {
+    destFile = project.file('build/docker/Dockerfile')
+    from "${rootProject.ext['docker.base.image']}"
+    maintainer "${rootProject.ext['docker.maintainer']}"
+	
+	// Copy Spring Boot jar.
+	copyFile("${project.name}-${project.version}.jar", "/")
+
+	// Run Java command to start application.
+	defaultCommand 'java', "-Xmx${rootProject.ext['docker.java.memory']}", '-jar', "/${project.name}-${project.version}.jar"
+}
+
+// Copy artifacts to Docker input folder.
+task copyArtifactsToDocker(type: Copy, dependsOn: dockerFile) {
+    from "${buildDir}/libs/${project.name}-${project.version}.jar"
+	into 'build/docker'
+}
+
+// Build an image from the Dockerfile.
+task dockerImage(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildImage, dependsOn: copyArtifactsToDocker) {
+    inputDir = project.file('build/docker')
+    tag = "${dockerRepository}/sitewhere/${project.name}:${version}"
+}

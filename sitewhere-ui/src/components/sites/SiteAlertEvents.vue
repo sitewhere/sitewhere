@@ -8,8 +8,8 @@
         <v-data-table v-if="alerts.length > 0" class="elevation-2 pa-0"
           :headers="headers" :items="alerts" :hide-actions="true"
           no-data-text="No Alerts Found for Site"
-          total-items="0">
-          <template slot="items" scope="props">
+          :total-items="0">
+          <template slot="items" slot-scope="props">
             <td width="30%" :title="props.item.assetName">
               {{ props.item.assetName }}
             </td>

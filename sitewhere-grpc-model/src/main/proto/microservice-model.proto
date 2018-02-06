@@ -1,0 +1,111 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.model;
+
+option java_outer_classname = "MicroserviceModel";
+
+import "sitewhere-common.proto";
+import "google/protobuf/timestamp.proto";
+
+// ####################
+// ### MICROSERVICE ###
+// ####################
+
+// Microservice details.
+message GMicroserviceDetails {
+	string identifier = 1;
+	string hostname = 2;
+	string name = 3;
+	string icon = 4;
+	string description = 5;
+	bool global = 6;
+}
+
+// #####################
+// ### CONFIGURATION ###
+// #####################
+
+// Attribute type.
+enum GNodeType {
+	NODE_TYPE_ELEMENT = 0;
+	NODE_TYPE_ATTRIBUTE = 1;
+}
+
+// XML node.
+message GXmlNode {
+	string name = 1;
+	string icon = 2;
+	string description = 3;
+	GNodeType type = 4;
+	string localName = 7;
+	GOptionalString namespace = 8;
+}
+
+// Attribute type.
+enum GAttributeType {
+	ATTRIBUTE_TYPE_STRING = 0;
+	ATTRIBUTE_TYPE_INTEGER = 1;
+	ATTRIBUTE_TYPE_DECIMAL = 2;
+	ATTRIBUTE_TYPE_BOOLEAN = 3;
+	ATTRIBUTE_TYPE_SCRIPT = 4;
+	ATTRIBUTE_TYPE_SITE_REFERENCE = 8;
+	ATTRIBUTE_TYPE_SPECIFICATION_REFERENCE = 9;
+}
+
+// Attribute choice.
+message GAttributeChoice {
+	string name = 1;
+	string value = 2;
+}
+
+// Attribute node.
+message GAttributeNode {
+	GAttributeType type = 1;
+	GOptionalString defaultValue = 2;
+	bool index = 3;
+	repeated GAttributeChoice choices = 4;
+	bool required = 5;
+	GOptionalString group = 6;
+	GXmlNode node = 7;
+}
+
+// Element node.
+message GElementNode {
+	repeated GAttributeNode attributes = 1;
+	string role = 2;
+	GOptionalString onDeleteWarning = 3;
+	map<string, string> specializes = 4;
+	map<string, string> attributeGroups = 5;
+	bool deprecated = 6;
+	GXmlNode node = 7;
+}
+
+// List of element nodes.
+message GElementNodeList {
+	repeated GElementNode elements = 1;
+}
+
+// Element role.
+message GElementRole {
+	string name = 1;
+	bool optional = 2;
+	bool multiple = 3;
+	bool reorderable = 4;
+	bool permanent = 5;
+	repeated string childRoles = 6;
+	repeated string subtypeRoles = 7;
+}
+
+// Microservice configuration information.
+message GMicroserviceConfiguration {
+	GMicroserviceDetails microservice = 1;
+	string defaultNamespace = 2;
+	string rootRoleId = 3;
+	map<string, GElementNodeList> elementsByRole = 4;
+	map<string, GElementRole> rolesById = 5;
+}
+
+// Configuration content for a microservice.
+message GConfigurationContent {
+	bytes content = 1;
+}

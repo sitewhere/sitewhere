@@ -5,8 +5,8 @@
         @assignmentDeleted="onAssignmentDeleted"
         :assignment="assignment" class="mb-3">
       </assignment-detail-header>
-      <v-tabs class="elevation-2" dark v-model="active">
-        <v-tabs-bar slot="activators" class="blue darken-2">
+      <v-tabs v-model="active">
+        <v-tabs-bar dark color="primary">
           <v-tabs-slider class="blue lighten-3"></v-tabs-slider>
           <v-tabs-item key="assignments" href="#assignments">
             Locations
@@ -24,25 +24,27 @@
             Command Responses
           </v-tabs-item>
         </v-tabs-bar>
-        <v-tabs-content key="assignments" id="assignments">
-          <assignment-location-events :token="assignment.token"></assignment-location-events>
-        </v-tabs-content>
-        <v-tabs-content key="measurements" id="measurements">
-          <assignment-measurement-events :token="assignment.token"></assignment-measurement-events>
-        </v-tabs-content>
-        <v-tabs-content key="alerts" id="alerts">
-          <assignment-alert-events :token="assignment.token"></assignment-alert-events>
-        </v-tabs-content>
-        <v-tabs-content key="invocations" id="invocations">
-          <assignment-invocation-events ref="invocations" :token="assignment.token"></assignment-invocation-events>
-        </v-tabs-content>
-        <v-tabs-content key="responses" id="responses">
-          <assignment-response-events :token="assignment.token"></assignment-response-events>
-        </v-tabs-content>
+        <v-tabs-items>
+          <v-tabs-content key="assignments" id="assignments">
+            <assignment-location-events :token="assignment.token"></assignment-location-events>
+          </v-tabs-content>
+          <v-tabs-content key="measurements" id="measurements">
+            <assignment-measurement-events :token="assignment.token"></assignment-measurement-events>
+          </v-tabs-content>
+          <v-tabs-content key="alerts" id="alerts">
+            <assignment-alert-events :token="assignment.token"></assignment-alert-events>
+          </v-tabs-content>
+          <v-tabs-content key="invocations" id="invocations">
+            <assignment-invocation-events ref="invocations" :token="assignment.token"></assignment-invocation-events>
+          </v-tabs-content>
+          <v-tabs-content key="responses" id="responses">
+            <assignment-response-events :token="assignment.token"></assignment-response-events>
+          </v-tabs-content>
+        </v-tabs-items>
       </v-tabs>
       <invocation-create-dialog v-if="active === 'invocations'"
         :token="assignment.token" @invocationAdded="onInvocationAdded"
-        :specificationToken="assignment.device.specificationToken"/>
+        :specificationToken="assignment.device.specification.token"/>
     </v-app>
   </div>
 </template>

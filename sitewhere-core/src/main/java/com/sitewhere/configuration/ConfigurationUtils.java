@@ -7,10 +7,11 @@
  */
 package com.sitewhere.configuration;
 
-import java.util.HashMap;
+import java.io.ByteArrayInputStream;
 import java.util.Map;
 
-import org.fusesource.hawtbuf.ByteArrayInputStream;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
@@ -18,9 +19,6 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.InputStreamResource;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.resource.IResource;
-import com.sitewhere.spi.system.IVersion;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Utility class for managing server configuration.
@@ -29,62 +27,59 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class ConfigurationUtils {
 
+    /** Static logger instance */
+    @SuppressWarnings("unused")
+    private static Logger LOGGER = LogManager.getLogger();
+
     /**
-     * Builds a Spring {@link ApplicationContext} from a resource containing the
+     * Builds a Spring {@link ApplicationContext} from a byte array containing the
      * XML configuration.
      * 
      * @param configuration
-     * @param version
+     * @param properties
+     * @param microservice
      * @return
      * @throws SiteWhereException
      */
-    public static ApplicationContext buildGlobalContext(IResource configuration, IVersion version)
-	    throws SiteWhereException {
-	GenericApplicationContext context = new GenericApplicationContext();
+    public static ApplicationContext buildGlobalContext(byte[] configuration, Map<String, Object> properties,
+	    ApplicationContext microservice) throws SiteWhereException {
+	GenericApplicationContext context = new GenericApplicationContext(microservice);
 
 	// Plug in custom property source.
-	Map<String, Object> properties = new HashMap<String, Object>();
-	properties.put("sitewhere.edition", version.getEditionIdentifier().toLowerCase());
-
 	MapPropertySource source = new MapPropertySource("sitewhere", properties);
 	context.getEnvironment().getPropertySources().addLast(source);
 
 	// Read context from XML configuration file.
 	XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(context);
 	reader.setValidationMode(XmlBeanDefinitionReader.VALIDATION_XSD);
-	reader.loadBeanDefinitions(new InputStreamResource(new ByteArrayInputStream(configuration.getContent())));
+	reader.loadBeanDefinitions(new InputStreamResource(new ByteArrayInputStream(configuration)));
 
 	context.refresh();
 	return context;
     }
 
     /**
-     * Build a Spring {@link ApplicationContext} from a resource containing a
-     * tenant configuration. The context will inherit from the global context.
+     * Build a Spring {@link ApplicationContext} from a byte[] containing a tenant
+     * configuration. The context will inherit from the global context.
      * 
      * @param configuration
-     * @param tenant
-     * @param version
+     * @param properties
      * @param global
      * @return
      * @throws SiteWhereException
      */
-    public static ApplicationContext buildTenantContext(IResource configuration, ITenant tenant, IVersion version,
+    public static ApplicationContext buildSubcontext(byte[] configuration, Map<String, Object> properties,
 	    ApplicationContext global) throws SiteWhereException {
 	GenericApplicationContext context = new GenericApplicationContext(global);
 
 	// Plug in custom property source.
-	Map<String, Object> properties = new HashMap<String, Object>();
-	properties.put("sitewhere.edition", version.getEditionIdentifier().toLowerCase());
-	properties.put("tenant.id", tenant.getId());
-
 	MapPropertySource source = new MapPropertySource("sitewhere", properties);
 	context.getEnvironment().getPropertySources().addLast(source);
 
 	// Read context from XML configuration file.
 	XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(context);
 	reader.setValidationMode(XmlBeanDefinitionReader.VALIDATION_XSD);
-	reader.loadBeanDefinitions(new InputStreamResource(new ByteArrayInputStream(configuration.getContent())));
+	reader.loadBeanDefinitions(new InputStreamResource(new ByteArrayInputStream(configuration)));
 
 	context.refresh();
 	return context;

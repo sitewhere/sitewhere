@@ -1,0 +1,278 @@
+/*
+ * Copyright (c) SiteWhere, LLC. All rights reserved. http://www.sitewhere.com
+ *
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
+package com.sitewhere.spi.microservice.configuration;
+
+import org.springframework.context.ApplicationContext;
+
+import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.scripting.IScriptManagement;
+import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
+
+/**
+ * Microservice that supports dynamic monitoring of configuration.
+ * 
+ * @author Derek
+ */
+public interface IConfigurableMicroservice extends IMicroservice {
+
+    /**
+     * Get configuration monitor.
+     * 
+     * @return
+     */
+    public IConfigurationMonitor getConfigurationMonitor();
+
+    /**
+     * Get scripting management interface.
+     * 
+     * @return
+     */
+    public IScriptManagement getScriptManagement();
+
+    /**
+     * Get current configuration state.
+     * 
+     * @return
+     */
+    public ConfigurationState getConfigurationState();
+
+    /**
+     * Wait for configuration to be loaded.
+     * 
+     * @throws SiteWhereException
+     */
+    public void waitForConfigurationReady() throws SiteWhereException;
+
+    /**
+     * Indicates if configuration has been cached from Zk.
+     * 
+     * @return
+     */
+    public boolean isConfigurationCacheReady();
+
+    /**
+     * Get configuration data for the given path.
+     * 
+     * @param path
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] getConfigurationDataFor(String path) throws SiteWhereException;
+
+    /**
+     * Get path for configuration file needed by microservice (excluding global
+     * instance configuration).
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getConfigurationPath() throws SiteWhereException;
+
+    /**
+     * Get path for instance management configuration.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getInstanceManagementConfigurationPath() throws SiteWhereException;
+
+    /**
+     * Get data for instance management configuration file.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] getInstanceManagementConfigurationData() throws SiteWhereException;
+
+    /**
+     * Subpath of instance configuration that contains tenant configuration data.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getInstanceTenantsConfigurationPath() throws SiteWhereException;
+
+    /**
+     * Subpath of instance configuration that contains tenant script data.
+     * 
+     * @param tenantId
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getInstanceTenantScriptsPath(String tenantId) throws SiteWhereException;
+
+    /**
+     * Get path for tenant configuration.
+     * 
+     * @param tenantId
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getInstanceTenantConfigurationPath(String tenantId) throws SiteWhereException;
+
+    /**
+     * Subpath of instance state that contains tenant state data.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getInstanceTenantsStatePath() throws SiteWhereException;
+
+    /**
+     * Get path for tenant state.
+     * 
+     * @param tenantId
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getInstanceTenantStatePath(String tenantId) throws SiteWhereException;
+
+    /**
+     * Get path to Zk node that indicates a tenant has been bootstrapped with
+     * template data.
+     * 
+     * @param tenantId
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getInstanceTenantBootstrappedIndicatorPath(String tenantId) throws SiteWhereException;
+
+    /**
+     * Initialize configurable components.
+     * 
+     * @param global
+     * @param local
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    public void configurationInitialize(ApplicationContext global, ApplicationContext local,
+	    ILifecycleProgressMonitor monitor) throws SiteWhereException;
+
+    /**
+     * Start configurable components.
+     * 
+     * @param global
+     * @param local
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    public void configurationStart(ApplicationContext global, ApplicationContext local,
+	    ILifecycleProgressMonitor monitor) throws SiteWhereException;
+
+    /**
+     * Stop configurable components.
+     * 
+     * @param global
+     * @param local
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    public void configurationStop(ApplicationContext global, ApplicationContext local,
+	    ILifecycleProgressMonitor monitor) throws SiteWhereException;
+
+    /**
+     * Terminate configurable components.
+     * 
+     * @param global
+     * @param local
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    public void configurationTerminate(ApplicationContext global, ApplicationContext local,
+	    ILifecycleProgressMonitor monitor) throws SiteWhereException;
+
+    /**
+     * Get global application context.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public ApplicationContext getGlobalApplicationContext() throws SiteWhereException;
+
+    /**
+     * Get local microservice application context.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public ApplicationContext getLocalApplicationContext() throws SiteWhereException;
+
+    /**
+     * Perform microservice initialization.
+     * 
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException;
+
+    /**
+     * Called to start microservice after initialization.
+     * 
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException;
+
+    /**
+     * Called to stop microservice before termination.
+     * 
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException;
+
+    /**
+     * Initialize components from the given context marked as
+     * {@link IDiscoverableTenantLifecycleComponent}.
+     * 
+     * @param context
+     * @return
+     * @throws SiteWhereException
+     */
+    public ILifecycleStep initializeDiscoverableBeans(ApplicationContext context) throws SiteWhereException;
+
+    /**
+     * Start components from the given context marked as
+     * {@link IDiscoverableTenantLifecycleComponent}.
+     * 
+     * @param context
+     * @return
+     * @throws SiteWhereException
+     */
+    public ILifecycleStep startDiscoverableBeans(ApplicationContext context) throws SiteWhereException;
+
+    /**
+     * Stop components from the given context marked as
+     * {@link IDiscoverableTenantLifecycleComponent}.
+     * 
+     * @param context
+     * @return
+     * @throws SiteWhereException
+     */
+    public ILifecycleStep stopDiscoverableBeans(ApplicationContext context) throws SiteWhereException;
+
+    /**
+     * Terminate components from the given context marked as
+     * {@link IDiscoverableTenantLifecycleComponent}.
+     * 
+     * @param context
+     * @return
+     * @throws SiteWhereException
+     */
+    public ILifecycleStep terminateDiscoverableBeans(ApplicationContext context) throws SiteWhereException;
+
+    /**
+     * Restart the microservice configuration.
+     * 
+     * @throws SiteWhereException
+     */
+    public void restartConfiguration() throws SiteWhereException;
+}

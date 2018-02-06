@@ -7,7 +7,7 @@
  */
 package com.sitewhere.rest.model.search.external;
 
-import com.sitewhere.spi.search.external.ISearchProvider;
+import com.sitewhere.spi.search.ISearchProvider;
 
 /**
  * Implementation of {@link ISearchProvider} used for marshaling.

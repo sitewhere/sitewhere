@@ -121,8 +121,12 @@ export default {
       payload.deviceHardwareId = this.hardwareId
       payload.assignmentType = this.$data.assnAssociateAsset
         ? 'Associated' : 'Unassociated'
-      payload.assetModuleId = this.$data.assnAssetModule
-      payload.assetId = this.$data.assnAssetId
+
+      var assetReference = {}
+      assetReference.module = this.$data.assnAssetModule
+      assetReference.id = this.$data.assnAssetId
+      payload.assetReference = assetReference
+
       payload.metadata = Utils.arrayToMetadata(this.$data.metadata)
       return payload
     },

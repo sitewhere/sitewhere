@@ -1,0 +1,7 @@
+/.settings/
+/.project
+/bin/
+/Californium.properties
+/src/generated
+/.classpath
+/.gitignore

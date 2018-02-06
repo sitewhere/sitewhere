@@ -7,7 +7,7 @@
         </no-results-panel>
         <v-data-table v-if="zones.length > 0" class="elevation-2 pa-0" :headers="headers" :items="zones"
           :hide-actions="true" no-data-text="No Zones Found for Site">
-          <template slot="items" scope="props">
+          <template slot="items" slot-scope="props">
             <td width="30%" :title="props.item.name">
               <span class="zone-name">
                 <div class="zone-outer" :style="{'border-color': props.item.borderColor}">

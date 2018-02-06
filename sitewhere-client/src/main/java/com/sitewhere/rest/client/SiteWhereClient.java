@@ -29,6 +29,8 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import com.sitewhere.rest.ISiteWhereWebConstants;
+import com.sitewhere.rest.model.batch.BatchOperation;
+import com.sitewhere.rest.model.batch.request.BatchCommandInvocationRequest;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.rest.model.device.Device;
@@ -36,7 +38,6 @@ import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
-import com.sitewhere.rest.model.device.batch.BatchOperation;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
@@ -49,7 +50,6 @@ import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCrea
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
-import com.sitewhere.rest.model.device.request.BatchCommandInvocationRequest;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceGroupCreateRequest;
@@ -1033,7 +1033,7 @@ public class SiteWhereClient implements ISiteWhereClient {
 	try {
 	    HttpHeaders headers = new HttpHeaders();
 	    headers.add("Authorization", getAuthHeader());
-	    headers.add(ISiteWhereWebConstants.HEADER_TENANT_TOKEN, getTenantAuthToken());
+	    headers.add(ISiteWhereWebConstants.HEADER_TENANT_AUTH, getTenantAuthToken());
 	    HttpEntity<T> entity = new HttpEntity<T>(input, headers);
 	    ResponseEntity<S> response = getClient().exchange(url, method, entity, clazz, vars);
 	    return response.getBody();
@@ -1050,7 +1050,7 @@ public class SiteWhereClient implements ISiteWhereClient {
 	try {
 	    HttpHeaders headers = new HttpHeaders();
 	    headers.add("Authorization", getAuthHeader());
-	    headers.add(ISiteWhereWebConstants.HEADER_TENANT_TOKEN, getTenantAuthToken());
+	    headers.add(ISiteWhereWebConstants.HEADER_TENANT_AUTH, getTenantAuthToken());
 	    headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 	    HttpEntity<T> entity = new HttpEntity<T>(input, headers);
 	    ResponseEntity<S> response = getClient().exchange(url, method, entity, clazz, vars);
@@ -1077,7 +1077,7 @@ public class SiteWhereClient implements ISiteWhereClient {
 	try {
 	    HttpHeaders headers = new HttpHeaders();
 	    headers.add("Authorization", getAuthHeader());
-	    headers.add(ISiteWhereWebConstants.HEADER_TENANT_TOKEN, getTenantAuthToken());
+	    headers.add(ISiteWhereWebConstants.HEADER_TENANT_AUTH, getTenantAuthToken());
 
 	    ResponseEntity<byte[]> response = getClient().exchange(url, method, new HttpEntity<byte[]>(headers),
 		    byte[].class, vars);

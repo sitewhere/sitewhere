@@ -10,14 +10,14 @@ package com.sitewhere.spi.device.symbology;
 import java.util.List;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Manages a list of symbol generators.
  * 
  * @author Derek
  */
-public interface ISymbolGeneratorManager extends ITenantLifecycleComponent {
+public interface ISymbolGeneratorManager extends ITenantEngineLifecycleComponent {
 
     /**
      * Get the list of available symbol generators.

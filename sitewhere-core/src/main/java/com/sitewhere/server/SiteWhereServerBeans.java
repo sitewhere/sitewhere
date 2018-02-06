@@ -14,25 +14,12 @@ package com.sitewhere.server;
  */
 public interface SiteWhereServerBeans {
 
-    /*******************************
-     * COMMON SYSTEM FUNCTIONALITY *
-     *******************************/
-
-    /** Bean id for system tracer implementation */
-    public static final String BEAN_TRACER = "tracer";
-
-    /** Bean id for version checker */
-    public static final String BEAN_VERSION_CHECK = "versionChecker";
-
     /*************************
      * MANAGEMENT INTERFACES *
      *************************/
 
     /** Bean id for user management in server configuration */
     public static final String BEAN_USER_MANAGEMENT = "userManagement";
-
-    /** Bean id for tenant management in server configuration */
-    public static final String BEAN_TENANT_MANAGEMENT = "tenantManagement";
 
     /** Bean id for device management in server configuration */
     public static final String BEAN_DEVICE_MANAGEMENT = "deviceManagement";
@@ -51,9 +38,6 @@ public interface SiteWhereServerBeans {
 
     /** Bean id for event processing subsystem in server configuration */
     public static final String BEAN_EVENT_PROCESSING = "eventProcessing";
-
-    /** Bean id for asset module manager in server configuration */
-    public static final String BEAN_ASSET_MODULE_MANAGER = "assetModuleManager";
 
     /*****************************
      * SEARCH PROVIDER MANAGMENT *

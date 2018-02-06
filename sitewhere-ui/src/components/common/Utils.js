@@ -39,9 +39,6 @@ export default {
 
   // Short string with ellipsis if necessary.
   ellipsis: function (val, max) {
-    if (!val) {
-      return ''
-    }
     return (val.length > max) ? (val.substring(0, max) + '...') : val
   },
 

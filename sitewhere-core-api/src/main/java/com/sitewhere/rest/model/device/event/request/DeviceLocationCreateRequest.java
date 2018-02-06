@@ -13,6 +13,7 @@ import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 
 /**
@@ -35,6 +36,10 @@ public class DeviceLocationCreateRequest extends DeviceEventCreateRequest
 
     /** Elevation value */
     private Double elevation;
+
+    public DeviceLocationCreateRequest() {
+	setEventType(DeviceEventType.Location);
+    }
 
     /*
      * (non-Javadoc)

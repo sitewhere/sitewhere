@@ -11,6 +11,7 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 
@@ -35,6 +36,10 @@ public class DeviceCommandResponseCreateRequest extends DeviceEventCreateRequest
 
     /** Data sent for response */
     private String response;
+
+    public DeviceCommandResponseCreateRequest() {
+	setEventType(DeviceEventType.CommandResponse);
+    }
 
     /*
      * (non-Javadoc)

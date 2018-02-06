@@ -14,7 +14,10 @@
 
 <script>
 import InvocationDialog from './InvocationDialog'
-import {_createCommandInvocationForAssignment, _scheduleCommandInvocation} from '../../http/sitewhere-api-wrapper'
+import {
+  _createCommandInvocationForAssignment,
+  _scheduleCommandInvocation
+} from '../../http/sitewhere-api-wrapper'
 
 export default {
 

@@ -1,6 +1,0 @@
-description = 'SiteWhere Spring Service Provider Interfaces'
-
-dependencies {
-    compile project(':sitewhere-client')
-    compile group: 'org.springframework', name: 'spring-beans'
-}

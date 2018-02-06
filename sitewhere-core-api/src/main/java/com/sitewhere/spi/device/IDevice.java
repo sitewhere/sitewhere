@@ -8,6 +8,7 @@
 package com.sitewhere.spi.device;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
@@ -20,32 +21,46 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
 public interface IDevice extends IMetadataProviderEntity {
 
     /**
-     * Get the unique hardware id of the device.
+     * Get unique device id.
+     * 
+     * @return
+     */
+    public UUID getId();
+
+    /**
+     * Get hardware id that acts as an alias for the device id.
      * 
      * @return
      */
     public String getHardwareId();
 
     /**
-     * Get token for associated site.
+     * Get unique id for associated site.
      * 
      * @return
      */
-    public String getSiteToken();
+    public UUID getSiteId();
 
     /**
-     * Get token for device specification.
+     * Get unique id for associated device specification.
      * 
      * @return
      */
-    public String getSpecificationToken();
+    public UUID getDeviceSpecificationId();
 
     /**
-     * If contained by a parent device, returns the parent hardware id.
+     * Get device assignment id if assigned.
      * 
      * @return
      */
-    public String getParentHardwareId();
+    public UUID getDeviceAssignmentId();
+
+    /**
+     * If contained by a parent device, returns the parent device id.
+     * 
+     * @return
+     */
+    public UUID getParentDeviceId();
 
     /**
      * Gets mappings of {@link IDeviceElementSchema} paths to hardware ids for
@@ -68,11 +83,4 @@ public interface IDevice extends IMetadataProviderEntity {
      * @return
      */
     public String getStatus();
-
-    /**
-     * Get the current device assignment token if assigned.
-     * 
-     * @return
-     */
-    public String getAssignmentToken();
 }

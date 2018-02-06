@@ -1,48 +1,68 @@
 rootProject.name = 'sitewhere'
-include ':sitewhere-activemq'
-include ':sitewhere-aws'
-include ':sitewhere-azure'
+include ':service-asset-management'
+include ':service-batch-operations'
+include ':service-command-delivery'
+include ':service-device-management'
+include ':service-device-registration'
+include ':service-event-management'
+include ':service-event-search'
+include ':service-event-sources'
+include ':service-inbound-processing'
+include ':service-instance-management'
+include ':service-label-generation'
+include ':service-outbound-connectors'
+include ':service-presence-management'
+include ':service-rule-processing'
+include ':service-schedule-management'
+include ':service-streaming-media'
+include ':service-tenant-management'
+include ':service-user-management'
+include ':service-web-rest'
+
 include ':sitewhere-client'
-include ':sitewhere-cloud'
+include ':sitewhere-communication'
+include ':sitewhere-configuration'
 include ':sitewhere-core'
 include ':sitewhere-core-api'
+include ':sitewhere-core-lifecycle'
+include ':sitewhere-grpc-client'
+include ':sitewhere-grpc-model'
 include ':sitewhere-hbase'
-include ':sitewhere-influx'
+include ':sitewhere-influxdb'
+include ':sitewhere-microservice'
 include ':sitewhere-mongodb'
-include ':sitewhere-protobuf'
-include ':sitewhere-rabbit-mq'
-include ':sitewhere-rest'
-include ':sitewhere-server-api'
-include ':sitewhere-siddhi'
-include ':sitewhere-solr'
 include ':sitewhere-spark'
-include ':sitewhere-spring'
-include ':sitewhere-spring-spi'
-include ':sitewhere-twilio'
-include ':sitewhere-web'
-include ':sitewhere-web-admin'
-include ':sitewhere-wso2'
 
-project(':sitewhere-activemq').projectDir = "$rootDir/sitewhere-activemq" as File
-project(':sitewhere-aws').projectDir = "$rootDir/sitewhere-aws" as File
-project(':sitewhere-azure').projectDir = "$rootDir/sitewhere-azure" as File
+project(':service-asset-management').projectDir = "$rootDir/service-asset-management" as File
+project(':service-batch-operations').projectDir = "$rootDir/service-batch-operations" as File
+project(':service-command-delivery').projectDir = "$rootDir/service-command-delivery" as File
+project(':service-device-management').projectDir = "$rootDir/service-device-management" as File
+project(':service-device-registration').projectDir = "$rootDir/service-device-registration" as File
+project(':service-event-management').projectDir = "$rootDir/service-event-management" as File
+project(':service-event-search').projectDir = "$rootDir/service-event-search" as File
+project(':service-event-sources').projectDir = "$rootDir/service-event-sources" as File
+project(':service-inbound-processing').projectDir = "$rootDir/service-inbound-processing" as File
+project(':service-instance-management').projectDir = "$rootDir/service-instance-management" as File
+project(':service-label-generation').projectDir = "$rootDir/service-label-generation" as File
+project(':service-outbound-connectors').projectDir = "$rootDir/service-outbound-connectors" as File
+project(':service-presence-management').projectDir = "$rootDir/service-presence-management" as File
+project(':service-rule-processing').projectDir = "$rootDir/service-rule-processing" as File
+project(':service-schedule-management').projectDir = "$rootDir/service-schedule-management" as File
+project(':service-streaming-media').projectDir = "$rootDir/service-streaming-media" as File
+project(':service-tenant-management').projectDir = "$rootDir/service-tenant-management" as File
+project(':service-user-management').projectDir = "$rootDir/service-user-management" as File
+project(':service-web-rest').projectDir = "$rootDir/service-web-rest" as File
+
 project(':sitewhere-client').projectDir = "$rootDir/sitewhere-client" as File
-project(':sitewhere-cloud').projectDir = "$rootDir/sitewhere-cloud" as File
+project(':sitewhere-communication').projectDir = "$rootDir/sitewhere-communication" as File
+project(':sitewhere-configuration').projectDir = "$rootDir/sitewhere-configuration" as File
 project(':sitewhere-core').projectDir = "$rootDir/sitewhere-core" as File
 project(':sitewhere-core-api').projectDir = "$rootDir/sitewhere-core-api" as File
+project(':sitewhere-core-lifecycle').projectDir = "$rootDir/sitewhere-core-lifecycle" as File
+project(':sitewhere-grpc-client').projectDir = "$rootDir/sitewhere-grpc-client" as File
+project(':sitewhere-grpc-model').projectDir = "$rootDir/sitewhere-grpc-model" as File
 project(':sitewhere-hbase').projectDir = "$rootDir/sitewhere-hbase" as File
-project(':sitewhere-influx').projectDir = "$rootDir/sitewhere-influx" as File
+project(':sitewhere-influxdb').projectDir = "$rootDir/sitewhere-influxdb" as File
+project(':sitewhere-microservice').projectDir = "$rootDir/sitewhere-microservice" as File
 project(':sitewhere-mongodb').projectDir = "$rootDir/sitewhere-mongodb" as File
-project(':sitewhere-protobuf').projectDir = "$rootDir/sitewhere-protobuf" as File
-project(':sitewhere-rabbit-mq').projectDir = "$rootDir/sitewhere-rabbit-mq" as File
-project(':sitewhere-rest').projectDir = "$rootDir/sitewhere-rest" as File
-project(':sitewhere-server-api').projectDir = "$rootDir/sitewhere-server-api" as File
-project(':sitewhere-siddhi').projectDir = "$rootDir/sitewhere-siddhi" as File
-project(':sitewhere-solr').projectDir = "$rootDir/sitewhere-solr" as File
 project(':sitewhere-spark').projectDir = "$rootDir/sitewhere-spark" as File
-project(':sitewhere-spring').projectDir = "$rootDir/sitewhere-spring" as File
-project(':sitewhere-spring-spi').projectDir = "$rootDir/sitewhere-spring-spi" as File
-project(':sitewhere-twilio').projectDir = "$rootDir/sitewhere-twilio" as File
-project(':sitewhere-web').projectDir = "$rootDir/sitewhere-web" as File
-project(':sitewhere-web-admin').projectDir = "$rootDir/sitewhere-web-admin" as File
-project(':sitewhere-wso2').projectDir = "$rootDir/sitewhere-wso2" as File

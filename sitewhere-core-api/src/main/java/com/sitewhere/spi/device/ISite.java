@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.device;
 
+import java.util.UUID;
+
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 
 /**
@@ -18,7 +20,14 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
 public interface ISite extends IMetadataProviderEntity {
 
     /**
-     * Get unique token.
+     * Get unique site id.
+     * 
+     * @return
+     */
+    public UUID getId();
+
+    /**
+     * Get token that acts as an alias for site id.
      * 
      * @return
      */

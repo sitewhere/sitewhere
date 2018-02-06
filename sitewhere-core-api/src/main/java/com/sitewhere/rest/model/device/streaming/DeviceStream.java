@@ -7,6 +7,8 @@
  */
 package com.sitewhere.rest.model.device.streaming;
 
+import java.util.UUID;
+
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
@@ -21,27 +23,40 @@ public class DeviceStream extends MetadataProviderEntity implements IDeviceStrea
     /** Serial version UID */
     private static final long serialVersionUID = -5721420122887571143L;
 
-    /** Parent assignment token */
-    private String assignmentToken;
+    /** Unique stream id */
+    private UUID id;
 
-    /** Stream id */
+    /** Parent assignment id */
+    private UUID assignmentId;
+
+    /** Alias for stream id */
     private String streamId;
 
     /** Stream content type */
     private String contentType;
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.device.streaming.IDeviceStream#getAssignmentToken()
+     * @see com.sitewhere.spi.device.streaming.IDeviceStream#getId()
      */
-    public String getAssignmentToken() {
-	return assignmentToken;
+    @Override
+    public UUID getId() {
+	return id;
     }
 
-    public void setAssignmentToken(String assignmentToken) {
-	this.assignmentToken = assignmentToken;
+    public void setId(UUID id) {
+	this.id = id;
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.streaming.IDeviceStream#getAssignmentId()
+     */
+    @Override
+    public UUID getAssignmentId() {
+	return assignmentId;
+    }
+
+    public void setAssignmentId(UUID assignmentId) {
+	this.assignmentId = assignmentId;
     }
 
     /*
@@ -49,6 +64,7 @@ public class DeviceStream extends MetadataProviderEntity implements IDeviceStrea
      * 
      * @see com.sitewhere.spi.device.streaming.IDeviceStream#getStreamId()
      */
+    @Override
     public String getStreamId() {
 	return streamId;
     }
@@ -62,6 +78,7 @@ public class DeviceStream extends MetadataProviderEntity implements IDeviceStrea
      * 
      * @see com.sitewhere.spi.device.streaming.IDeviceStream#getContentType()
      */
+    @Override
     public String getContentType() {
 	return contentType;
     }
@@ -72,7 +89,8 @@ public class DeviceStream extends MetadataProviderEntity implements IDeviceStrea
 
     public static DeviceStream copy(IDeviceStream input) throws SiteWhereException {
 	DeviceStream result = new DeviceStream();
-	result.setAssignmentToken(input.getAssignmentToken());
+	result.setId(input.getId());
+	result.setAssignmentId(input.getAssignmentId());
 	result.setStreamId(input.getStreamId());
 	result.setContentType(input.getContentType());
 

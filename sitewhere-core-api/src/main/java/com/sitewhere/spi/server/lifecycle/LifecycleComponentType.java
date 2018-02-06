@@ -38,17 +38,11 @@ public enum LifecycleComponentType {
     /** Search provider */
     SearchProvider,
 
-    /** Outbound processor chain */
-    OutboundProcessorChain,
-
-    /** Outbound event processor */
-    OutboundEventProcessor,
+    /** Outbound connector */
+    OutboundConnector,
 
     /** Outbound event processor filter */
     OutboundEventProcessorFilter,
-
-    /** Inbound processor chain */
-    InboundProcessorChain,
 
     /** Inbound event processor */
     InboundEventProcessor,

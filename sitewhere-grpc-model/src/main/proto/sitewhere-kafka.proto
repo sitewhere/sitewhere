@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.kafka.model;
+
+option java_outer_classname = "KafkaModel";
+
+import "sitewhere-common.proto";
+import "microservice-model.proto";
+import "tenant-model.proto";
+import "device-model.proto";
+import "device-event-model.proto";
+
+// ############################
+// ### TENANT MODEL UPDATES ###
+// ############################
+
+// Tenant model update type.
+enum GTenantModelUpdateType {
+	TENANTMODEL_TENANT_ADDED = 0;
+	TENANTMODEL_TENANT_UPDATED = 1;
+	TENANTMODEL_TENANT_DELETED = 2;
+}
+
+// Tenant model update message.
+message GTenantModelUpdate {
+	GTenantModelUpdateType type = 1;
+	com.sitewhere.grpc.model.GTenant tenant = 2;
+}
+
+// ########################
+// ### EVENT PROCESSING ###
+// ########################
+
+// Inbound event payload.
+message GInboundEventPayload {
+	string sourceId = 1;
+	string hardwareId = 2;
+	com.sitewhere.grpc.model.GOptionalString originator = 3;
+	com.sitewhere.grpc.model.GAnyDeviceEventCreateRequest event = 4;
+}
+
+// Persisted event payload.
+message GPersistedEventPayload {
+	com.sitewhere.grpc.model.GUUID deviceId = 1;
+	com.sitewhere.grpc.model.GAnyDeviceEvent event = 2;
+}
+
+// Enriched event payload.
+message GEnrichedEventPayload {
+	com.sitewhere.grpc.model.GDeviceEventContext context = 1;
+	com.sitewhere.grpc.model.GAnyDeviceEvent event = 2;
+}
+
+// ########################
+// ### STATE MANAGEMENT ###
+// ########################
+
+// Lifecycle status.
+enum GLifecycleStatus {
+	LIFECYCLE_STATUS_INITIALIZING = 0;
+	LIFECYCLE_STATUS_INITIALIZATION_ERROR = 1;
+	LIFECYCLE_STATUS_STOPPED = 2;
+	LIFECYCLE_STATUS_STARTING = 3;
+	LIFECYCLE_STATUS_STARTED = 4;
+	LIFECYCLE_STATUS_PAUSING = 5;
+	LIFECYCLE_STATUS_PAUSED = 6;
+	LIFECYCLE_STATUS_STOPPING = 7;
+	LIFECYCLE_STATUS_TERMINATING = 8;
+	LIFECYCLE_STATUS_TERMINATED = 9;
+	LIFECYCLE_STATUS_ERROR = 10;
+}
+
+// Microservice state.
+message GMicroserviceState {
+	com.sitewhere.grpc.model.GMicroserviceDetails microservice = 1;
+	GLifecycleStatus status = 2;
+}
+
+// Tenant engine state.
+message GTenantEngineState {
+	com.sitewhere.grpc.model.GMicroserviceDetails microservice = 1;
+	string tenantId = 2;
+	GLifecycleStatus status = 3;
+	repeated string error = 4;
+}
+
+// Wrapper for state update types.
+message GStateUpdate {
+	oneof state {
+		GMicroserviceState microserviceState = 1;
+		GTenantEngineState tenantEngineState = 2;
+	}
+}

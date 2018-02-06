@@ -8,30 +8,25 @@
 package com.sitewhere.device;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import com.sitewhere.server.lifecycle.LifecycleComponentDecorator;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.common.IMetadataProvider;
+import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceAssignmentState;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
-import com.sitewhere.spi.device.batch.IBatchElement;
-import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
-import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
-import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
-import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
-import com.sitewhere.spi.device.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
@@ -42,14 +37,12 @@ import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
-import com.sitewhere.spi.search.IDateRangeSearchCriteria;
+import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
-import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Allows classes to inject themselves as a facade around an existing device
@@ -58,408 +51,639 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public class DeviceManagementDecorator extends LifecycleComponentDecorator implements IDeviceManagement {
-
-    /** Delegate instance */
-    private IDeviceManagement delegate;
+public class DeviceManagementDecorator extends LifecycleComponentDecorator<IDeviceManagement>
+	implements IDeviceManagement {
 
     public DeviceManagementDecorator(IDeviceManagement delegate) {
 	super(delegate);
-	this.delegate = delegate;
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#setTenant(
-     * com. sitewhere .spi.user.ITenant)
+     * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
+     * setTenantEngine(com.sitewhere.spi.microservice.multitenant.
+     * IMicroserviceTenantEngine)
      */
     @Override
-    public void setTenant(ITenant tenant) {
-	delegate.setTenant(tenant);
+    public void setTenantEngine(IMicroserviceTenantEngine tenantEngine) {
+	getDelegate().setTenantEngine(tenantEngine);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#getTenant()
+     * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
+     * getTenantEngine()
      */
     @Override
-    public ITenant getTenant() {
-	return delegate.getTenant();
+    public IMicroserviceTenantEngine getTenantEngine() {
+	return getDelegate().getTenantEngine();
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createDeviceSpecification(com.
+     * sitewhere.spi.device.request.IDeviceSpecificationCreateRequest)
+     */
     @Override
     public IDeviceSpecification createDeviceSpecification(IDeviceSpecificationCreateRequest request)
 	    throws SiteWhereException {
-	return delegate.createDeviceSpecification(request);
+	return getDelegate().createDeviceSpecification(request);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceSpecification(java.util.
+     * UUID)
+     */
+    @Override
+    public IDeviceSpecification getDeviceSpecification(UUID id) throws SiteWhereException {
+	return getDelegate().getDeviceSpecification(id);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceSpecificationByToken(java
+     * .lang.String)
+     */
     @Override
     public IDeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException {
-	return delegate.getDeviceSpecificationByToken(token);
+	return getDelegate().getDeviceSpecificationByToken(token);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceSpecification(java.
+     * util.UUID,
+     * com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest)
+     */
     @Override
-    public IDeviceSpecification updateDeviceSpecification(String token, IDeviceSpecificationCreateRequest request)
+    public IDeviceSpecification updateDeviceSpecification(UUID id, IDeviceSpecificationCreateRequest request)
 	    throws SiteWhereException {
-	return delegate.updateDeviceSpecification(token, request);
+	return getDelegate().updateDeviceSpecification(id, request);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listDeviceSpecifications(boolean,
+     * com.sitewhere.spi.search.ISearchCriteria)
+     */
     @Override
     public ISearchResults<IDeviceSpecification> listDeviceSpecifications(boolean includeDeleted,
 	    ISearchCriteria criteria) throws SiteWhereException {
-	return delegate.listDeviceSpecifications(includeDeleted, criteria);
+	return getDelegate().listDeviceSpecifications(includeDeleted, criteria);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceSpecification(java.
+     * util.UUID, boolean)
+     */
     @Override
-    public IDeviceSpecification deleteDeviceSpecification(String token, boolean force) throws SiteWhereException {
-	return delegate.deleteDeviceSpecification(token, force);
+    public IDeviceSpecification deleteDeviceSpecification(UUID id, boolean force) throws SiteWhereException {
+	return getDelegate().deleteDeviceSpecification(id, force);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createDeviceCommand(java.util.
+     * UUID, com.sitewhere.spi.device.request.IDeviceCommandCreateRequest)
+     */
     @Override
-    public IDeviceCommand createDeviceCommand(IDeviceSpecification spec, IDeviceCommandCreateRequest request)
+    public IDeviceCommand createDeviceCommand(UUID specificationdId, IDeviceCommandCreateRequest request)
 	    throws SiteWhereException {
-	return delegate.createDeviceCommand(spec, request);
+	return getDelegate().createDeviceCommand(specificationdId, request);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceCommand(java.util.UUID)
+     */
+    @Override
+    public IDeviceCommand getDeviceCommand(UUID id) throws SiteWhereException {
+	return getDelegate().getDeviceCommand(id);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceCommandByToken(java.lang.
+     * String)
+     */
     @Override
     public IDeviceCommand getDeviceCommandByToken(String token) throws SiteWhereException {
-	return delegate.getDeviceCommandByToken(token);
+	return getDelegate().getDeviceCommandByToken(token);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceCommand(java.util.
+     * UUID, com.sitewhere.spi.device.request.IDeviceCommandCreateRequest)
+     */
     @Override
-    public IDeviceCommand updateDeviceCommand(String token, IDeviceCommandCreateRequest request)
+    public IDeviceCommand updateDeviceCommand(UUID id, IDeviceCommandCreateRequest request) throws SiteWhereException {
+	return getDelegate().updateDeviceCommand(id, request);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listDeviceCommands(java.util.UUID,
+     * boolean)
+     */
+    @Override
+    public List<IDeviceCommand> listDeviceCommands(UUID specificationdId, boolean includeDeleted)
 	    throws SiteWhereException {
-	return delegate.updateDeviceCommand(token, request);
+	return getDelegate().listDeviceCommands(specificationdId, includeDeleted);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceCommand(java.util.
+     * UUID, boolean)
+     */
     @Override
-    public List<IDeviceCommand> listDeviceCommands(String token, boolean includeDeleted) throws SiteWhereException {
-	return delegate.listDeviceCommands(token, includeDeleted);
+    public IDeviceCommand deleteDeviceCommand(UUID id, boolean force) throws SiteWhereException {
+	return getDelegate().deleteDeviceCommand(id, force);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createDeviceStatus(java.util.UUID,
+     * com.sitewhere.spi.device.request.IDeviceStatusCreateRequest)
+     */
     @Override
-    public IDeviceCommand deleteDeviceCommand(String token, boolean force) throws SiteWhereException {
-	return delegate.deleteDeviceCommand(token, force);
-    }
-
-    @Override
-    public IDeviceStatus createDeviceStatus(String specToken, IDeviceStatusCreateRequest request)
+    public IDeviceStatus createDeviceStatus(UUID specificationdId, IDeviceStatusCreateRequest request)
 	    throws SiteWhereException {
-	return delegate.createDeviceStatus(specToken, request);
+	return getDelegate().createDeviceStatus(specificationdId, request);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStatusByCode(java.util.
+     * UUID, java.lang.String)
+     */
     @Override
-    public IDeviceStatus getDeviceStatusByCode(String specToken, String code) throws SiteWhereException {
-	return delegate.getDeviceStatusByCode(specToken, code);
+    public IDeviceStatus getDeviceStatusByCode(UUID specificationdId, String code) throws SiteWhereException {
+	return getDelegate().getDeviceStatusByCode(specificationdId, code);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceStatus(java.util.UUID,
+     * java.lang.String,
+     * com.sitewhere.spi.device.request.IDeviceStatusCreateRequest)
+     */
     @Override
-    public IDeviceStatus updateDeviceStatus(String specToken, String code, IDeviceStatusCreateRequest request)
+    public IDeviceStatus updateDeviceStatus(UUID specificationdId, String code, IDeviceStatusCreateRequest request)
 	    throws SiteWhereException {
-	return delegate.updateDeviceStatus(specToken, code, request);
+	return getDelegate().updateDeviceStatus(specificationdId, code, request);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listDeviceStatuses(java.util.UUID)
+     */
     @Override
-    public List<IDeviceStatus> listDeviceStatuses(String specToken) throws SiteWhereException {
-	return delegate.listDeviceStatuses(specToken);
+    public List<IDeviceStatus> listDeviceStatuses(UUID specificationdId) throws SiteWhereException {
+	return getDelegate().listDeviceStatuses(specificationdId);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceStatus(java.util.UUID,
+     * java.lang.String)
+     */
     @Override
-    public IDeviceStatus deleteDeviceStatus(String specToken, String code) throws SiteWhereException {
-	return delegate.deleteDeviceStatus(specToken, code);
+    public IDeviceStatus deleteDeviceStatus(UUID specificationdId, String code) throws SiteWhereException {
+	return getDelegate().deleteDeviceStatus(specificationdId, code);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createDevice(com.sitewhere.spi.
+     * device.request.IDeviceCreateRequest)
+     */
     @Override
     public IDevice createDevice(IDeviceCreateRequest device) throws SiteWhereException {
-	return delegate.createDevice(device);
+	return getDelegate().createDevice(device);
     }
 
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getDevice(java.util.UUID)
+     */
+    @Override
+    public IDevice getDevice(UUID deviceId) throws SiteWhereException {
+	return getDelegate().getDevice(deviceId);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceByHardwareId(java.lang.
+     * String)
+     */
     @Override
     public IDevice getDeviceByHardwareId(String hardwareId) throws SiteWhereException {
-	return delegate.getDeviceByHardwareId(hardwareId);
+	return getDelegate().getDeviceByHardwareId(hardwareId);
     }
 
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#updateDevice(java.util.UUID,
+     * com.sitewhere.spi.device.request.IDeviceCreateRequest)
+     */
     @Override
-    public IDevice updateDevice(String hardwareId, IDeviceCreateRequest request) throws SiteWhereException {
-	return delegate.updateDevice(hardwareId, request);
+    public IDevice updateDevice(UUID id, IDeviceCreateRequest request) throws SiteWhereException {
+	return getDelegate().updateDevice(id, request);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getCurrentDeviceAssignment(java.
+     * util.UUID)
+     */
     @Override
-    public IDeviceAssignment getCurrentDeviceAssignment(IDevice device) throws SiteWhereException {
-	return delegate.getCurrentDeviceAssignment(device);
+    public IDeviceAssignment getCurrentDeviceAssignment(UUID id) throws SiteWhereException {
+	return getDelegate().getCurrentDeviceAssignment(id);
     }
 
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#listDevices(boolean,
+     * com.sitewhere.spi.search.device.IDeviceSearchCriteria)
+     */
     @Override
     public ISearchResults<IDevice> listDevices(boolean includeDeleted, IDeviceSearchCriteria criteria)
 	    throws SiteWhereException {
-	return delegate.listDevices(includeDeleted, criteria);
+	return getDelegate().listDevices(includeDeleted, criteria);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createDeviceElementMapping(java.
+     * util.UUID, com.sitewhere.spi.device.IDeviceElementMapping)
+     */
     @Override
-    public IDevice createDeviceElementMapping(String hardwareId, IDeviceElementMapping mapping)
-	    throws SiteWhereException {
-	return delegate.createDeviceElementMapping(hardwareId, mapping);
+    public IDevice createDeviceElementMapping(UUID id, IDeviceElementMapping mapping) throws SiteWhereException {
+	return getDelegate().createDeviceElementMapping(id, mapping);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceElementMapping(java.
+     * util.UUID, java.lang.String)
+     */
     @Override
-    public IDevice deleteDeviceElementMapping(String hardwareId, String path) throws SiteWhereException {
-	return delegate.deleteDeviceElementMapping(hardwareId, path);
+    public IDevice deleteDeviceElementMapping(UUID id, String path) throws SiteWhereException {
+	return getDelegate().deleteDeviceElementMapping(id, path);
     }
 
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteDevice(java.util.UUID,
+     * boolean)
+     */
     @Override
-    public IDevice deleteDevice(String hardwareId, boolean force) throws SiteWhereException {
-	return delegate.deleteDevice(hardwareId, force);
+    public IDevice deleteDevice(UUID id, boolean force) throws SiteWhereException {
+	return getDelegate().deleteDevice(id, force);
     }
 
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#createDeviceAssignment(com.
+     * sitewhere.spi.device.request.IDeviceAssignmentCreateRequest)
+     */
     @Override
     public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request) throws SiteWhereException {
-	return delegate.createDeviceAssignment(request);
+	return getDelegate().createDeviceAssignment(request);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignment(java.util.
+     * UUID)
+     */
+    @Override
+    public IDeviceAssignment getDeviceAssignment(UUID id) throws SiteWhereException {
+	return getDelegate().getDeviceAssignment(id);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentByToken(java.
+     * lang.String)
+     */
     @Override
     public IDeviceAssignment getDeviceAssignmentByToken(String token) throws SiteWhereException {
-	return delegate.getDeviceAssignmentByToken(token);
+	return getDelegate().getDeviceAssignmentByToken(token);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceAssignment(java.util.
+     * UUID, boolean)
+     */
     @Override
-    public IDeviceAssignment deleteDeviceAssignment(String token, boolean force) throws SiteWhereException {
-	return delegate.deleteDeviceAssignment(token, force);
+    public IDeviceAssignment deleteDeviceAssignment(UUID id, boolean force) throws SiteWhereException {
+	return getDelegate().deleteDeviceAssignment(id, force);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignmentMetadata(
+     * java.util.UUID, java.util.Map)
+     */
     @Override
-    public IDevice getDeviceForAssignment(IDeviceAssignment assignment) throws SiteWhereException {
-	return delegate.getDeviceForAssignment(assignment);
-    }
-
-    @Override
-    public ISite getSiteForAssignment(IDeviceAssignment assignment) throws SiteWhereException {
-	return delegate.getSiteForAssignment(assignment);
-    }
-
-    @Override
-    public IDeviceAssignment updateDeviceAssignmentMetadata(String token, IMetadataProvider metadata)
+    public IDeviceAssignment updateDeviceAssignmentMetadata(UUID id, Map<String, String> metadata)
 	    throws SiteWhereException {
-	return delegate.updateDeviceAssignmentMetadata(token, metadata);
+	return getDelegate().updateDeviceAssignmentMetadata(id, metadata);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignmentStatus(java.
+     * util.UUID, com.sitewhere.spi.device.DeviceAssignmentStatus)
+     */
     @Override
-    public IDeviceAssignment updateDeviceAssignmentStatus(String token, DeviceAssignmentStatus status)
+    public IDeviceAssignment updateDeviceAssignmentStatus(UUID id, DeviceAssignmentStatus status)
 	    throws SiteWhereException {
-	return delegate.updateDeviceAssignmentStatus(token, status);
+	return getDelegate().updateDeviceAssignmentStatus(id, status);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#endDeviceAssignment(java.util.
+     * UUID)
+     */
     @Override
-    public IDeviceAssignment updateDeviceAssignmentState(String token, IDeviceAssignmentState state)
+    public IDeviceAssignment endDeviceAssignment(UUID id) throws SiteWhereException {
+	return getDelegate().endDeviceAssignment(id);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentHistory(java.
+     * util.UUID, com.sitewhere.spi.search.ISearchCriteria)
+     */
+    @Override
+    public ISearchResults<IDeviceAssignment> getDeviceAssignmentHistory(UUID id, ISearchCriteria criteria)
 	    throws SiteWhereException {
-	return delegate.updateDeviceAssignmentState(token, state);
+	return getDelegate().getDeviceAssignmentHistory(id, criteria);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForSite(java.
+     * util.UUID, com.sitewhere.spi.search.device.IAssignmentSearchCriteria)
+     */
     @Override
-    public IDeviceAssignment endDeviceAssignment(String token) throws SiteWhereException {
-	return delegate.endDeviceAssignment(token);
-    }
-
-    @Override
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsWithLastInteraction(String siteToken,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return delegate.getDeviceAssignmentsWithLastInteraction(siteToken, criteria);
-    }
-
-    @Override
-    public ISearchResults<IDeviceAssignment> getMissingDeviceAssignments(String siteToken, ISearchCriteria criteria)
-	    throws SiteWhereException {
-	return delegate.getMissingDeviceAssignments(siteToken, criteria);
-    }
-
-    @Override
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentHistory(String hardwareId, ISearchCriteria criteria)
-	    throws SiteWhereException {
-	return delegate.getDeviceAssignmentHistory(hardwareId, criteria);
-    }
-
-    @Override
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForSite(String siteToken,
+    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForSite(UUID siteId,
 	    IAssignmentSearchCriteria criteria) throws SiteWhereException {
-	return delegate.getDeviceAssignmentsForSite(siteToken, criteria);
+	return getDelegate().getDeviceAssignmentsForSite(siteId, criteria);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAsset(com.
+     * sitewhere.spi.asset.IAssetReference,
+     * com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria)
+     */
     @Override
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String assetModuleId, String assetId,
+    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(IAssetReference assetReference,
 	    IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException {
-	return delegate.getDeviceAssignmentsForAsset(assetModuleId, assetId, criteria);
+	return getDelegate().getDeviceAssignmentsForAsset(assetReference, criteria);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createDeviceStream(java.util.UUID,
+     * com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest)
+     */
     @Override
-    public IDeviceStream createDeviceStream(String assignmentToken, IDeviceStreamCreateRequest request)
+    public IDeviceStream createDeviceStream(UUID assignmentId, IDeviceStreamCreateRequest request)
 	    throws SiteWhereException {
-	return delegate.createDeviceStream(assignmentToken, request);
+	return getDelegate().createDeviceStream(assignmentId, request);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStream(java.util.UUID,
+     * java.lang.String)
+     */
     @Override
-    public IDeviceStream getDeviceStream(String assignmentToken, String streamId) throws SiteWhereException {
-	return delegate.getDeviceStream(assignmentToken, streamId);
+    public IDeviceStream getDeviceStream(UUID assignmentId, String streamId) throws SiteWhereException {
+	return getDelegate().getDeviceStream(assignmentId, streamId);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listDeviceStreams(java.util.UUID,
+     * com.sitewhere.spi.search.ISearchCriteria)
+     */
     @Override
-    public ISearchResults<IDeviceStream> listDeviceStreams(String assignmentToken, ISearchCriteria criteria)
+    public ISearchResults<IDeviceStream> listDeviceStreams(UUID assignmentId, ISearchCriteria criteria)
 	    throws SiteWhereException {
-	return delegate.listDeviceStreams(assignmentToken, criteria);
+	return getDelegate().listDeviceStreams(assignmentId, criteria);
     }
 
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#createSite(com.sitewhere.spi.
+     * device.request.ISiteCreateRequest)
+     */
     @Override
     public ISite createSite(ISiteCreateRequest request) throws SiteWhereException {
-	return delegate.createSite(request);
+	return getDelegate().createSite(request);
     }
 
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteSite(java.util.UUID,
+     * boolean)
+     */
     @Override
-    public ISite deleteSite(String siteToken, boolean force) throws SiteWhereException {
-	return delegate.deleteSite(siteToken, force);
+    public ISite deleteSite(UUID id, boolean force) throws SiteWhereException {
+	return getDelegate().deleteSite(id, force);
     }
 
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#updateSite(java.util.UUID,
+     * com.sitewhere.spi.device.request.ISiteCreateRequest)
+     */
     @Override
-    public ISite updateSite(String siteToken, ISiteCreateRequest request) throws SiteWhereException {
-	return delegate.updateSite(siteToken, request);
+    public ISite updateSite(UUID id, ISiteCreateRequest request) throws SiteWhereException {
+	return getDelegate().updateSite(id, request);
     }
 
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getSite(java.util.UUID)
+     */
+    @Override
+    public ISite getSite(UUID id) throws SiteWhereException {
+	return getDelegate().getSite(id);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getSiteByToken(java.lang.String)
+     */
     @Override
     public ISite getSiteByToken(String token) throws SiteWhereException {
-	return delegate.getSiteByToken(token);
+	return getDelegate().getSiteByToken(token);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listSites(com.sitewhere.spi.search
+     * .ISearchCriteria)
+     */
     @Override
     public ISearchResults<ISite> listSites(ISearchCriteria criteria) throws SiteWhereException {
-	return delegate.listSites(criteria);
+	return getDelegate().listSites(criteria);
     }
 
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#createZone(java.util.UUID,
+     * com.sitewhere.spi.device.request.IZoneCreateRequest)
+     */
     @Override
-    public IZone createZone(ISite site, IZoneCreateRequest request) throws SiteWhereException {
-	return delegate.createZone(site, request);
+    public IZone createZone(UUID siteId, IZoneCreateRequest request) throws SiteWhereException {
+	return getDelegate().createZone(siteId, request);
     }
 
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#updateZone(java.util.UUID,
+     * com.sitewhere.spi.device.request.IZoneCreateRequest)
+     */
     @Override
-    public IZone updateZone(String token, IZoneCreateRequest request) throws SiteWhereException {
-	return delegate.updateZone(token, request);
+    public IZone updateZone(UUID id, IZoneCreateRequest request) throws SiteWhereException {
+	return getDelegate().updateZone(id, request);
     }
 
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getZone(java.util.UUID)
+     */
     @Override
-    public IZone getZone(String zoneToken) throws SiteWhereException {
-	return delegate.getZone(zoneToken);
+    public IZone getZone(UUID id) throws SiteWhereException {
+	return getDelegate().getZone(id);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getZoneByToken(java.lang.String)
+     */
     @Override
-    public ISearchResults<IZone> listZones(String siteToken, ISearchCriteria criteria) throws SiteWhereException {
-	return delegate.listZones(siteToken, criteria);
+    public IZone getZoneByToken(String zoneToken) throws SiteWhereException {
+	return getDelegate().getZoneByToken(zoneToken);
     }
 
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#listZones(java.util.UUID,
+     * com.sitewhere.spi.search.ISearchCriteria)
+     */
     @Override
-    public IZone deleteZone(String zoneToken, boolean force) throws SiteWhereException {
-	return delegate.deleteZone(zoneToken, force);
+    public ISearchResults<IZone> listZones(UUID siteId, ISearchCriteria criteria) throws SiteWhereException {
+	return getDelegate().listZones(siteId, criteria);
     }
 
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteZone(java.util.UUID,
+     * boolean)
+     */
+    @Override
+    public IZone deleteZone(UUID id, boolean force) throws SiteWhereException {
+	return getDelegate().deleteZone(id, force);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createDeviceGroup(com.sitewhere.
+     * spi.device.request.IDeviceGroupCreateRequest)
+     */
     @Override
     public IDeviceGroup createDeviceGroup(IDeviceGroupCreateRequest request) throws SiteWhereException {
-	return delegate.createDeviceGroup(request);
+	return getDelegate().createDeviceGroup(request);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceGroup(java.util.UUID,
+     * com.sitewhere.spi.device.request.IDeviceGroupCreateRequest)
+     */
     @Override
-    public IDeviceGroup updateDeviceGroup(String token, IDeviceGroupCreateRequest request) throws SiteWhereException {
-	return delegate.updateDeviceGroup(token, request);
+    public IDeviceGroup updateDeviceGroup(UUID id, IDeviceGroupCreateRequest request) throws SiteWhereException {
+	return getDelegate().updateDeviceGroup(id, request);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceGroup(java.util.UUID)
+     */
     @Override
-    public IDeviceGroup getDeviceGroup(String token) throws SiteWhereException {
-	return delegate.getDeviceGroup(token);
+    public IDeviceGroup getDeviceGroup(UUID id) throws SiteWhereException {
+	return getDelegate().getDeviceGroup(id);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceGroupByToken(java.lang.
+     * String)
+     */
+    @Override
+    public IDeviceGroup getDeviceGroupByToken(String token) throws SiteWhereException {
+	return getDelegate().getDeviceGroupByToken(token);
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceGroups(boolean,
+     * com.sitewhere.spi.search.ISearchCriteria)
+     */
     @Override
     public ISearchResults<IDeviceGroup> listDeviceGroups(boolean includeDeleted, ISearchCriteria criteria)
 	    throws SiteWhereException {
-	return delegate.listDeviceGroups(includeDeleted, criteria);
+	return getDelegate().listDeviceGroups(includeDeleted, criteria);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listDeviceGroupsWithRole(java.lang
+     * .String, boolean, com.sitewhere.spi.search.ISearchCriteria)
+     */
     @Override
     public ISearchResults<IDeviceGroup> listDeviceGroupsWithRole(String role, boolean includeDeleted,
 	    ISearchCriteria criteria) throws SiteWhereException {
-	return delegate.listDeviceGroupsWithRole(role, includeDeleted, criteria);
+	return getDelegate().listDeviceGroupsWithRole(role, includeDeleted, criteria);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#addDeviceGroupElements(java.util.
+     * UUID, java.util.List, boolean)
+     */
     @Override
-    public List<IDeviceGroupElement> addDeviceGroupElements(String groupToken,
+    public List<IDeviceGroupElement> addDeviceGroupElements(UUID groupId,
 	    List<IDeviceGroupElementCreateRequest> elements, boolean ignoreDuplicates) throws SiteWhereException {
-	return delegate.addDeviceGroupElements(groupToken, elements, ignoreDuplicates);
+	return getDelegate().addDeviceGroupElements(groupId, elements, ignoreDuplicates);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#removeDeviceGroupElements(java.
+     * util.UUID, java.util.List)
+     */
     @Override
-    public List<IDeviceGroupElement> removeDeviceGroupElements(String groupToken,
+    public List<IDeviceGroupElement> removeDeviceGroupElements(UUID groupId,
 	    List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException {
-	return delegate.removeDeviceGroupElements(groupToken, elements);
+	return getDelegate().removeDeviceGroupElements(groupId, elements);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listDeviceGroupElements(java.util.
+     * UUID, com.sitewhere.spi.search.ISearchCriteria)
+     */
     @Override
-    public ISearchResults<IDeviceGroupElement> listDeviceGroupElements(String groupToken, ISearchCriteria criteria)
+    public ISearchResults<IDeviceGroupElement> listDeviceGroupElements(UUID groupId, ISearchCriteria criteria)
 	    throws SiteWhereException {
-	return delegate.listDeviceGroupElements(groupToken, criteria);
+	return getDelegate().listDeviceGroupElements(groupId, criteria);
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceGroup(java.util.UUID,
+     * boolean)
+     */
     @Override
-    public IDeviceGroup deleteDeviceGroup(String token, boolean force) throws SiteWhereException {
-	return delegate.deleteDeviceGroup(token, force);
-    }
-
-    @Override
-    public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request) throws SiteWhereException {
-	return delegate.createBatchOperation(request);
-    }
-
-    @Override
-    public IBatchOperation updateBatchOperation(String token, IBatchOperationUpdateRequest request)
-	    throws SiteWhereException {
-	return delegate.updateBatchOperation(token, request);
-    }
-
-    @Override
-    public IBatchOperation getBatchOperation(String token) throws SiteWhereException {
-	return delegate.getBatchOperation(token);
-    }
-
-    @Override
-    public ISearchResults<IBatchOperation> listBatchOperations(boolean includeDeleted, ISearchCriteria criteria)
-	    throws SiteWhereException {
-	return delegate.listBatchOperations(includeDeleted, criteria);
-    }
-
-    @Override
-    public IBatchOperation deleteBatchOperation(String token, boolean force) throws SiteWhereException {
-	return delegate.deleteBatchOperation(token, force);
-    }
-
-    @Override
-    public ISearchResults<IBatchElement> listBatchElements(String batchToken, IBatchElementSearchCriteria criteria)
-	    throws SiteWhereException {
-	return delegate.listBatchElements(batchToken, criteria);
-    }
-
-    @Override
-    public IBatchElement updateBatchElement(String operationToken, long index, IBatchElementUpdateRequest request)
-	    throws SiteWhereException {
-	return delegate.updateBatchElement(operationToken, index, request);
-    }
-
-    @Override
-    public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request)
-	    throws SiteWhereException {
-	return delegate.createBatchCommandInvocation(request);
-    }
-
-    public IDeviceManagement getDelegate() {
-	return delegate;
-    }
-
-    public void setDelegate(IDeviceManagement delegate) {
-	this.delegate = delegate;
+    public IDeviceGroup deleteDeviceGroup(UUID id, boolean force) throws SiteWhereException {
+	return getDelegate().deleteDeviceGroup(id, force);
     }
 }

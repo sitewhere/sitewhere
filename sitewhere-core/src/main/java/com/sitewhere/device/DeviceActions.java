@@ -46,11 +46,11 @@ public class DeviceActions implements IDeviceActions {
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.device.IDeviceActions#createLocation(java.lang.String,
-     * double, double, double, boolean)
+     * com.sitewhere.spi.device.IDeviceActions#createLocation(com.sitewhere.spi.
+     * device.IDeviceAssignment, double, double, double, boolean)
      */
     @Override
-    public void createLocation(String assignmentToken, double latitude, double longitude, double elevation,
+    public void createLocation(IDeviceAssignment assignment, double latitude, double longitude, double elevation,
 	    boolean updateState) throws SiteWhereException {
 	DeviceLocationCreateRequest location = new DeviceLocationCreateRequest();
 	location.setLatitude(latitude);
@@ -58,25 +58,21 @@ public class DeviceActions implements IDeviceActions {
 	location.setElevation(elevation);
 	location.setEventDate(new Date());
 	location.setUpdateState(updateState);
-	getDeviceEventManagement().addDeviceLocation(assignmentToken, location);
+	getDeviceEventManagement().addDeviceLocation(assignment, location);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceActions#sendCommand(java.lang.String,
-     * java.lang.String, java.util.Map)
+     * @see com.sitewhere.spi.device.IDeviceActions#sendCommand(com.sitewhere.spi.
+     * device.IDeviceAssignment, java.lang.String, java.util.Map)
      */
     @Override
-    public void sendCommand(String assignmentToken, String commandName, Map<String, String> parameters)
+    public void sendCommand(IDeviceAssignment assignment, String commandName, Map<String, String> parameters)
 	    throws SiteWhereException {
-	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(assignmentToken);
-	if (assignment == null) {
-	    throw new SiteWhereException("Command not executed. Assignment not found: " + assignmentToken);
-	}
-	IDevice device = getDeviceManagement().getDeviceForAssignment(assignment);
-	List<IDeviceCommand> commands = getDeviceManagement().listDeviceCommands(device.getSpecificationToken(), false);
+	IDevice device = getDeviceManagement().getDevice(assignment.getDeviceId());
+	List<IDeviceCommand> commands = getDeviceManagement().listDeviceCommands(device.getDeviceSpecificationId(),
+		false);
 	IDeviceCommand match = null;
 	for (IDeviceCommand command : commands) {
 	    if (command.getName().equals(commandName)) {
@@ -93,7 +89,7 @@ public class DeviceActions implements IDeviceActions {
 	create.setTarget(CommandTarget.Assignment);
 	create.setTargetId(assignment.getToken());
 	create.setEventDate(new Date());
-	getDeviceEventManagement().addDeviceCommandInvocation(assignment.getToken(), match, create);
+	getDeviceEventManagement().addDeviceCommandInvocation(assignment, create);
     }
 
     public IDeviceManagement getDeviceManagement() {

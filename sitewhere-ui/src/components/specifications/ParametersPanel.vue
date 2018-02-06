@@ -3,7 +3,7 @@
     <v-card-text>
       <v-data-table class="elevation-0" :headers="headers" :items="parameters"
         :rows-per-page-items="pagesize" no-data-text="Command has no existing parameters">
-        <template slot="items" scope="props">
+        <template slot="items" slot-scope="props">
           <td width="250px" :title="props.item.name">
             {{ (props.item.name.length > 25) ? props.item.name.substring(0, 25) + "..." : props.item.name }}
           </td>

@@ -8,7 +8,7 @@
         <v-data-table v-if="operations.length > 0" class="elevation-2 pa-0"
           :headers="headers" :items="operations"
           :hide-actions="true" no-data-text="No Batch Operations Found">
-          <template slot="items" scope="props">
+          <template slot="items" slot-scope="props">
             <td width="15%" :title="props.item.operationType">
               {{ props.item.operationType }}
             </td>

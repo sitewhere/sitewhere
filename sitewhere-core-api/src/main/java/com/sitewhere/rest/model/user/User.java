@@ -27,7 +27,7 @@ import com.sitewhere.spi.user.IUser;
  * @author Derek Adams
  */
 @JsonInclude(Include.NON_NULL)
-public class User extends MetadataProviderEntity implements IUser, Serializable {
+public class User extends MetadataProviderEntity implements IUser {
 
     /** For {@link Serializable} */
     private static final long serialVersionUID = -3322129570954465956L;
@@ -51,7 +51,7 @@ public class User extends MetadataProviderEntity implements IUser, Serializable 
     private AccountStatus status;
 
     /** List of granted authorities */
-    private List<String> authorities = new ArrayList<String>();
+    private List<String> authorities = new ArrayList<>();
 
     /*
      * (non-Javadoc)

@@ -3,14 +3,14 @@
     <site-dialog ref="dialog" title="Create Site" width="600" resetOnOpen="true"
       createLabel="Create" cancelLabel="Cancel" @payload="onCommit">
     </site-dialog>
-    <v-btn fab dark class="add-button red darken-1 elevation-5"
-      v-tooltip:top="{ html: 'Add Site' }" @click.native.stop="onOpenDialog">
-      <v-icon>add</v-icon>
-    </v-btn>
+    <floating-action-button label="Add Site" icon="fa-plus"
+      @action="onOpenDialog">
+    </floating-action-button>
   </div>
 </template>
 
 <script>
+import FloatingActionButton from '../common/FloatingActionButton'
 import SiteDialog from './SiteDialog'
 import {_createSite} from '../../http/sitewhere-api-wrapper'
 
@@ -20,7 +20,8 @@ export default {
   }),
 
   components: {
-    SiteDialog
+    SiteDialog,
+    FloatingActionButton
   },
 
   methods: {

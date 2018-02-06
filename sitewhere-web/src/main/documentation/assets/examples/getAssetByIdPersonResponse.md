@@ -1,1 +1,0 @@
-If the asset returned is a person asset, the response will resemble the output below:

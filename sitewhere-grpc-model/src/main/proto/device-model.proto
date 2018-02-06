@@ -1,0 +1,436 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.model;
+
+option java_outer_classname = "DeviceModel";
+
+import "asset-model.proto";
+import "sitewhere-common.proto";
+import "google/protobuf/timestamp.proto";
+
+// #############################
+// ### DEVICE SPECIFICATIONS ###
+// #############################
+
+// Slot within a unit.
+message GDeviceSlot {
+	string name = 1;
+	string path = 2;
+}
+
+// Unit within a schema.
+message GDeviceUnit {
+	string name = 1;
+	string path = 2;
+	repeated GDeviceUnit units = 3;
+	repeated GDeviceSlot slots = 4;
+}
+
+// Device element schema.
+message GDeviceElementSchema {
+	repeated GDeviceUnit units = 1;
+	repeated GDeviceSlot slots = 2;
+}
+
+// Request for creating a device specification.
+message GDeviceSpecificationCreateRequest {
+	string token = 1;
+	string name = 2;
+	GAssetReference assetReference = 3;
+	GDeviceContainerPolicy containerPolicy = 4;
+	GDeviceElementSchema deviceElementSchema = 5;
+	map<string, string> metadata = 6;
+}
+
+// Criteria for searching device specifications.
+message GDeviceSpecificationSearchCriteria {
+	GOptionalBoolean includeDeleted = 1;
+	GPaging paging = 2;
+}
+
+// Results for device specification search.
+message GDeviceSpecificationSearchResults {
+	uint64 count = 1;
+	repeated GDeviceSpecification specifications = 2;
+}
+
+// Reference to a device specification by token.
+message GDeviceSpecificationReference {
+	string token = 1;
+}
+
+// Device specification.
+message GDeviceSpecification {
+	GUUID id = 1;
+	string token = 2;
+	string name = 3;
+	GAssetReference assetReference = 4;
+	GDeviceContainerPolicy containerPolicy = 5;
+	GDeviceElementSchema deviceElementSchema = 6;
+	map<string, string> metadata = 7;
+	GEntityInformation entityInformation = 8;
+}
+
+// #######################
+// ### DEVICE COMMANDS ###
+// #######################
+
+// Device command parameter.
+message GCommandParameter {
+	string name = 1;
+	GParameterType type = 2;
+	bool required = 3;
+}
+
+// Request for creating a device command.
+message GDeviceCommandCreateRequest {
+	string token = 1;
+	string namespace = 2;
+	string name = 3;
+	string description = 4;
+	repeated GCommandParameter parameters = 5;
+	map<string, string> metadata = 6;
+}
+
+// Criteria for searching device commands.
+message GDeviceCommandSearchCriteria {
+	GUUID deviceSpecificationId = 1;
+	GOptionalBoolean includeDeleted = 2;
+}
+
+// Device command.
+message GDeviceCommand {
+	GUUID id = 1;
+	string token = 2;
+	GUUID deviceSpecificationId = 3;
+	string namespace = 4;
+	string name = 5;
+	string description = 6;
+	repeated GCommandParameter parameters = 7;
+	map<string, string> metadata = 8;
+	GEntityInformation entityInformation = 9;
+}
+
+// #######################
+// ### DEVICE STATUSES ###
+// #######################
+
+// Request for creating a device status.
+message GDeviceStatusCreateRequest {
+	string code = 1;
+	string name = 2;
+	string backgroundColor = 3;
+	string foregroundColor = 4;
+	string borderColor = 5;
+	string icon = 6;
+	map<string, string> metadata = 7;
+}
+
+// Criteria for searching device statuses.
+message GDeviceStatusSearchCriteria {
+	GUUID deviceSpecificationId = 1;
+	GOptionalString code = 2;
+}
+
+// Device status.
+message GDeviceStatus {
+	GUUID id = 1;
+	string code = 2;
+	GUUID deviceSpecificationId = 3;
+	string name = 4;
+	string backgroundColor = 5;
+	string foregroundColor = 6;
+	string borderColor = 7;
+	string icon = 8;
+	map<string, string> metadata = 9;
+}
+
+// ###############
+// ### DEVICES ###
+// ###############
+
+// Device element mapping.
+message GDeviceElementMapping {
+	string schemaPath = 1;
+	string hardwareId = 2;
+}
+
+// Request for creating a device.
+message GDeviceCreateRequest {
+	string hardwareId = 1;
+	string siteToken = 2;
+	string specificationToken = 3;
+	GOptionalString parentHardwareId = 4;
+	repeated GDeviceElementMapping deviceElementMappings = 5;
+	GOptionalString comments = 6;
+	GOptionalString status = 7;
+	map<string, string> metadata = 8;
+}
+
+// Criteria for searching devices.
+message GDeviceSearchCriteria {
+	GOptionalBoolean includeDeleted = 1;
+	GDeviceSpecificationReference specification = 2;
+	GSiteReference site = 3;
+	GOptionalBoolean excludeAssigned = 4;
+	google.protobuf.Timestamp createdAfter = 5;
+	google.protobuf.Timestamp createdBefore = 6;
+	GPaging paging = 7;
+}
+
+// Results for device search.
+message GDeviceSearchResults {
+	uint64 count = 1;
+	repeated GDevice devices = 2;
+}
+
+// Device.
+message GDevice {
+	GUUID id = 1;
+	string hardwareId = 2;
+	GUUID siteId = 3;
+	GUUID deviceSpecificationId = 4;
+	GUUID deviceAssignmentId = 5;
+	GUUID parentDeviceId = 6;
+	repeated GDeviceElementMapping deviceElementMappings = 7;
+	GOptionalString comments = 8;
+	GOptionalString status = 9;
+	map<string, string> metadata = 10;
+	GEntityInformation entityInformation = 11;
+}
+
+// #####################
+// ### DEVICE GROUPS ###
+// #####################
+
+// Request data for creating a device group element.
+message GDeviceGroupElementCreateRequest {
+	GDeviceGroupElementType type = 1;
+	string elementId = 2;
+	repeated string roles = 3;
+}
+
+// Request data for creating a device group.
+message GDeviceGroupCreateRequest {
+	string token = 1;
+	string name = 2;
+	string description = 3;
+	repeated string roles = 4;
+	map<string, string> metadata = 5;
+}
+
+// Criteria for searching device group elements.
+message GDeviceGroupElementsSearchCriteria {
+	GPaging paging = 2;
+}
+
+// Results for device group elements search.
+message GDeviceGroupElementsSearchResults {
+	uint64 count = 1;
+	repeated GDeviceGroupElement elements = 2;
+}
+
+// Criteria for searching device groups.
+message GDeviceGroupSearchCriteria {
+	GOptionalBoolean includeDeleted = 1;
+	GPaging paging = 2;
+}
+
+// Criteria for searching device groups.
+message GDeviceGroupsWithRoleSearchCriteria {
+	GOptionalBoolean includeDeleted = 1;
+	string role = 2;
+	GPaging paging = 3;
+}
+
+// Results for device group search.
+message GDeviceGroupSearchResults {
+	uint64 count = 1;
+	repeated GDeviceGroup deviceGroups = 2;
+}
+
+// Device group element.
+message GDeviceGroupElement {
+	GUUID groupId = 1;
+	uint64 index = 2; 
+	GDeviceGroupElementType type = 3;
+	GUUID elementId = 4;
+	repeated string roles = 5;
+}
+
+// Device group.
+message GDeviceGroup {
+	GUUID id = 1;
+	string token = 2;
+	string name = 3;
+	string description = 4;
+	repeated string roles = 5;
+	map<string, string> metadata = 6;
+	GEntityInformation entityInformation = 7;
+}
+
+// ##########################
+// ### DEVICE ASSIGNMENTS ###
+// ##########################
+
+// Request data for creating a device assignment.
+message GDeviceAssignmentCreateRequest {
+	GOptionalString token = 1;
+	string deviceHardwareId = 2;
+	GDeviceAssignmentType assignmentType = 3;
+	GAssetReference assetReference = 4;
+	map<string, string> metadata = 5;
+}
+
+// Criteria for searching device assignments.
+message GDeviceAssignmentSearchCriteria {
+	GDeviceAssignmentStatus status = 1;
+	GPaging paging = 2;
+}
+
+// Criteria for searching assets linked to assignent.
+message GAssetsForAssignmentSearchCriteria {
+	GSiteReference site = 1;
+	GDeviceAssignmentStatus status = 2;
+	GPaging paging = 3;
+}
+
+// Results for device assignment search.
+message GDeviceAssignmentSearchResults {
+	int64 count = 1;
+	repeated GDeviceAssignment assignments = 2;
+}
+
+// Criteria for device assignment history.
+message GDeviceAssignmentHistoryCriteria {
+	GPaging paging = 1;
+}
+
+// Device assignment.
+message GDeviceAssignment {
+	GUUID id = 1;
+	string token = 2;
+	GUUID deviceId = 3;
+	GUUID siteId = 4;
+	GDeviceAssignmentType assignmentType = 5;
+	GDeviceAssignmentStatus status = 6;
+	GAssetReference assetReference = 7;
+	google.protobuf.Timestamp activeDate = 8;
+	google.protobuf.Timestamp releasedDate = 9;
+	map<string, string> metadata = 10;
+	GEntityInformation entityInformation = 11;
+}
+
+// ######################
+// ### DEVICE STREAMS ###
+// ######################
+
+// Request data for creating a device stream.
+message GDeviceStreamCreateRequest {
+	string streamId = 1;
+	string contentType = 2;
+	map<string, string> metadata = 3;
+}
+
+// Criteria for searching device streams.
+message GDeviceStreamSearchCriteria {
+	GPaging paging = 1;
+}
+
+// Results for device stream search.
+message GDeviceStreamSearchResults {
+	int64 count = 1;
+	repeated GDeviceStream streams = 2;
+}
+
+// Device stream.
+message GDeviceStream {
+	GUUID id = 1;
+	string streamId = 2;
+	string contentType = 3;
+	GUUID deviceAssignmentId = 4;
+	map<string, string> metadata = 5;
+	GEntityInformation entityInformation = 6;
+}
+
+// #############
+// ### SITES ###
+// #############
+
+// Map data associated with a site.
+message GSiteMapData {
+	string type = 1;
+	map<string, string> metadata = 2;
+}
+
+// Request data for creating a site.
+message GSiteCreateRequest {
+	string token = 1;
+	string name = 2;
+	string description = 3;
+	string imageUrl = 4;
+	GSiteMapData mapData = 5;
+	map<string, string> metadata = 6;
+}
+
+// Criteria for searching sites.
+message GSiteSearchCriteria {
+	GPaging paging = 1;
+}
+
+// Results for site search.
+message GSiteSearchResults {
+	int64 count = 1;
+	repeated GSite sites = 2;
+}
+
+// Site.
+message GSite {
+	GUUID id = 1;
+	string token = 2;
+	string name = 3;
+	string description = 4;
+	string imageUrl = 5;
+	GSiteMapData mapData = 6;
+	map<string, string> metadata = 7;
+	GEntityInformation entityInformation = 8;
+}
+
+// #############
+// ### ZONES ###
+// #############
+
+// Request data for creating a zone.
+message GZoneCreateRequest {
+	string name = 1;
+	repeated GLocation coordinates = 2;
+	string borderColor = 3;
+	string fillColor = 4;
+	double opacity = 5;
+	map<string, string> metadata = 6;
+}
+
+// Criteria for searching zones.
+message GZoneSearchCriteria {
+	GPaging paging = 1;
+}
+
+// Results for zone search.
+message GZoneSearchResults {
+	int64 count = 1;
+	repeated GZone zones = 2;
+}
+
+// Zone.
+message GZone {
+	GUUID id = 1;
+	string token = 2;
+	GUUID siteId = 3;
+	string name = 4;
+	repeated GLocation coordinates = 5;
+	string borderColor = 6;
+	string fillColor = 7;
+	double opacity = 8;
+	map<string, string> metadata = 9;
+	GEntityInformation entityInformation = 10;
+}

@@ -1,12 +1,10 @@
 <template>
-  <span>
-    <delete-dialog title="Delete Tenant" width="400" :error="error"
-      @delete="onDeleteConfirmed">
-      <v-card-text>
-        Are you sure you want to delete this tenant?
-      </v-card-text>
-    </delete-dialog>
-  </span>
+  <delete-dialog title="Delete Tenant" width="400" :error="error"
+    @delete="onDeleteConfirmed">
+    <v-card-text>
+      Are you sure you want to delete this tenant?
+    </v-card-text>
+  </delete-dialog>
 </template>
 
 <script>

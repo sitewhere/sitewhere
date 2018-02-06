@@ -1,0 +1,101 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.model;
+
+option java_outer_classname = "ScheduleModel";
+
+import "sitewhere-common.proto";
+import "google/protobuf/timestamp.proto";
+
+// #################
+// ### SCHEDULES ###
+// #################
+
+// Trigger type.
+enum GTriggerType {
+	TRIGGER_TYPE_SIMPLE = 0;
+	TRIGGER_TYPE_CRON = 1;
+}
+
+// Schedule create request.
+message GScheduleCreateRequest {
+	string token = 1;
+	string name = 2;
+	GTriggerType triggerType = 3;
+	map<string, string> triggerConfiguration = 4;
+	google.protobuf.Timestamp startDate = 5;
+	google.protobuf.Timestamp endDate = 6;
+	map<string, string> metadata = 7;
+}
+
+// Schedule search criteria.
+message GScheduleSearchCriteria {
+	GPaging paging = 1;
+}
+
+// Results for schedule search.
+message GScheduleSearchResults {
+	int64 count = 1;
+	repeated GSchedule schedules = 2;
+}
+
+// Schedule.
+message GSchedule {
+	string token = 1;
+	string name = 2;
+	GTriggerType triggerType = 3;
+	map<string, string> triggerConfiguration = 4;
+	google.protobuf.Timestamp startDate = 5;
+	google.protobuf.Timestamp endDate = 6;
+	map<string, string> metadata = 7;
+	GEntityInformation entityInformation = 8;
+}
+
+// ######################
+// ### SCHEDULED JOBS ###
+// ######################
+
+// Scheduled job type.
+enum GScheduledJobType {
+	SCHEDULED_JOB_TYPE_COMMAND_INVOCATION = 0;
+	SCHEDULED_JOB_TYPE_BATCH_COMMAND_INVOCATION = 1;
+}
+
+// Scheduled job state.
+enum GScheduledJobState {
+	SCHEDULED_JOB_STATE_UNSUBMITTED = 0;
+	SCHEDULED_JOB_STATE_ACTIVE = 1;
+	SCHEDULED_JOB_STATE_COMPLETE = 2;
+}
+
+// Scheduled job create request.
+message GScheduledJobCreateRequest {
+	string token = 1;
+	string scheduleToken = 2;
+	GScheduledJobType jobType = 3;
+	map<string, string> jobConfiguration = 4;
+	GScheduledJobState jobState = 5;
+	map<string, string> metadata = 6;
+}
+
+// Schedule search criteria.
+message GScheduledJobSearchCriteria {
+	GPaging paging = 1;
+}
+
+// Results for schedule search.
+message GScheduledJobSearchResults {
+	int64 count = 1;
+	repeated GScheduledJob scheduledJobs = 2;
+}
+
+// Scheduled job.
+message GScheduledJob {
+	string token = 1;
+	string scheduleToken = 2;
+	GScheduledJobType jobType = 3;
+	map<string, string> jobConfiguration = 4;
+	GScheduledJobState jobState = 5;
+	map<string, string> metadata = 6;
+	GEntityInformation entityInformation = 7;
+}

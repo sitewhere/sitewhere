@@ -10,23 +10,20 @@ package com.sitewhere.device.marshaling;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.asset.LocationAsset;
 import com.sitewhere.rest.model.asset.PersonAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
-import com.sitewhere.rest.model.device.DeviceAssignment;
-import com.sitewhere.rest.model.device.DeviceAssignmentState;
 import com.sitewhere.rest.model.device.Site;
+import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceAssignment;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
-import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.ISite;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Configurable helper class that allows DeviceAssignment model objects to be
@@ -39,9 +36,6 @@ public class DeviceAssignmentMarshalHelper {
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Tenant */
-    private ITenant tenant;
-
     /** Indicates whether device asset information is to be included */
     private boolean includeAsset = true;
 
@@ -51,11 +45,17 @@ public class DeviceAssignmentMarshalHelper {
     /** Indicates whether to include site information */
     private boolean includeSite = false;
 
+    /** Indicates whether to include device specification */
+    private boolean includeSpecification = false;
+
+    /** Device management */
+    private IDeviceManagement deviceManagement;
+
     /** Used to control marshaling of devices */
     private DeviceMarshalHelper deviceHelper;
 
-    public DeviceAssignmentMarshalHelper(ITenant tenant) {
-	this.tenant = tenant;
+    public DeviceAssignmentMarshalHelper(IDeviceManagement deviceManagement) {
+	this.deviceManagement = deviceManagement;
     }
 
     /**
@@ -66,23 +66,22 @@ public class DeviceAssignmentMarshalHelper {
      * @return
      * @throws SiteWhereException
      */
-    public DeviceAssignment convert(IDeviceAssignment source, IAssetModuleManager manager) throws SiteWhereException {
-	DeviceAssignment result = new DeviceAssignment();
+    public MarshaledDeviceAssignment convert(IDeviceAssignment source, IAssetResolver assetResolver)
+	    throws SiteWhereException {
+	MarshaledDeviceAssignment result = new MarshaledDeviceAssignment();
+	result.setId(source.getId());
 	result.setToken(source.getToken());
 	result.setActiveDate(source.getActiveDate());
 	result.setReleasedDate(source.getReleasedDate());
 	result.setStatus(source.getStatus());
 	result.setAssignmentType(source.getAssignmentType());
-	result.setAssetModuleId(source.getAssetModuleId());
-	result.setAssetId(source.getAssetId());
+	result.setAssetReference(source.getAssetReference());
 	MetadataProviderEntity.copy(source, result);
-	if (source.getState() != null) {
-	    result.setState(DeviceAssignmentState.copy(source.getState()));
-	}
-	if (source.getAssignmentType() != DeviceAssignmentType.Unassociated) {
-	    IAsset asset = manager.getAssetById(source.getAssetModuleId(), source.getAssetId());
 
-	    // Handle case where referenced asset is not found.
+	if (source.getAssignmentType() != DeviceAssignmentType.Unassociated) {
+
+	    // Look up asset and handle case where not found.
+	    IAsset asset = assetResolver.getAssetModuleManagement().getAsset(source.getAssetReference());
 	    if (asset == null) {
 		LOGGER.warn("Device assignment has reference to non-existent asset.");
 		asset = new InvalidAsset();
@@ -99,31 +98,21 @@ public class DeviceAssignmentMarshalHelper {
 		}
 	    }
 	}
-	result.setSiteToken(source.getSiteToken());
+	result.setSiteId(source.getSiteId());
 	if (isIncludeSite()) {
-	    ISite site = getDeviceManagement().getSiteForAssignment(source);
-	    result.setSite(Site.copy(site));
+	    ISite site = getDeviceManagement().getSite(source.getSiteId());
+	    result.setSite((Site) site);
 	}
-	result.setDeviceHardwareId(source.getDeviceHardwareId());
+	result.setDeviceId(source.getDeviceId());
 	if (isIncludeDevice()) {
-	    IDevice device = getDeviceManagement().getDeviceForAssignment(source);
+	    IDevice device = getDeviceManagement().getDevice(source.getDeviceId());
 	    if (device != null) {
-		result.setDevice(getDeviceHelper().convert(device, manager));
+		result.setDevice(getDeviceHelper().convert(device, assetResolver));
 	    } else {
 		LOGGER.error("Assignment references invalid hardware id.");
 	    }
 	}
 	return result;
-    }
-
-    /**
-     * Get the device management implementation.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IDeviceManagement getDeviceManagement() throws SiteWhereException {
-	return SiteWhere.getServer().getDeviceManagement(tenant);
     }
 
     /**
@@ -133,10 +122,10 @@ public class DeviceAssignmentMarshalHelper {
      */
     protected DeviceMarshalHelper getDeviceHelper() {
 	if (deviceHelper == null) {
-	    deviceHelper = new DeviceMarshalHelper(tenant);
+	    deviceHelper = new DeviceMarshalHelper(getDeviceManagement());
 	    deviceHelper.setIncludeAsset(false);
 	    deviceHelper.setIncludeAssignment(false);
-	    deviceHelper.setIncludeSpecification(false);
+	    deviceHelper.setIncludeSpecification(isIncludeSpecification());
 	}
 	return deviceHelper;
     }
@@ -166,5 +155,22 @@ public class DeviceAssignmentMarshalHelper {
     public DeviceAssignmentMarshalHelper setIncludeSite(boolean includeSite) {
 	this.includeSite = includeSite;
 	return this;
+    }
+
+    public boolean isIncludeSpecification() {
+	return includeSpecification;
+    }
+
+    public DeviceAssignmentMarshalHelper setIncludeSpecification(boolean includeSpecification) {
+	this.includeSpecification = includeSpecification;
+	return this;
+    }
+
+    public IDeviceManagement getDeviceManagement() {
+	return deviceManagement;
+    }
+
+    public void setDeviceManagement(IDeviceManagement deviceManagement) {
+	this.deviceManagement = deviceManagement;
     }
 }

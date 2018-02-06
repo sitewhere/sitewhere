@@ -14,7 +14,6 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.user.AccountStatus;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
@@ -35,7 +34,7 @@ public class SitewhereUserDetails implements UserDetails {
     /** Granted authorities */
     private Collection<GrantedAuthority> grantedAuthorities;
 
-    public SitewhereUserDetails(IUser user, List<IGrantedAuthority> authorities) throws SiteWhereException {
+    public SitewhereUserDetails(IUser user, List<IGrantedAuthority> authorities) {
 	this.user = user;
 	this.grantedAuthorities = convertAuthorities(authorities);
     }

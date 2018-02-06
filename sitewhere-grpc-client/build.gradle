@@ -1,0 +1,6 @@
+description = 'SiteWhere GRPC Client Support'
+
+dependencies {
+    compile project(':sitewhere-core')
+    compile project(':sitewhere-grpc-model')
+}

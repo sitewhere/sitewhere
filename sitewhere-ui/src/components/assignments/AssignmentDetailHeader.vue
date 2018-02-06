@@ -10,27 +10,27 @@
         Emulator
       </v-btn>
       <div class="assn-headers">
-        <header-field label="Token">
+        <header-field label="Assignment token">
           <clipboard-copy-field :field="assignment.token"
             message="Assignment token copied to clipboard">
           </clipboard-copy-field>
         </header-field>
-        <header-field label="Asset">
+        <header-field label="Assigned asset">
           <span>{{ assignment.assetName }}</span>
         </header-field>
-        <header-field label="Device">
-          <span>{{ assignment.device.assetName }}</span>
+        <header-field label="Assigned device">
+          <span>{{ assignment.device.specification.assetName }}</span>
         </header-field>
-        <header-field label="Created">
+        <header-field label="Created date">
           <span>{{ formatDate(assignment.createdDate) }}</span>
         </header-field>
-        <header-field label="Updated">
+        <header-field label="Last updated date">
           <span>{{ formatDate(assignment.updatedDate) }}</span>
         </header-field>
-        <header-field label="Active">
+        <header-field label="Active date">
           <span>{{ formatDate(assignment.activeDate) }}</span>
         </header-field>
-        <header-field label="Released">
+        <header-field label="Released date">
           <span>{{ formatDate(assignment.releasedDate) }}</span>
         </header-field>
       </div>
@@ -47,7 +47,7 @@
 <script>
 import Utils from '../common/Utils'
 import Style from '../common/Style'
-import {createBaseUrl} from '../../http/sitewhere-api-wrapper'
+import {createCoreApiUrl} from '../../http/sitewhere-api-wrapper'
 import HeaderField from '../common/HeaderField'
 import ClipboardCopyField from '../common/ClipboardCopyField'
 import AssignmentDeleteDialog from './AssignmentDeleteDialog'
@@ -96,7 +96,7 @@ export default {
       var tenant = this.$store.getters.selectedTenant
       return {
         'background-color': '#fff',
-        'background-image': 'url(' + createBaseUrl(this.$store) +
+        'background-image': 'url(' + createCoreApiUrl(this.$store) +
           'assignments/' + this.assignment.token + '/symbol?tenantAuthToken=' +
           tenant.authenticationToken + ')',
         'background-size': 'contain',
@@ -156,7 +156,8 @@ export default {
 .assn-headers {
   position: absolute;
   top: 20px;
-  left: 220px;
+  left: 200px;
+  right: 200px;
 }
 
 .assn-emulator {

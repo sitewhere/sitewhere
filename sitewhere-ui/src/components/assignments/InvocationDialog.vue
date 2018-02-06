@@ -80,7 +80,10 @@ import Lodash from 'lodash'
 import Utils from '../common/Utils'
 import BaseDialog from '../common/BaseDialog'
 import MetadataPanel from '../common/MetadataPanel'
-import {_listDeviceCommands, _listSchedules} from '../../http/sitewhere-api-wrapper'
+import {
+  _listDeviceCommands,
+  _listSchedules
+} from '../../http/sitewhere-api-wrapper'
 
 export default {
 

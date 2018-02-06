@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="visible" persistent :width="width">
     <v-card >
-      <div class="delete-dialog blue darken-2 white--text headline">
+      <div class="delete-dialog blue darken-2 white--text title">
         {{title}}
       </div>
       <v-alert class="ma-0" error v-bind:value="true" style="width: 100%" slot="error" v-if="error">

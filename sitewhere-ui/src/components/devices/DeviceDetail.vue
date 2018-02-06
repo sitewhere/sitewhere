@@ -1,37 +1,44 @@
 <template>
   <div v-if="device">
-    <v-app>
-      <device-detail-header :device="device" class="mb-3">
-      </device-detail-header>
-      <v-tabs class="elevation-2" dark v-model="active">
-        <v-tabs-bar slot="activators" class="blue darken-2">
-          <v-tabs-slider class="blue lighten-3"></v-tabs-slider>
-          <v-tabs-item key="assignments" href="#assignments">
-            Assignment History
-          </v-tabs-item>
-        </v-tabs-bar>
+    <device-detail-header :device="device" class="mb-3">
+    </device-detail-header>
+    <v-tabs v-model="active">
+      <v-tabs-bar dark color="primary">
+        <v-tabs-slider class="blue lighten-3"></v-tabs-slider>
+        <v-tabs-item key="assignments" href="#assignments">
+          Assignment History
+        </v-tabs-item>
+      </v-tabs-bar>
+      <v-tabs-items>
         <v-tabs-content key="assignments" id="assignments">
           <device-assignment-history :device="device"></device-assignment-history>
         </v-tabs-content>
-      </v-tabs>
-    </v-app>
+      </v-tabs-items>
+    </v-tabs>
     <v-speed-dial v-model="fab" direction="top" hover fixed bottom right
       class="action-chooser-fab"
       transition="slide-y-reverse-transition">
-      <v-btn slot="activator" class="red darken-1 elevation-5" dark
-        fab hover>
-        <v-icon fa style="margin-top: -10px;" class="fa-2x">bolt</v-icon>
-      </v-btn>
-      <v-btn fab dark small class="blue darken-3 elevation-5"
-         v-tooltip:left="{ html: 'Update Device' }"
-          @click.native="onUpdateDevice">
-        <v-icon fa style="margin-top: -3px;">edit</v-icon>
-      </v-btn>
-      <v-btn fab dark small class="red darken-3 elevation-5"
-         v-tooltip:left="{ html: 'Delete Device' }"
-          @click.native="onDeleteDevice">
-        <v-icon fa style="margin-top: -3px;">remove</v-icon>
-      </v-btn>
+      <v-tooltip left slot="activator">
+        <v-btn slot="activator" class="red darken-1 elevation-5" dark
+          fab hover>
+          <v-icon style="margin-top: -10px;" class="fa-2x">fa-bolt</v-icon>
+        </v-btn>
+        <span>Device Actions</span>
+      </v-tooltip>
+      <v-tooltip left>
+        <v-btn fab dark small class="blue darken-3 elevation-5"
+            @click="onUpdateDevice" slot="activator">
+          <v-icon style="margin-top: -3px;">fa-edit</v-icon>
+        </v-btn>
+        <span>Update Device</span>
+      </v-tooltip>
+      <v-tooltip left>
+        <v-btn fab dark small class="red darken-3 elevation-5"
+            @click="onDeleteDevice" slot="activator">
+          <v-icon style="margin-top: -3px;">fa-times</v-icon>
+        </v-btn>
+        <span>Delete Device</span>
+      </v-tooltip>
     </v-speed-dial>
     <device-update-dialog ref="update" :hardwareId="hardwareId"
       @deviceUpdated="refresh">

@@ -1,0 +1,15 @@
+{
+	"id": "influxdb",
+	"name": "Construction Site Example (InfluxDB)",
+	"initializers": {
+		"deviceManagement": [
+			"initializer/deviceModel.groovy"
+		],
+		"assetManagement": [
+			"initializer/assetModel.groovy"
+		],
+		"scheduleManagement": [
+			"initializer/scheduleModel.groovy"
+		]
+	}
+}

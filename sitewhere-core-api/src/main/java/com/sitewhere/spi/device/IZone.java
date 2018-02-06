@@ -8,6 +8,7 @@
 package com.sitewhere.spi.device;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.sitewhere.spi.common.ILocation;
 import com.sitewhere.spi.common.IMetadataProviderEntity;
@@ -20,18 +21,25 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
 public interface IZone extends IMetadataProviderEntity {
 
     /**
-     * Get unique zone token.
+     * Get unique zone id.
+     * 
+     * @return
+     */
+    public UUID getId();
+
+    /**
+     * Get token that acts as alias for zone id.
      * 
      * @return
      */
     public String getToken();
 
     /**
-     * Get token for associated site.
+     * Get id for associated site.
      * 
      * @return
      */
-    public String getSiteToken();
+    public UUID getSiteId();
 
     /**
      * Get display name.

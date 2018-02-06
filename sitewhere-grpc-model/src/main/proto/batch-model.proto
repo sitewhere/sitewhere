@@ -1,0 +1,110 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.model;
+
+option java_outer_classname = "BatchModel";
+
+import "sitewhere-common.proto";
+import "google/protobuf/timestamp.proto";
+
+// ########################
+// ### BATCH OPERATIONS ###
+// ########################
+
+// Batch operation status.
+enum GBatchOperationStatus {
+	BATCH_OPERATION_STATUS_UNPROCESSED = 0;
+	BATCH_OPERATION_STATUS_PROCESSING = 1;
+	BATCH_OPERATION_STATUS_FINISHED_SUCCESSFULLY = 2;
+	BATCH_OPERATION_STATUS_FINISHED_WITH_ERRORS = 3;
+}
+
+// Batch operation create request.
+message GBatchOperationCreateRequest {
+	string token = 1;
+	string operationType = 2;
+	map<string, string> parameters = 3;
+	repeated string hardwareIds = 4;
+	map<string, string> metadata = 5;
+}
+
+// Batch command invocation create request.
+message GBatchCommandInvocationCreateRequest {
+	string token = 1;
+	string commandToken = 2;
+	map<string, string> parameters = 3;
+	repeated string hardwareIds = 4;
+}
+
+// Batch operation update request.
+message GBatchOperationUpdateRequest {
+	GBatchOperationStatus processingStatus = 1;
+	google.protobuf.Timestamp processingStartedDate = 2;
+	google.protobuf.Timestamp processingEndedDate = 3;
+	map<string, string> metadata = 4;
+}
+
+// Criteria for searching batch operations.
+message GBatchOperationSearchCriteria {
+	GOptionalBoolean includeDeleted = 1;
+	GPaging paging = 2;
+}
+
+// Results for batch operation search.
+message GBatchOperationSearchResults {
+	int64 count = 1;
+	repeated GBatchOperation batchOperations = 2;
+}
+
+// Batch operation.
+message GBatchOperation {
+	string token = 1;
+	string operationType = 2;
+	map<string, string> parameters = 3;
+	GBatchOperationStatus processingStatus = 4;
+	google.protobuf.Timestamp processingStartedDate = 5;
+	google.protobuf.Timestamp processingEndedDate = 6;
+	map<string, string> metadata = 7;
+	GEntityInformation entityInformation = 8;
+}
+
+// ################################
+// ### BATCH OPERATION ELEMENTS ###
+// ################################
+
+// Batch element processing status.
+enum GElementProcessingStatus {
+	BATCH_ELEMENT_STATUS_UNPROCESSED = 0;
+	BATCH_ELEMENT_STATUS_PROCESSING = 1;
+	BATCH_ELEMENT_STATUS_FAILED = 2;
+	BATCH_ELEMENT_STATUS_SUCCEEDED = 3;
+}
+
+// Batch element update request.
+message GBatchOperationElementUpdateRequest {
+	GElementProcessingStatus processingStatus = 1;
+	google.protobuf.Timestamp processedDate = 2;
+	map<string, string> metadata = 3;
+}
+
+// Criteria for searching batch elements.
+message GBatchOperationElementSearchCriteria {
+	GElementProcessingStatus processingStatus = 1;
+	GPaging paging = 2;
+}
+
+// Results for batch element search.
+message GBatchOperationElementSearchResults {
+	int64 count = 1;
+	repeated GBatchOperationElement batchOperationElements = 2;
+}
+
+// Batch element.
+message GBatchOperationElement {
+	string batchOperationToken = 1;
+	string hardwareId = 2;
+	int64 index = 3;
+	GElementProcessingStatus processingStatus = 4;
+	google.protobuf.Timestamp processedDate = 5;
+	map<string, string> metadata = 6;
+}

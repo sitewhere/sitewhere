@@ -1,0 +1,164 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.service;
+
+option java_multiple_files = true;
+option java_package = "com.sitewhere.grpc.service";
+option java_outer_classname = "ScheduleServices";
+
+import "sitewhere-common.proto";
+import "schedule-model.proto";
+
+// Schedule management APIs.
+service ScheduleManagement {
+
+	// #################
+	// ### SCHEDULES ###
+	// #################
+
+	// Create a new schedule.
+	rpc CreateSchedule (GCreateScheduleRequest) returns (GCreateScheduleResponse) {}
+
+	// Update an existing schedule.
+	rpc UpdateSchedule (GUpdateScheduleRequest) returns (GUpdateScheduleResponse) {}
+
+	// Get schedule by token.
+	rpc GetScheduleByToken (GGetScheduleByTokenRequest) returns (GGetScheduleByTokenResponse) {}
+
+	// List schedules that match criteria.
+	rpc ListSchedules (GListSchedulesRequest) returns (GListSchedulesResponse) {}
+
+	// Delete a schedule.
+	rpc DeleteSchedule (GDeleteScheduleRequest) returns (GDeleteScheduleResponse) {}
+
+	// ######################
+	// ### SCHEDULED JOBS ###
+	// ######################
+	
+	// Create a new schedule.
+	rpc CreateScheduledJob (GCreateScheduledJobRequest) returns (GCreateScheduledJobResponse) {}	
+
+	// Update an existing scheduled job.
+	rpc UpdateScheduledJob (GUpdateScheduledJobRequest) returns (GUpdateScheduledJobResponse) {}
+
+	// Get scheduled job by token.
+	rpc GetScheduledJobByToken (GGetScheduledJobByTokenRequest) returns (GGetScheduledJobByTokenResponse) {}
+
+	// List scheduled jobs that match criteria.
+	rpc ListScheduledJobs (GListScheduledJobsRequest) returns (GListScheduledJobsResponse) {}
+
+	// Delete a scheduled job.
+	rpc DeleteScheduledJob (GDeleteScheduledJobRequest) returns (GDeleteScheduledJobResponse) {}
+}
+
+// #################
+// ### SCHEDULES ###
+// #################
+	
+// Request for creating a schedule.
+message GCreateScheduleRequest {
+	com.sitewhere.grpc.model.GScheduleCreateRequest request = 1;
+}
+
+// Response for creating a schedule.
+message GCreateScheduleResponse {
+	com.sitewhere.grpc.model.GSchedule schedule = 1;
+}
+	
+// Request for updating a schedule.
+message GUpdateScheduleRequest {
+	string token = 1;
+	com.sitewhere.grpc.model.GScheduleCreateRequest request = 2;
+}
+
+// Response for updating a schedule.
+message GUpdateScheduleResponse {
+	com.sitewhere.grpc.model.GSchedule schedule = 1;
+}
+
+// Request for getting a schedule by token.
+message GGetScheduleByTokenRequest {
+	string token = 1;
+}
+	
+// Response for getting a schedule by token.
+message GGetScheduleByTokenResponse {
+	com.sitewhere.grpc.model.GSchedule schedule = 1;
+}
+	
+// Request for listing schedules that meet criteria.
+message GListSchedulesRequest {
+	com.sitewhere.grpc.model.GScheduleSearchCriteria criteria = 1;
+}
+	
+// Response for listing schedules that meet criteria.
+message GListSchedulesResponse {
+	com.sitewhere.grpc.model.GScheduleSearchResults results = 1;
+}
+	
+// Request for deleting a schedule.
+message GDeleteScheduleRequest {
+	string token = 1;
+	bool force = 2;
+}
+	
+// Response for deleting a schedule.
+message GDeleteScheduleResponse {
+	com.sitewhere.grpc.model.GSchedule schedule = 1;
+}
+
+// ######################
+// ### SCHEDULED JOBS ###
+// ######################
+	
+// Request for creating a scheduled job.
+message GCreateScheduledJobRequest {
+	com.sitewhere.grpc.model.GScheduledJobCreateRequest request = 1;
+}
+
+// Response for creating a scheduled job.
+message GCreateScheduledJobResponse {
+	com.sitewhere.grpc.model.GScheduledJob scheduledJob = 1;
+}
+	
+// Request for updating a scheduled job.
+message GUpdateScheduledJobRequest {
+	string token = 1;
+	com.sitewhere.grpc.model.GScheduledJobCreateRequest request = 2;
+}
+
+// Response for updating a scheduled job.
+message GUpdateScheduledJobResponse {
+	com.sitewhere.grpc.model.GScheduledJob scheduledJob = 1;
+}
+
+// Request for getting a scheduled job by token.
+message GGetScheduledJobByTokenRequest {
+	string token = 1;
+}
+	
+// Response for getting a scheduled job by token.
+message GGetScheduledJobByTokenResponse {
+	com.sitewhere.grpc.model.GScheduledJob scheduledJob = 1;
+}
+	
+// Request for listing scheduled jobs that meet criteria.
+message GListScheduledJobsRequest {
+	com.sitewhere.grpc.model.GScheduledJobSearchCriteria criteria = 1;
+}
+	
+// Response for listing scheduled jobs that meet criteria.
+message GListScheduledJobsResponse {
+	com.sitewhere.grpc.model.GScheduledJobSearchResults results = 1;
+}
+	
+// Request for deleting a scheduled job.
+message GDeleteScheduledJobRequest {
+	string token = 1;
+	bool force = 2;
+}
+	
+// Response for deleting a scheduled job.
+message GDeleteScheduledJobResponse {
+	com.sitewhere.grpc.model.GScheduledJob scheduledJob = 1;
+}

@@ -1,13 +1,16 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import createPersistedState from 'vuex-persistedstate'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
+  plugins: [createPersistedState()],
   state: {
     protocol: 'http',
     server: 'localhost',
     port: 8080,
+    jwt: null,
     user: null,
     authToken: null,
     authTenants: null,
@@ -29,6 +32,11 @@ export default new Vuex.Store({
     // Set server port.
     port (state, port) {
       state.port = port
+    },
+
+    // Set current JWT.
+    jwt (state, jwt) {
+      state.jwt = jwt
     },
 
     // Set currently logged in user.
@@ -92,6 +100,10 @@ export default new Vuex.Store({
 
     port: state => {
       return state.port
+    },
+
+    jwt: state => {
+      return state.jwt
     },
 
     user: state => {

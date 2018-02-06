@@ -1,0 +1,198 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.model;
+
+option java_outer_classname = "CommonModel";
+
+import "google/protobuf/timestamp.proto";
+
+// #######################
+// ### OPTIONAL FIELDS ###
+// #######################
+
+// Optional double value.
+message GOptionalDouble {
+	double value = 1;
+}
+
+// Optional boolean value.
+message GOptionalBoolean {
+	bool value = 1;
+}
+
+// Optional string value.
+message GOptionalString {
+	string value = 1;
+}
+
+// ###########
+// ### IDS ###
+// ###########
+
+message GUUID {
+	fixed64 msb = 1;
+	fixed64 lsb = 2;
+}
+
+// #############################
+// ### COMMON API STRUCTURES ###
+// #############################
+
+// Common entity information.
+message GEntityInformation {
+	google.protobuf.Timestamp createdDate = 1;
+	GUserReference createdBy = 2;
+	google.protobuf.Timestamp updatedDate = 3;
+	GUserReference updatedBy = 4;
+	bool deleted = 5;
+}
+
+// Information about paging for searches.
+message GPaging {
+	int32 pageNumber = 1;
+	int32 pageSize = 2;
+}
+
+// Search criteria that includes a date range.
+message GDateRangeSearchCriteria {
+	google.protobuf.Timestamp startDate = 1;
+	google.protobuf.Timestamp endDate = 2;
+	int32 pageNumber = 3;
+	int32 pageSize = 4;
+}
+
+// Location information.
+message GLocation {
+	GOptionalDouble latitude = 1;
+	GOptionalDouble longitude = 2;
+	GOptionalDouble elevation = 3;
+}
+
+// #########################
+// ### OBJECT REFERENCES ###
+// #########################
+
+// Reference user by username.
+message GUserReference {
+	string username = 1;
+}
+
+// Reference to a granted authority by authority.
+message GGrantedAuthorityReference {
+	string authority = 1;
+}
+
+// Reference to a tenant by id.
+message GTenantReference {
+	string id = 1;
+}
+
+// Reference to a site by token.
+message GSiteReference {
+	string token = 1;
+}
+
+// Text used for search.
+message GSearchText {
+	string search = 1;
+}
+
+// ####################
+// ### ENUMERATIONS ###
+// ####################
+
+// User account status
+enum GUserAccountStatus {
+	USER_STATUS_ACTIVE = 0;
+	USER_STATUS_EXPIRED = 1;
+	USER_STATUS_LOCKED = 2;
+}
+
+// Device container policy.
+enum GDeviceContainerPolicy {
+	CONTAINER_STANDALONE = 0;
+	CONTAINER_COMPOSITE = 1;
+}
+
+// Device command parameter type.
+enum GParameterType {
+    PARAMETER_DOUBLE = 0;
+    PARAMETER_FLOAT = 1;
+    PARAMETER_INT32 = 2;
+    PARAMETER_INT64 = 3;
+    PARAMETER_UINT32 = 4;
+    PARAMETER_UINT64 = 5;
+    PARAMETER_SINT32 = 6;
+    PARAMETER_SINT64 = 7;
+    PARAMETER_FIXED32 = 8;
+    PARAMETER_FIXED64 = 9;
+    PARAMETER_SFIXED32 = 10;
+    PARAMETER_SFIXED64 = 11;
+    PARAMETER_BOOL = 12;
+    PARAMETER_STRING = 13;
+    PARAMETER_BYTES = 14;
+}
+
+// Device group element type.
+enum GDeviceGroupElementType {
+	ELEMENT_TYPE_DEVICE = 0;
+	ELEMENT_TYPE_GROUP = 1;
+}
+
+// Device assignment type.
+enum GDeviceAssignmentType {
+	ASSN_TYPE_UNASSOCIATED = 0;
+	ASSN_TYPE_ASSOCIATED = 1;
+}
+
+// Device assignment status.
+enum GDeviceAssignmentStatus {
+	ASSN_STATUS_ACTIVE = 0;
+	ASSN_STATUS_MISSING = 1;
+	ASSN_STATUS_RELEASED = 2;
+}
+
+// Device command initiator.
+enum GDeviceCommandInitiator {
+	CMD_INITIATOR_REST = 0;
+	CMD_INITIATOR_BATCH_OPERATION = 1;
+	CMD_INITIATOR_SCRIPT = 2;
+	CMD_INITIATOR_SCHEDULER = 3;
+}
+
+// Device command target.
+enum GDeviceCommandTarget {
+	CMD_TARGET_ASSIGNMENT = 0;
+}
+
+// Device command status.
+enum GDeviceCommandStatus {
+	CMD_STATUS_PENDING = 0;
+	CMD_STATUS_PROCESSING = 1;
+	CMD_STATUS_SENT = 2;
+	CMD_STATUS_RESPONDED = 3;
+}
+
+// State change event category.
+enum GStateChangeCategory {
+	STATE_CHANGE_CAT_ASSIGNMENT = 0;
+	STATE_CHANGE_CAT_PRESENCE = 1;
+	STATE_CHANGE_CAT_REGISTRATION = 2;
+}
+
+// State change event type.
+enum GStateChangeType {
+	STATE_CHANGE_TYPE_ASSIGNMENT_CREATED = 0;
+	STATE_CHANGE_TYPE_ASSIGNMENT_UPDATED = 1;
+	STATE_CHANGE_TYPE_ASSIGNMENT_RELEASED = 2;
+	STATE_CHANGE_TYPE_PRESENCE_UPDATED = 3;
+	STATE_CHANGE_TYPE_REGISTRATION_REQUESTED = 4;
+}
+
+// Asset type.
+enum GAssetType {
+	ASSET_TYPE_DEVICE = 0;
+	ASSET_TYPE_PERSON = 1;
+	ASSET_TYPE_HARDWARE = 2;
+	ASSET_TYPE_LOCATION = 3;
+}

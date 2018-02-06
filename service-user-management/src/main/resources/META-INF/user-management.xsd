@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+	xmlns="http://sitewhere.io/schema/sitewhere/microservice/user-management"
+	xmlns:ds="http://sitewhere.io/schema/sitewhere/microservice/common/datastore"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/user-management"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xsd:import
+		namespace="http://sitewhere.io/schema/sitewhere/microservice/common/datastore"
+		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/datastore-common.xsd" />
+
+	<xsd:element name="user-management" type="userManagementType">
+		<xsd:annotation>
+			<xsd:documentation>
+				Provides configuration information for the
+				SiteWhere user management microservice.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<xsd:complexType name="userManagementType">
+		<xsd:all>
+			<xsd:element ref="ds:device-management-datastore" />
+		</xsd:all>
+	</xsd:complexType>
+</xsd:schema>

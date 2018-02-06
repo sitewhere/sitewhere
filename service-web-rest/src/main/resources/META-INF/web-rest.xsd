@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://sitewhere.io/schema/sitewhere/microservice/web-rest"
+	xmlns:sw="http://sitewhere.io/schema/sitewhere/microservice/common"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/web-rest"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xsd:import namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
+		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
+
+	<xsd:element name="web-rest" type="webRestType">
+		<xsd:annotation>
+			<xsd:documentation>
+				Provides configuration information for the
+				SiteWhere web/REST microservice.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<xsd:complexType name="webRestType">
+	</xsd:complexType>
+</xsd:schema>

@@ -1,5 +1,8 @@
 <template>
-  <div>
+  <span>
+    <v-toolbar flat card dark color="primary">
+      <v-toolbar-title>User Management</v-toolbar-title>
+    </v-toolbar>
     <v-layout row wrap v-if="users">
       <v-flex xs12>
         <no-results-panel v-if="users.length === 0"
@@ -8,7 +11,7 @@
         <v-data-table v-if="users.length > 0" class="elevation-2 pa-0"
           :headers="headers" :items="users"
           :hide-actions="true" no-data-text="No Users Found">
-          <template slot="items" scope="props">
+          <template slot="items" slot-scope="props">
             <td width="5%" :title="props.item.username">
               {{ props.item.username }}
             </td>
@@ -48,7 +51,7 @@
     </pager>
     <user-create-dialog @userAdded="refresh">
     </user-create-dialog>
-  </div>
+  </span>
 </template>
 
 <script>

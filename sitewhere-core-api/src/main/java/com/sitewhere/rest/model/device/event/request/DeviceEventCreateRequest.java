@@ -14,6 +14,7 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 
 /**
@@ -28,6 +29,9 @@ public class DeviceEventCreateRequest implements IDeviceEventCreateRequest, Seri
 
     /** Alternate (external) id for event */
     private String alternateId;
+
+    /** Event type indicator */
+    private DeviceEventType eventType;
 
     /** Date event occurred */
     private Date eventDate;
@@ -51,6 +55,19 @@ public class DeviceEventCreateRequest implements IDeviceEventCreateRequest, Seri
 
     public void setAlternateId(String alternateId) {
 	this.alternateId = alternateId;
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest#
+     * getEventType()
+     */
+    @Override
+    public DeviceEventType getEventType() {
+	return eventType;
+    }
+
+    public void setEventType(DeviceEventType eventType) {
+	this.eventType = eventType;
     }
 
     /*

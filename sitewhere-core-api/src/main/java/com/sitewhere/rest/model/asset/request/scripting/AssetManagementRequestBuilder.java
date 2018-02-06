@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) SiteWhere, LLC. All rights reserved. http://www.sitewhere.com
+ *
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
 package com.sitewhere.rest.model.asset.request.scripting;
 
 import java.util.List;
@@ -11,7 +18,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.asset.IHardwareAsset;
 import com.sitewhere.spi.asset.ILocationAsset;
 import com.sitewhere.spi.asset.IPersonAsset;
@@ -23,15 +30,11 @@ import com.sitewhere.spi.asset.IPersonAsset;
  */
 public class AssetManagementRequestBuilder {
 
-    /** Asset management implementation */
-    private IAssetManagement assetManagement;
+    /** Asset resolver implementation */
+    private IAssetResolver assetResolver;
 
-    /** Asset module manager */
-    private IAssetModuleManager assetModuleManager;
-
-    public AssetManagementRequestBuilder(IAssetManagement assetManagement, IAssetModuleManager assetModuleManager) {
-	this.assetManagement = assetManagement;
-	this.assetModuleManager = assetModuleManager;
+    public AssetManagementRequestBuilder(IAssetResolver assetResolver) {
+	this.assetResolver = assetResolver;
     }
 
     public AssetCategoryCreateRequest.Builder newAssetCategory(String id, String name) {
@@ -72,19 +75,15 @@ public class AssetManagementRequestBuilder {
 	return getAssetManagement().listAssets(moduleId, SearchCriteria.ALL).getResults();
     }
 
+    public IAssetResolver getAssetResolver() {
+	return assetResolver;
+    }
+
+    public void setAssetResolver(IAssetResolver assetResolver) {
+	this.assetResolver = assetResolver;
+    }
+
     public IAssetManagement getAssetManagement() {
-	return assetManagement;
-    }
-
-    public void setAssetManagement(IAssetManagement assetManagement) {
-	this.assetManagement = assetManagement;
-    }
-
-    public IAssetModuleManager getAssetModuleManager() {
-	return assetModuleManager;
-    }
-
-    public void setAssetModuleManager(IAssetModuleManager assetModuleManager) {
-	this.assetModuleManager = assetModuleManager;
+	return getAssetResolver().getAssetManagement();
     }
 }

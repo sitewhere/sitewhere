@@ -1,12 +1,12 @@
 <template>
   <span>
     {{ field }}
-    <v-btn style="position: absolute; right: -45px; bottom: -15px;"
-      v-tooltip:left="{ html: 'Copy to Clipboard' }" class="mt-0"
-      light icon v-clipboard="field" :key="field"
-      @success="onFieldCopied" @error="onFieldCopyFailed">
-      <v-icon fa>clipboard</v-icon>
-    </v-btn>
+    <v-tooltip right class="pl-1">
+      <v-icon style="font-size: 10pt;" class="grey--text" slot="activator"
+        v-clipboard="field" :key="field" @success="onFieldCopied"
+        @error="onFieldCopyFailed">fa-clipboard</v-icon>
+      <span>Copy to Clipboard</span>
+    </v-tooltip>
     <v-snackbar :timeout="2000" success v-model="showFieldCopied">{{ message }}
       <v-btn dark flat @click.native="showFieldCopied = false">Close</v-btn>
     </v-snackbar>

@@ -1,6 +1,7 @@
 <template>
   <v-card hover class="white">
-    <v-card-text :style="styleForDevice()" class="device-root">
+    <v-card-text @click="onOpenDevice" :style="styleForDevice()"
+      class="device-root">
       <div class="device-image"
         :style="backgroundImageStyle(device.specification.assetImageUrl)"></div>
       <div class="device-hardware-id">
@@ -15,12 +16,13 @@
       <div v-if="isAssociated" class="device-asset"
         :style="backgroundImageStyle(device.assignment.assetImageUrl)"></div>
       <div v-else-if="!device.assignment" class="device-assign-button">
-        <v-btn dark icon
-          class="blue ml-0"
-          v-tooltip:left="{ html: 'Assign Device' }"
-          @click.native.stop="onAssignDevice">
-          <v-icon fa class="fa-lg">tag</v-icon>
-        </v-btn>
+        <v-tooltip top>
+          <v-btn dark icon class="blue ml-0"
+            @click.stop="onAssignDevice" slot="activator">
+            <v-icon>fa-tag</v-icon>
+          </v-btn>
+          <span>Assign Device</span>
+        </v-tooltip>
       </div>
       <assignment-create-dialog ref="assign" :hardwareId="device.hardwareId"
         @created="onDeviceAssigned"/>
@@ -60,8 +62,8 @@ export default {
   methods: {
     styleForDevice: function () {
       let style = {}
-      style['background-color'] = (this.device.assignment ? '#eee' : '#cff')
-      style['border'] = '1px solid' + (this.device.assignment ? '#ddd' : '#6cc')
+      style['background-color'] = (this.device.assignment ? '#fff' : '#cff')
+      style['border'] = '1px solid' + (this.device.assignment ? 'none' : '#6cc')
       return style
     },
     // Create background image style.
@@ -77,6 +79,11 @@ export default {
     // Fire event to have parent refresh content.
     refresh: function () {
       this.$emit('refresh')
+    },
+
+    // Called when a device is clicked.
+    onOpenDevice: function () {
+      this.$emit('deviceOpened', this.device.hardwareId)
     },
 
     // Open device assignment dialog.
@@ -110,9 +117,9 @@ export default {
 }
 .device-image {
   position: absolute;
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
+  top: 5px;
+  left: 5px;
+  bottom: 5px;
   width: 90px;
   background-color: #fff;
   border-right: 1px solid #eee;
@@ -120,7 +127,7 @@ export default {
 .device-specification {
   position: absolute;
   top: 6px;
-  left: 100px;
+  left: 110px;
   font-size: 18px;
   color: #333;
   font-weight: 700;
@@ -130,7 +137,7 @@ export default {
 .device-hardware-id {
   position: absolute;
   top: 40px;
-  left: 100px;
+  left: 110px;
   font-size: 14px;
   color: #333;
   font-weight: 700;
@@ -140,7 +147,7 @@ export default {
 .device-comments {
   position: absolute;
   top: 68px;
-  left: 100px;
+  left: 110px;
   font-size: 12px;
   color: #333;
   white-space: nowrap;

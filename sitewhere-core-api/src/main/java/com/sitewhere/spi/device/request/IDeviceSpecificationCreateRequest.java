@@ -9,6 +9,7 @@ package com.sitewhere.spi.device.request;
 
 import java.util.Map;
 
+import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 
@@ -27,18 +28,11 @@ public interface IDeviceSpecificationCreateRequest {
     public String getName();
 
     /**
-     * Get id for asset module.
+     * Get asset reference information.
      * 
      * @return
      */
-    public String getAssetModuleId();
-
-    /**
-     * Get id for specification asset type.
-     * 
-     * @return
-     */
-    public String getAssetId();
+    public IAssetReference getAssetReference();
 
     /**
      * Allows the specification id to be specified. (Optional)

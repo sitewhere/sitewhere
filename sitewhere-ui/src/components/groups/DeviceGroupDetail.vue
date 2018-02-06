@@ -7,25 +7,34 @@
     <v-speed-dial v-model="fab" direction="top" hover fixed bottom right
       class="action-chooser-fab"
       transition="slide-y-reverse-transition">
-      <v-btn slot="activator" class="red darken-1 elevation-5" dark
-        fab hover>
-        <v-icon fa style="margin-top: -10px;" class="fa-2x">bolt</v-icon>
-      </v-btn>
-      <v-btn fab dark small class="blue darken-3 elevation-5"
-         v-tooltip:left="{ html: 'Update Device Group' }"
-          @click.native="onUpdateDeviceGroup">
-        <v-icon fa style="margin-top: -3px;">edit</v-icon>
-      </v-btn>
-      <v-btn fab dark small class="red darken-3 elevation-5"
-         v-tooltip:left="{ html: 'Delete Device Group' }"
-          @click.native="onDeleteDeviceGroup">
-        <v-icon fa style="margin-top: -3px;">remove</v-icon>
-      </v-btn>
-      <v-btn fab dark small class="green darken-3 elevation-5"
-         v-tooltip:left="{ html: 'Add Element' }"
-          @click.native="onAddElement">
-        <v-icon fa style="margin-top: -3px;">plus</v-icon>
-      </v-btn>
+      <v-tooltip left slot="activator">
+        <v-btn slot="activator" class="red darken-1 elevation-5" dark
+          fab hover>
+          <v-icon class="fa-2x">fa-bolt</v-icon>
+        </v-btn>
+        <span>Group Actions</span>
+      </v-tooltip>
+      <v-tooltip left>
+        <v-btn fab dark small class="blue darken-3 elevation-5"
+            @click="onUpdateDeviceGroup" slot="activator">
+          <v-icon>fa-edit</v-icon>
+        </v-btn>
+        <span>Update Device Group</span>
+      </v-tooltip>
+      <v-tooltip left>
+        <v-btn fab dark small class="red darken-3 elevation-5"
+            @click="onDeleteDeviceGroup" slot="activator">
+          <v-icon>fa-times</v-icon>
+        </v-btn>
+        <span>Delete Device Group</span>
+      </v-tooltip>
+      <v-tooltip left>
+        <v-btn fab dark small class="green darken-3 elevation-5"
+            @click="onAddElement" slot="activator">
+          <v-icon>fa-plus</v-icon>
+        </v-btn>
+        <span>Add Element</span>
+      </v-tooltip>
     </v-speed-dial>
     <device-group-update-dialog ref="update" :token="token"
       @groupUpdated="refresh">

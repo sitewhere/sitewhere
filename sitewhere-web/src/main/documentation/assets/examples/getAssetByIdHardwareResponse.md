@@ -1,1 +1,0 @@
-If the asset returned is a hardware asset, the response will resemble the output below:

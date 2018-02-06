@@ -2,11 +2,10 @@
   <div v-if="site">
     <v-app>
       <site-detail-header :site="site"
-        @siteDeleted="onSiteDeleted" @siteUpdated="onSiteUpdated" class="mb-3">
+        @siteDeleted="onSiteDeleted" @siteUpdated="onSiteUpdated">
       </site-detail-header>
-      <v-tabs class="elevation-2" dark v-model="active">
-        <v-tabs-bar slot="activators" class="blue darken-2">
-          <v-tabs-slider class="blue lighten-3"></v-tabs-slider>
+      <v-tabs v-model="active">
+        <v-tabs-bar dark color="primary">
           <v-tabs-item key="assignments" href="#assignments">
             Device Assignments
           </v-tabs-item>
@@ -22,22 +21,25 @@
           <v-tabs-item key="zones" href="#zones">
             Zones
           </v-tabs-item>
+          <v-tabs-slider></v-tabs-slider>
         </v-tabs-bar>
-        <v-tabs-content key="assignments" id="assignments">
-          <site-assignments :siteToken="site.token"></site-assignments>
-        </v-tabs-content>
-        <v-tabs-content key="locations" id="locations">
-          <site-location-events :siteToken="site.token"></site-location-events>
-        </v-tabs-content>
-        <v-tabs-content key="measurements" id="measurements">
-          <site-measurement-events :siteToken="site.token"></site-measurement-events>
-        </v-tabs-content>
-        <v-tabs-content key="alerts" id="alerts">
-          <site-alert-events :siteToken="site.token"></site-alert-events>
-        </v-tabs-content>
-        <v-tabs-content key="zones" id="zones">
-          <site-zones :site="site"></site-zones>
-        </v-tabs-content>
+        <v-tabs-items>
+          <v-tabs-content key="assignments" id="assignments">
+            <site-assignments :siteToken="site.token"></site-assignments>
+          </v-tabs-content>
+          <v-tabs-content key="locations" id="locations">
+            <site-location-events :siteToken="site.token"></site-location-events>
+          </v-tabs-content>
+          <v-tabs-content key="measurements" id="measurements">
+            <site-measurement-events :siteToken="site.token"></site-measurement-events>
+          </v-tabs-content>
+          <v-tabs-content key="alerts" id="alerts">
+            <site-alert-events :siteToken="site.token"></site-alert-events>
+          </v-tabs-content>
+          <v-tabs-content key="zones" id="zones">
+            <site-zones :site="site"></site-zones>
+          </v-tabs-content>
+        </v-tabs-items>
       </v-tabs>
       <zone-create-dialog v-if="active === 'zones'" :site="site" @zoneAdded="onZoneAdded"/>
     </v-app>

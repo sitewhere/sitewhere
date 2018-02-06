@@ -14,10 +14,11 @@ import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
+import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceSpecification;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.asset.IAssetResolver;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Configurable helper class that allows {@link DeviceSpecification} model
@@ -30,17 +31,16 @@ public class DeviceSpecificationMarshalHelper {
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Tenant */
-    private ITenant tenant;
+    /** Device Management */
+    private IDeviceManagement deviceManagement;
 
     /**
-     * Indicates whether device specification asset information is to be
-     * included
+     * Indicates whether device specification asset information is to be included
      */
     private boolean includeAsset = true;
 
-    public DeviceSpecificationMarshalHelper(ITenant tenant) {
-	this.tenant = tenant;
+    public DeviceSpecificationMarshalHelper(IDeviceManagement deviceManagement) {
+	this.deviceManagement = deviceManagement;
     }
 
     /**
@@ -51,27 +51,28 @@ public class DeviceSpecificationMarshalHelper {
      * @return
      * @throws SiteWhereException
      */
-    public DeviceSpecification convert(IDeviceSpecification source, IAssetModuleManager manager)
+    public MarshaledDeviceSpecification convert(IDeviceSpecification source, IAssetResolver assetResolver)
 	    throws SiteWhereException {
-	DeviceSpecification spec = new DeviceSpecification();
+	MarshaledDeviceSpecification spec = new MarshaledDeviceSpecification();
 	MetadataProviderEntity.copy(source, spec);
+	spec.setId(source.getId());
 	spec.setToken(source.getToken());
 	spec.setName(source.getName());
-	HardwareAsset asset = (HardwareAsset) manager.getAssetById(source.getAssetModuleId(), source.getAssetId());
+	spec.setAssetReference(source.getAssetReference());
 
-	// Handle case where referenced asset is not found.
+	// Look up asset reference and handle asset not found.
+	HardwareAsset asset = (HardwareAsset) assetResolver.getAssetModuleManagement()
+		.getAsset(source.getAssetReference());
 	if (asset == null) {
 	    LOGGER.warn("Device specification has reference to non-existent asset.");
 	    asset = new InvalidAsset();
 	}
 
-	spec.setAssetId(asset.getId());
 	spec.setAssetName(asset.getName());
 	spec.setAssetImageUrl(asset.getImageUrl());
 	if (isIncludeAsset()) {
 	    spec.setAsset(asset);
 	}
-	spec.setAssetModuleId(source.getAssetModuleId());
 	spec.setContainerPolicy(source.getContainerPolicy());
 	spec.setDeviceElementSchema((DeviceElementSchema) source.getDeviceElementSchema());
 	return spec;
@@ -86,11 +87,11 @@ public class DeviceSpecificationMarshalHelper {
 	return this;
     }
 
-    public ITenant getTenant() {
-	return tenant;
+    public IDeviceManagement getDeviceManagement() {
+	return deviceManagement;
     }
 
-    public void setTenant(ITenant tenant) {
-	this.tenant = tenant;
+    public void setDeviceManagement(IDeviceManagement deviceManagement) {
+	this.deviceManagement = deviceManagement;
     }
 }

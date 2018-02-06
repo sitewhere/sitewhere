@@ -7,10 +7,12 @@
  */
 package com.sitewhere.spi.user;
 
+import java.io.Serializable;
+
 /**
  * Placeholder for future search criteria.
  * 
  * @author Derek
  */
-public interface IGrantedAuthoritySearchCriteria {
+public interface IGrantedAuthoritySearchCriteria extends Serializable {
 }

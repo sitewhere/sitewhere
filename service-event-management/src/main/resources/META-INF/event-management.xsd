@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+	xmlns="http://sitewhere.io/schema/sitewhere/microservice/event-management"
+	xmlns:ds="http://sitewhere.io/schema/sitewhere/microservice/common/datastore"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/event-management"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xsd:import
+		namespace="http://sitewhere.io/schema/sitewhere/microservice/common/datastore"
+		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/datastore-common.xsd" />
+
+	<xsd:element name="event-management" type="eventManagementType">
+		<xsd:annotation>
+			<xsd:documentation>
+				Provides configuration information for the
+				SiteWhere device event management microservice.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<xsd:complexType name="eventManagementType">
+		<xsd:all>
+			<xsd:element ref="ds:event-management-datastore" />
+		</xsd:all>
+	</xsd:complexType>
+</xsd:schema>

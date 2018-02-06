@@ -5,8 +5,8 @@
         @specificationDeleted="onDeleted" @specificationUpdated="onUpdated"
         class="mb-3">
       </specification-detail-header>
-      <v-tabs class="elevation-2" dark v-model="active">
-        <v-tabs-bar slot="activators" class="blue darken-2">
+      <v-tabs v-model="active">
+        <v-tabs-bar dark color="primary">
           <v-tabs-slider class="blue lighten-3"></v-tabs-slider>
           <v-tabs-item key="commands" href="#commands">
             Commands
@@ -22,24 +22,26 @@
             Composition
           </v-tabs-item>
         </v-tabs-bar>
-        <v-tabs-content key="commands" id="commands">
-          <specification-commands ref="commands" :specification="specification">
-          </specification-commands>
-        </v-tabs-content>
-        <v-tabs-content key="statuses" id="statuses">
-          <specification-device-statuses ref="statuses"
-            :specification="specification">
-          </specification-device-statuses>
-        </v-tabs-content>
-        <v-tabs-content key="code" id="code">
-          <specification-codegen :specification="specification">
-          </specification-codegen>
-        </v-tabs-content>
-        <v-tabs-content v-if="specification.containerPolicy === 'Composite'"
-          key="composition" id="composition">
-          <specification-composition :specification="specification">
-          </specification-composition>
-        </v-tabs-content>
+        <v-tabs-items>
+          <v-tabs-content key="commands" id="commands">
+            <specification-commands ref="commands" :specification="specification">
+            </specification-commands>
+          </v-tabs-content>
+          <v-tabs-content key="statuses" id="statuses">
+            <specification-device-statuses ref="statuses"
+              :specification="specification">
+            </specification-device-statuses>
+          </v-tabs-content>
+          <v-tabs-content key="code" id="code">
+            <specification-codegen :specification="specification">
+            </specification-codegen>
+          </v-tabs-content>
+          <v-tabs-content v-if="specification.containerPolicy === 'Composite'"
+            key="composition" id="composition">
+            <specification-composition :specification="specification">
+            </specification-composition>
+          </v-tabs-content>
+        </v-tabs-items>
       </v-tabs>
       <command-create-dialog v-if="active === 'commands'"
         :specification="specification" @commandAdded="onCommandAdded"/>

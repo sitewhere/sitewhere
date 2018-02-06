@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+	xmlns="http://sitewhere.io/schema/sitewhere/microservice/common/connector"
+	xmlns:sw="http://sitewhere.io/schema/sitewhere/microservice/common"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/common/connector"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xsd:import namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
+		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
+
+	<!-- Attributes for MQTT broker connectivity -->
+	<xsd:attributeGroup name="mqtt-broker-attributes">
+		<xsd:attribute name="protocol" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					MQTT protocol (defaults to tcp).
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="hostname" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					MQTT broker hostname.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="port" type="sw:substitutableInt" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					MQTT broker port.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="username" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					MQTT broker username.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="password" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					MQTT broker password.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="trustStorePath" type="xsd:string"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					For secured connections. Provides the full path
+					to the Java
+					TrustStore used for the secure connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="trustStorePassword" type="xsd:string"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					For secured connections. Provides the password to
+					the Java
+					TrustStore used for the secure connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="keyStorePath" type="xsd:string"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					For secured connections. Provides the full path
+					to the Java keystore used for the secure connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="keyStorePassword" type="xsd:string"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					For secured connections. Provides the password to
+					the Java keystore used for the secure connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
+
+	<!-- Attributes for Apache Solr connectivity -->
+	<xsd:attributeGroup name="solr-attributes">
+		<xsd:attribute name="solrServerUrl" type="xsd:string"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>URL used by Solr client to access server.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
+
+</xsd:schema>

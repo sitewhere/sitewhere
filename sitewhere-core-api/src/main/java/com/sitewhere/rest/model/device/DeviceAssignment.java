@@ -9,15 +9,14 @@ package com.sitewhere.rest.model.device;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.sitewhere.rest.model.asset.HardwareAsset;
-import com.sitewhere.rest.model.asset.LocationAsset;
-import com.sitewhere.rest.model.asset.PersonAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
+import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -33,32 +32,23 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
     /** Serialization version identifier */
     private static final long serialVersionUID = 4053925804888464375L;
 
+    /** Unique device id */
+    private UUID id;
+
     /** Unique assignment token */
     private String token;
 
-    /** Device hardware id */
-    private String deviceHardwareId;
+    /** Device id */
+    private UUID deviceId;
 
     /** Type of associated asset */
     private DeviceAssignmentType assignmentType;
 
-    /** Id of asset module */
-    private String assetModuleId;
+    /** Asset reference */
+    private IAssetReference assetReference;
 
-    /** Id of associated asset */
-    private String assetId;
-
-    /** Associated asset name */
-    private String assetName;
-
-    /** Associated asset image */
-    private String assetImageUrl;
-
-    /** Assigned site */
-    private Site site;
-
-    /** Site token */
-    private String siteToken;
+    /** Id of site when assigned */
+    private UUID siteId;
 
     /** Assignment status */
     private DeviceAssignmentStatus status;
@@ -69,22 +59,17 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
     /** Assignment end date */
     private Date releasedDate;
 
-    /** FIELDS BELOW DEPEND ON MARSHALING PARAMETERS */
+    /*
+     * @see com.sitewhere.spi.device.IDeviceAssignment#getId()
+     */
+    @Override
+    public UUID getId() {
+	return id;
+    }
 
-    /** Device being assigned */
-    private Device device;
-
-    /** Last known location */
-    private DeviceAssignmentState state;
-
-    /** Associated person asset */
-    private PersonAsset associatedPerson;
-
-    /** Associated hardware asset */
-    private HardwareAsset associatedHardware;
-
-    /** Associated location asset */
-    private LocationAsset associatedLocation;
+    public void setId(UUID id) {
+	this.id = id;
+    }
 
     /*
      * (non-Javadoc)
@@ -101,17 +86,15 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceAssignment#getDeviceHardwareId()
+     * @see com.sitewhere.spi.device.IDeviceAssignment#getDeviceId()
      */
     @Override
-    public String getDeviceHardwareId() {
-	return deviceHardwareId;
+    public UUID getDeviceId() {
+	return deviceId;
     }
 
-    public void setDeviceHardwareId(String deviceHardwareId) {
-	this.deviceHardwareId = deviceHardwareId;
+    public void setDeviceId(UUID deviceId) {
+	this.deviceId = deviceId;
     }
 
     /*
@@ -129,68 +112,27 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceAssignment#getAssetModuleId()
+     * @see com.sitewhere.spi.device.IDeviceAssignment#getAssetReference()
      */
-    public String getAssetModuleId() {
-	return assetModuleId;
+    @Override
+    public IAssetReference getAssetReference() {
+	return assetReference;
     }
 
-    public void setAssetModuleId(String assetModuleId) {
-	this.assetModuleId = assetModuleId;
+    public void setAssetReference(IAssetReference assetReference) {
+	this.assetReference = assetReference;
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceAssignment#getAssetId()
+     * @see com.sitewhere.spi.device.IDeviceAssignment#getSiteId()
      */
     @Override
-    public String getAssetId() {
-	return assetId;
+    public UUID getSiteId() {
+	return siteId;
     }
 
-    public void setAssetId(String assetId) {
-	this.assetId = assetId;
-    }
-
-    public String getAssetName() {
-	return assetName;
-    }
-
-    public void setAssetName(String assetName) {
-	this.assetName = assetName;
-    }
-
-    public String getAssetImageUrl() {
-	return assetImageUrl;
-    }
-
-    public void setAssetImageUrl(String assetImageUrl) {
-	this.assetImageUrl = assetImageUrl;
-    }
-
-    public Site getSite() {
-	return site;
-    }
-
-    public void setSite(Site site) {
-	this.site = site;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceAssignment#getSiteToken()
-     */
-    @Override
-    public String getSiteToken() {
-	return siteToken;
-    }
-
-    public void setSiteToken(String siteToken) {
-	this.siteToken = siteToken;
+    public void setSiteId(UUID siteId) {
+	this.siteId = siteId;
     }
 
     /*
@@ -235,51 +177,5 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
 
     public void setReleasedDate(Date releasedDate) {
 	this.releasedDate = releasedDate;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceAssignment#getState()
-     */
-    @Override
-    public DeviceAssignmentState getState() {
-	return state;
-    }
-
-    public Device getDevice() {
-	return device;
-    }
-
-    public void setDevice(Device device) {
-	this.device = device;
-    }
-
-    public void setState(DeviceAssignmentState state) {
-	this.state = state;
-    }
-
-    public PersonAsset getAssociatedPerson() {
-	return associatedPerson;
-    }
-
-    public void setAssociatedPerson(PersonAsset associatedPerson) {
-	this.associatedPerson = associatedPerson;
-    }
-
-    public HardwareAsset getAssociatedHardware() {
-	return associatedHardware;
-    }
-
-    public void setAssociatedHardware(HardwareAsset associatedHardware) {
-	this.associatedHardware = associatedHardware;
-    }
-
-    public LocationAsset getAssociatedLocation() {
-	return associatedLocation;
-    }
-
-    public void setAssociatedLocation(LocationAsset associatedLocation) {
-	this.associatedLocation = associatedLocation;
     }
 }

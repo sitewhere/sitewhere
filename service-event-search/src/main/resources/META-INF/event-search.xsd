@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+	xmlns="http://sitewhere.io/schema/sitewhere/microservice/event-search"
+	xmlns:sw="http://sitewhere.io/schema/sitewhere/microservice/common"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/event-search"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xsd:import namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
+		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
+
+	<xsd:element name="event-search" type="eventSearchType">
+		<xsd:annotation>
+			<xsd:documentation>
+				Provides configuration information for the
+				SiteWhere event search microservice.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Contains information about event search -->
+	<xsd:complexType name="eventSearchType">
+		<xsd:sequence>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

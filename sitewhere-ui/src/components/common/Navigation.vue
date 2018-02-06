@@ -13,7 +13,8 @@
           <v-icon dark>keyboard_arrow_down</v-icon>
         </v-list-tile-action>
       </v-list-tile>
-      <v-list-tile @click.native="onSectionClicked(navsub)" v-for="navsub in navsect.subsections" :key="navsub">
+      <v-list-tile @click="onSectionClicked(navsub)"
+        v-for="navsub in navsect.subsections" :key="navsub.id">
         <v-list-tile-content>
           <v-list-tile-title>{{ navsub.title }}</v-list-tile-title>
         </v-list-tile-content>

@@ -3,7 +3,8 @@
     <error-banner :error="error"></error-banner>
     <v-progress-linear v-if="loading" class="call-progress pa-0 ma-0">
     </v-progress-linear>
-    <v-navigation-drawer persistent dark :mini-variant.sync="mini" v-model="drawer">
+    <v-navigation-drawer fixed dark mini-variant.sync="false"
+      v-model="drawer" app>
       <v-list>
         <v-list-tile tag="div">
           <img src="https://s3.amazonaws.com/sitewhere-demo/sitewhere-white.png"
@@ -14,7 +15,7 @@
       <navigation :sections="sections" @sectionSelected="onSectionClicked">
       </navigation>
     </v-navigation-drawer>
-    <v-toolbar fixed class="grey darken-3" dark>
+    <v-toolbar fixed class="grey darken-3" dark app>
       <v-toolbar-side-icon class="grey--text" @click.native.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-icon left dark>{{ section.icon }}</v-icon>
       <v-toolbar-title class="subheading">{{ section.longTitle }}</v-toolbar-title>
@@ -25,7 +26,7 @@
           {{ fullname }}
         </v-btn>
         <v-list>
-          <v-list-tile @click.native="onUserAction(action)"
+          <v-list-tile @click="onUserAction(action)"
             v-for="action in userActions" :key="action.id">
             <v-icon left light class="mr-2">{{action.icon}}</v-icon>
             <v-list-tile-title v-text="action.title"></v-list-tile-title>
@@ -33,16 +34,14 @@
         </v-list>
       </v-menu>
     </v-toolbar>
-    <main>
-      <v-container fluid>
-        <router-view></router-view>
-      </v-container>
-    </main>
+    <v-content>
+      <router-view></router-view>
+    </v-content>
   </v-app>
 </template>
 
 <script>
-import {_getTenant} from '../../http/sitewhere-api-wrapper'
+import {_getTenant, _getJwt} from '../../http/sitewhere-api-wrapper'
 import Navigation from '../common/Navigation'
 import ErrorBanner from '../common/ErrorBanner'
 
@@ -113,7 +112,6 @@ export default {
       title: 'Log Out',
       icon: 'power_settings_new'
     }],
-    mini: false,
     right: null
   }),
 
@@ -157,6 +155,9 @@ export default {
   },
 
   created: function () {
+    // Set up JWT auto-refresh.
+    this.refreshJwt()
+
     // Verify that user is logged in.
     var user = this.$store.getters.user
     if (!user) {
@@ -226,6 +227,24 @@ export default {
       console.log('Logging out!')
       this.$store.commit('logOut')
       this.$router.push('/')
+    },
+
+    // Set up timer for reloading JWT.
+    refreshJwt: function () {
+      var component = this
+      _getJwt(this.$store)
+        .then(function (response) {
+          console.log('Refreshed JWT.')
+          var jwt = response.headers['x-sitewhere-jwt']
+          component.$store.commit('jwt', jwt)
+          setTimeout(function () {
+            component.refreshJwt()
+          }, (1000 * 60 * 5))
+        }).catch(function (e) {
+          console.log('Could not update JWT.')
+          console.log(e)
+          component.onLogOut()
+        })
     }
   }
 }

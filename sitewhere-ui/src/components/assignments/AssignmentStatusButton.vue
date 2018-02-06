@@ -1,26 +1,36 @@
 <template>
   <div>
-    <confirm-dialog ref="dialog" buttonText="Update" title="Update Assignment Status" width="400"
-      @action="onUpdateStatus">
+    <confirm-dialog ref="dialog" buttonText="Update"
+      title="Update Assignment Status" width="400" @action="onUpdateStatus">
       <v-card-text>
         Are you sure you want to update the assignment status?
       </v-card-text>
     </confirm-dialog>
     <v-menu offset-y v-if="assignment.status === 'Active'">
-      <v-btn small style="height: 20px;" class="green darken-2 white--text pa-0 ma-0" slot="activator"
-        v-tooltip:top="{ html: 'Update Status' }">Active</v-btn>
+      <v-tooltip left slot="activator">
+        <v-btn small style="height: 20px;"
+          class="green darken-2 white--text pa-0 ma-0" slot="activator">
+          Active
+        </v-btn>
+        <span>Update Status</span>
+      </v-tooltip>
       <v-list>
-        <v-list-tile @click.native.stop="showDialog(item.action)"
+        <v-list-tile @click.stop="showDialog(item.action)"
           v-for="item in statusActiveItems" :key="item.text">
           <v-list-tile-title>{{ item.text }}</v-list-tile-title>
         </v-list-tile>
       </v-list>
     </v-menu>
     <v-menu offset-y v-if="assignment.status === 'Missing'">
-      <v-btn small style="height: 20px;" class="red darken-2 white--text pa-0 ma-0" slot="activator"
-        v-tooltip:top="{ html: 'Update Status' }">Missing</v-btn>
+      <v-tooltip left slot="activator">
+        <v-btn small style="height: 20px;"
+          class="red darken-2 white--text pa-0 ma-0" slot="activator">
+          Missing
+        </v-btn>
+        <span>Update Status</span>
+      </v-tooltip>
       <v-list>
-        <v-list-tile @click.native.stop="showDialog(item.action)"
+        <v-list-tile @click.stop="showDialog(item.action)"
           v-for="item in statusMissingItems" :key="item.text">
           <v-list-tile-title>{{ item.text }}</v-list-tile-title>
         </v-list-tile>

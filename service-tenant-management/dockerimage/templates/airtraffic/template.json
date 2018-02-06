@@ -1,0 +1,15 @@
+{
+	"id": "airtraffic",
+	"name": "Air Traffic Example",
+	"initializers": {
+		"deviceManagement": [
+			"initializer/deviceModel.groovy"
+		],
+		"assetManagement": [
+			"initializer/assetModel.groovy"
+		],
+		"scheduleManagement": [
+			"initializer/scheduleModel.groovy"
+		]
+	}
+}

@@ -7,7 +7,7 @@
         </no-results-panel>
         <v-data-table v-if="elements.length > 0" class="elevation-2 pa-0" :headers="headers" :items="elements"
           :hide-actions="true" no-data-text="No Elements Found for Group">
-          <template slot="items" scope="props">
+          <template slot="items" slot-scope="props">
             <td width="40%" :title="props.item.elementId"
               :class="elementClassFor(props.item)">
               <v-icon class="grey--text text--darken-2 type-icon">

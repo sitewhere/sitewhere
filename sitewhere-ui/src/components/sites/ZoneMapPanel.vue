@@ -14,15 +14,19 @@
             <v-text-field hide-details label="Zone name" v-model="zoneName"></v-text-field>
           </v-flex>
           <v-flex xs2 pa-2>
-            <color-picker text="Border" v-model="zoneBorder"
-              v-tooltip:top="{ html: 'Border Color' }">
-            </color-picker>
+            <v-tooltip top>
+              <color-picker text="Border" v-model="zoneBorder">
+              </color-picker>
+              <span>Border Color</span>
+            </v-tooltip>
           </v-flex>
           <v-flex xs2 pa-2>
-            <color-picker text="Fill" v-model="zoneFill"
-              @opacityChanged="onFillOpacityUpdated"
-              v-tooltip:top="{ html: 'Fill Color' }">
-            </color-picker>
+            <v-tooltip top>
+              <color-picker text="Fill" v-model="zoneFill"
+                @opacityChanged="onFillOpacityUpdated">
+              </color-picker>
+              <span>Fill Color</span>
+            </v-tooltip>
           </v-flex>
         </v-layout>
       </v-container>

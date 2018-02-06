@@ -14,8 +14,11 @@ package com.sitewhere.rest;
  */
 public interface ISiteWhereWebConstants {
 
-    /** Header that holds SiteWhere tenant authentication token */
-    public static final String HEADER_TENANT_TOKEN = "X-SiteWhere-Tenant";
+    /** Header that holds SiteWhere tenant id being accessed */
+    public static final String HEADER_TENANT_ID = "X-SiteWhere-Tenant-Id";
+
+    /** Header that holds SiteWhere tenant auth token */
+    public static final String HEADER_TENANT_AUTH = "X-SiteWhere-Tenant-Auth";
 
     /** Header that holds SiteWhere error string on error response */
     public static final String HEADER_SITEWHERE_ERROR = "X-SiteWhere-Error";

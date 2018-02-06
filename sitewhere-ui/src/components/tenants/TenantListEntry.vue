@@ -4,32 +4,20 @@
       <div class="tenant-logo" :style="tenantLogoStyle(tenant)">
       </div>
       <div class="tenant-divider"></div>
-      <div class="tenant-name headline ellipsis">
+      <div class="tenant-name headline ellipsis mt-2">
         {{tenant.name}} ({{tenant.id}})
       </div>
       <div class="tenant-actions">
-        <v-btn @click.native.stop="onConfigureTenant"
+        <v-btn @click.stop="onConfigureTenant"
           class="blue white--text tenant-configure ma-0" >
-          <v-icon left dark fa>cogs</v-icon>
+          <v-icon left dark>fa-cogs</v-icon>
           Configure
         </v-btn>
-        <v-btn @click.native.stop="onOpenTenant"
+        <v-btn @click.stop="onOpenTenant"
           class="green white--text tenant-open" >
-          <v-icon left dark fa>database</v-icon>
+          <v-icon left dark>fa-database</v-icon>
           Manage Data
         </v-btn>
-      </div>
-      <div v-if="tenantStarted">
-        <v-icon class="tenant-symbol green--text fa-lg" fa>check-circle</v-icon>
-        <span class="tenant-message">Tenant is Running</span>
-      </div>
-      <div v-if="tenantStopped">
-        <v-icon class="tenant-symbol grey--text fa-lg" fa>power-off</v-icon>
-        <span class="tenant-message">Tenant is Stopped</span>
-      </div>
-      <div v-if="tenantError">
-        <v-icon class="tenant-symbol red--text fa-lg" fa>warning</v-icon>
-        <span class="tenant-message">Tenant Failed to Start</span>
       </div>
     </v-card-text>
   </v-card>

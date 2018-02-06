@@ -1,10 +1,12 @@
 <template>
   <v-card dark class="blue darken-2 elevation-1 pb-3">
-    <v-card-title class="ma-0">
-      <span class="title white--text">Device Filter Criteria</span>
-    </v-card-title>
-    <div class="pl-2 pr-2 pt-0 pb-0" style="width: 80%">
-      <div>
+    <v-toolbar flat dark dense card class="primary">
+      <v-toolbar-title class="white--text">
+        Device Filter Criteria
+      </v-toolbar-title>
+    </v-toolbar>
+    <v-layout row wrap>
+      <v-flex xs11 class="pa-4">
         <span v-if="emptyFilter" class="subheading white--text pl-3">No filter applied</span>
         <v-chip close v-if="siteFilter" @input="onSiteFilterClosed"
           v-tooltip:top="{ html: 'Only include devices from this site' }">
@@ -29,11 +31,13 @@
           </v-avatar>
           {{ deviceGroupFilter.name }}
         </v-chip>
-      </div>
-      <v-spacer></v-spacer>
-      <device-list-filter-dialog :filter="filter" @filter="onFilterUpdated">
-      </device-list-filter-dialog>
-    </div>
+      </v-flex>
+      <v-flex xs1>
+        <device-list-filter-dialog class="pa-2" :filter="filter"
+          @filter="onFilterUpdated">
+        </device-list-filter-dialog>
+      </v-flex>
+    </v-layout>
   </v-card>
 </template>
 

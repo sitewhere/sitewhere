@@ -1,1 +1,0 @@
-If the result is an alert event, the response will be similar to the one below:

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://sitewhere.io/schema/sitewhere/microservice/common"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/common"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<!-- Defines property placeholder regular expression -->
+	<xsd:simpleType name="propertyPlaceholderType">
+		<xsd:annotation>
+			<xsd:documentation>
+				Defines string value restricted to a Spring
+				property placeholder.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="\$\{[^\}]+\}" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="substitutableInt">
+		<xsd:annotation>
+			<xsd:documentation>
+				Value that can be an integer or a property
+				placeholder value.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:union>
+			<xsd:simpleType>
+				<xsd:restriction base="propertyPlaceholderType" />
+			</xsd:simpleType>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:int" />
+			</xsd:simpleType>
+		</xsd:union>
+	</xsd:simpleType>
+	<xsd:simpleType name="substitutableBoolean">
+		<xsd:annotation>
+			<xsd:documentation>
+				Value that can be a boolean or a property
+				placeholder value.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:union>
+			<xsd:simpleType>
+				<xsd:restriction base="propertyPlaceholderType" />
+			</xsd:simpleType>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:boolean" />
+			</xsd:simpleType>
+		</xsd:union>
+	</xsd:simpleType>
+</xsd:schema>

@@ -1,7 +1,5 @@
 description = 'SiteWhere HBase Implementation'
 
-apply plugin: 'nebula.provided-base'
-
 dependencies {
     compile project(':sitewhere-client')
     compile project(':sitewhere-core')
@@ -10,12 +8,10 @@ dependencies {
  		exclude (module: 'log4j')   
  		exclude (module: 'slf4j-log4j12')   
     }
-    compile group: 'com.google.protobuf', name: 'protobuf-java'
     compile group: 'org.springframework', name: 'spring-beans'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
     compile group: 'commons-codec', name: 'commons-codec'
-    
-    provided group: 'javax.servlet', name: 'javax.servlet-api'
+    compile group: 'com.google', name: 'bitcoinj', version:'0.11.3'
 }

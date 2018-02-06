@@ -25,12 +25,12 @@ import org.apache.hadoop.hbase.client.Table;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
 import com.sitewhere.hbase.encoder.PayloadEncoding;
 import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
+import com.sitewhere.persistence.Persistence;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.search.Pager;
 import com.sitewhere.rest.model.search.SearchResults;
@@ -277,7 +277,7 @@ public class HBaseUtils {
 	    }
 	} else {
 	    byte[] marker = { (byte) 0x01 };
-	    SiteWherePersistence.setUpdatedEntityMetadata(existing);
+	    Persistence.setUpdatedEntityMetadata(existing);
 	    byte[] updated = marshaler.encode(existing);
 
 	    Table table = null;

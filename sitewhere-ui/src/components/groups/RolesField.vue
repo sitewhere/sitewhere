@@ -20,9 +20,14 @@
                 </v-text-field>
               </v-flex>
               <v-flex xs1>
-                <v-btn icon @click.native="onRoleAdded" v-tooltip:left="{ html: 'Add role' }">
-                  <v-icon large class="blue--text text--darken-2">add_circle</v-icon>
-                </v-btn>
+                <v-tooltip left>
+                  <v-btn icon @click="onRoleAdded"  slot="activator">
+                    <v-icon class="blue--text text--darken-2">
+                      fa-plus
+                    </v-icon>
+                  </v-btn>
+                  <span>Update Device</span>
+                </v-tooltip>
               </v-flex>
             </v-layout>
           </v-container>

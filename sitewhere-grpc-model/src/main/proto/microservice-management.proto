@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.service;
+
+option java_multiple_files = true;
+option java_package = "com.sitewhere.grpc.service";
+option java_outer_classname = "MicroserviceServices";
+
+import "sitewhere-common.proto";
+import "microservice-model.proto";
+
+// Microservice management APIs.
+service MicroserviceManagement {
+
+	// #####################
+	// ### CONFIGURATION ###
+	// #####################
+
+	// Get configuration model.
+	rpc GetConfigurationModel (GGetConfigurationModelRequest) returns (GGetConfigurationModelResponse) {}
+
+	// Get global configuration content.
+	rpc GetGlobalConfiguration (GGetGlobalConfigurationRequest) returns (GGetGlobalConfigurationResponse) {}
+
+	// Get tenant configuration content.
+	rpc GetTenantConfiguration (GGetTenantConfigurationRequest) returns (GGetTenantConfigurationResponse) {}
+
+	// Update global configuration content.
+	rpc UpdateGlobalConfiguration (GUpdateGlobalConfigurationRequest) returns (GUpdateGlobalConfigurationResponse) {}
+
+	// Update tenant configuration content.
+	rpc UpdateTenantConfiguration (GUpdateTenantConfigurationRequest) returns (GUpdateTenantConfigurationResponse) {}
+}
+
+// #####################
+// ### CONFIGURATION ###
+// #####################
+
+// Request for getting configuration model.
+message GGetConfigurationModelRequest {
+}
+	
+// Response for creating a batch operation.
+message GGetConfigurationModelResponse {
+	com.sitewhere.grpc.model.GMicroserviceConfiguration model = 1;
+}
+
+// Request for getting global configuration data.
+message GGetGlobalConfigurationRequest {
+}
+	
+// Response for getting global configuration data.
+message GGetGlobalConfigurationResponse {
+	com.sitewhere.grpc.model.GConfigurationContent configuration = 1;
+}
+
+// Request for getting tenant configuration data.
+message GGetTenantConfigurationRequest {
+	string tenantId = 1;
+}
+	
+// Response for getting tenant configuration data.
+message GGetTenantConfigurationResponse {
+	com.sitewhere.grpc.model.GConfigurationContent configuration = 1;
+}
+
+// Request for updating global configuration data.
+message GUpdateGlobalConfigurationRequest {
+	com.sitewhere.grpc.model.GConfigurationContent configuration = 1;
+}
+	
+// Response for updating global configuration data.
+message GUpdateGlobalConfigurationResponse {
+}
+
+// Request for updating tenant configuration data.
+message GUpdateTenantConfigurationRequest {
+	string tenantId = 1;
+	com.sitewhere.grpc.model.GConfigurationContent configuration = 2;
+}
+	
+// Response for updating tenant configuration data.
+message GUpdateTenantConfigurationResponse {
+}

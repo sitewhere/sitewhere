@@ -12,14 +12,14 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Generates symbols which uniquely identify SiteWhere entities.
  * 
  * @author Derek
  */
-public interface ISymbolGenerator extends ITenantLifecycleComponent {
+public interface ISymbolGenerator extends ITenantEngineLifecycleComponent {
 
     /**
      * Get unique generator id.

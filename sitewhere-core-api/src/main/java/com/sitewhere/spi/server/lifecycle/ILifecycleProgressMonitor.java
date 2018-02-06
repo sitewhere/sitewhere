@@ -1,9 +1,19 @@
+/*
+ * Copyright (c) SiteWhere, LLC. All rights reserved. http://www.sitewhere.com
+ *
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
 package com.sitewhere.spi.server.lifecycle;
 
 import java.util.Deque;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.monitoring.IProgressReporter;
+
+import io.opentracing.ActiveSpan;
 
 /**
  * Allows progress to be monitored on long-running lifecycle tasks.
@@ -28,6 +38,30 @@ public interface ILifecycleProgressMonitor extends IProgressReporter {
     public void pushContext(ILifecycleProgressContext context) throws SiteWhereException;
 
     /**
+     * Start a span for the current context.
+     * 
+     * @param name
+     * @return
+     * @throws SiteWhereException
+     */
+    public ActiveSpan createTracerSpan(String name) throws SiteWhereException;
+
+    /**
+     * Handle an error encountered while in a tracer span.
+     * 
+     * @param span
+     * @param t
+     */
+    public void handleErrorInTracerSpan(ActiveSpan span, Throwable t);
+
+    /**
+     * Finish the given tracer span.
+     * 
+     * @param span
+     */
+    public void finishTracerSpan(ActiveSpan span);
+
+    /**
      * Start progress on a new operation within the current nesting context.
      * 
      * @param operation
@@ -50,4 +84,11 @@ public interface ILifecycleProgressMonitor extends IProgressReporter {
      * @throws SiteWhereException
      */
     public ILifecycleProgressContext popContext() throws SiteWhereException;
+
+    /**
+     * Get microservice associated with component.
+     * 
+     * @return
+     */
+    public IMicroservice getMicroservice();
 }

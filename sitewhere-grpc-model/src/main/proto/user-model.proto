@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.model;
+
+option java_outer_classname = "UserModel";
+
+import "sitewhere-common.proto";
+import "google/protobuf/timestamp.proto";
+
+// #############
+// ### USERS ###
+// #############
+
+// Request for creating a user.
+message GUserCreateRequest {
+	string username = 1;
+	string password = 2;
+	string firstName = 3;
+	string lastName = 4;
+	GUserAccountStatus status = 5;
+	repeated string authorities = 6;
+	map<string, string> metadata = 7;
+}
+
+// Criteria for user search.
+message GUserSearchCriteria {
+	bool includeDeleted = 1;
+}
+
+// Information for a user.
+message GUser {
+	string username = 1;
+	string hashedPassword = 2;
+	string firstName = 3;
+	string lastName = 4;
+	google.protobuf.Timestamp lastLogin = 5;
+	GUserAccountStatus status = 6;
+	repeated string authorities = 7;
+	map<string, string> metadata = 8;
+	GEntityInformation entityInformation = 9;
+}
+
+// ###########################
+// ### GRANTED AUTHORITIES ###
+// ###########################
+
+// Request for creating a granted authority.
+message GGrantedAuthorityCreateRequest {
+	string authority = 1;
+	string description = 2;
+	GGrantedAuthorityReference parent = 3;
+	bool group = 4;
+}
+
+// Information for a granted authority.
+message GGrantedAuthority {
+	string authority = 1;
+	string description = 2;
+	GGrantedAuthorityReference parent = 3;
+	bool group = 4;
+}

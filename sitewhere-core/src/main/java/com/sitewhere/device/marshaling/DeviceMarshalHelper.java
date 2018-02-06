@@ -10,21 +10,20 @@ package com.sitewhere.device.marshaling;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.Site;
+import com.sitewhere.rest.model.device.marshaling.MarshaledDevice;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Configurable helper class that allows {@link Device} model objects to be
@@ -38,7 +37,7 @@ public class DeviceMarshalHelper {
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Tenant */
-    private ITenant tenant;
+    private IDeviceManagement deviceManagement;
 
     /** Indicates whether device spec asset information is to be included */
     private boolean includeAsset = true;
@@ -66,8 +65,8 @@ public class DeviceMarshalHelper {
     /** Helper for marshaling nested devices */
     private DeviceMarshalHelper nestedHelper;
 
-    public DeviceMarshalHelper(ITenant tenant) {
-	this.tenant = tenant;
+    public DeviceMarshalHelper(IDeviceManagement deviceManagement) {
+	this.deviceManagement = deviceManagement;
     }
 
     /**
@@ -78,12 +77,14 @@ public class DeviceMarshalHelper {
      * @return
      * @throws SiteWhereException
      */
-    public Device convert(IDevice source, IAssetModuleManager manager) throws SiteWhereException {
-	Device result = new Device();
+    public MarshaledDevice convert(IDevice source, IAssetResolver assetResolver) throws SiteWhereException {
+	MarshaledDevice result = new MarshaledDevice();
+	result.setId(source.getId());
 	result.setHardwareId(source.getHardwareId());
-	result.setSiteToken(source.getSiteToken());
-	result.setParentHardwareId(source.getParentHardwareId());
-	result.setStatus(source.getStatus());
+	result.setSiteId(source.getSiteId());
+	result.setDeviceSpecificationId(source.getDeviceSpecificationId());
+	result.setDeviceAssignmentId(source.getDeviceAssignmentId());
+	result.setParentDeviceId(source.getParentDeviceId());
 	result.setComments(source.getComments());
 	MetadataProviderEntity.copy(source, result);
 
@@ -91,24 +92,23 @@ public class DeviceMarshalHelper {
 	for (IDeviceElementMapping mapping : source.getDeviceElementMappings()) {
 	    DeviceElementMapping cnvMapping = DeviceElementMapping.copy(mapping);
 	    if (isIncludeNested()) {
-		IDevice device = getDeviceManagement(tenant).getDeviceByHardwareId(mapping.getHardwareId());
-		cnvMapping.setDevice(getNestedHelper().convert(device, manager));
+		IDevice device = getDeviceManagement().getDeviceByHardwareId(mapping.getHardwareId());
+		cnvMapping.setDevice(getNestedHelper().convert(device, assetResolver));
 	    }
 	    result.getDeviceElementMappings().add(cnvMapping);
 	}
 
 	// Look up specification information.
-	if (source.getSpecificationToken() != null) {
-	    IDeviceSpecification spec = getDeviceManagement(tenant)
-		    .getDeviceSpecificationByToken(source.getSpecificationToken());
+	if (source.getDeviceSpecificationId() != null) {
+	    IDeviceSpecification spec = getDeviceManagement().getDeviceSpecification(source.getDeviceSpecificationId());
 	    if (spec == null) {
 		throw new SiteWhereException("Device references non-existent specification.");
 	    }
 	    if (includeSpecification) {
-		result.setSpecification(getSpecificationHelper().convert(spec, manager));
+		result.setSpecification(getSpecificationHelper().convert(spec, assetResolver));
 	    } else {
-		result.setSpecificationToken(source.getSpecificationToken());
-		HardwareAsset asset = (HardwareAsset) manager.getAssetById(spec.getAssetModuleId(), spec.getAssetId());
+		HardwareAsset asset = (HardwareAsset) assetResolver.getAssetModuleManagement()
+			.getAsset(spec.getAssetReference());
 		if (asset != null) {
 		    result.setAssetId(asset.getId());
 		    result.setAssetName(asset.getName());
@@ -118,42 +118,28 @@ public class DeviceMarshalHelper {
 		}
 	    }
 	}
-	if (source.getAssignmentToken() != null) {
-	    if (includeAssignment) {
-		try {
-		    IDeviceAssignment assignment = getDeviceManagement(tenant).getCurrentDeviceAssignment(source);
-		    if (assignment != null) {
-			result.setAssignment(getAssignmentHelper().convert(assignment, manager));
-		    }
-		} catch (SiteWhereException e) {
-		    LOGGER.warn("Device has token for non-existent assignment.");
+	if ((source.getDeviceAssignmentId() != null) && (isIncludeAssignment())) {
+	    try {
+		IDeviceAssignment assignment = getDeviceManagement()
+			.getDeviceAssignment(source.getDeviceAssignmentId());
+		if (assignment == null) {
+		    throw new SiteWhereException("Device contains an invalid assignment reference.");
 		}
-	    } else {
-		result.setAssignmentToken(source.getAssignmentToken());
+		result.setAssignment(getAssignmentHelper().convert(assignment, assetResolver));
+	    } catch (SiteWhereException e) {
+		LOGGER.warn("Device has token for non-existent assignment.");
 	    }
 	}
-	if (source.getSiteToken() != null) {
+	if ((source.getSiteId() != null) && (isIncludeSite())) {
 	    if (includeSite) {
-		ISite site = getDeviceManagement(tenant).getSiteByToken(source.getSiteToken());
-		if (site != null) {
-		    result.setSite(Site.copy(site));
+		ISite site = getDeviceManagement().getSite(source.getSiteId());
+		if (site == null) {
+		    throw new SiteWhereException("Device contains an invalid site reference.");
 		}
-	    } else {
-		result.setSiteToken(source.getSiteToken());
+		result.setSite((Site) site);
 	    }
 	}
 	return result;
-    }
-
-    /**
-     * Get device management implementation.
-     * 
-     * @param tenant
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IDeviceManagement getDeviceManagement(ITenant tenant) throws SiteWhereException {
-	return SiteWhere.getServer().getDeviceManagement(tenant);
     }
 
     /**
@@ -163,7 +149,7 @@ public class DeviceMarshalHelper {
      */
     protected DeviceSpecificationMarshalHelper getSpecificationHelper() {
 	if (specificationHelper == null) {
-	    specificationHelper = new DeviceSpecificationMarshalHelper(tenant);
+	    specificationHelper = new DeviceSpecificationMarshalHelper(getDeviceManagement());
 	    specificationHelper.setIncludeAsset(isIncludeAsset());
 	}
 	return specificationHelper;
@@ -176,7 +162,7 @@ public class DeviceMarshalHelper {
      */
     protected DeviceAssignmentMarshalHelper getAssignmentHelper() {
 	if (assignmentHelper == null) {
-	    assignmentHelper = new DeviceAssignmentMarshalHelper(tenant);
+	    assignmentHelper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	    assignmentHelper.setIncludeAsset(false);
 	    assignmentHelper.setIncludeDevice(false);
 	    assignmentHelper.setIncludeSite(false);
@@ -191,7 +177,7 @@ public class DeviceMarshalHelper {
      */
     protected DeviceMarshalHelper getNestedHelper() {
 	if (nestedHelper == null) {
-	    nestedHelper = new DeviceMarshalHelper(tenant);
+	    nestedHelper = new DeviceMarshalHelper(getDeviceManagement());
 	}
 	return nestedHelper;
     }
@@ -237,5 +223,13 @@ public class DeviceMarshalHelper {
 
     public void setIncludeNested(boolean includeNested) {
 	this.includeNested = includeNested;
+    }
+
+    public IDeviceManagement getDeviceManagement() {
+	return deviceManagement;
+    }
+
+    public void setDeviceManagement(IDeviceManagement deviceManagement) {
+	this.deviceManagement = deviceManagement;
     }
 }

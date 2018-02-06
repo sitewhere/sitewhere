@@ -1,12 +1,11 @@
 <template>
   <div v-if="assignment">
     <v-app>
-      <assignment-list-panel :assignment="assignment" headerMode="false"
-        class="mb-3">
+      <assignment-list-panel :assignment="assignment" headerMode="false">
       </assignment-list-panel>
       <v-card>
-        <v-tabs dark v-model="active">
-          <v-tabs-bar slot="activators">
+        <v-tabs v-model="active">
+          <v-tabs-bar dark color="primary">
             <v-tabs-slider></v-tabs-slider>
             <v-tabs-item key="emulator" href="#emulator">
               Emulator
@@ -20,68 +19,78 @@
               MQTT Connected
             </v-btn>
           </v-tabs-bar>
-          <v-tabs-content key="emulator" id="emulator">
-            <assignment-emulator-map ref="map" :assignment="assignment"
-              height="600px" @location="onLocationClicked">
-            </assignment-emulator-map>
-            <v-speed-dial v-model="fab" direction="top" :hover="true"
-              class="action-chooser-fab"
-              transition="slide-y-reverse-transition">
-              <v-btn slot="activator" class="blue darken-3 elevation-5" dark
-                fab hover>
-                <v-icon fa style="margin-top: -10px;" class="fa-2x">bolt</v-icon>
-              </v-btn>
-              <v-btn fab dark small class="green darken-3 elevation-5"
-                 v-tooltip:left="{ html: 'Pan to Last Location' }"
-                  @click.native="onPanToLastLocation">
-                <v-icon fa style="margin-top: -3px;">crosshairs</v-icon>
-              </v-btn>
-              <v-btn fab dark small class="green darken-3 elevation-5"
-                 v-tooltip:left="{ html: 'Add Location' }"
-                 @click.native="onEnterAddLocationMode">
-                <v-icon>room</v-icon>
-              </v-btn>
-              <v-btn fab dark small class="blue darken-3 elevation-5"
-                v-tooltip:left="{ html: 'Add Measurements' }"
-                 @click.native="onAddMeasurementsClicked">
-                <v-icon fa style="margin-top: -3px;">thermometer</v-icon>
-              </v-btn>
-              <v-btn fab dark small class="red darken-3 elevation-5"
-                v-tooltip:left="{ html: 'Add Alert' }"
-                @click.native="onAddAlertClicked">
-                <v-icon>warning</v-icon>
-              </v-btn>
-            </v-speed-dial>
-          </v-tabs-content>
-          <v-tabs-content key="mqtt" id="mqtt">
-            <v-card flat>
-              <v-card-text>
-                <v-container fluid>
-                  <v-layout row wrap>
-                    <v-flex xs12>
-                      <v-text-field class="mt-1" label="MQTT Hostname"
-                        v-model="mqttHostname" prepend-icon="storage">
-                      </v-text-field>
-                    </v-flex>
-                  </v-layout>
-                  <v-layout row wrap>
-                    <v-flex xs12>
-                      <v-text-field class="mt-1" label="MQTT WebSocket Port"
-                        v-model="mqttWsPort" prepend-icon="storage">
-                      </v-text-field>
-                    </v-flex>
-                  </v-layout>
-                  <v-layout row wrap>
-                    <v-flex xs12>
-                      <v-text-field class="mt-1" label="MQTT Topic"
-                        v-model="mqttTopic" prepend-icon="compare_arrows">
-                      </v-text-field>
-                    </v-flex>
-                  </v-layout>
-                </v-container>
-              </v-card-text>
-            </v-card>
-          </v-tabs-content>
+          <v-tabs-items>
+            <v-tabs-content key="emulator" id="emulator">
+              <assignment-emulator-map ref="map" :assignment="assignment"
+                height="600px" @location="onLocationClicked">
+              </assignment-emulator-map>
+              <v-speed-dial v-model="fab" direction="top" :hover="true"
+                class="action-chooser-fab"
+                transition="slide-y-reverse-transition">
+                <v-btn slot="activator" class="blue darken-3 elevation-5" dark
+                  fab hover>
+                  <v-icon style="margin-top: -10px;" class="fa-2x">fa-bolt</v-icon>
+                </v-btn>
+                <v-tooltip left>
+                  <v-btn fab dark small class="green darken-3 elevation-5"
+                      @click="onPanToLastLocation" slot="activator">
+                    <v-icon style="margin-top: -3px;">fa-crosshairs</v-icon>
+                  </v-btn>
+                  <span>Pan to Last Location</span>
+                </v-tooltip>
+                <v-tooltip left>
+                  <v-btn fab dark small class="green darken-3 elevation-5"
+                      @click="onEnterAddLocationMode" slot="activator">
+                    <v-icon>fa-plus</v-icon>
+                  </v-btn>
+                  <span>Add Location</span>
+                </v-tooltip>
+                <v-tooltip left>
+                  <v-btn fab dark small class="blue darken-3 elevation-5"
+                      @click="onAddMeasurementsClicked" slot="activator">
+                    <v-icon>fa-thermometer</v-icon>
+                  </v-btn>
+                  <span>Add Measurements</span>
+                </v-tooltip>
+                <v-tooltip left>
+                  <v-btn fab dark small class="red darken-3 elevation-5"
+                      @click="onAddAlertClicked" slot="activator">
+                    <v-icon>fa-warning</v-icon>
+                  </v-btn>
+                  <span>Add Alert</span>
+                </v-tooltip>
+              </v-speed-dial>
+            </v-tabs-content>
+            <v-tabs-content key="mqtt" id="mqtt">
+              <v-card flat>
+                <v-card-text>
+                  <v-container fluid>
+                    <v-layout row wrap>
+                      <v-flex xs12>
+                        <v-text-field class="mt-1" label="MQTT Hostname"
+                          v-model="mqttHostname" prepend-icon="storage">
+                        </v-text-field>
+                      </v-flex>
+                    </v-layout>
+                    <v-layout row wrap>
+                      <v-flex xs12>
+                        <v-text-field class="mt-1" label="MQTT WebSocket Port"
+                          v-model="mqttWsPort" prepend-icon="storage">
+                        </v-text-field>
+                      </v-flex>
+                    </v-layout>
+                    <v-layout row wrap>
+                      <v-flex xs12>
+                        <v-text-field class="mt-1" label="MQTT Topic"
+                          v-model="mqttTopic" prepend-icon="compare_arrows">
+                        </v-text-field>
+                      </v-flex>
+                    </v-layout>
+                  </v-container>
+                </v-card-text>
+              </v-card>
+            </v-tabs-content>
+          </v-tabs-items>
         </v-tabs>
       </v-card>
       <location-create-dialog ref="locationCreate" :token="token"

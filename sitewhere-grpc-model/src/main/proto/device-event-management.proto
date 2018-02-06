@@ -1,0 +1,462 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.service;
+
+option java_multiple_files = true;
+option java_package = "com.sitewhere.grpc.service";
+option java_outer_classname = "DeviceEventServices";
+
+import "sitewhere-common.proto";
+import "device-event-model.proto";
+import "device-model.proto";
+
+// Device event management APIs.
+service DeviceEventManagement {
+
+	// ####################
+	// ### BATCH EVENTS ###
+	// ####################
+	
+	// Add a batch of device events.
+	rpc AddDeviceEventBatch (GAddDeviceEventBatchRequest) returns (GAddDeviceEventBatchResponse) {}
+
+	// ######################
+	// ### GENERIC EVENTS ###
+	// ######################
+	
+	// Get an event by unique id.
+	rpc GetDeviceEventById (GGetDeviceEventByIdRequest) returns (GGetDeviceEventByIdResponse) {}
+	
+	// Get an event by alternate id.
+	rpc GetDeviceEventByAlternateId (GGetDeviceEventByAlternateIdRequest) returns (GGetDeviceEventByAlternateIdResponse) {}
+	
+	// List device events that match criteria.
+	rpc ListDeviceEvents (GListDeviceEventsRequest) returns (GListDeviceEventsResponse) {}
+	
+	// Update an existing device event.
+	rpc UpdateDeviceEvent (GUpdateDeviceEventRequest) returns (GUpdateDeviceEventResponse) {}
+
+	// ####################
+	// ### MEASUREMENTS ###
+	// ####################
+	
+	// Add measurements for an assignment.
+	rpc AddMeasurementsForAssignment (GAddMeasurementsForAssignmentRequest) returns (GAddMeasurementsForAssignmentResponse) {}
+	
+	// List measurements for an assignment.
+	rpc ListMeasurementsForAssignment (GListMeasurementsForAssignmentRequest) returns (GListMeasurementsForAssignmentResponse) {}
+	
+	// List measurements for a site.
+	rpc ListMeasurementsForSite (GListMeasurementsForSiteRequest) returns (GListMeasurementsForSiteResponse) {}
+
+	// #################
+	// ### LOCATIONS ###
+	// #################
+	
+	// Add location for an assignment.
+	rpc AddLocationForAssignment (GAddLocationForAssignmentRequest) returns (GAddLocationForAssignmentResponse) {}
+	
+	// List locations for an assignment.
+	rpc ListLocationsForAssignment (GListLocationsForAssignmentRequest) returns (GListLocationsForAssignmentResponse) {}
+	
+	// List locations for a site.
+	rpc ListLocationsForSite (GListLocationsForSiteRequest) returns (GListLocationsForSiteResponse) {}
+
+	// ##############
+	// ### ALERTS ###
+	// ##############
+	
+	// Add alert for an assignment.
+	rpc AddAlertForAssignment (GAddAlertForAssignmentRequest) returns (GAddAlertForAssignmentResponse) {}
+	
+	// List alerts for an assignment.
+	rpc ListAlertsForAssignment (GListAlertsForAssignmentRequest) returns (GListAlertsForAssignmentResponse) {}
+	
+	// List alerts for a site.
+	rpc ListAlertsForSite (GListAlertsForSiteRequest) returns (GListAlertsForSiteResponse) {}
+
+	// ###################
+	// ### STREAM DATA ###
+	// ###################
+	
+	// Add stream data for an assignment.
+	rpc AddStreamDataForAssignment (GAddStreamDataForAssignmentRequest) returns (GAddStreamDataForAssignmentResponse) {}
+	
+	// Get stream data for an assignment.
+	rpc GetStreamDataForAssignment (GGetStreamDataForAssignmentRequest) returns (GGetStreamDataForAssignmentResponse) {}
+	
+	// List stream data for an assignment.
+	rpc ListStreamDataForAssignment (GListStreamDataForAssignmentRequest) returns (GListStreamDataForAssignmentResponse) {}
+
+	// ###########################
+	// ### COMMAND INVOCATIONS ###
+	// ###########################
+	
+	// Add command invocation for an assignment.
+	rpc AddCommandInvocationForAssignment (GAddCommandInvocationForAssignmentRequest) returns (GAddCommandInvocationForAssignmentResponse) {}
+	
+	// List command invocations for an assignment.
+	rpc ListCommandInvocationsForAssignment (GListCommandInvocationsForAssignmentRequest) returns (GListCommandInvocationsForAssignmentResponse) {}
+	
+	// List command invocations for a site.
+	rpc ListCommandInvocationsForSite (GListCommandInvocationsForSiteRequest) returns (GListCommandInvocationsForSiteResponse) {}
+
+	// #########################
+	// ### COMMAND RESPONSES ###
+	// #########################
+	
+	// Add command invocation for an assignment.
+	rpc AddCommandResponseForAssignment (GAddCommandResponseForAssignmentRequest) returns (GAddCommandResponseForAssignmentResponse) {}
+	
+	// List command invocations for a command invocation.
+	rpc ListCommandResponsesForInvocation (GListCommandResponsesForInvocationRequest) returns (GListCommandResponsesForInvocationResponse) {}
+	
+	// List command invocations for an assignment.
+	rpc ListCommandResponsesForAssignment (GListCommandResponsesForAssignmentRequest) returns (GListCommandResponsesForAssignmentResponse) {}
+	
+	// List command invocations for a site.
+	rpc ListCommandResponsesForSite (GListCommandResponsesForSiteRequest) returns (GListCommandResponsesForSiteResponse) {}
+	
+	// #####################
+	// ### STATE CHANGES ###
+	// #####################
+	
+	// Add state change for an assignment.
+	rpc AddStateChangeForAssignment (GAddStateChangeForAssignmentRequest) returns (GAddStateChangeForAssignmentResponse) {}
+	
+	// List state changes for an assignment.
+	rpc ListStateChangesForAssignment (GListStateChangesForAssignmentRequest) returns (GListStateChangesForAssignmentResponse) {}
+	
+	// List state changes for a site.
+	rpc ListStateChangesForSite (GListStateChangesForSiteRequest) returns (GListStateChangesForSiteResponse) {}
+}
+
+// ####################
+// ### BATCH EVENTS ###
+// ####################
+	
+// Request for adding a batch of device events.
+message GAddDeviceEventBatchRequest {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+	com.sitewhere.grpc.model.GDeviceEventBatchCreateRequest request = 2;
+}
+
+// Response for adding a batch of device events.
+message GAddDeviceEventBatchResponse {
+	com.sitewhere.grpc.model.GDeviceEventBatchResponse response = 1;
+}
+
+// ######################
+// ### GENERIC EVENTS ###
+// ######################
+	
+// Request for getting an event by id.
+message GGetDeviceEventByIdRequest {
+	string id = 1;
+}
+
+// Response for getting an event by id.
+message GGetDeviceEventByIdResponse {
+	com.sitewhere.grpc.model.GAnyDeviceEvent event = 1;
+}
+	
+// Request for getting an event by alternate id.
+message GGetDeviceEventByAlternateIdRequest {
+	string alternateId = 1;
+}
+
+// Response for getting an event by alternate id.
+message GGetDeviceEventByAlternateIdResponse {
+	com.sitewhere.grpc.model.GAnyDeviceEvent event = 1;
+}
+	
+// Request for finding device events that meet criteria.
+message GListDeviceEventsRequest {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+	com.sitewhere.grpc.model.GDeviceEventSearchCriteria criteria = 2;
+}
+	
+// Response for finding device events that meet criteria.
+message GListDeviceEventsResponse {
+	com.sitewhere.grpc.model.GDeviceEventSearchResults results = 1;
+}
+	
+// Request for updating a device event.
+message GUpdateDeviceEventRequest {
+	string id = 1;
+	com.sitewhere.grpc.model.GDeviceEventCreateRequest event = 2;
+}
+	
+// Response for updating a device event.
+message GUpdateDeviceEventResponse {
+	com.sitewhere.grpc.model.GAnyDeviceEvent event = 1;
+}
+
+// ####################
+// ### MEASUREMENTS ###
+// ####################
+	
+// Request for adding measurements for an assignment.
+message GAddMeasurementsForAssignmentRequest {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+	com.sitewhere.grpc.model.GDeviceMeasurementsCreateRequest request = 2;
+}
+	
+// Response for adding measurements for an assignment.
+message GAddMeasurementsForAssignmentResponse {
+	com.sitewhere.grpc.model.GDeviceMeasurements measurements = 1;
+}
+	
+// Request for list of measurements for an assignment.
+message GListMeasurementsForAssignmentRequest {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
+}
+	
+// Response for list of measurements for an assignment.
+message GListMeasurementsForAssignmentResponse {
+	com.sitewhere.grpc.model.GDeviceMeasurementsSearchResults results = 1;
+}
+	
+// Request for list of measurements for a site.
+message GListMeasurementsForSiteRequest {
+	com.sitewhere.grpc.model.GSite site = 1;
+	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
+}
+	
+// Response for list of measurements for a site.
+message GListMeasurementsForSiteResponse {
+	com.sitewhere.grpc.model.GDeviceMeasurementsSearchResults results = 1;
+}
+
+// #################
+// ### LOCATIONS ###
+// #################
+	
+// Request for adding location for an assignment.
+message GAddLocationForAssignmentRequest {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+	com.sitewhere.grpc.model.GDeviceLocationCreateRequest request = 2;
+}
+	
+// Response for adding location for an assignment.
+message GAddLocationForAssignmentResponse {
+	com.sitewhere.grpc.model.GDeviceLocation location = 1;
+}
+	
+// Request for list of locations for an assignment.
+message GListLocationsForAssignmentRequest {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
+}
+	
+// Response for list of locations for an assignment.
+message GListLocationsForAssignmentResponse {
+	com.sitewhere.grpc.model.GDeviceLocationSearchResults results = 1;
+}
+	
+// Request for list of locations for a site.
+message GListLocationsForSiteRequest {
+	com.sitewhere.grpc.model.GSite site = 1;
+	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
+}
+	
+// Response for list of locations for a site.
+message GListLocationsForSiteResponse {
+	com.sitewhere.grpc.model.GDeviceLocationSearchResults results = 1;
+}
+
+// ##############
+// ### ALERTS ###
+// ##############
+	
+// Request for adding alert for an assignment.
+message GAddAlertForAssignmentRequest {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+	com.sitewhere.grpc.model.GDeviceAlertCreateRequest request = 2;
+}
+	
+// Response for adding alert for an assignment.
+message GAddAlertForAssignmentResponse {
+	com.sitewhere.grpc.model.GDeviceAlert alert = 1;
+}
+	
+// Request for list of alerts for an assignment.
+message GListAlertsForAssignmentRequest {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
+}
+// Response for list of alerts for an assignment.
+message GListAlertsForAssignmentResponse {
+	com.sitewhere.grpc.model.GDeviceAlertSearchResults results = 1;
+}
+	
+// Request for list of alerts for a site.
+message GListAlertsForSiteRequest {
+	com.sitewhere.grpc.model.GSite site = 1;
+	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
+}
+	
+// Response for list of alerts for a site.
+message GListAlertsForSiteResponse {
+	com.sitewhere.grpc.model.GDeviceAlertSearchResults results = 1;
+}
+
+// ###################
+// ### STREAM DATA ###
+// ###################
+	
+// Request for adding stream data for an assignment.
+message GAddStreamDataForAssignmentRequest {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+	com.sitewhere.grpc.model.GDeviceStream deviceStream = 2;
+	com.sitewhere.grpc.model.GDeviceStreamDataCreateRequest request = 3;
+}
+	
+// Response for adding stream data for an assignment.
+message GAddStreamDataForAssignmentResponse {
+	com.sitewhere.grpc.model.GDeviceStreamData streamData = 1;
+}
+	
+// Request for adding stream data for an assignment.
+message GGetStreamDataForAssignmentRequest {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+	string streamId = 2;
+	uint64 sequenceNumber = 3;
+}
+	
+// Response for adding stream data for an assignment.
+message GGetStreamDataForAssignmentResponse {
+	com.sitewhere.grpc.model.GDeviceStreamData streamData = 1;
+}
+	
+// Request for list of stream data for an assignment.
+message GListStreamDataForAssignmentRequest {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+	string streamId = 2;
+	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 3;
+}
+// Response for list of stream data for an assignment.
+message GListStreamDataForAssignmentResponse {
+	com.sitewhere.grpc.model.GDeviceStreamDataSearchResults results = 1;
+}
+
+// ###########################
+// ### COMMAND INVOCATIONS ###
+// ###########################
+	
+// Request for adding command invocation for an assignment.
+message GAddCommandInvocationForAssignmentRequest {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+	com.sitewhere.grpc.model.GDeviceCommandInvocationCreateRequest request = 2;
+}
+	
+// Response for adding command invocation for an assignment.
+message GAddCommandInvocationForAssignmentResponse {
+	com.sitewhere.grpc.model.GDeviceCommandInvocation invocation = 1;
+}
+	
+// Request for list of command invocations for an assignment.
+message GListCommandInvocationsForAssignmentRequest {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
+}
+// Response for list of command invocations for an assignment.
+message GListCommandInvocationsForAssignmentResponse {
+	com.sitewhere.grpc.model.GDeviceCommandInvocationSearchResults results = 1;
+}
+	
+// Request for list of command invocations for a site.
+message GListCommandInvocationsForSiteRequest {
+	com.sitewhere.grpc.model.GSite site = 1;
+	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
+}
+	
+// Response for list of command invocations for a site.
+message GListCommandInvocationsForSiteResponse {
+	com.sitewhere.grpc.model.GDeviceCommandInvocationSearchResults results = 1;
+}
+
+// #########################
+// ### COMMAND RESPONSES ###
+// #########################
+	
+// Request for adding command response for an assignment.
+message GAddCommandResponseForAssignmentRequest {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+	com.sitewhere.grpc.model.GDeviceCommandResponseCreateRequest request = 2;
+}
+	
+// Response for adding command response for an assignment.
+message GAddCommandResponseForAssignmentResponse {
+	com.sitewhere.grpc.model.GDeviceCommandResponse response = 1;
+}
+		
+// Request for list of command responses for an invocation.
+message GListCommandResponsesForInvocationRequest {
+	string invocationId = 1;
+	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
+}
+// Response for list of command responses for an invocation.
+message GListCommandResponsesForInvocationResponse {
+	com.sitewhere.grpc.model.GDeviceCommandResponseSearchResults results = 1;
+}
+	
+// Request for list of command responses for an assignment.
+message GListCommandResponsesForAssignmentRequest {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
+}
+// Response for list of command responses for an assignment.
+message GListCommandResponsesForAssignmentResponse {
+	com.sitewhere.grpc.model.GDeviceCommandResponseSearchResults results = 1;
+}
+	
+// Request for list of command responses for a site.
+message GListCommandResponsesForSiteRequest {
+	com.sitewhere.grpc.model.GSite site = 1;
+	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
+}
+	
+// Response for list of command responses for a site.
+message GListCommandResponsesForSiteResponse {
+	com.sitewhere.grpc.model.GDeviceCommandResponseSearchResults results = 1;
+}
+
+// #####################
+// ### STATE CHANGES ###
+// #####################
+	
+// Request for adding state change for an assignment.
+message GAddStateChangeForAssignmentRequest {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+	com.sitewhere.grpc.model.GDeviceStateChangeCreateRequest request = 2;
+}
+	
+// Response for adding state change for an assignment.
+message GAddStateChangeForAssignmentResponse {
+	com.sitewhere.grpc.model.GDeviceStateChange stateChange = 1;
+}
+	
+// Request for list of state changes for an assignment.
+message GListStateChangesForAssignmentRequest {
+	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
+}
+// Response for list of state changes for an assignment.
+message GListStateChangesForAssignmentResponse {
+	com.sitewhere.grpc.model.GDeviceStateChangeSearchResults results = 1;
+}
+	
+// Request for list of state changes for a site.
+message GListStateChangesForSiteRequest {
+	com.sitewhere.grpc.model.GSite site = 1;
+	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
+}
+	
+// Response for list of state changes for a site.
+message GListStateChangesForSiteResponse {
+	com.sitewhere.grpc.model.GDeviceStateChangeSearchResults results = 1;
+}
+
+

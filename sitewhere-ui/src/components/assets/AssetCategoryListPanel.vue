@@ -1,7 +1,9 @@
 <template>
   <v-card hover class="white">
-    <v-card-text class="category">
-      <v-icon class="category-icon fa-4x grey--text" fa>{{ getIconForCategory(category) }}</v-icon>
+    <v-card-text class="category" @click="onOpenCategory">
+      <v-icon style="font-size: 28pt;" class="category-icon grey--text">
+        fa-{{ getIconForCategory(category) }}
+      </v-icon>
       <div class="category-name title">
         {{ utils.ellipsis(category.name, charWidth) }}
       </div>
@@ -30,6 +32,10 @@ export default {
   props: ['category'],
 
   methods: {
+    // Called when a site is clicked.
+    onOpenCategory: function () {
+      this.$emit('categoryOpened', this.category)
+    },
     // Get icon displayed for a given category.
     getIconForCategory: function (category) {
       if (category.assetType === 'Device') {

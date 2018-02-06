@@ -3,10 +3,13 @@
     <zone-dialog :site='site' style="display: none;" title="Create Zone" width="600"
       createLabel="Create" cancelLabel="Cancel" mode='create' @payload="onCommit">
     </zone-dialog>
-    <v-btn fab dark class="add-button red darken-1 elevation-5"
-      v-tooltip:top="{ html: 'Add Zone' }" @click.native.stop="onOpenDialog">
-      <v-icon>add</v-icon>
-    </v-btn>
+    <v-tooltip top>
+      <v-btn fab dark class="add-button red darken-1 elevation-5"
+        @click.stop="onOpenDialog" slot="activator">
+        <v-icon>fa-plus</v-icon>
+      </v-btn>
+      <span>Add Zone</span>
+    </v-tooltip>
   </span>
 </template>
 

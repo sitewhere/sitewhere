@@ -6,30 +6,50 @@
         <v-flex xs2>
           <v-subheader class="ma-0 pt-0 pr-0">Rows per page</v-subheader>
         </v-flex>
-        <v-flex xs3 style="margin-top: 6px; height: 10px;">
-          <v-btn-toggle :items="pageSizesWithDefaults" v-model="pageSize"></v-btn-toggle>
+        <v-flex xs3>
+          <v-btn-toggle v-model="pageSize" class="mt-1">
+            <v-btn flat :value="entry.value"
+              v-for="entry in pageSizesWithDefaults" :key="entry.value">
+              {{ entry.text }}
+            </v-btn>
+          </v-btn-toggle>
         </v-flex>
         <v-flex xs4>
-          <v-btn :disabled="!previousEnabled" icon light class="ml-0 mr-0"
-            v-tooltip:top="{ html: 'First Page' }" @click.native="onFirstPage">
-            <v-icon light>skip_previous</v-icon>
-          </v-btn>
-          <v-btn :disabled="!previousEnabled" icon light class="ml-0 mr-0"
-            v-tooltip:top="{ html: 'Previous Page' }" @click.native="onPreviousPage">
-            <v-icon light>keyboard_arrow_left</v-icon>
-          </v-btn>
-          <v-btn icon light class="ml-0 mr-0"
-            v-tooltip:top="{ html: 'Refresh' }" @click.native="onRefresh">
-            <v-icon light>refresh</v-icon>
-          </v-btn>
-          <v-btn :disabled="!nextEnabled" icon light class="ml-0 mr-0"
-            v-tooltip:top="{ html: 'Next Page' }" @click.native="onNextPage">
-            <v-icon light>keyboard_arrow_right</v-icon>
-          </v-btn>
-          <v-btn :disabled="!nextEnabled" icon light class="ml-0 mr-0"
-            v-tooltip:top="{ html: 'Last Page' }" @click.native="onLastPage">
-            <v-icon light>skip_next</v-icon>
-          </v-btn>
+          <v-tooltip top>
+            <v-btn :disabled="!previousEnabled" icon light class="ml-0 mr-0"
+              @click="onFirstPage" slot="activator">
+              <v-icon light>fa-fast-backward</v-icon>
+            </v-btn>
+            <span>First Page</span>
+          </v-tooltip>
+          <v-tooltip top>
+            <v-btn :disabled="!previousEnabled" icon light class="ml-0 mr-0"
+              @click="onPreviousPage" slot="activator">
+              <v-icon light>fa-backward</v-icon>
+            </v-btn>
+            <span>Previous Page</span>
+          </v-tooltip>
+          <v-tooltip top>
+            <v-btn icon light class="ml-0 mr-0"
+              @click="onRefresh" slot="activator">
+              <v-icon light>fa-refresh</v-icon>
+            </v-btn>
+            <span>Refresh</span>
+          </v-tooltip>
+          <v-tooltip top>
+            <v-btn :disabled="!nextEnabled" icon light class="ml-0 mr-0"
+              @click="onNextPage" slot="activator">
+              <v-icon light>fa-forward</v-icon>
+            </v-btn>
+            <span>Next Page</span>
+          </v-tooltip>
+          <v-tooltip top>
+            <v-btn :disabled="!nextEnabled" icon light class="ml-0 mr-0"
+              @click="onLastPage" slot="activator">
+              <v-icon light>fa-fast-forward</v-icon>
+            </v-btn>
+            <span>Last Page</span>
+          </v-tooltip>
         </v-flex>
         <v-flex xs3>
           <v-subheader class="ma-0 pt-0 right">{{ description }}</v-subheader>

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) SiteWhere, LLC. All rights reserved. http://www.sitewhere.com
+ *
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
 package com.sitewhere.rest.model.device.request;
 
 import com.sitewhere.rest.model.common.MetadataProvider;
@@ -15,9 +22,6 @@ public class DeviceStatusCreateRequest extends MetadataProvider implements IDevi
 
     /** Status code */
     private String code;
-
-    /** Specification token */
-    private String specificationToken;
 
     /** Display name */
     private String name;
@@ -46,20 +50,6 @@ public class DeviceStatusCreateRequest extends MetadataProvider implements IDevi
 
     public void setCode(String code) {
 	this.code = code;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.request.IDeviceStatusCreateRequest#
-     * getSpecificationToken()
-     */
-    public String getSpecificationToken() {
-	return specificationToken;
-    }
-
-    public void setSpecificationToken(String specificationToken) {
-	this.specificationToken = specificationToken;
     }
 
     /*

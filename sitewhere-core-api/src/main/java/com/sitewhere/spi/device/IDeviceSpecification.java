@@ -7,6 +7,9 @@
  */
 package com.sitewhere.spi.device;
 
+import java.util.UUID;
+
+import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 
@@ -18,7 +21,14 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
 public interface IDeviceSpecification extends IMetadataProviderEntity {
 
     /**
-     * Get unique device specification token.
+     * Get unique device specification id.
+     * 
+     * @return
+     */
+    public UUID getId();
+
+    /**
+     * Get token that acts as an alias for the specificaton id.
      * 
      * @return
      */
@@ -32,18 +42,11 @@ public interface IDeviceSpecification extends IMetadataProviderEntity {
     public String getName();
 
     /**
-     * Get asset module id.
+     * Get asset reference information.
      * 
      * @return
      */
-    public String getAssetModuleId();
-
-    /**
-     * Get unique id within asset module.
-     * 
-     * @return
-     */
-    public String getAssetId();
+    public IAssetReference getAssetReference();
 
     /**
      * Indicates whether this device contains other devices.

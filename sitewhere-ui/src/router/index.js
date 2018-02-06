@@ -13,7 +13,10 @@ import Login from '@/components/Login'
 import SystemAdministration from '@/components/SystemAdministration'
 import TenantsList from '@/components/tenants/TenantsList'
 import TenantDetail from '@/components/tenants/TenantDetail'
+import TenantMicroserviceEditor from '@/components/tenants/TenantMicroserviceEditor'
 import UsersList from '@/components/users/UsersList'
+import GlobalMicroservicesList from '@/components/global/GlobalMicroservicesList'
+import GlobalMicroserviceEditor from '@/components/global/GlobalMicroserviceEditor'
 import TenantAdministration from '@/components/tenants/TenantAdministration'
 import Server from '@/components/server/Server'
 import SitesList from '@/components/sites/SitesList'
@@ -33,7 +36,14 @@ import BatchOperationDetail from '@/components/batch/BatchOperationDetail'
 import SchedulesList from '@/components/schedules/SchedulesList'
 
 Vue.use(Router)
-Vue.use(Vuetify)
+Vue.use(Vuetify, {
+  theme: {
+    primary: '#1565c0',
+    secondary: '#b0bec5',
+    accent: '#8c9eff',
+    error: '#b71c1c'
+  }
+})
 Vue.use(VueMoment)
 Vue.use(VueClipboards)
 Vue.use(VueHighlightJS)
@@ -83,8 +93,17 @@ export default new Router({
           path: 'tenants/:tenantId',
           component: TenantDetail
         }, {
+          path: 'tenants/:tenantId/:identifier',
+          component: TenantMicroserviceEditor
+        }, {
           path: 'users',
           component: UsersList
+        }, {
+          path: 'microservices',
+          component: GlobalMicroservicesList
+        }, {
+          path: 'microservices/:identifier',
+          component: GlobalMicroserviceEditor
         }
       ]
     }, {

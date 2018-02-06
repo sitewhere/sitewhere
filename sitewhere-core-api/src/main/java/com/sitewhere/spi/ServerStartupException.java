@@ -22,12 +22,9 @@ public class ServerStartupException extends SiteWhereException {
     /** Component that caused startup to fail */
     private ILifecycleComponent component;
 
-    /** High-level description of error */
-    private String description;
-
-    public ServerStartupException(ILifecycleComponent component, String description) {
+    public ServerStartupException(ILifecycleComponent component, String message, Throwable t) {
+	super(message, t);
 	this.component = component;
-	this.description = description;
     }
 
     public ILifecycleComponent getComponent() {
@@ -36,13 +33,5 @@ public class ServerStartupException extends SiteWhereException {
 
     public void setComponent(ILifecycleComponent component) {
 	this.component = component;
-    }
-
-    public String getDescription() {
-	return description;
-    }
-
-    public void setDescription(String description) {
-	this.description = description;
     }
 }
