@@ -1,18 +1,10 @@
 <template>
-  <span>
-    <delete-dialog title="Delete Assignment" width="400" :error="error"
-      @delete="onDeleteConfirmed">
-      <v-card-text>
-        Are you sure you want to delete this assignment?
-      </v-card-text>
-    </delete-dialog>
-    <v-tooltip top>
-      <v-btn icon @click="showDeleteDialog" slot="activator">
-        <v-icon class="grey--text">fa-times</v-icon>
-      </v-btn>
-      <span>Delete Assignment</span>
-    </v-tooltip>
-  </span>
+  <delete-dialog title="Delete Assignment" width="400" :error="error"
+    @delete="onDeleteConfirmed">
+    <v-card-text>
+      Are you sure you want to delete this assignment?
+    </v-card-text>
+  </delete-dialog>
 </template>
 
 <script>

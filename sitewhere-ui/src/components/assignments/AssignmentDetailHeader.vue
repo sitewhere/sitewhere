@@ -34,7 +34,19 @@
           <span>{{ formatDate(assignment.releasedDate) }}</span>
         </header-field>
       </div>
-      <assignment-delete-dialog :token="assignment.token" class="assn-delete"
+      <options-menu class="options-menu">
+        <v-list slot="options">
+          <v-list-tile>
+            <v-btn block class="red darken-2 white--text"
+              @click="onDeleteAssignment">
+              Delete Assignment
+              <v-spacer></v-spacer>
+              <v-icon class="white--text pl-2">fa-times</v-icon>
+            </v-btn>
+          </v-list-tile>
+        </v-list>
+      </options-menu>
+      <assignment-delete-dialog ref="delete" :token="assignment.token"
         @assignmentDeleted="onAssignmentDeleted">
       </assignment-delete-dialog>
     </v-card-text>
@@ -50,6 +62,7 @@ import Style from '../common/Style'
 import {createCoreApiUrl} from '../../http/sitewhere-api-wrapper'
 import HeaderField from '../common/HeaderField'
 import ClipboardCopyField from '../common/ClipboardCopyField'
+import OptionsMenu from '../common/OptionsMenu'
 import AssignmentDeleteDialog from './AssignmentDeleteDialog'
 
 export default {
@@ -64,6 +77,7 @@ export default {
   components: {
     HeaderField,
     ClipboardCopyField,
+    OptionsMenu,
     AssignmentDeleteDialog
   },
 
@@ -112,16 +126,18 @@ export default {
   },
 
   methods: {
+    // Open dialog to delete assignment.
+    onDeleteAssignment: function () {
+      this.$refs['delete'].showDeleteDialog()
+    },
     // Called when site is deleted.
     onAssignmentDeleted: function () {
       this.$emit('assignmentDeleted')
     },
-
     // Format date.
     formatDate: function (date) {
       return Utils.formatDate(date)
     },
-
     // Open the assignment emulator.
     onOpenEmulator: function () {
       this.$emit('emulatorOpened')
@@ -170,5 +186,11 @@ export default {
   position: absolute;
   bottom: 0px;
   right: 200px;
+}
+
+.options-menu {
+  position: absolute;
+  top: 10px;
+  right: 190px;
 }
 </style>
