@@ -163,9 +163,9 @@ public class HBaseDevice {
 		if ((shouldAdd) && (payload != null)) {
 		    Device device = context.getPayloadMarshaler().decodeDevice(payload);
 
-		    // Filter by specification.
-		    if (criteria.getSpecificationToken() != null) {
-			if (!criteria.getSpecificationToken().equals(device.getDeviceSpecificationId())) {
+		    // Filter by device type.
+		    if (criteria.getDeviceTypeToken() != null) {
+			if (!criteria.getDeviceTypeToken().equals(device.getDeviceTypeId())) {
 			    continue;
 			}
 		    }

@@ -38,8 +38,8 @@ public interface JobConstants {
      */
     public static interface BatchCommandInvocation {
 
-	/** Indicates if results should be narrowed by device specification */
-	public static final String SPECIFICATION_TOKEN = "specificationToken";
+	/** Indicates if results should be narrowed by device type */
+	public static final String DEVICE_TYPE_TOKEN = "deviceTypeToken";
 
 	/** Indicates if results should be narrowed by site */
 	public static final String SITE_TOKEN = "siteToken";
@@ -48,20 +48,18 @@ public interface JobConstants {
 	public static final String GROUP_TOKEN = "groupToken";
 
 	/**
-	 * Indicates if results should be narrowed by groups that have a given
-	 * role
+	 * Indicates if results should be narrowed by groups that have a given role
 	 */
 	public static final String GROUP_ROLE = "groupRole";
 
 	/**
-	 * Indicates if results should be narrowed by devices created on or
-	 * after a date
+	 * Indicates if results should be narrowed by devices created on or after a date
 	 */
 	public static final String START_DATE = "startDate";
 
 	/**
-	 * Indicates if results should be narrowed by devices created on or
-	 * before a date
+	 * Indicates if results should be narrowed by devices created on or before a
+	 * date
 	 */
 	public static final String END_DATE = "endDate";
     }

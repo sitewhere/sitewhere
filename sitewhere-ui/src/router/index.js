@@ -23,8 +23,8 @@ import SitesList from '@/components/sites/SitesList'
 import SiteDetail from '@/components/sites/SiteDetail'
 import AssignmentDetail from '@/components/assignments/AssignmentDetail'
 import AssignmentEmulator from '@/components/assignments/AssignmentEmulator'
-import SpecificationsList from '@/components/specifications/SpecificationsList'
-import SpecificationDetail from '@/components/specifications/SpecificationDetail'
+import DeviceTypesList from '@/components/devicetypes/DeviceTypesList'
+import DeviceTypeDetail from '@/components/devicetypes/DeviceTypeDetail'
 import DevicesList from '@/components/devices/DevicesList'
 import DeviceDetail from '@/components/devices/DeviceDetail'
 import DeviceGroupsList from '@/components/groups/DeviceGroupsList'
@@ -126,11 +126,11 @@ export default new Router({
           path: 'assignments/:token/emulator',
           component: AssignmentEmulator
         }, {
-          path: 'specifications',
-          component: SpecificationsList
+          path: 'devicetypes',
+          component: DeviceTypesList
         }, {
-          path: 'specifications/:token',
-          component: SpecificationDetail
+          path: 'devicetypes/:token',
+          component: DeviceTypeDetail
         }, {
           path: 'devices',
           component: DevicesList

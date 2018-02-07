@@ -42,11 +42,11 @@ public interface IDevice extends IMetadataProviderEntity {
     public UUID getSiteId();
 
     /**
-     * Get unique id for associated device specification.
+     * Get unique id for associated device type.
      * 
      * @return
      */
-    public UUID getDeviceSpecificationId();
+    public UUID getDeviceTypeId();
 
     /**
      * Get device assignment id if assigned.

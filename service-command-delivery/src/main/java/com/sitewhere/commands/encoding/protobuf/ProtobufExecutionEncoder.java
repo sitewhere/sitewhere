@@ -17,7 +17,6 @@ import com.google.protobuf.ByteString;
 import com.sitewhere.commands.spi.ICommandExecutionEncoder;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.communication.protobuf.ProtobufMessageBuilder;
-import com.sitewhere.communication.protobuf.proto.Sitewhere.Model;
 import com.sitewhere.communication.protobuf.proto.Sitewhere.Device.Command;
 import com.sitewhere.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAck;
 import com.sitewhere.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAckState;
@@ -25,6 +24,7 @@ import com.sitewhere.communication.protobuf.proto.Sitewhere.Device.Header;
 import com.sitewhere.communication.protobuf.proto.Sitewhere.Device.RegistrationAck;
 import com.sitewhere.communication.protobuf.proto.Sitewhere.Device.RegistrationAckError;
 import com.sitewhere.communication.protobuf.proto.Sitewhere.Device.RegistrationAckState;
+import com.sitewhere.communication.protobuf.proto.Sitewhere.Model;
 import com.sitewhere.communication.protobuf.proto.Sitewhere.Model.DeviceStreamData;
 import com.sitewhere.core.DataUtils;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -109,7 +109,7 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
 		builder.setErrorType(RegistrationAckError.NEW_DEVICES_NOT_ALLOWED);
 		break;
 	    }
-	    case InvalidSpecificationToken: {
+	    case InvalidDeviceTypeToken: {
 		builder.setErrorType(RegistrationAckError.INVALID_SPECIFICATION);
 		break;
 	    }

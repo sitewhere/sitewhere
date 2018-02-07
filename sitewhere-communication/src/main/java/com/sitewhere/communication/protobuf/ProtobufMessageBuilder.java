@@ -20,13 +20,13 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceNestingContext;
-import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Produces an encoded message based on Google Protocol Buffer derived from an
- * {@link IDeviceSpecification}.
+ * {@link IDeviceType}.
  * 
  * @author Derek
  */
@@ -48,16 +48,15 @@ public class ProtobufMessageBuilder {
      */
     public static byte[] createMessage(IDeviceCommandExecution execution, IDeviceNestingContext nested,
 	    IDeviceAssignment assignment, ITenant tenant) throws SiteWhereException {
-	IDeviceSpecification specification = getDeviceManagement(tenant)
-		.getDeviceSpecification(execution.getCommand().getDeviceSpecificationId());
-	DescriptorProtos.FileDescriptorProto fdproto = getFileDescriptor(specification, tenant);
-	LOGGER.debug("Using the following specification proto:\n" + fdproto.toString());
+	IDeviceType deviceType = getDeviceManagement(tenant).getDeviceType(execution.getCommand().getDeviceTypeId());
+	DescriptorProtos.FileDescriptorProto fdproto = getFileDescriptor(deviceType, tenant);
+	LOGGER.debug("Using the following device type proto:\n" + fdproto.toString());
 	Descriptors.FileDescriptor[] fdescs = new Descriptors.FileDescriptor[0];
 	ByteArrayOutputStream out = new ByteArrayOutputStream();
 	try {
 	    Descriptors.FileDescriptor filedesc = Descriptors.FileDescriptor.buildFrom(fdproto, fdescs);
 	    Descriptors.Descriptor mdesc = filedesc
-		    .findMessageTypeByName(ProtobufNaming.getSpecificationIdentifier(specification));
+		    .findMessageTypeByName(ProtobufNaming.getDeviceTypeIdentifier(deviceType));
 
 	    // Create the header message.
 	    Descriptors.Descriptor header = mdesc.findNestedTypeByName(ProtobufNaming.HEADER_MSG_NAME);
@@ -75,14 +74,14 @@ public class ProtobufMessageBuilder {
 		    execution.getInvocation().getId());
 
 	    if (nested.getNested() != null) {
-		IDeviceSpecification nestedSpec = getDeviceManagement(tenant)
-			.getDeviceSpecification(nested.getNested().getDeviceSpecificationId());
-		LOGGER.debug("Targeting nested device with specification: " + nestedSpec.getToken() + " at path "
-			+ nested.getPath());
+		IDeviceType nestedType = getDeviceManagement(tenant)
+			.getDeviceType(nested.getNested().getDeviceTypeId());
+		LOGGER.debug(
+			"Targeting nested device with type: " + nestedType.getName() + " at path " + nested.getPath());
 		headBuilder.setField(header.findFieldByName(ProtobufNaming.HEADER_NESTED_PATH_FIELD_NAME),
 			nested.getPath());
-		headBuilder.setField(header.findFieldByName(ProtobufNaming.HEADER_NESTED_SPEC_FIELD_NAME),
-			nestedSpec.getToken());
+		headBuilder.setField(header.findFieldByName(ProtobufNaming.HEADER_NESTED_TYPE_FIELD_NAME),
+			nestedType.getToken());
 	    }
 
 	    DynamicMessage hmessage = headBuilder.build();
@@ -98,7 +97,7 @@ public class ProtobufMessageBuilder {
 		Object value = execution.getParameters().get(name);
 		Descriptors.FieldDescriptor field = command.findFieldByName(name);
 		if (field == null) {
-		    throw new SiteWhereException("Command parameter '" + name + "' not found in specification: ");
+		    throw new SiteWhereException("Command parameter '" + name + "' not found in device type: ");
 		}
 		try {
 		    cbuilder.setField(field, value);
@@ -121,17 +120,16 @@ public class ProtobufMessageBuilder {
     }
 
     /**
-     * Gets a file descriptor for protobuf representation of
-     * {@link IDeviceSpecification}.
+     * Gets a file descriptor for protobuf representation of {@link IDeviceType}.
      * 
-     * @param specification
+     * @param deviceType
      * @param tenant
      * @return
      * @throws SiteWhereException
      */
-    protected static DescriptorProtos.FileDescriptorProto getFileDescriptor(IDeviceSpecification specification,
-	    ITenant tenant) throws SiteWhereException {
-	return ProtobufSpecificationBuilder.createFileDescriptor(specification, tenant);
+    protected static DescriptorProtos.FileDescriptorProto getFileDescriptor(IDeviceType deviceType, ITenant tenant)
+	    throws SiteWhereException {
+	return ProtobufSpecificationBuilder.createFileDescriptor(deviceType, tenant);
     }
 
     private static IDeviceManagement getDeviceManagement(ITenant tenant) {

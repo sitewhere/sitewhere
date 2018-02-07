@@ -20,25 +20,25 @@ export function updateDevice (axios, hardwareId, payload) {
 /**
  * List devices.
  */
-export function listDevices (axios, includeSpecification, includeAssignment,
+export function listDevices (axios, includeDeviceType, includeAssignment,
   paging) {
   return listFilteredDevices(axios, null, null, false, false,
-    includeSpecification, includeAssignment, paging)
+    includeDeviceType, includeAssignment, paging)
 }
 
 /**
  * List devices (with extra filter criteria).
  */
 export function listFilteredDevices (axios, site, specification,
-  includeDeleted, excludeAssigned, includeSpecification, includeAssignment,
+  includeDeleted, excludeAssigned, includeDeviceType, includeAssignment,
   paging) {
   let query = ''
   query += (includeDeleted)
     ? '?includeDeleted=true' : '?includeDeleted=false'
   query += (excludeAssigned)
     ? '&excludeAssigned=true' : '&excludeAssigned=false'
-  query += (includeSpecification)
-    ? '&includeSpecification=true' : '&includeSpecification=false'
+  query += (includeDeviceType)
+    ? '&includeDeviceType=true' : '&includeDeviceType=false'
   query += (includeAssignment)
     ? '&includeAssignment=true' : '&includeAssignment=false'
   query += (site) ? '&site=' + site : ''

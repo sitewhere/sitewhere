@@ -38,8 +38,8 @@ public class BatchCommandForCriteriaRequest implements IBatchCommandForCriteriaR
     /** Map of parameter values */
     private Map<String, String> parameterValues = new HashMap<String, String>();
 
-    /** Specification token to limit by */
-    private String specificationToken;
+    /** Device type token to limit by */
+    private String deviceTypeToken;
 
     /** Group token to limit by */
     private String groupToken;
@@ -56,6 +56,11 @@ public class BatchCommandForCriteriaRequest implements IBatchCommandForCriteriaR
     /** End date for create date window */
     private Date endDate;
 
+    /*
+     * @see
+     * com.sitewhere.spi.batch.request.IBatchCommandForCriteriaRequest#getToken()
+     */
+    @Override
     public String getToken() {
 	return token;
     }
@@ -64,6 +69,11 @@ public class BatchCommandForCriteriaRequest implements IBatchCommandForCriteriaR
 	this.token = token;
     }
 
+    /*
+     * @see com.sitewhere.spi.batch.request.IBatchCommandForCriteriaRequest#
+     * getCommandToken()
+     */
+    @Override
     public String getCommandToken() {
 	return commandToken;
     }
@@ -72,6 +82,11 @@ public class BatchCommandForCriteriaRequest implements IBatchCommandForCriteriaR
 	this.commandToken = commandToken;
     }
 
+    /*
+     * @see com.sitewhere.spi.batch.request.IBatchCommandForCriteriaRequest#
+     * getParameterValues()
+     */
+    @Override
     public Map<String, String> getParameterValues() {
 	return parameterValues;
     }
@@ -80,14 +95,25 @@ public class BatchCommandForCriteriaRequest implements IBatchCommandForCriteriaR
 	this.parameterValues = parameterValues;
     }
 
-    public String getSpecificationToken() {
-	return specificationToken;
+    /*
+     * @see com.sitewhere.spi.batch.request.IBatchCommandForCriteriaRequest#
+     * getDeviceTypeToken()
+     */
+    @Override
+    public String getDeviceTypeToken() {
+	return deviceTypeToken;
     }
 
-    public void setSpecificationToken(String specificationToken) {
-	this.specificationToken = specificationToken;
+    public void setDeviceTypeToken(String deviceTypeToken) {
+	this.deviceTypeToken = deviceTypeToken;
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.batch.request.IBatchCommandForCriteriaRequest#getGroupToken
+     * ()
+     */
+    @Override
     public String getGroupToken() {
 	return groupToken;
     }
@@ -96,6 +122,11 @@ public class BatchCommandForCriteriaRequest implements IBatchCommandForCriteriaR
 	this.groupToken = groupToken;
     }
 
+    /*
+     * @see com.sitewhere.spi.batch.request.IBatchCommandForCriteriaRequest#
+     * getGroupsWithRole()
+     */
+    @Override
     public String getGroupsWithRole() {
 	return groupsWithRole;
     }
@@ -104,6 +135,12 @@ public class BatchCommandForCriteriaRequest implements IBatchCommandForCriteriaR
 	this.groupsWithRole = groupsWithRole;
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.batch.request.IBatchCommandForCriteriaRequest#getSiteToken(
+     * )
+     */
+    @Override
     public String getSiteToken() {
 	return siteToken;
     }
@@ -112,6 +149,12 @@ public class BatchCommandForCriteriaRequest implements IBatchCommandForCriteriaR
 	this.siteToken = siteToken;
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.batch.request.IBatchCommandForCriteriaRequest#getStartDate(
+     * )
+     */
+    @Override
     @JsonSerialize(using = JsonDateSerializer.class)
     public Date getStartDate() {
 	return startDate;
@@ -121,6 +164,11 @@ public class BatchCommandForCriteriaRequest implements IBatchCommandForCriteriaR
 	this.startDate = startDate;
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.batch.request.IBatchCommandForCriteriaRequest#getEndDate()
+     */
+    @Override
     @JsonSerialize(using = JsonDateSerializer.class)
     public Date getEndDate() {
 	return endDate;

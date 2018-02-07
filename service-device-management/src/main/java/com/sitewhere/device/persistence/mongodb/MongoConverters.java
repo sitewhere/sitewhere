@@ -14,8 +14,8 @@ import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.IDeviceStatus;
+import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.command.IDeviceCommand;
@@ -36,7 +36,7 @@ public class MongoConverters implements IMongoConverterLookup {
     /** Create a list of converters for various types */
     static {
 	// Converters for device management.
-	CONVERTERS.put(IDeviceSpecification.class, new MongoDeviceSpecification());
+	CONVERTERS.put(IDeviceType.class, new MongoDeviceType());
 	CONVERTERS.put(IDeviceCommand.class, new MongoDeviceCommand());
 	CONVERTERS.put(IDeviceStatus.class, new MongoDeviceStatus());
 	CONVERTERS.put(IDevice.class, new MongoDevice());
@@ -51,8 +51,7 @@ public class MongoConverters implements IMongoConverterLookup {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.mongodb.IMongoConverterLookup#getConverterFor(java.lang.
+     * @see com.sitewhere.mongodb.IMongoConverterLookup#getConverterFor(java.lang.
      * Class)
      */
     @SuppressWarnings("unchecked")

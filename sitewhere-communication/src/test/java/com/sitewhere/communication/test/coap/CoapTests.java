@@ -35,7 +35,7 @@ public class CoapTests {
 	CoapClient client = createClientFor("devices");
 	DeviceRegistrationRequest registration = new DeviceRegistrationRequest();
 	registration.setHardwareId("111-COAP-TEST-444");
-	registration.setSpecificationToken("da05f689-2056-4786-ac9f-4f25b406369a");
+	registration.setDeviceTypeToken("da05f689-2056-4786-ac9f-4f25b406369a");
 	registration.setSiteToken("bb105f8d-3150-41f5-b9d1-db04965668d3");
 	Map<String, String> metadata = new HashMap<String, String>();
 	metadata.put("ipaddress", "localhost");

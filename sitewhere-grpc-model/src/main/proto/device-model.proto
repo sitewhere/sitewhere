@@ -32,9 +32,9 @@ message GDeviceElementSchema {
 	repeated GDeviceSlot slots = 2;
 }
 
-// Request for creating a device specification.
-message GDeviceSpecificationCreateRequest {
-	string token = 1;
+// Request for creating a device type.
+message GDeviceTypeCreateRequest {
+	GOptionalString token = 1;
 	string name = 2;
 	GAssetReference assetReference = 3;
 	GDeviceContainerPolicy containerPolicy = 4;
@@ -42,25 +42,25 @@ message GDeviceSpecificationCreateRequest {
 	map<string, string> metadata = 6;
 }
 
-// Criteria for searching device specifications.
-message GDeviceSpecificationSearchCriteria {
+// Criteria for searching device types.
+message GDeviceTypeSearchCriteria {
 	GOptionalBoolean includeDeleted = 1;
 	GPaging paging = 2;
 }
 
-// Results for device specification search.
-message GDeviceSpecificationSearchResults {
+// Results for device type search.
+message GDeviceTypeSearchResults {
 	uint64 count = 1;
-	repeated GDeviceSpecification specifications = 2;
+	repeated GDeviceType deviceTypes = 2;
 }
 
-// Reference to a device specification by token.
-message GDeviceSpecificationReference {
+// Reference to a device type by token.
+message GDeviceTypeReference {
 	string token = 1;
 }
 
-// Device specification.
-message GDeviceSpecification {
+// Device type.
+message GDeviceType {
 	GUUID id = 1;
 	string token = 2;
 	string name = 3;
@@ -94,7 +94,7 @@ message GDeviceCommandCreateRequest {
 
 // Criteria for searching device commands.
 message GDeviceCommandSearchCriteria {
-	GUUID deviceSpecificationId = 1;
+	GUUID deviceTypeId = 1;
 	GOptionalBoolean includeDeleted = 2;
 }
 
@@ -102,7 +102,7 @@ message GDeviceCommandSearchCriteria {
 message GDeviceCommand {
 	GUUID id = 1;
 	string token = 2;
-	GUUID deviceSpecificationId = 3;
+	GUUID deviceTypeId = 3;
 	string namespace = 4;
 	string name = 5;
 	string description = 6;
@@ -128,7 +128,7 @@ message GDeviceStatusCreateRequest {
 
 // Criteria for searching device statuses.
 message GDeviceStatusSearchCriteria {
-	GUUID deviceSpecificationId = 1;
+	GUUID deviceTypeId = 1;
 	GOptionalString code = 2;
 }
 
@@ -136,7 +136,7 @@ message GDeviceStatusSearchCriteria {
 message GDeviceStatus {
 	GUUID id = 1;
 	string code = 2;
-	GUUID deviceSpecificationId = 3;
+	GUUID deviceTypeId = 3;
 	string name = 4;
 	string backgroundColor = 5;
 	string foregroundColor = 6;
@@ -159,7 +159,7 @@ message GDeviceElementMapping {
 message GDeviceCreateRequest {
 	string hardwareId = 1;
 	string siteToken = 2;
-	string specificationToken = 3;
+	string deviceTypeToken = 3;
 	GOptionalString parentHardwareId = 4;
 	repeated GDeviceElementMapping deviceElementMappings = 5;
 	GOptionalString comments = 6;
@@ -170,7 +170,7 @@ message GDeviceCreateRequest {
 // Criteria for searching devices.
 message GDeviceSearchCriteria {
 	GOptionalBoolean includeDeleted = 1;
-	GDeviceSpecificationReference specification = 2;
+	GDeviceTypeReference deviceType = 2;
 	GSiteReference site = 3;
 	GOptionalBoolean excludeAssigned = 4;
 	google.protobuf.Timestamp createdAfter = 5;
@@ -189,7 +189,7 @@ message GDevice {
 	GUUID id = 1;
 	string hardwareId = 2;
 	GUUID siteId = 3;
-	GUUID deviceSpecificationId = 4;
+	GUUID deviceTypeId = 4;
 	GUUID deviceAssignmentId = 5;
 	GUUID parentDeviceId = 6;
 	repeated GDeviceElementMapping deviceElementMappings = 7;

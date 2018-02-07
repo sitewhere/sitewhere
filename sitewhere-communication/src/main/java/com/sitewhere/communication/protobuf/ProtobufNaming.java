@@ -11,7 +11,7 @@ import java.nio.ByteBuffer;
 import java.util.UUID;
 
 import com.google.bitcoin.core.Base58;
-import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 
 /**
@@ -34,8 +34,8 @@ public class ProtobufNaming {
     /** Name of nested path field in header */
     public static final String HEADER_NESTED_PATH_FIELD_NAME = "nestedPath";
 
-    /** Name of nested spec field in header */
-    public static final String HEADER_NESTED_SPEC_FIELD_NAME = "nestedSpec";
+    /** Name of nested type field in header */
+    public static final String HEADER_NESTED_TYPE_FIELD_NAME = "nestedType";
 
     /** Name associated with uuid message */
     public static final String UUID_MSG_NAME = "Uuid";
@@ -44,13 +44,13 @@ public class ProtobufNaming {
     public static final String HEADER_MSG_NAME = "_Header";
 
     /**
-     * Get the specification identifier.
+     * Get the device type identifier.
      * 
-     * @param command
+     * @param deviceType
      * @return
      */
-    protected static String getSpecificationIdentifier(IDeviceSpecification specification) {
-	UUID uuid = UUID.fromString(specification.getToken());
+    protected static String getDeviceTypeIdentifier(IDeviceType deviceType) {
+	UUID uuid = UUID.fromString(deviceType.getToken());
 	long low = uuid.getLeastSignificantBits();
 	long high = uuid.getMostSignificantBits();
 	ByteBuffer buffer = ByteBuffer.allocate(16);

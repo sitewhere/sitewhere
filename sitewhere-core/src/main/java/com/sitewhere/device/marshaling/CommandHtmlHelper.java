@@ -14,7 +14,7 @@ import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.group.IDeviceGroup;
@@ -76,12 +76,12 @@ public class CommandHtmlHelper {
      */
     public static String getHtml(BatchCommandForCriteriaRequest criteria, IDeviceManagement devices,
 	    String relativePath) throws SiteWhereException {
-	if (StringUtils.isEmpty(criteria.getSpecificationToken())) {
-	    throw new SiteWhereException("Specification token must be populated to generate HTML.");
+	if (StringUtils.isEmpty(criteria.getDeviceTypeToken())) {
+	    throw new SiteWhereException("Device type token must be populated to generate HTML.");
 	}
-	IDeviceSpecification specification = devices.getDeviceSpecificationByToken(criteria.getSpecificationToken());
-	if (specification == null) {
-	    throw new SiteWhereException("Invalid specification reference: " + criteria.getSpecificationToken());
+	IDeviceType deviceType = devices.getDeviceTypeByToken(criteria.getDeviceTypeToken());
+	if (deviceType == null) {
+	    throw new SiteWhereException("Invalid device type reference: " + criteria.getDeviceTypeToken());
 	}
 	String html = "all devices";
 	if (!StringUtils.isEmpty(criteria.getSiteToken())) {
@@ -92,8 +92,8 @@ public class CommandHtmlHelper {
 	    html += " belonging to site <a href=\"" + relativePath + "/sites/" + site.getToken() + ".html\">"
 		    + site.getName() + "</a>";
 	}
-	html += " with specification <a href=\"" + relativePath + "/specifications/" + specification.getToken()
-		+ ".html\">" + specification.getName() + "</a>";
+	html += " with device type <a href=\"" + relativePath + "/devicetypes/" + deviceType.getToken() + ".html\">"
+		+ deviceType.getName() + "</a>";
 	if (!StringUtils.isEmpty(criteria.getGroupToken())) {
 	    IDeviceGroup group = devices.getDeviceGroupByToken(criteria.getGroupToken());
 	    if (group == null) {

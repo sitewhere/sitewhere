@@ -71,8 +71,7 @@ public class DeviceActions implements IDeviceActions {
     public void sendCommand(IDeviceAssignment assignment, String commandName, Map<String, String> parameters)
 	    throws SiteWhereException {
 	IDevice device = getDeviceManagement().getDevice(assignment.getDeviceId());
-	List<IDeviceCommand> commands = getDeviceManagement().listDeviceCommands(device.getDeviceSpecificationId(),
-		false);
+	List<IDeviceCommand> commands = getDeviceManagement().listDeviceCommands(device.getDeviceTypeId(), false);
 	IDeviceCommand match = null;
 	for (IDeviceCommand command : commands) {
 	    if (command.getName().equals(commandName)) {

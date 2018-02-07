@@ -54,8 +54,8 @@ public class BatchCommandInvocationJob implements Job {
 	}
 
 	BatchCommandForCriteriaRequest criteria = BatchCommandInvocationJobParser.parse(data);
-	if (criteria.getSpecificationToken() == null) {
-	    throw new JobExecutionException("Specification token not provided.");
+	if (criteria.getDeviceTypeToken() == null) {
+	    throw new JobExecutionException("Device type token not provided.");
 	}
 	if (criteria.getCommandToken() == null) {
 	    throw new JobExecutionException("Command token not provided.");

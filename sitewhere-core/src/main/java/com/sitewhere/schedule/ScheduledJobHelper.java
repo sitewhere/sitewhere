@@ -58,8 +58,8 @@ public class ScheduledJobHelper {
     }
 
     /**
-     * Create request for a job that uses criteria to choose a list of devices
-     * on which a command will be invoked.
+     * Create request for a job that uses criteria to choose a list of devices on
+     * which a command will be invoked.
      * 
      * @param token
      * @param request
@@ -83,7 +83,7 @@ public class ScheduledJobHelper {
 	}
 
 	// Store criteria information.
-	config.put(JobConstants.BatchCommandInvocation.SPECIFICATION_TOKEN, request.getSpecificationToken());
+	config.put(JobConstants.BatchCommandInvocation.DEVICE_TYPE_TOKEN, request.getDeviceTypeToken());
 	if (!StringUtils.isEmpty(request.getSiteToken())) {
 	    config.put(JobConstants.BatchCommandInvocation.SITE_TOKEN, request.getSiteToken());
 	}

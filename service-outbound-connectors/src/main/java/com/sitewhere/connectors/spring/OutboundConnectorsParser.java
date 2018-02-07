@@ -31,7 +31,7 @@ import com.sitewhere.connectors.azure.EventHubOutboundEventProcessor;
 import com.sitewhere.connectors.dweetio.DweetIoEventProcessor;
 import com.sitewhere.connectors.filter.FilterOperation;
 import com.sitewhere.connectors.filter.SiteFilter;
-import com.sitewhere.connectors.filter.SpecificationFilter;
+import com.sitewhere.connectors.filter.DeviceTypeFilter;
 import com.sitewhere.connectors.groovy.GroovyEventProcessor;
 import com.sitewhere.connectors.groovy.filter.GroovyFilter;
 import com.sitewhere.connectors.groovy.multicast.AllWithSpecificationStringMulticaster;
@@ -522,7 +522,7 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
      * @return
      */
     protected AbstractBeanDefinition parseSpecificationFilter(Element element, ParserContext context) {
-	BeanDefinitionBuilder filter = BeanDefinitionBuilder.rootBeanDefinition(SpecificationFilter.class);
+	BeanDefinitionBuilder filter = BeanDefinitionBuilder.rootBeanDefinition(DeviceTypeFilter.class);
 
 	Attr specification = element.getAttributeNode("specification");
 	if (specification == null) {

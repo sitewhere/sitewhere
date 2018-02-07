@@ -88,7 +88,8 @@ public enum ErrorCode {
      ***************************/
 
     /** Malformed device hardware id */
-    MalformedHardwareId(480, "Hardware id must consist of alphanumeric values with dashes, underscores, and no spaces."),
+    MalformedHardwareId(480,
+	    "Hardware id must consist of alphanumeric values with dashes, underscores, and no spaces."),
 
     /** Generic duplicate id error */
     DuplicateId(499, "The given id is already in use."),
@@ -102,11 +103,11 @@ public enum ErrorCode {
     /** Invalid asset reference id */
     InvalidAssetReferenceId(502, "Asset reference not found."),
 
-    /** Invalid device specification token */
-    InvalidDeviceSpecificationToken(503, "Device specification not found."),
+    /** Invalid device type token */
+    InvalidDeviceTypeToken(503, "Device type not found."),
 
-    /** Invalid device specification token */
-    DuplicateDeviceSpecificationToken(504, "Device specification token already in use."),
+    /** Invalid device type token */
+    DuplicateDeviceTypeToken(504, "Device type token already in use."),
 
     /** Invalid device command token */
     InvalidDeviceCommandToken(505, "Device command not found."),
@@ -227,8 +228,7 @@ public enum ErrorCode {
      **********/
 
     /**
-     * Attempting to create a new assignment for a device with an active
-     * assignment
+     * Attempting to create a new assignment for a device with an active assignment
      */
     DeviceAlreadyAssigned(600, "Device already has an active assignment."),
 
@@ -257,8 +257,8 @@ public enum ErrorCode {
     InvalidDeviceSlotPath(612, "Path does not correspond to a valid device slot."),
 
     /**
-     * Attempting to create a device element mapping for a device that is
-     * already mapped
+     * Attempting to create a device element mapping for a device that is already
+     * mapped
      */
     DeviceParentMappingExists(613, "Target device is already in use by an existing mapping."),
 
@@ -289,8 +289,7 @@ public enum ErrorCode {
     AssetIdInUse(801, "Asset id is already in use for this category."),
 
     /**
-     * Attempting to create a new asset in a category that does not allow the
-     * type
+     * Attempting to create a new asset in a category that does not allow the type
      */
     AssetTypeNotAllowed(805, "Asset category does not allow assets of this type."),
 

@@ -12,7 +12,7 @@ import java.net.URI;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.ISite;
 
 /**
@@ -32,13 +32,13 @@ public interface IEntityUriProvider {
     public URI getSiteIdentifier(ISite site) throws SiteWhereException;
 
     /**
-     * Get unique identifier for a device specification.
+     * Get unique identifier for a device type.
      * 
-     * @param specification
+     * @param deviceType
      * @return
      * @throws SiteWhereException
      */
-    public URI getDeviceSpecificationIdentifier(IDeviceSpecification specification) throws SiteWhereException;
+    public URI getDeviceTypeIdentifier(IDeviceType deviceType) throws SiteWhereException;
 
     /**
      * Get unique identifier for a device.

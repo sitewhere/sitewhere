@@ -34,11 +34,11 @@ public interface IDeviceCommand extends IMetadataProviderEntity {
     public String getToken();
 
     /**
-     * Get unique id of parent device specification.
+     * Get unique id of parent device type.
      * 
      * @return
      */
-    public UUID getDeviceSpecificationId();
+    public UUID getDeviceTypeId();
 
     /**
      * Optional namespace for distinguishing commands.

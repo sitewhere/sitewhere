@@ -53,7 +53,7 @@ public class BinaryCompositeDeviceEventDecoder extends CompositeDeviceEventDecod
 		    "Unable to build device context. Device not found for hardware id: " + metadata.getHardwareId());
 	}
 
-	context.setDeviceSpecification(devices.getDeviceSpecification(context.getDevice().getDeviceSpecificationId()));
+	context.setDeviceType(devices.getDeviceType(context.getDevice().getDeviceTypeId()));
 
 	context.setPayload(metadata.getPayload());
 	return context;

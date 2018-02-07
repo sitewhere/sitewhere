@@ -26,8 +26,8 @@ public class DeviceManagementMongoClient extends MongoDbClient implements IDevic
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
 
-    /** Injected name used for device specifications collection */
-    private String deviceSpecificationsCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICE_SPECIFICATIONS_COLLECTION_NAME;
+    /** Injected name used for device types collection */
+    private String deviceTypesCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICE_TYPES_COLLECTION_NAME;
 
     /** Injected name used for device commands collection */
     private String deviceCommandsCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICE_COMMANDS_COLLECTION_NAME;
@@ -65,16 +65,18 @@ public class DeviceManagementMongoClient extends MongoDbClient implements IDevic
 
     /*
      * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
-     * getDeviceSpecificationsCollection()
+     * getDeviceTypesCollection()
      */
-    public MongoCollection<Document> getDeviceSpecificationsCollection() throws SiteWhereException {
-	return getDatabase().getCollection(getDeviceSpecificationsCollectionName());
+    @Override
+    public MongoCollection<Document> getDeviceTypesCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getDeviceTypesCollectionName());
     }
 
     /*
      * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
      * getDeviceCommandsCollection()
      */
+    @Override
     public MongoCollection<Document> getDeviceCommandsCollection() throws SiteWhereException {
 	return getDatabase().getCollection(getDeviceCommandsCollectionName());
     }
@@ -92,6 +94,7 @@ public class DeviceManagementMongoClient extends MongoDbClient implements IDevic
      * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
      * getDevicesCollection()
      */
+    @Override
     public MongoCollection<Document> getDevicesCollection() throws SiteWhereException {
 	return getDatabase().getCollection(getDevicesCollectionName());
     }
@@ -100,6 +103,7 @@ public class DeviceManagementMongoClient extends MongoDbClient implements IDevic
      * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
      * getDeviceAssignmentsCollection()
      */
+    @Override
     public MongoCollection<Document> getDeviceAssignmentsCollection() throws SiteWhereException {
 	return getDatabase().getCollection(getDeviceAssignmentsCollectionName());
     }
@@ -108,6 +112,7 @@ public class DeviceManagementMongoClient extends MongoDbClient implements IDevic
      * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
      * getSitesCollection()
      */
+    @Override
     public MongoCollection<Document> getSitesCollection() throws SiteWhereException {
 	return getDatabase().getCollection(getSitesCollectionName());
     }
@@ -116,6 +121,7 @@ public class DeviceManagementMongoClient extends MongoDbClient implements IDevic
      * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
      * getZonesCollection()
      */
+    @Override
     public MongoCollection<Document> getZonesCollection() throws SiteWhereException {
 	return getDatabase().getCollection(getZonesCollectionName());
     }
@@ -124,6 +130,7 @@ public class DeviceManagementMongoClient extends MongoDbClient implements IDevic
      * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
      * getDeviceGroupsCollection()
      */
+    @Override
     public MongoCollection<Document> getDeviceGroupsCollection() throws SiteWhereException {
 	return getDatabase().getCollection(getDeviceGroupsCollectionName());
     }
@@ -140,6 +147,7 @@ public class DeviceManagementMongoClient extends MongoDbClient implements IDevic
      * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
      * getStreamsCollection()
      */
+    @Override
     public MongoCollection<Document> getStreamsCollection() throws SiteWhereException {
 	return getDatabase().getCollection(getStreamsCollectionName());
     }
@@ -148,6 +156,7 @@ public class DeviceManagementMongoClient extends MongoDbClient implements IDevic
      * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
      * getStreamDataCollection()
      */
+    @Override
     public MongoCollection<Document> getStreamDataCollection() throws SiteWhereException {
 	return getDatabase().getCollection(getStreamDataCollectionName());
     }
@@ -162,12 +171,12 @@ public class DeviceManagementMongoClient extends MongoDbClient implements IDevic
 	return LOGGER;
     }
 
-    public String getDeviceSpecificationsCollectionName() {
-	return deviceSpecificationsCollectionName;
+    public String getDeviceTypesCollectionName() {
+	return deviceTypesCollectionName;
     }
 
-    public void setDeviceSpecificationsCollectionName(String deviceSpecificationsCollectionName) {
-	this.deviceSpecificationsCollectionName = deviceSpecificationsCollectionName;
+    public void setDeviceTypesCollectionName(String deviceTypesCollectionName) {
+	this.deviceTypesCollectionName = deviceTypesCollectionName;
     }
 
     public String getDeviceCommandsCollectionName() {

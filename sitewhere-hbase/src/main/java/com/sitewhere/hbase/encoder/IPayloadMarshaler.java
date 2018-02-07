@@ -16,7 +16,7 @@ import com.sitewhere.rest.model.batch.BatchOperation;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceAssignmentState;
-import com.sitewhere.rest.model.device.DeviceSpecification;
+import com.sitewhere.rest.model.device.DeviceType;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
@@ -43,7 +43,7 @@ import com.sitewhere.spi.batch.IBatchOperation;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceAssignmentState;
-import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.command.IDeviceCommand;
@@ -132,22 +132,22 @@ public interface IPayloadMarshaler {
     public Zone decodeZone(byte[] payload) throws SiteWhereException;
 
     /**
-     * Encode an {@link IDeviceSpecification}.
+     * Encode an {@link IDeviceType}.
      * 
-     * @param specification
+     * @param deviceType
      * @return
      * @throws SiteWhereException
      */
-    public byte[] encodeDeviceSpecification(IDeviceSpecification specification) throws SiteWhereException;
+    public byte[] encodeDeviceType(IDeviceType deviceType) throws SiteWhereException;
 
     /**
-     * Decode a {@link DeviceSpecification} from the binary payload.
+     * Decode a {@link DeviceType} from the binary payload.
      * 
      * @param payload
      * @return
      * @throws SiteWhereException
      */
-    public DeviceSpecification decodeDeviceSpecification(byte[] payload) throws SiteWhereException;
+    public DeviceType decodeDeviceType(byte[] payload) throws SiteWhereException;
 
     /**
      * Encode an {@link IDevice}.

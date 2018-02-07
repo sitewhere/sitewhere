@@ -12,27 +12,27 @@ import "sitewhere-common.proto";
 // Device management APIs.
 service DeviceManagement {
 
-	// #############################
-	// ### DEVICE SPECIFICATIONS ###
-	// #############################
+	// ####################
+	// ### DEVICE TYPES ###
+	// ####################
 	
-	// Create a new device specification.
-	rpc CreateDeviceSpecification (GCreateDeviceSpecificationRequest) returns (GCreateDeviceSpecificationResponse) {}
+	// Create a new device type.
+	rpc CreateDeviceType (GCreateDeviceTypeRequest) returns (GCreateDeviceTypeResponse) {}
 
-	// Get device specification by id.
-	rpc GetDeviceSpecification (GGetDeviceSpecificationRequest) returns (GGetDeviceSpecificationResponse) {}
+	// Get device type by id.
+	rpc GetDeviceType (GGetDeviceTypeRequest) returns (GGetDeviceTypeResponse) {}
 
-	// Get device specification by unique token.
-	rpc GetDeviceSpecificationByToken (GGetDeviceSpecificationByTokenRequest) returns (GGetDeviceSpecificationByTokenResponse) {}
+	// Get device type by unique token.
+	rpc GetDeviceTypeByToken (GGetDeviceTypeByTokenRequest) returns (GGetDeviceTypeByTokenResponse) {}
 
-	// Update an existing device specification.
-	rpc UpdateDeviceSpecification (GUpdateDeviceSpecificationRequest) returns (GUpdateDeviceSpecificationResponse) {}
+	// Update an existing device type.
+	rpc UpdateDeviceType (GUpdateDeviceTypeRequest) returns (GUpdateDeviceTypeResponse) {}
 
-	// List device specifications that meet criteria.
-	rpc ListDeviceSpecifications (GListDeviceSpecificationsRequest) returns (GListDeviceSpecificationsResponse) {}
+	// List device type that meet criteria.
+	rpc ListDeviceTypes (GListDeviceTypesRequest) returns (GListDeviceTypesResponse) {}
 
-	// Delete an existing device specification.
-	rpc DeleteDeviceSpecification (GDeleteDeviceSpecificationRequest) returns (GDeleteDeviceSpecificationResponse) {}
+	// Delete an existing device type.
+	rpc DeleteDeviceType (GDeleteDeviceTypeRequest) returns (GDeleteDeviceTypeResponse) {}
 
 	// #######################
 	// ### DEVICE COMMANDS ###
@@ -236,79 +236,79 @@ service DeviceManagement {
 // ### DEVICE SPECIFICATIONS ###
 // #############################
 	
-// Request for creating a device specification.
-message GCreateDeviceSpecificationRequest {
-	com.sitewhere.grpc.model.GDeviceSpecificationCreateRequest request = 1;
+// Request for creating a device type.
+message GCreateDeviceTypeRequest {
+	com.sitewhere.grpc.model.GDeviceTypeCreateRequest request = 1;
 }
 
-// Response from creating a device specification.
-message GCreateDeviceSpecificationResponse {
-	com.sitewhere.grpc.model.GDeviceSpecification specification = 1;
+// Response from creating a device type.
+message GCreateDeviceTypeResponse {
+	com.sitewhere.grpc.model.GDeviceType deviceType = 1;
 }
 	
-// Request for getting a device specification by id.
-message GGetDeviceSpecificationRequest {
+// Request for getting a device type by id.
+message GGetDeviceTypeRequest {
 	com.sitewhere.grpc.model.GUUID id = 1;
 }
 	
-// Response for getting a device specification by id.
-message GGetDeviceSpecificationResponse {
-	com.sitewhere.grpc.model.GDeviceSpecification specification = 1;
+// Response for getting a device type by id.
+message GGetDeviceTypeResponse {
+	com.sitewhere.grpc.model.GDeviceType deviceType = 1;
 }
 	
-// Request for getting a device specification by token.
-message GGetDeviceSpecificationByTokenRequest {
+// Request for getting a device type by token.
+message GGetDeviceTypeByTokenRequest {
 	string token = 1;
 }
 	
-// Response for getting a device specification by token.
-message GGetDeviceSpecificationByTokenResponse {
-	com.sitewhere.grpc.model.GDeviceSpecification specification = 1;
+// Response for getting a device type by token.
+message GGetDeviceTypeByTokenResponse {
+	com.sitewhere.grpc.model.GDeviceType deviceType = 1;
 }
 	
-// Request for updating an existing device specification.
-message GUpdateDeviceSpecificationRequest {
+// Request for updating an existing device type.
+message GUpdateDeviceTypeRequest {
 	com.sitewhere.grpc.model.GUUID id = 1;
-	com.sitewhere.grpc.model.GDeviceSpecificationCreateRequest request = 2;
+	com.sitewhere.grpc.model.GDeviceTypeCreateRequest request = 2;
 }
 	
-// Response for updating an existing device specification.
-message GUpdateDeviceSpecificationResponse {
-	com.sitewhere.grpc.model.GDeviceSpecification specification = 1;
+// Response for updating an existing device type.
+message GUpdateDeviceTypeResponse {
+	com.sitewhere.grpc.model.GDeviceType deviceType = 1;
 }
 	
-// Request for listing device specifications that meet criteria.
-message GListDeviceSpecificationsRequest {
-	com.sitewhere.grpc.model.GDeviceSpecificationSearchCriteria criteria = 1;
+// Request for listing device type that meet criteria.
+message GListDeviceTypesRequest {
+	com.sitewhere.grpc.model.GDeviceTypeSearchCriteria criteria = 1;
 }
 	
-// Response for listing device specifications that meet criteria.
-message GListDeviceSpecificationsResponse {
-	com.sitewhere.grpc.model.GDeviceSpecificationSearchResults results = 1;
+// Response for listing device type that meet criteria.
+message GListDeviceTypesResponse {
+	com.sitewhere.grpc.model.GDeviceTypeSearchResults results = 1;
 }
 	
-// Request for deleting a device specification.
-message GDeleteDeviceSpecificationRequest {
+// Request for deleting a device type.
+message GDeleteDeviceTypeRequest {
 	com.sitewhere.grpc.model.GUUID id = 1;
 	bool force = 2;
 }
 	
-// Response for deleting a device specification.
-message GDeleteDeviceSpecificationResponse {
-	com.sitewhere.grpc.model.GDeviceSpecification specification = 1;
+// Response for deleting a device type.
+message GDeleteDeviceTypeResponse {
+	com.sitewhere.grpc.model.GDeviceType deviceType = 1;
 }
 
 // #######################
 // ### DEVICE COMMANDS ###
 // #######################
 	
-// Request for creating a device specification.
+// Request for creating a device command.
 message GCreateDeviceCommandRequest {
-	com.sitewhere.grpc.model.GUUID specificationId = 1;
+	com.sitewhere.grpc.model.GUUID deviceTypeId = 1;
 	com.sitewhere.grpc.model.GDeviceCommandCreateRequest request = 2;
 }
 
-// Response from creating a device specification.
+// Response from creating a device command.
 message GCreateDeviceCommandResponse {
 	com.sitewhere.grpc.model.GDeviceCommand command = 1;
 }
@@ -371,7 +371,7 @@ message GDeleteDeviceCommandResponse {
 	
 // Request for creating a device status.
 message GCreateDeviceStatusRequest {
-	com.sitewhere.grpc.model.GUUID specificationId = 1;
+	com.sitewhere.grpc.model.GUUID deviceTypeId = 1;
 	com.sitewhere.grpc.model.GDeviceStatusCreateRequest request = 2;
 }
 
@@ -382,7 +382,7 @@ message GCreateDeviceStatusResponse {
 
 // Request for getting a device status by code.
 message GGetDeviceStatusByCodeRequest {
-	com.sitewhere.grpc.model.GUUID specificationId = 1;
+	com.sitewhere.grpc.model.GUUID deviceTypeId = 1;
 	string code = 2;
 }
 	
@@ -393,7 +393,7 @@ message GGetDeviceStatusByCodeResponse {
 	
 // Request for updating an existing device status.
 message GUpdateDeviceStatusRequest {
-	com.sitewhere.grpc.model.GUUID specificationId = 1;
+	com.sitewhere.grpc.model.GUUID deviceTypeId = 1;
 	string code = 2;
 	com.sitewhere.grpc.model.GDeviceStatusCreateRequest request = 3;
 }
@@ -415,7 +415,7 @@ message GListDeviceStatusesResponse {
 	
 // Request for deleting a device status.
 message GDeleteDeviceStatusRequest {
-	com.sitewhere.grpc.model.GUUID specificationId = 1;
+	com.sitewhere.grpc.model.GUUID deviceTypeId = 1;
 	string code = 2;
 }
 	

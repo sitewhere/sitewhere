@@ -16,7 +16,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.cache.ICacheProvider;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.tenant.ITenant;
@@ -34,11 +34,11 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
     /** Site by id cache */
     private ICacheProvider<UUID, ISite> siteByIdCache;
 
-    /** Device specification cache */
-    private ICacheProvider<String, IDeviceSpecification> deviceSpecificationCache;
+    /** Device type cache */
+    private ICacheProvider<String, IDeviceType> deviceTypeCache;
 
-    /** Device specification by id cache */
-    private ICacheProvider<UUID, IDeviceSpecification> deviceSpecificationByIdCache;
+    /** Device type by id cache */
+    private ICacheProvider<UUID, IDeviceType> deviceTypeByIdCache;
 
     /** Device cache */
     private ICacheProvider<String, IDevice> deviceCache;
@@ -56,10 +56,8 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
 	super(demux, microservice, host);
 	this.siteCache = new DeviceManagementCacheProviders.SiteCache(microservice, false);
 	this.siteByIdCache = new DeviceManagementCacheProviders.SiteByIdCache(microservice, false);
-	this.deviceSpecificationCache = new DeviceManagementCacheProviders.DeviceSpecificationCache(microservice,
-		false);
-	this.deviceSpecificationByIdCache = new DeviceManagementCacheProviders.DeviceSpecificationByIdCache(
-		microservice, false);
+	this.deviceTypeCache = new DeviceManagementCacheProviders.DeviceTypeCache(microservice, false);
+	this.deviceTypeByIdCache = new DeviceManagementCacheProviders.DeviceTypeByIdCache(microservice, false);
 	this.deviceCache = new DeviceManagementCacheProviders.DeviceCache(microservice, false);
 	this.deviceByIdCache = new DeviceManagementCacheProviders.DeviceByIdCache(microservice, false);
 	this.deviceAssignmentCache = new DeviceManagementCacheProviders.DeviceAssignmentCache(microservice, false);
@@ -104,37 +102,38 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
     }
 
     /*
-     * @see com.sitewhere.grpc.model.client.DeviceManagementApiChannel#
-     * getDeviceSpecificationByToken(java.lang.String)
+     * @see com.sitewhere.grpc.client.device.DeviceManagementApiChannel#
+     * getDeviceTypeByToken(java.lang.String)
      */
     @Override
-    public IDeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException {
+    public IDeviceType getDeviceTypeByToken(String token) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	IDeviceSpecification specification = getDeviceSpecificationCache().getCacheEntry(tenant, token);
-	if (specification != null) {
-	    CacheUtils.logCacheHit(specification);
-	    return specification;
+	IDeviceType deviceType = getDeviceTypeCache().getCacheEntry(tenant, token);
+	if (deviceType != null) {
+	    CacheUtils.logCacheHit(deviceType);
+	    return deviceType;
 	} else {
-	    getLogger().trace("No cached information for specification '" + token + "'.");
+	    getLogger().trace("No cached information for device type '" + token + "'.");
 	}
-	return super.getDeviceSpecificationByToken(token);
+	return super.getDeviceTypeByToken(token);
     }
 
     /*
-     * @see com.sitewhere.grpc.client.device.DeviceManagementApiChannel#
-     * getDeviceSpecification(java.util.UUID)
+     * @see
+     * com.sitewhere.grpc.client.device.DeviceManagementApiChannel#getDeviceType(
+     * java.util.UUID)
      */
     @Override
-    public IDeviceSpecification getDeviceSpecification(UUID id) throws SiteWhereException {
+    public IDeviceType getDeviceType(UUID id) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	IDeviceSpecification specification = getDeviceSpecificationByIdCache().getCacheEntry(tenant, id);
-	if (specification != null) {
-	    CacheUtils.logCacheHit(specification);
-	    return specification;
+	IDeviceType deviceType = getDeviceTypeByIdCache().getCacheEntry(tenant, id);
+	if (deviceType != null) {
+	    CacheUtils.logCacheHit(deviceType);
+	    return deviceType;
 	} else {
-	    getLogger().trace("No cached information for specification id '" + id + "'.");
+	    getLogger().trace("No cached information for device type id '" + id + "'.");
 	}
-	return super.getDeviceSpecification(id);
+	return super.getDeviceType(id);
     }
 
     /*
@@ -223,21 +222,20 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
 	this.siteByIdCache = siteByIdCache;
     }
 
-    protected ICacheProvider<String, IDeviceSpecification> getDeviceSpecificationCache() {
-	return deviceSpecificationCache;
+    public ICacheProvider<String, IDeviceType> getDeviceTypeCache() {
+	return deviceTypeCache;
     }
 
-    protected void setDeviceSpecificationCache(ICacheProvider<String, IDeviceSpecification> deviceSpecificationCache) {
-	this.deviceSpecificationCache = deviceSpecificationCache;
+    public void setDeviceTypeCache(ICacheProvider<String, IDeviceType> deviceTypeCache) {
+	this.deviceTypeCache = deviceTypeCache;
     }
 
-    public ICacheProvider<UUID, IDeviceSpecification> getDeviceSpecificationByIdCache() {
-	return deviceSpecificationByIdCache;
+    public ICacheProvider<UUID, IDeviceType> getDeviceTypeByIdCache() {
+	return deviceTypeByIdCache;
     }
 
-    public void setDeviceSpecificationByIdCache(
-	    ICacheProvider<UUID, IDeviceSpecification> deviceSpecificationByIdCache) {
-	this.deviceSpecificationByIdCache = deviceSpecificationByIdCache;
+    public void setDeviceTypeByIdCache(ICacheProvider<UUID, IDeviceType> deviceTypeByIdCache) {
+	this.deviceTypeByIdCache = deviceTypeByIdCache;
     }
 
     protected ICacheProvider<String, IDevice> getDeviceCache() {

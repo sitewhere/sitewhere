@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitewhere.spi.device.IDevice;
-import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
@@ -59,8 +59,8 @@ public interface ICompositeDeviceEventDecoder<T> extends IDeviceEventDecoder<T> 
     }
 
     /**
-     * Provides metadata about a message, which is used to decide which decoder
-     * to use.
+     * Provides metadata about a message, which is used to decide which decoder to
+     * use.
      * 
      * @author Derek
      */
@@ -91,11 +91,11 @@ public interface ICompositeDeviceEventDecoder<T> extends IDeviceEventDecoder<T> 
 	public IDevice getDevice();
 
 	/**
-	 * Get referenced device specification.
+	 * Get referenced device type.
 	 * 
 	 * @return
 	 */
-	public IDeviceSpecification getDeviceSpecification();
+	public IDeviceType getDeviceType();
 
 	/**
 	 * Get payload to be parsed.
@@ -115,8 +115,8 @@ public interface ICompositeDeviceEventDecoder<T> extends IDeviceEventDecoder<T> 
     public static interface IMessageMetadataExtractor<T> extends ITenantEngineLifecycleComponent {
 
 	/**
-	 * Extract metadata about payload. This metadata is used to determine
-	 * context and choose which decoder should be used.
+	 * Extract metadata about payload. This metadata is used to determine context
+	 * and choose which decoder should be used.
 	 * 
 	 * @param payload
 	 * @param eventSourceMetadata

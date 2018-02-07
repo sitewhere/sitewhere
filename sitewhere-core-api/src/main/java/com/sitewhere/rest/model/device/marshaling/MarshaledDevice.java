@@ -9,7 +9,7 @@ package com.sitewhere.rest.model.device.marshaling;
 
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
-import com.sitewhere.rest.model.device.DeviceSpecification;
+import com.sitewhere.rest.model.device.DeviceType;
 import com.sitewhere.rest.model.device.Site;
 
 /**
@@ -22,8 +22,8 @@ public class MarshaledDevice extends Device {
     /** Serial version UID */
     private static final long serialVersionUID = -7249138366647616811L;
 
-    /** Device specification */
-    private DeviceSpecification specification;
+    /** Device type */
+    private DeviceType deviceType;
 
     /** Current device assignment */
     private DeviceAssignment assignment;
@@ -40,12 +40,12 @@ public class MarshaledDevice extends Device {
     /** Asset image url from device specification (only for marshaling) */
     private String assetImageUrl;
 
-    public DeviceSpecification getSpecification() {
-	return specification;
+    public DeviceType getDeviceType() {
+	return deviceType;
     }
 
-    public void setSpecification(DeviceSpecification specification) {
-	this.specification = specification;
+    public void setDeviceType(DeviceType deviceType) {
+	this.deviceType = deviceType;
     }
 
     public DeviceAssignment getAssignment() {

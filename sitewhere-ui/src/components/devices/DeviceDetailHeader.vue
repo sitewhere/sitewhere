@@ -10,8 +10,8 @@
             message="Hardware id copied to clipboard">
           </clipboard-copy-field>
         </header-field>
-        <header-field label="Device Specification">
-          <span>{{ device.specification.assetName }}</span>
+        <header-field label="Device Type">
+          <span>{{ device.deviceType.assetName }}</span>
         </header-field>
         <header-field label="Site">
           <span>{{ device.site.name }}</span>
@@ -68,7 +68,7 @@ export default {
     logoStyle: function () {
       return {
         'background-color': '#fff',
-        'background-image': 'url(' + this.device.specification.asset.imageUrl + ')',
+        'background-image': 'url(' + this.device.deviceType.asset.imageUrl + ')',
         'background-size': 'contain',
         'background-repeat': 'no-repeat',
         'background-position': '50% 50%',

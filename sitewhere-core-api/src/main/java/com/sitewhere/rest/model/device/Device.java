@@ -39,8 +39,8 @@ public class Device extends MetadataProviderEntity implements IDevice, Serializa
     /** Site id */
     private UUID siteId;
 
-    /** Specification token */
-    private UUID deviceSpecificationId;
+    /** Device type id */
+    private UUID deviceTypeId;
 
     /** Id for current assignment if assigned */
     private UUID deviceAssignmentId;
@@ -96,16 +96,16 @@ public class Device extends MetadataProviderEntity implements IDevice, Serializa
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDevice#getDeviceSpecificationId()
+     * @see com.sitewhere.spi.device.IDevice#getDeviceTypeId()
      */
     @Override
-    public UUID getDeviceSpecificationId() {
-	return deviceSpecificationId;
+    public UUID getDeviceTypeId() {
+	return deviceTypeId;
     }
 
-    public void setDeviceSpecificationId(UUID deviceSpecificationId) {
-	this.deviceSpecificationId = deviceSpecificationId;
-    }
+    public void setDeviceTypeId(UUID deviceTypeId) {
+	this.deviceTypeId = deviceTypeId;
+    }	
 
     /*
      * @see com.sitewhere.spi.device.IDevice#getDeviceAssignmentId()

@@ -28,8 +28,8 @@ public class DeviceStatus extends MetadataProvider implements IDeviceStatus {
     /** Status code */
     private String code;
 
-    /** Unique id for parent specification */
-    private UUID deviceSpecificationId;
+    /** Unique id for parent device type */
+    private UUID deviceTypeId;
 
     /** Display name */
     private String name;
@@ -73,15 +73,15 @@ public class DeviceStatus extends MetadataProvider implements IDeviceStatus {
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceStatus#getDeviceSpecificationId()
+     * @see com.sitewhere.spi.device.IDeviceStatus#getDeviceTypeId()
      */
     @Override
-    public UUID getDeviceSpecificationId() {
-	return deviceSpecificationId;
+    public UUID getDeviceTypeId() {
+	return deviceTypeId;
     }
 
-    public void setDeviceSpecificationId(UUID deviceSpecificationId) {
-	this.deviceSpecificationId = deviceSpecificationId;
+    public void setDeviceTypeId(UUID deviceTypeId) {
+	this.deviceTypeId = deviceTypeId;
     }
 
     /*

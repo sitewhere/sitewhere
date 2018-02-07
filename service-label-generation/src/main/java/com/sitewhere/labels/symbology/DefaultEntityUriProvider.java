@@ -13,7 +13,7 @@ import java.net.URISyntaxException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.symbology.IEntityUriProvider;
 
@@ -43,8 +43,7 @@ public class DefaultEntityUriProvider implements IEntityUriProvider {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.symbology.IEntityUriProvider#getSiteIdentifier(
+     * @see com.sitewhere.spi.device.symbology.IEntityUriProvider#getSiteIdentifier(
      * com.sitewhere .spi.device.ISite)
      */
     @Override
@@ -53,15 +52,13 @@ public class DefaultEntityUriProvider implements IEntityUriProvider {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.symbology.IEntityUriProvider#
-     * getDeviceSpecificationIdentifier
-     * (com.sitewhere.spi.device.IDeviceSpecification)
+     * @see
+     * com.sitewhere.spi.device.symbology.IEntityUriProvider#getDeviceTypeIdentifier
+     * (com.sitewhere.spi.device.IDeviceType)
      */
     @Override
-    public URI getDeviceSpecificationIdentifier(IDeviceSpecification specification) throws SiteWhereException {
-	return createUri(SITEWHERE_PROTOCOL + "specification/" + specification.getToken());
+    public URI getDeviceTypeIdentifier(IDeviceType deviceType) throws SiteWhereException {
+	return createUri(SITEWHERE_PROTOCOL + "devicetype/" + deviceType.getToken());
     }
 
     /*
@@ -80,8 +77,7 @@ public class DefaultEntityUriProvider implements IEntityUriProvider {
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.symbology.IEntityUriProvider#
-     * getDeviceAssignmentIdentifier
-     * (com.sitewhere.spi.device.IDeviceAssignment)
+     * getDeviceAssignmentIdentifier (com.sitewhere.spi.device.IDeviceAssignment)
      */
     @Override
     public URI getDeviceAssignmentIdentifier(IDeviceAssignment assignment) throws SiteWhereException {

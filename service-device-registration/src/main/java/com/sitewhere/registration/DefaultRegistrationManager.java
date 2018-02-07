@@ -25,7 +25,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.command.DeviceMappingResult;
 import com.sitewhere.spi.device.command.RegistrationFailureReason;
@@ -49,11 +49,11 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
     /** Indicates if new devices can register with the system */
     private boolean allowNewDevices = true;
 
-    /** Id of device specification that will be auto-assigned */
-    private UUID autoAssignSpecificationId = null;
+    /** Id of device type that will be auto-assigned */
+    private UUID autoAssignDeviceTypeId = null;
 
-    /** Device specification used for automatic assignment */
-    private IDeviceSpecification autoAssignSpecification;
+    /** Device type used for automatic assignment */
+    private IDeviceType autoAssignDeviceType;
 
     /** Id of site that will be auto-assigned */
     private UUID autoAssignSiteId = null;
@@ -76,7 +76,7 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
     public void handleDeviceRegistration(IDeviceRegistrationRequest request) throws SiteWhereException {
 	LOGGER.debug("Handling device registration request.");
 	IDevice device = getDeviceManagement().getDeviceByHardwareId(request.getHardwareId());
-	IDeviceSpecification deviceSpecification = getDeviceSpecificationFor(request);
+	IDeviceType deviceType = getDeviceTypeFor(request);
 	ISite deviceSite = getSiteFor(request);
 
 	// Create device if it does not already exist.
@@ -88,14 +88,14 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 	    LOGGER.debug("Creating new device as part of registration.");
 	    DeviceCreateRequest deviceCreate = new DeviceCreateRequest();
 	    deviceCreate.setHardwareId(request.getHardwareId());
-	    deviceCreate.setSpecificationToken(deviceSpecification.getToken());
+	    deviceCreate.setDeviceTypeToken(request.getDeviceTypeToken());
 	    deviceCreate.setSiteToken(deviceSite.getToken());
 	    deviceCreate.setComments("Device created by on-demand registration.");
 	    deviceCreate.setMetadata(request.getMetadata());
 	    device = getDeviceManagement().createDevice(deviceCreate);
-	} else if (!device.getDeviceSpecificationId().equals(deviceSpecification.getId())) {
-	    LOGGER.info("Found existing device registration, but specification does not match.");
-	    sendInvalidSpecification(request.getHardwareId());
+	} else if (!device.getDeviceTypeId().equals(deviceType.getId())) {
+	    LOGGER.info("Found existing device registration, but device type does not match.");
+	    sendInvalidDeviceType(request.getHardwareId());
 	    return;
 	} else {
 	    LOGGER.info("Found existing device registration. Updating metadata.");
@@ -133,21 +133,19 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
      * @return
      * @throws SiteWhereException
      */
-    protected IDeviceSpecification getDeviceSpecificationFor(IDeviceRegistrationRequest request)
-	    throws SiteWhereException {
-	IDeviceSpecification deviceSpec = getAutoAssignSpecification();
-	if (request.getSpecificationToken() != null) {
-	    IDeviceSpecification override = getDeviceManagement()
-		    .getDeviceSpecificationByToken(request.getSpecificationToken());
+    protected IDeviceType getDeviceTypeFor(IDeviceRegistrationRequest request) throws SiteWhereException {
+	IDeviceType deviceType = getAutoAssignDeviceType();
+	if (request.getDeviceTypeToken() != null) {
+	    IDeviceType override = getDeviceManagement().getDeviceTypeByToken(request.getDeviceTypeToken());
 	    if (override == null) {
-		throw new SiteWhereException("Registration request specified invalid device specification token.");
+		throw new SiteWhereException("Registration request specified invalid device type token.");
 	    }
-	    deviceSpec = override;
+	    deviceType = override;
 	}
-	if (deviceSpec == null) {
-	    throw new SiteWhereException("Device specification not passed and no default provided.");
+	if (deviceType == null) {
+	    throw new SiteWhereException("Device type not passed and no default provided.");
 	}
-	return deviceSpec;
+	return deviceType;
     }
 
     /**
@@ -201,16 +199,16 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
     }
 
     /**
-     * Send a message indicating invalid specification id or one that does not match
+     * Send a message indicating invalid device type id or one that does not match
      * existing device.
      * 
      * @param hardwareId
      * @throws SiteWhereException
      */
-    protected void sendInvalidSpecification(String hardwareId) throws SiteWhereException {
+    protected void sendInvalidDeviceType(String hardwareId) throws SiteWhereException {
 	RegistrationFailureCommand command = new RegistrationFailureCommand();
-	command.setReason(RegistrationFailureReason.InvalidSpecificationToken);
-	command.setErrorMessage("Specification token passed in registration was invalid.");
+	command.setReason(RegistrationFailureReason.InvalidDeviceTypeToken);
+	command.setErrorMessage("Device type token passed in registration was invalid.");
 	// getDeviceCommunication().deliverSystemCommand(hardwareId, command);
     }
 
@@ -260,12 +258,12 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	if (getAutoAssignSpecificationId() != null) {
-	    IDeviceSpecification spec = getDeviceManagement().getDeviceSpecification(getAutoAssignSpecificationId());
-	    if (spec == null) {
-		throw new SiteWhereException("Registration manager auto assignment device specification is invalid.");
+	if (getAutoAssignDeviceTypeId() != null) {
+	    IDeviceType deviceType = getDeviceManagement().getDeviceType(getAutoAssignDeviceTypeId());
+	    if (deviceType == null) {
+		throw new SiteWhereException("Registration manager auto assignment device type is invalid.");
 	    }
-	    this.autoAssignSpecification = spec;
+	    this.autoAssignDeviceType = deviceType;
 	}
 	if (getAutoAssignSiteId() != null) {
 	    ISite site = getDeviceManagement().getSite(getAutoAssignSiteId());
@@ -294,20 +292,20 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 	this.allowNewDevices = allowNewDevices;
     }
 
-    public UUID getAutoAssignSpecificationId() {
-	return autoAssignSpecificationId;
+    public UUID getAutoAssignDeviceTypeId() {
+	return autoAssignDeviceTypeId;
     }
 
-    public void setAutoAssignSpecificationId(UUID autoAssignSpecificationId) {
-	this.autoAssignSpecificationId = autoAssignSpecificationId;
+    public void setAutoAssignDeviceTypeId(UUID autoAssignDeviceTypeId) {
+	this.autoAssignDeviceTypeId = autoAssignDeviceTypeId;
     }
 
-    public IDeviceSpecification getAutoAssignSpecification() {
-	return autoAssignSpecification;
+    public IDeviceType getAutoAssignDeviceType() {
+	return autoAssignDeviceType;
     }
 
-    public void setAutoAssignSpecification(IDeviceSpecification autoAssignSpecification) {
-	this.autoAssignSpecification = autoAssignSpecification;
+    public void setAutoAssignDeviceType(IDeviceType autoAssignDeviceType) {
+	this.autoAssignDeviceType = autoAssignDeviceType;
     }
 
     public UUID getAutoAssignSiteId() {

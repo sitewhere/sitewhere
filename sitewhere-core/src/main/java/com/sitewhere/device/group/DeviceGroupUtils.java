@@ -18,7 +18,7 @@ import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
@@ -47,11 +47,10 @@ public class DeviceGroupUtils {
 	List<IDevice> matches = new ArrayList<IDevice>();
 	for (IDevice device : devices) {
 
-	    // Handle filter by specification.
-	    if (criteria.getSpecificationToken() != null) {
-		IDeviceSpecification specification = deviceManagement
-			.getDeviceSpecificationByToken(criteria.getSpecificationToken());
-		if (!device.getDeviceSpecificationId().equals(specification.getId())) {
+	    // Handle filter by device type.
+	    if (criteria.getDeviceTypeToken() != null) {
+		IDeviceType deviceType = deviceManagement.getDeviceTypeByToken(criteria.getDeviceTypeToken());
+		if (!device.getDeviceTypeId().equals(deviceType.getId())) {
 		    continue;
 		}
 	    }

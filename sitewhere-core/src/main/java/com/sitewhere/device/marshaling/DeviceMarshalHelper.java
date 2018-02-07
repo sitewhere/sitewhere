@@ -22,7 +22,7 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.ISite;
 
 /**
@@ -39,11 +39,11 @@ public class DeviceMarshalHelper {
     /** Tenant */
     private IDeviceManagement deviceManagement;
 
-    /** Indicates whether device spec asset information is to be included */
+    /** Indicates whether device type asset information is to be included */
     private boolean includeAsset = true;
 
-    /** Indicates whether device specification information is to be included */
-    private boolean includeSpecification = true;
+    /** Indicates whether device type information is to be included */
+    private boolean includeDeviceType = true;
 
     /** Indicates whether device assignment information is to be copied */
     private boolean includeAssignment = false;
@@ -56,8 +56,8 @@ public class DeviceMarshalHelper {
      */
     private boolean includeNested = false;
 
-    /** Helper for marshaling device specification information */
-    private DeviceSpecificationMarshalHelper specificationHelper;
+    /** Helper for marshaling device type information */
+    private DeviceTypeMarshalHelper deviceTypeHelper;
 
     /** Helper for marshaling device assignement information */
     private DeviceAssignmentMarshalHelper assignmentHelper;
@@ -82,7 +82,7 @@ public class DeviceMarshalHelper {
 	result.setId(source.getId());
 	result.setHardwareId(source.getHardwareId());
 	result.setSiteId(source.getSiteId());
-	result.setDeviceSpecificationId(source.getDeviceSpecificationId());
+	result.setDeviceTypeId(source.getDeviceTypeId());
 	result.setDeviceAssignmentId(source.getDeviceAssignmentId());
 	result.setParentDeviceId(source.getParentDeviceId());
 	result.setComments(source.getComments());
@@ -98,17 +98,17 @@ public class DeviceMarshalHelper {
 	    result.getDeviceElementMappings().add(cnvMapping);
 	}
 
-	// Look up specification information.
-	if (source.getDeviceSpecificationId() != null) {
-	    IDeviceSpecification spec = getDeviceManagement().getDeviceSpecification(source.getDeviceSpecificationId());
-	    if (spec == null) {
-		throw new SiteWhereException("Device references non-existent specification.");
+	// Look up device type information.
+	if (source.getDeviceTypeId() != null) {
+	    IDeviceType deviceType = getDeviceManagement().getDeviceType(source.getDeviceTypeId());
+	    if (deviceType == null) {
+		throw new SiteWhereException("Device references non-existent device type.");
 	    }
-	    if (includeSpecification) {
-		result.setSpecification(getSpecificationHelper().convert(spec, assetResolver));
+	    if (isIncludeDeviceType()) {
+		result.setDeviceType(getDeviceTypeHelper().convert(deviceType, assetResolver));
 	    } else {
 		HardwareAsset asset = (HardwareAsset) assetResolver.getAssetModuleManagement()
-			.getAsset(spec.getAssetReference());
+			.getAsset(deviceType.getAssetReference());
 		if (asset != null) {
 		    result.setAssetId(asset.getId());
 		    result.setAssetName(asset.getName());
@@ -143,16 +143,16 @@ public class DeviceMarshalHelper {
     }
 
     /**
-     * Get helper class for marshaling specifications.
+     * Get helper class for marshaling device types .
      * 
      * @return
      */
-    protected DeviceSpecificationMarshalHelper getSpecificationHelper() {
-	if (specificationHelper == null) {
-	    specificationHelper = new DeviceSpecificationMarshalHelper(getDeviceManagement());
-	    specificationHelper.setIncludeAsset(isIncludeAsset());
+    protected DeviceTypeMarshalHelper getDeviceTypeHelper() {
+	if (deviceTypeHelper == null) {
+	    deviceTypeHelper = new DeviceTypeMarshalHelper(getDeviceManagement());
+	    deviceTypeHelper.setIncludeAsset(isIncludeAsset());
 	}
-	return specificationHelper;
+	return deviceTypeHelper;
     }
 
     /**
@@ -191,12 +191,12 @@ public class DeviceMarshalHelper {
 	return this;
     }
 
-    public boolean isIncludeSpecification() {
-	return includeSpecification;
+    public boolean isIncludeDeviceType() {
+	return includeDeviceType;
     }
 
-    public DeviceMarshalHelper setIncludeSpecification(boolean includeSpecification) {
-	this.includeSpecification = includeSpecification;
+    public DeviceMarshalHelper setIncludeDeviceType(boolean includeDeviceType) {
+	this.includeDeviceType = includeDeviceType;
 	return this;
     }
 

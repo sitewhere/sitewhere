@@ -68,8 +68,8 @@ import com.sitewhere.spi.error.ErrorCode;
  */
 public class ApiTests {
 
-    /** Device specification id used in tests */
-    public static final String TEST_SPECIFICATION_TOKEN = "293749827342243827349";
+    /** Device type token used in tests */
+    public static final String TEST_DEVICE_TYPE_TOKEN = "293749827342243827349";
 
     /** Hardware id used for test cases */
     public static final String TEST_HARDWARE_ID = "12356789-TEST-123";
@@ -111,7 +111,7 @@ public class ApiTests {
 	// Test initial create.
 	DeviceCreateRequest request = new DeviceCreateRequest();
 	request.setHardwareId(TEST_HARDWARE_ID);
-	request.setSpecificationToken(TEST_SPECIFICATION_TOKEN);
+	request.setDeviceTypeToken(TEST_DEVICE_TYPE_TOKEN);
 	request.setComments("This is a test device.");
 	Map<String, String> metadata = new HashMap<String, String>();
 	metadata.put("name1", "value1");

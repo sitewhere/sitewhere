@@ -30,7 +30,7 @@ import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
@@ -44,29 +44,30 @@ import com.sitewhere.spi.error.ErrorLevel;
 public class HBaseDeviceCommand {
 
     /**
-     * Create a new device command for an existing device specification.
+     * Create a new device command for an existing device type.
      * 
      * @param context
-     * @param spec
+     * @param deviceType
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public static IDeviceCommand createDeviceCommand(IHBaseContext context, IDeviceSpecification spec,
+    public static IDeviceCommand createDeviceCommand(IHBaseContext context, IDeviceType deviceType,
 	    IDeviceCommandCreateRequest request) throws SiteWhereException {
-	Long specId = context.getDeviceIdManager().getSpecificationKeys().getValue(spec.getToken());
-	if (specId == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken, ErrorLevel.ERROR);
+	Long deviceTypeId = context.getDeviceIdManager().getSpecificationKeys().getValue(deviceType.getToken());
+	if (deviceTypeId == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceTypeToken, ErrorLevel.ERROR);
 	}
 	String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
 
 	// Use common logic so all backend implementations work the same.
-	List<IDeviceCommand> existing = listDeviceCommands(context, spec, false);
-	DeviceCommand command = DeviceManagementPersistence.deviceCommandCreateLogic(spec, request, uuid, existing);
+	List<IDeviceCommand> existing = listDeviceCommands(context, deviceType, false);
+	DeviceCommand command = DeviceManagementPersistence.deviceCommandCreateLogic(deviceType, request, uuid,
+		existing);
 
 	// Create unique row for new device.
-	Long nextId = HBaseDeviceSpecification.allocateNextCommandId(context, specId);
-	byte[] rowkey = HBaseDeviceSpecification.getDeviceCommandRowKey(specId, nextId);
+	Long nextId = HBaseDeviceType.allocateNextCommandId(context, deviceTypeId);
+	byte[] rowkey = HBaseDeviceType.getDeviceCommandRowKey(deviceTypeId, nextId);
 	context.getDeviceIdManager().getCommandKeys().create(uuid, rowkey);
 
 	return putDeviceCommandPayload(context, command);
@@ -76,14 +77,14 @@ public class HBaseDeviceCommand {
      * List device commands that match the given criteria.
      * 
      * @param context
-     * @param specToken
+     * @param deviceType
      * @param includeDeleted
      * @return
      * @throws SiteWhereException
      */
-    public static List<IDeviceCommand> listDeviceCommands(IHBaseContext context, IDeviceSpecification spec,
+    public static List<IDeviceCommand> listDeviceCommands(IHBaseContext context, IDeviceType deviceType,
 	    boolean includeDeleted) throws SiteWhereException {
-	List<IDeviceCommand> matches = getFilteredDeviceCommands(context, spec, includeDeleted);
+	List<IDeviceCommand> matches = getFilteredDeviceCommands(context, deviceType, includeDeleted);
 	Collections.sort(matches, new Comparator<IDeviceCommand>() {
 
 	    @Override
@@ -98,16 +99,16 @@ public class HBaseDeviceCommand {
      * Get device commands that correspond to the given criteria.
      * 
      * @param context
-     * @param specToken
+     * @param deviceType
      * @param includeDeleted
      * @return
      * @throws SiteWhereException
      */
-    protected static List<IDeviceCommand> getFilteredDeviceCommands(IHBaseContext context, IDeviceSpecification spec,
+    protected static List<IDeviceCommand> getFilteredDeviceCommands(IHBaseContext context, IDeviceType deviceType,
 	    boolean includeDeleted) throws SiteWhereException {
-	Long specId = context.getDeviceIdManager().getSpecificationKeys().getValue(spec.getToken());
+	Long specId = context.getDeviceIdManager().getSpecificationKeys().getValue(deviceType.getToken());
 	if (specId == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken, ErrorLevel.ERROR);
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceTypeToken, ErrorLevel.ERROR);
 	}
 
 	Table devices = null;
@@ -116,8 +117,8 @@ public class HBaseDeviceCommand {
 	try {
 	    devices = getDeviceTableInterface(context);
 	    Scan scan = new Scan();
-	    scan.setStartRow(HBaseDeviceSpecification.getDeviceCommandRowPrefix(specId));
-	    scan.setStopRow(HBaseDeviceSpecification.getEndRowPrefix(specId));
+	    scan.setStartRow(HBaseDeviceType.getDeviceCommandRowPrefix(specId));
+	    scan.setStopRow(HBaseDeviceType.getEndRowPrefix(specId));
 	    scanner = devices.getScanner(scan);
 
 	    List<IDeviceCommand> results = new ArrayList<IDeviceCommand>();
@@ -186,16 +187,16 @@ public class HBaseDeviceCommand {
      * Update an existing device command.
      * 
      * @param context
-     * @param specification
+     * @param deviceType
      * @param command
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceCommand updateDeviceCommand(IHBaseContext context, IDeviceSpecification specification,
+    public static DeviceCommand updateDeviceCommand(IHBaseContext context, IDeviceType deviceType,
 	    IDeviceCommand command, IDeviceCommandCreateRequest request) throws SiteWhereException {
 	DeviceCommand updated = assertDeviceCommand(context, command.getToken());
-	List<IDeviceCommand> existing = listDeviceCommands(context, specification, false);
+	List<IDeviceCommand> existing = listDeviceCommands(context, deviceType, false);
 	DeviceManagementPersistence.deviceCommandUpdateLogic(request, updated, existing);
 	return putDeviceCommandPayload(context, updated);
     }

@@ -29,11 +29,11 @@ public interface IDeviceEventContext {
     public UUID getDeviceId();
 
     /**
-     * Get id for device specification.
+     * Get id for device type.
      * 
      * @return
      */
-    public UUID getDeviceSpecificationId();
+    public UUID getDeviceTypeId();
 
     /**
      * If contained by a parent device, returns the parent id.

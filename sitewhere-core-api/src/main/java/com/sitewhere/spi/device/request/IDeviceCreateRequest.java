@@ -34,11 +34,11 @@ public interface IDeviceCreateRequest {
     public String getSiteToken();
 
     /**
-     * Get the device specification token.
+     * Get the device type token.
      * 
      * @return
      */
-    public String getSpecificationToken();
+    public String getDeviceTypeToken();
 
     /**
      * Get the parent hardware id (if nested).

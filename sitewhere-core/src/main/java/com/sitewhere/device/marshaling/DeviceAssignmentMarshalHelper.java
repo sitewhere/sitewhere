@@ -45,8 +45,8 @@ public class DeviceAssignmentMarshalHelper {
     /** Indicates whether to include site information */
     private boolean includeSite = false;
 
-    /** Indicates whether to include device specification */
-    private boolean includeSpecification = false;
+    /** Indicates whether to include device type */
+    private boolean includeDeviceType = false;
 
     /** Device management */
     private IDeviceManagement deviceManagement;
@@ -125,7 +125,7 @@ public class DeviceAssignmentMarshalHelper {
 	    deviceHelper = new DeviceMarshalHelper(getDeviceManagement());
 	    deviceHelper.setIncludeAsset(false);
 	    deviceHelper.setIncludeAssignment(false);
-	    deviceHelper.setIncludeSpecification(isIncludeSpecification());
+	    deviceHelper.setIncludeDeviceType(isIncludeDeviceType());
 	}
 	return deviceHelper;
     }
@@ -157,12 +157,12 @@ public class DeviceAssignmentMarshalHelper {
 	return this;
     }
 
-    public boolean isIncludeSpecification() {
-	return includeSpecification;
+    public boolean isIncludeDeviceType() {
+	return includeDeviceType;
     }
 
-    public DeviceAssignmentMarshalHelper setIncludeSpecification(boolean includeSpecification) {
-	this.includeSpecification = includeSpecification;
+    public DeviceAssignmentMarshalHelper setIncludeDeviceType(boolean includeDeviceType) {
+	this.includeDeviceType = includeDeviceType;
 	return this;
     }
 

@@ -33,8 +33,8 @@ public class DeviceRegistrationRequest extends DeviceStateChangeCreateRequest
     /** Data map identifier for hardware id */
     public static final String DATA_HARDWARE_ID = "hardwareId";
 
-    /** Data map identifier for specification token */
-    public static final String DATA_SPECIFICATION_TOKEN = "specificationToken";
+    /** Data map identifier for device type token */
+    public static final String DATA_DEVICE_TYPE_TOKEN = "deviceTypeToken";
 
     /** Data map identifier for 'reply to' address */
     public static final String DATA_SITE_TOKEN = "siteToken";
@@ -47,8 +47,7 @@ public class DeviceRegistrationRequest extends DeviceStateChangeCreateRequest
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.request.IDeviceRegistrationCreateRequest#
+     * @see com.sitewhere.spi.device.event.request.IDeviceRegistrationCreateRequest#
      * getHardwareId ()
      */
     @Override
@@ -61,19 +60,16 @@ public class DeviceRegistrationRequest extends DeviceStateChangeCreateRequest
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.device.event.request.IDeviceRegistrationCreateRequest#
-     * getSpecificationToken()
+     * @see com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest#
+     * getDeviceTypeToken()
      */
     @Override
-    public String getSpecificationToken() {
-	return getData().get(DATA_SPECIFICATION_TOKEN);
+    public String getDeviceTypeToken() {
+	return getData().get(DATA_DEVICE_TYPE_TOKEN);
     }
 
-    public void setSpecificationToken(String specificationToken) {
-	getData().put(DATA_SPECIFICATION_TOKEN, specificationToken);
+    public void setDeviceTypeToken(String specificationToken) {
+	getData().put(DATA_DEVICE_TYPE_TOKEN, specificationToken);
     }
 
     /*

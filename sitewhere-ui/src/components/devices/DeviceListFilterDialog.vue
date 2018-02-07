@@ -37,11 +37,11 @@
           <v-tabs-content key="specification" id="specification">
             <v-card flat>
               <v-card-text>
-                <specification-chooser :chosenText="specificationChosenText"
+                <device-type-chooser :chosenText="specificationChosenText"
                   :notChosenText="specificationNotChosenText"
                   :selected="specificationFilter"
                   @specificationUpdated="onSpecificationUpdated">
-                </specification-chooser>
+                </device-type-chooser>
               </v-card-text>
             </v-card>
           </v-tabs-content>
@@ -112,7 +112,7 @@
 <script>
 import BaseDialog from '../common/BaseDialog'
 import SiteChooser from '../sites/SiteChooser'
-import SpecificationChooser from '../specifications/SpecificationChooser'
+import DeviceTypeChooser from '../devicetypes/DeviceTypeChooser'
 import DeviceGroupChooser from '../groups/DeviceGroupChooser'
 import DateTimePicker from '../common/DateTimePicker'
 
@@ -157,7 +157,7 @@ export default {
   components: {
     BaseDialog,
     SiteChooser,
-    SpecificationChooser,
+    DeviceTypeChooser,
     DeviceGroupChooser,
     DateTimePicker
   },

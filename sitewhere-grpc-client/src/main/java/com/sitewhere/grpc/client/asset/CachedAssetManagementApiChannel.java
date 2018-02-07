@@ -43,6 +43,9 @@ public class CachedAssetManagementApiChannel extends AssetManagementApiChannel {
      */
     @Override
     public IAsset getAsset(IAssetReference reference) throws SiteWhereException {
+	if (reference == null) {
+	    throw new SiteWhereException("Attempting to look up asset with null reference.");
+	}
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	String encoded = getAssetReferenceEncoder().encode(reference);
 	IAsset asset = getAssetByReferenceCache().getCacheEntry(tenant, encoded);

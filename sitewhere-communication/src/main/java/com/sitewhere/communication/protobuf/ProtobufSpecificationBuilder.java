@@ -14,7 +14,7 @@ import com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Type;
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.command.ParameterType;
@@ -29,34 +29,33 @@ import com.sitewhere.spi.tenant.ITenant;
 public class ProtobufSpecificationBuilder {
 
     /**
-     * Creates a {@link FileDescriptorProto} based on an
-     * {@link IDeviceSpecification}.
+     * Creates a {@link FileDescriptorProto} based on an {@link IDeviceType}.
      * 
-     * @param specification
+     * @param deviceType
      * @param tenant
      * @return
      * @throws SiteWhereException
      */
-    public static DescriptorProtos.FileDescriptorProto createFileDescriptor(IDeviceSpecification specification,
-	    ITenant tenant) throws SiteWhereException {
+    public static DescriptorProtos.FileDescriptorProto createFileDescriptor(IDeviceType deviceType, ITenant tenant)
+	    throws SiteWhereException {
 	DescriptorProtos.FileDescriptorProto.Builder builder = DescriptorProtos.FileDescriptorProto.newBuilder();
-	builder.addMessageType(createSpecificationMessage(specification, tenant));
+	builder.addMessageType(createDeviceTypeMessage(deviceType, tenant));
 	return builder.build();
     }
 
     /**
-     * Create the message for a specification.
+     * Create the message for a device type.
      * 
      * @param specification
      * @param tenant
      * @return
      * @throws SiteWhereException
      */
-    public static DescriptorProtos.DescriptorProto createSpecificationMessage(IDeviceSpecification specification,
-	    ITenant tenant) throws SiteWhereException {
-	List<IDeviceCommand> commands = getDeviceManagement(tenant).listDeviceCommands(specification.getId(), false);
+    public static DescriptorProtos.DescriptorProto createDeviceTypeMessage(IDeviceType deviceType, ITenant tenant)
+	    throws SiteWhereException {
+	List<IDeviceCommand> commands = getDeviceManagement(tenant).listDeviceCommands(deviceType.getId(), false);
 	DescriptorProtos.DescriptorProto.Builder builder = DescriptorProtos.DescriptorProto.newBuilder();
-	builder.setName(ProtobufNaming.getSpecificationIdentifier(specification));
+	builder.setName(ProtobufNaming.getDeviceTypeIdentifier(deviceType));
 	builder.addEnumType(createCommandsEnum(commands));
 	builder.addNestedType(createUuidMessage());
 	builder.addNestedType(createHeaderMessage());
@@ -128,7 +127,7 @@ public class ProtobufSpecificationBuilder {
 		.setName(ProtobufNaming.HEADER_NESTED_PATH_FIELD_NAME).setNumber(3).setType(Type.TYPE_STRING);
 	builder.addField(path.build());
 	DescriptorProtos.FieldDescriptorProto.Builder target = DescriptorProtos.FieldDescriptorProto.newBuilder()
-		.setName(ProtobufNaming.HEADER_NESTED_SPEC_FIELD_NAME).setNumber(4).setType(Type.TYPE_STRING);
+		.setName(ProtobufNaming.HEADER_NESTED_TYPE_FIELD_NAME).setNumber(4).setType(Type.TYPE_STRING);
 	builder.addField(target.build());
 	return builder.build();
     }

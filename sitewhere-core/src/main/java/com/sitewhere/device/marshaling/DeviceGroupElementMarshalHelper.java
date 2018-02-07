@@ -46,8 +46,8 @@ public class DeviceGroupElementMarshalHelper {
 
     public DeviceGroupElementMarshalHelper(IDeviceManagement deviceManagement) {
 	this.deviceManagement = deviceManagement;
-	this.deviceHelper = new DeviceMarshalHelper(deviceManagement).setIncludeSpecification(true)
-		.setIncludeAsset(true).setIncludeAssignment(true);
+	this.deviceHelper = new DeviceMarshalHelper(deviceManagement).setIncludeDeviceType(true).setIncludeAsset(true)
+		.setIncludeAssignment(true);
     }
 
     /**

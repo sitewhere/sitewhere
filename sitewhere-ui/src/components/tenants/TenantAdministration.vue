@@ -63,11 +63,11 @@ export default {
       route: 'devices',
       longTitle: 'Manage Devices',
       subsections: [{
-        id: 'specifications',
-        title: 'Device Specifications',
+        id: 'devicetypes',
+        title: 'Device Types',
         icon: 'description',
-        route: 'specifications',
-        longTitle: 'Manage Device Specifications'
+        route: 'devicetypes',
+        longTitle: 'Manage Device Types'
       }, {
         id: 'devices',
         title: 'Devices',

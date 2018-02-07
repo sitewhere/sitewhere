@@ -34,7 +34,7 @@ public class DeviceCommand extends MetadataProviderEntity implements IDeviceComm
     private String token;
 
     /** Unique id for parent specification */
-    private UUID deviceSpecificationId;
+    private UUID deviceTypeId;
 
     /** Command namespace */
     private String namespace;
@@ -75,16 +75,15 @@ public class DeviceCommand extends MetadataProviderEntity implements IDeviceComm
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.device.command.IDeviceCommand#getDeviceSpecificationId()
+     * @see com.sitewhere.spi.device.command.IDeviceCommand#getDeviceTypeId()
      */
     @Override
-    public UUID getDeviceSpecificationId() {
-	return deviceSpecificationId;
+    public UUID getDeviceTypeId() {
+	return deviceTypeId;
     }
 
-    public void setDeviceSpecificationId(UUID deviceSpecificationId) {
-	this.deviceSpecificationId = deviceSpecificationId;
+    public void setDeviceTypeId(UUID deviceTypeId) {
+	this.deviceTypeId = deviceTypeId;
     }
 
     /*
@@ -155,7 +154,7 @@ public class DeviceCommand extends MetadataProviderEntity implements IDeviceComm
 	MetadataProviderEntity.copy(input, result);
 	result.setId(input.getId());
 	result.setToken(input.getToken());
-	result.setDeviceSpecificationId(input.getDeviceSpecificationId());
+	result.setDeviceTypeId(input.getDeviceTypeId());
 	result.setName(input.getName());
 	result.setNamespace(input.getNamespace());
 	result.setDescription(input.getDescription());

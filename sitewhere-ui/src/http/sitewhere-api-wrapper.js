@@ -65,14 +65,14 @@ import {
   deleteZone
 } from './sitewhere-sites-api.js'
 
-// Specifications.
+// Device types.
 import {
-  createDeviceSpecification,
-  getDeviceSpecification,
-  getDeviceSpecificationProtobuf,
-  updateDeviceSpecification,
-  listDeviceSpecifications,
-  deleteDeviceSpecification,
+  createDeviceType,
+  getDeviceType,
+  getDeviceTypeProtobuf,
+  updateDeviceType,
+  listDeviceTypes,
+  deleteDeviceType,
   createDeviceCommand,
   getDeviceCommand,
   listDeviceCommands,
@@ -84,7 +84,7 @@ import {
   listDeviceStatuses,
   updateDeviceStatus,
   deleteDeviceStatus
-} from './sitewhere-specifications-api.js'
+} from './sitewhere-devicetypes-api.js'
 
 // Devices.
 import {
@@ -766,56 +766,56 @@ export function _missingAssignment (store, token) {
 }
 
 /**
- * Create a new device specification.
+ * Create a new device type.
  */
-export function _createDeviceSpecification (store, payload) {
+export function _createDeviceType (store, payload) {
   let axios = createCoreApiCall(store)
-  let api = createDeviceSpecification(axios, payload)
+  let api = createDeviceType(axios, payload)
   return loaderWrapper(store, api)
 }
 
 /**
- * Get a device specification by token.
+ * Get a device type by token.
  */
-export function _getDeviceSpecification (store, token) {
+export function _getDeviceType (store, token) {
   let axios = createCoreApiCall(store)
-  let api = getDeviceSpecification(axios, token)
+  let api = getDeviceType(axios, token)
   return loaderWrapper(store, api)
 }
 
 /**
- * Get a device specification protocol buffer definition.
+ * Get a device type protocol buffer definition.
  */
-export function _getDeviceSpecificationProtobuf (store, token) {
+export function _getDeviceTypeProtobuf (store, token) {
   let axios = createCoreApiCall(store)
-  let api = getDeviceSpecificationProtobuf(axios, token)
+  let api = getDeviceTypeProtobuf(axios, token)
   return loaderWrapper(store, api)
 }
 
 /**
- * Update an existing device specification.
+ * Update an existing device type.
  */
-export function _updateDeviceSpecification (store, token, payload) {
+export function _updateDeviceType (store, token, payload) {
   let axios = createCoreApiCall(store)
-  let api = updateDeviceSpecification(axios, token, payload)
+  let api = updateDeviceType(axios, token, payload)
   return loaderWrapper(store, api)
 }
 
 /**
- * List device specifications.
+ * List device types.
  */
-export function _listDeviceSpecifications (store, includeDeleted, includeAsset, paging) {
+export function _listDeviceTypes (store, includeDeleted, includeAsset, paging) {
   let axios = createCoreApiCall(store)
-  let api = listDeviceSpecifications(axios, includeDeleted, includeAsset, paging)
+  let api = listDeviceTypes(axios, includeDeleted, includeAsset, paging)
   return loaderWrapper(store, api)
 }
 
 /**
- * Delete an existing device specification.
+ * Delete an existing device type.
  */
-export function _deleteDeviceSpecification (store, token, force) {
+export function _deleteDeviceType (store, token, force) {
   let axios = createCoreApiCall(store)
-  let api = deleteDeviceSpecification(axios, token, force)
+  let api = deleteDeviceType(axios, token, force)
   return loaderWrapper(store, api)
 }
 

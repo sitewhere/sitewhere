@@ -7,7 +7,7 @@
         </no-results-panel>
         <v-data-table v-if="alerts.length > 0" class="elevation-2 pa-0"
           :headers="headers" :items="alerts" :hide-actions="true"
-          total-items="0">
+          :total-items="0">
           <template slot="items" slot-scope="props">
             <td width="20%" :title="props.item.type">
               {{ props.item.type }}

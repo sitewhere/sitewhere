@@ -1910,7 +1910,7 @@ public class EventModelConverter {
     public static DeviceEventContext asApiDeviceEventContext(GDeviceEventContext grpc) throws SiteWhereException {
 	DeviceEventContext api = new DeviceEventContext();
 	api.setDeviceId(CommonModelConverter.asApiUuid(grpc.getDeviceId()));
-	api.setDeviceSpecificationId(CommonModelConverter.asApiUuid(grpc.getDeviceSpecificationId()));
+	api.setDeviceTypeId(CommonModelConverter.asApiUuid(grpc.getDeviceTypeId()));
 	api.setParentDeviceId(
 		grpc.hasParentDeviceId() ? CommonModelConverter.asApiUuid(grpc.getParentDeviceId()) : null);
 	api.setDeviceStatus(grpc.hasDeviceStatus() ? grpc.getDeviceStatus().getValue() : null);
@@ -1930,7 +1930,7 @@ public class EventModelConverter {
     public static GDeviceEventContext asGrpcDeviceEventContext(IDeviceEventContext api) throws SiteWhereException {
 	GDeviceEventContext.Builder grpc = GDeviceEventContext.newBuilder();
 	grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
-	grpc.setDeviceSpecificationId(CommonModelConverter.asGrpcUuid(api.getDeviceSpecificationId()));
+	grpc.setDeviceTypeId(CommonModelConverter.asGrpcUuid(api.getDeviceTypeId()));
 	if (api.getParentDeviceId() != null) {
 	    grpc.setParentDeviceId(CommonModelConverter.asGrpcUuid(api.getParentDeviceId()));
 	}

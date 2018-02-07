@@ -22,11 +22,11 @@ public interface IDeviceRegistrationRequest extends IDeviceStateChangeCreateRequ
     public String getHardwareId();
 
     /**
-     * Get token for device hardware specification.
+     * Get token for device type token.
      * 
      * @return
      */
-    public String getSpecificationToken();
+    public String getDeviceTypeToken();
 
     /**
      * Get token for site to which device should be assigned.

@@ -9,7 +9,7 @@ package com.sitewhere.sources.decoder.composite;
 
 import com.sitewhere.sources.spi.ICompositeDeviceEventDecoder.IDeviceContext;
 import com.sitewhere.spi.device.IDevice;
-import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.IDeviceType;
 
 /**
  * Device context with a binary payload.
@@ -21,18 +21,17 @@ public class BinaryDeviceContext implements IDeviceContext<byte[]> {
     /** Device */
     private IDevice device;
 
-    /** Device specification */
-    private IDeviceSpecification deviceSpecification;
+    /** Device type */
+    private IDeviceType deviceType;
 
     /** Message payload */
     private byte[] payload;
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.ICompositeDeviceEventDecoder.
-     * IDeviceContext#getDevice()
+     * @see com.sitewhere.sources.spi.ICompositeDeviceEventDecoder.IDeviceContext#
+     * getDevice()
      */
+    @Override
     public IDevice getDevice() {
 	return device;
     }
@@ -42,17 +41,16 @@ public class BinaryDeviceContext implements IDeviceContext<byte[]> {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.ICompositeDeviceEventDecoder.
-     * IDeviceContext#getDeviceSpecification()
+     * @see com.sitewhere.sources.spi.ICompositeDeviceEventDecoder.IDeviceContext#
+     * getDeviceType()
      */
-    public IDeviceSpecification getDeviceSpecification() {
-	return deviceSpecification;
+    @Override
+    public IDeviceType getDeviceType() {
+	return deviceType;
     }
 
-    public void setDeviceSpecification(IDeviceSpecification deviceSpecification) {
-	this.deviceSpecification = deviceSpecification;
+    public void setDeviceType(IDeviceType deviceType) {
+	this.deviceType = deviceType;
     }
 
     /*

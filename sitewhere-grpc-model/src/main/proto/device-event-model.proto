@@ -211,7 +211,7 @@ message GAnyDeviceEvent {
 // Context information for a device event.
 message GDeviceEventContext {
 	GUUID deviceId = 1;
-	GUUID deviceSpecificationId = 2;
+	GUUID deviceTypeId = 2;
 	GUUID parentDeviceId = 3;
 	GOptionalString deviceStatus = 4;
 	map<string, string> deviceMetadata = 5;

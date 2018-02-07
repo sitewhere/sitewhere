@@ -31,12 +31,12 @@ public interface IRegistrationManager extends ITenantEngineLifecycleComponent {
     public boolean isAllowNewDevices();
 
     /**
-     * Get id of device specification that will be used if no device specification
-     * is provided in request.
+     * Get id of device type that will be used if no device type is provided in
+     * request.
      * 
      * @return
      */
-    public UUID getAutoAssignSpecificationId();
+    public UUID getAutoAssignDeviceTypeId();
 
     /**
      * Get id of site that will be used if no site is provided in request.

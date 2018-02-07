@@ -22,7 +22,7 @@ public class BatchCommandInvocationJobParser {
      */
     public static BatchCommandForCriteriaRequest parse(Map<String, String> data) {
 
-	String specificationToken = null;
+	String deviceTypeToken = null;
 	String siteToken = null;
 	String groupToken = null;
 	String groupRole = null;
@@ -31,8 +31,8 @@ public class BatchCommandInvocationJobParser {
 
 	for (String key : data.keySet()) {
 	    String value = data.get(key);
-	    if (JobConstants.BatchCommandInvocation.SPECIFICATION_TOKEN.equals(key)) {
-		specificationToken = value;
+	    if (JobConstants.BatchCommandInvocation.DEVICE_TYPE_TOKEN.equals(key)) {
+		deviceTypeToken = value;
 	    } else if (JobConstants.BatchCommandInvocation.SITE_TOKEN.equals(key)) {
 		siteToken = value;
 	    } else if (JobConstants.BatchCommandInvocation.GROUP_TOKEN.equals(key)) {
@@ -50,7 +50,7 @@ public class BatchCommandInvocationJobParser {
 	BatchCommandForCriteriaRequest request = new BatchCommandForCriteriaRequest();
 	request.setCommandToken(commandToken);
 	request.setParameterValues(parameters);
-	request.setSpecificationToken(specificationToken);
+	request.setDeviceTypeToken(deviceTypeToken);
 	request.setSiteToken(siteToken);
 	request.setGroupToken(groupToken);
 	request.setGroupsWithRole(groupRole);

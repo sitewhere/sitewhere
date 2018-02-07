@@ -35,8 +35,8 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
     /** Site token */
     private String siteToken;
 
-    /** Device specification token */
-    private String specificationToken;
+    /** Device type token */
+    private String deviceTypeToken;
 
     /** Parent hardware id (if nested) */
     private String parentHardwareId;
@@ -74,6 +74,7 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
      * 
      * @see com.sitewhere.spi.device.request.IDeviceCreateRequest#getSiteToken()
      */
+    @Override
     public String getSiteToken() {
 	return siteToken;
     }
@@ -83,17 +84,16 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.request.IDeviceCreateRequest#
-     * getSpecificationToken()
+     * @see
+     * com.sitewhere.spi.device.request.IDeviceCreateRequest#getDeviceTypeToken()
      */
-    public String getSpecificationToken() {
-	return specificationToken;
+    @Override
+    public String getDeviceTypeToken() {
+	return deviceTypeToken;
     }
 
-    public void setSpecificationToken(String specificationToken) {
-	this.specificationToken = specificationToken;
+    public void setDeviceTypeToken(String deviceTypeToken) {
+	this.deviceTypeToken = deviceTypeToken;
     }
 
     /*
@@ -102,6 +102,7 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
      * @see
      * com.sitewhere.spi.device.request.IDeviceCreateRequest#getParentHardwareId ()
      */
+    @Override
     public String getParentHardwareId() {
 	return parentHardwareId;
     }
@@ -116,6 +117,7 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
      * @see com.sitewhere.spi.device.request.IDeviceCreateRequest#
      * isRemoveParentHardwareId()
      */
+    @Override
     public Boolean isRemoveParentHardwareId() {
 	return removeParentHardwareId;
     }
@@ -130,6 +132,7 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
      * @see com.sitewhere.spi.device.request.IDeviceCreateRequest#
      * getDeviceElementMappings()
      */
+    @Override
     @SuppressWarnings("unchecked")
     public List<IDeviceElementMapping> getDeviceElementMappings() {
 	return (List<IDeviceElementMapping>) (List<? extends IDeviceElementMapping>) deviceElementMappings;
@@ -144,6 +147,7 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
      * 
      * @see com.sitewhere.spi.device.request.IDeviceCreateRequest#getComments()
      */
+    @Override
     public String getComments() {
 	return comments;
     }
@@ -152,6 +156,10 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
 	this.comments = comments;
     }
 
+    /*
+     * @see com.sitewhere.spi.device.request.IDeviceCreateRequest#getStatus()
+     */
+    @Override
     public String getStatus() {
 	return status;
     }
@@ -165,6 +173,7 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
      * 
      * @see com.sitewhere.spi.device.request.IDeviceCreateRequest#getMetadata()
      */
+    @Override
     public Map<String, String> getMetadata() {
 	return metadata;
     }
@@ -195,9 +204,9 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
 	// }
 	// }
 
-	public Builder(String siteToken, String specificationToken, String hardwareId) {
+	public Builder(String siteToken, String deviceTypeToken, String hardwareId) {
 	    request.setSiteToken(siteToken);
-	    request.setSpecificationToken(specificationToken);
+	    request.setDeviceTypeToken(deviceTypeToken);
 	    request.setHardwareId(hardwareId);
 	    request.setStatus(null);
 	    request.setComments("");

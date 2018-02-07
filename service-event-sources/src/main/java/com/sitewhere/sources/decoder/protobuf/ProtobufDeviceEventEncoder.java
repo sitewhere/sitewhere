@@ -31,8 +31,7 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.communication.IDeviceEventEncoder#encode(com.
+     * @see com.sitewhere.spi.device.communication.IDeviceEventEncoder#encode(com.
      * sitewhere .spi.device.communication.IDecodedDeviceRequest)
      */
     @Override
@@ -51,8 +50,8 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
     }
 
     /**
-     * Encode a {@link IDecodedDeviceRequest} containing measurements in a
-     * protobuf message.
+     * Encode a {@link IDecodedDeviceRequest} containing measurements in a protobuf
+     * message.
      * 
      * @param request
      * @return
@@ -138,8 +137,8 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
     }
 
     /**
-     * Encode a {@link IDecodedDeviceRequest} containing a location in a
-     * protobuf message.
+     * Encode a {@link IDecodedDeviceRequest} containing a location in a protobuf
+     * message.
      * 
      * @param request
      * @return
@@ -180,8 +179,8 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
     }
 
     /**
-     * Encode a {@link IDecodedDeviceRequest} containing a device registration
-     * in a protobuf message.
+     * Encode a {@link IDecodedDeviceRequest} containing a device registration in a
+     * protobuf message.
      * 
      * @param decoded
      * @return
@@ -194,7 +193,7 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
 	    SiteWhere.RegisterDevice.Builder register = SiteWhere.RegisterDevice.newBuilder();
 	    register.setHardwareId(request.getHardwareId());
 	    register.setSiteToken(request.getSiteToken());
-	    register.setSpecificationToken(request.getSpecificationToken());
+	    register.setSpecificationToken(request.getDeviceTypeToken());
 
 	    ByteArrayOutputStream out = new ByteArrayOutputStream();
 	    SiteWhere.Header.Builder builder = SiteWhere.Header.newBuilder();

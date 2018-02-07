@@ -3,12 +3,12 @@
     <v-card-text @click="onOpenDevice" :style="styleForDevice()"
       class="device-root">
       <div class="device-image"
-        :style="backgroundImageStyle(device.specification.assetImageUrl)"></div>
+        :style="backgroundImageStyle(device.deviceType.assetImageUrl)"></div>
       <div class="device-hardware-id">
         {{ ellipsis(device.hardwareId, charWidth) }}
       </div>
-      <div class="device-specification">
-        {{ ellipsis(device.specification.name, charWidth) }}
+      <div class="device-type">
+        {{ ellipsis(device.deviceType.name, charWidth) }}
       </div>
       <div class="device-comments">
         {{ ellipsis(device.comments, charWidth)  }}
@@ -124,7 +124,7 @@ export default {
   background-color: #fff;
   border-right: 1px solid #eee;
 }
-.device-specification {
+.device-type {
   position: absolute;
   top: 6px;
   left: 110px;

@@ -17,7 +17,7 @@ import com.sitewhere.rest.model.batch.BatchOperation;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceAssignmentState;
-import com.sitewhere.rest.model.device.DeviceSpecification;
+import com.sitewhere.rest.model.device.DeviceType;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
@@ -44,7 +44,7 @@ import com.sitewhere.spi.batch.IBatchOperation;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceAssignmentState;
-import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.command.IDeviceCommand;
@@ -82,8 +82,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#encode(java.lang.Object)
+     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#encode(java.lang.Object)
      */
     @Override
     public byte[] encode(Object obj) throws SiteWhereException {
@@ -104,8 +103,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeSite(com.sitewhere.
+     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeSite(com.sitewhere.
      * spi.device .ISite)
      */
     @Override
@@ -126,8 +124,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeZone(com.sitewhere.
+     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeZone(com.sitewhere.
      * spi.device .IZone)
      */
     @Override
@@ -146,27 +143,21 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeDeviceSpecification(
-     * com.sitewhere .spi.device.IDeviceSpecification)
+     * com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeDeviceType(com.sitewhere.
+     * spi.device.IDeviceType)
      */
     @Override
-    public byte[] encodeDeviceSpecification(IDeviceSpecification specification) throws SiteWhereException {
-	return MarshalUtils.marshalJson(specification);
+    public byte[] encodeDeviceType(IDeviceType deviceType) throws SiteWhereException {
+	return MarshalUtils.marshalJson(deviceType);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeDeviceSpecification(
-     * byte[])
+     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeDeviceType(byte[])
      */
     @Override
-    public DeviceSpecification decodeDeviceSpecification(byte[] payload) throws SiteWhereException {
-	return MarshalUtils.unmarshalJson(payload, DeviceSpecification.class);
+    public DeviceType decodeDeviceType(byte[] payload) throws SiteWhereException {
+	return MarshalUtils.unmarshalJson(payload, DeviceType.class);
     }
 
     /*
@@ -207,8 +198,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeDeviceAssignment(byte
-     * [])
+     * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeDeviceAssignment(byte [])
      */
     @Override
     public DeviceAssignment decodeDeviceAssignment(byte[] payload) throws SiteWhereException {
@@ -218,8 +208,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeDeviceStream(com.
+     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeDeviceStream(com.
      * sitewhere. spi.device.streaming.IDeviceStream)
      */
     @Override
@@ -230,8 +219,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeDeviceStream(byte[])
+     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeDeviceStream(byte[])
      */
     @Override
     public DeviceStream decodeDeviceStream(byte[] payload) throws SiteWhereException {
@@ -265,8 +253,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeDeviceMeasurements(
+     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeDeviceMeasurements(
      * com.sitewhere .spi.device.event.IDeviceMeasurements)
      */
     @Override
@@ -277,8 +264,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeDeviceMeasurements(
+     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeDeviceMeasurements(
      * byte[])
      */
     @Override
@@ -289,8 +275,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeDeviceLocation(com.
+     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeDeviceLocation(com.
      * sitewhere .spi.device.event.IDeviceLocation)
      */
     @Override
@@ -302,8 +287,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeDeviceLocation(byte[]
-     * )
+     * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeDeviceLocation(byte[] )
      */
     @Override
     public DeviceLocation decodeDeviceLocation(byte[] payload) throws SiteWhereException {
@@ -324,8 +308,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeDeviceAlert(byte[])
+     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeDeviceAlert(byte[])
      */
     @Override
     public DeviceAlert decodeDeviceAlert(byte[] payload) throws SiteWhereException {
@@ -348,8 +331,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeDeviceStreamData(byte
-     * [])
+     * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeDeviceStreamData(byte [])
      */
     @Override
     public DeviceStreamData decodeDeviceStreamData(byte[] payload) throws SiteWhereException {
@@ -394,8 +376,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeDeviceStateChange(
+     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeDeviceStateChange(
      * byte[])
      */
     @Override
@@ -430,8 +411,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeBatchOperation(com.
+     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeBatchOperation(com.
      * sitewhere .spi.device.batch.IBatchOperation)
      */
     @Override
@@ -443,8 +423,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeBatchOperation(byte[]
-     * )
+     * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeBatchOperation(byte[] )
      */
     @Override
     public BatchOperation decodeBatchOperation(byte[] payload) throws SiteWhereException {
@@ -454,8 +433,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeBatchElement(com.
+     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeBatchElement(com.
      * sitewhere. spi.device.batch.IBatchElement)
      */
     @Override
@@ -466,8 +444,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeBatchElement(byte[])
+     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeBatchElement(byte[])
      */
     @Override
     public BatchElement decodeBatchElement(byte[] payload) throws SiteWhereException {
@@ -488,8 +465,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeDeviceGroup(byte[])
+     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeDeviceGroup(byte[])
      */
     @Override
     public DeviceGroup decodeDeviceGroup(byte[] payload) throws SiteWhereException {
@@ -499,8 +475,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeDeviceGroupElement(
+     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeDeviceGroupElement(
      * com.sitewhere .spi.device.group.IDeviceGroupElement)
      */
     @Override
@@ -511,8 +486,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeDeviceGroupElement(
+     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeDeviceGroupElement(
      * byte[])
      */
     @Override
@@ -523,8 +497,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeDeviceCommand(com.
+     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeDeviceCommand(com.
      * sitewhere .spi.device.command.IDeviceCommand)
      */
     @Override
@@ -546,8 +519,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeUser(com.sitewhere.
+     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeUser(com.sitewhere.
      * spi.user .IUser)
      */
     @Override
@@ -581,8 +553,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeGrantedAuthority(byte
-     * [])
+     * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeGrantedAuthority(byte [])
      */
     @Override
     public GrantedAuthority decodeGrantedAuthority(byte[] payload) throws SiteWhereException {
@@ -592,8 +563,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeAssetCategory(com.
+     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeAssetCategory(com.
      * sitewhere .spi.asset.IAssetCategory)
      */
     @Override
@@ -626,8 +596,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodePersonAsset(byte[])
+     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#decodePersonAsset(byte[])
      */
     @Override
     public PersonAsset decodePersonAsset(byte[] payload) throws SiteWhereException {
@@ -637,8 +606,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeHardwareAsset(com.
+     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeHardwareAsset(com.
      * sitewhere .spi.asset.IHardwareAsset)
      */
     @Override
@@ -660,8 +628,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeLocationAsset(com.
+     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeLocationAsset(com.
      * sitewhere .spi.asset.ILocationAsset)
      */
     @Override

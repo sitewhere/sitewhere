@@ -39,8 +39,8 @@ public class BatchUtils {
      */
     public static List<String> getHardwareIds(IBatchCommandForCriteriaRequest criteria,
 	    IDeviceManagement deviceManagement) throws SiteWhereException {
-	if (criteria.getSpecificationToken() == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken, ErrorLevel.ERROR);
+	if (criteria.getDeviceTypeToken() == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceTypeToken, ErrorLevel.ERROR);
 	}
 
 	boolean hasGroup = false;
@@ -55,7 +55,7 @@ public class BatchUtils {
 	    throw new SiteWhereException("Only one of groupToken or groupsWithRole may be specified.");
 	}
 
-	IDeviceSearchCriteria deviceSearch = new DeviceSearchCriteria(criteria.getSpecificationToken(),
+	IDeviceSearchCriteria deviceSearch = new DeviceSearchCriteria(criteria.getDeviceTypeToken(),
 		criteria.getSiteToken(), false, 1, 0, criteria.getStartDate(), criteria.getEndDate());
 
 	Collection<IDevice> matches;

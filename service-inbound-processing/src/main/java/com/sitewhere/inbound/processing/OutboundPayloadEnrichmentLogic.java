@@ -69,7 +69,7 @@ public class OutboundPayloadEnrichmentLogic {
 	// Build event context.
 	DeviceEventContext context = new DeviceEventContext();
 	context.setDeviceId(device.getId());
-	context.setDeviceSpecificationId(device.getDeviceSpecificationId());
+	context.setDeviceTypeId(device.getDeviceTypeId());
 	context.setParentDeviceId(device.getParentDeviceId());
 	context.setDeviceStatus(device.getStatus());
 	context.setDeviceMetadata(device.getMetadata());

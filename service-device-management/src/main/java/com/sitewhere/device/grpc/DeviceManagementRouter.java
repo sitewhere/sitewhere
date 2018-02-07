@@ -62,81 +62,74 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * createDeviceSpecification(com.sitewhere.grpc.service.
-     * GCreateDeviceSpecificationRequest, io.grpc.stub.StreamObserver)
+     * createDeviceType(com.sitewhere.grpc.service.GCreateDeviceTypeRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void createDeviceSpecification(GCreateDeviceSpecificationRequest request,
-	    StreamObserver<GCreateDeviceSpecificationResponse> responseObserver) {
-	getTenantImplementation().createDeviceSpecification(request, responseObserver);
+    public void createDeviceType(GCreateDeviceTypeRequest request,
+	    StreamObserver<GCreateDeviceTypeResponse> responseObserver) {
+	getTenantImplementation().createDeviceType(request, responseObserver);
     }
 
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getDeviceSpecification(com.sitewhere.grpc.service.
-     * GGetDeviceSpecificationRequest, io.grpc.stub.StreamObserver)
+     * getDeviceType(com.sitewhere.grpc.service.GGetDeviceTypeRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void getDeviceSpecification(GGetDeviceSpecificationRequest request,
-	    StreamObserver<GGetDeviceSpecificationResponse> responseObserver) {
-	getTenantImplementation().getDeviceSpecification(request, responseObserver);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getDeviceSpecificationByToken(com.sitewhere.grpc.service.
-     * GGetDeviceSpecificationByTokenRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getDeviceSpecificationByToken(GGetDeviceSpecificationByTokenRequest request,
-	    StreamObserver<GGetDeviceSpecificationByTokenResponse> responseObserver) {
-	getTenantImplementation().getDeviceSpecificationByToken(request, responseObserver);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * updateDeviceSpecification(com.sitewhere.grpc.service.
-     * GUpdateDeviceSpecificationRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void updateDeviceSpecification(GUpdateDeviceSpecificationRequest request,
-	    StreamObserver<GUpdateDeviceSpecificationResponse> responseObserver) {
-	getTenantImplementation().updateDeviceSpecification(request, responseObserver);
+    public void getDeviceType(GGetDeviceTypeRequest request, StreamObserver<GGetDeviceTypeResponse> responseObserver) {
+	getTenantImplementation().getDeviceType(request, responseObserver);
     }
 
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * listDeviceSpecifications(com.sitewhere.grpc.service.
-     * GListDeviceSpecificationsRequest, io.grpc.stub.StreamObserver)
+     * getDeviceTypeByToken(com.sitewhere.grpc.service.GGetDeviceTypeByTokenRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listDeviceSpecifications(GListDeviceSpecificationsRequest request,
-	    StreamObserver<GListDeviceSpecificationsResponse> responseObserver) {
-	getTenantImplementation().listDeviceSpecifications(request, responseObserver);
+    public void getDeviceTypeByToken(GGetDeviceTypeByTokenRequest request,
+	    StreamObserver<GGetDeviceTypeByTokenResponse> responseObserver) {
+	getTenantImplementation().getDeviceTypeByToken(request, responseObserver);
     }
 
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * deleteDeviceSpecification(com.sitewhere.grpc.service.
-     * GDeleteDeviceSpecificationRequest, io.grpc.stub.StreamObserver)
+     * updateDeviceType(com.sitewhere.grpc.service.GUpdateDeviceTypeRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void deleteDeviceSpecification(GDeleteDeviceSpecificationRequest request,
-	    StreamObserver<GDeleteDeviceSpecificationResponse> responseObserver) {
-	getTenantImplementation().deleteDeviceSpecification(request, responseObserver);
+    public void updateDeviceType(GUpdateDeviceTypeRequest request,
+	    StreamObserver<GUpdateDeviceTypeResponse> responseObserver) {
+	getTenantImplementation().updateDeviceType(request, responseObserver);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listDeviceTypes(com.sitewhere.grpc.service.GListDeviceTypesRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void listDeviceTypes(GListDeviceTypesRequest request,
+	    StreamObserver<GListDeviceTypesResponse> responseObserver) {
+	getTenantImplementation().listDeviceTypes(request, responseObserver);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * deleteDeviceType(com.sitewhere.grpc.service.GDeleteDeviceTypeRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void deleteDeviceType(GDeleteDeviceTypeRequest request,
+	    StreamObserver<GDeleteDeviceTypeResponse> responseObserver) {
+	getTenantImplementation().deleteDeviceType(request, responseObserver);
     }
 
     /*

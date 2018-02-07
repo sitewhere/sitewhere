@@ -17,8 +17,8 @@ public enum RegistrationFailureReason {
     /** Registration manager does not allow new devices */
     NewDevicesNotAllowed,
 
-    /** Invalid specification token was passed */
-    InvalidSpecificationToken,
+    /** Invalid device type token was passed */
+    InvalidDeviceTypeToken,
 
     /** Site token was required */
     SiteTokenRequired;

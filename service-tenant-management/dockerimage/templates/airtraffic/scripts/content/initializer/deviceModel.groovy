@@ -22,19 +22,19 @@ def randomItem = { items ->
 }
 
 // Create specification for each type of tracker asset.
-def allSpecs = []
+def allDeviceTypes = []
 trackers.each { tracker ->
-	def spec = deviceBuilder.newSpecification randomId(), tracker.name + '  Specification', 'at-devices', tracker.id
-	spec = deviceBuilder.persist spec
-	logger.info "[Create Specification] ${spec.name}"
-	allSpecs << spec
+	def type = deviceBuilder.newDeviceType randomId(), tracker.name + '  Device Type', 'at-devices', tracker.id
+	spec = deviceBuilder.persist type
+	logger.info "[Create Device Type] ${type.name}"
+	allDeviceTypes << spec
 }
 
 // Create tracker device for each plane.
 def allTrackerDevices = []
 (1..planeCount).each {
-	def randomSpec = randomItem(allSpecs)
-	def device = deviceBuilder.newDevice site.token, randomSpec.token, randomId() withComment "Air traffic tracker device ${it}."
+	def randomType = randomItem(allDeviceTypes)
+	def device = deviceBuilder.newDevice site.token, randomType.token, randomId() withComment "Air traffic tracker device ${it}."
 	device = deviceBuilder.persist device
 	logger.info "[Create Device] ${device.hardwareId}"
 	allTrackerDevices << device

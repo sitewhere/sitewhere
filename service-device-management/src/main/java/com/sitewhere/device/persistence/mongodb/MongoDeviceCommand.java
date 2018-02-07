@@ -35,8 +35,8 @@ public class MongoDeviceCommand implements MongoConverter<IDeviceCommand> {
     /** Property for token */
     public static final String PROP_TOKEN = "tk";
 
-    /** Property for specification id */
-    public static final String PROP_SPEC_ID = "si";
+    /** Property for device type id */
+    public static final String PROP_DEVICE_TYPE_ID = "ti";
 
     /** Property for command namespace */
     public static final String PROP_NAMESPACE = "ns";
@@ -88,7 +88,7 @@ public class MongoDeviceCommand implements MongoConverter<IDeviceCommand> {
     public static void toDocument(IDeviceCommand source, Document target) {
 	target.append(PROP_ID, source.getId());
 	target.append(PROP_TOKEN, source.getToken());
-	target.append(PROP_SPEC_ID, source.getDeviceSpecificationId());
+	target.append(PROP_DEVICE_TYPE_ID, source.getDeviceTypeId());
 	target.append(PROP_NAMESPACE, source.getNamespace());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_DESCRIPTION, source.getDescription());
@@ -118,14 +118,14 @@ public class MongoDeviceCommand implements MongoConverter<IDeviceCommand> {
     public static void fromDocument(Document source, DeviceCommand target) {
 	UUID id = (UUID) source.get(PROP_ID);
 	String token = (String) source.get(PROP_TOKEN);
-	UUID specId = (UUID) source.get(PROP_SPEC_ID);
+	UUID deviceTypeId = (UUID) source.get(PROP_DEVICE_TYPE_ID);
 	String namespace = (String) source.get(PROP_NAMESPACE);
 	String name = (String) source.get(PROP_NAME);
 	String desc = (String) source.get(PROP_DESCRIPTION);
 
 	target.setId(id);
 	target.setToken(token);
-	target.setDeviceSpecificationId(specId);
+	target.setDeviceTypeId(deviceTypeId);
 	target.setNamespace(namespace);
 	target.setName(name);
 	target.setDescription(desc);

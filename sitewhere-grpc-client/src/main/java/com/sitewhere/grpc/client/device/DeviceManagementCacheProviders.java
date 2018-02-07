@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 import com.sitewhere.grpc.client.cache.CacheProvider;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.microservice.IMicroservice;
 
@@ -32,11 +32,11 @@ public class DeviceManagementCacheProviders {
     /** Cache id for site by id cache */
     public static final String ID_SITE_ID_CACHE = "stid";
 
-    /** Cache id for device specification cache */
-    public static final String ID_SPECIFICATION_CACHE = "spex";
+    /** Cache id for device type cache */
+    public static final String ID_DEVICE_TYPE_CACHE = "dtyp";
 
-    /** Cache id for device specification by id cache */
-    public static final String ID_SPECIFICATION_ID_CACHE = "spid";
+    /** Cache id for device type by id cache */
+    public static final String ID_DEVICE_TYPE_ID_CACHE = "dtid";
 
     /** Cache id for device cache */
     public static final String ID_DEVICE_CACHE = "devc";
@@ -97,17 +97,17 @@ public class DeviceManagementCacheProviders {
     }
 
     /**
-     * Cache for device specifications.
+     * Cache for device types.
      * 
      * @author Derek
      */
-    public static class DeviceSpecificationCache extends CacheProvider<String, IDeviceSpecification> {
+    public static class DeviceTypeCache extends CacheProvider<String, IDeviceType> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = LogManager.getLogger();
 
-	public DeviceSpecificationCache(IMicroservice microservice, boolean createOnStartup) {
-	    super(microservice, ID_SPECIFICATION_CACHE, createOnStartup);
+	public DeviceTypeCache(IMicroservice microservice, boolean createOnStartup) {
+	    super(microservice, ID_DEVICE_TYPE_CACHE, createOnStartup);
 	}
 
 	/*
@@ -120,17 +120,17 @@ public class DeviceManagementCacheProviders {
     }
 
     /**
-     * Cache for device specifications by id.
+     * Cache for device types by id.
      * 
      * @author Derek
      */
-    public static class DeviceSpecificationByIdCache extends CacheProvider<UUID, IDeviceSpecification> {
+    public static class DeviceTypeByIdCache extends CacheProvider<UUID, IDeviceType> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = LogManager.getLogger();
 
-	public DeviceSpecificationByIdCache(IMicroservice microservice, boolean createOnStartup) {
-	    super(microservice, ID_SPECIFICATION_ID_CACHE, createOnStartup);
+	public DeviceTypeByIdCache(IMicroservice microservice, boolean createOnStartup) {
+	    super(microservice, ID_DEVICE_TYPE_ID_CACHE, createOnStartup);
 	}
 
 	/*

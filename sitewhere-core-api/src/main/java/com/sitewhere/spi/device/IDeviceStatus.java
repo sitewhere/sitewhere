@@ -34,11 +34,11 @@ public interface IDeviceStatus extends IMetadataProvider {
     public String getCode();
 
     /**
-     * Get unqiue id for the parent specification.
+     * Get unqiue id for the parent device type.
      * 
      * @return
      */
-    public UUID getDeviceSpecificationId();
+    public UUID getDeviceTypeId();
 
     /**
      * Name displayed in user interface.

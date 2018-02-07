@@ -35,7 +35,7 @@ import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
-import com.sitewhere.rest.model.device.DeviceSpecification;
+import com.sitewhere.rest.model.device.DeviceType;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
@@ -54,8 +54,8 @@ import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceGroupCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceGroupElementCreateRequest;
-import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceTypeCreateRequest;
 import com.sitewhere.rest.model.device.request.SiteCreateRequest;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
@@ -70,8 +70,8 @@ import com.sitewhere.rest.model.search.DeviceGroupSearchResults;
 import com.sitewhere.rest.model.search.DeviceLocationSearchResults;
 import com.sitewhere.rest.model.search.DeviceMeasurementsSearchResults;
 import com.sitewhere.rest.model.search.DeviceSearchResults;
-import com.sitewhere.rest.model.search.DeviceSpecificationSearchResults;
 import com.sitewhere.rest.model.search.DeviceStreamSearchResults;
+import com.sitewhere.rest.model.search.DeviceTypeSearchResults;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.ZoneSearchResults;
@@ -169,8 +169,7 @@ public class SiteWhereClient implements ISiteWhereClient {
     }
 
     /**
-     * Allow subclasses to override converters used for the
-     * {@link RestTemplate}.
+     * Allow subclasses to override converters used for the {@link RestTemplate}.
      * 
      * @param converters
      */
@@ -200,89 +199,70 @@ public class SiteWhereClient implements ISiteWhereClient {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.ISiteWhereClient#createDeviceSpecification(com.
-     * sitewhere.rest .model.device.request.DeviceSpecificationCreateRequest)
+     * @see
+     * com.sitewhere.spi.ISiteWhereClient#createDeviceType(com.sitewhere.rest.model.
+     * device.request.DeviceTypeCreateRequest)
      */
     @Override
-    public DeviceSpecification createDeviceSpecification(DeviceSpecificationCreateRequest request)
-	    throws SiteWhereException {
+    public DeviceType createDeviceType(DeviceTypeCreateRequest request) throws SiteWhereException {
 	Map<String, String> vars = new HashMap<String, String>();
-	return sendRest(getBaseUrl() + "specifications", HttpMethod.POST, request, DeviceSpecification.class, vars);
+	return sendRest(getBaseUrl() + "devicetypes", HttpMethod.POST, request, DeviceType.class, vars);
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.ISiteWhereClient#getDeviceSpecificationByToken(java.
-     * lang.String)
+     * com.sitewhere.spi.ISiteWhereClient#getDeviceTypeByToken(java.lang.String)
      */
     @Override
-    public DeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException {
+    public DeviceType getDeviceTypeByToken(String token) throws SiteWhereException {
 	Map<String, String> vars = new HashMap<String, String>();
 	vars.put("token", token);
-	return sendRest(getBaseUrl() + "specifications/{token}", HttpMethod.GET, null, DeviceSpecification.class, vars);
+	return sendRest(getBaseUrl() + "devicetypes/{token}", HttpMethod.GET, null, DeviceType.class, vars);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#updateDeviceSpecification(java.lang.
-     * String,
-     * com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest)
+     * @see com.sitewhere.spi.ISiteWhereClient#updateDeviceType(java.lang.String,
+     * com.sitewhere.rest.model.device.request.DeviceTypeCreateRequest)
      */
     @Override
-    public DeviceSpecification updateDeviceSpecification(String token, DeviceSpecificationCreateRequest request)
-	    throws SiteWhereException {
+    public DeviceType updateDeviceType(String token, DeviceTypeCreateRequest request) throws SiteWhereException {
 	Map<String, String> vars = new HashMap<String, String>();
 	vars.put("token", token);
-	return sendRest(getBaseUrl() + "specifications/{token}", HttpMethod.PUT, null, DeviceSpecification.class, vars);
+	return sendRest(getBaseUrl() + "devicetypes/{token}", HttpMethod.PUT, null, DeviceType.class, vars);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.ISiteWhereClient#listDeviceSpecifications(boolean,
-     * boolean, com.sitewhere.rest.model.search.SearchCriteria)
+     * @see com.sitewhere.spi.ISiteWhereClient#listDeviceTypes(boolean, boolean,
+     * com.sitewhere.rest.model.search.SearchCriteria)
      */
     @Override
-    public DeviceSpecificationSearchResults listDeviceSpecifications(boolean includeDeleted, boolean includeAsset,
+    public DeviceTypeSearchResults listDeviceTypes(boolean includeDeleted, boolean includeAsset,
 	    SearchCriteria criteria) throws SiteWhereException {
 	Map<String, String> vars = new HashMap<String, String>();
 	vars.put("includeDeleted", String.valueOf(includeDeleted));
 	vars.put("includeAsset", String.valueOf(includeAsset));
 	addSearchCriteria(vars, criteria);
-	return sendRest(
-		getBaseUrl() + "specifications?includeDeleted={includeDeleted}&includeAsset={includeAsset}&"
-			+ getSearchCriteriaFields(criteria),
-		HttpMethod.GET, null, DeviceSpecificationSearchResults.class, vars);
+	return sendRest(getBaseUrl() + "devicetypes?includeDeleted={includeDeleted}&includeAsset={includeAsset}&"
+		+ getSearchCriteriaFields(criteria), HttpMethod.GET, null, DeviceTypeSearchResults.class, vars);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#deleteDeviceSpecification(java.lang.
-     * String, boolean)
+     * @see com.sitewhere.spi.ISiteWhereClient#deleteDeviceType(java.lang.String,
+     * boolean)
      */
     @Override
-    public DeviceSpecification deleteDeviceSpecification(String token, boolean deletePermanently)
-	    throws SiteWhereException {
+    public DeviceType deleteDeviceType(String token, boolean deletePermanently) throws SiteWhereException {
 	Map<String, String> vars = new HashMap<String, String>();
 	vars.put("token", token);
 	vars.put("force", String.valueOf(deletePermanently));
-	return sendRest(getBaseUrl() + "specifications/{token}&force={force}", HttpMethod.DELETE, null,
-		DeviceSpecification.class, vars);
+	return sendRest(getBaseUrl() + "devicetypes/{token}&force={force}", HttpMethod.DELETE, null, DeviceType.class,
+		vars);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#createDeviceCommand(java.lang.String,
+     * @see com.sitewhere.spi.ISiteWhereClient#createDeviceCommand(java.lang.String,
      * com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest)
      */
     @Override
@@ -297,8 +277,7 @@ public class SiteWhereClient implements ISiteWhereClient {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#listDeviceCommands(java.lang.String,
+     * @see com.sitewhere.spi.ISiteWhereClient#listDeviceCommands(java.lang.String,
      * boolean)
      */
     @Override
@@ -314,8 +293,7 @@ public class SiteWhereClient implements ISiteWhereClient {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#createSite(com.sitewhere.rest.model.
+     * @see com.sitewhere.spi.ISiteWhereClient#createSite(com.sitewhere.rest.model.
      * device. request .SiteCreateRequest)
      */
     @Override
@@ -350,8 +328,7 @@ public class SiteWhereClient implements ISiteWhereClient {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#listZonesForSite(java.lang.String)
+     * @see com.sitewhere.spi.ISiteWhereClient#listZonesForSite(java.lang.String)
      */
     @Override
     public ZoneSearchResults listZonesForSite(String siteToken) throws SiteWhereException {
@@ -404,8 +381,7 @@ public class SiteWhereClient implements ISiteWhereClient {
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.ISiteWhereClient#listDevices(boolean, boolean,
-     * boolean, boolean,
-     * com.sitewhere.rest.model.search.DateRangeSearchCriteria)
+     * boolean, boolean, com.sitewhere.rest.model.search.DateRangeSearchCriteria)
      */
     @Override
     public DeviceSearchResults listDevices(boolean includeDeleted, boolean excludeAssigned,
@@ -442,8 +418,7 @@ public class SiteWhereClient implements ISiteWhereClient {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#getCurrentAssignmentForDevice(java.
+     * @see com.sitewhere.spi.ISiteWhereClient#getCurrentAssignmentForDevice(java.
      * lang.String)
      */
     @Override
@@ -459,8 +434,7 @@ public class SiteWhereClient implements ISiteWhereClient {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#createDeviceAssignment(com.sitewhere.
+     * @see com.sitewhere.spi.ISiteWhereClient#createDeviceAssignment(com.sitewhere.
      * spi.device .request. IDeviceAssignmentCreateRequest)
      */
     @Override
@@ -472,8 +446,7 @@ public class SiteWhereClient implements ISiteWhereClient {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#getDeviceAssignmentByToken(java.lang.
+     * @see com.sitewhere.spi.ISiteWhereClient#getDeviceAssignmentByToken(java.lang.
      * String)
      */
     @Override
@@ -556,8 +529,7 @@ public class SiteWhereClient implements ISiteWhereClient {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#addDeviceEventBatch(java.lang.String,
+     * @see com.sitewhere.spi.ISiteWhereClient#addDeviceEventBatch(java.lang.String,
      * com.sitewhere.rest.model.device.DeviceEventBatch)
      */
     @Override
@@ -572,8 +544,7 @@ public class SiteWhereClient implements ISiteWhereClient {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#updateDeviceAssignmentMetadata(java.
+     * @see com.sitewhere.spi.ISiteWhereClient#updateDeviceAssignmentMetadata(java.
      * lang.String, com.sitewhere.rest.model.device.MetadataProvider)
      */
     @Override
@@ -588,8 +559,7 @@ public class SiteWhereClient implements ISiteWhereClient {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#createDeviceMeasurements(java.lang.
+     * @see com.sitewhere.spi.ISiteWhereClient#createDeviceMeasurements(java.lang.
      * String,
      * com.sitewhere.rest.model.device.request.DeviceMeasurementsCreateRequest)
      */
@@ -641,8 +611,7 @@ public class SiteWhereClient implements ISiteWhereClient {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#listDeviceLocations(java.lang.String,
+     * @see com.sitewhere.spi.ISiteWhereClient#listDeviceLocations(java.lang.String,
      * com.sitewhere.rest.model.search.DateRangeSearchCriteria)
      */
     @Override
@@ -658,8 +627,7 @@ public class SiteWhereClient implements ISiteWhereClient {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#createDeviceAlert(java.lang.String,
+     * @see com.sitewhere.spi.ISiteWhereClient#createDeviceAlert(java.lang.String,
      * com.sitewhere.rest.model.device.request.DeviceAlertCreateRequest)
      */
     @Override
@@ -673,8 +641,7 @@ public class SiteWhereClient implements ISiteWhereClient {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#listDeviceAlerts(java.lang.String,
+     * @see com.sitewhere.spi.ISiteWhereClient#listDeviceAlerts(java.lang.String,
      * com.sitewhere.rest.model.search.DateRangeSearchCriteria)
      */
     @Override
@@ -690,8 +657,7 @@ public class SiteWhereClient implements ISiteWhereClient {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#createDeviceCommandInvocation(java.
+     * @see com.sitewhere.spi.ISiteWhereClient#createDeviceCommandInvocation(java.
      * lang.String, com.sitewhere.rest.model.device.event.request.
      * DeviceCommandInvocationCreateRequest)
      */
@@ -724,8 +690,7 @@ public class SiteWhereClient implements ISiteWhereClient {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#createDeviceStream(java.lang.String,
+     * @see com.sitewhere.spi.ISiteWhereClient#createDeviceStream(java.lang.String,
      * com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest)
      */
     @Override
@@ -755,8 +720,7 @@ public class SiteWhereClient implements ISiteWhereClient {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#listDeviceStreams(java.lang.String,
+     * @see com.sitewhere.spi.ISiteWhereClient#listDeviceStreams(java.lang.String,
      * com.sitewhere.rest.model.search.DateRangeSearchCriteria)
      */
     @Override
@@ -772,8 +736,7 @@ public class SiteWhereClient implements ISiteWhereClient {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#addDeviceStreamData(java.lang.String,
+     * @see com.sitewhere.spi.ISiteWhereClient#addDeviceStreamData(java.lang.String,
      * java.lang.String, long, byte[])
      */
     @Override
@@ -790,8 +753,7 @@ public class SiteWhereClient implements ISiteWhereClient {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#getDeviceStreamData(java.lang.String,
+     * @see com.sitewhere.spi.ISiteWhereClient#getDeviceStreamData(java.lang.String,
      * java.lang.String, long)
      */
     @Override
@@ -815,8 +777,7 @@ public class SiteWhereClient implements ISiteWhereClient {
      * 
      * @see
      * com.sitewhere.spi.ISiteWhereClient#listDeviceStreamData(java.lang.String,
-     * java.lang.String,
-     * com.sitewhere.rest.model.search.DateRangeSearchCriteria)
+     * java.lang.String, com.sitewhere.rest.model.search.DateRangeSearchCriteria)
      */
     @Override
     public byte[] listDeviceStreamData(String assignmentToken, String streamId, DateRangeSearchCriteria criteria)
@@ -850,8 +811,7 @@ public class SiteWhereClient implements ISiteWhereClient {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#createDeviceGroup(com.sitewhere.rest.
+     * @see com.sitewhere.spi.ISiteWhereClient#createDeviceGroup(com.sitewhere.rest.
      * model. device .request.DeviceGroupCreateRequest)
      */
     @Override
@@ -876,8 +836,7 @@ public class SiteWhereClient implements ISiteWhereClient {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#deleteDeviceGroup(java.lang.String)
+     * @see com.sitewhere.spi.ISiteWhereClient#deleteDeviceGroup(java.lang.String)
      */
     @Override
     public DeviceGroup deleteDeviceGroup(String token) throws SiteWhereException {
@@ -889,8 +848,7 @@ public class SiteWhereClient implements ISiteWhereClient {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#listDeviceGroups(java.lang.String,
+     * @see com.sitewhere.spi.ISiteWhereClient#listDeviceGroups(java.lang.String,
      * com.sitewhere.rest.model.search.SearchCriteria, boolean)
      */
     @Override
@@ -924,8 +882,7 @@ public class SiteWhereClient implements ISiteWhereClient {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#listDeviceGroupElements(java.lang.
+     * @see com.sitewhere.spi.ISiteWhereClient#listDeviceGroupElements(java.lang.
      * String, boolean, com.sitewhere.rest.model.search.SearchCriteria)
      */
     @Override
@@ -941,8 +898,7 @@ public class SiteWhereClient implements ISiteWhereClient {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#deleteDeviceGroupElements(java.lang.
+     * @see com.sitewhere.spi.ISiteWhereClient#deleteDeviceGroupElements(java.lang.
      * String, java.util.List)
      */
     @Override
@@ -957,8 +913,7 @@ public class SiteWhereClient implements ISiteWhereClient {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.ISiteWhereClient#getAssetsByModuleId(java.lang.String,
+     * @see com.sitewhere.spi.ISiteWhereClient#getAssetsByModuleId(java.lang.String,
      * java.lang.String)
      */
     public AssetSearchResults getAssetsByModuleId(String moduleId, String criteria) throws SiteWhereException {
@@ -1092,8 +1047,8 @@ public class SiteWhereClient implements ISiteWhereClient {
     }
 
     /**
-     * Used to get around limitation of Spring RestTemplate not being able to
-     * send a body request for a delete.
+     * Used to get around limitation of Spring RestTemplate not being able to send a
+     * body request for a delete.
      * 
      * @author Derek
      */

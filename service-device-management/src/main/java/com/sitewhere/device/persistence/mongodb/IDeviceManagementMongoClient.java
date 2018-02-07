@@ -25,8 +25,8 @@ public interface IDeviceManagementMongoClient {
     /** Default collection name for SiteWhere zones */
     public static final String DEFAULT_ZONES_COLLECTION_NAME = "zones";
 
-    /** Default collection name for SiteWhere device specifications */
-    public static final String DEFAULT_DEVICE_SPECIFICATIONS_COLLECTION_NAME = "specifications";
+    /** Default collection name for SiteWhere device types */
+    public static final String DEFAULT_DEVICE_TYPES_COLLECTION_NAME = "devicetypes";
 
     /** Default collection name for SiteWhere device commands */
     public static final String DEFAULT_DEVICE_COMMANDS_COLLECTION_NAME = "commands";
@@ -53,12 +53,12 @@ public interface IDeviceManagementMongoClient {
     public static final String DEFAULT_DEVICE_STREAM_DATA_COLLECTION_NAME = "streamdata";
 
     /**
-     * Collection for device specifications.
+     * Collection for device types.
      * 
      * @return
      * @throws SiteWhereException
      */
-    public MongoCollection<Document> getDeviceSpecificationsCollection() throws SiteWhereException;
+    public MongoCollection<Document> getDeviceTypesCollection() throws SiteWhereException;
 
     /**
      * Collection for device commands.

@@ -14,7 +14,7 @@ import com.sitewhere.rest.model.batch.BatchOperation;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
-import com.sitewhere.rest.model.device.DeviceSpecification;
+import com.sitewhere.rest.model.device.DeviceType;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
@@ -33,8 +33,8 @@ import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceGroupCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceGroupElementCreateRequest;
-import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceTypeCreateRequest;
 import com.sitewhere.rest.model.device.request.SiteCreateRequest;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
@@ -48,8 +48,8 @@ import com.sitewhere.rest.model.search.DeviceGroupElementSearchResults;
 import com.sitewhere.rest.model.search.DeviceGroupSearchResults;
 import com.sitewhere.rest.model.search.DeviceLocationSearchResults;
 import com.sitewhere.rest.model.search.DeviceSearchResults;
-import com.sitewhere.rest.model.search.DeviceSpecificationSearchResults;
 import com.sitewhere.rest.model.search.DeviceStreamSearchResults;
+import com.sitewhere.rest.model.search.DeviceTypeSearchResults;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.ZoneSearchResults;
@@ -73,37 +73,35 @@ public interface ISiteWhereClient {
     public Version getSiteWhereVersion() throws SiteWhereException;
 
     /**
-     * Create a new device specification.
+     * Create a new device type.
      * 
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public DeviceSpecification createDeviceSpecification(DeviceSpecificationCreateRequest request)
-	    throws SiteWhereException;
+    public DeviceType createDeviceType(DeviceTypeCreateRequest request) throws SiteWhereException;
 
     /**
-     * Get a device specification by token.
+     * Get a device type by token.
      * 
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    public DeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException;
+    public DeviceType getDeviceTypeByToken(String token) throws SiteWhereException;
 
     /**
-     * Update an existing device specification.
+     * Update an existing device type.
      * 
      * @param token
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public DeviceSpecification updateDeviceSpecification(String token, DeviceSpecificationCreateRequest request)
-	    throws SiteWhereException;
+    public DeviceType updateDeviceType(String token, DeviceTypeCreateRequest request) throws SiteWhereException;
 
     /**
-     * List device specifications that meet the given criteria.
+     * List device types that meet the given criteria.
      * 
      * @param includeDeleted
      * @param includeDetailedAssetInfo
@@ -111,19 +109,18 @@ public interface ISiteWhereClient {
      * @return
      * @throws SiteWhereException
      */
-    public DeviceSpecificationSearchResults listDeviceSpecifications(boolean includeDeleted,
-	    boolean includeDetailedAssetInfo, SearchCriteria criteria) throws SiteWhereException;
+    public DeviceTypeSearchResults listDeviceTypes(boolean includeDeleted, boolean includeDetailedAssetInfo,
+	    SearchCriteria criteria) throws SiteWhereException;
 
     /**
-     * Delete an existing device specification.
+     * Delete an existing device type.
      * 
      * @param token
      * @param deletePermanently
      * @return
      * @throws SiteWhereException
      */
-    public DeviceSpecification deleteDeviceSpecification(String token, boolean deletePermanently)
-	    throws SiteWhereException;
+    public DeviceType deleteDeviceType(String token, boolean deletePermanently) throws SiteWhereException;
 
     /**
      * Create a new device command for a specification.
@@ -278,8 +275,7 @@ public interface ISiteWhereClient {
 	    DeviceAssignmentStatus status, SearchCriteria criteria) throws SiteWhereException;
 
     /**
-     * Add a batch of events to the current assignment for the given hardware
-     * id.
+     * Add a batch of events to the current assignment for the given hardware id.
      * 
      * @param hardwareId
      *            hardware id whose assignment will have events added

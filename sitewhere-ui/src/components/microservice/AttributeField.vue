@@ -33,10 +33,10 @@
       <site-selector v-else-if="attribute.type === 'SiteReference'"
         selected="attrConstValue">
       </site-selector>
-      <specification-selector
+      <device-type-selector
         v-else-if="attribute.type === 'SpecificationReference'"
         v-model="attrConstValue">
-      </specification-selector>
+      </device-type-selector>
       <scripts-selector v-else-if="attribute.type === 'Script'"
         v-model="attrConstValue" :tenantId="tenantId">
       </scripts-selector>
@@ -62,7 +62,7 @@
 
 <script>
 import SiteSelector from '../sites/SiteSelector'
-import SpecificationSelector from '../specifications/SpecificationSelector'
+import DeviceTypeSelector from '../devicetypes/DeviceTypeSelector'
 import ScriptsSelector from '../tenants/ScriptsSelector'
 
 export default {
@@ -74,7 +74,7 @@ export default {
 
   components: {
     SiteSelector,
-    SpecificationSelector,
+    DeviceTypeSelector,
     ScriptsSelector
   },
 

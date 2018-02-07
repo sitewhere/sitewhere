@@ -40,12 +40,12 @@ public interface IBatchCommandForCriteriaRequest {
     public Map<String, String> getParameterValues();
 
     /**
-     * If set, only devices with the given specification token will be sent the
+     * If set, only devices with the given device type token will be sent the
      * command.
      * 
      * @return
      */
-    public String getSpecificationToken();
+    public String getDeviceTypeToken();
 
     /**
      * If set, only devices in the given group will be sent the command.
@@ -55,16 +55,14 @@ public interface IBatchCommandForCriteriaRequest {
     public String getGroupToken();
 
     /**
-     * If set, only devices in groups with the given role will be sent the
-     * command.
+     * If set, only devices in groups with the given role will be sent the command.
      * 
      * @return
      */
     public String getGroupsWithRole();
 
     /**
-     * If set, only devices associated with the given site will be sent the
-     * command.
+     * If set, only devices associated with the given site will be sent the command.
      * 
      * @return
      */

@@ -10,7 +10,7 @@
           <v-divider></v-divider>
           <v-stepper-step step="2" :complete="step > 2">Site</v-stepper-step>
           <v-divider></v-divider>
-          <v-stepper-step step="3" :complete="step > 3">Specification</v-stepper-step>
+          <v-stepper-step step="3" :complete="step > 3">Device Type</v-stepper-step>
           <v-divider></v-divider>
           <v-stepper-step step="4">Metadata<small>Optional</small></v-stepper-step>
         </v-stepper-header>
@@ -35,9 +35,9 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn flat @click.native="onCancelClicked">{{ cancelLabel }}</v-btn>
-            <v-btn :disabled="!firstPageComplete" flat primary
-              @click.native="step = 2">Assign Site
-              <v-icon light primary>keyboard_arrow_right</v-icon>
+            <v-btn color="primary" :disabled="!firstPageComplete" flat
+              @click="step = 2">Assign Site
+              <v-icon light>keyboard_arrow_right</v-icon>
             </v-btn>
           </v-card-actions>
         </v-stepper-content>
@@ -49,37 +49,37 @@
             @siteUpdated="onSiteUpdated">
           </site-chooser>
           <v-card-actions>
-            <v-btn flat primary @click.native="step = 1">
-              <v-icon light primary>keyboard_arrow_left</v-icon>
+            <v-btn color="primary" flat @click="step = 1">
+              <v-icon light>keyboard_arrow_left</v-icon>
               Back
             </v-btn>
             <v-spacer></v-spacer>
-            <v-btn flat @click.native="onCancelClicked">{{ cancelLabel }}</v-btn>
-            <v-btn flat primary :disabled="!secondPageComplete"
-              @click.native="step = 3">Assign Specification
-              <v-icon light primary>keyboard_arrow_right</v-icon>
+            <v-btn flat @click="onCancelClicked">{{ cancelLabel }}</v-btn>
+            <v-btn color="primary" flat :disabled="!secondPageComplete"
+              @click="step = 3">Assign Specification
+              <v-icon light>keyboard_arrow_right</v-icon>
             </v-btn>
           </v-card-actions>
         </v-stepper-content>
         <v-stepper-content step="3">
-          <specification-chooser
-            chosenText="Device will implement the specification below."
-            notChosenText="Choose a specification that will be implemented by the device:"
-            :selectedToken="devSpecificationToken"
-            @specificationUpdated="onSpecificationUpdated">
-          </specification-chooser>
+          <device-type-chooser
+            chosenText="Device will implement the device type below."
+            notChosenText="Choose a device type that will be implemented by the device:"
+            :selectedToken="devDeviceTypeToken"
+            @deviceTypeUpdated="onDeviceTypeUpdated">
+          </device-type-chooser>
           <v-card-actions>
-            <v-btn flat primary @click.native="step = 2">
-              <v-icon light primary>keyboard_arrow_left</v-icon>
+            <v-btn color="primary" flat @click="step = 2">
+              <v-icon light>keyboard_arrow_left</v-icon>
               Back
             </v-btn>
             <v-spacer></v-spacer>
-            <v-btn flat @click.native="onCancelClicked">{{ cancelLabel }}</v-btn>
-            <v-btn flat primary :disabled="!thirdPageComplete"
-              @click.native="onCreateClicked">{{ createLabel }}</v-btn>
-            <v-btn flat primary :disabled="!thirdPageComplete"
-              @click.native="step = 4">Add Metadata
-              <v-icon light primary>keyboard_arrow_right</v-icon>
+            <v-btn flat @click="onCancelClicked">{{ cancelLabel }}</v-btn>
+            <v-btn color="primary" flat :disabled="!thirdPageComplete"
+              @click="onCreateClicked">{{ createLabel }}</v-btn>
+            <v-btn color="primary" flat :disabled="!thirdPageComplete"
+              @click="step = 4">Add Metadata
+              <v-icon light>keyboard_arrow_right</v-icon>
             </v-btn>
           </v-card-actions>
         </v-stepper-content>
@@ -87,14 +87,14 @@
           <metadata-panel class="mb-3" :metadata="metadata"
             @itemDeleted="onMetadataDeleted" @itemAdded="onMetadataAdded"/>
             <v-card-actions>
-              <v-btn flat primary @click.native="step = 3">
-                <v-icon light primary>keyboard_arrow_left</v-icon>
+              <v-btn color="primary" flat @click.native="step = 3">
+                <v-icon light>keyboard_arrow_left</v-icon>
                 Back
               </v-btn>
               <v-spacer></v-spacer>
-              <v-btn flat @click.native="onCancelClicked">{{ cancelLabel }}</v-btn>
-              <v-btn flat primary :disabled="!thirdPageComplete"
-                @click.native="onCreateClicked">{{ createLabel }}</v-btn>
+              <v-btn flat @click="onCancelClicked">{{ cancelLabel }}</v-btn>
+              <v-btn color="primary" flat :disabled="!thirdPageComplete"
+                @click="onCreateClicked">{{ createLabel }}</v-btn>
             </v-card-actions>
         </v-stepper-content>
       </v-stepper>
@@ -107,7 +107,7 @@ import Utils from '../common/Utils'
 import BaseDialog from '../common/BaseDialog'
 import MetadataPanel from '../common/MetadataPanel'
 import SiteChooser from '../sites/SiteChooser'
-import SpecificationChooser from '../specifications/SpecificationChooser'
+import DeviceTypeChooser from '../devicetypes/DeviceTypeChooser'
 import {_getAssetModules} from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -118,7 +118,7 @@ export default {
     devHardwareId: null,
     devComments: null,
     devSiteToken: null,
-    devSpecificationToken: null,
+    devDeviceTypeToken: null,
     metadata: [],
     assetModules: [],
     error: null
@@ -128,7 +128,7 @@ export default {
     BaseDialog,
     MetadataPanel,
     SiteChooser,
-    SpecificationChooser
+    DeviceTypeChooser
   },
 
   props: ['title', 'width', 'createLabel', 'cancelLabel'],
@@ -147,7 +147,7 @@ export default {
     // Indicates if third page is complete.
     thirdPageComplete: function () {
       return this.firstPageComplete && this.secondPageComplete &&
-        (this.$data.devSpecificationToken != null)
+        (this.$data.devDeviceTypeToken != null)
     }
   },
 
@@ -158,7 +158,7 @@ export default {
       payload.hardwareId = this.$data.devHardwareId
       payload.comments = this.$data.devComments
       payload.siteToken = this.$data.devSiteToken
-      payload.specificationToken = this.$data.devSpecificationToken
+      payload.deviceTypeToken = this.$data.devDeviceTypeToken
       payload.metadata = Utils.arrayToMetadata(this.$data.metadata)
       return payload
     },
@@ -168,7 +168,7 @@ export default {
       this.$data.devHardwareId = null
       this.$data.devComments = null
       this.$data.devSiteToken = null
-      this.$data.devSpecificationToken = null
+      this.$data.devDeviceTypeToken = null
       this.$data.metadata = []
       this.$data.step = 1
       this.$data.error = null
@@ -190,7 +190,7 @@ export default {
         this.$data.devHardwareId = payload.hardwareId
         this.$data.devComments = payload.comments
         this.$data.devSiteToken = payload.siteToken
-        this.$data.devSpecificationToken = payload.specificationToken
+        this.$data.devDeviceTypeToken = payload.deviceTypeToken
         this.$data.metadata = Utils.metadataToArray(payload.metadata)
       }
     },
@@ -230,12 +230,12 @@ export default {
       }
     },
 
-    // Called when specification choice is updated.
-    onSpecificationUpdated: function (specification) {
-      if (specification) {
-        this.$data.devSpecificationToken = specification.token
+    // Called when device type choice is updated.
+    onDeviceTypeUpdated: function (deviceType) {
+      if (deviceType) {
+        this.$data.devDeviceTypeToken = deviceType.token
       } else {
-        this.$data.devSpecificationToken = null
+        this.$data.devDeviceTypeToken = null
       }
     },
 

@@ -42,7 +42,7 @@ import com.sitewhere.sources.coap.CoapServerEventReceiver;
 import com.sitewhere.sources.decoder.GroovyEventDecoder;
 import com.sitewhere.sources.decoder.GroovyStringEventDecoder;
 import com.sitewhere.sources.decoder.composite.BinaryCompositeDeviceEventDecoder;
-import com.sitewhere.sources.decoder.composite.DeviceSpecificationDecoderChoice;
+import com.sitewhere.sources.decoder.composite.DeviceTypeDecoderChoice;
 import com.sitewhere.sources.decoder.composite.GroovyMessageMetadataExtractor;
 import com.sitewhere.sources.decoder.debug.EchoStringDecoder;
 import com.sitewhere.sources.decoder.json.JsonBatchEventDecoder;
@@ -1335,7 +1335,7 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
      */
     protected AbstractBeanDefinition parseDeviceSpecificationDecoderChoice(Element element, ParserContext context) {
 	BeanDefinitionBuilder builder = BeanDefinitionBuilder
-		.rootBeanDefinition(DeviceSpecificationDecoderChoice.class);
+		.rootBeanDefinition(DeviceTypeDecoderChoice.class);
 
 	// Device specification token is required.
 	Attr token = element.getAttributeNode("token");

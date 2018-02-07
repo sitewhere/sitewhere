@@ -50,8 +50,7 @@ public abstract class CompositeDeviceEventDecoder<T> extends TenantEngineLifecyc
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.
+     * @see com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.
      * lang.Object, java.util.Map)
      */
     @Override
@@ -65,8 +64,8 @@ public abstract class CompositeDeviceEventDecoder<T> extends TenantEngineLifecyc
 
 	try {
 	    IDeviceContext<T> context = buildContext(metadata);
-	    getLogger().debug("Built context: Device: " + context.getDevice() + " Specification: "
-		    + context.getDeviceSpecification());
+	    getLogger().debug("Built context: Device: " + context.getDevice().getHardwareId() + " Device type: "
+		    + context.getDeviceType().getToken());
 
 	    // Add context metadata to event source metadata.
 	    Map<String, Object> combined = new HashMap<String, Object>();
@@ -74,7 +73,7 @@ public abstract class CompositeDeviceEventDecoder<T> extends TenantEngineLifecyc
 		combined.putAll(eventSourceMetadata);
 	    }
 	    combined.put(IDeviceEventDecoder.META_DEVICE, context.getDevice());
-	    combined.put(IDeviceEventDecoder.META_DEVICE_SPECIFICATION, context.getDeviceSpecification());
+	    combined.put(IDeviceEventDecoder.META_DEVICE_TYPE, context.getDeviceType());
 
 	    // Loop through choices and use first one that applies.
 	    for (ICompositeDeviceEventDecoder.IDecoderChoice<T> choice : getDecoderChoices()) {

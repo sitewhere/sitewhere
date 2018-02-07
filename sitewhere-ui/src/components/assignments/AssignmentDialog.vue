@@ -38,13 +38,11 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn flat @click.native="onCancelClicked">{{ cancelLabel }}</v-btn>
-            <v-btn :disabled="!firstPageComplete" flat primary
-              @click.native="onCreateClicked">
+            <v-btn :disabled="!firstPageComplete" flat @click="onCreateClicked">
               {{ createLabel }}
             </v-btn>
-            <v-btn :disabled="!firstPageComplete" flat primary
-              @click.native="step = 2">Add Metadata
-              <v-icon light primary>keyboard_arrow_right</v-icon>
+            <v-btn :disabled="!firstPageComplete" flat @click="step = 2">Add Metadata
+              <v-icon light>keyboard_arrow_right</v-icon>
             </v-btn>
           </v-card-actions>
         </v-stepper-content>
@@ -52,13 +50,13 @@
           <metadata-panel class="mb-3" :metadata="metadata"
             @itemDeleted="onMetadataDeleted" @itemAdded="onMetadataAdded"/>
             <v-card-actions>
-              <v-btn flat primary @click.native="step = 1">
-                <v-icon light primary>keyboard_arrow_left</v-icon>
+              <v-btn flat @click="step = 1">
+                <v-icon light>keyboard_arrow_left</v-icon>
                 Back
               </v-btn>
               <v-spacer></v-spacer>
-              <v-btn flat @click.native="onCancelClicked">{{ cancelLabel }}</v-btn>
-              <v-btn flat primary @click.native="onCreateClicked">
+              <v-btn flat @click="onCancelClicked">{{ cancelLabel }}</v-btn>
+              <v-btn flat color="primary" @click="onCreateClicked">
                 {{ createLabel }}
               </v-btn>
             </v-card-actions>

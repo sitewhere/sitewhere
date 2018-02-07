@@ -16,7 +16,7 @@ import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.symbology.IEntityUriProvider;
 import com.sitewhere.spi.device.symbology.ISymbolGenerator;
@@ -61,8 +61,7 @@ public class QrCodeSymbolGenerator extends TenantEngineLifecycleComponent implem
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.symbology.ISymbolGenerator#getSiteSymbol(com.
+     * @see com.sitewhere.spi.device.symbology.ISymbolGenerator#getSiteSymbol(com.
      * sitewhere .spi.device.ISite,
      * com.sitewhere.spi.device.symbology.IEntityUriProvider)
      */
@@ -74,17 +73,14 @@ public class QrCodeSymbolGenerator extends TenantEngineLifecycleComponent implem
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.symbology.ISymbolGenerator#
-     * getDeviceSpecificationSymbol
-     * (com.sitewhere.spi.device.IDeviceSpecification,
+     * @see
+     * com.sitewhere.spi.device.symbology.ISymbolGenerator#getDeviceTypeSymbol(com.
+     * sitewhere.spi.device.IDeviceType,
      * com.sitewhere.spi.device.symbology.IEntityUriProvider)
      */
     @Override
-    public byte[] getDeviceSpecificationSymbol(IDeviceSpecification specification, IEntityUriProvider provider)
-	    throws SiteWhereException {
-	URI uri = provider.getDeviceSpecificationIdentifier(specification);
+    public byte[] getDeviceTypeSymbol(IDeviceType deviceType, IEntityUriProvider provider) throws SiteWhereException {
+	URI uri = provider.getDeviceTypeIdentifier(deviceType);
 	return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())
 		.withColor(getForegroundColor(), getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
     }
@@ -92,8 +88,7 @@ public class QrCodeSymbolGenerator extends TenantEngineLifecycleComponent implem
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.symbology.ISymbolGenerator#getDeviceSymbol(com.
+     * @see com.sitewhere.spi.device.symbology.ISymbolGenerator#getDeviceSymbol(com.
      * sitewhere .spi.device.IDevice,
      * com.sitewhere.spi.device.symbology.IEntityUriProvider)
      */

@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.device.marshaling.CommandHtmlHelper;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
-import com.sitewhere.device.marshaling.DeviceSpecificationMarshalHelper;
+import com.sitewhere.device.marshaling.DeviceTypeMarshalHelper;
 import com.sitewhere.rest.model.batch.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
@@ -26,7 +26,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
@@ -60,8 +60,8 @@ public class ScheduledJobMarshalHelper {
     /** Used for marshaling device assignment info */
     private DeviceAssignmentMarshalHelper assignmentHelper;
 
-    /** Used for marshaling device specification info */
-    private DeviceSpecificationMarshalHelper specificationHelper;
+    /** Used for marshaling device type info */
+    private DeviceTypeMarshalHelper deviceTypeHelper;
 
     public ScheduledJobMarshalHelper(IScheduleManagement scheduleManagement, IDeviceManagement deviceManagement,
 	    IAssetResolver assetResolver) {
@@ -76,7 +76,7 @@ public class ScheduledJobMarshalHelper {
 	this.includeContextInfo = includeContextInfo;
 	this.assignmentHelper = new DeviceAssignmentMarshalHelper(deviceManagement).setIncludeDevice(true)
 		.setIncludeAsset(false);
-	this.specificationHelper = new DeviceSpecificationMarshalHelper(deviceManagement).setIncludeAsset(false);
+	this.deviceTypeHelper = new DeviceTypeMarshalHelper(deviceManagement).setIncludeAsset(false);
     }
 
     /**
@@ -120,8 +120,8 @@ public class ScheduledJobMarshalHelper {
     }
 
     /**
-     * Includes contextual information specific to a command invocation. This
-     * data is useful for displaying the job in a user interface.
+     * Includes contextual information specific to a command invocation. This data
+     * is useful for displaying the job in a user interface.
      * 
      * @param job
      * @throws SiteWhereException
@@ -159,19 +159,18 @@ public class ScheduledJobMarshalHelper {
     }
 
     /**
-     * Includes contextual information specific to a batch command invocation.
-     * This data is useful for displaying the job in a user interface.
+     * Includes contextual information specific to a batch command invocation. This
+     * data is useful for displaying the job in a user interface.
      * 
      * @param job
      * @throws SiteWhereException
      */
     protected void includeBatchCommandInvocationContext(ScheduledJob job) throws SiteWhereException {
-	String specToken = job.getJobConfiguration().get(JobConstants.BatchCommandInvocation.SPECIFICATION_TOKEN);
-	if (specToken != null) {
-	    IDeviceSpecification specification = getDeviceManagement().getDeviceSpecificationByToken(specToken);
-	    if (specification != null) {
-		job.getContext().put("specification",
-			getSpecificationHelper().convert(specification, getAssetResolver()));
+	String deviceTypeToken = job.getJobConfiguration().get(JobConstants.BatchCommandInvocation.DEVICE_TYPE_TOKEN);
+	if (deviceTypeToken != null) {
+	    IDeviceType deviceType = getDeviceManagement().getDeviceTypeByToken(deviceTypeToken);
+	    if (deviceType != null) {
+		job.getContext().put("deviceType", getDeviceTypeHelper().convert(deviceType, getAssetResolver()));
 	    }
 	    BatchCommandForCriteriaRequest criteria = BatchCommandInvocationJobParser.parse(job.getJobConfiguration());
 	    String html = CommandHtmlHelper.getHtml(criteria, getDeviceManagement(), "..");
@@ -211,12 +210,12 @@ public class ScheduledJobMarshalHelper {
     }
 
     /**
-     * Get helper class for marshaling device specification information.
+     * Get helper class for marshaling device type information.
      * 
      * @return
      */
-    protected DeviceSpecificationMarshalHelper getSpecificationHelper() {
-	return specificationHelper;
+    protected DeviceTypeMarshalHelper getDeviceTypeHelper() {
+	return deviceTypeHelper;
     }
 
     public IDeviceManagement getDeviceManagement() {

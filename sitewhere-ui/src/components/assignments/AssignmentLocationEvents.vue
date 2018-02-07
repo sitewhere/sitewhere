@@ -7,7 +7,7 @@
         </no-results-panel>
         <v-data-table v-if="locations.length > 0" class="elevation-2 pa-0"
           :headers="headers" :items="locations" :hide-actions="true"
-          total-items="0">
+          :total-items="0">
           <template slot="items" slot-scope="props">
             <td width="40%" title="Lat/Lon/Elevation">
               {{ utils.fourDecimalPlaces(props.item.latitude) }}

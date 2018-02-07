@@ -25,8 +25,8 @@ public class DeviceEventContext implements IDeviceEventContext {
     /** Device id */
     private UUID deviceId;
 
-    /** Device specification id */
-    private UUID deviceSpecificationId;
+    /** Device type id */
+    private UUID deviceTypeId;
 
     /** Parent device id */
     private UUID parentDeviceId;
@@ -56,16 +56,15 @@ public class DeviceEventContext implements IDeviceEventContext {
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventContext#getDeviceSpecificationId()
+     * @see com.sitewhere.spi.device.event.IDeviceEventContext#getDeviceTypeId()
      */
     @Override
-    public UUID getDeviceSpecificationId() {
-	return deviceSpecificationId;
+    public UUID getDeviceTypeId() {
+	return deviceTypeId;
     }
 
-    public void setDeviceSpecificationId(UUID deviceSpecificationId) {
-	this.deviceSpecificationId = deviceSpecificationId;
+    public void setDeviceTypeId(UUID deviceTypeId) {
+	this.deviceTypeId = deviceTypeId;
     }
 
     /*
