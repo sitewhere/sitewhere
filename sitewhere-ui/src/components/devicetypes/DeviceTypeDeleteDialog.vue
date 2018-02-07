@@ -1,18 +1,10 @@
 <template>
-  <span>
-    <delete-dialog title="Delete Device Type" width="400" :error="error"
-      @delete="onDeleteConfirmed">
-      <v-card-text>
-        Are you sure you want to delete this device type?
-      </v-card-text>
-    </delete-dialog>
-    <v-tooltip left>
-      <v-btn icon @click="showDeleteDialog" slot="activator">
-        <v-icon class="grey--text">fa-times</v-icon>
-      </v-btn>
-      <span>Delete Device Type</span>
-    </v-tooltip>
-  </span>
+  <delete-dialog title="Delete Device Type" width="400" :error="error"
+    @delete="onDeleteConfirmed">
+    <v-card-text>
+      Are you sure you want to delete this device type?
+    </v-card-text>
+  </delete-dialog>
 </template>
 
 <script>

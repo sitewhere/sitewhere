@@ -1,15 +1,7 @@
 <template>
-  <span>
-    <device-type-dialog title="Edit Device Type" width="600" resetOnOpen="true"
-      createLabel="Update" cancelLabel="Cancel" @payload="onCommit">
-    </device-type-dialog>
-    <v-tooltip left>
-      <v-btn icon @click="onOpenDialog" slot="activator">
-        <v-icon class="grey--text">edit</v-icon>
-      </v-btn>
-      <span>Edit Device Type</span>
-    </v-tooltip>
-  </span>
+  <device-type-dialog title="Edit Device Type" width="600" resetOnOpen="true"
+    createLabel="Update" cancelLabel="Cancel" @payload="onCommit">
+  </device-type-dialog>
 </template>
 
 <script>

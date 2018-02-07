@@ -27,7 +27,30 @@
           <span>{{ formatDate(device.updatedDate) }}</span>
         </header-field>
       </div>
+      <options-menu class="options-menu">
+        <v-list slot="options">
+          <v-list-tile>
+            <v-btn block class="blue white--text" @click="onEditDevice">
+              Edit Device
+              <v-spacer></v-spacer>
+              <v-icon class="white--text pl-2">fa-edit</v-icon>
+            </v-btn>
+          </v-list-tile>
+          <v-list-tile>
+            <v-btn block class="red darken-2 white--text" @click="onDeleteDevice">
+              Delete Device
+              <v-spacer></v-spacer>
+              <v-icon class="white--text pl-2">fa-times</v-icon>
+            </v-btn>
+          </v-list-tile>
+        </v-list>
+      </options-menu>
     </v-card-text>
+    <device-update-dialog ref="update" :hardwareId="device.hardwareId">
+    </device-update-dialog>
+    <device-delete-dialog ref="delete" :hardwareId="device.hardwareId"
+      @deviceDeleted="onDeviceDeleted">
+    </device-delete-dialog>
   </v-card>
 </template>
 
@@ -36,6 +59,9 @@ import Utils from '../common/Utils'
 import Style from '../common/Style'
 import HeaderField from '../common/HeaderField'
 import ClipboardCopyField from '../common/ClipboardCopyField'
+import OptionsMenu from '../common/OptionsMenu'
+import DeviceUpdateDialog from './DeviceUpdateDialog'
+import DeviceDeleteDialog from './DeviceDeleteDialog'
 import {createCoreApiUrl} from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -49,7 +75,10 @@ export default {
 
   components: {
     HeaderField,
-    ClipboardCopyField
+    ClipboardCopyField,
+    OptionsMenu,
+    DeviceUpdateDialog,
+    DeviceDeleteDialog
   },
 
   computed: {
@@ -97,6 +126,17 @@ export default {
   },
 
   methods: {
+    // Open dialog to edit device.
+    onEditDevice: function () {
+      this.$refs['update'].onOpenDialog()
+    },
+    // Open dialog to delete device.
+    onDeleteDevice: function () {
+      this.$refs['delete'].showDeleteDialog()
+    },
+    onDeviceDeleted: function () {
+      this.$emit('deviceDeleted')
+    },
     // Format date.
     formatDate: function (date) {
       return Utils.formatDate(date)
@@ -133,5 +173,11 @@ export default {
   top: 20px;
   left: 200px;
   right: 200px;
+}
+
+.options-menu {
+  position: absolute;
+  top: 10px;
+  right: 190px;
 }
 </style>

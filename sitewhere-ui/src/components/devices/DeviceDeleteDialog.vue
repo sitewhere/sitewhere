@@ -1,12 +1,10 @@
 <template>
-  <span>
-    <delete-dialog ref="dialog" title="Delete Device" width="400" :error="error"
-      @delete="onDeleteConfirmed">
-      <v-card-text>
-        Are you sure you want to delete this device?
-      </v-card-text>
-    </delete-dialog>
-  </span>
+  <delete-dialog ref="dialog" title="Delete Device" width="400" :error="error"
+    @delete="onDeleteConfirmed">
+    <v-card-text>
+      Are you sure you want to delete this device?
+    </v-card-text>
+  </delete-dialog>
 </template>
 
 <script>

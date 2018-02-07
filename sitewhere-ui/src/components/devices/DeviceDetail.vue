@@ -1,6 +1,7 @@
 <template>
   <div v-if="device">
-    <device-detail-header :device="device" class="mb-3">
+    <device-detail-header :device="device" class="mb-3"
+      @deviceDeleted="onDeviceDeleted">
     </device-detail-header>
     <v-tabs v-model="active">
       <v-tabs-bar dark color="primary">
@@ -15,37 +16,6 @@
         </v-tabs-content>
       </v-tabs-items>
     </v-tabs>
-    <v-speed-dial v-model="fab" direction="top" hover fixed bottom right
-      class="action-chooser-fab"
-      transition="slide-y-reverse-transition">
-      <v-tooltip left slot="activator">
-        <v-btn slot="activator" class="red darken-1 elevation-5" dark
-          fab hover>
-          <v-icon style="margin-top: -10px;" class="fa-2x">fa-bolt</v-icon>
-        </v-btn>
-        <span>Device Actions</span>
-      </v-tooltip>
-      <v-tooltip left>
-        <v-btn fab dark small class="blue darken-3 elevation-5"
-            @click="onUpdateDevice" slot="activator">
-          <v-icon style="margin-top: -3px;">fa-edit</v-icon>
-        </v-btn>
-        <span>Update Device</span>
-      </v-tooltip>
-      <v-tooltip left>
-        <v-btn fab dark small class="red darken-3 elevation-5"
-            @click="onDeleteDevice" slot="activator">
-          <v-icon style="margin-top: -3px;">fa-times</v-icon>
-        </v-btn>
-        <span>Delete Device</span>
-      </v-tooltip>
-    </v-speed-dial>
-    <device-update-dialog ref="update" :hardwareId="hardwareId"
-      @deviceUpdated="refresh">
-    </device-update-dialog>
-    <device-delete-dialog ref="delete" :hardwareId="hardwareId"
-      @deviceDeleted="onDeviceDeleted">
-    </device-delete-dialog>
   </div>
 </template>
 
@@ -53,8 +23,6 @@
 import Utils from '../common/Utils'
 import DeviceDetailHeader from './DeviceDetailHeader'
 import DeviceAssignmentHistory from './DeviceAssignmentHistory'
-import DeviceUpdateDialog from './DeviceUpdateDialog'
-import DeviceDeleteDialog from './DeviceDeleteDialog'
 
 import {_getDevice} from '../../http/sitewhere-api-wrapper'
 
@@ -69,9 +37,7 @@ export default {
 
   components: {
     DeviceDetailHeader,
-    DeviceAssignmentHistory,
-    DeviceUpdateDialog,
-    DeviceDeleteDialog
+    DeviceAssignmentHistory
   },
 
   created: function () {
@@ -104,16 +70,6 @@ export default {
         longTitle: 'Manage Device: ' + device.hardwareId
       }
       this.$store.commit('currentSection', section)
-    },
-
-    // Called when device update is requested.
-    onUpdateDevice: function () {
-      this.$refs['update'].onOpenDialog()
-    },
-
-    // Called when device delete is requested.
-    onDeleteDevice: function () {
-      this.$refs['delete'].showDeleteDialog()
     },
 
     // Called after device is deleted.
