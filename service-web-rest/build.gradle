@@ -76,3 +76,9 @@ task dockerImage(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildImage, 
     inputDir = project.file('build/docker')
     tag = "${dockerRepository}/sitewhere/${project.name}:${version}"
 }
+
+// Push image to remote repository.
+task dockerPush(type: com.bmuschko.gradle.docker.tasks.image.DockerPushImage, dependsOn: dockerImage) {
+    imageName = "${dockerRepository}/sitewhere/${project.name}"
+    tag = "${version}"
+}

@@ -72,6 +72,12 @@ subprojects {
 	apply plugin: 'com.bmuschko.docker-remote-api'
 	docker {
 	    url = dockerProtocol + '://' + dockerHostname + ':' + dockerPort
+	    registryCredentials {
+	        url = registryUrl
+	        username = registryUsername
+	        password = registryPassword
+	        email = registryEmail
+	    }
 	}
  	
  	// Choose Java settings.
