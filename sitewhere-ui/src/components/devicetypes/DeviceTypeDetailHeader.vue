@@ -91,7 +91,8 @@ export default {
         'background-image': 'url(' + this.deviceType.assetImageUrl + ')',
         'background-size': 'contain',
         'background-repeat': 'no-repeat',
-        'background-position': '50% 50%'
+        'background-position': '50% 50%',
+        'border': '1px solid #eee'
       }
     },
 

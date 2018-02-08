@@ -1,9 +1,7 @@
 <template>
-  <v-card hover class="deviceType white pa-2">
-    <v-card-text @click="onOpenDeviceType">
-      <div class="type-logo"
-        v-bind:style="{ 'background': 'url(' + deviceType.assetImageUrl + ')', 'background-size': 'contain', 'background-repeat': 'no-repeat', 'background-position': '50% 50%'}">
-      </div>
+  <v-card hover class="white pa-2">
+    <v-card-text class="deviceType" @click="onOpenDeviceType">
+      <div class="type-logo" :style="logoStyle"></div>
       <div class="type-name">{{deviceType.name}}</div>
       <div class="type-desc">{{deviceType.asset.description}}</div>
     </v-card-text>
@@ -17,6 +15,20 @@ export default {
   }),
 
   props: ['deviceType'],
+
+  computed: {
+    // Compute style of logo.
+    logoStyle: function () {
+      return {
+        'background-color': '#fff',
+        'background-image': 'url(' + this.deviceType.assetImageUrl + ')',
+        'background-size': 'contain',
+        'background-repeat': 'no-repeat',
+        'background-position': '50% 50%',
+        'border': '1px solid #eee'
+      }
+    }
+  },
 
   methods: {
     // Called when a device type is clicked.

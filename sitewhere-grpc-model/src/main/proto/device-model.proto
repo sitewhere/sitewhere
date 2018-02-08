@@ -84,7 +84,7 @@ message GCommandParameter {
 
 // Request for creating a device command.
 message GDeviceCommandCreateRequest {
-	string token = 1;
+	GOptionalString token = 1;
 	string namespace = 2;
 	string name = 3;
 	string description = 4;

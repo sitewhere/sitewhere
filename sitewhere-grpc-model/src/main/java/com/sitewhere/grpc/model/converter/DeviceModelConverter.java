@@ -648,7 +648,7 @@ public class DeviceModelConverter {
     public static DeviceCommandCreateRequest asApiDeviceCommandCreateRequest(GDeviceCommandCreateRequest grpc)
 	    throws SiteWhereException {
 	DeviceCommandCreateRequest api = new DeviceCommandCreateRequest();
-	api.setToken(grpc.getToken());
+	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
 	api.setName(grpc.getName());
 	api.setDescription(grpc.getDescription());
 	api.setNamespace(grpc.getNamespace());
@@ -667,7 +667,9 @@ public class DeviceModelConverter {
     public static GDeviceCommandCreateRequest asGrpcDeviceCommandCreateRequest(IDeviceCommandCreateRequest api)
 	    throws SiteWhereException {
 	GDeviceCommandCreateRequest.Builder grpc = GDeviceCommandCreateRequest.newBuilder();
-	grpc.setToken(api.getToken());
+	if (api.getToken() != null) {
+	    grpc.setToken(GOptionalString.newBuilder().setValue(api.getToken()));
+	}
 	grpc.setName(api.getName());
 	grpc.setDescription(api.getDescription());
 	grpc.setNamespace(api.getNamespace());

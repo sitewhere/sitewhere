@@ -3,17 +3,14 @@
     <command-dialog ref="dialog" title="Create Command" width="600" resetOnOpen="true"
       createLabel="Create" cancelLabel="Cancel" @payload="onCommit">
     </command-dialog>
-    <v-tooltip left>
-      <v-btn fab dark class="add-button red darken-1 elevation-5"
-        @click="onOpenDialog" slot="activator">
-        <v-icon>fa-plus</v-icon>
-      </v-btn>
-      <span>Add Command</span>
-    </v-tooltip>
+    <floating-action-button label="Add Command" icon="fa-plus"
+      @action="onOpenDialog">
+    </floating-action-button>
   </div>
 </template>
 
 <script>
+import FloatingActionButton from '../common/FloatingActionButton'
 import CommandDialog from './CommandDialog'
 import {_createDeviceCommand} from '../../http/sitewhere-api-wrapper'
 
@@ -23,10 +20,11 @@ export default {
   }),
 
   components: {
+    FloatingActionButton,
     CommandDialog
   },
 
-  props: ['specification'],
+  props: ['deviceType'],
 
   methods: {
     // Get handle to nested dialog component.
@@ -43,7 +41,7 @@ export default {
     // Handle payload commit.
     onCommit: function (payload) {
       var component = this
-      _createDeviceCommand(this.$store, this.specification.token, payload)
+      _createDeviceCommand(this.$store, this.deviceType.token, payload)
         .then(function (response) {
           component.onCommitted(response)
         }).catch(function (e) {

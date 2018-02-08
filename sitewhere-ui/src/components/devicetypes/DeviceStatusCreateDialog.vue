@@ -4,7 +4,7 @@
       title="Create Device Status" width="600"
       createLabel="Create" cancelLabel="Cancel" @payload="onCommit">
     </device-status-dialog>
-    <floating-action-button label="Add Status" icon="add"
+    <floating-action-button label="Add Status" icon="fa-plus"
       @action="onOpenDialog">
     </floating-action-button>
   </span>
