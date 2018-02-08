@@ -3,9 +3,8 @@
     <base-dialog :title="title" :width="width" :visible="dialogVisible"
       :createLabel="createLabel" :cancelLabel="cancelLabel" :error="error"
       @createClicked="onCreateClicked" @cancelClicked="onCancelClicked">
-      <v-tabs dark v-model="active">
-        <v-tabs-bar slot="activators">
-          <v-tabs-slider></v-tabs-slider>
+      <v-tabs v-model="active">
+        <v-tabs-bar dark color="primary">
           <v-tabs-item key="details" href="#details">
             Command Details
           </v-tabs-item>
@@ -15,61 +14,64 @@
           <v-tabs-item key="metadata" href="#metadata">
             Metadata
           </v-tabs-item>
+          <v-tabs-slider></v-tabs-slider>
         </v-tabs-bar>
-        <v-tabs-content key="details" id="details">
-          <v-card flat>
-            <v-card-text>
-              <v-container fluid>
-                <v-layout row wrap>
-                  <v-flex xs12>
-                    <v-select :items="commands" v-model="commandSelection"
-                      label="Command" item-text="name" item-value="token"
-                      light single-line auto prepend-icon="flash_on"
-                      hide-details></v-select>
-                  </v-flex>
-                  <v-card v-if="command" style="width: 100%;">
-                    <v-card-text>
-                      {{ command.description }}
-                    </v-card-text>
-                    <v-card-text class="pt-0" v-if="command.parameters.length">
-                      <v-flex xs12 v-for="(param, index) in command.parameters" :key="param.name">
-                        <v-text-field :label="param.name"
-                          :required="param.required" v-model="parameters[param.name]">
-                        </v-text-field>
-                      </v-flex>
-                    </v-card-text>
-                  </v-card>
-                </v-layout>
-              </v-container>
-            </v-card-text>
-          </v-card>
-        </v-tabs-content>
-        <v-tabs-content key="schedule" id="schedule">
-          <v-card flat>
-            <v-card-text>
-              <v-container fluid>
-                <v-layout row wrap>
-                  <v-flex xs12>
-                    <v-switch class="mb-0" :label="scheduleMessage" v-model="useSchedule">
-                    </v-switch>
-                  </v-flex>
-                  <v-flex xs12>
-                    <v-select class="mt-0" :disabled="!useSchedule"
-                      :style="{'opacity': useSchedule ? 1 : 0.3 }"
-                      :items="schedules" v-model="scheduleSelection"
-                      label="Schedule" item-text="name" item-value="token"
-                      light single-line auto prepend-icon="flash_on"
-                      hide-details></v-select>
-                  </v-flex>
-                </v-layout>
-              </v-container>
-            </v-card-text>
-          </v-card>
-        </v-tabs-content>
-        <v-tabs-content key="metadata" id="metadata">
-          <metadata-panel :metadata="metadata"
-            @itemDeleted="onMetadataDeleted" @itemAdded="onMetadataAdded"/>
-        </v-tabs-content>
+        <v-tabs-items>
+          <v-tabs-content key="details" id="details">
+            <v-card flat>
+              <v-card-text>
+                <v-container fluid>
+                  <v-layout row wrap>
+                    <v-flex xs12>
+                      <v-select :items="commands" v-model="commandSelection"
+                        label="Command" item-text="name" item-value="token"
+                        light single-line auto prepend-icon="flash_on"
+                        hide-details></v-select>
+                    </v-flex>
+                    <v-card v-if="command" style="width: 100%;">
+                      <v-card-text>
+                        {{ command.description }}
+                      </v-card-text>
+                      <v-card-text class="pt-0" v-if="command.parameters.length">
+                        <v-flex xs12 v-for="(param, index) in command.parameters" :key="param.name">
+                          <v-text-field :label="param.name"
+                            :required="param.required" v-model="parameters[param.name]">
+                          </v-text-field>
+                        </v-flex>
+                      </v-card-text>
+                    </v-card>
+                  </v-layout>
+                </v-container>
+              </v-card-text>
+            </v-card>
+          </v-tabs-content>
+          <v-tabs-content key="schedule" id="schedule">
+            <v-card flat>
+              <v-card-text>
+                <v-container fluid>
+                  <v-layout row wrap>
+                    <v-flex xs12>
+                      <v-switch class="mb-0" :label="scheduleMessage" v-model="useSchedule">
+                      </v-switch>
+                    </v-flex>
+                    <v-flex xs12>
+                      <v-select class="mt-0" :disabled="!useSchedule"
+                        :style="{'opacity': useSchedule ? 1 : 0.3 }"
+                        :items="schedules" v-model="scheduleSelection"
+                        label="Schedule" item-text="name" item-value="token"
+                        light single-line auto prepend-icon="flash_on"
+                        hide-details></v-select>
+                    </v-flex>
+                  </v-layout>
+                </v-container>
+              </v-card-text>
+            </v-card>
+          </v-tabs-content>
+          <v-tabs-content key="metadata" id="metadata">
+            <metadata-panel :metadata="metadata"
+              @itemDeleted="onMetadataDeleted" @itemAdded="onMetadataAdded"/>
+          </v-tabs-content>
+        </v-tabs-items>
       </v-tabs>
     </base-dialog>
   </div>
@@ -105,7 +107,7 @@ export default {
     MetadataPanel
   },
 
-  props: ['title', 'width', 'createLabel', 'cancelLabel', 'specificationToken'],
+  props: ['title', 'width', 'createLabel', 'cancelLabel', 'deviceType'],
 
   computed: {
     // Get currently selected command.
@@ -157,7 +159,7 @@ export default {
       this.$data.active = 'details'
 
       var component = this
-      _listDeviceCommands(this.$store, this.specificationToken, false)
+      _listDeviceCommands(this.$store, this.deviceType.token, false)
         .then(function (response) {
           component.$data.commands = response.data.results
         }).catch(function (e) {

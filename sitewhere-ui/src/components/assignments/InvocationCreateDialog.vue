@@ -2,18 +2,18 @@
   <div>
     <invocation-dialog ref="dialog" title="Invoke Device Command" width="600"
       resetOnOpen="true" createLabel="Invoke" cancelLabel="Cancel"
-      :specificationToken="specificationToken" @payload="onCommit"
+      :deviceType="deviceType" @payload="onCommit"
       @scheduleUpdated="onScheduleUpdated">
     </invocation-dialog>
-    <v-btn fab dark class="add-button red darken-1 elevation-5"
-      v-tooltip:top="{ html: 'Invoke Command' }" @click.native.stop="onOpenDialog">
-      <v-icon>flash_on</v-icon>
-    </v-btn>
+    <floating-action-button label="Invoke Command" icon="fa-bolt"
+      @action="onOpenDialog">
+    </floating-action-button>
   </div>
 </template>
 
 <script>
 import InvocationDialog from './InvocationDialog'
+import FloatingActionButton from '../common/FloatingActionButton'
 import {
   _createCommandInvocationForAssignment,
   _scheduleCommandInvocation
@@ -25,10 +25,11 @@ export default {
     schedule: null
   }),
 
-  props: ['token', 'specificationToken'],
+  props: ['token', 'deviceType'],
 
   components: {
-    InvocationDialog
+    InvocationDialog,
+    FloatingActionButton
   },
 
   methods: {
