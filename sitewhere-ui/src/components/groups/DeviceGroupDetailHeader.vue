@@ -14,12 +14,39 @@
       <div class="group-roles ellipsis">
         Roles: <strong>{{ rolesView  }}</strong>
       </div>
+      <options-menu class="options-menu">
+        <v-list slot="options">
+          <v-list-tile>
+            <v-btn block class="blue white--text" @click="onUpdateDeviceGroup">
+              Edit Device Group
+              <v-spacer></v-spacer>
+              <v-icon class="white--text pl-2">fa-edit</v-icon>
+            </v-btn>
+          </v-list-tile>
+          <v-list-tile>
+            <v-btn block class="red darken-2 white--text" @click="onDeleteDeviceGroup">
+              Delete Device Group
+              <v-spacer></v-spacer>
+              <v-icon class="white--text pl-2">fa-times</v-icon>
+            </v-btn>
+          </v-list-tile>
+        </v-list>
+      </options-menu>
     </v-card-text>
+    <device-group-update-dialog ref="update" :token="group.token"
+      @groupUpdated="onDeviceGroupUpdated">
+    </device-group-update-dialog>
+    <device-group-delete-dialog ref="delete" :token="group.token"
+      @groupDeleted="onDeviceGroupDeleted">
+    </device-group-delete-dialog>
   </v-card>
 </template>
 
 <script>
 import Utils from '../common/Utils'
+import OptionsMenu from '../common/OptionsMenu'
+import DeviceGroupUpdateDialog from './DeviceGroupUpdateDialog'
+import DeviceGroupDeleteDialog from './DeviceGroupDeleteDialog'
 
 export default {
 
@@ -29,6 +56,9 @@ export default {
   },
 
   components: {
+    OptionsMenu,
+    DeviceGroupUpdateDialog,
+    DeviceGroupDeleteDialog
   },
 
   props: ['group'],
@@ -44,7 +74,22 @@ export default {
     refresh: function () {
       this.$emit('refresh')
     },
-
+    // Show dialog on update requested.
+    onUpdateDeviceGroup: function () {
+      this.$refs['update'].onOpenDialog()
+    },
+    // Called after device group is updated.
+    onDeviceGroupUpdated: function () {
+      this.$emit('deviceGroupUpdated')
+    },
+    // Show dialog on delete requested.
+    onDeleteDeviceGroup: function () {
+      this.$refs['delete'].showDeleteDialog()
+    },
+    // Called after device group is deleted.
+    onDeviceGroupDeleted: function () {
+      this.$emit('deviceGroupDeleted')
+    },
     // Format date.
     formatDate: function (date) {
       return Utils.formatDate(date)
@@ -97,5 +142,10 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.options-menu {
+  position: absolute;
+  top: 10px;
+  right: 10px;
 }
 </style>

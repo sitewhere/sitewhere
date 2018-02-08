@@ -26,7 +26,7 @@
                       fa-plus
                     </v-icon>
                   </v-btn>
-                  <span>Update Device</span>
+                  <span>Add Role</span>
                 </v-tooltip>
               </v-flex>
             </v-layout>

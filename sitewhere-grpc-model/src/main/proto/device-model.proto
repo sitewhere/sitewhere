@@ -212,7 +212,7 @@ message GDeviceGroupElementCreateRequest {
 
 // Request data for creating a device group.
 message GDeviceGroupCreateRequest {
-	string token = 1;
+	GOptionalString token = 1;
 	string name = 2;
 	string description = 3;
 	repeated string roles = 4;

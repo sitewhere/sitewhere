@@ -1093,7 +1093,7 @@ public class DeviceModelConverter {
     public static DeviceGroupCreateRequest asApiDeviceGroupCreateRequest(GDeviceGroupCreateRequest grpc)
 	    throws SiteWhereException {
 	DeviceGroupCreateRequest api = new DeviceGroupCreateRequest();
-	api.setToken(grpc.getToken());
+	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
 	api.setName(grpc.getName());
 	api.setDescription(grpc.getDescription());
 	api.setRoles(grpc.getRolesList());
@@ -1111,7 +1111,9 @@ public class DeviceModelConverter {
     public static GDeviceGroupCreateRequest asGrpcDeviceGroupCreateRequest(IDeviceGroupCreateRequest api)
 	    throws SiteWhereException {
 	GDeviceGroupCreateRequest.Builder grpc = GDeviceGroupCreateRequest.newBuilder();
-	grpc.setToken(api.getToken());
+	if (api.getToken() != null) {
+	    grpc.setToken(GOptionalString.newBuilder().setValue(api.getToken()));
+	}
 	grpc.setName(api.getName());
 	grpc.setDescription(api.getDescription());
 	grpc.addAllRoles(api.getRoles());

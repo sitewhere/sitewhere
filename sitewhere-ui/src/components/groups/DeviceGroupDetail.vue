@@ -1,47 +1,13 @@
 <template>
   <div>
-    <device-group-detail-header :group="group" class="mb-3">
+    <device-group-detail-header :group="group" class="mb-3"
+      @deviceGroupUpdated="refresh" @deviceGroupDeleted="onDeviceGroupDeleted">
     </device-group-detail-header>
     <device-group-element-list-panel ref="list" :token="token">
     </device-group-element-list-panel>
-    <v-speed-dial v-model="fab" direction="top" hover fixed bottom right
-      class="action-chooser-fab"
-      transition="slide-y-reverse-transition">
-      <v-tooltip left slot="activator">
-        <v-btn slot="activator" class="red darken-1 elevation-5" dark
-          fab hover>
-          <v-icon class="fa-2x">fa-bolt</v-icon>
-        </v-btn>
-        <span>Group Actions</span>
-      </v-tooltip>
-      <v-tooltip left>
-        <v-btn fab dark small class="blue darken-3 elevation-5"
-            @click="onUpdateDeviceGroup" slot="activator">
-          <v-icon>fa-edit</v-icon>
-        </v-btn>
-        <span>Update Device Group</span>
-      </v-tooltip>
-      <v-tooltip left>
-        <v-btn fab dark small class="red darken-3 elevation-5"
-            @click="onDeleteDeviceGroup" slot="activator">
-          <v-icon>fa-times</v-icon>
-        </v-btn>
-        <span>Delete Device Group</span>
-      </v-tooltip>
-      <v-tooltip left>
-        <v-btn fab dark small class="green darken-3 elevation-5"
-            @click="onAddElement" slot="activator">
-          <v-icon>fa-plus</v-icon>
-        </v-btn>
-        <span>Add Element</span>
-      </v-tooltip>
-    </v-speed-dial>
-    <device-group-update-dialog ref="update" :token="token"
-      @groupUpdated="refresh">
-    </device-group-update-dialog>
-    <device-group-delete-dialog ref="delete" :token="token"
-      @groupDeleted="onDeviceGroupDeleted">
-    </device-group-delete-dialog>
+    <floating-action-button label="Add Group Element" icon="fa-plus"
+      @action="onAddElement">
+    </floating-action-button>
     <device-group-element-create-dialog ref="create" :token="token"
       @elementAdded="onElementAdded">
     </device-group-element-create-dialog>
@@ -51,10 +17,9 @@
 <script>
 import Utils from '../common/Utils'
 import Pager from '../common/Pager'
+import FloatingActionButton from '../common/FloatingActionButton'
 import DeviceGroupDetailHeader from './DeviceGroupDetailHeader'
 import DeviceGroupElementListPanel from './DeviceGroupElementListPanel'
-import DeviceGroupUpdateDialog from './DeviceGroupUpdateDialog'
-import DeviceGroupDeleteDialog from './DeviceGroupDeleteDialog'
 import DeviceGroupElementCreateDialog from './DeviceGroupElementCreateDialog'
 import {_getDeviceGroup} from '../../http/sitewhere-api-wrapper'
 
@@ -83,10 +48,9 @@ export default {
 
   components: {
     Pager,
+    FloatingActionButton,
     DeviceGroupDetailHeader,
     DeviceGroupElementListPanel,
-    DeviceGroupUpdateDialog,
-    DeviceGroupDeleteDialog,
     DeviceGroupElementCreateDialog
   },
 
@@ -119,16 +83,6 @@ export default {
         longTitle: 'Manage Device Group: ' + group.token
       }
       this.$store.commit('currentSection', section)
-    },
-
-    // Show dialog on update requested.
-    onUpdateDeviceGroup: function () {
-      this.$refs['update'].onOpenDialog()
-    },
-
-    // Show dialog on delete requested.
-    onDeleteDeviceGroup: function () {
-      this.$refs['delete'].showDeleteDialog()
     },
 
     // Handle successful delete.

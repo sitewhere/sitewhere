@@ -16,10 +16,10 @@
               {{ props.item.elementId }}
             </td>
             <td width="40%" v-if="props.item.device && props.item.device.assignment">
-              {{ props.item.device.specification.assetName + '(' + props.item.device.assignment.assetName + ')' }}
+              {{ props.item.device.deviceType.assetName + '(' + props.item.device.assignment.assetName + ')' }}
             </td>
             <td width="40%" v-if="props.item.device && !props.item.device.assignment">
-              {{ props.item.device.specification.assetName }}
+              {{ props.item.device.deviceType.assetName }}
             </td>
             <td width="40%" v-if="props.item.deviceGroup">
               {{ props.item.deviceGroup.name }}
