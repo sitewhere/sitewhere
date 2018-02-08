@@ -68,7 +68,7 @@ export default {
       let filter = this.$data.filter
       let component = this
       let criteria = filter || {}
-      _listFilteredDevices(this.$store, criteria.site, criteria.specification,
+      _listFilteredDevices(this.$store, criteria.site, criteria.deviceType,
         false, false, true, true, paging)
         .then(function (response) {
           component.results = response.data

@@ -75,9 +75,9 @@ export default {
   watch: {
     selected: function (value) {
       if (value) {
-        this.onSpecificationChosen(value, false)
+        this.onDeviceTypeChosen(value, false)
       } else {
-        this.onSpecificationRemoved(false)
+        this.onDeviceTypeRemoved(false)
       }
     },
     selectedToken: function (value) {

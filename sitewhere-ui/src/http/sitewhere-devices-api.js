@@ -29,7 +29,7 @@ export function listDevices (axios, includeDeviceType, includeAssignment,
 /**
  * List devices (with extra filter criteria).
  */
-export function listFilteredDevices (axios, site, specification,
+export function listFilteredDevices (axios, site, deviceType,
   includeDeleted, excludeAssigned, includeDeviceType, includeAssignment,
   paging) {
   let query = ''
@@ -42,7 +42,7 @@ export function listFilteredDevices (axios, site, specification,
   query += (includeAssignment)
     ? '&includeAssignment=true' : '&includeAssignment=false'
   query += (site) ? '&site=' + site : ''
-  query += (specification) ? '&specification=' + specification : ''
+  query += (deviceType) ? '&deviceType=' + deviceType : ''
   if (paging) {
     query += '&' + paging
   }
