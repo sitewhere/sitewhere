@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/sitewhere/sitewhere.svg?branch=master)](https://travis-ci.org/sitewhere/sitewhere)
+
 ![SiteWhere](https://s3.amazonaws.com/sitewhere-demo/sitewhere-github.png)
 
 ---
