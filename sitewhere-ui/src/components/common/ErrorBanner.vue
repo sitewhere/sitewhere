@@ -30,6 +30,8 @@ export default {
       } else if (this.error.response && this.error.response.headers) {
         if (this.error.response.headers['x-sitewhere-error']) {
           return this.error.response.headers['x-sitewhere-error']
+        } else if (this.error.response.status === 403) {
+          return 'Server Authentication Failed'
         }
       }
       return this.error.message
