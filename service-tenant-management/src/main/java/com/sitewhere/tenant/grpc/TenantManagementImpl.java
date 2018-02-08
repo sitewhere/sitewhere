@@ -79,8 +79,7 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(TenantManagementGrpc.METHOD_CREATE_TENANT, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.METHOD_CREATE_TENANT, e, responseObserver);
 	}
     }
 
@@ -103,8 +102,7 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(TenantManagementGrpc.METHOD_UPDATE_TENANT, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.METHOD_UPDATE_TENANT, e, responseObserver);
 	}
     }
 
@@ -128,8 +126,7 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(TenantManagementGrpc.METHOD_GET_TENANT_BY_ID, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.METHOD_GET_TENANT_BY_ID, e, responseObserver);
 	}
     }
 
@@ -155,8 +152,8 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(TenantManagementGrpc.METHOD_GET_TENANT_BY_AUTHENTICATION_TOKEN, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.METHOD_GET_TENANT_BY_AUTHENTICATION_TOKEN, e,
+		    responseObserver);
 	}
     }
 
@@ -179,8 +176,7 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(TenantManagementGrpc.METHOD_LIST_TENANTS, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.METHOD_LIST_TENANTS, e, responseObserver);
 	}
     }
 
@@ -202,8 +198,7 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(TenantManagementGrpc.METHOD_DELETE_TENANT, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.METHOD_DELETE_TENANT, e, responseObserver);
 	}
     }
 
@@ -224,8 +219,8 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(TenantManagementGrpc.METHOD_GET_TENANT_TEMPLATES, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.METHOD_GET_TENANT_TEMPLATES, e,
+		    responseObserver);
 	}
     }
 

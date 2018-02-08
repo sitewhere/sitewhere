@@ -83,8 +83,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_TYPE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_TYPE, e, responseObserver);
 	}
     }
 
@@ -107,8 +106,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_TYPE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_TYPE, e, responseObserver);
 	}
     }
 
@@ -131,8 +129,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_TYPE_BY_TOKEN, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_TYPE_BY_TOKEN, e,
+		    responseObserver);
 	}
     }
 
@@ -156,8 +154,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_TYPE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_TYPE, e, responseObserver);
 	}
     }
 
@@ -187,8 +184,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_TYPES, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_TYPES, e, responseObserver);
 	}
     }
 
@@ -210,8 +206,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_TYPE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_TYPE, e, responseObserver);
 	}
     }
 
@@ -237,8 +232,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_COMMAND, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_COMMAND, e,
+		    responseObserver);
 	}
     }
 
@@ -262,8 +257,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_COMMAND, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_COMMAND, e, responseObserver);
 	}
     }
 
@@ -288,8 +282,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_COMMAND_BY_TOKEN, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_COMMAND_BY_TOKEN, e,
+		    responseObserver);
 	}
     }
 
@@ -315,8 +309,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_COMMAND, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_COMMAND, e,
+		    responseObserver);
 	}
     }
 
@@ -346,8 +340,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_COMMANDS, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_COMMANDS, e,
+		    responseObserver);
 	}
     }
 
@@ -371,8 +365,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_COMMAND, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_COMMAND, e,
+		    responseObserver);
 	}
     }
 
@@ -398,8 +392,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_STATUS, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_STATUS, e,
+		    responseObserver);
 	}
     }
 
@@ -425,8 +419,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_STATUS_BY_CODE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_STATUS_BY_CODE, e,
+		    responseObserver);
 	}
     }
 
@@ -452,8 +446,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_STATUS, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_STATUS, e,
+		    responseObserver);
 	}
     }
 
@@ -479,8 +473,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_STATUSES, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_STATUSES, e,
+		    responseObserver);
 	}
     }
 
@@ -504,8 +498,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_STATUS, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_STATUS, e,
+		    responseObserver);
 	}
     }
 
@@ -528,8 +522,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE, e, responseObserver);
 	}
     }
 
@@ -551,8 +544,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE, e, responseObserver);
 	}
     }
 
@@ -575,8 +567,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_BY_HARDWARE_ID, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_BY_HARDWARE_ID, e,
+		    responseObserver);
 	}
     }
 
@@ -600,8 +592,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE, e, responseObserver);
 	}
     }
 
@@ -632,8 +623,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICES, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICES, e, responseObserver);
 	}
     }
 
@@ -658,8 +648,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_ELEMENT_MAPPING, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_ELEMENT_MAPPING, e,
+		    responseObserver);
 	}
     }
 
@@ -683,8 +673,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_ELEMENT_MAPPING, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_ELEMENT_MAPPING, e,
+		    responseObserver);
 	}
     }
 
@@ -707,8 +697,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE, e, responseObserver);
 	}
     }
 
@@ -733,8 +722,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_GROUP, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_GROUP, e, responseObserver);
 	}
     }
 
@@ -758,8 +746,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_GROUP, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_GROUP, e, responseObserver);
 	}
     }
 
@@ -784,8 +771,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_GROUP_BY_TOKEN, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_GROUP_BY_TOKEN, e,
+		    responseObserver);
 	}
     }
 
@@ -811,8 +798,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_GROUP, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_GROUP, e, responseObserver);
 	}
     }
 
@@ -844,8 +830,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUPS, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUPS, e, responseObserver);
 	}
     }
 
@@ -878,8 +863,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUPS, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUPS, e, responseObserver);
 	}
     }
 
@@ -903,8 +887,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_GROUP, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_GROUP, e, responseObserver);
 	}
     }
 
@@ -932,8 +915,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_ADD_DEVICE_GROUP_ELEMENTS, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_ADD_DEVICE_GROUP_ELEMENTS, e,
+		    responseObserver);
 	}
     }
 
@@ -961,8 +944,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_REMOVE_DEVICE_GROUP_ELEMENTS, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_REMOVE_DEVICE_GROUP_ELEMENTS, e,
+		    responseObserver);
 	}
     }
 
@@ -992,8 +975,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUP_ELEMENTS, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUP_ELEMENTS, e,
+		    responseObserver);
 	}
     }
 
@@ -1018,8 +1001,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_ASSIGNMENT, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_ASSIGNMENT, e,
+		    responseObserver);
 	}
     }
 
@@ -1043,8 +1026,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT, e,
+		    responseObserver);
 	}
     }
 
@@ -1069,8 +1052,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT_BY_TOKEN, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT_BY_TOKEN, e,
+		    responseObserver);
 	}
     }
 
@@ -1097,8 +1080,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_GET_CURRENT_ASSIGNMENT_FOR_DEVICE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_CURRENT_ASSIGNMENT_FOR_DEVICE, e,
+		    responseObserver);
 	}
     }
 
@@ -1122,8 +1105,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_ASSIGNMENT, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_ASSIGNMENT, e,
+		    responseObserver);
 	}
     }
 
@@ -1150,8 +1133,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT_METADATA, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT_METADATA, e,
+		    responseObserver);
 	}
     }
 
@@ -1178,8 +1161,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT_STATUS, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT_STATUS, e,
+		    responseObserver);
 	}
     }
 
@@ -1205,8 +1188,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_END_DEVICE_ASSIGNMENT, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_END_DEVICE_ASSIGNMENT, e,
+		    responseObserver);
 	}
     }
 
@@ -1236,8 +1219,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT_HISTORY, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT_HISTORY, e,
+		    responseObserver);
 	}
     }
 
@@ -1267,8 +1250,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_SITE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_SITE, e,
+		    responseObserver);
 	}
     }
 
@@ -1299,8 +1282,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_ASSET, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_ASSET, e,
+		    responseObserver);
 	}
     }
 
@@ -1326,8 +1309,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_STREAM, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_STREAM, e,
+		    responseObserver);
 	}
     }
 
@@ -1353,8 +1336,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_STREAM_BY_STREAM_ID, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_STREAM_BY_STREAM_ID, e,
+		    responseObserver);
 	}
     }
 
@@ -1384,8 +1367,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_STREAMS, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_STREAMS, e, responseObserver);
 	}
     }
 
@@ -1408,8 +1390,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_CREATE_SITE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_SITE, e, responseObserver);
 	}
     }
 
@@ -1431,8 +1412,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_GET_SITE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_SITE, e, responseObserver);
 	}
     }
 
@@ -1457,8 +1437,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_GET_SITE_BY_TOKEN, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_SITE_BY_TOKEN, e, responseObserver);
 	}
     }
 
@@ -1483,8 +1462,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_SITE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_SITE, e, responseObserver);
 	}
     }
 
@@ -1512,8 +1490,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_LIST_SITES, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_SITES, e, responseObserver);
 	}
     }
 
@@ -1536,8 +1513,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_DELETE_SITE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_DELETE_SITE, e, responseObserver);
 	}
     }
 
@@ -1561,8 +1537,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_CREATE_ZONE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_ZONE, e, responseObserver);
 	}
     }
 
@@ -1584,8 +1559,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_GET_ZONE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_ZONE, e, responseObserver);
 	}
     }
 
@@ -1610,8 +1584,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_GET_ZONE_BY_TOKEN, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_ZONE_BY_TOKEN, e, responseObserver);
 	}
     }
 
@@ -1637,8 +1610,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_ZONE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_ZONE, e, responseObserver);
 	}
     }
 
@@ -1667,8 +1639,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_LIST_ZONES, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_ZONES, e, responseObserver);
 	}
     }
 
@@ -1691,8 +1662,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceManagementGrpc.METHOD_DELETE_ZONE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_DELETE_ZONE, e, responseObserver);
 	}
     }
 

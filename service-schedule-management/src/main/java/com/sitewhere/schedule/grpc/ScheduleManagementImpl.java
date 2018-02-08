@@ -73,8 +73,7 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(ScheduleManagementGrpc.METHOD_CREATE_SCHEDULE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.METHOD_CREATE_SCHEDULE, e, responseObserver);
 	}
     }
 
@@ -96,8 +95,7 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(ScheduleManagementGrpc.METHOD_UPDATE_SCHEDULE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.METHOD_UPDATE_SCHEDULE, e, responseObserver);
 	}
     }
 
@@ -120,8 +118,8 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(ScheduleManagementGrpc.METHOD_GET_SCHEDULE_BY_TOKEN, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.METHOD_GET_SCHEDULE_BY_TOKEN, e,
+		    responseObserver);
 	}
     }
 
@@ -147,8 +145,7 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(ScheduleManagementGrpc.METHOD_LIST_SCHEDULES, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.METHOD_LIST_SCHEDULES, e, responseObserver);
 	}
     }
 
@@ -169,8 +166,7 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(ScheduleManagementGrpc.METHOD_DELETE_SCHEDULE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.METHOD_DELETE_SCHEDULE, e, responseObserver);
 	}
     }
 
@@ -193,8 +189,8 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(ScheduleManagementGrpc.METHOD_CREATE_SCHEDULED_JOB, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.METHOD_CREATE_SCHEDULED_JOB, e,
+		    responseObserver);
 	}
     }
 
@@ -217,8 +213,8 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(ScheduleManagementGrpc.METHOD_UPDATE_SCHEDULED_JOB, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.METHOD_UPDATE_SCHEDULED_JOB, e,
+		    responseObserver);
 	}
     }
 
@@ -241,8 +237,8 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(ScheduleManagementGrpc.METHOD_GET_SCHEDULED_JOB_BY_TOKEN, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.METHOD_GET_SCHEDULED_JOB_BY_TOKEN, e,
+		    responseObserver);
 	}
     }
 
@@ -269,8 +265,8 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(ScheduleManagementGrpc.METHOD_LIST_SCHEDULED_JOBS, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.METHOD_LIST_SCHEDULED_JOBS, e,
+		    responseObserver);
 	}
     }
 
@@ -292,8 +288,8 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(ScheduleManagementGrpc.METHOD_DELETE_SCHEDULED_JOB, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.METHOD_DELETE_SCHEDULED_JOB, e,
+		    responseObserver);
 	}
     }
 

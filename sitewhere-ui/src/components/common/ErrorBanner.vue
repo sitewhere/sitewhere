@@ -1,5 +1,5 @@
 <template>
-  <v-snackbar class="error-banner" v-if="error" :timeout="4000" error v-model="errorDisplayed">
+  <v-snackbar class="error-banner" v-if="error" :timeout="5000" error v-model="errorDisplayed">
     {{ errorMessage }}
     <v-btn dark flat @click.native="errorDisplayed = false">Close</v-btn>
   </v-snackbar>

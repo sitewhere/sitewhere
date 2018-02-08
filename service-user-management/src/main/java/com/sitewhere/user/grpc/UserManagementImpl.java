@@ -85,8 +85,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_CREATE_USER, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_CREATE_USER, e, responseObserver);
 	}
     }
 
@@ -108,16 +107,14 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_IMPORT_USER, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_IMPORT_USER, e, responseObserver);
 	}
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
+     * @see com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
      * authenticate(com.sitewhere.grpc.service.GAuthenticateRequest,
      * io.grpc.stub.StreamObserver)
      */
@@ -132,16 +129,14 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_AUTHENTICATE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_AUTHENTICATE, e, responseObserver);
 	}
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
+     * @see com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
      * updateUser(com.sitewhere.grpc.service.GUpdateUserRequest,
      * io.grpc.stub.StreamObserver)
      */
@@ -157,16 +152,14 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_UPDATE_USER, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_UPDATE_USER, e, responseObserver);
 	}
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
+     * @see com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
      * getUserByUsername(com.sitewhere.grpc.service.GGetUserByUsernameRequest,
      * io.grpc.stub.StreamObserver)
      */
@@ -183,16 +176,14 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_GET_USER_BY_USERNAME, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_GET_USER_BY_USERNAME, e, responseObserver);
 	}
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
+     * @see com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
      * listUsers(com.sitewhere.grpc.service.GListUsersRequest,
      * io.grpc.stub.StreamObserver)
      */
@@ -211,16 +202,14 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_LIST_USERS, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_LIST_USERS, e, responseObserver);
 	}
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
+     * @see com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
      * deleteUser(com.sitewhere.grpc.service.GDeleteUserRequest,
      * io.grpc.stub.StreamObserver)
      */
@@ -234,16 +223,14 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_DELETE_USER, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_DELETE_USER, e, responseObserver);
 	}
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
+     * @see com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
      * createGrantedAuthority(com.sitewhere.grpc.service.
      * GCreateGrantedAuthorityRequest, io.grpc.stub.StreamObserver)
      */
@@ -259,16 +246,15 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_CREATE_GRANTED_AUTHORITY, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_CREATE_GRANTED_AUTHORITY, e,
+		    responseObserver);
 	}
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
+     * @see com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
      * getGrantedAuthorityByName(com.sitewhere.grpc.service.
      * GGetGrantedAuthorityByNameRequest, io.grpc.stub.StreamObserver)
      */
@@ -285,16 +271,15 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_GET_GRANTED_AUTHORITY_BY_NAME, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_GET_GRANTED_AUTHORITY_BY_NAME, e,
+		    responseObserver);
 	}
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
+     * @see com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
      * updateGrantedAuthority(com.sitewhere.grpc.service.
      * GUpdateGrantedAuthorityRequest, io.grpc.stub.StreamObserver)
      */
@@ -310,16 +295,15 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_UPDATE_GRANTED_AUTHORITY, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_UPDATE_GRANTED_AUTHORITY, e,
+		    responseObserver);
 	}
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
+     * @see com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
      * listGrantedAuthorities(com.sitewhere.grpc.service.
      * GListGrantedAuthoritiesRequest, io.grpc.stub.StreamObserver)
      */
@@ -337,16 +321,15 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_LIST_GRANTED_AUTHORITIES, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_LIST_GRANTED_AUTHORITIES, e,
+		    responseObserver);
 	}
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
+     * @see com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
      * deleteGrantedAuthority(com.sitewhere.grpc.service.
      * GDeleteGrantedAuthorityRequest, io.grpc.stub.StreamObserver)
      */
@@ -360,16 +343,15 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_DELETE_GRANTED_AUTHORITY, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_DELETE_GRANTED_AUTHORITY, e,
+		    responseObserver);
 	}
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
+     * @see com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
      * getGrantedAuthoritiesForUser(com.sitewhere.grpc.service.
      * GGetGrantedAuthoritiesRequest, io.grpc.stub.StreamObserver)
      */
@@ -386,16 +368,15 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_GET_GRANTED_AUTHORITIES_FOR_USER, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_GET_GRANTED_AUTHORITIES_FOR_USER, e,
+		    responseObserver);
 	}
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
+     * @see com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
      * addGrantedAuthoritiesForUser(com.sitewhere.grpc.service.
      * GAddGrantedAuthoritiesRequest, io.grpc.stub.StreamObserver)
      */
@@ -413,16 +394,15 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_ADD_GRANTED_AUTHORITIES_FOR_USER, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_ADD_GRANTED_AUTHORITIES_FOR_USER, e,
+		    responseObserver);
 	}
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
+     * @see com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
      * removeGrantedAuthoritiesForUser(com.sitewhere.grpc.service.
      * GRemoveGrantedAuthoritiesRequest, io.grpc.stub.StreamObserver)
      */
@@ -440,8 +420,8 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(UserManagementGrpc.METHOD_REMOVE_GRANTED_AUTHORITIES_FOR_USER, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_REMOVE_GRANTED_AUTHORITIES_FOR_USER, e,
+		    responseObserver);
 	}
     }
 

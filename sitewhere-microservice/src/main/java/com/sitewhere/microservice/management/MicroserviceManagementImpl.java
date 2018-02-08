@@ -67,8 +67,8 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(MicroserviceManagementGrpc.METHOD_GET_CONFIGURATION_MODEL, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(MicroserviceManagementGrpc.METHOD_GET_CONFIGURATION_MODEL, e,
+		    responseObserver);
 	}
     }
 
@@ -96,8 +96,8 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(MicroserviceManagementGrpc.METHOD_GET_GLOBAL_CONFIGURATION, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(MicroserviceManagementGrpc.METHOD_GET_GLOBAL_CONFIGURATION, e,
+		    responseObserver);
 	}
     }
 
@@ -126,8 +126,8 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(MicroserviceManagementGrpc.METHOD_GET_TENANT_CONFIGURATION, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(MicroserviceManagementGrpc.METHOD_GET_TENANT_CONFIGURATION, e,
+		    responseObserver);
 	}
     }
 
@@ -153,8 +153,8 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(MicroserviceManagementGrpc.METHOD_UPDATE_GLOBAL_CONFIGURATION, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(MicroserviceManagementGrpc.METHOD_UPDATE_GLOBAL_CONFIGURATION, e,
+		    responseObserver);
 	}
     }
 
@@ -181,8 +181,8 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(MicroserviceManagementGrpc.METHOD_UPDATE_TENANT_CONFIGURATION, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(MicroserviceManagementGrpc.METHOD_UPDATE_TENANT_CONFIGURATION, e,
+		    responseObserver);
 	}
     }
 

@@ -71,8 +71,8 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(BatchManagementGrpc.METHOD_CREATE_BATCH_OPERATION, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(BatchManagementGrpc.METHOD_CREATE_BATCH_OPERATION, e,
+		    responseObserver);
 	}
     }
 
@@ -94,8 +94,8 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(BatchManagementGrpc.METHOD_CREATE_BATCH_COMMAND_INVOCATION, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(BatchManagementGrpc.METHOD_CREATE_BATCH_COMMAND_INVOCATION, e,
+		    responseObserver);
 	}
     }
 
@@ -117,8 +117,8 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(BatchManagementGrpc.METHOD_UPDATE_BATCH_OPERATION, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(BatchManagementGrpc.METHOD_UPDATE_BATCH_OPERATION, e,
+		    responseObserver);
 	}
     }
 
@@ -140,8 +140,8 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(BatchManagementGrpc.METHOD_GET_BATCH_OPERATION_BY_TOKEN, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(BatchManagementGrpc.METHOD_GET_BATCH_OPERATION_BY_TOKEN, e,
+		    responseObserver);
 	}
     }
 
@@ -167,8 +167,8 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(BatchManagementGrpc.METHOD_LIST_BATCH_OPERATIONS, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(BatchManagementGrpc.METHOD_LIST_BATCH_OPERATIONS, e,
+		    responseObserver);
 	}
     }
 
@@ -189,8 +189,8 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(BatchManagementGrpc.METHOD_DELETE_BATCH_OPERATION, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(BatchManagementGrpc.METHOD_DELETE_BATCH_OPERATION, e,
+		    responseObserver);
 	}
     }
 
@@ -216,8 +216,8 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(BatchManagementGrpc.METHOD_LIST_BATCH_OPERATION_ELEMENTS, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(BatchManagementGrpc.METHOD_LIST_BATCH_OPERATION_ELEMENTS, e,
+		    responseObserver);
 	}
     }
 
@@ -240,8 +240,8 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(BatchManagementGrpc.METHOD_UPDATE_BATCH_OPERATION_ELEMENT, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(BatchManagementGrpc.METHOD_UPDATE_BATCH_OPERATION_ELEMENT, e,
+		    responseObserver);
 	}
     }
 

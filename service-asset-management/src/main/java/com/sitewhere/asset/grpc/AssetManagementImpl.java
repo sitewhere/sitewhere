@@ -103,8 +103,8 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(AssetManagementGrpc.METHOD_CREATE_ASSET_CATEGORY, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_CREATE_ASSET_CATEGORY, e,
+		    responseObserver);
 	}
     }
 
@@ -128,8 +128,8 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(AssetManagementGrpc.METHOD_GET_ASSET_CATEGORY_BY_ID, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_GET_ASSET_CATEGORY_BY_ID, e,
+		    responseObserver);
 	}
     }
 
@@ -154,8 +154,8 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(AssetManagementGrpc.METHOD_UPDATE_ASSET_CATEGORY, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_UPDATE_ASSET_CATEGORY, e,
+		    responseObserver);
 	}
     }
 
@@ -183,8 +183,8 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(AssetManagementGrpc.METHOD_LIST_ASSET_CATEGORIES, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_LIST_ASSET_CATEGORIES, e,
+		    responseObserver);
 	}
     }
 
@@ -206,8 +206,8 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(AssetManagementGrpc.METHOD_DELETE_ASSET_CATEGORY, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_DELETE_ASSET_CATEGORY, e,
+		    responseObserver);
 	}
     }
 
@@ -232,8 +232,8 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(AssetManagementGrpc.METHOD_CREATE_HARDWARE_ASSET, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_CREATE_HARDWARE_ASSET, e,
+		    responseObserver);
 	}
     }
 
@@ -258,8 +258,8 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(AssetManagementGrpc.METHOD_UPDATE_HARDWARE_ASSET, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_UPDATE_HARDWARE_ASSET, e,
+		    responseObserver);
 	}
     }
 
@@ -284,8 +284,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(AssetManagementGrpc.METHOD_CREATE_PERSON_ASSET, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_CREATE_PERSON_ASSET, e, responseObserver);
 	}
     }
 
@@ -310,8 +309,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(AssetManagementGrpc.METHOD_UPDATE_PERSON_ASSET, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_UPDATE_PERSON_ASSET, e, responseObserver);
 	}
     }
 
@@ -336,8 +334,8 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(AssetManagementGrpc.METHOD_CREATE_LOCATION_ASSET, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_CREATE_LOCATION_ASSET, e,
+		    responseObserver);
 	}
     }
 
@@ -362,8 +360,8 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(AssetManagementGrpc.METHOD_UPDATE_LOCATION_ASSET, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_UPDATE_LOCATION_ASSET, e,
+		    responseObserver);
 	}
     }
 
@@ -387,8 +385,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(AssetManagementGrpc.METHOD_GET_ASSET_BY_ID, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_GET_ASSET_BY_ID, e, responseObserver);
 	}
     }
 
@@ -410,8 +407,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(AssetManagementGrpc.METHOD_DELETE_ASSET, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_DELETE_ASSET, e, responseObserver);
 	}
     }
 
@@ -439,8 +435,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(AssetManagementGrpc.METHOD_LIST_ASSETS, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_LIST_ASSETS, e, responseObserver);
 	}
     }
 
@@ -464,8 +459,8 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(AssetManagementGrpc.METHOD_LIST_ASSET_MODULE_DESCRIPTORS, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_LIST_ASSET_MODULE_DESCRIPTORS, e,
+		    responseObserver);
 	}
     }
 
@@ -503,8 +498,8 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_DESCRIPTOR_BY_MODULE_ID, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_DESCRIPTOR_BY_MODULE_ID,
+		    e, responseObserver);
 	}
     }
 
@@ -529,8 +524,8 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_ASSETS_BY_CRITERIA, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_ASSETS_BY_CRITERIA, e,
+		    responseObserver);
 	}
     }
 
@@ -555,8 +550,8 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_ASSET, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_ASSET, e,
+		    responseObserver);
 	}
     }
 

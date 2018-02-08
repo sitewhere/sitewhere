@@ -16,10 +16,16 @@ import com.sitewhere.grpc.model.security.NotAuthorizedException;
 import com.sitewhere.grpc.model.security.UnauthenticatedException;
 import com.sitewhere.grpc.model.tracing.DebugParameter;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.ServiceNotAvailableException;
 
 import io.grpc.MethodDescriptor;
+import io.grpc.Status;
+import io.grpc.Status.Code;
 import io.grpc.StatusRuntimeException;
+import io.grpc.stub.StreamObserver;
 
 public class GrpcUtils {
 
@@ -109,6 +115,12 @@ public class GrpcUtils {
 	    case UNAVAILABLE: {
 		return new ServiceNotAvailableException("The requested service is not available.", sre);
 	    }
+	    case FAILED_PRECONDITION: {
+		String delimited = sre.getStatus().getDescription();
+		String[] parts = delimited.split(":");
+		ErrorCode code = ErrorCode.fromCode(Long.parseLong(parts[0]));
+		return new SiteWhereSystemException(code, ErrorLevel.ERROR);
+	    }
 	    default: {
 	    }
 	    }
@@ -116,7 +128,26 @@ public class GrpcUtils {
 	return new SiteWhereException("Client exception in call to " + method.getFullMethodName() + ".", t);
     }
 
-    public static void logServerMethodException(MethodDescriptor<?, ?> method, Throwable t) {
+    /**
+     * Handle server exception by logging it, then converting to a format that can
+     * be passed back across the wire to a client.
+     * 
+     * @param method
+     * @param t
+     * @param observer
+     */
+    public static void handleServerMethodException(MethodDescriptor<?, ?> method, Throwable t,
+	    StreamObserver<?> observer) {
 	LOGGER.error("Server exception in call to " + method.getFullMethodName() + ".", t);
+
+	Throwable thrown = t;
+	if (t instanceof SiteWhereSystemException) {
+	    SiteWhereSystemException sysex = (SiteWhereSystemException) t;
+	    Status status = Status.fromCode(Code.FAILED_PRECONDITION)
+		    .withDescription(sysex.getCode().getCode() + ":" + sysex.getCode().getMessage());
+	    thrown = status.asException();
+	}
+
+	observer.onError(thrown);
     }
 }

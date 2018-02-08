@@ -127,8 +127,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_DEVICE_EVENT_BATCH, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_DEVICE_EVENT_BATCH, e,
+		    responseObserver);
 	}
     }
 
@@ -152,8 +152,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_GET_DEVICE_EVENT_BY_ID, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_GET_DEVICE_EVENT_BY_ID, e,
+		    responseObserver);
 	}
     }
 
@@ -178,8 +178,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_GET_DEVICE_EVENT_BY_ALTERNATE_ID, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_GET_DEVICE_EVENT_BY_ALTERNATE_ID, e,
+		    responseObserver);
 	}
     }
 
@@ -208,8 +208,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_DEVICE_EVENTS, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_DEVICE_EVENTS, e,
+		    responseObserver);
 	}
     }
 
@@ -234,8 +234,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_UPDATE_DEVICE_EVENT, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_UPDATE_DEVICE_EVENT, e,
+		    responseObserver);
 	}
     }
 
@@ -262,8 +262,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_MEASUREMENTS_FOR_ASSIGNMENT, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_MEASUREMENTS_FOR_ASSIGNMENT, e,
+		    responseObserver);
 	}
     }
 
@@ -294,8 +294,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_ASSIGNMENT, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_ASSIGNMENT, e,
+		    responseObserver);
 	}
     }
 
@@ -325,8 +325,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_SITE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_SITE, e,
+		    responseObserver);
 	}
     }
 
@@ -352,8 +352,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_LOCATION_FOR_ASSIGNMENT, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_LOCATION_FOR_ASSIGNMENT, e,
+		    responseObserver);
 	}
     }
 
@@ -382,8 +382,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_LOCATIONS_FOR_ASSIGNMENT, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_LOCATIONS_FOR_ASSIGNMENT, e,
+		    responseObserver);
 	}
     }
 
@@ -412,8 +412,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_LOCATIONS_FOR_SITE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_LOCATIONS_FOR_SITE, e,
+		    responseObserver);
 	}
     }
 
@@ -439,8 +439,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_ALERT_FOR_ASSIGNMENT, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_ALERT_FOR_ASSIGNMENT, e,
+		    responseObserver);
 	}
     }
 
@@ -469,8 +469,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_ASSIGNMENT, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_ASSIGNMENT, e,
+		    responseObserver);
 	}
     }
 
@@ -499,8 +499,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_SITE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_SITE, e,
+		    responseObserver);
 	}
     }
 
@@ -527,8 +527,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_STREAM_DATA_FOR_ASSIGNMENT, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_STREAM_DATA_FOR_ASSIGNMENT, e,
+		    responseObserver);
 	}
     }
 
@@ -554,8 +554,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_GET_STREAM_DATA_FOR_ASSIGNMENT, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_GET_STREAM_DATA_FOR_ASSIGNMENT, e,
+		    responseObserver);
 	}
     }
 
@@ -585,8 +585,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_SITE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_SITE, e,
+		    responseObserver);
 	}
     }
 
@@ -614,9 +614,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_INVOCATION_FOR_ASSIGNMENT,
-		    e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(
+		    DeviceEventManagementGrpc.METHOD_ADD_COMMAND_INVOCATION_FOR_ASSIGNMENT, e, responseObserver);
 	}
     }
 
@@ -647,9 +646,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_INVOCATIONS_FOR_ASSIGNMENT,
-		    e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(
+		    DeviceEventManagementGrpc.METHOD_LIST_COMMAND_INVOCATIONS_FOR_ASSIGNMENT, e, responseObserver);
 	}
     }
 
@@ -680,8 +678,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_INVOCATIONS_FOR_SITE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_INVOCATIONS_FOR_SITE, e,
+		    responseObserver);
 	}
     }
 
@@ -709,8 +707,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_RESPONSE_FOR_ASSIGNMENT, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_RESPONSE_FOR_ASSIGNMENT,
+		    e, responseObserver);
 	}
     }
 
@@ -740,9 +738,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_INVOCATION,
-		    e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(
+		    DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_INVOCATION, e, responseObserver);
 	}
     }
 
@@ -773,9 +770,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_ASSIGNMENT,
-		    e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(
+		    DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_ASSIGNMENT, e, responseObserver);
 	}
     }
 
@@ -805,8 +801,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_SITE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_SITE, e,
+		    responseObserver);
 	}
     }
 
@@ -833,8 +829,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_STATE_CHANGE_FOR_ASSIGNMENT, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_STATE_CHANGE_FOR_ASSIGNMENT, e,
+		    responseObserver);
 	}
     }
 
@@ -865,8 +861,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_ASSIGNMENT, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_ASSIGNMENT, e,
+		    responseObserver);
 	}
     }
 
@@ -895,8 +891,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.logServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_SITE, e);
-	    responseObserver.onError(e);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_SITE, e,
+		    responseObserver);
 	}
     }
 
