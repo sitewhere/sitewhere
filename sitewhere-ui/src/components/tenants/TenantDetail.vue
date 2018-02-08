@@ -1,7 +1,8 @@
 <template>
   <div v-if="tenant">
     <v-app>
-      <tenant-detail-header :tenant="tenant" @refresh="refresh">
+      <tenant-detail-header :tenant="tenant" @tenantEdited="onTenantEdited"
+        @tenantDeleted="onTenantDeleted">
         <span slot="buttons">
           <v-menu open-on-hover offset-y>
     				<v-btn color="blue darken-2" dark slot="activator">
@@ -42,12 +43,6 @@
         </v-tabs-items>
       </v-tabs>
     </v-app>
-    <tenant-update-dialog ref="update" :tenantId="tenant.id"
-      @tenantUpdated="onTenantEdited">
-    </tenant-update-dialog>
-    <tenant-delete-dialog ref="delete" :tenantId="tenant.id"
-      @tenantDeleted="onTenantDeleted">
-    </tenant-delete-dialog>
   </div>
 </template>
 
@@ -56,8 +51,6 @@ import FloatingActionButton from '../common/FloatingActionButton'
 import TenantDetailHeader from './TenantDetailHeader'
 import MicroserviceList from '../microservice/MicroserviceList'
 import ScriptsManager from './ScriptsManager'
-import TenantUpdateDialog from './TenantUpdateDialog'
-import TenantDeleteDialog from './TenantDeleteDialog'
 import {
   _getTenant,
   _getTenantTopology
@@ -76,9 +69,7 @@ export default {
     FloatingActionButton,
     TenantDetailHeader,
     MicroserviceList,
-    ScriptsManager,
-    TenantUpdateDialog,
-    TenantDeleteDialog
+    ScriptsManager
   },
 
   created: function () {
@@ -130,19 +121,9 @@ export default {
       this.$store.commit('currentSection', section)
     },
 
-    // Called to edit tenant.
-    onEditTenant: function () {
-      this.$refs['update'].onOpenDialog()
-    },
-
     // Called after tenant is edited.
     onTenantEdited: function () {
       this.$emit('refresh')
-    },
-
-    // Called to delete tenant.
-    onDeleteTenant: function () {
-      this.$refs['delete'].showDeleteDialog()
     },
 
     // Called after tenant is deleted.

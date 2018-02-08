@@ -1,6 +1,6 @@
 <template>
-  <v-card hover class="tenant">
-    <v-card-text :style="tenantPanelStyle(tenant)">
+  <v-card hover>
+    <v-card-text class="tenant" @click.stop="onOpenTenant" :style="tenantPanelStyle(tenant)">
       <div class="tenant-logo" :style="tenantLogoStyle(tenant)">
       </div>
       <div class="tenant-divider"></div>
