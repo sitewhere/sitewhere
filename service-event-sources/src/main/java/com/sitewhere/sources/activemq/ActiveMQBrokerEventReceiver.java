@@ -42,7 +42,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public class ActiveMQInboundEventReceiver extends InboundEventReceiver<byte[]> {
+public class ActiveMQBrokerEventReceiver extends InboundEventReceiver<byte[]> {
 
     /** Static logger instance */
     private static Logger LOGGER = LogManager.getLogger();
@@ -62,9 +62,6 @@ public class ActiveMQInboundEventReceiver extends InboundEventReceiver<byte[]> {
     /** Queue name used for inbound event data */
     private String queueName;
 
-    /** ActiveMQ data directory */
-    private String dataDirectory;
-
     /** Number of consumers used to read messages from the queue */
     private int numConsumers = DEFAULT_NUM_CONSUMERS;
 
@@ -74,7 +71,7 @@ public class ActiveMQInboundEventReceiver extends InboundEventReceiver<byte[]> {
     /** Thread pool for consumer processing */
     private ExecutorService consumersPool;
 
-    public ActiveMQInboundEventReceiver() {
+    public ActiveMQBrokerEventReceiver() {
 	this.brokerService = new BrokerService();
     }
 
@@ -96,15 +93,11 @@ public class ActiveMQInboundEventReceiver extends InboundEventReceiver<byte[]> {
 	if (getQueueName() == null) {
 	    throw new SiteWhereException("Queue name is required.");
 	}
-	if (getDataDirectory() == null) {
-	    LOGGER.warn("Data directory is no longer supported.");
-	}
 	try {
 	    brokerService.setBrokerName(getBrokerName());
 	    TransportConnector connector = new TransportConnector();
 	    connector.setUri(new URI(getTransportUri()));
 	    brokerService.addConnector(connector);
-	    brokerService.setDataDirectory(getDataDirectory());
 	    brokerService.setUseShutdownHook(false);
 	    brokerService.setUseJmx(false);
 	    brokerService.start();
@@ -306,14 +299,6 @@ public class ActiveMQInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
     public void setQueueName(String queueName) {
 	this.queueName = queueName;
-    }
-
-    public String getDataDirectory() {
-	return dataDirectory;
-    }
-
-    public void setDataDirectory(String dataDirectory) {
-	this.dataDirectory = dataDirectory;
     }
 
     public int getNumConsumers() {

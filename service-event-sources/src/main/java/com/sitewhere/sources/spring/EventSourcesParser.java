@@ -35,8 +35,8 @@ import com.sitewhere.sources.BinaryInboundEventSource;
 import com.sitewhere.sources.DecodedInboundEventSource;
 import com.sitewhere.sources.EventSourcesManager;
 import com.sitewhere.sources.StringInboundEventSource;
+import com.sitewhere.sources.activemq.ActiveMQBrokerEventReceiver;
 import com.sitewhere.sources.activemq.ActiveMQClientEventReceiver;
-import com.sitewhere.sources.activemq.ActiveMQInboundEventReceiver;
 import com.sitewhere.sources.azure.EventHubInboundEventReceiver;
 import com.sitewhere.sources.coap.CoapServerEventReceiver;
 import com.sitewhere.sources.decoder.GroovyEventDecoder;
@@ -481,22 +481,13 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
     }
 
     /**
-     * Get implementation class for ActiveMQ event receiver.
-     * 
-     * @return
-     */
-    protected Class<? extends IInboundEventReceiver<byte[]>> getActiveMQEventReceiverImplementation() {
-	return ActiveMQInboundEventReceiver.class;
-    }
-
-    /**
      * Create ActiveMQ event receiver from XML element.
      * 
      * @param element
      * @return
      */
     protected AbstractBeanDefinition createActiveMQEventReceiver(Element element) {
-	BeanDefinitionBuilder mq = BeanDefinitionBuilder.rootBeanDefinition(getActiveMQEventReceiverImplementation());
+	BeanDefinitionBuilder mq = BeanDefinitionBuilder.rootBeanDefinition(ActiveMQBrokerEventReceiver.class);
 
 	Attr sourceId = element.getAttributeNode("sourceId");
 	if (sourceId == null) {
@@ -1334,8 +1325,7 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
      * @return
      */
     protected AbstractBeanDefinition parseDeviceSpecificationDecoderChoice(Element element, ParserContext context) {
-	BeanDefinitionBuilder builder = BeanDefinitionBuilder
-		.rootBeanDefinition(DeviceTypeDecoderChoice.class);
+	BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(DeviceTypeDecoderChoice.class);
 
 	// Device specification token is required.
 	Attr token = element.getAttributeNode("token");

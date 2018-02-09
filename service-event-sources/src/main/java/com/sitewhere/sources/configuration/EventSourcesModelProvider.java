@@ -51,7 +51,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 	addElement(createMqttEventSourceElement());
 	addElement(createRabbitMqEventSourceElement());
 	addElement(createAzureEventHubEventSourceElement());
-	addElement(createActiveMQEventSourceElement());
+	addElement(createActiveMQBrokerEventSourceElement());
 	addElement(createActiveMQClientEventSourceElement());
 	addElement(createHazelcastQueueEventSourceElement());
 	addElement(createPollingRestEventSourceElement());
@@ -219,12 +219,13 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
      * 
      * @return
      */
-    protected ElementNode createActiveMQEventSourceElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("ActiveMQ Event Source",
+    protected ElementNode createActiveMQBrokerEventSourceElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("ActiveMQ Broker Event Source",
 		IEventSourcesParser.Elements.ActiveMQEventSource.getLocalName(), "sign-in",
 		EventSourcesRoleKeys.EventSource, this);
 
-	builder.description("Event source that pulls binary information from an ActiveMQ queue and decodes it.");
+	builder.description("Event source that starts an ActiveMQ broker and listens on the transport "
+		+ "via an ActiveMQ queue and decodes it.");
 	addEventSourceAttributes(builder);
 
 	// Only accept binary event decoders.
@@ -233,8 +234,6 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 	builder.attribute((new AttributeNode.Builder("Transport URI", "transportUri", AttributeType.String)
 		.description("URI used to configure the trasport for the embedded ActiveMQ broker.").makeRequired()
 		.build()));
-	builder.attribute((new AttributeNode.Builder("Data directory", "dataDirectory", AttributeType.String)
-		.description("Data directory used to store persistent message queues.").build()));
 	builder.attribute((new AttributeNode.Builder("Queue name", "queueName", AttributeType.String)
 		.description("Name of JMS queue for consumers to pull messages from.").makeRequired().build()));
 	builder.attribute((new AttributeNode.Builder("Number of consumers", "numConsumers", AttributeType.Integer)
