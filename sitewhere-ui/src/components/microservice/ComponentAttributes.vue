@@ -1,6 +1,7 @@
 <template>
-  <div v-if="currentContext && currentContext.groups && currentContext.groups.length">
-    <v-form v-model="formValid" ref="form" lazy-validation>
+  <div>
+    <v-form v-if="currentContext && currentContext.groups && currentContext.groups.length"
+      v-model="formValid" ref="form" lazy-validation>
       <v-card class="grey lighten-4 mb-3"
         v-for="group in currentContext.groups" :key="group.id">
         <v-divider></v-divider>
@@ -21,6 +22,11 @@
         </v-card-text>
       </v-card>
     </v-form>
+    <v-card v-else>
+      <v-card-text>
+        This component does not contain any configurable attributes.
+      </v-card-text>
+    </v-card>
   </div>
 </template>
 

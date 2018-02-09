@@ -41,6 +41,7 @@ export default {
     // Reset dialog contents.
     reset: function (e) {
       this.$data.active = 'configuration'
+      this.$data.attrValues = null
     },
 
     // Load dialog from a given payload.
