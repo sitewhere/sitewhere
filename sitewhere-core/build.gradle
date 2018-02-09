@@ -28,6 +28,10 @@ dependencies {
 	compile group: 'com.vividsolutions', name: 'jts', version:'1.13'
 }
 
+license {
+	exclude "**/core/Base58*"
+}
+
 processResources {
     from(sourceSets.main.resources.srcDirs) {
         include '**/*.properties'
