@@ -13,7 +13,6 @@ dependencies {
     // Hazelcast dependencies.
     compile group: 'com.hazelcast', name: 'hazelcast'
 	
-    compile group: 'com.google', name: 'bitcoinj', version:'0.11.3'
 	compile group: 'com.google.protobuf', name: 'protobuf-java', version: "${rootProject.ext['protobuf.version']}"
 }
 

@@ -9,6 +9,7 @@ package com.sitewhere.microservice.scripting;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -17,10 +18,9 @@ import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.zookeeper.KeeperException.NoNodeException;
-import org.spongycastle.util.encoders.Base64;
 
-import com.google.bitcoin.core.Base58;
 import com.sitewhere.common.MarshalUtils;
+import com.sitewhere.core.Base58;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
@@ -309,7 +309,7 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
 
 	    // Store version content.
 	    String contentPath = getScriptMetadataZkPath(tenantId) + "/" + getVersionContentPath(meta, version);
-	    byte[] content = Base64.decode(contentStr);
+	    byte[] content = Base64.getDecoder().decode(contentStr);
 	    if (getZookeeperManager().getCurator().checkExists().forPath(contentPath) == null) {
 		getZookeeperManager().getCurator().create().creatingParentsIfNeeded().forPath(contentPath, content);
 	    } else {

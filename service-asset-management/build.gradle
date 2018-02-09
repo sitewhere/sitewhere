@@ -6,6 +6,10 @@ dependencies {
 	compile project(':sitewhere-mongodb')
 	compile project(':sitewhere-microservice')
 	
+	// REST template for SCIM access.
+    compile group: 'org.springframework', name: 'spring-web'
+    compile group: 'org.apache.httpcomponents', name: 'httpclient'
+	
 	// WSO2 dependencies.
     compile group: 'com.google.code.ksoap2-android', name: 'ksoap2-android', version:'3.4.0'
     compile group: 'com.google.code.ksoap2-android', name: 'ksoap2-j2se', version:'3.4.0'

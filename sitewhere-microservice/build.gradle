@@ -9,9 +9,6 @@ dependencies {
 	// GRPC server components.
 	compile group: 'io.grpc', name: 'grpc-netty', version: "${rootProject.ext['grpc.version']}"
     
-    // Used for generating ids.
-    compile group: 'com.google', name: 'bitcoinj', version:'0.11.3'
-    
     // Tracing support
     compile group: 'com.uber.jaeger', name: 'jaeger-core', version:'0.21.0'
 }

@@ -10,7 +10,7 @@ package com.sitewhere.communication.protobuf;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
-import com.google.bitcoin.core.Base58;
+import com.sitewhere.core.Base58;
 import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 
