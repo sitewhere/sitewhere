@@ -1014,6 +1014,11 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 	    receiver.addPropertyValue("hostname", hostname.getValue());
 	}
 
+	Attr port = element.getAttributeNode("port");
+	if (port != null) {
+	    receiver.addPropertyValue("port", port.getValue());
+	}
+
 	return receiver.getBeanDefinition();
     }
 
