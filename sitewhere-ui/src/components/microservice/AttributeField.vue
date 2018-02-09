@@ -115,8 +115,15 @@ export default {
       }
     },
     onValueUpdated: function () {
-      var newValue = (this.$data.attrEnvVar) ? '${' + this.$data.attrEnvVar +
-        ':' + this.$data.attrConstValue + '}' : this.$data.attrConstValue
+      let env = this.$data.attrEnvVar
+      let val = this.$data.attrConstValue
+      let newValue
+
+      if (val && (val.length > 0)) {
+        newValue = env ? '${' + env + ':' + val + '}' : val
+      } else {
+        newValue = env ? '${' + env + '}' : null
+      }
 
       var updated = {}
       updated.attribute = this.attribute

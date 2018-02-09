@@ -70,7 +70,11 @@ export default {
 
     // Called when attribute value is updated.
     onAttributeValueUpdated: function (update) {
-      this.$data.attrValues[update.attribute.localName] = update.newValue
+      if (update.newValue) {
+        this.$data.attrValues[update.attribute.localName] = update.newValue
+      } else {
+        delete this.$data.attrValues[update.attribute.localName]
+      }
       this.$emit('valuesUpdated', this.$data.attrValues)
     }
   }

@@ -27,6 +27,9 @@ import com.sitewhere.spi.SiteWhereException;
 
 public class CoapTests {
 
+    /** Supplies CoAP server location */
+    private static final String COAP_SERVER = "192.168.171.129";
+
     /** Supplies standard CoAP port */
     private static final int COAP_PORT = NetworkConfig.getStandard().getInt(NetworkConfig.Keys.COAP_PORT);
 
@@ -221,6 +224,6 @@ public class CoapTests {
     }
 
     protected CoapClient createClientFor(String relativeUrl) {
-	return new CoapClient("coap://localhost:" + COAP_PORT + "/" + relativeUrl);
+	return new CoapClient("coap://" + COAP_SERVER + ":" + COAP_PORT + "/" + relativeUrl);
     }
 }
