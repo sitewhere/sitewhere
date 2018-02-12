@@ -29,14 +29,13 @@ import com.sitewhere.connectors.OutboundConnectorsManager;
 import com.sitewhere.connectors.aws.sqs.SqsOutboundEventProcessor;
 import com.sitewhere.connectors.azure.EventHubOutboundEventProcessor;
 import com.sitewhere.connectors.dweetio.DweetIoEventProcessor;
+import com.sitewhere.connectors.filter.DeviceTypeFilter;
 import com.sitewhere.connectors.filter.FilterOperation;
 import com.sitewhere.connectors.filter.SiteFilter;
-import com.sitewhere.connectors.filter.DeviceTypeFilter;
 import com.sitewhere.connectors.groovy.GroovyEventProcessor;
 import com.sitewhere.connectors.groovy.filter.GroovyFilter;
 import com.sitewhere.connectors.groovy.multicast.AllWithSpecificationStringMulticaster;
 import com.sitewhere.connectors.groovy.routing.GroovyRouteBuilder;
-import com.sitewhere.connectors.hazelcast.HazelcastEventProcessor;
 import com.sitewhere.connectors.initialstate.InitialStateEventProcessor;
 import com.sitewhere.connectors.mqtt.MqttOutboundConnector;
 import com.sitewhere.connectors.rabbitmq.RabbitMqOutboundEventProcessor;
@@ -81,10 +80,6 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
 	    }
 	    case RabbitMqConnector: {
 		connectors.add(parseRabbitMqConnector(child, context));
-		break;
-	    }
-	    case HazelcastConnector: {
-		connectors.add(parseHazelcastConnector(child, context));
 		break;
 	    }
 	    case SolrConnector: {
@@ -258,25 +253,6 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
 
 	// Parse route builder.
 	processor.addPropertyValue("routeBuilder", parseRouteBuilder(element, context));
-
-	return processor.getBeanDefinition();
-    }
-
-    /**
-     * Parse configuration for Hazelcast outbound connector.
-     * 
-     * @param element
-     * @param context
-     * @return
-     */
-    protected AbstractBeanDefinition parseHazelcastConnector(Element element, ParserContext context) {
-	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(HazelcastEventProcessor.class);
-
-	// Parse common outbound connector attributes.
-	parseCommonOutboundConnectorAttributes(element, processor);
-
-	// Parse nested filters.
-	processor.addPropertyValue("filters", parseFilters(element, context));
 
 	return processor.getBeanDefinition();
     }

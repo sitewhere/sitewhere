@@ -39,9 +39,6 @@ public interface IEventSourcesParser {
 	/** CoAP server event source */
 	CoapServerEventSource("coap-server-event-source"),
 
-	/** Hazelcast queue event source */
-	HazelcastQueueEventSource("hazelcast-queue-event-source"),
-
 	/** MQTT event source */
 	MqttEventSource("mqtt-event-source"),
 

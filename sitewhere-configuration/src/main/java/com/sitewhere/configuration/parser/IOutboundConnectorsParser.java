@@ -33,9 +33,6 @@ public interface IOutboundConnectorsParser {
 	/** Sends outbound events to a RabbitMQ exchange */
 	RabbitMqConnector("rabbit-mq-connector"),
 
-	/** Sends outbound events over Hazelcast topics */
-	HazelcastConnector("hazelcast-connector"),
-
 	/** Indexes outbound events in Apache Solr */
 	SolrConnector("solr-connector"),
 

@@ -407,24 +407,6 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
-	<!-- Hazelcast outbound connector -->
-	<xsd:element name="hazelcast-connector" type="hazelcastConnectorType"
-		substitutionGroup="abstract-outbound-connector">
-		<xsd:annotation>
-			<xsd:documentation>
-				Sends outbound events to Hazelcast topics for
-				processing by external
-				consumers.
-			</xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="hazelcastConnectorType">
-		<xsd:complexContent>
-			<xsd:extension base="filteredOutboundConnectorType">
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-
 	<!-- Groovy outbound event connector -->
 	<xsd:element name="groovy-connector" type="groovyConnectorType"
 		substitutionGroup="abstract-outbound-connector">

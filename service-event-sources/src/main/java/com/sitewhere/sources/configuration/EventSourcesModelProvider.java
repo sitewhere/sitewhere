@@ -53,7 +53,6 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 	addElement(createAzureEventHubEventSourceElement());
 	addElement(createActiveMQBrokerEventSourceElement());
 	addElement(createActiveMQClientEventSourceElement());
-	addElement(createHazelcastQueueEventSourceElement());
 	addElement(createPollingRestEventSourceElement());
 	addElement(createCoapServerEventSourceElement());
 
@@ -384,26 +383,6 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 	builder.attribute((new AttributeNode.Builder("Payload type", "payloadType", AttributeType.String)
 		.description("Chooses whether payload is processed as binary or string.").choice("Binary", "binary")
 		.choice("String", "string").defaultValue("binary").build()));
-
-	return builder.build();
-    }
-
-    /**
-     * Create element configuration for Hazelcast queue event source.
-     * 
-     * @return
-     */
-    protected ElementNode createHazelcastQueueEventSourceElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Hazelcast Queue Event Source",
-		IEventSourcesParser.Elements.HazelcastQueueEventSource.getLocalName(), "sign-in",
-		EventSourcesRoleKeys.EventSource, this);
-
-	builder.description("Event source that pulls decoded events from a Hazelcast queue. Primarily used to "
-		+ "allow one instance of SiteWhere to decode events and feed them to multiple subordinate instances for processing.");
-	addEventSourceAttributes(builder);
-
-	// Only accept binary event decoders.
-	builder.specializes(EventSourcesRoleKeys.EventDecoder, EventSourcesRoleKeys.BinaryEventDecoder);
 
 	return builder.build();
     }

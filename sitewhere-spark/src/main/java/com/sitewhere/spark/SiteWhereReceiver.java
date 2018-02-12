@@ -15,14 +15,12 @@ import org.slf4j.LoggerFactory;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ITopic;
 import com.hazelcast.core.Message;
 import com.hazelcast.core.MessageListener;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceEvent;
-import com.sitewhere.spi.server.hazelcast.ISiteWhereHazelcast;
 
 /**
  * Implements a {@link Receiver} that listens for events on the default
@@ -43,15 +41,6 @@ public class SiteWhereReceiver extends Receiver<IDeviceEvent> {
 
     /** Hazelcast client for SiteWhere */
     private HazelcastInstance hazelcast;
-
-    /** Measurements topic */
-    private ITopic<DeviceMeasurements> measurements;
-
-    /** Locations topic */
-    private ITopic<DeviceLocation> locations;
-
-    /** Alerts topic */
-    private ITopic<DeviceAlert> alerts;
 
     /** Hazelcast address set in connect */
     private String hazelcastAddress;
@@ -91,22 +80,7 @@ public class SiteWhereReceiver extends Receiver<IDeviceEvent> {
 	    clientConfig.getNetworkConfig().setSmartRouting(true);
 
 	    this.hazelcast = HazelcastClient.newHazelcastClient(clientConfig);
-	    LOGGER.info("Connected to SiteWhere via Hazelcast on: " + getHazelcastAddress());
-
-	    // Subscribe to measurements and process them.
-	    this.measurements = hazelcast.getTopic(ISiteWhereHazelcast.TOPIC_MEASUREMENTS_ADDED);
-	    measurements.addMessageListener(new MeasurementsEventListener());
-	    LOGGER.info("Listening for measurements on: " + ISiteWhereHazelcast.TOPIC_MEASUREMENTS_ADDED);
-
-	    // Subscribe to locations and process them.
-	    this.locations = hazelcast.getTopic(ISiteWhereHazelcast.TOPIC_LOCATION_ADDED);
-	    locations.addMessageListener(new LocationsEventListener());
-	    LOGGER.info("Listening for locations on: " + ISiteWhereHazelcast.TOPIC_LOCATION_ADDED);
-
-	    // Subscribe to alerts and process them.
-	    this.alerts = hazelcast.getTopic(ISiteWhereHazelcast.TOPIC_ALERT_ADDED);
-	    alerts.addMessageListener(new AlertsEventListener());
-	    LOGGER.info("Listening for alerts on: " + ISiteWhereHazelcast.TOPIC_ALERT_ADDED);
+	    // Use a non-hazelcast transport for connecting.
 	} catch (Exception e) {
 	    stop("Unable to start SiteWhere receiver.", e);
 	}
@@ -129,6 +103,7 @@ public class SiteWhereReceiver extends Receiver<IDeviceEvent> {
      * 
      * @author Derek
      */
+    @SuppressWarnings("unused")
     private class MeasurementsEventListener implements MessageListener<DeviceMeasurements> {
 
 	/*
@@ -154,6 +129,7 @@ public class SiteWhereReceiver extends Receiver<IDeviceEvent> {
      * 
      * @author Derek
      */
+    @SuppressWarnings("unused")
     private class LocationsEventListener implements MessageListener<DeviceLocation> {
 
 	/*
@@ -179,6 +155,7 @@ public class SiteWhereReceiver extends Receiver<IDeviceEvent> {
      * 
      * @author Derek
      */
+    @SuppressWarnings("unused")
     private class AlertsEventListener implements MessageListener<DeviceAlert> {
 
 	/*

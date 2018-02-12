@@ -639,26 +639,6 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
-	<!-- Event source that pulls decoded events from a Hazelcast queue -->
-	<xsd:element name="hazelcast-queue-event-source" type="hazelcastQueueEventSourceType"
-		substitutionGroup="abstract-event-source">
-		<xsd:annotation>
-			<xsd:documentation>Event source that pulls decoded events from a
-				Hazelcast queue.
-				Primarily used to allow one instance of SiteWhere to
-				decode events and feed them to
-				multiple subordinate instances for
-				processing.
-			</xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="hazelcastQueueEventSourceType">
-		<xsd:complexContent>
-			<xsd:extension base="abstractEventSourceType">
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-
 	<!-- Event source that polls REST services for data -->
 	<xsd:element name="polling-rest-event-source" type="pollingRestEventSourceType"
 		substitutionGroup="abstract-event-source">

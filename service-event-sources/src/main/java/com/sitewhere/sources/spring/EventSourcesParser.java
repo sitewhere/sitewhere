@@ -32,7 +32,6 @@ import com.sitewhere.configuration.parser.IEventSourcesParser.Deduplicators;
 import com.sitewhere.configuration.parser.IEventSourcesParser.Elements;
 import com.sitewhere.configuration.parser.IEventSourcesParser.StringDecoders;
 import com.sitewhere.sources.BinaryInboundEventSource;
-import com.sitewhere.sources.DecodedInboundEventSource;
 import com.sitewhere.sources.EventSourcesManager;
 import com.sitewhere.sources.StringInboundEventSource;
 import com.sitewhere.sources.activemq.ActiveMQBrokerEventReceiver;
@@ -50,7 +49,6 @@ import com.sitewhere.sources.decoder.json.JsonDeviceRequestDecoder;
 import com.sitewhere.sources.decoder.protobuf.ProtobufDeviceEventDecoder;
 import com.sitewhere.sources.deduplicator.AlternateIdDeduplicator;
 import com.sitewhere.sources.deduplicator.GroovyEventDeduplicator;
-import com.sitewhere.sources.hazelcast.HazelcastQueueReceiver;
 import com.sitewhere.sources.mqtt.MqttInboundEventReceiver;
 import com.sitewhere.sources.rabbitmq.RabbitMqInboundEventReceiver;
 import com.sitewhere.sources.rest.PollingRestInboundEventReceiver;
@@ -114,10 +112,6 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 	    }
 	    case CoapServerEventSource: {
 		sources.add(parseCoapServerEventSource(child, context));
-		break;
-	    }
-	    case HazelcastQueueEventSource: {
-		sources.add(parseHazelcastQueueEventSource(child, context));
 		break;
 	    }
 	    case MqttEventSource: {
@@ -1019,45 +1013,6 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 	    receiver.addPropertyValue("port", port.getValue());
 	}
 
-	return receiver.getBeanDefinition();
-    }
-
-    /**
-     * Configure components needed to realize a Hazelcast queue event source.
-     * 
-     * @param element
-     * @param context
-     * @return
-     */
-    protected AbstractBeanDefinition parseHazelcastQueueEventSource(Element element, ParserContext context) {
-	BeanDefinitionBuilder source = BeanDefinitionBuilder.rootBeanDefinition(DecodedInboundEventSource.class);
-
-	// Verify that a sourceId was provided and set it on the bean.
-	parseEventSourceId(element, source);
-
-	// Create event receiver bean and register it.
-	AbstractBeanDefinition receiver = createHazelcastQueueEventReceiver(element, context);
-	String receiverName = nameGenerator.generateBeanName(receiver, context.getRegistry());
-	context.getRegistry().registerBeanDefinition(receiverName, receiver);
-
-	// Create list with bean reference and add it as property.
-	ManagedList<Object> list = new ManagedList<Object>();
-	RuntimeBeanReference ref = new RuntimeBeanReference(receiverName);
-	list.add(ref);
-	source.addPropertyValue("inboundEventReceivers", list);
-
-	return source.getBeanDefinition();
-    }
-
-    /**
-     * Create Hazelcast queue event receiver.
-     * 
-     * @param element
-     * @param context
-     * @return
-     */
-    protected AbstractBeanDefinition createHazelcastQueueEventReceiver(Element element, ParserContext context) {
-	BeanDefinitionBuilder receiver = BeanDefinitionBuilder.rootBeanDefinition(HazelcastQueueReceiver.class);
 	return receiver.getBeanDefinition();
     }
 

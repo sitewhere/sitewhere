@@ -50,7 +50,6 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 
 	// Outbound connectors.
 	addElement(createOutboundConnectorElement());
-	addElement(createHazelcastConnectorElement());
 	addElement(createSolrConnectorElement());
 	addElement(createAzureEventHubConnectorElement());
 	addElement(createAmazonSqsConnectorElement());
@@ -171,21 +170,6 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 		.description("URI that provides information about the RabbitMQ instance to connect to.").build()));
 	builder.attribute((new AttributeNode.Builder("Topic", "topic", AttributeType.String)
 		.defaultValue("sitewhere.output").description("Topic used if no route builder is specified.").build()));
-	return builder.build();
-    }
-
-    /**
-     * Create a Hazelcast connector.
-     * 
-     * @return
-     */
-    protected ElementNode createHazelcastConnectorElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Hazelcast Connector",
-		IOutboundConnectorsParser.Elements.HazelcastConnector.getLocalName(), "sign-out",
-		OutboundConnectorsRoleKeys.FilteredConnector, this);
-	builder.description("Forwards outbound events to Hazelcast topics for processing by external consumers.");
-
-	addCommonConnectorAttributes(builder);
 	return builder.build();
     }
 
