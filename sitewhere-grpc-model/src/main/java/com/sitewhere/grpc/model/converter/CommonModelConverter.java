@@ -261,6 +261,9 @@ public class CommonModelConverter {
      * @throws SiteWhereException
      */
     public static GUUID asGrpcUuid(UUID api) throws SiteWhereException {
+	if (api == null) {
+	    return null;
+	}
 	GUUID.Builder grpc = GUUID.newBuilder();
 	grpc.setMsb(api.getMostSignificantBits());
 	grpc.setLsb(api.getLeastSignificantBits());

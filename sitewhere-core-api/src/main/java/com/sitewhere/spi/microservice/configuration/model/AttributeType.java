@@ -29,8 +29,8 @@ public enum AttributeType {
     /** Script */
     Script,
 
-    /** Reference to a site by token */
-    SiteReference,
+    /** Reference to an area by token */
+    AreaReference,
 
     /** Reference to a specification by token */
     SpecificationReference;

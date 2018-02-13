@@ -16,10 +16,10 @@ import org.bson.Document;
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
+import com.sitewhere.rest.model.area.Zone;
 import com.sitewhere.rest.model.common.Location;
-import com.sitewhere.rest.model.device.Zone;
+import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.common.ILocation;
-import com.sitewhere.spi.device.IZone;
 
 /**
  * Used to load or save zone data to MongoDB.
@@ -34,8 +34,8 @@ public class MongoZone implements MongoConverter<IZone> {
     /** Property for unique token */
     public static final String PROP_TOKEN = "tk";
 
-    /** Property for site id */
-    public static final String PROP_SITE_ID = "si";
+    /** Property for area id */
+    public static final String PROP_AREA_ID = "ai";
 
     /** Property for name */
     public static final String PROP_NAME = "nm";
@@ -90,7 +90,7 @@ public class MongoZone implements MongoConverter<IZone> {
     public static void toDocument(IZone source, Document target) {
 	target.append(PROP_ID, source.getId());
 	target.append(PROP_TOKEN, source.getToken());
-	target.append(PROP_SITE_ID, source.getSiteId());
+	target.append(PROP_AREA_ID, source.getAreaId());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_BORDER_COLOR, source.getBorderColor());
 	target.append(PROP_FILL_COLOR, source.getFillColor());
@@ -124,7 +124,7 @@ public class MongoZone implements MongoConverter<IZone> {
     public static void fromDocument(Document source, Zone target) {
 	UUID id = (UUID) source.get(PROP_ID);
 	String token = (String) source.get(PROP_TOKEN);
-	UUID siteId = (UUID) source.get(PROP_SITE_ID);
+	UUID areaId = (UUID) source.get(PROP_AREA_ID);
 	String name = (String) source.get(PROP_NAME);
 	String borderColor = (String) source.get(PROP_BORDER_COLOR);
 	String fillColor = (String) source.get(PROP_FILL_COLOR);
@@ -132,7 +132,7 @@ public class MongoZone implements MongoConverter<IZone> {
 
 	target.setId(id);
 	target.setToken(token);
-	target.setSiteId(siteId);
+	target.setAreaId(areaId);
 	target.setName(name);
 	target.setBorderColor(borderColor);
 	target.setFillColor(fillColor);

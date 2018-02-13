@@ -22,12 +22,12 @@ import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
-import com.sitewhere.rest.model.device.Zone;
+import com.sitewhere.rest.model.area.Zone;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.device.ISite;
-import com.sitewhere.spi.device.IZone;
-import com.sitewhere.spi.device.request.IZoneCreateRequest;
+import com.sitewhere.spi.area.IArea;
+import com.sitewhere.spi.area.IZone;
+import com.sitewhere.spi.area.request.IZoneCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 
@@ -45,26 +45,26 @@ public class HBaseZone {
      * Create a new zone.
      * 
      * @param context
-     * @param site
+     * @param area
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public static IZone createZone(IHBaseContext context, ISite site, IZoneCreateRequest request)
+    public static IZone createZone(IHBaseContext context, IArea area, IZoneCreateRequest request)
 	    throws SiteWhereException {
-	Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(site.getToken());
-	if (siteId == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+	Long areaId = context.getDeviceIdManager().getSiteKeys().getValue(area.getToken());
+	if (areaId == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
 	}
-	Long zoneId = HBaseSite.allocateNextZoneId(context, siteId);
-	byte[] rowkey = getPrimaryRowkey(siteId, zoneId);
+	Long zoneId = HBaseArea.allocateNextZoneId(context, areaId);
+	byte[] rowkey = getPrimaryRowkey(areaId, zoneId);
 
 	// Associate new UUID with zone row key.
 	String uuid = context.getDeviceIdManager().getZoneKeys().createUniqueId(rowkey);
 
 	// Use common processing logic so all backend implementations work the
 	// same.
-	Zone zone = DeviceManagementPersistence.zoneCreateLogic(request, site, uuid);
+	Zone zone = DeviceManagementPersistence.zoneCreateLogic(request, area, uuid);
 
 	byte[] payload = context.getPayloadMarshaler().encodeZone(zone);
 
@@ -202,11 +202,11 @@ public class HBaseZone {
     /**
      * Get primary row key for a given zone.
      * 
-     * @param siteId
+     * @param areaId
      * @return
      */
-    public static byte[] getPrimaryRowkey(Long siteId, Long zoneId) {
-	byte[] baserow = HBaseSite.getZoneRowKey(siteId);
+    public static byte[] getPrimaryRowkey(Long areaId, Long zoneId) {
+	byte[] baserow = HBaseArea.getZoneRowKey(areaId);
 	byte[] zoneIdBytes = getZoneIdentifier(zoneId);
 	ByteBuffer buffer = ByteBuffer.allocate(baserow.length + zoneIdBytes.length);
 	buffer.put(baserow);

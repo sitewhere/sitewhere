@@ -29,9 +29,9 @@ public interface IDeviceRegistrationRequest extends IDeviceStateChangeCreateRequ
     public String getDeviceTypeToken();
 
     /**
-     * Get token for site to which device should be assigned.
+     * Get token for area to which device should be assigned.
      * 
      * @return
      */
-    public String getSiteToken();
+    public String getAreaToken();
 }

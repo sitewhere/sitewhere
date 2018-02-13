@@ -27,9 +27,9 @@ import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -239,16 +239,14 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceMeasurementsForSite(com.sitewhere.spi.device.ISite,
+     * listDeviceMeasurementsForArea(com.sitewhere.spi.area.IArea,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForSite(ISite site,
+    public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForArea(IArea area,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchBySite(site, DeviceEventType.Measurements, criteria, getClient(),
+	return InfluxDbDeviceEvent.searchByArea(area, DeviceEventType.Measurements, criteria, getClient(),
 		IDeviceMeasurements.class);
     }
 
@@ -288,16 +286,14 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceLocationsForSite(com.sitewhere.spi.device.ISite,
+     * listDeviceLocationsForArea(com.sitewhere.spi.area.IArea,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceLocation> listDeviceLocationsForSite(ISite site, IDateRangeSearchCriteria criteria)
+    public ISearchResults<IDeviceLocation> listDeviceLocationsForArea(IArea area, IDateRangeSearchCriteria criteria)
 	    throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchBySite(site, DeviceEventType.Location, criteria, getClient(),
+	return InfluxDbDeviceEvent.searchByArea(area, DeviceEventType.Location, criteria, getClient(),
 		IDeviceLocation.class);
     }
 
@@ -337,16 +333,15 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceAlertsForSite(com.sitewhere.spi.device.ISite,
+     * @see
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceAlertsForArea
+     * (com.sitewhere.spi.area.IArea,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceAlert> listDeviceAlertsForSite(ISite site, IDateRangeSearchCriteria criteria)
+    public ISearchResults<IDeviceAlert> listDeviceAlertsForArea(IArea area, IDateRangeSearchCriteria criteria)
 	    throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchBySite(site, DeviceEventType.Alert, criteria, getClient(), IDeviceAlert.class);
+	return InfluxDbDeviceEvent.searchByArea(area, DeviceEventType.Alert, criteria, getClient(), IDeviceAlert.class);
     }
 
     /*
@@ -428,16 +423,14 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandInvocationsForSite(com.sitewhere.spi.device.ISite,
+     * listDeviceCommandInvocationsForArea(com.sitewhere.spi.area.IArea,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(ISite site,
+    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForArea(IArea area,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchBySite(site, DeviceEventType.CommandInvocation, criteria, getClient(),
+	return InfluxDbDeviceEvent.searchByArea(area, DeviceEventType.CommandInvocation, criteria, getClient(),
 		IDeviceCommandInvocation.class);
     }
 
@@ -490,16 +483,14 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandResponsesForSite(com.sitewhere.spi.device.ISite,
+     * listDeviceCommandResponsesForArea(com.sitewhere.spi.area.IArea,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(ISite site,
+    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForArea(IArea area,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchBySite(site, DeviceEventType.CommandResponse, criteria, getClient(),
+	return InfluxDbDeviceEvent.searchByArea(area, DeviceEventType.CommandResponse, criteria, getClient(),
 		IDeviceCommandResponse.class);
     }
 
@@ -538,16 +529,14 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceStateChangesForSite(com.sitewhere.spi.device.ISite,
+     * listDeviceStateChangesForArea(com.sitewhere.spi.area.IArea,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(ISite site,
+    public ISearchResults<IDeviceStateChange> listDeviceStateChangesForArea(IArea area,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchBySite(site, DeviceEventType.StateChange, criteria, getClient(),
+	return InfluxDbDeviceEvent.searchByArea(area, DeviceEventType.StateChange, criteria, getClient(),
 		IDeviceStateChange.class);
     }
 

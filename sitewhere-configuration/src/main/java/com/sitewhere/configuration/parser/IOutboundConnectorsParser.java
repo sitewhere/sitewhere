@@ -83,8 +83,8 @@ public interface IOutboundConnectorsParser {
      */
     public static enum Filters {
 
-	/** Include or exclude events for a site */
-	SiteFilter("site-filter"),
+	/** Include or exclude events for an area */
+	AreaFilter("area-filter"),
 
 	/** Include or exclude events for a specification */
 	SpecificationFilter("specification-filter"),

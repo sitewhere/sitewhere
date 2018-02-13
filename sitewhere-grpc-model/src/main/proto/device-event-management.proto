@@ -46,8 +46,8 @@ service DeviceEventManagement {
 	// List measurements for an assignment.
 	rpc ListMeasurementsForAssignment (GListMeasurementsForAssignmentRequest) returns (GListMeasurementsForAssignmentResponse) {}
 	
-	// List measurements for a site.
-	rpc ListMeasurementsForSite (GListMeasurementsForSiteRequest) returns (GListMeasurementsForSiteResponse) {}
+	// List measurements for an area.
+	rpc ListMeasurementsForArea (GListMeasurementsForAreaRequest) returns (GListMeasurementsForAreaResponse) {}
 
 	// #################
 	// ### LOCATIONS ###
@@ -59,8 +59,8 @@ service DeviceEventManagement {
 	// List locations for an assignment.
 	rpc ListLocationsForAssignment (GListLocationsForAssignmentRequest) returns (GListLocationsForAssignmentResponse) {}
 	
-	// List locations for a site.
-	rpc ListLocationsForSite (GListLocationsForSiteRequest) returns (GListLocationsForSiteResponse) {}
+	// List locations for an area.
+	rpc ListLocationsForArea (GListLocationsForAreaRequest) returns (GListLocationsForAreaResponse) {}
 
 	// ##############
 	// ### ALERTS ###
@@ -72,8 +72,8 @@ service DeviceEventManagement {
 	// List alerts for an assignment.
 	rpc ListAlertsForAssignment (GListAlertsForAssignmentRequest) returns (GListAlertsForAssignmentResponse) {}
 	
-	// List alerts for a site.
-	rpc ListAlertsForSite (GListAlertsForSiteRequest) returns (GListAlertsForSiteResponse) {}
+	// List alerts for an area.
+	rpc ListAlertsForArea (GListAlertsForAreaRequest) returns (GListAlertsForAreaResponse) {}
 
 	// ###################
 	// ### STREAM DATA ###
@@ -98,8 +98,8 @@ service DeviceEventManagement {
 	// List command invocations for an assignment.
 	rpc ListCommandInvocationsForAssignment (GListCommandInvocationsForAssignmentRequest) returns (GListCommandInvocationsForAssignmentResponse) {}
 	
-	// List command invocations for a site.
-	rpc ListCommandInvocationsForSite (GListCommandInvocationsForSiteRequest) returns (GListCommandInvocationsForSiteResponse) {}
+	// List command invocations for an area.
+	rpc ListCommandInvocationsForArea (GListCommandInvocationsForAreaRequest) returns (GListCommandInvocationsForAreaResponse) {}
 
 	// #########################
 	// ### COMMAND RESPONSES ###
@@ -114,8 +114,8 @@ service DeviceEventManagement {
 	// List command invocations for an assignment.
 	rpc ListCommandResponsesForAssignment (GListCommandResponsesForAssignmentRequest) returns (GListCommandResponsesForAssignmentResponse) {}
 	
-	// List command invocations for a site.
-	rpc ListCommandResponsesForSite (GListCommandResponsesForSiteRequest) returns (GListCommandResponsesForSiteResponse) {}
+	// List command invocations for an area.
+	rpc ListCommandResponsesForArea (GListCommandResponsesForAreaRequest) returns (GListCommandResponsesForAreaResponse) {}
 	
 	// #####################
 	// ### STATE CHANGES ###
@@ -127,8 +127,8 @@ service DeviceEventManagement {
 	// List state changes for an assignment.
 	rpc ListStateChangesForAssignment (GListStateChangesForAssignmentRequest) returns (GListStateChangesForAssignmentResponse) {}
 	
-	// List state changes for a site.
-	rpc ListStateChangesForSite (GListStateChangesForSiteRequest) returns (GListStateChangesForSiteResponse) {}
+	// List state changes for an area.
+	rpc ListStateChangesForArea (GListStateChangesForAreaRequest) returns (GListStateChangesForAreaResponse) {}
 }
 
 // ####################
@@ -218,14 +218,14 @@ message GListMeasurementsForAssignmentResponse {
 	com.sitewhere.grpc.model.GDeviceMeasurementsSearchResults results = 1;
 }
 	
-// Request for list of measurements for a site.
-message GListMeasurementsForSiteRequest {
-	com.sitewhere.grpc.model.GSite site = 1;
+// Request for list of measurements for an area.
+message GListMeasurementsForAreaRequest {
+	com.sitewhere.grpc.model.GArea area = 1;
 	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
 }
 	
-// Response for list of measurements for a site.
-message GListMeasurementsForSiteResponse {
+// Response for list of measurements for an area.
+message GListMeasurementsForAreaResponse {
 	com.sitewhere.grpc.model.GDeviceMeasurementsSearchResults results = 1;
 }
 
@@ -255,14 +255,14 @@ message GListLocationsForAssignmentResponse {
 	com.sitewhere.grpc.model.GDeviceLocationSearchResults results = 1;
 }
 	
-// Request for list of locations for a site.
-message GListLocationsForSiteRequest {
-	com.sitewhere.grpc.model.GSite site = 1;
+// Request for list of locations for an area.
+message GListLocationsForAreaRequest {
+	com.sitewhere.grpc.model.GArea area = 1;
 	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
 }
 	
-// Response for list of locations for a site.
-message GListLocationsForSiteResponse {
+// Response for list of locations for an area.
+message GListLocationsForAreaResponse {
 	com.sitewhere.grpc.model.GDeviceLocationSearchResults results = 1;
 }
 
@@ -291,14 +291,14 @@ message GListAlertsForAssignmentResponse {
 	com.sitewhere.grpc.model.GDeviceAlertSearchResults results = 1;
 }
 	
-// Request for list of alerts for a site.
-message GListAlertsForSiteRequest {
-	com.sitewhere.grpc.model.GSite site = 1;
+// Request for list of alerts for an area.
+message GListAlertsForAreaRequest {
+	com.sitewhere.grpc.model.GArea area = 1;
 	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
 }
 	
-// Response for list of alerts for a site.
-message GListAlertsForSiteResponse {
+// Response for list of alerts for an area.
+message GListAlertsForAreaResponse {
 	com.sitewhere.grpc.model.GDeviceAlertSearchResults results = 1;
 }
 
@@ -366,14 +366,14 @@ message GListCommandInvocationsForAssignmentResponse {
 	com.sitewhere.grpc.model.GDeviceCommandInvocationSearchResults results = 1;
 }
 	
-// Request for list of command invocations for a site.
-message GListCommandInvocationsForSiteRequest {
-	com.sitewhere.grpc.model.GSite site = 1;
+// Request for list of command invocations for an area.
+message GListCommandInvocationsForAreaRequest {
+	com.sitewhere.grpc.model.GArea area = 1;
 	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
 }
 	
-// Response for list of command invocations for a site.
-message GListCommandInvocationsForSiteResponse {
+// Response for list of command invocations for an area.
+message GListCommandInvocationsForAreaResponse {
 	com.sitewhere.grpc.model.GDeviceCommandInvocationSearchResults results = 1;
 }
 
@@ -412,14 +412,14 @@ message GListCommandResponsesForAssignmentResponse {
 	com.sitewhere.grpc.model.GDeviceCommandResponseSearchResults results = 1;
 }
 	
-// Request for list of command responses for a site.
-message GListCommandResponsesForSiteRequest {
-	com.sitewhere.grpc.model.GSite site = 1;
+// Request for list of command responses for an area.
+message GListCommandResponsesForAreaRequest {
+	com.sitewhere.grpc.model.GArea area = 1;
 	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
 }
 	
-// Response for list of command responses for a site.
-message GListCommandResponsesForSiteResponse {
+// Response for list of command responses for an area.
+message GListCommandResponsesForAreaResponse {
 	com.sitewhere.grpc.model.GDeviceCommandResponseSearchResults results = 1;
 }
 
@@ -448,14 +448,14 @@ message GListStateChangesForAssignmentResponse {
 	com.sitewhere.grpc.model.GDeviceStateChangeSearchResults results = 1;
 }
 	
-// Request for list of state changes for a site.
-message GListStateChangesForSiteRequest {
-	com.sitewhere.grpc.model.GSite site = 1;
+// Request for list of state changes for an area.
+message GListStateChangesForAreaRequest {
+	com.sitewhere.grpc.model.GArea area = 1;
 	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
 }
 	
-// Response for list of state changes for a site.
-message GListStateChangesForSiteResponse {
+// Response for list of state changes for an area.
+message GListStateChangesForAreaResponse {
 	com.sitewhere.grpc.model.GDeviceStateChangeSearchResults results = 1;
 }
 

@@ -43,11 +43,11 @@ public interface IDeviceAssignment extends IMetadataProviderEntity {
     public UUID getDeviceId();
 
     /**
-     * Get unique id for site assigned to device when assignment was created.
+     * Get unique id for area assigned to device.
      * 
      * @return
      */
-    public UUID getSiteId();
+    public UUID getAreaId();
 
     /**
      * Get the referenced asset type.

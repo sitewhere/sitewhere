@@ -22,11 +22,11 @@ import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.command.DeviceMappingResult;
 import com.sitewhere.spi.device.command.RegistrationFailureReason;
 import com.sitewhere.spi.device.command.RegistrationSuccessReason;
@@ -55,11 +55,11 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
     /** Device type used for automatic assignment */
     private IDeviceType autoAssignDeviceType;
 
-    /** Id of site that will be auto-assigned */
-    private UUID autoAssignSiteId = null;
+    /** Id of area that will be auto-assigned */
+    private UUID autoAssignAreaId = null;
 
-    /** Site used for automatic assignment */
-    private ISite autoAssignSite;
+    /** Area used for automatic assignment */
+    private IArea autoAssignArea;
 
     public DefaultRegistrationManager() {
 	super(LifecycleComponentType.RegistrationManager);
@@ -77,7 +77,6 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 	LOGGER.debug("Handling device registration request.");
 	IDevice device = getDeviceManagement().getDeviceByHardwareId(request.getHardwareId());
 	IDeviceType deviceType = getDeviceTypeFor(request);
-	ISite deviceSite = getSiteFor(request);
 
 	// Create device if it does not already exist.
 	if (device == null) {
@@ -89,7 +88,6 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 	    DeviceCreateRequest deviceCreate = new DeviceCreateRequest();
 	    deviceCreate.setHardwareId(request.getHardwareId());
 	    deviceCreate.setDeviceTypeToken(request.getDeviceTypeToken());
-	    deviceCreate.setSiteToken(deviceSite.getToken());
 	    deviceCreate.setComments("Device created by on-demand registration.");
 	    deviceCreate.setMetadata(request.getMetadata());
 	    device = getDeviceManagement().createDevice(deviceCreate);
@@ -149,25 +147,25 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
     }
 
     /**
-     * Get site that should be used for the given request.
+     * Get area that should be used for the given request.
      * 
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    protected ISite getSiteFor(IDeviceRegistrationRequest request) throws SiteWhereException {
-	ISite deviceSite = getAutoAssignSite();
-	if (request.getSiteToken() != null) {
-	    ISite override = getDeviceManagement().getSiteByToken(request.getSiteToken());
+    protected IArea getAreaFor(IDeviceRegistrationRequest request) throws SiteWhereException {
+	IArea deviceArea = getAutoAssignArea();
+	if (request.getAreaToken() != null) {
+	    IArea override = getDeviceManagement().getAreaByToken(request.getAreaToken());
 	    if (override == null) {
-		throw new SiteWhereException("Registration request specified invalid site token.");
+		throw new SiteWhereException("Registration request specified invalid area token.");
 	    }
-	    deviceSite = override;
+	    deviceArea = override;
 	}
-	if (deviceSite == null) {
-	    throw new SiteWhereException("Site not passed and no default provided.");
+	if (deviceArea == null) {
+	    throw new SiteWhereException("Area not passed and no default provided.");
 	}
-	return deviceSite;
+	return deviceArea;
     }
 
     /**
@@ -265,12 +263,12 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 	    }
 	    this.autoAssignDeviceType = deviceType;
 	}
-	if (getAutoAssignSiteId() != null) {
-	    ISite site = getDeviceManagement().getSite(getAutoAssignSiteId());
-	    if (site == null) {
-		throw new SiteWhereException("Registration manager auto assignment site is invalid.");
+	if (getAutoAssignAreaId() != null) {
+	    IArea area = getDeviceManagement().getArea(getAutoAssignAreaId());
+	    if (area == null) {
+		throw new SiteWhereException("Registration manager auto assignment area is invalid.");
 	    }
-	    this.autoAssignSite = site;
+	    this.autoAssignArea = area;
 	}
     }
 
@@ -292,6 +290,12 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 	this.allowNewDevices = allowNewDevices;
     }
 
+    /*
+     * @see
+     * com.sitewhere.registration.spi.IRegistrationManager#getAutoAssignDeviceTypeId
+     * ()
+     */
+    @Override
     public UUID getAutoAssignDeviceTypeId() {
 	return autoAssignDeviceTypeId;
     }
@@ -308,20 +312,25 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 	this.autoAssignDeviceType = autoAssignDeviceType;
     }
 
-    public UUID getAutoAssignSiteId() {
-	return autoAssignSiteId;
+    /*
+     * @see
+     * com.sitewhere.registration.spi.IRegistrationManager#getAutoAssignAreaId()
+     */
+    @Override
+    public UUID getAutoAssignAreaId() {
+	return autoAssignAreaId;
     }
 
-    public void setAutoAssignSiteId(UUID autoAssignSiteId) {
-	this.autoAssignSiteId = autoAssignSiteId;
+    public void setAutoAssignAreaId(UUID autoAssignAreaId) {
+	this.autoAssignAreaId = autoAssignAreaId;
     }
 
-    public ISite getAutoAssignSite() {
-	return autoAssignSite;
+    public IArea getAutoAssignArea() {
+	return autoAssignArea;
     }
 
-    public void setAutoAssignSite(ISite autoAssignSite) {
-	this.autoAssignSite = autoAssignSite;
+    public void setAutoAssignArea(IArea autoAssignArea) {
+	this.autoAssignArea = autoAssignArea;
     }
 
     private IDeviceManagement getDeviceManagement() {

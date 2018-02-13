@@ -24,13 +24,6 @@ public interface IDeviceSearchCriteria extends IDateRangeSearchCriteria {
     public String getDeviceTypeToken();
 
     /**
-     * Get token if filtered by site.
-     * 
-     * @return
-     */
-    public String getSiteToken();
-
-    /**
      * Indicates whether assigned devices should be excluded.
      * 
      * @return

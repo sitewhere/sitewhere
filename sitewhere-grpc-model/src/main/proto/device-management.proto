@@ -168,8 +168,8 @@ service DeviceManagement {
 	// Get device assignment history.
 	rpc GetDeviceAssignmentHistory (GGetDeviceAssignmentHistoryRequest) returns (GGetDeviceAssignmentHistoryResponse) {}
 	
-	// Get device assignments for a site.
-	rpc GetDeviceAssignmentsForSite (GGetDeviceAssignmentsForSiteRequest) returns (GGetDeviceAssignmentsForSiteResponse) {}
+	// Get device assignments for an area.
+	rpc GetDeviceAssignmentsForArea (GGetDeviceAssignmentsForAreaRequest) returns (GGetDeviceAssignmentsForAreaResponse) {}
 	
 	// Get device assignments linked to an asset.
 	rpc GetDeviceAssignmentsForAsset (GGetDeviceAssignmentsForAssetRequest) returns (GGetDeviceAssignmentsForAssetResponse) {}
@@ -188,26 +188,26 @@ service DeviceManagement {
 	rpc ListDeviceStreams (GListDeviceStreamsRequest) returns (GListDeviceStreamsResponse) {}
 
 	// #############
-	// ### SITES ###
+	// ### AREAS ###
 	// #############
 	
-	// Create a new site.
-	rpc CreateSite (GCreateSiteRequest) returns (GCreateSiteResponse) {}
+	// Create a new area.
+	rpc CreateArea (GCreateAreaRequest) returns (GCreateAreaResponse) {}
 		
-	// Get site by id.
-	rpc GetSite (GGetSiteRequest) returns (GGetSiteResponse) {}
+	// Get area by id.
+	rpc GetArea (GGetAreaRequest) returns (GGetAreaResponse) {}
 	
-	// Get site by unique token.
-	rpc GetSiteByToken (GGetSiteByTokenRequest) returns (GGetSiteByTokenResponse) {}
+	// Get area by unique token.
+	rpc GetAreaByToken (GGetAreaByTokenRequest) returns (GGetAreaByTokenResponse) {}
 	
-	// Update an existing site.
-	rpc UpdateSite (GUpdateSiteRequest) returns (GUpdateSiteResponse) {}
+	// Update an existing area.
+	rpc UpdateArea (GUpdateAreaRequest) returns (GUpdateAreaResponse) {}
 	
-	// List sites that meet criteria.
-	rpc ListSites (GListSitesRequest) returns (GListSitesResponse) {}
+	// List areas that meet criteria.
+	rpc ListAreas (GListAreasRequest) returns (GListAreasResponse) {}
 	
-	// Delete an existing site.
-	rpc DeleteSite (GDeleteSiteRequest) returns (GDeleteSiteResponse) {}
+	// Delete an existing area.
+	rpc DeleteArea (GDeleteAreaRequest) returns (GDeleteAreaResponse) {}
 	
 	// #############
 	// ### ZONES ###
@@ -610,14 +610,14 @@ message GGetDeviceAssignmentHistoryResponse {
 	com.sitewhere.grpc.model.GDeviceAssignmentSearchResults results = 1;
 }
 	
-// Request for getting device assignments for a site.
-message GGetDeviceAssignmentsForSiteRequest {
-	com.sitewhere.grpc.model.GUUID siteId = 1;
+// Request for getting device assignments for an area.
+message GGetDeviceAssignmentsForAreaRequest {
+	com.sitewhere.grpc.model.GUUID areaId = 1;
 	com.sitewhere.grpc.model.GDeviceAssignmentSearchCriteria criteria = 2;
 }
 	
-// Response for getting device assignments for a site.
-message GGetDeviceAssignmentsForSiteResponse {
+// Response for getting device assignments for an area.
+message GGetDeviceAssignmentsForAreaResponse {
 	com.sitewhere.grpc.model.GDeviceAssignmentSearchResults results = 1;
 }
 	
@@ -671,69 +671,69 @@ message GListDeviceStreamsResponse {
 }
 
 // #############
-// ### SITES ###
+// ### AREAS ###
 // #############
 
-// Request for creating a site.
-message GCreateSiteRequest {
-	com.sitewhere.grpc.model.GSiteCreateRequest request = 1;
+// Request for creating an area.
+message GCreateAreaRequest {
+	com.sitewhere.grpc.model.GAreaCreateRequest request = 1;
 }
 
-// Response from creating a site.
-message GCreateSiteResponse {
-	com.sitewhere.grpc.model.GSite site = 1;
+// Response from creating an area.
+message GCreateAreaResponse {
+	com.sitewhere.grpc.model.GArea area = 1;
 }
 	
-// Request for getting a site by id.
-message GGetSiteRequest {
+// Request for getting an area by id.
+message GGetAreaRequest {
 	com.sitewhere.grpc.model.GUUID id = 1;
 }
 	
-// Response for getting a site by id.
-message GGetSiteResponse {
-	com.sitewhere.grpc.model.GSite site = 1;
+// Response for getting an area by id.
+message GGetAreaResponse {
+	com.sitewhere.grpc.model.GArea area = 1;
 }
 	
-// Request for getting a site by token.
-message GGetSiteByTokenRequest {
+// Request for getting an area by token.
+message GGetAreaByTokenRequest {
 	string token = 1;
 }
 	
-// Response for getting a site by token.
-message GGetSiteByTokenResponse {
-	com.sitewhere.grpc.model.GSite site = 1;
+// Response for getting an area by token.
+message GGetAreaByTokenResponse {
+	com.sitewhere.grpc.model.GArea area = 1;
 }
 	
-// Request for updating an existing site.
-message GUpdateSiteRequest {
+// Request for updating an existing area.
+message GUpdateAreaRequest {
 	com.sitewhere.grpc.model.GUUID id = 1;
-	com.sitewhere.grpc.model.GSiteCreateRequest request = 2;
+	com.sitewhere.grpc.model.GAreaCreateRequest request = 2;
 }
 	
-// Response for updating an existing site.
-message GUpdateSiteResponse {
-	com.sitewhere.grpc.model.GSite site = 1;
+// Response for updating an existing area.
+message GUpdateAreaResponse {
+	com.sitewhere.grpc.model.GArea area = 1;
 }
 	
-// Request for listing sites that meet criteria.
-message GListSitesRequest {
-	com.sitewhere.grpc.model.GSiteSearchCriteria criteria = 1;
+// Request for listing areas that meet criteria.
+message GListAreasRequest {
+	com.sitewhere.grpc.model.GAreaSearchCriteria criteria = 1;
 }
 	
-// Response for listing sites that meet criteria.
-message GListSitesResponse {
-	com.sitewhere.grpc.model.GSiteSearchResults results = 1;
+// Response for listing areas that meet criteria.
+message GListAreasResponse {
+	com.sitewhere.grpc.model.GAreaSearchResults results = 1;
 }
 	
-// Request for deleting a site.
-message GDeleteSiteRequest {
+// Request for deleting an area.
+message GDeleteAreaRequest {
 	com.sitewhere.grpc.model.GUUID id = 1;
 	bool force = 2;
 }
 	
-// Response for deleting a site.
-message GDeleteSiteResponse {
-	com.sitewhere.grpc.model.GSite site = 1;
+// Response for deleting an area.
+message GDeleteAreaResponse {
+	com.sitewhere.grpc.model.GArea area = 1;
 }
 
 // #############

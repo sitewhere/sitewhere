@@ -136,8 +136,8 @@ public class MicroserviceModelConverter {
 	    return AttributeType.Integer;
 	case ATTRIBUTE_TYPE_SCRIPT:
 	    return AttributeType.Script;
-	case ATTRIBUTE_TYPE_SITE_REFERENCE:
-	    return AttributeType.SiteReference;
+	case ATTRIBUTE_TYPE_AREA_REFERENCE:
+	    return AttributeType.AreaReference;
 	case ATTRIBUTE_TYPE_SPECIFICATION_REFERENCE:
 	    return AttributeType.SpecificationReference;
 	case ATTRIBUTE_TYPE_STRING:
@@ -165,8 +165,8 @@ public class MicroserviceModelConverter {
 	    return GAttributeType.ATTRIBUTE_TYPE_INTEGER;
 	case Script:
 	    return GAttributeType.ATTRIBUTE_TYPE_SCRIPT;
-	case SiteReference:
-	    return GAttributeType.ATTRIBUTE_TYPE_SITE_REFERENCE;
+	case AreaReference:
+	    return GAttributeType.ATTRIBUTE_TYPE_AREA_REFERENCE;
 	case SpecificationReference:
 	    return GAttributeType.ATTRIBUTE_TYPE_SPECIFICATION_REFERENCE;
 	case String:

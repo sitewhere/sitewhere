@@ -33,9 +33,6 @@ public class MongoDevice implements MongoConverter<IDevice> {
     /** Property for hardware id */
     public static final String PROP_HARDWARE_ID = "hw";
 
-    /** Property for specification id */
-    public static final String PROP_SITE_ID = "si";
-
     /** Property for device type id */
     public static final String PROP_DEVICE_TYPE_ID = "ty";
 
@@ -78,7 +75,6 @@ public class MongoDevice implements MongoConverter<IDevice> {
     public static void toDocument(IDevice source, Document target) {
 	target.append(PROP_ID, source.getId());
 	target.append(PROP_HARDWARE_ID, source.getHardwareId());
-	target.append(PROP_SITE_ID, source.getSiteId());
 	target.append(PROP_DEVICE_TYPE_ID, source.getDeviceTypeId());
 	target.append(PROP_PARENT_DEVICE_ID, source.getParentDeviceId());
 	target.append(PROP_COMMENTS, source.getComments());
@@ -105,7 +101,6 @@ public class MongoDevice implements MongoConverter<IDevice> {
     public static void fromDocument(Document source, Device target) {
 	UUID id = (UUID) source.get(PROP_ID);
 	String hardwareId = (String) source.get(PROP_HARDWARE_ID);
-	UUID siteId = (UUID) source.get(PROP_SITE_ID);
 	UUID typeId = (UUID) source.get(PROP_DEVICE_TYPE_ID);
 	UUID parentDeviceId = (UUID) source.get(PROP_PARENT_DEVICE_ID);
 	String comments = (String) source.get(PROP_COMMENTS);
@@ -113,7 +108,6 @@ public class MongoDevice implements MongoConverter<IDevice> {
 
 	target.setId(id);
 	target.setHardwareId(hardwareId);
-	target.setSiteId(siteId);
 	target.setDeviceTypeId(typeId);
 	target.setParentDeviceId(parentDeviceId);
 	target.setComments(comments);

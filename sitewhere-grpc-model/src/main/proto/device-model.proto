@@ -8,9 +8,9 @@ import "asset-model.proto";
 import "sitewhere-common.proto";
 import "google/protobuf/timestamp.proto";
 
-// #############################
-// ### DEVICE SPECIFICATIONS ###
-// #############################
+// ####################
+// ### DEVICE TYPES ###
+// ####################
 
 // Slot within a unit.
 message GDeviceSlot {
@@ -158,20 +158,18 @@ message GDeviceElementMapping {
 // Request for creating a device.
 message GDeviceCreateRequest {
 	string hardwareId = 1;
-	string siteToken = 2;
-	string deviceTypeToken = 3;
-	GOptionalString parentHardwareId = 4;
-	repeated GDeviceElementMapping deviceElementMappings = 5;
-	GOptionalString comments = 6;
-	GOptionalString status = 7;
-	map<string, string> metadata = 8;
+	string deviceTypeToken = 2;
+	GOptionalString parentHardwareId = 3;
+	repeated GDeviceElementMapping deviceElementMappings = 4;
+	GOptionalString comments = 5;
+	GOptionalString status = 6;
+	map<string, string> metadata = 7;
 }
 
 // Criteria for searching devices.
 message GDeviceSearchCriteria {
 	GOptionalBoolean includeDeleted = 1;
 	GDeviceTypeReference deviceType = 2;
-	GSiteReference site = 3;
 	GOptionalBoolean excludeAssigned = 4;
 	google.protobuf.Timestamp createdAfter = 5;
 	google.protobuf.Timestamp createdBefore = 6;
@@ -188,7 +186,6 @@ message GDeviceSearchResults {
 message GDevice {
 	GUUID id = 1;
 	string hardwareId = 2;
-	GUUID siteId = 3;
 	GUUID deviceTypeId = 4;
 	GUUID deviceAssignmentId = 5;
 	GUUID parentDeviceId = 6;
@@ -277,9 +274,10 @@ message GDeviceGroup {
 message GDeviceAssignmentCreateRequest {
 	GOptionalString token = 1;
 	string deviceHardwareId = 2;
-	GDeviceAssignmentType assignmentType = 3;
-	GAssetReference assetReference = 4;
-	map<string, string> metadata = 5;
+	GOptionalString areaToken = 3;
+	GDeviceAssignmentType assignmentType = 4;
+	GAssetReference assetReference = 5;
+	map<string, string> metadata = 6;
 }
 
 // Criteria for searching device assignments.
@@ -290,7 +288,7 @@ message GDeviceAssignmentSearchCriteria {
 
 // Criteria for searching assets linked to assignent.
 message GAssetsForAssignmentSearchCriteria {
-	GSiteReference site = 1;
+	GAreaReference area = 1;
 	GDeviceAssignmentStatus status = 2;
 	GPaging paging = 3;
 }
@@ -311,7 +309,7 @@ message GDeviceAssignment {
 	GUUID id = 1;
 	string token = 2;
 	GUUID deviceId = 3;
-	GUUID siteId = 4;
+	GUUID areaId = 4;
 	GDeviceAssignmentType assignmentType = 5;
 	GDeviceAssignmentStatus status = 6;
 	GAssetReference assetReference = 7;
@@ -354,44 +352,44 @@ message GDeviceStream {
 }
 
 // #############
-// ### SITES ###
+// ### AREAS ###
 // #############
 
-// Map data associated with a site.
-message GSiteMapData {
+// Map data associated with an area.
+message GAreaMapData {
 	string type = 1;
 	map<string, string> metadata = 2;
 }
 
-// Request data for creating a site.
-message GSiteCreateRequest {
+// Request data for creating an area.
+message GAreaCreateRequest {
 	string token = 1;
 	string name = 2;
 	string description = 3;
 	string imageUrl = 4;
-	GSiteMapData mapData = 5;
+	GAreaMapData mapData = 5;
 	map<string, string> metadata = 6;
 }
 
-// Criteria for searching sites.
-message GSiteSearchCriteria {
+// Criteria for searching areas.
+message GAreaSearchCriteria {
 	GPaging paging = 1;
 }
 
-// Results for site search.
-message GSiteSearchResults {
+// Results for area search.
+message GAreaSearchResults {
 	int64 count = 1;
-	repeated GSite sites = 2;
+	repeated GArea areas = 2;
 }
 
-// Site.
-message GSite {
+// Area.
+message GArea {
 	GUUID id = 1;
 	string token = 2;
 	string name = 3;
 	string description = 4;
 	string imageUrl = 5;
-	GSiteMapData mapData = 6;
+	GAreaMapData mapData = 6;
 	map<string, string> metadata = 7;
 	GEntityInformation entityInformation = 8;
 }

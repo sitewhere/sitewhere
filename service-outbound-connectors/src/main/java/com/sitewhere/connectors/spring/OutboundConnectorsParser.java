@@ -29,9 +29,9 @@ import com.sitewhere.connectors.OutboundConnectorsManager;
 import com.sitewhere.connectors.aws.sqs.SqsOutboundEventProcessor;
 import com.sitewhere.connectors.azure.EventHubOutboundEventProcessor;
 import com.sitewhere.connectors.dweetio.DweetIoEventProcessor;
+import com.sitewhere.connectors.filter.AreaFilter;
 import com.sitewhere.connectors.filter.DeviceTypeFilter;
 import com.sitewhere.connectors.filter.FilterOperation;
-import com.sitewhere.connectors.filter.SiteFilter;
 import com.sitewhere.connectors.groovy.GroovyEventProcessor;
 import com.sitewhere.connectors.groovy.filter.GroovyFilter;
 import com.sitewhere.connectors.groovy.multicast.AllWithSpecificationStringMulticaster;
@@ -445,8 +445,8 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
 		    throw new RuntimeException("Unknown filter element: " + child.getLocalName());
 		}
 		switch (type) {
-		case SiteFilter: {
-		    result.add(parseSiteFilter(child, context));
+		case AreaFilter: {
+		    result.add(parseAreaFilter(child, context));
 		    break;
 		}
 		case SpecificationFilter: {
@@ -465,20 +465,20 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
     }
 
     /**
-     * Parse a site filter element.
+     * Parse a area filter element.
      * 
      * @param element
      * @param context
      * @return
      */
-    protected AbstractBeanDefinition parseSiteFilter(Element element, ParserContext context) {
-	BeanDefinitionBuilder filter = BeanDefinitionBuilder.rootBeanDefinition(SiteFilter.class);
+    protected AbstractBeanDefinition parseAreaFilter(Element element, ParserContext context) {
+	BeanDefinitionBuilder filter = BeanDefinitionBuilder.rootBeanDefinition(AreaFilter.class);
 
-	Attr site = element.getAttributeNode("site");
-	if (site == null) {
-	    throw new RuntimeException("Attribute 'site' is required for site-filter.");
+	Attr area = element.getAttributeNode("area");
+	if (area == null) {
+	    throw new RuntimeException("Attribute 'area' is required for area-filter.");
 	}
-	filter.addPropertyValue("siteToken", site.getValue());
+	filter.addPropertyValue("areaToken", area.getValue());
 
 	Attr operation = element.getAttributeNode("operation");
 	if (operation != null) {

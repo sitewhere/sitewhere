@@ -170,13 +170,6 @@ public class HBaseDevice {
 			}
 		    }
 
-		    // Filter by site.
-		    if (criteria.getSiteToken() != null) {
-			if (!criteria.getSiteToken().equals(device.getSiteId())) {
-			    continue;
-			}
-		    }
-
 		    pager.process(device);
 		}
 	    }
@@ -212,7 +205,6 @@ public class HBaseDevice {
 	    devices = getDeviceTableInterface(context);
 	    Put put = new Put(primary);
 	    HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
-	    put.addColumn(ISiteWhereHBase.FAMILY_ID, CURRENT_SITE, Bytes.toBytes(device.getSiteId().toString()));
 	    devices.put(put);
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to put device data.", e);

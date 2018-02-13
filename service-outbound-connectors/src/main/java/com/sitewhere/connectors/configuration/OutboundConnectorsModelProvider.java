@@ -64,7 +64,7 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 
 	// Outbound connector filters.
 	addElement(createFilterCriteriaElement());
-	addElement(createSiteFilterElement());
+	addElement(createAreaFilterElement());
 	addElement(createSpecificationFilterElement());
 	addElement(createGroovyFilterElement());
     }
@@ -319,19 +319,19 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
     }
 
     /**
-     * Create connector site filter.
+     * Create connector area filter.
      * 
      * @return
      */
-    protected ElementNode createSiteFilterElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Site Filter",
-		IOutboundConnectorsParser.Filters.SiteFilter.getLocalName(), "filter",
+    protected ElementNode createAreaFilterElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Area Filter",
+		IOutboundConnectorsParser.Filters.AreaFilter.getLocalName(), "filter",
 		OutboundConnectorsRoleKeys.OutboundFilters, this);
-	builder.description("Allows events from a given site to be included or excluded for an outbound processor.");
-	builder.attribute((new AttributeNode.Builder("Site", "site", AttributeType.SiteReference)
-		.description("Site filter applies to.").makeIndex().build()));
+	builder.description("Allows events from a given area to be included or excluded for an outbound processor.");
+	builder.attribute((new AttributeNode.Builder("Area", "area", AttributeType.AreaReference)
+		.description("Area filter applies to.").makeIndex().build()));
 	builder.attribute((new AttributeNode.Builder("Include/Exclude", "operation", AttributeType.String)
-		.description("Indicates whether events from the site should be included or excluded from processing.")
+		.description("Indicates whether events from the area should be included or excluded from processing.")
 		.choice("Include", "include").choice("Exclude", "exclude").defaultValue("include").build()));
 	return builder.build();
     }

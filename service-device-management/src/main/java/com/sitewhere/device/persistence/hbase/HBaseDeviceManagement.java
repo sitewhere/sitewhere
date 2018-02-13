@@ -22,10 +22,16 @@ import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.SiteWhereTables;
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
-import com.sitewhere.rest.model.device.Site;
+import com.sitewhere.rest.model.area.Area;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.area.IArea;
+import com.sitewhere.spi.area.IAreaType;
+import com.sitewhere.spi.area.IZone;
+import com.sitewhere.spi.area.request.IAreaCreateRequest;
+import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
+import com.sitewhere.spi.area.request.IZoneCreateRequest;
 import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
@@ -34,8 +40,6 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.device.ISite;
-import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
@@ -47,8 +51,6 @@ import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
-import com.sitewhere.spi.device.request.ISiteCreateRequest;
-import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
@@ -498,14 +500,14 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForSite(java.
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForArea(java.
      * util.UUID, com.sitewhere.spi.search.device.IAssignmentSearchCriteria)
      */
     @Override
-    public SearchResults<IDeviceAssignment> getDeviceAssignmentsForSite(UUID siteId, IAssignmentSearchCriteria criteria)
+    public SearchResults<IDeviceAssignment> getDeviceAssignmentsForArea(UUID areaId, IAssignmentSearchCriteria criteria)
 	    throws SiteWhereException {
-	ISite site = getSite(siteId);
-	return HBaseSite.listDeviceAssignmentsForSite(context, site, criteria);
+	IArea area = getArea(areaId);
+	return HBaseArea.listDeviceAssignmentsForArea(context, area, criteria);
     }
 
     /*
@@ -517,7 +519,7 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
     @Override
     public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(IAssetReference assetReference,
 	    IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException {
-	return HBaseSite.listDeviceAssignmentsForAsset(context, assetReference, criteria);
+	return HBaseArea.listDeviceAssignmentsForAsset(context, assetReference, criteria);
     }
 
     /*
@@ -556,64 +558,117 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceManagement#createSite(com.sitewhere.spi.
-     * device. request.ISiteCreateRequest)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createAreaType(com.sitewhere.spi.
+     * area.request.IAreaTypeCreateRequest)
      */
     @Override
-    public ISite createSite(ISiteCreateRequest request) throws SiteWhereException {
-	return HBaseSite.createSite(context, request);
+    public IAreaType createAreaType(IAreaTypeCreateRequest request) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase device managment.");
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#deleteSite(java.util.UUID,
+     * @see com.sitewhere.spi.device.IDeviceManagement#getAreaType(java.util.UUID)
+     */
+    @Override
+    public IAreaType getAreaType(UUID id) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase device managment.");
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getAreaTypeByToken(java.lang.
+     * String)
+     */
+    @Override
+    public IAreaType getAreaTypeByToken(String token) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase device managment.");
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#updateAreaType(java.util.UUID,
+     * com.sitewhere.spi.area.request.IAreaTypeCreateRequest)
+     */
+    @Override
+    public IAreaType updateAreaType(UUID id, IAreaTypeCreateRequest request) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase device managment.");
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listAreaTypes(com.sitewhere.spi.
+     * search.ISearchCriteria)
+     */
+    @Override
+    public ISearchResults<IAreaType> listAreaTypes(ISearchCriteria criteria) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase device managment.");
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#deleteAreaType(java.util.UUID,
      * boolean)
      */
     @Override
-    public ISite deleteSite(UUID id, boolean force) throws SiteWhereException {
-	ISite site = getSite(id);
-	return HBaseSite.deleteSite(context, (Site) site, force);
+    public IAreaType deleteAreaType(UUID id, boolean force) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase device managment.");
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#updateSite(java.util.UUID,
-     * com.sitewhere.spi.device.request.ISiteCreateRequest)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createArea(com.sitewhere.spi.area.
+     * request.IAreaCreateRequest)
      */
     @Override
-    public ISite updateSite(UUID id, ISiteCreateRequest request) throws SiteWhereException {
-	ISite site = getSite(id);
-	return HBaseSite.updateSite(context, (Site) site, request);
+    public IArea createArea(IAreaCreateRequest request) throws SiteWhereException {
+	return HBaseArea.createArea(context, request);
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#getSite(java.util.UUID)
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteArea(java.util.UUID,
+     * boolean)
      */
     @Override
-    public ISite getSite(UUID id) throws SiteWhereException {
+    public IArea deleteArea(UUID id, boolean force) throws SiteWhereException {
+	IArea area = getArea(id);
+	return HBaseArea.deleteArea(context, (Area) area, force);
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#updateArea(java.util.UUID,
+     * com.sitewhere.spi.area.request.IAreaCreateRequest)
+     */
+    @Override
+    public IArea updateArea(UUID id, IAreaCreateRequest request) throws SiteWhereException {
+	IArea area = getArea(id);
+	return HBaseArea.updateArea(context, (Area) area, request);
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getArea(java.util.UUID)
+     */
+    @Override
+    public IArea getArea(UUID id) throws SiteWhereException {
 	return null;
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceManagement#getSiteByToken(java.lang.
-     * String)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getAreaByToken(java.lang.String)
      */
     @Override
-    public ISite getSiteByToken(String token) throws SiteWhereException {
-	return HBaseSite.getSiteByToken(context, token);
+    public IArea getAreaByToken(String token) throws SiteWhereException {
+	return HBaseArea.getAreaByToken(context, token);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceManagement#listSites(com.sitewhere.spi.
-     * common. ISearchCriteria)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listAreas(com.sitewhere.spi.search
+     * .ISearchCriteria)
      */
     @Override
-    public SearchResults<ISite> listSites(ISearchCriteria criteria) throws SiteWhereException {
-	return HBaseSite.listSites(context, criteria);
+    public SearchResults<IArea> listAreas(ISearchCriteria criteria) throws SiteWhereException {
+	return HBaseArea.listAreas(context, criteria);
     }
 
     /*
@@ -621,9 +676,9 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
      * com.sitewhere.spi.device.request.IZoneCreateRequest)
      */
     @Override
-    public IZone createZone(UUID siteId, IZoneCreateRequest request) throws SiteWhereException {
-	ISite site = getSite(siteId);
-	return HBaseZone.createZone(context, site, request);
+    public IZone createZone(UUID areaId, IZoneCreateRequest request) throws SiteWhereException {
+	IArea area = getArea(areaId);
+	return HBaseZone.createZone(context, area, request);
     }
 
     /*
@@ -658,9 +713,9 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
      * com.sitewhere.spi.search.ISearchCriteria)
      */
     @Override
-    public SearchResults<IZone> listZones(UUID siteId, ISearchCriteria criteria) throws SiteWhereException {
-	ISite site = getSite(siteId);
-	return HBaseSite.listZonesForSite(context, site, criteria);
+    public SearchResults<IZone> listZones(UUID areaId, ISearchCriteria criteria) throws SiteWhereException {
+	IArea area = getArea(areaId);
+	return HBaseArea.listZonesForArea(context, area, criteria);
     }
 
     /*

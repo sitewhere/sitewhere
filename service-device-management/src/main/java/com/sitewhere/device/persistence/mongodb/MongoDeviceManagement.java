@@ -28,12 +28,12 @@ import com.sitewhere.device.persistence.DeviceManagementPersistence;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
+import com.sitewhere.rest.model.area.Area;
+import com.sitewhere.rest.model.area.Zone;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceStatus;
 import com.sitewhere.rest.model.device.DeviceType;
-import com.sitewhere.rest.model.device.Site;
-import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
@@ -42,6 +42,12 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.area.IArea;
+import com.sitewhere.spi.area.IAreaType;
+import com.sitewhere.spi.area.IZone;
+import com.sitewhere.spi.area.request.IAreaCreateRequest;
+import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
+import com.sitewhere.spi.area.request.IZoneCreateRequest;
 import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
@@ -50,8 +56,6 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.device.ISite;
-import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
@@ -63,8 +67,6 @@ import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
-import com.sitewhere.spi.device.request.ISiteCreateRequest;
-import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
@@ -129,10 +131,10 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      * @throws SiteWhereException
      */
     protected void ensureIndexes() throws SiteWhereException {
-	// Site indexes.
-	getMongoClient().getSitesCollection().createIndex(new Document(MongoSite.PROP_ID, 1),
+	// Area indexes.
+	getMongoClient().getAreasCollection().createIndex(new Document(MongoArea.PROP_ID, 1),
 		new IndexOptions().unique(true));
-	getMongoClient().getSitesCollection().createIndex(new Document(MongoSite.PROP_TOKEN, 1),
+	getMongoClient().getAreasCollection().createIndex(new Document(MongoArea.PROP_TOKEN, 1),
 		new IndexOptions().unique(true));
 
 	// Specification-related indexes.
@@ -156,7 +158,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	getMongoClient().getDeviceAssignmentsCollection().createIndex(new Document(MongoDeviceAssignment.PROP_TOKEN, 1),
 		new IndexOptions().unique(true));
 	getMongoClient().getDeviceAssignmentsCollection()
-		.createIndex(new Document(MongoDeviceAssignment.PROP_SITE_ID, 1)
+		.createIndex(new Document(MongoDeviceAssignment.PROP_AREA_ID, 1)
 			.append(MongoDeviceAssignment.PROP_ASSET_REFERENCE, 1)
 			.append(MongoDeviceAssignment.PROP_STATUS, 1));
 
@@ -621,15 +623,11 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     @Override
     public IDevice createDevice(IDeviceCreateRequest request) throws SiteWhereException {
-	ISite site = getSiteByToken(request.getSiteToken());
-	if (site == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
-	}
 	IDeviceType deviceType = getDeviceTypeByToken(request.getDeviceTypeToken());
 	if (deviceType == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceTypeToken, ErrorLevel.ERROR);
 	}
-	Device newDevice = DeviceManagementPersistence.deviceCreateLogic(request, site, deviceType);
+	Device newDevice = DeviceManagementPersistence.deviceCreateLogic(request, deviceType);
 
 	// Convert and save device data.
 	MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
@@ -648,14 +646,6 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	Document existing = assertDevice(id);
 	Device updatedDevice = MongoDevice.fromDocument(existing);
 
-	ISite site = null;
-	if (request.getSiteToken() != null) {
-	    site = getSiteByToken(request.getSiteToken());
-	    if (site == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
-	    }
-	}
-
 	IDeviceType deviceType = null;
 	if (request.getDeviceTypeToken() != null) {
 	    deviceType = getDeviceTypeByToken(request.getDeviceTypeToken());
@@ -672,7 +662,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    }
 	}
 
-	DeviceManagementPersistence.deviceUpdateLogic(request, site, deviceType, parent, updatedDevice);
+	DeviceManagementPersistence.deviceUpdateLogic(request, deviceType, parent, updatedDevice);
 	Document updated = MongoDevice.toDocument(updatedDevice);
 
 	MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
@@ -746,12 +736,6 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	if (!StringUtils.isEmpty(criteria.getDeviceTypeToken())) {
 	    IDeviceType deviceType = getDeviceTypeByToken(criteria.getDeviceTypeToken());
 	    dbCriteria.put(MongoDevice.PROP_DEVICE_TYPE_ID, deviceType.getId());
-	}
-
-	// Add site filter if specified.
-	if (!StringUtils.isEmpty(criteria.getSiteToken())) {
-	    ISite site = getSiteByToken(criteria.getSiteToken());
-	    dbCriteria.put(MongoDevice.PROP_SITE_ID, site.getId());
 	}
 
 	Document sort = new Document(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
@@ -855,14 +839,25 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     @Override
     public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request) throws SiteWhereException {
+	// Verify device is not already assigned.
 	IDevice existing = getDeviceByHardwareId(request.getDeviceHardwareId());
 	if (existing.getDeviceAssignmentId() != null) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceAlreadyAssigned, ErrorLevel.ERROR);
 	}
 	Document deviceDb = assertDevice(existing.getId());
 
+	// Look up area if specified.
+	IArea area = null;
+	if (request.getAreaToken() != null) {
+	    area = getAreaByToken(request.getAreaToken());
+	    if (area == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
+	    }
+	}
+
 	// Use common logic to load assignment from request.
-	DeviceAssignment newAssignment = DeviceManagementPersistence.deviceAssignmentCreateLogic(request, existing);
+	DeviceAssignment newAssignment = DeviceManagementPersistence.deviceAssignmentCreateLogic(request, area,
+		existing);
 	if (newAssignment.getToken() == null) {
 	    newAssignment.setToken(UUID.randomUUID().toString());
 	}
@@ -1010,14 +1005,14 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForSite(java.
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForArea(java.
      * util.UUID, com.sitewhere.spi.search.device.IAssignmentSearchCriteria)
      */
     @Override
-    public SearchResults<IDeviceAssignment> getDeviceAssignmentsForSite(UUID siteId, IAssignmentSearchCriteria criteria)
+    public SearchResults<IDeviceAssignment> getDeviceAssignmentsForArea(UUID areaId, IAssignmentSearchCriteria criteria)
 	    throws SiteWhereException {
 	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
-	Document query = new Document(MongoDeviceAssignment.PROP_SITE_ID, siteId);
+	Document query = new Document(MongoDeviceAssignment.PROP_AREA_ID, areaId);
 	if (criteria.getStatus() != null) {
 	    query.append(MongoDeviceAssignment.PROP_STATUS, criteria.getStatus().name());
 	}
@@ -1036,9 +1031,9 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
 	Document query = new Document(MongoDeviceAssignment.PROP_ASSET_REFERENCE, assetReference);
-	if (criteria.getSiteToken() != null) {
-	    ISite site = getSiteByToken(criteria.getSiteToken());
-	    query.append(MongoDeviceAssignment.PROP_SITE_ID, site.getId());
+	if (criteria.getAreaToken() != null) {
+	    IArea area = getAreaByToken(criteria.getAreaToken());
+	    query.append(MongoDeviceAssignment.PROP_AREA_ID, area.getId());
 	}
 	if (criteria.getStatus() != null) {
 	    query.append(MongoDeviceAssignment.PROP_STATUS, criteria.getStatus().name());
@@ -1120,154 +1115,213 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceManagement#createSite(com.sitewhere.spi.
-     * device. request.ISiteCreateRequest )
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createAreaType(com.sitewhere.spi.
+     * area.request.IAreaTypeCreateRequest)
      */
     @Override
-    public ISite createSite(ISiteCreateRequest request) throws SiteWhereException {
-	// Use common logic so all backend implementations work the same.
-	Site site = DeviceManagementPersistence.siteCreateLogic(request);
-
-	MongoCollection<Document> sites = getMongoClient().getSitesCollection();
-	Document created = MongoSite.toDocument(site);
-	MongoPersistence.insert(sites, created, ErrorCode.DeuplicateSiteToken);
-	return MongoSite.fromDocument(created);
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#updateSite(java.util.UUID,
-     * com.sitewhere.spi.device.request.ISiteCreateRequest)
-     */
-    @Override
-    public ISite updateSite(UUID id, ISiteCreateRequest request) throws SiteWhereException {
-	ISite site = getApiSiteById(id);
-
-	// Use common update logic.
-	DeviceManagementPersistence.siteUpdateLogic(request, (Site) site);
-
-	Document updated = MongoSite.toDocument(site);
-
-	MongoCollection<Document> sites = getMongoClient().getSitesCollection();
-	Document query = new Document(MongoSite.PROP_ID, id);
-	MongoPersistence.update(sites, query, updated);
-	return MongoSite.fromDocument(updated);
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#getSite(java.util.UUID)
-     */
-    @Override
-    public ISite getSite(UUID id) throws SiteWhereException {
-	Document dbSite = getSiteDocumentById(id);
-	if (dbSite != null) {
-	    return MongoSite.fromDocument(dbSite);
-	}
+    public IAreaType createAreaType(IAreaTypeCreateRequest request) throws SiteWhereException {
+	// TODO Auto-generated method stub
 	return null;
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceManagement#getSiteByToken(java.lang.
-     * String )
+     * @see com.sitewhere.spi.device.IDeviceManagement#getAreaType(java.util.UUID)
      */
     @Override
-    public ISite getSiteByToken(String token) throws SiteWhereException {
-	Document dbSite = getSiteDocumentByToken(token);
-	if (dbSite != null) {
-	    return MongoSite.fromDocument(dbSite);
-	}
+    public IAreaType getAreaType(UUID id) throws SiteWhereException {
+	// TODO Auto-generated method stub
 	return null;
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#deleteSite(java.util.UUID,
+     * @see com.sitewhere.spi.device.IDeviceManagement#getAreaTypeByToken(java.lang.
+     * String)
+     */
+    @Override
+    public IAreaType getAreaTypeByToken(String token) throws SiteWhereException {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#updateAreaType(java.util.UUID,
+     * com.sitewhere.spi.area.request.IAreaTypeCreateRequest)
+     */
+    @Override
+    public IAreaType updateAreaType(UUID id, IAreaTypeCreateRequest request) throws SiteWhereException {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listAreaTypes(com.sitewhere.spi.
+     * search.ISearchCriteria)
+     */
+    @Override
+    public ISearchResults<IAreaType> listAreaTypes(ISearchCriteria criteria) throws SiteWhereException {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#deleteAreaType(java.util.UUID,
      * boolean)
      */
     @Override
-    public ISite deleteSite(UUID id, boolean force) throws SiteWhereException {
-	Document existing = getSiteDocumentById(id);
+    public IAreaType deleteAreaType(UUID id, boolean force) throws SiteWhereException {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createArea(com.sitewhere.spi.area.
+     * request.IAreaCreateRequest)
+     */
+    @Override
+    public IArea createArea(IAreaCreateRequest request) throws SiteWhereException {
+	// Use common logic so all backend implementations work the same.
+	Area area = DeviceManagementPersistence.areaCreateLogic(request);
+
+	MongoCollection<Document> sites = getMongoClient().getAreasCollection();
+	Document created = MongoArea.toDocument(area);
+	MongoPersistence.insert(sites, created, ErrorCode.DuplicateAreaToken);
+	return MongoArea.fromDocument(created);
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#updateArea(java.util.UUID,
+     * com.sitewhere.spi.area.request.IAreaCreateRequest)
+     */
+    @Override
+    public IArea updateArea(UUID id, IAreaCreateRequest request) throws SiteWhereException {
+	IArea area = getApiAreaById(id);
+
+	// Use common update logic.
+	DeviceManagementPersistence.areaUpdateLogic(request, (Area) area);
+
+	Document updated = MongoArea.toDocument(area);
+
+	MongoCollection<Document> areas = getMongoClient().getAreasCollection();
+	Document query = new Document(MongoArea.PROP_ID, id);
+	MongoPersistence.update(areas, query, updated);
+	return MongoArea.fromDocument(updated);
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getArea(java.util.UUID)
+     */
+    @Override
+    public IArea getArea(UUID id) throws SiteWhereException {
+	Document dbSite = getAreaDocumentById(id);
+	if (dbSite != null) {
+	    return MongoArea.fromDocument(dbSite);
+	}
+	return null;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getAreaByToken(java.lang.String)
+     */
+    @Override
+    public IArea getAreaByToken(String token) throws SiteWhereException {
+	Document dbArea = getAreaDocumentByToken(token);
+	if (dbArea != null) {
+	    return MongoArea.fromDocument(dbArea);
+	}
+	return null;
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteArea(java.util.UUID,
+     * boolean)
+     */
+    @Override
+    public IArea deleteArea(UUID id, boolean force) throws SiteWhereException {
+	Document existing = getAreaDocumentById(id);
 	if (existing == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
 	}
 	if (force) {
-	    MongoCollection<Document> sites = getMongoClient().getSitesCollection();
-	    MongoPersistence.delete(sites, existing);
-	    return MongoSite.fromDocument(existing);
+	    MongoCollection<Document> areas = getMongoClient().getAreasCollection();
+	    MongoPersistence.delete(areas, existing);
+	    return MongoArea.fromDocument(existing);
 	} else {
 	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    Document query = new Document(MongoSite.PROP_ID, id);
-	    MongoCollection<Document> sites = getMongoClient().getSitesCollection();
-	    MongoPersistence.update(sites, query, existing);
-	    return MongoSite.fromDocument(existing);
+	    Document query = new Document(MongoArea.PROP_ID, id);
+	    MongoCollection<Document> areas = getMongoClient().getAreasCollection();
+	    MongoPersistence.update(areas, query, existing);
+	    return MongoArea.fromDocument(existing);
 	}
     }
 
     /**
-     * Get the DBObject containing site information that matches the given token.
+     * Get the DBObject containing area information that matches the given token.
      * 
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    protected Document getSiteDocumentByToken(String token) throws SiteWhereException {
-	MongoCollection<Document> sites = getMongoClient().getSitesCollection();
-	Document query = new Document(MongoSite.PROP_TOKEN, token);
+    protected Document getAreaDocumentByToken(String token) throws SiteWhereException {
+	MongoCollection<Document> sites = getMongoClient().getAreasCollection();
+	Document query = new Document(MongoArea.PROP_TOKEN, token);
 	return sites.find(query).first();
     }
 
     /**
-     * Get the DBObject containing site information that matches the given id.
+     * Get the DBObject containing area information that matches the given id.
      * 
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    protected Document getSiteDocumentById(UUID id) throws SiteWhereException {
-	MongoCollection<Document> sites = getMongoClient().getSitesCollection();
-	Document query = new Document(MongoSite.PROP_ID, id);
-	return sites.find(query).first();
+    protected Document getAreaDocumentById(UUID id) throws SiteWhereException {
+	MongoCollection<Document> areas = getMongoClient().getAreasCollection();
+	Document query = new Document(MongoArea.PROP_ID, id);
+	return areas.find(query).first();
     }
 
     /**
-     * Get API site based on unique id.
+     * Get API area based on unique id.
      * 
      * @param id
      * @return
      * @throws SiteWhereException
      */
-    protected ISite getApiSiteById(UUID id) throws SiteWhereException {
-	Document match = getSiteDocumentById(id);
+    protected IArea getApiAreaById(UUID id) throws SiteWhereException {
+	Document match = getAreaDocumentById(id);
 	if (match == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
 	}
-	return MongoSite.fromDocument(match);
+	return MongoArea.fromDocument(match);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceManagement#listSites(com.sitewhere.spi.
-     * common. ISearchCriteria)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listAreas(com.sitewhere.spi.search
+     * .ISearchCriteria)
      */
     @Override
-    public SearchResults<ISite> listSites(ISearchCriteria criteria) throws SiteWhereException {
-	MongoCollection<Document> sites = getMongoClient().getSitesCollection();
+    public SearchResults<IArea> listAreas(ISearchCriteria criteria) throws SiteWhereException {
+	MongoCollection<Document> areas = getMongoClient().getAreasCollection();
 	Document query = new Document();
-	Document sort = new Document(MongoSite.PROP_NAME, 1);
-	return MongoPersistence.search(ISite.class, sites, query, sort, criteria, LOOKUP);
+	Document sort = new Document(MongoArea.PROP_NAME, 1);
+	return MongoPersistence.search(IArea.class, areas, query, sort, criteria, LOOKUP);
     }
 
     /*
      * @see com.sitewhere.spi.device.IDeviceManagement#createZone(java.util.UUID,
-     * com.sitewhere.spi.device.request.IZoneCreateRequest)
+     * com.sitewhere.spi.area.request.IZoneCreateRequest)
      */
     @Override
-    public IZone createZone(UUID siteId, IZoneCreateRequest request) throws SiteWhereException {
-	ISite site = assertApiSite(siteId);
-	Zone zone = DeviceManagementPersistence.zoneCreateLogic(request, site, UUID.randomUUID().toString());
+    public IZone createZone(UUID areaId, IZoneCreateRequest request) throws SiteWhereException {
+	IArea area = assertApiArea(areaId);
+	Zone zone = DeviceManagementPersistence.zoneCreateLogic(request, area, UUID.randomUUID().toString());
 
 	MongoCollection<Document> zones = getMongoClient().getZonesCollection();
 	Document created = MongoZone.toDocument(zone);
@@ -1289,7 +1343,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 
 	Document updated = MongoZone.toDocument(zone);
 
-	Document query = new Document(MongoSite.PROP_ID, id);
+	Document query = new Document(MongoZone.PROP_ID, id);
 	MongoPersistence.update(zones, query, updated);
 	return MongoZone.fromDocument(updated);
     }
@@ -1324,9 +1378,9 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      * com.sitewhere.spi.search.ISearchCriteria)
      */
     @Override
-    public SearchResults<IZone> listZones(UUID siteId, ISearchCriteria criteria) throws SiteWhereException {
+    public SearchResults<IZone> listZones(UUID areaId, ISearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> zones = getMongoClient().getZonesCollection();
-	Document query = new Document(MongoZone.PROP_SITE_ID, siteId);
+	Document query = new Document(MongoZone.PROP_AREA_ID, areaId);
 	Document sort = new Document(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
 	return MongoPersistence.search(IZone.class, zones, query, sort, criteria, LOOKUP);
     }
@@ -1573,34 +1627,34 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /**
-     * Return the {@link Document} for the site with the given token. Throws an
+     * Return the {@link Document} for the area with the given token. Throws an
      * exception if the token is not found.
      * 
      * @param hardwareId
      * @return
      * @throws SiteWhereException
      */
-    protected Document assertSite(String token) throws SiteWhereException {
-	Document match = getSiteDocumentByToken(token);
+    protected Document assertArea(String token) throws SiteWhereException {
+	Document match = getAreaDocumentByToken(token);
 	if (match == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.INFO);
+	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.INFO);
 	}
 	return match;
     }
 
     /**
-     * Return the API site if found. Throw an exception if not.
+     * Return the API area if found. Throw an exception if not.
      * 
      * @param id
      * @return
      * @throws SiteWhereException
      */
-    protected ISite assertApiSite(UUID id) throws SiteWhereException {
-	Document match = getSiteDocumentById(id);
+    protected IArea assertApiArea(UUID id) throws SiteWhereException {
+	Document match = getAreaDocumentById(id);
 	if (match == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.INFO);
+	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.INFO);
 	}
-	return MongoSite.fromDocument(match);
+	return MongoArea.fromDocument(match);
     }
 
     /**

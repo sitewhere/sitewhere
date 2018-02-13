@@ -15,9 +15,10 @@ import "google/protobuf/timestamp.proto";
 // Base fields for creating a device event.
 message GDeviceEventCreateRequest {
 	GOptionalString alternateId = 1;
-	google.protobuf.Timestamp eventDate = 2;
-	GOptionalBoolean updateState = 3;
-	map<string, string> metadata = 4;
+	GOptionalString areaToken = 2;
+	google.protobuf.Timestamp eventDate = 3;
+	GOptionalBoolean updateState = 4;
+	map<string, string> metadata = 5;
 }
 
 // Request data for creating device measurements.
@@ -125,7 +126,7 @@ message GDeviceEvent {
 	string id = 1;
 	GOptionalString alternateId = 2;
 	GDeviceEventType eventType = 3;
-	GUUID siteId = 4;
+	GUUID areaId = 4;
 	GUUID deviceAssignmentId = 5;
 	GDeviceAssignmentType assignmentType = 6;
 	GAssetReference assetReference = 7;

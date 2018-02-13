@@ -14,19 +14,25 @@ import org.bson.Document;
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
-import com.sitewhere.rest.model.device.Site;
-import com.sitewhere.rest.model.device.SiteMapData;
-import com.sitewhere.spi.device.ISite;
+import com.sitewhere.rest.model.area.Area;
+import com.sitewhere.rest.model.area.AreaMapData;
+import com.sitewhere.spi.area.IArea;
 
 /**
- * Used to load or save site data to MongoDB.
+ * Used to load or save area data to MongoDB.
  * 
  * @author dadams
  */
-public class MongoSite implements MongoConverter<ISite> {
+public class MongoArea implements MongoConverter<IArea> {
 
     /** Property for id */
     public static final String PROP_ID = "id";
+
+    /** Property for area type id */
+    public static final String PROP_AREA_TYPE_ID = "ti";
+
+    /** Property for parent area id */
+    public static final String PROP_PARENT_AREA_ID = "pi";
 
     /** Property for name */
     public static final String PROP_NAME = "nm";
@@ -55,8 +61,8 @@ public class MongoSite implements MongoConverter<ISite> {
      * @see com.sitewhere.dao.mongodb.MongoConverter#convert(java.lang.Object)
      */
     @Override
-    public Document convert(ISite source) {
-	return MongoSite.toDocument(source);
+    public Document convert(IArea source) {
+	return MongoArea.toDocument(source);
     }
 
     /*
@@ -65,8 +71,8 @@ public class MongoSite implements MongoConverter<ISite> {
      * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
     @Override
-    public ISite convert(Document source) {
-	return MongoSite.fromDocument(source);
+    public IArea convert(Document source) {
+	return MongoArea.fromDocument(source);
     }
 
     /**
@@ -75,8 +81,10 @@ public class MongoSite implements MongoConverter<ISite> {
      * @param source
      * @param target
      */
-    public static void toDocument(ISite source, Document target) {
+    public static void toDocument(IArea source, Document target) {
 	target.append(PROP_ID, source.getId());
+	target.append(PROP_AREA_TYPE_ID, source.getAreaTypeId());
+	target.append(PROP_PARENT_AREA_ID, source.getParentAreaId());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_DESCRIPTION, source.getDescription());
 	target.append(PROP_IMAGE_URL, source.getImageUrl());
@@ -97,8 +105,10 @@ public class MongoSite implements MongoConverter<ISite> {
      * @param source
      * @param target
      */
-    public static void fromDocument(Document source, Site target) {
+    public static void fromDocument(Document source, Area target) {
 	UUID id = (UUID) source.get(PROP_ID);
+	UUID areaTypeId = (UUID) source.get(PROP_AREA_TYPE_ID);
+	UUID parentAreaId = (UUID) source.get(PROP_PARENT_AREA_ID);
 	String name = (String) source.get(PROP_NAME);
 	String description = (String) source.get(PROP_DESCRIPTION);
 	String imageUrl = (String) source.get(PROP_IMAGE_URL);
@@ -106,7 +116,7 @@ public class MongoSite implements MongoConverter<ISite> {
 
 	Document mdo = (Document) source.get(PROP_MAP_DATA);
 	if (mdo != null) {
-	    SiteMapData mapData = new SiteMapData();
+	    AreaMapData mapData = new AreaMapData();
 	    MongoMetadataProvider.fromDocument(PROP_MAP_METADATA, mdo, mapData);
 	    String type = (String) mdo.get(PROP_MAP_TYPE);
 	    mapData.setType(type);
@@ -114,6 +124,8 @@ public class MongoSite implements MongoConverter<ISite> {
 	}
 
 	target.setId(id);
+	target.setAreaTypeId(areaTypeId);
+	target.setParentAreaId(parentAreaId);
 	target.setName(name);
 	target.setDescription(description);
 	target.setImageUrl(imageUrl);
@@ -129,9 +141,9 @@ public class MongoSite implements MongoConverter<ISite> {
      * @param source
      * @return
      */
-    public static Document toDocument(ISite source) {
+    public static Document toDocument(IArea source) {
 	Document result = new Document();
-	MongoSite.toDocument(source, result);
+	MongoArea.toDocument(source, result);
 	return result;
     }
 
@@ -141,9 +153,9 @@ public class MongoSite implements MongoConverter<ISite> {
      * @param source
      * @return
      */
-    public static Site fromDocument(Document source) {
-	Site result = new Site();
-	MongoSite.fromDocument(source, result);
+    public static Area fromDocument(Document source) {
+	Area result = new Area();
+	MongoArea.fromDocument(source, result);
 	return result;
     }
 }

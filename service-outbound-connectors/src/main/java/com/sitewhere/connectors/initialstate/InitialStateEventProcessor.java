@@ -38,8 +38,8 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
- * Implmentation of {@link IOutboundConnector} that sends events to the
- * cloud provider at InitialState.com.
+ * Implmentation of {@link IOutboundConnector} that sends events to the cloud
+ * provider at InitialState.com.
  * 
  * @author Derek
  */
@@ -162,7 +162,6 @@ public class InitialStateEventProcessor extends FilteredOutboundConnector {
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(false);
 	helper.setIncludeDevice(true);
-	helper.setIncludeSite(false);
 	MarshaledDeviceAssignment converted = helper.convert(assignment, null);
 
 	createBucket(converted.getToken(),

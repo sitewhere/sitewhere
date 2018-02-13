@@ -14,10 +14,10 @@ import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.symbology.IEntityUriProvider;
 import com.sitewhere.spi.device.symbology.ISymbolGenerator;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
@@ -59,15 +59,13 @@ public class QrCodeSymbolGenerator extends TenantEngineLifecycleComponent implem
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.symbology.ISymbolGenerator#getSiteSymbol(com.
-     * sitewhere .spi.device.ISite,
+     * @see com.sitewhere.spi.device.symbology.ISymbolGenerator#getAreaSymbol(com.
+     * sitewhere.spi.area.IArea,
      * com.sitewhere.spi.device.symbology.IEntityUriProvider)
      */
     @Override
-    public byte[] getSiteSymbol(ISite site, IEntityUriProvider provider) throws SiteWhereException {
-	URI uri = provider.getSiteIdentifier(site);
+    public byte[] getAreaSymbol(IArea area, IEntityUriProvider provider) throws SiteWhereException {
+	URI uri = provider.getAreaIdentifier(area);
 	return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())
 		.withColor(getForegroundColor(), getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
     }

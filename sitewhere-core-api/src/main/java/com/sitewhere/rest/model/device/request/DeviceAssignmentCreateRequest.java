@@ -35,6 +35,9 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
     /** Device hardware id */
     private String deviceHardwareId;
 
+    /** Area token */
+    private String areaToken;
+
     /** Type of assignment */
     private DeviceAssignmentType assignmentType;
 
@@ -72,6 +75,20 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
 
     public void setDeviceHardwareId(String deviceHardwareId) {
 	this.deviceHardwareId = deviceHardwareId;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#getAreaToken(
+     * )
+     */
+    @Override
+    public String getAreaToken() {
+	return areaToken;
+    }
+
+    public void setAreaToken(String areaToken) {
+	this.areaToken = areaToken;
     }
 
     /*

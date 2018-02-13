@@ -43,8 +43,8 @@ public abstract class DeviceEvent extends MetadataProvider
     /** Event type indicator */
     private DeviceEventType eventType;
 
-    /** Site id */
-    private UUID siteId;
+    /** Area id */
+    private UUID areaId;
 
     /** Device assignment id */
     private UUID deviceAssignmentId;
@@ -108,15 +108,15 @@ public abstract class DeviceEvent extends MetadataProvider
     }
 
     /*
-     * @see com.sitewhere.spi.device.event.IDeviceEvent#getSiteId()
+     * @see com.sitewhere.spi.device.event.IDeviceEvent#getAreaId()
      */
     @Override
-    public UUID getSiteId() {
-	return siteId;
+    public UUID getAreaId() {
+	return areaId;
     }
 
-    public void setSiteId(UUID siteId) {
-	this.siteId = siteId;
+    public void setAreaId(UUID areaId) {
+	this.areaId = areaId;
     }
 
     /*
@@ -209,7 +209,7 @@ public abstract class DeviceEvent extends MetadataProvider
     public static void copy(IDeviceEvent source, DeviceEvent target) throws SiteWhereException {
 	target.setId(source.getId());
 	target.setAlternateId(source.getAlternateId());
-	target.setSiteId(source.getSiteId());
+	target.setAreaId(source.getAreaId());
 	target.setDeviceAssignmentId(source.getDeviceAssignmentId());
 	target.setAssignmentType(source.getAssignmentType());
 	target.setAssetReference(source.getAssetReference());

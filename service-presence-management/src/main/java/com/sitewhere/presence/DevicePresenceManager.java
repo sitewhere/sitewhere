@@ -23,8 +23,8 @@ import com.sitewhere.presence.spi.IPresenceNotificationStrategy;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.tenant.ITenant;
@@ -144,9 +144,9 @@ public class DevicePresenceManager extends TenantEngineLifecycleComponent implem
 
 		try {
 		    // Loop through all sites and detect presence changes.
-		    List<ISite> sites = devices.listSites(SearchCriteria.ALL).getResults();
+		    List<IArea> areas = devices.listAreas(SearchCriteria.ALL).getResults();
 		    for (@SuppressWarnings("unused")
-		    ISite site : sites) {
+		    IArea area : areas) {
 			// // Calculate time window for presence calculation.
 			// Date endDate = new Date(System.currentTimeMillis() -
 			// (missingIntervalSecs * 1000));

@@ -39,11 +39,11 @@ public interface IRegistrationManager extends ITenantEngineLifecycleComponent {
     public UUID getAutoAssignDeviceTypeId();
 
     /**
-     * Get id of site that will be used if no site is provided in request.
+     * Get id of area that will be used if no area is provided in request.
      * 
      * @return
      */
-    public UUID getAutoAssignSiteId();
+    public UUID getAutoAssignAreaId();
 
     /**
      * Handle registration of a new device.

@@ -7,11 +7,11 @@
  */
 package com.sitewhere.rest.model.device.marshaling;
 
+import com.sitewhere.rest.model.area.Area;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.asset.LocationAsset;
 import com.sitewhere.rest.model.asset.PersonAsset;
 import com.sitewhere.rest.model.device.DeviceAssignment;
-import com.sitewhere.rest.model.device.Site;
 
 /**
  * Extends {@link DeviceAssignment} to support fields that can be included on
@@ -36,8 +36,8 @@ public class MarshaledDeviceAssignment extends DeviceAssignment {
     /** Associated location asset */
     private LocationAsset associatedLocation;
 
-    /** Site */
-    private Site site;
+    /** Assigned area */
+    private Area area;
 
     /** Associated asset name */
     private String assetName;
@@ -77,12 +77,12 @@ public class MarshaledDeviceAssignment extends DeviceAssignment {
 	this.associatedLocation = associatedLocation;
     }
 
-    public Site getSite() {
-	return site;
+    public Area getArea() {
+	return area;
     }
 
-    public void setSite(Site site) {
-	this.site = site;
+    public void setArea(Area area) {
+	this.area = area;
     }
 
     public String getAssetName() {

@@ -29,8 +29,8 @@ public interface ISolrFields {
     /** Asset reference */
     public static final String ASSET_REFERENCE = "assetReference";
 
-    /** Unique site identifier */
-    public static final String SITE_TOKEN = "siteToken";
+    /** Unique area identifier */
+    public static final String AREA_ID = "areaId";
 
     /** Event date */
     public static final String EVENT_DATE = "eventDate";

@@ -41,8 +41,11 @@ public class DeviceManagementMongoClient extends MongoDbClient implements IDevic
     /** Injected name used for device assignments collection */
     private String deviceAssignmentsCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICE_ASSIGNMENTS_COLLECTION_NAME;
 
-    /** Injected name used for sites collection */
-    private String sitesCollectionName = IDeviceManagementMongoClient.DEFAULT_SITES_COLLECTION_NAME;
+    /** Injected name used for areas collection */
+    private String areasCollectionName = IDeviceManagementMongoClient.DEFAULT_AREAS_COLLECTION_NAME;
+
+    /** Injected name used for area types collection */
+    private String areaTypesCollectionName = IDeviceManagementMongoClient.DEFAULT_AREA_TYPES_COLLECTION_NAME;
 
     /** Injected name used for zones collection */
     private String zonesCollectionName = IDeviceManagementMongoClient.DEFAULT_ZONES_COLLECTION_NAME;
@@ -110,11 +113,20 @@ public class DeviceManagementMongoClient extends MongoDbClient implements IDevic
 
     /*
      * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
-     * getSitesCollection()
+     * getAreasCollection()
      */
     @Override
-    public MongoCollection<Document> getSitesCollection() throws SiteWhereException {
-	return getDatabase().getCollection(getSitesCollectionName());
+    public MongoCollection<Document> getAreasCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getAreasCollectionName());
+    }
+
+    /*
+     * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
+     * getAreaTypesCollection()
+     */
+    @Override
+    public MongoCollection<Document> getAreaTypesCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getAreaTypesCollectionName());
     }
 
     /*
@@ -227,12 +239,20 @@ public class DeviceManagementMongoClient extends MongoDbClient implements IDevic
 	this.deviceAssignmentsCollectionName = deviceAssignmentsCollectionName;
     }
 
-    public String getSitesCollectionName() {
-	return sitesCollectionName;
+    public String getAreasCollectionName() {
+	return areasCollectionName;
     }
 
-    public void setSitesCollectionName(String sitesCollectionName) {
-	this.sitesCollectionName = sitesCollectionName;
+    public void setAreasCollectionName(String areasCollectionName) {
+	this.areasCollectionName = areasCollectionName;
+    }
+
+    public String getAreaTypesCollectionName() {
+	return areaTypesCollectionName;
+    }
+
+    public void setAreaTypesCollectionName(String areaTypesCollectionName) {
+	this.areaTypesCollectionName = areaTypesCollectionName;
     }
 
     public String getZonesCollectionName() {

@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.rest.model.device;
+package com.sitewhere.rest.model.area;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -17,8 +17,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.common.ILocation;
-import com.sitewhere.spi.device.IZone;
 
 /**
  * Model object for a zone.
@@ -37,8 +37,8 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
     /** Unique zone token */
     private String token;
 
-    /** Id for associated site */
-    private UUID siteId;
+    /** Id for associated area */
+    private UUID areaId;
 
     /** Displayed name */
     private String name;
@@ -56,7 +56,7 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
     private Double opacity;
 
     /*
-     * @see com.sitewhere.spi.device.IZone#getId()
+     * @see com.sitewhere.spi.area.IZone#getId()
      */
     @Override
     public UUID getId() {
@@ -68,9 +68,7 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IZone#getToken()
+     * @see com.sitewhere.spi.area.IZone#getToken()
      */
     @Override
     public String getToken() {
@@ -82,21 +80,19 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
     }
 
     /*
-     * @see com.sitewhere.spi.device.IZone#getSiteId()
+     * @see com.sitewhere.spi.area.IZone#getAreaId()
      */
     @Override
-    public UUID getSiteId() {
-	return siteId;
+    public UUID getAreaId() {
+	return areaId;
     }
 
-    public void setSiteId(UUID siteId) {
-	this.siteId = siteId;
+    public void setAreaId(UUID areaId) {
+	this.areaId = areaId;
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IZone#getName()
+     * @see com.sitewhere.spi.area.IZone#getName()
      */
     @Override
     public String getName() {
@@ -108,9 +104,7 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IZone#getCoordinates()
+     * @see com.sitewhere.spi.area.IZone#getCoordinates()
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -123,9 +117,7 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IZone#getBorderColor()
+     * @see com.sitewhere.spi.area.IZone#getBorderColor()
      */
     @Override
     public String getBorderColor() {
@@ -137,9 +129,7 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IZone#getFillColor()
+     * @see com.sitewhere.spi.area.IZone#getFillColor()
      */
     @Override
     public String getFillColor() {
@@ -151,9 +141,7 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IZone#getOpacity()
+     * @see com.sitewhere.spi.area.IZone#getOpacity()
      */
     @Override
     public Double getOpacity() {
@@ -174,7 +162,7 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
 	Zone result = new Zone();
 	result.setId(input.getId());
 	result.setToken(input.getToken());
-	result.setSiteId(input.getSiteId());
+	result.setAreaId(input.getAreaId());
 	result.setName(input.getName());
 	result.setCreatedDate(input.getCreatedDate());
 	result.setBorderColor(input.getBorderColor());

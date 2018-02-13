@@ -14,14 +14,14 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 
 /**
- * Includes or excludes events for devices associated with a given site.
+ * Includes or excludes events for devices associated with a given area.
  * 
  * @author Derek
  */
-public class SiteFilter extends DeviceEventFilter {
+public class AreaFilter extends DeviceEventFilter {
 
-    /** Site id to allow */
-    private UUID siteId;
+    /** Area id to allow */
+    private UUID areaId;
 
     /** Operation filter performs */
     private FilterOperation operation = FilterOperation.Include;
@@ -34,18 +34,18 @@ public class SiteFilter extends DeviceEventFilter {
      */
     @Override
     public boolean isFiltered(IDeviceEventContext context, IDeviceEvent event) throws SiteWhereException {
-	if (getSiteId().equals(event.getSiteId())) {
+	if (getAreaId().equals(event.getAreaId())) {
 	    return (getOperation() != FilterOperation.Include);
 	}
 	return (getOperation() == FilterOperation.Include);
     }
 
-    public UUID getSiteId() {
-	return siteId;
+    public UUID getAreaId() {
+	return areaId;
     }
 
-    public void setSiteId(UUID siteId) {
-	this.siteId = siteId;
+    public void setAreaId(UUID areaId) {
+	this.areaId = areaId;
     }
 
     public FilterOperation getOperation() {

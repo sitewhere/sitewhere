@@ -27,13 +27,6 @@ public interface IDeviceCreateRequest {
     public String getHardwareId();
 
     /**
-     * Get the site token.
-     * 
-     * @return
-     */
-    public String getSiteToken();
-
-    /**
      * Get the device type token.
      * 
      * @return

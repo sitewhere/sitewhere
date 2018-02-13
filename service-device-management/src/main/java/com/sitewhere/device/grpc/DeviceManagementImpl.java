@@ -11,18 +11,22 @@ import java.util.List;
 import java.util.UUID;
 
 import com.sitewhere.grpc.client.GrpcUtils;
+import com.sitewhere.grpc.model.DeviceModel.GAreaSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceAssignmentSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupElementsSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceStreamSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceTypeSearchResults;
-import com.sitewhere.grpc.model.DeviceModel.GSiteSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GZoneSearchResults;
 import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.grpc.model.converter.DeviceModelConverter;
 import com.sitewhere.grpc.service.*;
 import com.sitewhere.rest.model.asset.AssetReference;
+import com.sitewhere.spi.area.IArea;
+import com.sitewhere.spi.area.IZone;
+import com.sitewhere.spi.area.request.IAreaCreateRequest;
+import com.sitewhere.spi.area.request.IZoneCreateRequest;
 import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -30,8 +34,6 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.device.ISite;
-import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
@@ -43,8 +45,6 @@ import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
-import com.sitewhere.spi.device.request.ISiteCreateRequest;
-import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.ISearchResults;
 
@@ -1225,22 +1225,20 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getDeviceAssignmentsForSite(com.sitewhere.grpc.service.
-     * GGetDeviceAssignmentsForSiteRequest, io.grpc.stub.StreamObserver)
+     * getDeviceAssignmentsForArea(com.sitewhere.grpc.service.
+     * GGetDeviceAssignmentsForAreaRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void getDeviceAssignmentsForSite(GGetDeviceAssignmentsForSiteRequest request,
-	    StreamObserver<GGetDeviceAssignmentsForSiteResponse> responseObserver) {
+    public void getDeviceAssignmentsForArea(GGetDeviceAssignmentsForAreaRequest request,
+	    StreamObserver<GGetDeviceAssignmentsForAreaResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_SITE);
-	    ISearchResults<IDeviceAssignment> apiResult = getDeviceManagement().getDeviceAssignmentsForSite(
-		    CommonModelConverter.asApiUuid(request.getSiteId()),
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_AREA);
+	    ISearchResults<IDeviceAssignment> apiResult = getDeviceManagement().getDeviceAssignmentsForArea(
+		    CommonModelConverter.asApiUuid(request.getAreaId()),
 		    DeviceModelConverter.asApiAssignmentSearchCriteria(request.getCriteria()));
-	    GGetDeviceAssignmentsForSiteResponse.Builder response = GGetDeviceAssignmentsForSiteResponse.newBuilder();
+	    GGetDeviceAssignmentsForAreaResponse.Builder response = GGetDeviceAssignmentsForAreaResponse.newBuilder();
 	    GDeviceAssignmentSearchResults.Builder results = GDeviceAssignmentSearchResults.newBuilder();
 	    for (IDeviceAssignment api : apiResult.getResults()) {
 		results.addAssignments(DeviceModelConverter.asGrpcDeviceAssignment(api));
@@ -1250,7 +1248,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_SITE, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_AREA, e,
 		    responseObserver);
 	}
     }
@@ -1372,148 +1370,138 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * createSite(com.sitewhere.grpc.service.GCreateSiteRequest,
+     * createArea(com.sitewhere.grpc.service.GCreateAreaRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void createSite(GCreateSiteRequest request, StreamObserver<GCreateSiteResponse> responseObserver) {
+    public void createArea(GCreateAreaRequest request, StreamObserver<GCreateAreaResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_CREATE_SITE);
-	    ISiteCreateRequest apiRequest = DeviceModelConverter.asApiSiteCreateRequest(request.getRequest());
-	    ISite apiResult = getDeviceManagement().createSite(apiRequest);
-	    GCreateSiteResponse.Builder response = GCreateSiteResponse.newBuilder();
-	    response.setSite(DeviceModelConverter.asGrpcSite(apiResult));
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_CREATE_AREA);
+	    IAreaCreateRequest apiRequest = DeviceModelConverter.asApiAreaCreateRequest(request.getRequest());
+	    IArea apiResult = getDeviceManagement().createArea(apiRequest);
+	    GCreateAreaResponse.Builder response = GCreateAreaResponse.newBuilder();
+	    response.setArea(DeviceModelConverter.asGrpcArea(apiResult));
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_SITE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_AREA, e, responseObserver);
 	}
     }
 
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getSite(com.sitewhere.grpc.service.GGetSiteRequest,
+     * getArea(com.sitewhere.grpc.service.GGetAreaRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void getSite(GGetSiteRequest request, StreamObserver<GGetSiteResponse> responseObserver) {
+    public void getArea(GGetAreaRequest request, StreamObserver<GGetAreaResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_SITE);
-	    ISite apiResult = getDeviceManagement().getSite(CommonModelConverter.asApiUuid(request.getId()));
-	    GGetSiteResponse.Builder response = GGetSiteResponse.newBuilder();
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_AREA);
+	    IArea apiResult = getDeviceManagement().getArea(CommonModelConverter.asApiUuid(request.getId()));
+	    GGetAreaResponse.Builder response = GGetAreaResponse.newBuilder();
 	    if (apiResult != null) {
-		response.setSite(DeviceModelConverter.asGrpcSite(apiResult));
+		response.setArea(DeviceModelConverter.asGrpcArea(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_SITE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_AREA, e, responseObserver);
 	}
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getSiteByToken(com.sitewhere.grpc.service.GGetSiteByTokenRequest,
+     * getAreaByToken(com.sitewhere.grpc.service.GGetAreaByTokenRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void getSiteByToken(GGetSiteByTokenRequest request,
-	    StreamObserver<GGetSiteByTokenResponse> responseObserver) {
+    public void getAreaByToken(GGetAreaByTokenRequest request,
+	    StreamObserver<GGetAreaByTokenResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_SITE_BY_TOKEN);
-	    ISite apiResult = getDeviceManagement().getSiteByToken(request.getToken());
-	    GGetSiteByTokenResponse.Builder response = GGetSiteByTokenResponse.newBuilder();
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_AREA_BY_TOKEN);
+	    IArea apiResult = getDeviceManagement().getAreaByToken(request.getToken());
+	    GGetAreaByTokenResponse.Builder response = GGetAreaByTokenResponse.newBuilder();
 	    if (apiResult != null) {
-		response.setSite(DeviceModelConverter.asGrpcSite(apiResult));
+		response.setArea(DeviceModelConverter.asGrpcArea(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_SITE_BY_TOKEN, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_AREA_BY_TOKEN, e, responseObserver);
 	}
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * updateSite(com.sitewhere.grpc.service.GUpdateSiteRequest,
+     * updateArea(com.sitewhere.grpc.service.GUpdateAreaRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void updateSite(GUpdateSiteRequest request, StreamObserver<GUpdateSiteResponse> responseObserver) {
+    public void updateArea(GUpdateAreaRequest request, StreamObserver<GUpdateAreaResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_UPDATE_SITE);
-	    ISiteCreateRequest update = DeviceModelConverter.asApiSiteCreateRequest(request.getRequest());
-	    ISite apiResult = getDeviceManagement().updateSite(CommonModelConverter.asApiUuid(request.getId()), update);
-	    GUpdateSiteResponse.Builder response = GUpdateSiteResponse.newBuilder();
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_UPDATE_AREA);
+	    IAreaCreateRequest update = DeviceModelConverter.asApiAreaCreateRequest(request.getRequest());
+	    IArea apiResult = getDeviceManagement().updateArea(CommonModelConverter.asApiUuid(request.getId()), update);
+	    GUpdateAreaResponse.Builder response = GUpdateAreaResponse.newBuilder();
 	    if (apiResult != null) {
-		response.setSite(DeviceModelConverter.asGrpcSite(apiResult));
+		response.setArea(DeviceModelConverter.asGrpcArea(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_SITE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_AREA, e, responseObserver);
 	}
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * listSites(com.sitewhere.grpc.service.GListSitesRequest,
+     * listAreas(com.sitewhere.grpc.service.GListAreasRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listSites(GListSitesRequest request, StreamObserver<GListSitesResponse> responseObserver) {
+    public void listAreas(GListAreasRequest request, StreamObserver<GListAreasResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_SITES);
-	    ISearchResults<ISite> apiResult = getDeviceManagement()
-		    .listSites(CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
-	    GListSitesResponse.Builder response = GListSitesResponse.newBuilder();
-	    GSiteSearchResults.Builder results = GSiteSearchResults.newBuilder();
-	    for (ISite api : apiResult.getResults()) {
-		results.addSites(DeviceModelConverter.asGrpcSite(api));
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_AREAS);
+	    ISearchResults<IArea> apiResult = getDeviceManagement()
+		    .listAreas(CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
+	    GListAreasResponse.Builder response = GListAreasResponse.newBuilder();
+	    GAreaSearchResults.Builder results = GAreaSearchResults.newBuilder();
+	    for (IArea api : apiResult.getResults()) {
+		results.addAreas(DeviceModelConverter.asGrpcArea(api));
 	    }
 	    results.setCount(apiResult.getNumResults());
 	    response.setResults(results.build());
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_SITES, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_AREAS, e, responseObserver);
 	}
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * deleteSite(com.sitewhere.grpc.service.GDeleteSiteRequest,
+     * deleteArea(com.sitewhere.grpc.service.GDeleteAreaRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void deleteSite(GDeleteSiteRequest request, StreamObserver<GDeleteSiteResponse> responseObserver) {
+    public void deleteArea(GDeleteAreaRequest request, StreamObserver<GDeleteAreaResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_DELETE_SITE);
-	    ISite apiResult = getDeviceManagement().deleteSite(CommonModelConverter.asApiUuid(request.getId()),
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_DELETE_AREA);
+	    IArea apiResult = getDeviceManagement().deleteArea(CommonModelConverter.asApiUuid(request.getId()),
 		    request.getForce());
-	    GDeleteSiteResponse.Builder response = GDeleteSiteResponse.newBuilder();
-	    response.setSite(DeviceModelConverter.asGrpcSite(apiResult));
+	    GDeleteAreaResponse.Builder response = GDeleteAreaResponse.newBuilder();
+	    response.setArea(DeviceModelConverter.asGrpcArea(apiResult));
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_DELETE_SITE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_DELETE_AREA, e, responseObserver);
 	}
     }
 

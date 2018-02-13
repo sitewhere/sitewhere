@@ -12,6 +12,12 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.area.IArea;
+import com.sitewhere.spi.area.IAreaType;
+import com.sitewhere.spi.area.IZone;
+import com.sitewhere.spi.area.request.IAreaCreateRequest;
+import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
+import com.sitewhere.spi.area.request.IZoneCreateRequest;
 import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
@@ -24,8 +30,6 @@ import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
-import com.sitewhere.spi.device.request.ISiteCreateRequest;
-import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
@@ -390,14 +394,14 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
 	    throws SiteWhereException;
 
     /**
-     * Get a list of device assignments for a site.
+     * Get a list of device assignments for an area.
      * 
-     * @param siteId
+     * @param areaId
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForSite(UUID siteId,
+    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForArea(UUID areaId,
 	    IAssignmentSearchCriteria criteria) throws SiteWhereException;
 
     /**
@@ -445,72 +449,128 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
 	    throws SiteWhereException;
 
     /**
-     * Create a site based on the given input.
+     * Create an area type based on the given input.
      * 
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public ISite createSite(ISiteCreateRequest request) throws SiteWhereException;
+    public IAreaType createAreaType(IAreaTypeCreateRequest request) throws SiteWhereException;
 
     /**
-     * Get site by unique id.
+     * Get area type by unique id.
      * 
      * @param id
      * @return
      * @throws SiteWhereException
      */
-    public ISite getSite(UUID id) throws SiteWhereException;
+    public IAreaType getAreaType(UUID id) throws SiteWhereException;
 
     /**
-     * Get a site by unique token.
+     * Get a area type by alias token.
      * 
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    public ISite getSiteByToken(String token) throws SiteWhereException;
+    public IAreaType getAreaTypeByToken(String token) throws SiteWhereException;
 
     /**
-     * Update information for a site.
+     * Update information for an area type.
      * 
      * @param id
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public ISite updateSite(UUID id, ISiteCreateRequest request) throws SiteWhereException;
+    public IAreaType updateAreaType(UUID id, IAreaTypeCreateRequest request) throws SiteWhereException;
 
     /**
-     * Get a list of all sites.
+     * Get a list of area types matching search criteria.
      * 
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<ISite> listSites(ISearchCriteria criteria) throws SiteWhereException;
+    public ISearchResults<IAreaType> listAreaTypes(ISearchCriteria criteria) throws SiteWhereException;
 
     /**
-     * Delete a site based on unique site token. If 'force' is specified, the
-     * database object will be deleted, otherwise the deleted flag will be set to
-     * true.
+     * Delete an area type based on unique id. If 'force' is specified, the database
+     * object will be deleted, otherwise the deleted flag will be set to true.
      * 
      * @param id
      * @param force
      * @return
      * @throws SiteWhereException
      */
-    public ISite deleteSite(UUID id, boolean force) throws SiteWhereException;
+    public IAreaType deleteAreaType(UUID id, boolean force) throws SiteWhereException;
 
     /**
-     * Create a new zone.
+     * Create an area based on the given input.
      * 
-     * @param siteId
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public IZone createZone(UUID siteId, IZoneCreateRequest request) throws SiteWhereException;
+    public IArea createArea(IAreaCreateRequest request) throws SiteWhereException;
+
+    /**
+     * Get area by unique id.
+     * 
+     * @param id
+     * @return
+     * @throws SiteWhereException
+     */
+    public IArea getArea(UUID id) throws SiteWhereException;
+
+    /**
+     * Get a area by alias token.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    public IArea getAreaByToken(String token) throws SiteWhereException;
+
+    /**
+     * Update information for an area.
+     * 
+     * @param id
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public IArea updateArea(UUID id, IAreaCreateRequest request) throws SiteWhereException;
+
+    /**
+     * Get a list of areas matching search criteria.
+     * 
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    public ISearchResults<IArea> listAreas(ISearchCriteria criteria) throws SiteWhereException;
+
+    /**
+     * Delete an area based on unique id. If 'force' is specified, the database
+     * object will be deleted, otherwise the deleted flag will be set to true.
+     * 
+     * @param id
+     * @param force
+     * @return
+     * @throws SiteWhereException
+     */
+    public IArea deleteArea(UUID id, boolean force) throws SiteWhereException;
+
+    /**
+     * Create a new zone.
+     * 
+     * @param areaId
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public IZone createZone(UUID areaId, IZoneCreateRequest request) throws SiteWhereException;
 
     /**
      * Get zone by unique id.
@@ -541,14 +601,14 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     public IZone updateZone(UUID id, IZoneCreateRequest request) throws SiteWhereException;
 
     /**
-     * Get a list of all zones associated with a Site.
+     * Get a list of all zones associated with an area.
      * 
-     * @param siteId
+     * @param areaId
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IZone> listZones(UUID siteId, ISearchCriteria criteria) throws SiteWhereException;
+    public ISearchResults<IZone> listZones(UUID areaId, ISearchCriteria criteria) throws SiteWhereException;
 
     /**
      * Delete a zone given its unique id.

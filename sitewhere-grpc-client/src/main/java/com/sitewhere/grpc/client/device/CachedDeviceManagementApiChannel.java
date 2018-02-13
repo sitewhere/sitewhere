@@ -13,11 +13,11 @@ import com.sitewhere.grpc.client.cache.CacheUtils;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.cache.ICacheProvider;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -28,11 +28,11 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel {
 
-    /** Site cache */
-    private ICacheProvider<String, ISite> siteCache;
+    /** Area cache */
+    private ICacheProvider<String, IArea> areaCache;
 
-    /** Site by id cache */
-    private ICacheProvider<UUID, ISite> siteByIdCache;
+    /** Area by id cache */
+    private ICacheProvider<UUID, IArea> areaByIdCache;
 
     /** Device type cache */
     private ICacheProvider<String, IDeviceType> deviceTypeCache;
@@ -54,8 +54,8 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
 
     public CachedDeviceManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
 	super(demux, microservice, host);
-	this.siteCache = new DeviceManagementCacheProviders.SiteCache(microservice, false);
-	this.siteByIdCache = new DeviceManagementCacheProviders.SiteByIdCache(microservice, false);
+	this.areaCache = new DeviceManagementCacheProviders.AreaCache(microservice, false);
+	this.areaByIdCache = new DeviceManagementCacheProviders.AreaByIdCache(microservice, false);
 	this.deviceTypeCache = new DeviceManagementCacheProviders.DeviceTypeCache(microservice, false);
 	this.deviceTypeByIdCache = new DeviceManagementCacheProviders.DeviceTypeByIdCache(microservice, false);
 	this.deviceCache = new DeviceManagementCacheProviders.DeviceCache(microservice, false);
@@ -67,38 +67,37 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
 
     /*
      * @see
-     * com.sitewhere.grpc.client.device.DeviceManagementApiChannel#getSiteByToken(
-     * java.lang.String)
+     * com.sitewhere.spi.device.IDeviceManagement#getAreaByToken(java.lang.String)
      */
     @Override
-    public ISite getSiteByToken(String token) throws SiteWhereException {
+    public IArea getAreaByToken(String token) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	ISite site = getSiteCache().getCacheEntry(tenant, token);
-	if (site != null) {
-	    CacheUtils.logCacheHit(site);
-	    return site;
+	IArea area = getAreaCache().getCacheEntry(tenant, token);
+	if (area != null) {
+	    CacheUtils.logCacheHit(area);
+	    return area;
 	} else {
-	    getLogger().trace("No cached information for site '" + token + "'.");
+	    getLogger().trace("No cached information for area '" + token + "'.");
 	}
-	return super.getSiteByToken(token);
+	return super.getAreaByToken(token);
     }
 
     /*
      * @see
-     * com.sitewhere.grpc.client.device.DeviceManagementApiChannel#getSite(java.util
+     * com.sitewhere.grpc.client.device.DeviceManagementApiChannel#getArea(java.util
      * .UUID)
      */
     @Override
-    public ISite getSite(UUID id) throws SiteWhereException {
+    public IArea getArea(UUID id) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	ISite site = getSiteByIdCache().getCacheEntry(tenant, id);
-	if (site != null) {
-	    CacheUtils.logCacheHit(site);
-	    return site;
+	IArea area = getAreaByIdCache().getCacheEntry(tenant, id);
+	if (area != null) {
+	    CacheUtils.logCacheHit(area);
+	    return area;
 	} else {
-	    getLogger().trace("No cached information for site id '" + id + "'.");
+	    getLogger().trace("No cached information for area id '" + id + "'.");
 	}
-	return super.getSite(id);
+	return super.getArea(id);
     }
 
     /*
@@ -206,20 +205,20 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
 	return super.getDeviceAssignment(id);
     }
 
-    public ICacheProvider<String, ISite> getSiteCache() {
-	return siteCache;
+    public ICacheProvider<String, IArea> getAreaCache() {
+	return areaCache;
     }
 
-    public void setSiteCache(ICacheProvider<String, ISite> siteCache) {
-	this.siteCache = siteCache;
+    public void setAreaCache(ICacheProvider<String, IArea> areaCache) {
+	this.areaCache = areaCache;
     }
 
-    public ICacheProvider<UUID, ISite> getSiteByIdCache() {
-	return siteByIdCache;
+    public ICacheProvider<UUID, IArea> getAreaByIdCache() {
+	return areaByIdCache;
     }
 
-    public void setSiteByIdCache(ICacheProvider<UUID, ISite> siteByIdCache) {
-	this.siteByIdCache = siteByIdCache;
+    public void setAreaByIdCache(ICacheProvider<UUID, IArea> areaByIdCache) {
+	this.areaByIdCache = areaByIdCache;
     }
 
     public ICacheProvider<String, IDeviceType> getDeviceTypeCache() {

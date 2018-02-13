@@ -36,9 +36,6 @@ public class Device extends MetadataProviderEntity implements IDevice, Serializa
     /** Hardware id that acts as alias for device id */
     private String hardwareId;
 
-    /** Site id */
-    private UUID siteId;
-
     /** Device type id */
     private UUID deviceTypeId;
 
@@ -84,18 +81,6 @@ public class Device extends MetadataProviderEntity implements IDevice, Serializa
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDevice#getSiteId()
-     */
-    @Override
-    public UUID getSiteId() {
-	return siteId;
-    }
-
-    public void setSiteId(UUID siteId) {
-	this.siteId = siteId;
-    }
-
-    /*
      * @see com.sitewhere.spi.device.IDevice#getDeviceTypeId()
      */
     @Override
@@ -105,7 +90,7 @@ public class Device extends MetadataProviderEntity implements IDevice, Serializa
 
     public void setDeviceTypeId(UUID deviceTypeId) {
 	this.deviceTypeId = deviceTypeId;
-    }	
+    }
 
     /*
      * @see com.sitewhere.spi.device.IDevice#getDeviceAssignmentId()

@@ -52,8 +52,8 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
     /** Property for device hardware id */
     public static final String PROP_DEVICE_ID = "di";
 
-    /** Property for site token */
-    public static final String PROP_SITE_ID = "si";
+    /** Property for area id */
+    public static final String PROP_AREA_ID = "ai";
 
     /*
      * (non-Javadoc)
@@ -83,7 +83,7 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
 	target.append(PROP_ID, source.getId());
 	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_DEVICE_ID, source.getDeviceId());
-	target.append(PROP_SITE_ID, source.getSiteId());
+	target.append(PROP_AREA_ID, source.getAreaId());
 
 	if (source.getActiveDate() != null) {
 	    target.append(PROP_ACTIVE_DATE, source.getActiveDate());
@@ -113,7 +113,7 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
 	UUID id = (UUID) source.get(PROP_ID);
 	String token = (String) source.get(PROP_TOKEN);
 	UUID deviceId = (UUID) source.get(PROP_DEVICE_ID);
-	UUID siteId = (UUID) source.get(PROP_SITE_ID);
+	UUID areaId = (UUID) source.get(PROP_AREA_ID);
 	String status = (String) source.get(PROP_STATUS);
 	Date activeDate = (Date) source.get(PROP_ACTIVE_DATE);
 	String assetReference = (String) source.get(PROP_ASSET_REFERENCE);
@@ -123,7 +123,7 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
 	target.setId(id);
 	target.setToken(token);
 	target.setDeviceId(deviceId);
-	target.setSiteId(siteId);
+	target.setAreaId(areaId);
 	if (activeDate != null) {
 	    target.setActiveDate(activeDate);
 	}

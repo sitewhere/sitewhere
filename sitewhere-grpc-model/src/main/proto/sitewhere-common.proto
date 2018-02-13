@@ -87,8 +87,8 @@ message GTenantReference {
 	string id = 1;
 }
 
-// Reference to a site by token.
-message GSiteReference {
+// Reference to an area by token.
+message GAreaReference {
 	string token = 1;
 }
 

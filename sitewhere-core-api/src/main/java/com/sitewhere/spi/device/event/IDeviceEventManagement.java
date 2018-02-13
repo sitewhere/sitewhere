@@ -8,8 +8,8 @@
 package com.sitewhere.spi.device.event;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
@@ -93,14 +93,14 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
     /**
-     * List device measurements for a site.
+     * List device measurements for an area.
      * 
-     * @param site
+     * @param area
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForSite(ISite site,
+    public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForArea(IArea area,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
     /**
@@ -126,14 +126,14 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
     /**
-     * List device locations for a site.
+     * List device locations for an area.
      * 
-     * @param site
+     * @param area
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IDeviceLocation> listDeviceLocationsForSite(ISite site, IDateRangeSearchCriteria criteria)
+    public ISearchResults<IDeviceLocation> listDeviceLocationsForArea(IArea area, IDateRangeSearchCriteria criteria)
 	    throws SiteWhereException;
 
     /**
@@ -159,14 +159,14 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
     /**
-     * List device alerts for a site.
+     * List device alerts for an area.
      * 
-     * @param site
+     * @param area
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IDeviceAlert> listDeviceAlertsForSite(ISite site, IDateRangeSearchCriteria criteria)
+    public ISearchResults<IDeviceAlert> listDeviceAlertsForArea(IArea area, IDateRangeSearchCriteria criteria)
 	    throws SiteWhereException;
 
     /**
@@ -194,8 +194,8 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
 	    throws SiteWhereException;
 
     /**
-     * List all chunks of data in a device assignment that belong to a given
-     * stream and meet the criteria.
+     * List all chunks of data in a device assignment that belong to a given stream
+     * and meet the criteria.
      * 
      * @param assignment
      * @param streamId
@@ -229,14 +229,14 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
     /**
-     * List device command invocations for a site.
+     * List device command invocations for an area.
      * 
-     * @param site
+     * @param area
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(ISite site,
+    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForArea(IArea area,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
     /**
@@ -272,14 +272,14 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
     /**
-     * List device command responses for a site.
+     * List device command responses for an area.
      * 
-     * @param site
+     * @param area
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(ISite site,
+    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForArea(IArea area,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
     /**
@@ -305,14 +305,14 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
     /**
-     * List device state changes for a site.
+     * List device state changes for an area.
      * 
-     * @param site
+     * @param area
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(ISite site,
+    public ISearchResults<IDeviceStateChange> listDeviceStateChangesForArea(IArea area,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
     /**

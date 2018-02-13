@@ -25,30 +25,30 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sitewhere.device.marshaling.AreaMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
-import com.sitewhere.device.marshaling.SiteMarshalHelper;
+import com.sitewhere.rest.model.area.Zone;
+import com.sitewhere.rest.model.area.request.AreaCreateRequest;
+import com.sitewhere.rest.model.area.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.device.DeviceAssignment;
-import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.asset.DeviceAlertWithAsset;
 import com.sitewhere.rest.model.device.asset.DeviceCommandInvocationWithAsset;
 import com.sitewhere.rest.model.device.asset.DeviceCommandResponseWithAsset;
 import com.sitewhere.rest.model.device.asset.DeviceLocationWithAsset;
 import com.sitewhere.rest.model.device.asset.DeviceMeasurementsWithAsset;
 import com.sitewhere.rest.model.device.asset.DeviceStateChangeWithAsset;
-import com.sitewhere.rest.model.device.request.SiteCreateRequest;
-import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.AssignmentSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.area.IArea;
+import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.ISite;
-import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -67,22 +67,22 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 /**
- * Controller for site operations.
+ * Controller for area operations.
  * 
  * @author Derek Adams
  */
 @RestController
 @CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
-@RequestMapping(value = "/sites")
-@Api(value = "sites")
-public class Sites extends RestControllerBase {
+@RequestMapping(value = "/areas")
+@Api(value = "areas")
+public class Areas extends RestControllerBase {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
     private static Logger LOGGER = LogManager.getLogger();
 
     /**
-     * Create a new site.
+     * Create a new area.
      * 
      * @param input
      * @return
@@ -91,112 +91,112 @@ public class Sites extends RestControllerBase {
     @RequestMapping(method = RequestMethod.POST)
     @ApiOperation(value = "Create new site")
     @Secured({ SiteWhereRoles.REST })
-    public ISite createSite(@RequestBody SiteCreateRequest input, HttpServletRequest servletRequest)
+    public IArea createArea(@RequestBody AreaCreateRequest input, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	return getDeviceManagement().createSite(input);
+	return getDeviceManagement().createArea(input);
     }
 
     /**
-     * Get information for a given site based on site token.
+     * Get information for a given area based on token.
      * 
-     * @param siteToken
+     * @param areaToken
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{siteToken}", method = RequestMethod.GET)
-    @ApiOperation(value = "Get site by unique token")
+    @RequestMapping(value = "/{areaToken}", method = RequestMethod.GET)
+    @ApiOperation(value = "Get area by token")
     @Secured({ SiteWhereRoles.REST })
-    public ISite getSiteByToken(
-	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken)
+    public IArea getAreaByToken(
+	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken)
 	    throws SiteWhereException {
-	return assertSite(siteToken);
+	return assertArea(areaToken);
     }
 
     /**
-     * Update information for a site.
+     * Update information for an area.
      * 
      * @param input
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{siteToken}", method = RequestMethod.PUT)
-    @ApiOperation(value = "Update existing site")
+    @RequestMapping(value = "/{areaToken}", method = RequestMethod.PUT)
+    @ApiOperation(value = "Update existing area")
     @Secured({ SiteWhereRoles.REST })
-    public ISite updateSite(
-	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
-	    @RequestBody SiteCreateRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
-	ISite existing = assertSite(siteToken);
-	return getDeviceManagement().updateSite(existing.getId(), request);
+    public IArea updateArea(
+	    @ApiParam(value = "Token that identifies site", required = true) @PathVariable String areaToken,
+	    @RequestBody AreaCreateRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
+	IArea existing = assertArea(areaToken);
+	return getDeviceManagement().updateArea(existing.getId(), request);
     }
 
     /**
-     * Delete information for a given site based on site token.
+     * Delete information for a given area based on token.
      * 
-     * @param siteToken
+     * @param areaToken
      * @param force
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{siteToken}", method = RequestMethod.DELETE)
-    @ApiOperation(value = "Delete site by unique token")
+    @RequestMapping(value = "/{areaToken}", method = RequestMethod.DELETE)
+    @ApiOperation(value = "Delete area by token")
     @Secured({ SiteWhereRoles.REST })
-    public ISite deleteSite(
-	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+    public IArea deleteSite(
+	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	ISite existing = assertSite(siteToken);
-	return getDeviceManagement().deleteSite(existing.getId(), force);
+	IArea existing = assertArea(areaToken);
+	return getDeviceManagement().deleteArea(existing.getId(), force);
     }
 
     /**
-     * List all sites and wrap as search results.
+     * List all areas.
      * 
      * @return
      * @throws SiteWhereException
      */
     @RequestMapping(method = RequestMethod.GET)
-    @ApiOperation(value = "List sites matching criteria")
+    @ApiOperation(value = "List areas matching criteria")
     @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<ISite> listSites(
+    public ISearchResults<IArea> listAreas(
 	    @ApiParam(value = "Include assignments", required = false) @RequestParam(defaultValue = "false") boolean includeAssignments,
 	    @ApiParam(value = "Include zones", required = false) @RequestParam(defaultValue = "false") boolean includeZones,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	ISearchResults<ISite> matches = getDeviceManagement().listSites(criteria);
-	SiteMarshalHelper helper = new SiteMarshalHelper(getDeviceManagement(), getAssetResolver());
+	ISearchResults<IArea> matches = getDeviceManagement().listAreas(criteria);
+	AreaMarshalHelper helper = new AreaMarshalHelper(getDeviceManagement(), getAssetResolver());
 	helper.setIncludeZones(includeZones);
 	helper.setIncludeAssignements(includeAssignments);
 
-	List<ISite> results = new ArrayList<ISite>();
-	for (ISite site : matches.getResults()) {
-	    results.add(helper.convert(site));
+	List<IArea> results = new ArrayList<IArea>();
+	for (IArea area : matches.getResults()) {
+	    results.add(helper.convert(area));
 	}
-	return new SearchResults<ISite>(results, matches.getNumResults());
+	return new SearchResults<IArea>(results, matches.getNumResults());
     }
 
     /**
-     * Get device measurements for a given site.
+     * Get device measurements for a given area.
      * 
-     * @param siteToken
+     * @param areaToken
      * @param count
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{siteToken}/measurements", method = RequestMethod.GET)
-    @ApiOperation(value = "List measurements for site")
+    @RequestMapping(value = "/{areaToken}/measurements", method = RequestMethod.GET)
+    @ApiOperation(value = "List measurements for an area")
     @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForSite(
-	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+    public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForArea(
+	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	ISite site = assertSite(siteToken);
+	IArea existing = assertArea(areaToken);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-	ISearchResults<IDeviceMeasurements> results = getDeviceEventManagement().listDeviceMeasurementsForSite(site,
+	ISearchResults<IDeviceMeasurements> results = getDeviceEventManagement().listDeviceMeasurementsForArea(existing,
 		criteria);
 
 	// Marshal with asset info since multiple assignments might match.
@@ -208,26 +208,27 @@ public class Sites extends RestControllerBase {
     }
 
     /**
-     * Get device locations for a given site.
+     * Get device locations for a given area.
      * 
-     * @param siteToken
+     * @param areaToken
      * @param count
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{siteToken}/locations", method = RequestMethod.GET)
-    @ApiOperation(value = "List locations for site")
+    @RequestMapping(value = "/{areaToken}/locations", method = RequestMethod.GET)
+    @ApiOperation(value = "List locations for an area")
     @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IDeviceLocation> listDeviceLocationsForSite(
-	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+    public ISearchResults<IDeviceLocation> listDeviceLocationsForArea(
+	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	ISite site = assertSite(siteToken);
+	IArea existing = assertArea(areaToken);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-	ISearchResults<IDeviceLocation> results = getDeviceEventManagement().listDeviceLocationsForSite(site, criteria);
+	ISearchResults<IDeviceLocation> results = getDeviceEventManagement().listDeviceLocationsForArea(existing,
+		criteria);
 
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceLocation> wrapped = new ArrayList<IDeviceLocation>();
@@ -238,26 +239,26 @@ public class Sites extends RestControllerBase {
     }
 
     /**
-     * Get device alerts for a given site.
+     * Get device alerts for a given area.
      * 
-     * @param siteToken
+     * @param areaToken
      * @param count
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{siteToken}/alerts", method = RequestMethod.GET)
-    @ApiOperation(value = "List alerts for site")
+    @RequestMapping(value = "/{areaToken}/alerts", method = RequestMethod.GET)
+    @ApiOperation(value = "List alerts for an area")
     @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IDeviceAlert> listDeviceAlertsForSite(
-	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+    public ISearchResults<IDeviceAlert> listDeviceAlertsForArea(
+	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-	ISite site = getDeviceManagement().getSiteByToken(siteToken);
-	ISearchResults<IDeviceAlert> results = getDeviceEventManagement().listDeviceAlertsForSite(site, criteria);
+	IArea existing = assertArea(areaToken);
+	ISearchResults<IDeviceAlert> results = getDeviceEventManagement().listDeviceAlertsForArea(existing, criteria);
 
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceAlert> wrapped = new ArrayList<IDeviceAlert>();
@@ -268,27 +269,27 @@ public class Sites extends RestControllerBase {
     }
 
     /**
-     * Get device command invocations for a given site.
+     * Get device command invocations for a given area.
      * 
-     * @param siteToken
+     * @param areaToken
      * @param count
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{siteToken}/invocations", method = RequestMethod.GET)
-    @ApiOperation(value = "List command invocations for a site")
+    @RequestMapping(value = "/{areaToken}/invocations", method = RequestMethod.GET)
+    @ApiOperation(value = "List command invocations for an area")
     @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(
-	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForArea(
+	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	ISite site = assertSite(siteToken);
+	IArea existing = assertArea(areaToken);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 	ISearchResults<IDeviceCommandInvocation> results = getDeviceEventManagement()
-		.listDeviceCommandInvocationsForSite(site, criteria);
+		.listDeviceCommandInvocationsForArea(existing, criteria);
 
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceCommandInvocation> wrapped = new ArrayList<IDeviceCommandInvocation>();
@@ -299,27 +300,27 @@ public class Sites extends RestControllerBase {
     }
 
     /**
-     * Get device command responses for a given site.
+     * Get device command responses for a given area.
      * 
      * @param siteToken
      * @param count
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{siteToken}/responses", method = RequestMethod.GET)
-    @ApiOperation(value = "List command responses for site")
+    @RequestMapping(value = "/{areaToken}/responses", method = RequestMethod.GET)
+    @ApiOperation(value = "List command responses for an area")
     @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(
-	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForArea(
+	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	ISite site = assertSite(siteToken);
+	IArea existing = assertArea(areaToken);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 	ISearchResults<IDeviceCommandResponse> results = getDeviceEventManagement()
-		.listDeviceCommandResponsesForSite(site, criteria);
+		.listDeviceCommandResponsesForArea(existing, criteria);
 
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceCommandResponse> wrapped = new ArrayList<IDeviceCommandResponse>();
@@ -330,26 +331,26 @@ public class Sites extends RestControllerBase {
     }
 
     /**
-     * Get device state changes for a given site.
+     * Get device state changes for a given area.
      * 
-     * @param siteToken
+     * @param areaToken
      * @param count
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{siteToken}/statechanges", method = RequestMethod.GET)
-    @ApiOperation(value = "List state changes associated with a site")
+    @RequestMapping(value = "/{areaToken}/statechanges", method = RequestMethod.GET)
+    @ApiOperation(value = "List state changes associated with an area")
     @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(
-	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+    public ISearchResults<IDeviceStateChange> listDeviceStateChangesForArea(
+	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	ISite site = assertSite(siteToken);
+	IArea existing = assertArea(areaToken);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-	ISearchResults<IDeviceStateChange> results = getDeviceEventManagement().listDeviceStateChangesForSite(site,
+	ISearchResults<IDeviceStateChange> results = getDeviceEventManagement().listDeviceStateChangesForArea(existing,
 		criteria);
 
 	// Marshal with asset info since multiple assignments might match.
@@ -361,17 +362,17 @@ public class Sites extends RestControllerBase {
     }
 
     /**
-     * Find device assignments associated with a site.
+     * Find device assignments associated with an area.
      * 
-     * @param siteToken
+     * @param areaToken
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{siteToken}/assignments", method = RequestMethod.GET)
-    @ApiOperation(value = "List device assignments for site")
+    @RequestMapping(value = "/{areaToken}/assignments", method = RequestMethod.GET)
+    @ApiOperation(value = "List device assignments for an area")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<DeviceAssignment> listAssignmentsForSite(
-	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Limit results to the given status", required = false) @RequestParam(required = false) String status,
 	    @ApiParam(value = "Include detailed device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
 	    @ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "false") boolean includeAsset,
@@ -384,13 +385,12 @@ public class Sites extends RestControllerBase {
 	if (decodedStatus != null) {
 	    criteria.setStatus(decodedStatus);
 	}
-	ISite existing = assertSite(siteToken);
-	ISearchResults<IDeviceAssignment> matches = getDeviceManagement().getDeviceAssignmentsForSite(existing.getId(),
+	IArea existing = assertArea(areaToken);
+	ISearchResults<IDeviceAssignment> matches = getDeviceManagement().getDeviceAssignmentsForArea(existing.getId(),
 		criteria);
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(includeAsset);
 	helper.setIncludeDevice(includeDevice);
-	helper.setIncludeSite(includeSite);
 	List<DeviceAssignment> converted = new ArrayList<DeviceAssignment>();
 	for (IDeviceAssignment assignment : matches.getResults()) {
 	    converted.add(helper.convert(assignment, getAssetResolver()));
@@ -398,11 +398,11 @@ public class Sites extends RestControllerBase {
 	return new SearchResults<DeviceAssignment>(converted, matches.getNumResults());
     }
 
-    @RequestMapping(value = "/{siteToken}/assignments/lastinteraction", method = RequestMethod.GET)
+    @RequestMapping(value = "/{areaToken}/assignments/lastinteraction", method = RequestMethod.GET)
     @ApiOperation(value = "List device assignments for site with qualifying last interaction date")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<DeviceAssignment> listAssignmentsWithLastInteractionDate(
-	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Interactions after", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
@@ -437,11 +437,11 @@ public class Sites extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{siteToken}/assignments/missing", method = RequestMethod.GET)
+    @RequestMapping(value = "/{areaToken}/assignments/missing", method = RequestMethod.GET)
     @ApiOperation(value = "List device assignments marked as missing")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<DeviceAssignment> listMissingDeviceAssignments(
-	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
@@ -464,54 +464,55 @@ public class Sites extends RestControllerBase {
     }
 
     /**
-     * Create a new zone for a site.
+     * Create a new zone for an area.
      * 
      * @param input
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{siteToken}/zones", method = RequestMethod.POST)
+    @RequestMapping(value = "/{areaToken}/zones", method = RequestMethod.POST)
     @ApiOperation(value = "Create new zone for site")
     @Secured({ SiteWhereRoles.REST })
-    public Zone createZone(@ApiParam(value = "Unique site token", required = true) @PathVariable String siteToken,
+    public Zone createZone(
+	    @ApiParam(value = "Token that identifies an area", required = true) @PathVariable String areaToken,
 	    @RequestBody ZoneCreateRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
-	ISite existing = assertSite(siteToken);
+	IArea existing = assertArea(areaToken);
 	IZone zone = getDeviceManagement().createZone(existing.getId(), request);
 	return Zone.copy(zone);
     }
 
     /**
-     * List all zones for a site.
+     * List all zones for an area.
      * 
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{siteToken}/zones", method = RequestMethod.GET)
-    @ApiOperation(value = "List zones for site")
+    @RequestMapping(value = "/{areaToken}/zones", method = RequestMethod.GET)
+    @ApiOperation(value = "List zones for an area")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IZone> listZonesForSite(
-	    @ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+	    @ApiParam(value = "Token that identifies an area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	ISite existing = assertSite(siteToken);
+	IArea existing = assertArea(areaToken);
 	return getDeviceManagement().listZones(existing.getId(), criteria);
     }
 
     /**
-     * Get site associated with token or throw an exception if invalid.
+     * Get area associated with token or throw an exception if invalid.
      * 
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    protected ISite assertSite(String token) throws SiteWhereException {
-	ISite site = getDeviceManagement().getSiteByToken(token);
-	if (site == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+    protected IArea assertArea(String token) throws SiteWhereException {
+	IArea area = getDeviceManagement().getAreaByToken(token);
+	if (area == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
 	}
-	return site;
+	return area;
     }
 
     private IDeviceManagement getDeviceManagement() {

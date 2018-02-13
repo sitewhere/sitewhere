@@ -5,74 +5,74 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.device;
+package com.sitewhere.spi.area;
 
-import java.util.List;
+import java.io.Serializable;
 import java.util.UUID;
 
-import com.sitewhere.spi.common.ILocation;
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 
 /**
- * A polygonal area associated with a site that can be used to trigger events.
+ * An entity that represents a geographical area based on a previously defined
+ * area type.
  * 
- * @author dadams
+ * @author Derek
  */
-public interface IZone extends IMetadataProviderEntity {
+public interface IArea extends IMetadataProviderEntity, Serializable {
 
     /**
-     * Get unique zone id.
+     * Get unique area id.
      * 
      * @return
      */
     public UUID getId();
 
     /**
-     * Get token that acts as alias for zone id.
+     * Get token that acts as an alias for area id.
      * 
      * @return
      */
     public String getToken();
 
     /**
-     * Get id for associated site.
+     * Get id of corresponding area type.
      * 
      * @return
      */
-    public UUID getSiteId();
+    public UUID getAreaTypeId();
 
     /**
-     * Get display name.
+     * Get id of parent id (null if none).
+     * 
+     * @return
+     */
+    public UUID getParentAreaId();
+
+    /**
+     * Get the area name.
      * 
      * @return
      */
     public String getName();
 
     /**
-     * Get list of coordinates that defines the zone.
+     * Get the description.
      * 
      * @return
      */
-    public List<ILocation> getCoordinates();
+    public String getDescription();
 
     /**
-     * Get the border color.
+     * Get the image URL.
      * 
      * @return
      */
-    public String getBorderColor();
+    public String getImageUrl();
 
     /**
-     * Get the fill color.
+     * Get map information.
      * 
      * @return
      */
-    public String getFillColor();
-
-    /**
-     * Get the opacity value.
-     * 
-     * @return
-     */
-    public Double getOpacity();
+    public IAreaMapData getMap();
 }

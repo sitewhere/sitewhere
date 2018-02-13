@@ -162,7 +162,7 @@ public abstract class AllWithSpecificationMulticaster<T> extends GroovyComponent
 		try {
 		    ITenant tenant = AllWithSpecificationMulticaster.this.getTenantEngine().getTenant();
 		    String token = AllWithSpecificationMulticaster.this.getSpecificationToken();
-		    DeviceSearchCriteria criteria = new DeviceSearchCriteria(token, null, false, 1, 0, null, null);
+		    DeviceSearchCriteria criteria = new DeviceSearchCriteria(token, false, 1, 0, null, null);
 		    ISearchResults<IDevice> results = getDeviceManagement(tenant).listDevices(false, criteria);
 		    matches = results.getResults();
 		    LOGGER.debug("Found " + matches.size() + " matches for routing.");

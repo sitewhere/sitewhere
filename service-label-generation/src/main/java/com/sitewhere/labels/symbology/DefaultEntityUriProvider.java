@@ -11,10 +11,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.symbology.IEntityUriProvider;
 
 /**
@@ -41,14 +41,13 @@ public class DefaultEntityUriProvider implements IEntityUriProvider {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.symbology.IEntityUriProvider#getSiteIdentifier(
-     * com.sitewhere .spi.device.ISite)
+     * @see
+     * com.sitewhere.spi.device.symbology.IEntityUriProvider#getAreaIdentifier(com.
+     * sitewhere.spi.area.IArea)
      */
     @Override
-    public URI getSiteIdentifier(ISite site) throws SiteWhereException {
-	return createUri(SITEWHERE_PROTOCOL + "site/" + site.getToken());
+    public URI getAreaIdentifier(IArea area) throws SiteWhereException {
+	return createUri(SITEWHERE_PROTOCOL + "area/" + area.getToken());
     }
 
     /*

@@ -10,7 +10,6 @@ package com.sitewhere.rest.model.device.marshaling;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceType;
-import com.sitewhere.rest.model.device.Site;
 
 /**
  * Extends {@link Device} to support fields that can be included on REST calls.
@@ -27,9 +26,6 @@ public class MarshaledDevice extends Device {
 
     /** Current device assignment */
     private DeviceAssignment assignment;
-
-    /** Current site deployment */
-    private Site site;
 
     /** Asset id from device specification (only for marshaling) */
     private String assetId;
@@ -54,14 +50,6 @@ public class MarshaledDevice extends Device {
 
     public void setAssignment(DeviceAssignment assignment) {
 	this.assignment = assignment;
-    }
-
-    public Site getSite() {
-	return site;
-    }
-
-    public void setSite(Site site) {
-	this.site = site;
     }
 
     public String getAssetId() {

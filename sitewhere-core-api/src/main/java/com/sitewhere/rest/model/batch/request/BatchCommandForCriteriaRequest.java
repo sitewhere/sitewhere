@@ -47,8 +47,8 @@ public class BatchCommandForCriteriaRequest implements IBatchCommandForCriteriaR
     /** Groups with role to limit by */
     private String groupsWithRole;
 
-    /** Site token to limit by */
-    private String siteToken;
+    /** Area token to limit by */
+    private String areaToken;
 
     /** Start date for create date window */
     private Date startDate;
@@ -137,16 +137,16 @@ public class BatchCommandForCriteriaRequest implements IBatchCommandForCriteriaR
 
     /*
      * @see
-     * com.sitewhere.spi.batch.request.IBatchCommandForCriteriaRequest#getSiteToken(
+     * com.sitewhere.spi.batch.request.IBatchCommandForCriteriaRequest#getAreaToken(
      * )
      */
     @Override
-    public String getSiteToken() {
-	return siteToken;
+    public String getAreaToken() {
+	return areaToken;
     }
 
-    public void setSiteToken(String siteToken) {
-	this.siteToken = siteToken;
+    public void setAreaToken(String areaToken) {
+	this.areaToken = areaToken;
     }
 
     /*

@@ -147,7 +147,7 @@ public class Assets extends RestControllerBase {
     public ISearchResults<IDeviceAssignment> getAssignmentsForAsset(
 	    @ApiParam(value = "Unique asset module id", required = true) @PathVariable String moduleId,
 	    @ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
-	    @ApiParam(value = "Limit results to the given site", required = false) @RequestParam(required = false) String siteToken,
+	    @ApiParam(value = "Limit results to the given area", required = false) @RequestParam(required = false) String areaToken,
 	    @ApiParam(value = "Limit results to the given status", required = false) @RequestParam(required = false) String status,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
@@ -156,7 +156,7 @@ public class Assets extends RestControllerBase {
 	    AssignmentsForAssetSearchCriteria criteria = new AssignmentsForAssetSearchCriteria(page, pageSize);
 	    DeviceAssignmentStatus decodedStatus = (status != null) ? DeviceAssignmentStatus.valueOf(status) : null;
 	    criteria.setStatus(decodedStatus);
-	    criteria.setSiteToken(siteToken);
+	    criteria.setAreaToken(areaToken);
 
 	    IAssetReference assetReference = new AssetReference.Builder(moduleId, assetId).build();
 	    return getDeviceManagement().getDeviceAssignmentsForAsset(assetReference, criteria);

@@ -5,47 +5,52 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.rest.model.device;
+package com.sitewhere.rest.model.area;
 
-import java.io.Serializable;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
-import com.sitewhere.spi.device.ISite;
+import com.sitewhere.spi.area.IArea;
 
 /**
- * Model object for site information.
+ * Model object for area information.
  * 
  * @author dadams
  */
 @JsonInclude(Include.NON_NULL)
-public class Site extends MetadataProviderEntity implements ISite, Serializable {
+public class Area extends MetadataProviderEntity implements IArea {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = -566693689485715028L;
 
-    /** Unique site id */
+    /** Unique area id */
     private UUID id;
 
     /** Unique token */
     private String token;
 
-    /** Site name */
+    /** Area type id */
+    private UUID areaTypeId;
+
+    /** Parent area id */
+    private UUID parentAreaId;
+
+    /** Area name */
     private String name;
 
-    /** Site description */
+    /** Area description */
     private String description;
 
     /** Image URL */
     private String imageUrl;
 
     /** Map data */
-    private SiteMapData map = new SiteMapData();
+    private AreaMapData map = new AreaMapData();
 
     /*
-     * @see com.sitewhere.spi.device.ISite#getId()
+     * @see com.sitewhere.spi.area.IArea#getId()
      */
     @Override
     public UUID getId() {
@@ -57,9 +62,7 @@ public class Site extends MetadataProviderEntity implements ISite, Serializable 
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.ISite#getToken()
+     * @see com.sitewhere.spi.area.IArea#getToken()
      */
     @Override
     public String getToken() {
@@ -71,9 +74,31 @@ public class Site extends MetadataProviderEntity implements ISite, Serializable 
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.ISite#getName()
+     * @see com.sitewhere.spi.area.IArea#getAreaTypeId()
+     */
+    @Override
+    public UUID getAreaTypeId() {
+	return areaTypeId;
+    }
+
+    public void setAreaTypeId(UUID areaTypeId) {
+	this.areaTypeId = areaTypeId;
+    }
+
+    /*
+     * @see com.sitewhere.spi.area.IArea#getParentAreaId()
+     */
+    @Override
+    public UUID getParentAreaId() {
+	return parentAreaId;
+    }
+
+    public void setParentAreaId(UUID parentAreaId) {
+	this.parentAreaId = parentAreaId;
+    }
+
+    /*
+     * @see com.sitewhere.spi.area.IArea#getName()
      */
     @Override
     public String getName() {
@@ -85,9 +110,7 @@ public class Site extends MetadataProviderEntity implements ISite, Serializable 
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.ISite#getDescription()
+     * @see com.sitewhere.spi.area.IArea#getDescription()
      */
     @Override
     public String getDescription() {
@@ -99,9 +122,7 @@ public class Site extends MetadataProviderEntity implements ISite, Serializable 
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.ISite#getImageUrl()
+     * @see com.sitewhere.spi.area.IArea#getImageUrl()
      */
     @Override
     public String getImageUrl() {
@@ -113,16 +134,14 @@ public class Site extends MetadataProviderEntity implements ISite, Serializable 
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.ISite#getMap()
+     * @see com.sitewhere.spi.area.IArea#getMap()
      */
     @Override
-    public SiteMapData getMap() {
+    public AreaMapData getMap() {
 	return map;
     }
 
-    public void setMap(SiteMapData map) {
+    public void setMap(AreaMapData map) {
 	this.map = map;
     }
 }

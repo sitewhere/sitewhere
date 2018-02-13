@@ -20,11 +20,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
+import com.sitewhere.rest.model.area.request.ZoneCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.user.SiteWhereRoles;

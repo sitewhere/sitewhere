@@ -32,19 +32,19 @@ import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
+import com.sitewhere.rest.model.area.Area;
+import com.sitewhere.rest.model.area.Zone;
 import com.sitewhere.rest.model.device.DeviceAssignment;
-import com.sitewhere.rest.model.device.Site;
-import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.search.Pager;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.area.IArea;
+import com.sitewhere.spi.area.IZone;
+import com.sitewhere.spi.area.request.IAreaCreateRequest;
 import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.ISite;
-import com.sitewhere.spi.device.IZone;
-import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
@@ -53,11 +53,11 @@ import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
 
 /**
- * HBase specifics for dealing with SiteWhere sites.
+ * HBase specifics for dealing with SiteWhere areas.
  * 
  * @author Derek
  */
-public class HBaseSite {
+public class HBaseArea {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -79,24 +79,24 @@ public class HBaseSite {
     public static final String REGEX_ASSIGNMENT = "^.{7}\\x00$";
 
     /**
-     * Create a new site.
+     * Create a new area.
      * 
      * @param context
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public static ISite createSite(IHBaseContext context, ISiteCreateRequest request) throws SiteWhereException {
+    public static IArea createArea(IHBaseContext context, IAreaCreateRequest request) throws SiteWhereException {
 	// Use common logic so all backend implementations work the same.
-	Site site = DeviceManagementPersistence.siteCreateLogic(request);
+	Area area = DeviceManagementPersistence.areaCreateLogic(request);
 
 	Long value = context.getDeviceIdManager().getSiteKeys().getNextCounterValue();
-	context.getDeviceIdManager().getSiteKeys().create(site.getToken(), value);
+	context.getDeviceIdManager().getSiteKeys().create(area.getToken(), value);
 
 	byte[] primary = getPrimaryRowkey(value);
 
-	// Create primary site record.
-	byte[] payload = context.getPayloadMarshaler().encodeSite(site);
+	// Create primary area record.
+	byte[] payload = context.getPayloadMarshaler().encodeArea(area);
 	byte[] maxLong = Bytes.toBytes(Long.MAX_VALUE);
 
 	Table sites = null;
@@ -112,23 +112,23 @@ public class HBaseSite {
 	} finally {
 	    HBaseUtils.closeCleanly(sites);
 	}
-	return site;
+	return area;
     }
 
     /**
-     * Get a site based on unique token.
+     * Get a area based on unique token.
      * 
      * @param context
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    public static Site getSiteByToken(IHBaseContext context, String token) throws SiteWhereException {
-	Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(token);
-	if (siteId == null) {
+    public static Area getAreaByToken(IHBaseContext context, String token) throws SiteWhereException {
+	Long areaId = context.getDeviceIdManager().getSiteKeys().getValue(token);
+	if (areaId == null) {
 	    return null;
 	}
-	byte[] primary = getPrimaryRowkey(siteId);
+	byte[] primary = getPrimaryRowkey(areaId);
 	Table sites = null;
 	try {
 	    sites = getSitesTableInterface(context);
@@ -142,7 +142,7 @@ public class HBaseSite {
 		throw new SiteWhereException("Payload fields not found for site.");
 	    }
 
-	    return PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeSite(payload);
+	    return PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeArea(payload);
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to load site by token.", e);
 	} finally {
@@ -151,7 +151,7 @@ public class HBaseSite {
     }
 
     /**
-     * Update information for an existing site.
+     * Update information for an existing area.
      * 
      * @param context
      * @param token
@@ -159,20 +159,20 @@ public class HBaseSite {
      * @return
      * @throws SiteWhereException
      */
-    public static Site updateSite(IHBaseContext context, Site site, ISiteCreateRequest request)
+    public static Area updateArea(IHBaseContext context, Area area, IAreaCreateRequest request)
 	    throws SiteWhereException {
-	Site updated = getSiteByToken(context, site.getToken());
+	Area updated = getAreaByToken(context, area.getToken());
 	if (updated == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
 	}
 
 	// Use common update logic so that backend implemetations act the
 	// same way.
-	DeviceManagementPersistence.siteUpdateLogic(request, updated);
+	DeviceManagementPersistence.areaUpdateLogic(request, updated);
 
-	Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(site.getToken());
-	byte[] rowkey = getPrimaryRowkey(siteId);
-	byte[] payload = context.getPayloadMarshaler().encodeSite(updated);
+	Long areaId = context.getDeviceIdManager().getSiteKeys().getValue(area.getToken());
+	byte[] rowkey = getPrimaryRowkey(areaId);
+	byte[] payload = context.getPayloadMarshaler().encodeArea(updated);
 
 	Table sites = null;
 	try {
@@ -189,19 +189,19 @@ public class HBaseSite {
     }
 
     /**
-     * List all sites that match the given criteria.
+     * List all areas that match the given criteria.
      * 
      * @param context
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public static SearchResults<ISite> listSites(IHBaseContext context, ISearchCriteria criteria)
+    public static SearchResults<IArea> listAreas(IHBaseContext context, ISearchCriteria criteria)
 	    throws SiteWhereException {
 	RegexStringComparator comparator = new RegexStringComparator(REGEX_SITE);
-	Pager<ISite> pager = getFilteredSiteRows(context, false, criteria, comparator, null, null, Site.class,
-		ISite.class);
-	return new SearchResults<ISite>(pager.getResults());
+	Pager<IArea> pager = getFilteredAreaRows(context, false, criteria, comparator, null, null, Area.class,
+		IArea.class);
+	return new SearchResults<IArea>(pager.getResults());
     }
 
     /**
@@ -213,17 +213,17 @@ public class HBaseSite {
      * @return
      * @throws SiteWhereException
      */
-    public static SearchResults<IDeviceAssignment> listDeviceAssignmentsForSite(IHBaseContext context, ISite site,
+    public static SearchResults<IDeviceAssignment> listDeviceAssignmentsForArea(IHBaseContext context, IArea IArea,
 	    IAssignmentSearchCriteria criteria) throws SiteWhereException {
 	Table sites = null;
 	ResultScanner scanner = null;
 	try {
-	    Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(site.getToken());
-	    if (siteId == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+	    Long areaId = context.getDeviceIdManager().getSiteKeys().getValue(IArea.getToken());
+	    if (areaId == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
 	    }
-	    byte[] assnPrefix = getAssignmentRowKey(siteId);
-	    byte[] after = getAfterAssignmentRowKey(siteId);
+	    byte[] assnPrefix = getAssignmentRowKey(areaId);
+	    byte[] after = getAfterAssignmentRowKey(areaId);
 
 	    sites = getSitesTableInterface(context);
 
@@ -269,7 +269,7 @@ public class HBaseSite {
     }
 
     /**
-     * List device assignments for a site that have state attached and have a last
+     * List device assignments for an area that have state attached and have a last
      * interaction date within a given date range. TODO: This is not efficient since
      * it iterates through all assignments for a site.
      * 
@@ -280,16 +280,16 @@ public class HBaseSite {
      * @throws SiteWhereException
      */
     public static SearchResults<IDeviceAssignment> listDeviceAssignmentsWithLastInteraction(IHBaseContext context,
-	    String siteToken, IDateRangeSearchCriteria criteria) throws SiteWhereException {
+	    String areaToken, IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	Table sites = null;
 	ResultScanner scanner = null;
 	try {
-	    Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(siteToken);
-	    if (siteId == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+	    Long areaId = context.getDeviceIdManager().getSiteKeys().getValue(areaToken);
+	    if (areaId == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
 	    }
-	    byte[] assnPrefix = getAssignmentRowKey(siteId);
-	    byte[] after = getAfterAssignmentRowKey(siteId);
+	    byte[] assnPrefix = getAssignmentRowKey(areaId);
+	    byte[] after = getAfterAssignmentRowKey(areaId);
 
 	    sites = getSitesTableInterface(context);
 
@@ -350,22 +350,22 @@ public class HBaseSite {
      * List all device assignments for a site that have been marked as missing.
      * 
      * @param context
-     * @param siteToken
+     * @param areaToken
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public static SearchResults<IDeviceAssignment> listMissingDeviceAssignments(IHBaseContext context, String siteToken,
+    public static SearchResults<IDeviceAssignment> listMissingDeviceAssignments(IHBaseContext context, String areaToken,
 	    ISearchCriteria criteria) throws SiteWhereException {
 	Table sites = null;
 	ResultScanner scanner = null;
 	try {
-	    Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(siteToken);
-	    if (siteId == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+	    Long areaId = context.getDeviceIdManager().getSiteKeys().getValue(areaToken);
+	    if (areaId == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
 	    }
-	    byte[] assnPrefix = getAssignmentRowKey(siteId);
-	    byte[] after = getAfterAssignmentRowKey(siteId);
+	    byte[] assnPrefix = getAssignmentRowKey(areaId);
+	    byte[] after = getAfterAssignmentRowKey(areaId);
 
 	    sites = getSitesTableInterface(context);
 
@@ -425,13 +425,13 @@ public class HBaseSite {
     public static SearchResults<IDeviceAssignment> listDeviceAssignmentsForAsset(IHBaseContext context,
 	    IAssetReference assetReference, IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException {
 	Pager<IDeviceAssignment> pager = new Pager<IDeviceAssignment>(criteria);
-	if (criteria.getSiteToken() != null) {
-	    locateDeviceAssignmentsForAsset(context, pager, criteria.getSiteToken(), assetReference.getModule(),
+	if (criteria.getAreaToken() != null) {
+	    locateDeviceAssignmentsForAsset(context, pager, criteria.getAreaToken(), assetReference.getModule(),
 		    assetReference.getId(), criteria);
 	} else {
-	    SearchResults<ISite> sites = HBaseSite.listSites(context, SearchCriteria.ALL);
-	    for (ISite site : sites.getResults()) {
-		locateDeviceAssignmentsForAsset(context, pager, site.getToken(), assetReference.getModule(),
+	    SearchResults<IArea> areas = HBaseArea.listAreas(context, SearchCriteria.ALL);
+	    for (IArea area : areas.getResults()) {
+		locateDeviceAssignmentsForAsset(context, pager, area.getToken(), assetReference.getModule(),
 			assetReference.getId(), criteria);
 	    }
 	}
@@ -444,24 +444,24 @@ public class HBaseSite {
      * 
      * @param context
      * @param pager
-     * @param siteToken
+     * @param areaToken
      * @param assetModuleId
      * @param assetId
      * @param criteria
      * @throws SiteWhereException
      */
     public static void locateDeviceAssignmentsForAsset(IHBaseContext context, Pager<IDeviceAssignment> pager,
-	    String siteToken, String assetModuleId, String assetId, IAssignmentsForAssetSearchCriteria criteria)
+	    String areaToken, String assetModuleId, String assetId, IAssignmentsForAssetSearchCriteria criteria)
 	    throws SiteWhereException {
 	Table sites = null;
 	ResultScanner scanner = null;
 	try {
-	    Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(siteToken);
-	    if (siteId == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+	    Long areaId = context.getDeviceIdManager().getSiteKeys().getValue(areaToken);
+	    if (areaId == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
 	    }
-	    byte[] assnPrefix = getAssignmentRowKey(siteId);
-	    byte[] after = getAfterAssignmentRowKey(siteId);
+	    byte[] assnPrefix = getAssignmentRowKey(areaId);
+	    byte[] after = getAfterAssignmentRowKey(areaId);
 
 	    sites = getSitesTableInterface(context);
 
@@ -502,30 +502,30 @@ public class HBaseSite {
     }
 
     /**
-     * List zones for a given site.
+     * List zones for a given area.
      * 
      * @param context
-     * @param site
+     * @param area
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public static SearchResults<IZone> listZonesForSite(IHBaseContext context, ISite site, ISearchCriteria criteria)
+    public static SearchResults<IZone> listZonesForArea(IHBaseContext context, IArea area, ISearchCriteria criteria)
 	    throws SiteWhereException {
-	Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(site.getToken());
-	if (siteId == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+	Long areaId = context.getDeviceIdManager().getSiteKeys().getValue(area.getToken());
+	if (areaId == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
 	}
-	byte[] zonePrefix = getZoneRowKey(siteId);
-	byte[] after = getAssignmentRowKey(siteId);
+	byte[] zonePrefix = getZoneRowKey(areaId);
+	byte[] after = getAssignmentRowKey(areaId);
 	BinaryPrefixComparator comparator = new BinaryPrefixComparator(zonePrefix);
-	Pager<IZone> pager = getFilteredSiteRows(context, false, criteria, comparator, zonePrefix, after, Zone.class,
+	Pager<IZone> pager = getFilteredAreaRows(context, false, criteria, comparator, zonePrefix, after, Zone.class,
 		IZone.class);
 	return new SearchResults<IZone>(pager.getResults());
     }
 
     /**
-     * Get filtered results from the Site table.
+     * Get filtered results from the area table.
      * 
      * @param context
      * @param includeDeleted
@@ -538,7 +538,7 @@ public class HBaseSite {
      * @throws SiteWhereException
      */
     @SuppressWarnings("unchecked")
-    protected static <T, I> Pager<I> getFilteredSiteRows(IHBaseContext context, boolean includeDeleted,
+    protected static <T, I> Pager<I> getFilteredAreaRows(IHBaseContext context, boolean includeDeleted,
 	    ISearchCriteria criteria, ByteArrayComparable comparator, byte[] startRow, byte[] stopRow, Class<T> type,
 	    Class<I> iface) throws SiteWhereException {
 	Table sites = null;
@@ -584,24 +584,24 @@ public class HBaseSite {
     }
 
     /**
-     * Delete an existing site.
+     * Delete an existing area.
      * 
      * @param context
-     * @param site
+     * @param area
      * @param force
      * @return
      * @throws SiteWhereException
      */
-    public static Site deleteSite(IHBaseContext context, Site site, boolean force) throws SiteWhereException {
-	if (site == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+    public static Area deleteArea(IHBaseContext context, Area area, boolean force) throws SiteWhereException {
+	if (area == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
 	}
-	site.setDeleted(true);
+	area.setDeleted(true);
 
-	Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(site.getToken());
-	byte[] rowkey = getPrimaryRowkey(siteId);
+	Long areaId = context.getDeviceIdManager().getSiteKeys().getValue(area.getToken());
+	byte[] rowkey = getPrimaryRowkey(areaId);
 	if (force) {
-	    context.getDeviceIdManager().getSiteKeys().delete(site.getToken());
+	    context.getDeviceIdManager().getSiteKeys().delete(area.getToken());
 	    Table sites = null;
 	    try {
 		Delete delete = new Delete(rowkey);
@@ -614,8 +614,8 @@ public class HBaseSite {
 	    }
 	} else {
 	    byte[] marker = { (byte) 0x01 };
-	    DeviceManagementPersistence.setUpdatedEntityMetadata(site);
-	    byte[] updated = context.getPayloadMarshaler().encodeSite(site);
+	    DeviceManagementPersistence.setUpdatedEntityMetadata(area);
+	    byte[] updated = context.getPayloadMarshaler().encodeArea(area);
 	    Table sites = null;
 	    try {
 		sites = getSitesTableInterface(context);
@@ -629,7 +629,7 @@ public class HBaseSite {
 		HBaseUtils.closeCleanly(sites);
 	    }
 	}
-	return site;
+	return area;
     }
 
     /**

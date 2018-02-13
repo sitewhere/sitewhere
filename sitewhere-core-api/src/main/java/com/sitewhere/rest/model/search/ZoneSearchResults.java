@@ -10,7 +10,7 @@ package com.sitewhere.rest.model.search;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sitewhere.rest.model.device.Zone;
+import com.sitewhere.rest.model.area.Zone;
 
 /**
  * Search results that contain zones.

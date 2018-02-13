@@ -45,11 +45,11 @@ public interface IDeviceEvent extends IMetadataProvider, Comparable<IDeviceEvent
     public DeviceEventType getEventType();
 
     /**
-     * Get id for site the event pertains to.
+     * Get id for area the event pertains to.
      * 
      * @return
      */
-    public UUID getSiteId();
+    public UUID getAreaId();
 
     /**
      * Get the device assignment the event pertains to.

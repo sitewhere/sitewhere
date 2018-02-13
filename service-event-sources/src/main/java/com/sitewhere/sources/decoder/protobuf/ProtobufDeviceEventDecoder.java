@@ -73,8 +73,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.
+     * @see com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.
      * lang.Object, java.util.Map)
      */
     @Override
@@ -90,9 +89,9 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		LOGGER.debug("Decoded registration for: " + register.getHardwareId());
 		DeviceRegistrationRequest request = new DeviceRegistrationRequest();
 		request.setHardwareId(register.getHardwareId());
-		request.setDeviceTypeToken(register.getSpecificationToken());
-		if (register.hasSiteToken()) {
-		    request.setSiteToken(register.getSiteToken());
+		request.setDeviceTypeToken(register.getDeviceTypeToken());
+		if (register.hasAreaToken()) {
+		    request.setAreaToken(register.getAreaToken());
 		}
 
 		List<Metadata> pbmeta = register.getMetadataList();

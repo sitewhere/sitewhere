@@ -13,9 +13,9 @@ import com.sitewhere.rest.model.batch.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 
@@ -84,13 +84,13 @@ public class CommandHtmlHelper {
 	    throw new SiteWhereException("Invalid device type reference: " + criteria.getDeviceTypeToken());
 	}
 	String html = "all devices";
-	if (!StringUtils.isEmpty(criteria.getSiteToken())) {
-	    ISite site = devices.getSiteByToken(criteria.getSiteToken());
-	    if (site == null) {
-		throw new SiteWhereException("Invalid site reference: " + criteria.getGroupToken());
+	if (!StringUtils.isEmpty(criteria.getAreaToken())) {
+	    IArea area = devices.getAreaByToken(criteria.getAreaToken());
+	    if (area == null) {
+		throw new SiteWhereException("Invalid area reference: " + criteria.getAreaToken());
 	    }
-	    html += " belonging to site <a href=\"" + relativePath + "/sites/" + site.getToken() + ".html\">"
-		    + site.getName() + "</a>";
+	    html += " belonging to area <a href=\"" + relativePath + "/areas/" + area.getToken() + ".html\">"
+		    + area.getName() + "</a>";
 	}
 	html += " with device type <a href=\"" + relativePath + "/devicetypes/" + deviceType.getToken() + ".html\">"
 		+ deviceType.getName() + "</a>";

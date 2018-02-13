@@ -35,13 +35,6 @@ public interface IDevice extends IMetadataProviderEntity {
     public String getHardwareId();
 
     /**
-     * Get unique id for associated site.
-     * 
-     * @return
-     */
-    public UUID getSiteId();
-
-    /**
      * Get unique id for associated device type.
      * 
      * @return

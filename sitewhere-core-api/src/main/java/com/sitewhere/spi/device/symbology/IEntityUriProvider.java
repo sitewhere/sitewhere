@@ -10,10 +10,10 @@ package com.sitewhere.spi.device.symbology;
 import java.net.URI;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.device.ISite;
 
 /**
  * Translates a SiteWhere entity into a unique URL that identifies it.
@@ -23,13 +23,13 @@ import com.sitewhere.spi.device.ISite;
 public interface IEntityUriProvider {
 
     /**
-     * Get unique identifier for a site.
+     * Get unique identifier for an area.
      * 
-     * @param site
+     * @param area
      * @return
      * @throws SiteWhereException
      */
-    public URI getSiteIdentifier(ISite site) throws SiteWhereException;
+    public URI getAreaIdentifier(IArea area) throws SiteWhereException;
 
     /**
      * Get unique identifier for a device type.

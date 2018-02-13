@@ -47,8 +47,8 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
     /** Asset reference */
     private IAssetReference assetReference;
 
-    /** Id of site when assigned */
-    private UUID siteId;
+    /** Id of assigned area */
+    private UUID areaId;
 
     /** Assignment status */
     private DeviceAssignmentStatus status;
@@ -124,15 +124,15 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceAssignment#getSiteId()
+     * @see com.sitewhere.spi.device.IDeviceAssignment#getAreaId()
      */
     @Override
-    public UUID getSiteId() {
-	return siteId;
+    public UUID getAreaId() {
+	return areaId;
     }
 
-    public void setSiteId(UUID siteId) {
-	this.siteId = siteId;
+    public void setAreaId(UUID areaId) {
+	this.areaId = areaId;
     }
 
     /*

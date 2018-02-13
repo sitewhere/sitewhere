@@ -36,8 +36,8 @@ public class DeviceRegistrationRequest extends DeviceStateChangeCreateRequest
     /** Data map identifier for device type token */
     public static final String DATA_DEVICE_TYPE_TOKEN = "deviceTypeToken";
 
-    /** Data map identifier for 'reply to' address */
-    public static final String DATA_SITE_TOKEN = "siteToken";
+    /** Data map identifier for area token */
+    public static final String DATA_AREA_TOKEN = "areaToken";
 
     public DeviceRegistrationRequest() {
 	super(StateChangeCategory.Registration, StateChangeType.Registration_Requested,
@@ -73,16 +73,15 @@ public class DeviceRegistrationRequest extends DeviceStateChangeCreateRequest
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest#
-     * getSiteToken()
+     * getAreaToken()
      */
-    public String getSiteToken() {
-	return getData().get(DATA_SITE_TOKEN);
+    @Override
+    public String getAreaToken() {
+	return getData().get(DATA_AREA_TOKEN);
     }
 
-    public void setSiteToken(String token) {
-	getData().put(DATA_SITE_TOKEN, token);
+    public void setAreaToken(String token) {
+	getData().put(DATA_AREA_TOKEN, token);
     }
 }

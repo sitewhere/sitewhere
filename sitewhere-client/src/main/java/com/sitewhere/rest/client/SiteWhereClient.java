@@ -29,6 +29,10 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import com.sitewhere.rest.ISiteWhereWebConstants;
+import com.sitewhere.rest.model.area.Area;
+import com.sitewhere.rest.model.area.Zone;
+import com.sitewhere.rest.model.area.request.AreaCreateRequest;
+import com.sitewhere.rest.model.area.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.batch.BatchOperation;
 import com.sitewhere.rest.model.batch.request.BatchCommandInvocationRequest;
 import com.sitewhere.rest.model.common.MetadataProvider;
@@ -36,8 +40,6 @@ import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceType;
-import com.sitewhere.rest.model.device.Site;
-import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
@@ -56,8 +58,6 @@ import com.sitewhere.rest.model.device.request.DeviceGroupCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceGroupElementCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceTypeCreateRequest;
-import com.sitewhere.rest.model.device.request.SiteCreateRequest;
-import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.search.AssetSearchResults;
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
@@ -291,25 +291,23 @@ public class SiteWhereClient implements ISiteWhereClient {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.ISiteWhereClient#createSite(com.sitewhere.rest.model.
-     * device. request .SiteCreateRequest)
+     * @see
+     * com.sitewhere.spi.ISiteWhereClient#createArea(com.sitewhere.rest.model.area.
+     * request.AreaCreateRequest)
      */
     @Override
-    public Site createSite(SiteCreateRequest request) throws SiteWhereException {
+    public Area createArea(AreaCreateRequest request) throws SiteWhereException {
 	Map<String, String> vars = new HashMap<String, String>();
-	return sendRest(getBaseUrl() + "sites", HttpMethod.POST, request, Site.class, vars);
+	return sendRest(getBaseUrl() + "areas", HttpMethod.POST, request, Area.class, vars);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.ISiteWhereClient#getSiteByToken(java.lang.String)
+     * @see com.sitewhere.spi.ISiteWhereClient#getAreaByToken(java.lang.String)
      */
-    public Site getSiteByToken(String token) throws SiteWhereException {
+    @Override
+    public Area getAreaByToken(String token) throws SiteWhereException {
 	Map<String, String> vars = new HashMap<String, String>();
-	return sendRest(getBaseUrl() + "sites/" + token, HttpMethod.GET, null, Site.class, vars);
+	return sendRest(getBaseUrl() + "areas/" + token, HttpMethod.GET, null, Area.class, vars);
     }
 
     /*

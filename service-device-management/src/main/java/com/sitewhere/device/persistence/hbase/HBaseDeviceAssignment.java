@@ -73,15 +73,15 @@ public class HBaseDeviceAssignment {
 	if (device == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 	}
-	Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(device.getSiteId().toString());
-	if (siteId == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+	Long areaId = context.getDeviceIdManager().getSiteKeys().getValue(request.getAreaToken());
+	if (areaId == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
 	}
 	if (device.getDeviceAssignmentId() != null) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceAlreadyAssigned, ErrorLevel.ERROR);
 	}
-	byte[] baserow = HBaseSite.getAssignmentRowKey(siteId);
-	Long assnId = HBaseSite.allocateNextAssignmentId(context, siteId);
+	byte[] baserow = HBaseArea.getAssignmentRowKey(areaId);
+	Long assnId = HBaseArea.allocateNextAssignmentId(context, areaId);
 	byte[] assnIdBytes = getAssignmentIdentifier(assnId);
 	ByteBuffer buffer = ByteBuffer.allocate(baserow.length + assnIdBytes.length);
 	buffer.put(baserow);
@@ -100,7 +100,7 @@ public class HBaseDeviceAssignment {
 	byte[] primary = getPrimaryRowkey(assnKey);
 
 	// Create device assignment for JSON.
-	DeviceAssignment newAssignment = DeviceManagementPersistence.deviceAssignmentCreateLogic(request, device);
+	DeviceAssignment newAssignment = DeviceManagementPersistence.deviceAssignmentCreateLogic(request, null, device);
 	newAssignment.setToken(uuid);
 	byte[] payload = context.getPayloadMarshaler().encodeDeviceAssignment(newAssignment);
 

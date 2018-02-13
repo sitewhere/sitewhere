@@ -213,7 +213,7 @@ public class SiteWhereSolrFactory {
 	UUID assignmentId = (UUID) document.get(ISolrFields.ASSIGNMENT_TOKEN);
 	String assignmentTypeStr = (String) document.get(ISolrFields.ASSIGNMENT_TYPE);
 	String assetReference = (String) document.get(ISolrFields.ASSET_REFERENCE);
-	UUID siteId = (UUID) document.get(ISolrFields.SITE_TOKEN);
+	UUID areaId = (UUID) document.get(ISolrFields.AREA_ID);
 	Date eventDate = (Date) document.get(ISolrFields.EVENT_DATE);
 	Date receivedDate = (Date) document.get(ISolrFields.RECEIVED_DATE);
 
@@ -221,7 +221,7 @@ public class SiteWhereSolrFactory {
 	event.setDeviceAssignmentId(assignmentId);
 	event.setAssignmentType(DeviceAssignmentType.valueOf(assignmentTypeStr));
 	event.setAssetReference(new DefaultAssetReferenceEncoder().decode(assetReference));
-	event.setSiteId(siteId);
+	event.setAreaId(areaId);
 	event.setEventDate(eventDate);
 	event.setReceivedDate(receivedDate);
 
@@ -250,7 +250,7 @@ public class SiteWhereSolrFactory {
 	document.addField(ISolrFields.ASSIGNMENT_TYPE, event.getAssignmentType().name());
 	document.addField(ISolrFields.ASSET_REFERENCE,
 		new DefaultAssetReferenceEncoder().encode(event.getAssetReference()));
-	document.addField(ISolrFields.SITE_TOKEN, event.getSiteId());
+	document.addField(ISolrFields.AREA_ID, event.getAreaId());
 	document.addField(ISolrFields.EVENT_DATE, event.getEventDate());
 	document.addField(ISolrFields.RECEIVED_DATE, event.getReceivedDate());
 	addMetadata(document, event.getMetadata());

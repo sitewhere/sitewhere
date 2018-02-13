@@ -249,7 +249,7 @@ public class EventModelConverter {
 	api.setId(grpc.getId());
 	api.setAlternateId(grpc.hasAlternateId() ? grpc.getAlternateId().getValue() : null);
 	api.setEventType(EventModelConverter.asApiDeviceEventType(grpc.getEventType()));
-	api.setSiteId(CommonModelConverter.asApiUuid(grpc.getSiteId()));
+	api.setAreaId(CommonModelConverter.asApiUuid(grpc.getAreaId()));
 	api.setDeviceAssignmentId(CommonModelConverter.asApiUuid(grpc.getDeviceAssignmentId()));
 	api.setAssignmentType(DeviceModelConverter.asApiDeviceAssignmentType(grpc.getAssignmentType()));
 	api.setAssetReference(
@@ -273,7 +273,7 @@ public class EventModelConverter {
 	    grpc.setAlternateId(GOptionalString.newBuilder().setValue(api.getAlternateId()).build());
 	}
 	grpc.setEventType(EventModelConverter.asGrpcDeviceEventType(api.getEventType()));
-	grpc.setSiteId(CommonModelConverter.asGrpcUuid(api.getSiteId()));
+	grpc.setAreaId(CommonModelConverter.asGrpcUuid(api.getAreaId()));
 	grpc.setDeviceAssignmentId(CommonModelConverter.asGrpcUuid(api.getDeviceAssignmentId()));
 	grpc.setAssignmentType(DeviceModelConverter.asGrpcDeviceAssignmentType(api.getAssignmentType()));
 	if (api.getAssetReference() != null) {

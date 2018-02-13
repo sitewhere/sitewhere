@@ -46,8 +46,8 @@ import com.sitewhere.rest.model.search.Pager;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -82,8 +82,7 @@ public class HBaseDeviceEvent {
     private static final long ROW_IN_MS = (1 << 24);
 
     /**
-     * List measurements associated with an assignment based on the given
-     * criteria.
+     * List measurements associated with an assignment based on the given criteria.
      * 
      * @param context
      * @param assignment
@@ -131,8 +130,7 @@ public class HBaseDeviceEvent {
     }
 
     /**
-     * List measurements associated with an assignment based on the given
-     * criteria.
+     * List measurements associated with an assignment based on the given criteria.
      * 
      * @param context
      * @param assignment
@@ -148,17 +146,17 @@ public class HBaseDeviceEvent {
     }
 
     /**
-     * List device measurements associated with a site.
+     * List device measurements associated with an area.
      * 
      * @param context
-     * @param site
+     * @param area
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public static SearchResults<IDeviceMeasurements> listDeviceMeasurementsForSite(IHBaseContext context, ISite site,
+    public static SearchResults<IDeviceMeasurements> listDeviceMeasurementsForArea(IHBaseContext context, IArea area,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	Pager<EventMatch> matches = getEventRowsForSite(context, site, EventRecordType.Measurement, criteria);
+	Pager<EventMatch> matches = getEventRowsForArea(context, area, EventRecordType.Measurement, criteria);
 	return convertMatches(context, matches);
     }
 
@@ -205,17 +203,17 @@ public class HBaseDeviceEvent {
     }
 
     /**
-     * List device locations associated with a site.
+     * List device locations associated with an area.
      * 
      * @param context
-     * @param site
+     * @param area
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public static SearchResults<IDeviceLocation> listDeviceLocationsForSite(IHBaseContext context, ISite site,
+    public static SearchResults<IDeviceLocation> listDeviceLocationsForArea(IHBaseContext context, IArea area,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	Pager<EventMatch> matches = getEventRowsForSite(context, site, EventRecordType.Location, criteria);
+	Pager<EventMatch> matches = getEventRowsForArea(context, area, EventRecordType.Location, criteria);
 	return convertMatches(context, matches);
     }
 
@@ -263,17 +261,17 @@ public class HBaseDeviceEvent {
     }
 
     /**
-     * List device alerts associated with a site.
+     * List device alerts associated with an area.
      * 
      * @param context
-     * @param site
+     * @param area
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public static SearchResults<IDeviceAlert> listDeviceAlertsForSite(IHBaseContext context, ISite site,
+    public static SearchResults<IDeviceAlert> listDeviceAlertsForArea(IHBaseContext context, IArea area,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	Pager<EventMatch> matches = getEventRowsForSite(context, site, EventRecordType.Alert, criteria);
+	Pager<EventMatch> matches = getEventRowsForArea(context, area, EventRecordType.Alert, criteria);
 	return convertMatches(context, matches);
     }
 
@@ -322,9 +320,9 @@ public class HBaseDeviceEvent {
     }
 
     /**
-     * List device stream data that meets the given criteria. Note that the
-     * actual blob data is not stored with the event, so it has to be merged
-     * into the results list on the fly.
+     * List device stream data that meets the given criteria. Note that the actual
+     * blob data is not stored with the event, so it has to be merged into the
+     * results list on the fly.
      * 
      * @param context
      * @param assignment
@@ -418,17 +416,17 @@ public class HBaseDeviceEvent {
     }
 
     /**
-     * List device command invocations associated with a site.
+     * List device command invocations associated with an area.
      * 
      * @param context
-     * @param site
+     * @param area
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public static SearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(IHBaseContext context,
-	    ISite site, IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	Pager<EventMatch> matches = getEventRowsForSite(context, site, EventRecordType.CommandInvocation, criteria);
+    public static SearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForArea(IHBaseContext context,
+	    IArea area, IDateRangeSearchCriteria criteria) throws SiteWhereException {
+	Pager<EventMatch> matches = getEventRowsForArea(context, area, EventRecordType.CommandInvocation, criteria);
 	return convertMatches(context, matches);
     }
 
@@ -461,8 +459,7 @@ public class HBaseDeviceEvent {
     }
 
     /**
-     * List state changes associated with an assignment based on the given
-     * criteria.
+     * List state changes associated with an assignment based on the given criteria.
      * 
      * @param context
      * @param assignment
@@ -478,17 +475,17 @@ public class HBaseDeviceEvent {
     }
 
     /**
-     * List device state changes associated with a site.
+     * List device state changes associated with an area.
      * 
      * @param context
-     * @param site
+     * @param area
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public static SearchResults<IDeviceStateChange> listDeviceStateChangesForSite(IHBaseContext context, ISite site,
+    public static SearchResults<IDeviceStateChange> listDeviceStateChangesForArea(IHBaseContext context, IArea area,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	Pager<EventMatch> matches = getEventRowsForSite(context, site, EventRecordType.StateChange, criteria);
+	Pager<EventMatch> matches = getEventRowsForArea(context, area, EventRecordType.StateChange, criteria);
 	return convertMatches(context, matches);
     }
 
@@ -524,11 +521,11 @@ public class HBaseDeviceEvent {
     }
 
     /**
-     * Creates a link to the command response by incrementing(or creating) a
-     * counter and sequential entries under the original invocation. TODO: Note
-     * that none of this is transactional, so it is currently possible for
-     * responses not to be correctly linked back to the original invocation if
-     * the calls in this method fail.
+     * Creates a link to the command response by incrementing(or creating) a counter
+     * and sequential entries under the original invocation. TODO: Note that none of
+     * this is transactional, so it is currently possible for responses not to be
+     * correctly linked back to the original invocation if the calls in this method
+     * fail.
      * 
      * @param context
      * @param response
@@ -644,17 +641,17 @@ public class HBaseDeviceEvent {
     }
 
     /**
-     * List device command responses associated with a site.
+     * List device command responses associated with an area.
      * 
      * @param context
-     * @param site
+     * @param area
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public static SearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(IHBaseContext context,
-	    ISite site, IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	Pager<EventMatch> matches = getEventRowsForSite(context, site, EventRecordType.CommandResponse, criteria);
+    public static SearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForArea(IHBaseContext context,
+	    IArea area, IDateRangeSearchCriteria criteria) throws SiteWhereException {
+	Pager<EventMatch> matches = getEventRowsForArea(context, area, EventRecordType.CommandResponse, criteria);
 	return convertMatches(context, matches);
     }
 
@@ -676,8 +673,8 @@ public class HBaseDeviceEvent {
     }
 
     /**
-     * Find all event rows associated with a device assignment and return cells
-     * that match the search criteria.
+     * Find all event rows associated with a device assignment and return cells that
+     * match the search criteria.
      * 
      * @param context
      * @param assignment
@@ -775,20 +772,19 @@ public class HBaseDeviceEvent {
     }
 
     /**
-     * Find all event rows associated with a site and return values that match
-     * the search criteria. TODO: This is not optimized at all and will take
-     * forever in cases where there are ton of assignments and events. It has to
-     * go through every record associated with the site. It works for now
-     * though.
+     * Find all event rows associated with a site and return values that match the
+     * search criteria. TODO: This is not optimized at all and will take forever in
+     * cases where there are ton of assignments and events. It has to go through
+     * every record associated with the site. It works for now though.
      * 
      * @param context
-     * @param site
+     * @param area
      * @param eventType
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    protected static Pager<EventMatch> getEventRowsForSite(IHBaseContext context, ISite site, EventRecordType eventType,
+    protected static Pager<EventMatch> getEventRowsForArea(IHBaseContext context, IArea area, EventRecordType eventType,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	// Long siteId =
 	// context.getDeviceIdManager().getSiteKeys().getValue(siteToken);
@@ -853,8 +849,8 @@ public class HBaseDeviceEvent {
     }
 
     /**
-     * Used for ordering events without having to unmarshal all of the byte
-     * arrays to do it.
+     * Used for ordering events without having to unmarshal all of the byte arrays
+     * to do it.
      * 
      * @author Derek
      */
@@ -921,8 +917,8 @@ public class HBaseDeviceEvent {
     }
 
     /**
-     * Gets the absolute first possible event key for cases where a start
-     * timestamp is not specified.
+     * Gets the absolute first possible event key for cases where a start timestamp
+     * is not specified.
      * 
      * @param assnKey
      * @return
@@ -938,8 +934,8 @@ public class HBaseDeviceEvent {
     }
 
     /**
-     * Gets the absolute first possible event key for cases where a start
-     * timestamp is not specified.
+     * Gets the absolute first possible event key for cases where a start timestamp
+     * is not specified.
      * 
      * @param assnKey
      * @return
@@ -1031,8 +1027,8 @@ public class HBaseDeviceEvent {
     }
 
     /**
-     * Decodes an event id into a {@link KeyValue} that can be used to access
-     * the data in HBase.
+     * Decodes an event id into a {@link KeyValue} that can be used to access the
+     * data in HBase.
      * 
      * @param id
      * @return

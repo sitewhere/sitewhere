@@ -10,20 +10,20 @@ package com.sitewhere.device.marshaling;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.rest.model.area.Area;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.asset.LocationAsset;
 import com.sitewhere.rest.model.asset.PersonAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
-import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceAssignment;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.ISite;
 
 /**
  * Configurable helper class that allows DeviceAssignment model objects to be
@@ -42,8 +42,8 @@ public class DeviceAssignmentMarshalHelper {
     /** Indicates whether to include device information */
     private boolean includeDevice = false;
 
-    /** Indicates whether to include site information */
-    private boolean includeSite = false;
+    /** Indicates whether to include area information */
+    private boolean includeArea = false;
 
     /** Indicates whether to include device type */
     private boolean includeDeviceType = false;
@@ -98,10 +98,10 @@ public class DeviceAssignmentMarshalHelper {
 		}
 	    }
 	}
-	result.setSiteId(source.getSiteId());
-	if (isIncludeSite()) {
-	    ISite site = getDeviceManagement().getSite(source.getSiteId());
-	    result.setSite((Site) site);
+	result.setAreaId(source.getAreaId());
+	if (isIncludeArea()) {
+	    IArea area = getDeviceManagement().getArea(source.getAreaId());
+	    result.setArea((Area) area);
 	}
 	result.setDeviceId(source.getDeviceId());
 	if (isIncludeDevice()) {
@@ -148,12 +148,12 @@ public class DeviceAssignmentMarshalHelper {
 	return this;
     }
 
-    public boolean isIncludeSite() {
-	return includeSite;
+    public boolean isIncludeArea() {
+	return includeArea;
     }
 
-    public DeviceAssignmentMarshalHelper setIncludeSite(boolean includeSite) {
-	this.includeSite = includeSite;
+    public DeviceAssignmentMarshalHelper setIncludeArea(boolean includeArea) {
+	this.includeArea = includeArea;
 	return this;
     }
 

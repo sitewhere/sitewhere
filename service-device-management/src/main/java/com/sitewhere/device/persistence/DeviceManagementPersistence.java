@@ -16,15 +16,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.sitewhere.persistence.Persistence;
+import com.sitewhere.rest.model.area.Area;
+import com.sitewhere.rest.model.area.AreaMapData;
+import com.sitewhere.rest.model.area.Zone;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.DeviceStatus;
 import com.sitewhere.rest.model.device.DeviceType;
-import com.sitewhere.rest.model.device.Site;
-import com.sitewhere.rest.model.device.SiteMapData;
-import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
@@ -33,6 +33,9 @@ import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.area.IArea;
+import com.sitewhere.spi.area.request.IAreaCreateRequest;
+import com.sitewhere.spi.area.request.IZoneCreateRequest;
 import com.sitewhere.spi.common.ILocation;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceAssignmentType;
@@ -43,7 +46,6 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
@@ -56,8 +58,6 @@ import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
-import com.sitewhere.spi.device.request.ISiteCreateRequest;
-import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.util.DeviceTypeUtils;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
@@ -345,7 +345,7 @@ public class DeviceManagementPersistence extends Persistence {
      * @return
      * @throws SiteWhereException
      */
-    public static Device deviceCreateLogic(IDeviceCreateRequest request, ISite site, IDeviceType deviceType)
+    public static Device deviceCreateLogic(IDeviceCreateRequest request, IDeviceType deviceType)
 	    throws SiteWhereException {
 	Device device = new Device();
 	device.setId(UUID.randomUUID());
@@ -357,7 +357,6 @@ public class DeviceManagementPersistence extends Persistence {
 	    throw new SiteWhereSystemException(ErrorCode.MalformedHardwareId, ErrorLevel.ERROR);
 	}
 	device.setHardwareId(request.getHardwareId());
-	device.setSiteId(site.getId());
 	device.setDeviceTypeId(deviceType.getId());
 	device.setComments(request.getComments());
 	device.setStatus(request.getStatus());
@@ -374,15 +373,8 @@ public class DeviceManagementPersistence extends Persistence {
      * @param target
      * @throws SiteWhereException
      */
-    public static void deviceUpdateLogic(IDeviceCreateRequest request, ISite site, IDeviceType deviceType,
-	    IDevice parent, Device target) throws SiteWhereException {
-	// Can not update the hardware id on a device.
-	if ((request.getHardwareId() != null) && (!request.getHardwareId().equals(target.getHardwareId()))) {
-	    throw new SiteWhereSystemException(ErrorCode.DeviceHardwareIdCanNotBeChanged, ErrorLevel.ERROR);
-	}
-	if (site != null) {
-	    target.setSiteId(site.getId());
-	}
+    public static void deviceUpdateLogic(IDeviceCreateRequest request, IDeviceType deviceType, IDevice parent,
+	    Device target) throws SiteWhereException {
 	if (deviceType != null) {
 	    target.setDeviceTypeId(deviceType.getId());
 	}
@@ -510,40 +502,40 @@ public class DeviceManagementPersistence extends Persistence {
     }
 
     /**
-     * Common logic for creating new site object and populating it from request.
+     * Common logic for creating new area object and populating it from request.
      * 
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public static Site siteCreateLogic(ISiteCreateRequest request) throws SiteWhereException {
-	Site site = new Site();
-	site.setId(UUID.randomUUID());
+    public static Area areaCreateLogic(IAreaCreateRequest request) throws SiteWhereException {
+	Area area = new Area();
+	area.setId(UUID.randomUUID());
 
 	if (request.getToken() != null) {
-	    site.setToken(request.getToken());
+	    area.setToken(request.getToken());
 	} else {
-	    site.setToken(UUID.randomUUID().toString());
+	    area.setToken(UUID.randomUUID().toString());
 	}
 
-	site.setName(request.getName());
-	site.setDescription(request.getDescription());
-	site.setImageUrl(request.getImageUrl());
-	site.setMap(SiteMapData.copy(request.getMap()));
+	area.setName(request.getName());
+	area.setDescription(request.getDescription());
+	area.setImageUrl(request.getImageUrl());
+	area.setMap(AreaMapData.copy(request.getMap()));
 
-	DeviceManagementPersistence.initializeEntityMetadata(site);
-	MetadataProvider.copy(request.getMetadata(), site);
-	return site;
+	DeviceManagementPersistence.initializeEntityMetadata(area);
+	MetadataProvider.copy(request.getMetadata(), area);
+	return area;
     }
 
     /**
-     * Common logic for copying data from site update request to existing site.
+     * Common logic for copying data from area update request to existing area.
      * 
      * @param request
      * @param target
      * @throws SiteWhereException
      */
-    public static void siteUpdateLogic(ISiteCreateRequest request, Site target) throws SiteWhereException {
+    public static void areaUpdateLogic(IAreaCreateRequest request, Area target) throws SiteWhereException {
 	if (request.getName() != null) {
 	    target.setName(request.getName());
 	}
@@ -554,7 +546,7 @@ public class DeviceManagementPersistence extends Persistence {
 	    target.setImageUrl(request.getImageUrl());
 	}
 	if (request.getMap() != null) {
-	    target.setMap(SiteMapData.copy(request.getMap()));
+	    target.setMap(AreaMapData.copy(request.getMap()));
 	}
 	if (request.getMetadata() != null) {
 	    target.getMetadata().clear();
@@ -572,12 +564,12 @@ public class DeviceManagementPersistence extends Persistence {
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceAssignment deviceAssignmentCreateLogic(IDeviceAssignmentCreateRequest source, IDevice device)
-	    throws SiteWhereException {
+    public static DeviceAssignment deviceAssignmentCreateLogic(IDeviceAssignmentCreateRequest source, IArea area,
+	    IDevice device) throws SiteWhereException {
 	DeviceAssignment newAssignment = new DeviceAssignment();
 	newAssignment.setId(UUID.randomUUID());
 	newAssignment.setToken(source.getToken());
-	newAssignment.setSiteId(device.getSiteId());
+	newAssignment.setAreaId(area.getId());
 	newAssignment.setDeviceId(device.getId());
 
 	requireNotNull(source.getAssignmentType());
@@ -713,16 +705,16 @@ public class DeviceManagementPersistence extends Persistence {
      * Common logic for creating a zone based on an incoming request.
      * 
      * @param source
-     * @param siteToken
+     * @param area
      * @param uuid
      * @return
      * @throws SiteWhereException
      */
-    public static Zone zoneCreateLogic(IZoneCreateRequest source, ISite site, String uuid) throws SiteWhereException {
+    public static Zone zoneCreateLogic(IZoneCreateRequest source, IArea area, String uuid) throws SiteWhereException {
 	Zone zone = new Zone();
 	zone.setId(UUID.randomUUID());
 	zone.setToken(uuid);
-	zone.setSiteId(site.getId());
+	zone.setAreaId(area.getId());
 	zone.setName(source.getName());
 	zone.setBorderColor(source.getBorderColor());
 	zone.setFillColor(source.getFillColor());

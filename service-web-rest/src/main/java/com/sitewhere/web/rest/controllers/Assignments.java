@@ -130,7 +130,7 @@ public class Assignments extends RestControllerBase {
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
-	helper.setIncludeSite(true);
+	helper.setIncludeArea(true);
 	return helper.convert(created, getAssetResolver());
     }
 
@@ -151,7 +151,7 @@ public class Assignments extends RestControllerBase {
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
-	helper.setIncludeSite(true);
+	helper.setIncludeArea(true);
 	helper.setIncludeDeviceType(true);
 	return helper.convert(assignment, getAssetResolver());
     }
@@ -175,7 +175,7 @@ public class Assignments extends RestControllerBase {
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
-	helper.setIncludeSite(true);
+	helper.setIncludeArea(true);
 	return helper.convert(assignment, getAssetResolver());
     }
 
@@ -197,7 +197,7 @@ public class Assignments extends RestControllerBase {
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
-	helper.setIncludeSite(true);
+	helper.setIncludeArea(true);
 	return helper.convert(result, getAssetResolver());
     }
 
@@ -822,7 +822,7 @@ public class Assignments extends RestControllerBase {
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
-	helper.setIncludeSite(true);
+	helper.setIncludeArea(true);
 	return helper.convert(updated, getAssetResolver());
     }
 
@@ -846,7 +846,7 @@ public class Assignments extends RestControllerBase {
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
-	helper.setIncludeSite(true);
+	helper.setIncludeArea(true);
 	return helper.convert(updated, getAssetResolver());
     }
 

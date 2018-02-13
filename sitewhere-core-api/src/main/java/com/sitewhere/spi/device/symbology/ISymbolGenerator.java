@@ -8,10 +8,10 @@
 package com.sitewhere.spi.device.symbology;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
@@ -38,14 +38,14 @@ public interface ISymbolGenerator extends ITenantEngineLifecycleComponent {
     public String getName() throws SiteWhereException;
 
     /**
-     * Get symbol for a site.
+     * Get symbol for an area.
      * 
      * @param site
      * @param provider
      * @return
      * @throws SiteWhereException
      */
-    public byte[] getSiteSymbol(ISite site, IEntityUriProvider provider) throws SiteWhereException;
+    public byte[] getAreaSymbol(IArea area, IEntityUriProvider provider) throws SiteWhereException;
 
     /**
      * Get symbol for a device type.

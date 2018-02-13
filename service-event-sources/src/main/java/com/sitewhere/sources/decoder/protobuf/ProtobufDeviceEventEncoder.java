@@ -192,8 +192,8 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
 	    IDeviceRegistrationRequest request = (IDeviceRegistrationRequest) decoded.getRequest();
 	    SiteWhere.RegisterDevice.Builder register = SiteWhere.RegisterDevice.newBuilder();
 	    register.setHardwareId(request.getHardwareId());
-	    register.setSiteToken(request.getSiteToken());
-	    register.setSpecificationToken(request.getDeviceTypeToken());
+	    register.setAreaToken(request.getAreaToken());
+	    register.setDeviceTypeToken(request.getDeviceTypeToken());
 
 	    ByteArrayOutputStream out = new ByteArrayOutputStream();
 	    SiteWhere.Header.Builder builder = SiteWhere.Header.newBuilder();

@@ -10,21 +10,21 @@ package com.sitewhere.rest.model.device.request.scripting;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sitewhere.rest.model.area.request.AreaCreateRequest;
+import com.sitewhere.rest.model.area.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceGroupCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceGroupElementCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceTypeCreateRequest;
-import com.sitewhere.rest.model.device.request.SiteCreateRequest;
-import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.area.IArea;
+import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.device.ISite;
-import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
@@ -44,20 +44,20 @@ public class DeviceManagementRequestBuilder {
 	this.deviceManagement = deviceManagement;
     }
 
-    public SiteCreateRequest.Builder newSite(String token, String name) {
-	return new SiteCreateRequest.Builder(token, name);
+    public AreaCreateRequest.Builder newSite(String token, String name) {
+	return new AreaCreateRequest.Builder(token, name);
     }
 
-    public ISite persist(SiteCreateRequest.Builder builder) throws SiteWhereException {
-	return getDeviceManagement().createSite(builder.build());
+    public IArea persist(AreaCreateRequest.Builder builder) throws SiteWhereException {
+	return getDeviceManagement().createArea(builder.build());
     }
 
     public ZoneCreateRequest.Builder newZone(String name) {
 	return new ZoneCreateRequest.Builder(name);
     }
 
-    public IZone persist(ISite site, ZoneCreateRequest.Builder builder) throws SiteWhereException {
-	return getDeviceManagement().createZone(site.getId(), builder.build());
+    public IZone persist(IArea area, ZoneCreateRequest.Builder builder) throws SiteWhereException {
+	return getDeviceManagement().createZone(area.getId(), builder.build());
     }
 
     public DeviceTypeCreateRequest.Builder newDeviceType(String token, String name, String assetModuleId,
@@ -78,8 +78,8 @@ public class DeviceManagementRequestBuilder {
 	return getDeviceManagement().createDeviceCommand(type.getId(), builder.build());
     }
 
-    public DeviceCreateRequest.Builder newDevice(String siteToken, String specificationToken, String hardwareId) {
-	return new DeviceCreateRequest.Builder(siteToken, specificationToken, hardwareId);
+    public DeviceCreateRequest.Builder newDevice(String deviceTypeToken, String hardwareId) {
+	return new DeviceCreateRequest.Builder(deviceTypeToken, hardwareId);
     }
 
     // public DeviceCreateRequest.Builder fromDevice(IDevice device) {

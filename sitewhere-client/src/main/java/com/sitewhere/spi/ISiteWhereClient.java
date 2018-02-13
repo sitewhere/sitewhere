@@ -10,13 +10,15 @@ package com.sitewhere.spi;
 import java.util.List;
 import java.util.Map;
 
+import com.sitewhere.rest.model.area.Area;
+import com.sitewhere.rest.model.area.Zone;
+import com.sitewhere.rest.model.area.request.AreaCreateRequest;
+import com.sitewhere.rest.model.area.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.batch.BatchOperation;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceType;
-import com.sitewhere.rest.model.device.Site;
-import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
@@ -35,8 +37,6 @@ import com.sitewhere.rest.model.device.request.DeviceGroupCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceGroupElementCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceTypeCreateRequest;
-import com.sitewhere.rest.model.device.request.SiteCreateRequest;
-import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.search.AssetSearchResults;
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
@@ -145,22 +145,22 @@ public interface ISiteWhereClient {
 	    throws SiteWhereException;
 
     /**
-     * Create a new site.
+     * Create a new area.
      * 
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public Site createSite(SiteCreateRequest request) throws SiteWhereException;
+    public Area createArea(AreaCreateRequest request) throws SiteWhereException;
 
     /**
-     * Get Site by unique token.
+     * Get area by unique token.
      * 
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    public Site getSiteByToken(String token) throws SiteWhereException;
+    public Area getAreaByToken(String token) throws SiteWhereException;
 
     /**
      * Create a new zone associated with a site.

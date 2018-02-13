@@ -19,8 +19,11 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public interface IDeviceManagementMongoClient {
 
-    /** Default collection name for SiteWhere sites */
-    public static final String DEFAULT_SITES_COLLECTION_NAME = "sites";
+    /** Default collection name for SiteWhere areas */
+    public static final String DEFAULT_AREAS_COLLECTION_NAME = "areas";
+
+    /** Default collection name for SiteWhere area types */
+    public static final String DEFAULT_AREA_TYPES_COLLECTION_NAME = "areatypes";
 
     /** Default collection name for SiteWhere zones */
     public static final String DEFAULT_ZONES_COLLECTION_NAME = "zones";
@@ -93,12 +96,20 @@ public interface IDeviceManagementMongoClient {
     public MongoCollection<Document> getDeviceAssignmentsCollection() throws SiteWhereException;
 
     /**
-     * Collection for sites.
+     * Collection for areas.
      * 
      * @return
      * @throws SiteWhereException
      */
-    public MongoCollection<Document> getSitesCollection() throws SiteWhereException;
+    public MongoCollection<Document> getAreasCollection() throws SiteWhereException;
+
+    /**
+     * Collection for area types.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public MongoCollection<Document> getAreaTypesCollection() throws SiteWhereException;
 
     /**
      * Collection for zones.

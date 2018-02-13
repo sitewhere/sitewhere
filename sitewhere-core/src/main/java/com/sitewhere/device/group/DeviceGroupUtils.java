@@ -19,7 +19,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.search.ISearchCriteria;
@@ -51,14 +50,6 @@ public class DeviceGroupUtils {
 	    if (criteria.getDeviceTypeToken() != null) {
 		IDeviceType deviceType = deviceManagement.getDeviceTypeByToken(criteria.getDeviceTypeToken());
 		if (!device.getDeviceTypeId().equals(deviceType.getId())) {
-		    continue;
-		}
-	    }
-
-	    // Handle filter by site.
-	    if (criteria.getSiteToken() != null) {
-		ISite site = deviceManagement.getSiteByToken(criteria.getSiteToken());
-		if (!device.getSiteId().equals(site.getId())) {
 		    continue;
 		}
 	    }

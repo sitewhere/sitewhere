@@ -55,8 +55,8 @@ public class BatchUtils {
 	    throw new SiteWhereException("Only one of groupToken or groupsWithRole may be specified.");
 	}
 
-	IDeviceSearchCriteria deviceSearch = new DeviceSearchCriteria(criteria.getDeviceTypeToken(),
-		criteria.getSiteToken(), false, 1, 0, criteria.getStartDate(), criteria.getEndDate());
+	IDeviceSearchCriteria deviceSearch = new DeviceSearchCriteria(criteria.getDeviceTypeToken(), false, 1, 0,
+		criteria.getStartDate(), criteria.getEndDate());
 
 	Collection<IDevice> matches;
 	if (hasGroup) {

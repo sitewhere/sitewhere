@@ -62,11 +62,11 @@ public interface IBatchCommandForCriteriaRequest {
     public String getGroupsWithRole();
 
     /**
-     * If set, only devices associated with the given site will be sent the command.
+     * If set, only devices associated with the given area will be sent the command.
      * 
      * @return
      */
-    public String getSiteToken();
+    public String getAreaToken();
 
     /**
      * Get date range start.

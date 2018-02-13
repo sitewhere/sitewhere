@@ -8,6 +8,8 @@
 package com.sitewhere.hbase.encoder;
 
 import com.sitewhere.common.MarshalUtils;
+import com.sitewhere.rest.model.area.Area;
+import com.sitewhere.rest.model.area.Zone;
 import com.sitewhere.rest.model.asset.AssetCategory;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.asset.LocationAsset;
@@ -18,8 +20,6 @@ import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceAssignmentState;
 import com.sitewhere.rest.model.device.DeviceType;
-import com.sitewhere.rest.model.device.Site;
-import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
@@ -35,6 +35,8 @@ import com.sitewhere.rest.model.tenant.Tenant;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.area.IArea;
+import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.IHardwareAsset;
 import com.sitewhere.spi.asset.ILocationAsset;
@@ -45,8 +47,6 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceAssignmentState;
 import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.device.ISite;
-import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -101,24 +101,21 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeSite(com.sitewhere.
-     * spi.device .ISite)
+     * @see
+     * com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeArea(com.sitewhere.spi.
+     * area.IArea)
      */
     @Override
-    public byte[] encodeSite(ISite site) throws SiteWhereException {
-	return MarshalUtils.marshalJson(site);
+    public byte[] encodeArea(IArea area) throws SiteWhereException {
+	return MarshalUtils.marshalJson(area);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeSite(byte[])
+     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeArea(byte[])
      */
     @Override
-    public Site decodeSite(byte[] payload) throws SiteWhereException {
-	return MarshalUtils.unmarshalJson(payload, Site.class);
+    public Area decodeArea(byte[] payload) throws SiteWhereException {
+	return MarshalUtils.unmarshalJson(payload, Area.class);
     }
 
     /*

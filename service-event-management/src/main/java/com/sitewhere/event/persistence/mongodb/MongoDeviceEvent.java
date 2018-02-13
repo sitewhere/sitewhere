@@ -28,28 +28,28 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 public class MongoDeviceEvent {
 
     /** Alternate (external) id */
-    public static final String PROP_ALTERNATE_ID = "al";
+    public static final String PROP_ALTERNATE_ID = "alid";
 
     /** Event type indicator */
-    public static final String PROP_EVENT_TYPE = "et";
+    public static final String PROP_EVENT_TYPE = "evty";
 
     /** Property for site id */
-    public static final String PROP_SITE_ID = "si";
+    public static final String PROP_AREA_ID = "arid";
 
     /** Property for device assignment id */
-    public static final String PROP_DEVICE_ASSIGNMENT_ID = "ai";
+    public static final String PROP_DEVICE_ASSIGNMENT_ID = "asid";
 
     /** Property for device assignment type */
-    public static final String PROP_DEVICE_ASSIGNMENT_TYPE = "at";
+    public static final String PROP_DEVICE_ASSIGNMENT_TYPE = "asty";
 
     /** Property for asset reference */
-    public static final String PROP_ASSET_REFERENCE = "ar";
+    public static final String PROP_ASSET_REFERENCE = "asrf";
 
     /** Property for time measurements were taken */
-    public static final String PROP_EVENT_DATE = "ed";
+    public static final String PROP_EVENT_DATE = "evdt";
 
     /** Property for time measurements were received */
-    public static final String PROP_RECEIVED_DATE = "rd";
+    public static final String PROP_RECEIVED_DATE = "rcdt";
 
     /**
      * Copy information from SPI into Mongo {@link Document}.
@@ -67,7 +67,7 @@ public class MongoDeviceEvent {
 	}
 
 	target.append(PROP_EVENT_TYPE, source.getEventType().name());
-	target.append(PROP_SITE_ID, source.getSiteId());
+	target.append(PROP_AREA_ID, source.getAreaId());
 	target.append(PROP_DEVICE_ASSIGNMENT_ID, source.getDeviceAssignmentId());
 	target.append(PROP_DEVICE_ASSIGNMENT_TYPE, source.getAssignmentType().name());
 	target.append(PROP_ASSET_REFERENCE, new DefaultAssetReferenceEncoder().encode(source.getAssetReference()));
@@ -88,7 +88,7 @@ public class MongoDeviceEvent {
 	ObjectId id = (ObjectId) source.get("_id");
 	String alternateId = (String) source.get(PROP_ALTERNATE_ID);
 	String eventType = (String) source.get(PROP_EVENT_TYPE);
-	UUID siteId = (UUID) source.get(PROP_SITE_ID);
+	UUID areaId = (UUID) source.get(PROP_AREA_ID);
 	UUID assignmentId = (UUID) source.get(PROP_DEVICE_ASSIGNMENT_ID);
 	String assignmentType = (String) source.get(PROP_DEVICE_ASSIGNMENT_TYPE);
 	String assetReference = (String) source.get(PROP_ASSET_REFERENCE);
@@ -102,7 +102,7 @@ public class MongoDeviceEvent {
 	    target.setEventType(DeviceEventType.valueOf(eventType));
 	}
 	target.setAlternateId(alternateId);
-	target.setSiteId(siteId);
+	target.setAreaId(areaId);
 	target.setDeviceAssignmentId(assignmentId);
 	target.setAssetReference(new DefaultAssetReferenceEncoder().decode(assetReference));
 	target.setEventDate(eventDate);

@@ -89,9 +89,9 @@ message SiteWhere {
 	// Register a device with SiteWhere.
 	message RegisterDevice {
 		required string hardwareId = 1;
-		required string specificationToken = 2;
+		required string deviceTypeToken = 2;
 		repeated Model.Metadata metadata = 3;
-		optional string siteToken = 4;
+		optional string areaToken = 4;
 	}
 
 	// Acknowledge previous command.

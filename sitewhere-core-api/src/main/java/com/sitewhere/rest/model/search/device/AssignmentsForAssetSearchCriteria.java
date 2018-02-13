@@ -18,8 +18,8 @@ import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
  */
 public class AssignmentsForAssetSearchCriteria extends SearchCriteria implements IAssignmentsForAssetSearchCriteria {
 
-    /** Limit by site */
-    private String siteToken;
+    /** Limit by area */
+    private String areaToken;
 
     /** Limit by status */
     private DeviceAssignmentStatus status;
@@ -29,17 +29,16 @@ public class AssignmentsForAssetSearchCriteria extends SearchCriteria implements
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria#
-     * getSiteToken()
+     * getAreaToken()
      */
-    public String getSiteToken() {
-	return siteToken;
+    @Override
+    public String getAreaToken() {
+	return areaToken;
     }
 
-    public void setSiteToken(String siteToken) {
-	this.siteToken = siteToken;
+    public void setAreaToken(String areaToken) {
+	this.areaToken = areaToken;
     }
 
     /*
@@ -48,6 +47,7 @@ public class AssignmentsForAssetSearchCriteria extends SearchCriteria implements
      * @see com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria#
      * getStatus()
      */
+    @Override
     public DeviceAssignmentStatus getStatus() {
 	return status;
     }

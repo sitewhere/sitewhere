@@ -14,7 +14,6 @@ import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
-import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.marshaling.MarshaledDevice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetResolver;
@@ -23,7 +22,6 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.device.ISite;
 
 /**
  * Configurable helper class that allows {@link Device} model objects to be
@@ -47,9 +45,6 @@ public class DeviceMarshalHelper {
 
     /** Indicates whether device assignment information is to be copied */
     private boolean includeAssignment = false;
-
-    /** Indicates whether site information is to be copied */
-    private boolean includeSite = false;
 
     /**
      * Indicates whether device element mappings should include device details
@@ -81,7 +76,6 @@ public class DeviceMarshalHelper {
 	MarshaledDevice result = new MarshaledDevice();
 	result.setId(source.getId());
 	result.setHardwareId(source.getHardwareId());
-	result.setSiteId(source.getSiteId());
 	result.setDeviceTypeId(source.getDeviceTypeId());
 	result.setDeviceAssignmentId(source.getDeviceAssignmentId());
 	result.setParentDeviceId(source.getParentDeviceId());
@@ -130,15 +124,6 @@ public class DeviceMarshalHelper {
 		LOGGER.warn("Device has token for non-existent assignment.");
 	    }
 	}
-	if ((source.getSiteId() != null) && (isIncludeSite())) {
-	    if (includeSite) {
-		ISite site = getDeviceManagement().getSite(source.getSiteId());
-		if (site == null) {
-		    throw new SiteWhereException("Device contains an invalid site reference.");
-		}
-		result.setSite((Site) site);
-	    }
-	}
 	return result;
     }
 
@@ -165,7 +150,7 @@ public class DeviceMarshalHelper {
 	    assignmentHelper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	    assignmentHelper.setIncludeAsset(false);
 	    assignmentHelper.setIncludeDevice(false);
-	    assignmentHelper.setIncludeSite(false);
+	    assignmentHelper.setIncludeArea(false);
 	}
 	return assignmentHelper;
     }
@@ -207,14 +192,6 @@ public class DeviceMarshalHelper {
     public DeviceMarshalHelper setIncludeAssignment(boolean includeAssignment) {
 	this.includeAssignment = includeAssignment;
 	return this;
-    }
-
-    public boolean isIncludeSite() {
-	return includeSite;
-    }
-
-    public void setIncludeSite(boolean includeSite) {
-	this.includeSite = includeSite;
     }
 
     public boolean isIncludeNested() {

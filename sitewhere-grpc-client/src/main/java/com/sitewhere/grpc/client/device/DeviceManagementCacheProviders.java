@@ -13,10 +13,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.grpc.client.cache.CacheProvider;
+import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.microservice.IMicroservice;
 
 /**
@@ -26,11 +26,11 @@ import com.sitewhere.spi.microservice.IMicroservice;
  */
 public class DeviceManagementCacheProviders {
 
-    /** Cache id for site cache */
-    public static final String ID_SITE_CACHE = "site";
+    /** Cache id for area cache */
+    public static final String ID_AREA_CACHE = "area";
 
-    /** Cache id for site by id cache */
-    public static final String ID_SITE_ID_CACHE = "stid";
+    /** Cache id for area by id cache */
+    public static final String ID_AREA_ID_CACHE = "arid";
 
     /** Cache id for device type cache */
     public static final String ID_DEVICE_TYPE_CACHE = "dtyp";
@@ -51,17 +51,17 @@ public class DeviceManagementCacheProviders {
     public static final String ID_ASSIGNMENT_ID_CACHE = "anid";
 
     /**
-     * Cache for sites.
+     * Cache for areas.
      * 
      * @author Derek
      */
-    public static class SiteCache extends CacheProvider<String, ISite> {
+    public static class AreaCache extends CacheProvider<String, IArea> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = LogManager.getLogger();
 
-	public SiteCache(IMicroservice microservice, boolean createOnStartup) {
-	    super(microservice, ID_SITE_CACHE, createOnStartup);
+	public AreaCache(IMicroservice microservice, boolean createOnStartup) {
+	    super(microservice, ID_AREA_CACHE, createOnStartup);
 	}
 
 	/*
@@ -74,17 +74,17 @@ public class DeviceManagementCacheProviders {
     }
 
     /**
-     * Cache for sites by id.
+     * Cache for areas by id.
      * 
      * @author Derek
      */
-    public static class SiteByIdCache extends CacheProvider<UUID, ISite> {
+    public static class AreaByIdCache extends CacheProvider<UUID, IArea> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = LogManager.getLogger();
 
-	public SiteByIdCache(IMicroservice microservice, boolean createOnStartup) {
-	    super(microservice, ID_SITE_ID_CACHE, createOnStartup);
+	public AreaByIdCache(IMicroservice microservice, boolean createOnStartup) {
+	    super(microservice, ID_AREA_ID_CACHE, createOnStartup);
 	}
 
 	/*

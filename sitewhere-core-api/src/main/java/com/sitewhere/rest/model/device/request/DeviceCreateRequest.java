@@ -32,9 +32,6 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
     /** Hardware id for new device */
     private String hardwareId;
 
-    /** Site token */
-    private String siteToken;
-
     /** Device type token */
     private String deviceTypeToken;
 
@@ -67,20 +64,6 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
 
     public void setHardwareId(String hardwareId) {
 	this.hardwareId = hardwareId;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.request.IDeviceCreateRequest#getSiteToken()
-     */
-    @Override
-    public String getSiteToken() {
-	return siteToken;
-    }
-
-    public void setSiteToken(String siteToken) {
-	this.siteToken = siteToken;
     }
 
     /*
@@ -204,8 +187,7 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
 	// }
 	// }
 
-	public Builder(String siteToken, String deviceTypeToken, String hardwareId) {
-	    request.setSiteToken(siteToken);
+	public Builder(String deviceTypeToken, String hardwareId) {
 	    request.setDeviceTypeToken(deviceTypeToken);
 	    request.setHardwareId(hardwareId);
 	    request.setStatus(null);

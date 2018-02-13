@@ -7,7 +7,7 @@
  */
 package com.sitewhere.spi.geospatial;
 
-import com.sitewhere.spi.device.IZone;
+import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 
 /**

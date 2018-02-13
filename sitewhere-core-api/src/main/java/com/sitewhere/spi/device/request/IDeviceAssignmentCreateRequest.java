@@ -34,6 +34,13 @@ public interface IDeviceAssignmentCreateRequest {
     public String getDeviceHardwareId();
 
     /**
+     * Get token of area where device is assigned.
+     * 
+     * @return
+     */
+    public String getAreaToken();
+
+    /**
      * Get assignment type.
      * 
      * @return

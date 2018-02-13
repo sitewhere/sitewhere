@@ -586,13 +586,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getDeviceAssignmentsForSite(com.sitewhere.grpc.service.
-     * GGetDeviceAssignmentsForSiteRequest, io.grpc.stub.StreamObserver)
+     * getDeviceAssignmentsForArea(com.sitewhere.grpc.service.
+     * GGetDeviceAssignmentsForAreaRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void getDeviceAssignmentsForSite(GGetDeviceAssignmentsForSiteRequest request,
-	    StreamObserver<GGetDeviceAssignmentsForSiteResponse> responseObserver) {
-	getTenantImplementation().getDeviceAssignmentsForSite(request, responseObserver);
+    public void getDeviceAssignmentsForArea(GGetDeviceAssignmentsForAreaRequest request,
+	    StreamObserver<GGetDeviceAssignmentsForAreaResponse> responseObserver) {
+	getTenantImplementation().getDeviceAssignmentsForArea(request, responseObserver);
     }
 
     /*
@@ -646,68 +646,68 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * createSite(com.sitewhere.grpc.service.GCreateSiteRequest,
+     * createArea(com.sitewhere.grpc.service.GCreateAreaRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void createSite(GCreateSiteRequest request, StreamObserver<GCreateSiteResponse> responseObserver) {
-	getTenantImplementation().createSite(request, responseObserver);
+    public void createArea(GCreateAreaRequest request, StreamObserver<GCreateAreaResponse> responseObserver) {
+	getTenantImplementation().createArea(request, responseObserver);
     }
 
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getSite(com.sitewhere.grpc.service.GGetSiteRequest,
+     * getArea(com.sitewhere.grpc.service.GGetAreaRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void getSite(GGetSiteRequest request, StreamObserver<GGetSiteResponse> responseObserver) {
-	getTenantImplementation().getSite(request, responseObserver);
+    public void getArea(GGetAreaRequest request, StreamObserver<GGetAreaResponse> responseObserver) {
+	getTenantImplementation().getArea(request, responseObserver);
     }
 
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getSiteByToken(com.sitewhere.grpc.service.GGetSiteByTokenRequest,
+     * getAreaByToken(com.sitewhere.grpc.service.GGetAreaByTokenRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void getSiteByToken(GGetSiteByTokenRequest request,
-	    StreamObserver<GGetSiteByTokenResponse> responseObserver) {
-	getTenantImplementation().getSiteByToken(request, responseObserver);
+    public void getAreaByToken(GGetAreaByTokenRequest request,
+	    StreamObserver<GGetAreaByTokenResponse> responseObserver) {
+	getTenantImplementation().getAreaByToken(request, responseObserver);
     }
 
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * updateSite(com.sitewhere.grpc.service.GUpdateSiteRequest,
+     * updateArea(com.sitewhere.grpc.service.GUpdateAreaRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void updateSite(GUpdateSiteRequest request, StreamObserver<GUpdateSiteResponse> responseObserver) {
-	getTenantImplementation().updateSite(request, responseObserver);
+    public void updateArea(GUpdateAreaRequest request, StreamObserver<GUpdateAreaResponse> responseObserver) {
+	getTenantImplementation().updateArea(request, responseObserver);
     }
 
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * listSites(com.sitewhere.grpc.service.GListSitesRequest,
+     * listAreas(com.sitewhere.grpc.service.GListAreasRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listSites(GListSitesRequest request, StreamObserver<GListSitesResponse> responseObserver) {
-	getTenantImplementation().listSites(request, responseObserver);
+    public void listAreas(GListAreasRequest request, StreamObserver<GListAreasResponse> responseObserver) {
+	getTenantImplementation().listAreas(request, responseObserver);
     }
 
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * deleteSite(com.sitewhere.grpc.service.GDeleteSiteRequest,
+     * deleteArea(com.sitewhere.grpc.service.GDeleteAreaRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void deleteSite(GDeleteSiteRequest request, StreamObserver<GDeleteSiteResponse> responseObserver) {
-	getTenantImplementation().deleteSite(request, responseObserver);
+    public void deleteArea(GDeleteAreaRequest request, StreamObserver<GDeleteAreaResponse> responseObserver) {
+	getTenantImplementation().deleteArea(request, responseObserver);
     }
 
     /*
