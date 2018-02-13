@@ -29,6 +29,7 @@ import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.area.Area;
+import com.sitewhere.rest.model.area.AreaType;
 import com.sitewhere.rest.model.area.Zone;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
@@ -1121,8 +1122,13 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     @Override
     public IAreaType createAreaType(IAreaTypeCreateRequest request) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	// Use common logic so all backend implementations work the same.
+	AreaType type = DeviceManagementPersistence.areaTypeCreateLogic(request);
+
+	MongoCollection<Document> types = getMongoClient().getAreaTypesCollection();
+	Document created = MongoAreaType.toDocument(type);
+	MongoPersistence.insert(types, created, ErrorCode.DuplicateAreaTypeToken);
+	return MongoAreaType.fromDocument(created);
     }
 
     /*
@@ -1130,7 +1136,10 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     @Override
     public IAreaType getAreaType(UUID id) throws SiteWhereException {
-	// TODO Auto-generated method stub
+	Document document = getAreaDocumentById(id);
+	if (document != null) {
+	    return MongoAreaType.fromDocument(document);
+	}
 	return null;
     }
 
@@ -1140,7 +1149,10 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     @Override
     public IAreaType getAreaTypeByToken(String token) throws SiteWhereException {
-	// TODO Auto-generated method stub
+	Document document = getAreaTypeDocumentByToken(token);
+	if (document != null) {
+	    return MongoAreaType.fromDocument(document);
+	}
 	return null;
     }
 
@@ -1151,8 +1163,17 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     @Override
     public IAreaType updateAreaType(UUID id, IAreaTypeCreateRequest request) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	IAreaType type = getApiAreaTypeById(id);
+
+	// Use common update logic.
+	DeviceManagementPersistence.areaTypeUpdateLogic(request, (AreaType) type);
+
+	Document updated = MongoAreaType.toDocument(type);
+
+	MongoCollection<Document> types = getMongoClient().getAreaTypesCollection();
+	Document query = new Document(MongoAreaType.PROP_ID, id);
+	MongoPersistence.update(types, query, updated);
+	return MongoAreaType.fromDocument(updated);
     }
 
     /*
@@ -1162,8 +1183,10 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     @Override
     public ISearchResults<IAreaType> listAreaTypes(ISearchCriteria criteria) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	MongoCollection<Document> types = getMongoClient().getAreaTypesCollection();
+	Document query = new Document();
+	Document sort = new Document(MongoAreaType.PROP_NAME, 1);
+	return MongoPersistence.search(IAreaType.class, types, query, sort, criteria, LOOKUP);
     }
 
     /*
@@ -1173,8 +1196,20 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     @Override
     public IAreaType deleteAreaType(UUID id, boolean force) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	Document existing = getAreaTypeDocumentById(id);
+	if (existing == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaTypeToken, ErrorLevel.ERROR);
+	}
+	MongoCollection<Document> areas = getMongoClient().getAreasCollection();
+	if (force) {
+	    MongoPersistence.delete(areas, existing);
+	    return MongoAreaType.fromDocument(existing);
+	} else {
+	    MongoSiteWhereEntity.setDeleted(existing, true);
+	    Document query = new Document(MongoAreaType.PROP_ID, id);
+	    MongoPersistence.update(areas, query, existing);
+	    return MongoAreaType.fromDocument(existing);
+	}
     }
 
     /*
@@ -1191,25 +1226,6 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	Document created = MongoArea.toDocument(area);
 	MongoPersistence.insert(sites, created, ErrorCode.DuplicateAreaToken);
 	return MongoArea.fromDocument(created);
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#updateArea(java.util.UUID,
-     * com.sitewhere.spi.area.request.IAreaCreateRequest)
-     */
-    @Override
-    public IArea updateArea(UUID id, IAreaCreateRequest request) throws SiteWhereException {
-	IArea area = getApiAreaById(id);
-
-	// Use common update logic.
-	DeviceManagementPersistence.areaUpdateLogic(request, (Area) area);
-
-	Document updated = MongoArea.toDocument(area);
-
-	MongoCollection<Document> areas = getMongoClient().getAreasCollection();
-	Document query = new Document(MongoArea.PROP_ID, id);
-	MongoPersistence.update(areas, query, updated);
-	return MongoArea.fromDocument(updated);
     }
 
     /*
@@ -1238,6 +1254,38 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#updateArea(java.util.UUID,
+     * com.sitewhere.spi.area.request.IAreaCreateRequest)
+     */
+    @Override
+    public IArea updateArea(UUID id, IAreaCreateRequest request) throws SiteWhereException {
+	IArea area = getApiAreaById(id);
+
+	// Use common update logic.
+	DeviceManagementPersistence.areaUpdateLogic(request, (Area) area);
+
+	Document updated = MongoArea.toDocument(area);
+
+	MongoCollection<Document> areas = getMongoClient().getAreasCollection();
+	Document query = new Document(MongoArea.PROP_ID, id);
+	MongoPersistence.update(areas, query, updated);
+	return MongoArea.fromDocument(updated);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listAreas(com.sitewhere.spi.search
+     * .ISearchCriteria)
+     */
+    @Override
+    public SearchResults<IArea> listAreas(ISearchCriteria criteria) throws SiteWhereException {
+	MongoCollection<Document> areas = getMongoClient().getAreasCollection();
+	Document query = new Document();
+	Document sort = new Document(MongoArea.PROP_NAME, 1);
+	return MongoPersistence.search(IArea.class, areas, query, sort, criteria, LOOKUP);
+    }
+
+    /*
      * @see com.sitewhere.spi.device.IDeviceManagement#deleteArea(java.util.UUID,
      * boolean)
      */
@@ -1258,60 +1306,6 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    MongoPersistence.update(areas, query, existing);
 	    return MongoArea.fromDocument(existing);
 	}
-    }
-
-    /**
-     * Get the DBObject containing area information that matches the given token.
-     * 
-     * @param token
-     * @return
-     * @throws SiteWhereException
-     */
-    protected Document getAreaDocumentByToken(String token) throws SiteWhereException {
-	MongoCollection<Document> sites = getMongoClient().getAreasCollection();
-	Document query = new Document(MongoArea.PROP_TOKEN, token);
-	return sites.find(query).first();
-    }
-
-    /**
-     * Get the DBObject containing area information that matches the given id.
-     * 
-     * @param token
-     * @return
-     * @throws SiteWhereException
-     */
-    protected Document getAreaDocumentById(UUID id) throws SiteWhereException {
-	MongoCollection<Document> areas = getMongoClient().getAreasCollection();
-	Document query = new Document(MongoArea.PROP_ID, id);
-	return areas.find(query).first();
-    }
-
-    /**
-     * Get API area based on unique id.
-     * 
-     * @param id
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IArea getApiAreaById(UUID id) throws SiteWhereException {
-	Document match = getAreaDocumentById(id);
-	if (match == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
-	}
-	return MongoArea.fromDocument(match);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listAreas(com.sitewhere.spi.search
-     * .ISearchCriteria)
-     */
-    @Override
-    public SearchResults<IArea> listAreas(ISearchCriteria criteria) throws SiteWhereException {
-	MongoCollection<Document> areas = getMongoClient().getAreasCollection();
-	Document query = new Document();
-	Document sort = new Document(MongoArea.PROP_NAME, 1);
-	return MongoPersistence.search(IArea.class, areas, query, sort, criteria, LOOKUP);
     }
 
     /*
@@ -1700,6 +1694,89 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     protected IDeviceAssignment assertApiDeviceAssignment(UUID id) throws SiteWhereException {
 	Document match = assertDeviceAssignment(id);
 	return MongoDeviceAssignment.fromDocument(match);
+    }
+
+    /**
+     * Get the DBObject containing area type information that matches the given
+     * token.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    protected Document getAreaTypeDocumentByToken(String token) throws SiteWhereException {
+	MongoCollection<Document> types = getMongoClient().getAreaTypesCollection();
+	Document query = new Document(MongoAreaType.PROP_TOKEN, token);
+	return types.find(query).first();
+    }
+
+    /**
+     * Get the DBObject containing area type information that matches the given id.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    protected Document getAreaTypeDocumentById(UUID id) throws SiteWhereException {
+	MongoCollection<Document> types = getMongoClient().getAreaTypesCollection();
+	Document query = new Document(MongoAreaType.PROP_ID, id);
+	return types.find(query).first();
+    }
+
+    /**
+     * Get API area type based on unique id.
+     * 
+     * @param id
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IAreaType getApiAreaTypeById(UUID id) throws SiteWhereException {
+	Document match = getAreaDocumentById(id);
+	if (match == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaTypeToken, ErrorLevel.ERROR);
+	}
+	return MongoAreaType.fromDocument(match);
+    }
+
+    /**
+     * Get the DBObject containing area information that matches the given token.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    protected Document getAreaDocumentByToken(String token) throws SiteWhereException {
+	MongoCollection<Document> sites = getMongoClient().getAreasCollection();
+	Document query = new Document(MongoArea.PROP_TOKEN, token);
+	return sites.find(query).first();
+    }
+
+    /**
+     * Get the DBObject containing area information that matches the given id.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    protected Document getAreaDocumentById(UUID id) throws SiteWhereException {
+	MongoCollection<Document> areas = getMongoClient().getAreasCollection();
+	Document query = new Document(MongoArea.PROP_ID, id);
+	return areas.find(query).first();
+    }
+
+    /**
+     * Get API area based on unique id.
+     * 
+     * @param id
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IArea getApiAreaById(UUID id) throws SiteWhereException {
+	Document match = getAreaDocumentById(id);
+	if (match == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
+	}
+	return MongoArea.fromDocument(match);
     }
 
     /**

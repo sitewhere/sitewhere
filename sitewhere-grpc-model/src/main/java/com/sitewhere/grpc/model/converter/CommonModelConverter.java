@@ -250,6 +250,9 @@ public class CommonModelConverter {
      * @throws SiteWhereException
      */
     public static UUID asApiUuid(GUUID grpc) throws SiteWhereException {
+	if (grpc == null) {
+	    return null;
+	}
 	return new UUID(grpc.getMsb(), grpc.getLsb());
     }
 

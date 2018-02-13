@@ -115,11 +115,17 @@ public enum ErrorCode {
     /** Invalid device status code */
     InvalidDeviceStatusCode(507, "Device status not found."),
 
+    /** Duplicate area type token */
+    DuplicateAreaTypeToken(508, "Area type token already in use."),
+
     /** Duplicate area token */
     DuplicateAreaToken(509, "Area token already in use."),
 
     /** Invalid area token */
     InvalidAreaToken(510, "Area not found."),
+
+    /** Invalid area type token */
+    InvalidAreaTypeToken(510, "Area type not found."),
 
     /** Duplicate device assignment token */
     DuplicateDeviceAssignment(519, "Device assignment token already in use."),

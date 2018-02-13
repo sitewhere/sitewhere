@@ -646,6 +646,76 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * createAreaType(com.sitewhere.grpc.service.GCreateAreaTypeRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void createAreaType(GCreateAreaTypeRequest request,
+	    StreamObserver<GCreateAreaTypeResponse> responseObserver) {
+	getTenantImplementation().createAreaType(request, responseObserver);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getAreaType(com.sitewhere.grpc.service.GGetAreaTypeRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getAreaType(GGetAreaTypeRequest request, StreamObserver<GGetAreaTypeResponse> responseObserver) {
+	getTenantImplementation().getAreaType(request, responseObserver);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getAreaTypeByToken(com.sitewhere.grpc.service.GGetAreaTypeByTokenRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getAreaTypeByToken(GGetAreaTypeByTokenRequest request,
+	    StreamObserver<GGetAreaTypeByTokenResponse> responseObserver) {
+	getTenantImplementation().getAreaTypeByToken(request, responseObserver);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * updateAreaType(com.sitewhere.grpc.service.GUpdateAreaTypeRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void updateAreaType(GUpdateAreaTypeRequest request,
+	    StreamObserver<GUpdateAreaTypeResponse> responseObserver) {
+	getTenantImplementation().updateAreaType(request, responseObserver);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listAreaTypes(com.sitewhere.grpc.service.GListAreaTypesRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void listAreaTypes(GListAreaTypesRequest request, StreamObserver<GListAreaTypesResponse> responseObserver) {
+	getTenantImplementation().listAreaTypes(request, responseObserver);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * deleteAreaType(com.sitewhere.grpc.service.GDeleteAreaTypeRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void deleteAreaType(GDeleteAreaTypeRequest request,
+	    StreamObserver<GDeleteAreaTypeResponse> responseObserver) {
+	getTenantImplementation().deleteAreaType(request, responseObserver);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
      * createArea(com.sitewhere.grpc.service.GCreateAreaRequest,
      * io.grpc.stub.StreamObserver)
      */

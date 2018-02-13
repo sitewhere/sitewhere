@@ -157,6 +157,8 @@ public class AreaCreateRequest implements IAreaCreateRequest {
 
 	public Builder(IArea api) {
 	    request.setToken(api.getToken());
+	    request.setAreaTypeId(api.getAreaTypeId());
+	    request.setParentAreaId(api.getParentAreaId());
 	    request.setName(api.getName());
 	    request.setDescription(api.getDescription());
 	    request.setImageUrl(api.getImageUrl());
@@ -170,7 +172,9 @@ public class AreaCreateRequest implements IAreaCreateRequest {
 	    }
 	}
 
-	public Builder(String token, String name) {
+	public Builder(UUID areaTypeId, UUID parent, String token, String name) {
+	    request.setAreaTypeId(areaTypeId);
+	    request.setParentAreaId(parent);
 	    request.setToken(token);
 	    request.setName(name);
 	    request.setDescription("");

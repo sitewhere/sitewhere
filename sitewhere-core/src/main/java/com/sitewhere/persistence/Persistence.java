@@ -55,9 +55,9 @@ public class Persistence {
      * @param field
      * @throws SiteWhereException
      */
-    protected static void require(String field) throws SiteWhereException {
+    protected static void require(String fieldName, String field) throws SiteWhereException {
 	if (StringUtils.isBlank(field)) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+	    throw new SiteWhereException("Field '" + fieldName + "' is required.");
 	}
     }
 
@@ -67,9 +67,9 @@ public class Persistence {
      * @param field
      * @throws SiteWhereException
      */
-    protected static void requireNotNull(Object field) throws SiteWhereException {
+    protected static void requireNotNull(String fieldName, Object field) throws SiteWhereException {
 	if (field == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+	    throw new SiteWhereException("Field '" + fieldName + "' is required.");
 	}
     }
 
@@ -79,8 +79,9 @@ public class Persistence {
      * @param field
      * @throws SiteWhereException
      */
-    protected static void requireFormat(String field, String regex, ErrorCode ifFails) throws SiteWhereException {
-	require(field);
+    protected static void requireFormat(String fieldName, String field, String regex, ErrorCode ifFails)
+	    throws SiteWhereException {
+	require(fieldName, field);
 	if (!field.matches(regex)) {
 	    throw new SiteWhereSystemException(ifFails, ErrorLevel.ERROR);
 	}

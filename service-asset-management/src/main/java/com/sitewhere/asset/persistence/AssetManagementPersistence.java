@@ -42,15 +42,15 @@ public class AssetManagementPersistence extends Persistence {
 	    throws SiteWhereException {
 	AssetCategory category = new AssetCategory();
 
-	require(request.getId());
+	require("Category Id", request.getId());
 	category.setId(request.getId());
 
 	// Name is required.
-	require(request.getName());
+	require("Name", request.getName());
 	category.setName(request.getName());
 
 	// Type is required.
-	requireNotNull(request.getAssetType());
+	requireNotNull("Type", request.getAssetType());
 	category.setAssetType(request.getAssetType());
 
 	return category;
@@ -92,17 +92,15 @@ public class AssetManagementPersistence extends Persistence {
     public static void assetCreateLogic(IAssetCategory category, IAssetCreateRequest request, Asset asset)
 	    throws SiteWhereException {
 	asset.setType(category.getAssetType());
-
-	require(category.getId());
 	asset.setAssetCategoryId(category.getId());
 
-	require(request.getId());
+	require("Asset Id", request.getId());
 	asset.setId(request.getId());
 
-	require(request.getName());
+	require("Name", request.getName());
 	asset.setName(request.getName());
 
-	require(request.getImageUrl());
+	require("Image URL", request.getImageUrl());
 	asset.setImageUrl(request.getImageUrl());
 
 	asset.getProperties().putAll(request.getProperties());

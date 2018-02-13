@@ -13,6 +13,7 @@ import java.util.Map;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.spi.area.IArea;
+import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -42,6 +43,7 @@ public class MongoConverters implements IMongoConverterLookup {
 	CONVERTERS.put(IDevice.class, new MongoDevice());
 	CONVERTERS.put(IDeviceAssignment.class, new MongoDeviceAssignment());
 	CONVERTERS.put(IDeviceStream.class, new MongoDeviceStream());
+	CONVERTERS.put(IAreaType.class, new MongoAreaType());
 	CONVERTERS.put(IArea.class, new MongoArea());
 	CONVERTERS.put(IZone.class, new MongoZone());
 	CONVERTERS.put(IDeviceGroup.class, new MongoDeviceGroup());

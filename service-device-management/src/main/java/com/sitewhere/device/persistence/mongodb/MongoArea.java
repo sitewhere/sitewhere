@@ -26,34 +26,34 @@ import com.sitewhere.spi.area.IArea;
 public class MongoArea implements MongoConverter<IArea> {
 
     /** Property for id */
-    public static final String PROP_ID = "id";
+    public static final String PROP_ID = "arid";
 
     /** Property for area type id */
-    public static final String PROP_AREA_TYPE_ID = "ti";
+    public static final String PROP_AREA_TYPE_ID = "atid";
 
     /** Property for parent area id */
-    public static final String PROP_PARENT_AREA_ID = "pi";
+    public static final String PROP_PARENT_AREA_ID = "ptid";
 
     /** Property for name */
-    public static final String PROP_NAME = "nm";
+    public static final String PROP_NAME = "name";
 
     /** Property for description */
-    public static final String PROP_DESCRIPTION = "ds";
+    public static final String PROP_DESCRIPTION = "desc";
 
     /** Property for image URL */
-    public static final String PROP_IMAGE_URL = "im";
+    public static final String PROP_IMAGE_URL = "imgu";
 
     /** Property for token */
-    public static final String PROP_TOKEN = "tk";
+    public static final String PROP_TOKEN = "tokn";
 
     /** Property for map data */
-    public static final String PROP_MAP_DATA = "mp";
+    public static final String PROP_MAP_DATA = "mpdt";
 
     /** Property for map type */
-    public static final String PROP_MAP_TYPE = "mt";
+    public static final String PROP_MAP_TYPE = "mpty";
 
     /** Property for map metadata */
-    public static final String PROP_MAP_METADATA = "md";
+    public static final String PROP_MAP_METADATA = "mpmd";
 
     /*
      * (non-Javadoc)

@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 import com.sitewhere.persistence.Persistence;
 import com.sitewhere.rest.model.area.Area;
 import com.sitewhere.rest.model.area.AreaMapData;
+import com.sitewhere.rest.model.area.AreaType;
 import com.sitewhere.rest.model.area.Zone;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.Device;
@@ -35,6 +36,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.request.IAreaCreateRequest;
+import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
 import com.sitewhere.spi.common.ILocation;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
@@ -86,19 +88,19 @@ public class DeviceManagementPersistence extends Persistence {
 	type.setId(UUID.randomUUID());
 
 	// Unique token is required.
-	require(token);
+	require("Token", token);
 	type.setToken(token);
 
 	// Name is required.
-	require(request.getName());
+	require("Name", request.getName());
 	type.setName(request.getName());
 
 	// Asset reference is required.
-	requireNotNull(request.getAssetReference());
+	requireNotNull("Asset Reference", request.getAssetReference());
 	type.setAssetReference(request.getAssetReference());
 
 	// Container policy is required.
-	requireNotNull(request.getContainerPolicy());
+	requireNotNull("Container Policy", request.getContainerPolicy());
 	type.setContainerPolicy(request.getContainerPolicy());
 
 	// If composite container policy and no device element schema, create
@@ -170,11 +172,11 @@ public class DeviceManagementPersistence extends Persistence {
 	command.setId(UUID.randomUUID());
 
 	// Token is required.
-	require(token);
+	require("Token", token);
 	command.setToken(token);
 
 	// Name is required.
-	require(request.getName());
+	require("Name", request.getName());
 	command.setName(request.getName());
 
 	command.setDeviceTypeId(deviceType.getId());
@@ -267,11 +269,11 @@ public class DeviceManagementPersistence extends Persistence {
 	status.setId(UUID.randomUUID());
 
 	// Code is required.
-	require(request.getCode());
+	require("Code", request.getCode());
 	status.setCode(request.getCode());
 
 	// Name is required.
-	require(request.getName());
+	require("Name", request.getName());
 	status.setName(request.getName());
 
 	status.setDeviceTypeId(deviceType.getId());
@@ -351,7 +353,7 @@ public class DeviceManagementPersistence extends Persistence {
 	device.setId(UUID.randomUUID());
 
 	// Require hardware id and verify that it is valid.
-	require(request.getHardwareId());
+	require("Hardware Id", request.getHardwareId());
 	Matcher matcher = HARDWARE_ID_REGEX.matcher(request.getHardwareId());
 	if (!matcher.matches()) {
 	    throw new SiteWhereSystemException(ErrorCode.MalformedHardwareId, ErrorLevel.ERROR);
@@ -502,6 +504,61 @@ public class DeviceManagementPersistence extends Persistence {
     }
 
     /**
+     * Common logic for creating new area type object and populating it from
+     * request.
+     * 
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public static AreaType areaTypeCreateLogic(IAreaTypeCreateRequest request) throws SiteWhereException {
+	AreaType type = new AreaType();
+	type.setId(UUID.randomUUID());
+
+	if (request.getToken() != null) {
+	    type.setToken(request.getToken());
+	} else {
+	    type.setToken(UUID.randomUUID().toString());
+	}
+
+	type.setName(request.getName());
+	type.setDescription(request.getDescription());
+	type.setIcon(request.getIcon());
+
+	DeviceManagementPersistence.initializeEntityMetadata(type);
+	MetadataProvider.copy(request.getMetadata(), type);
+	return type;
+    }
+
+    /**
+     * Common logic for copying data from area type update request to existing area
+     * type.
+     * 
+     * @param request
+     * @param target
+     * @throws SiteWhereException
+     */
+    public static void areaTypeUpdateLogic(IAreaTypeCreateRequest request, AreaType target) throws SiteWhereException {
+	if (request.getToken() != null) {
+	    target.setToken(request.getToken());
+	}
+	if (request.getName() != null) {
+	    target.setName(request.getName());
+	}
+	if (request.getDescription() != null) {
+	    target.setDescription(request.getDescription());
+	}
+	if (request.getIcon() != null) {
+	    target.setIcon(request.getIcon());
+	}
+	if (request.getMetadata() != null) {
+	    target.getMetadata().clear();
+	    MetadataProvider.copy(request.getMetadata(), target);
+	}
+	DeviceManagementPersistence.setUpdatedEntityMetadata(target);
+    }
+
+    /**
      * Common logic for creating new area object and populating it from request.
      * 
      * @param request
@@ -518,6 +575,11 @@ public class DeviceManagementPersistence extends Persistence {
 	    area.setToken(UUID.randomUUID().toString());
 	}
 
+	requireNotNull("Area Type Id", request.getAreaTypeId());
+	requireNotNull("Name", request.getName());
+
+	area.setAreaTypeId(request.getAreaTypeId());
+	area.setParentAreaId(request.getParentAreaId());
 	area.setName(request.getName());
 	area.setDescription(request.getDescription());
 	area.setImageUrl(request.getImageUrl());
@@ -536,6 +598,9 @@ public class DeviceManagementPersistence extends Persistence {
      * @throws SiteWhereException
      */
     public static void areaUpdateLogic(IAreaCreateRequest request, Area target) throws SiteWhereException {
+	if (request.getToken() != null) {
+	    target.setToken(request.getToken());
+	}
 	if (request.getName() != null) {
 	    target.setName(request.getName());
 	}
@@ -569,10 +634,10 @@ public class DeviceManagementPersistence extends Persistence {
 	DeviceAssignment newAssignment = new DeviceAssignment();
 	newAssignment.setId(UUID.randomUUID());
 	newAssignment.setToken(source.getToken());
-	newAssignment.setAreaId(area.getId());
+	newAssignment.setAreaId(area != null ? area.getId() : null);
 	newAssignment.setDeviceId(device.getId());
 
-	requireNotNull(source.getAssignmentType());
+	requireNotNull("Assignment Type", source.getAssignmentType());
 	newAssignment.setAssignmentType(source.getAssignmentType());
 
 	if (source.getAssignmentType() == DeviceAssignmentType.Associated) {
@@ -619,14 +684,14 @@ public class DeviceManagementPersistence extends Persistence {
 	stream.setAssignmentId(assignment.getId());
 
 	// Verify the stream id is specified and contains only valid characters.
-	require(request.getStreamId());
+	require("Stream Id", request.getStreamId());
 	if (!request.getStreamId().matches("^[a-zA-Z0-9_\\-]+$")) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidCharsInStreamId, ErrorLevel.ERROR);
 	}
 	stream.setStreamId(request.getStreamId());
 
 	// Content type is required.
-	require(request.getContentType());
+	require("Content Type", request.getContentType());
 	stream.setContentType(request.getContentType());
 
 	MetadataProvider.copy(request.getMetadata(), stream);

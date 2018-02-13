@@ -187,6 +187,28 @@ service DeviceManagement {
 	// List devices streams that meet criteria.
 	rpc ListDeviceStreams (GListDeviceStreamsRequest) returns (GListDeviceStreamsResponse) {}
 
+	// ##################
+	// ### AREA TYPES ###
+	// ##################
+	
+	// Create a new area type.
+	rpc CreateAreaType (GCreateAreaTypeRequest) returns (GCreateAreaTypeResponse) {}
+		
+	// Get area type by id.
+	rpc GetAreaType (GGetAreaTypeRequest) returns (GGetAreaTypeResponse) {}
+	
+	// Get area type by unique token.
+	rpc GetAreaTypeByToken (GGetAreaTypeByTokenRequest) returns (GGetAreaTypeByTokenResponse) {}
+	
+	// Update an existing area type.
+	rpc UpdateAreaType (GUpdateAreaTypeRequest) returns (GUpdateAreaTypeResponse) {}
+	
+	// List area types that meet criteria.
+	rpc ListAreaTypes (GListAreaTypesRequest) returns (GListAreaTypesResponse) {}
+	
+	// Delete an existing area type.
+	rpc DeleteAreaType (GDeleteAreaTypeRequest) returns (GDeleteAreaTypeResponse) {}
+
 	// #############
 	// ### AREAS ###
 	// #############
@@ -668,6 +690,72 @@ message GListDeviceStreamsRequest {
 // Response for listing device streams that meet criteria.
 message GListDeviceStreamsResponse {
 	com.sitewhere.grpc.model.GDeviceStreamSearchResults results = 1;
+}
+
+// ##################
+// ### AREA TYPES ###
+// ##################
+
+// Request for creating an area type.
+message GCreateAreaTypeRequest {
+	com.sitewhere.grpc.model.GAreaTypeCreateRequest request = 1;
+}
+
+// Response from creating an area type.
+message GCreateAreaTypeResponse {
+	com.sitewhere.grpc.model.GAreaType areaType = 1;
+}
+	
+// Request for getting an area type by id.
+message GGetAreaTypeRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+}
+	
+// Response for getting an area type by id.
+message GGetAreaTypeResponse {
+	com.sitewhere.grpc.model.GAreaType areaType = 1;
+}
+	
+// Request for getting an area type by token.
+message GGetAreaTypeByTokenRequest {
+	string token = 1;
+}
+	
+// Response for getting an area type by token.
+message GGetAreaTypeByTokenResponse {
+	com.sitewhere.grpc.model.GAreaType areaType = 1;
+}
+	
+// Request for updating an existing area type.
+message GUpdateAreaTypeRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	com.sitewhere.grpc.model.GAreaTypeCreateRequest request = 2;
+}
+	
+// Response for updating an existing area type.
+message GUpdateAreaTypeResponse {
+	com.sitewhere.grpc.model.GAreaType areaType = 1;
+}
+	
+// Request for listing area types that meet criteria.
+message GListAreaTypesRequest {
+	com.sitewhere.grpc.model.GAreaTypeSearchCriteria criteria = 1;
+}
+	
+// Response for listing area types that meet criteria.
+message GListAreaTypesResponse {
+	com.sitewhere.grpc.model.GAreaTypeSearchResults results = 1;
+}
+	
+// Request for deleting an area type.
+message GDeleteAreaTypeRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	bool force = 2;
+}
+	
+// Response for deleting an area type.
+message GDeleteAreaTypeResponse {
+	com.sitewhere.grpc.model.GAreaType areaType = 1;
 }
 
 // #############

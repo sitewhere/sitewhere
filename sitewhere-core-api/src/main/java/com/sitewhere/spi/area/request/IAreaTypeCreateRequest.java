@@ -7,12 +7,15 @@
  */
 package com.sitewhere.spi.area.request;
 
+import java.io.Serializable;
+import java.util.Map;
+
 /**
  * Provides information needed to create an area type.
  * 
  * @author Derek
  */
-public interface IAreaTypeCreateRequest {
+public interface IAreaTypeCreateRequest extends Serializable {
 
     /**
      * Get token that acts as an alias for area type id.
@@ -41,4 +44,11 @@ public interface IAreaTypeCreateRequest {
      * @return
      */
     public String getIcon();
+
+    /**
+     * Get metadata values.
+     * 
+     * @return
+     */
+    public Map<String, String> getMetadata();
 }

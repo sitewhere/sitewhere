@@ -26,6 +26,10 @@ import com.sitewhere.grpc.model.DeviceModel.GAreaCreateRequest;
 import com.sitewhere.grpc.model.DeviceModel.GAreaMapData;
 import com.sitewhere.grpc.model.DeviceModel.GAreaSearchCriteria;
 import com.sitewhere.grpc.model.DeviceModel.GAreaSearchResults;
+import com.sitewhere.grpc.model.DeviceModel.GAreaType;
+import com.sitewhere.grpc.model.DeviceModel.GAreaTypeCreateRequest;
+import com.sitewhere.grpc.model.DeviceModel.GAreaTypeSearchCriteria;
+import com.sitewhere.grpc.model.DeviceModel.GAreaTypeSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GAssetsForAssignmentSearchCriteria;
 import com.sitewhere.grpc.model.DeviceModel.GCommandParameter;
 import com.sitewhere.grpc.model.DeviceModel.GDevice;
@@ -71,8 +75,10 @@ import com.sitewhere.grpc.model.DeviceModel.GZoneSearchCriteria;
 import com.sitewhere.grpc.model.DeviceModel.GZoneSearchResults;
 import com.sitewhere.rest.model.area.Area;
 import com.sitewhere.rest.model.area.AreaMapData;
+import com.sitewhere.rest.model.area.AreaType;
 import com.sitewhere.rest.model.area.Zone;
 import com.sitewhere.rest.model.area.request.AreaCreateRequest;
+import com.sitewhere.rest.model.area.request.AreaTypeCreateRequest;
 import com.sitewhere.rest.model.area.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
@@ -102,8 +108,10 @@ import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.IAreaMapData;
+import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.area.request.IAreaCreateRequest;
+import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceAssignmentType;
@@ -1602,7 +1610,9 @@ public class DeviceModelConverter {
 	grpc.setToken(api.getToken());
 	grpc.setAssignmentType(DeviceModelConverter.asGrpcDeviceAssignmentType(api.getAssignmentType()));
 	grpc.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(api.getStatus()));
-	grpc.setAreaId(CommonModelConverter.asGrpcUuid(api.getAreaId()));
+	if (api.getAreaId() != null) {
+	    grpc.setAreaId(CommonModelConverter.asGrpcUuid(api.getAreaId()));
+	}
 	grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
 	grpc.setAssetReference(AssetModelConverter.asGrpcAssetReference(api.getAssetReference()));
 	if (api.getActiveDate() != null) {
@@ -1777,6 +1787,114 @@ public class DeviceModelConverter {
 	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
 	grpc.setStreamId(api.getStreamId());
 	grpc.setContentType(api.getContentType());
+	if (api.getMetadata() != null) {
+	    grpc.putAllMetadata(api.getMetadata());
+	}
+	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
+	return grpc.build();
+    }
+
+    /**
+     * Convert area type create request from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static AreaTypeCreateRequest asApiAreaTypeCreateRequest(GAreaTypeCreateRequest grpc)
+	    throws SiteWhereException {
+	AreaTypeCreateRequest api = new AreaTypeCreateRequest();
+	api.setToken(grpc.getToken());
+	api.setName(grpc.getName());
+	api.setDescription(grpc.getDescription());
+	api.setIcon(grpc.getIcon());
+	api.setMetadata(grpc.getMetadataMap());
+	return api;
+    }
+
+    /**
+     * Convert area type create request from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GAreaTypeCreateRequest asGrpcAreaTypeCreateRequest(IAreaTypeCreateRequest api)
+	    throws SiteWhereException {
+	GAreaTypeCreateRequest.Builder grpc = GAreaTypeCreateRequest.newBuilder();
+	grpc.setToken(api.getToken());
+	grpc.setName(api.getName());
+	grpc.setDescription(api.getDescription());
+	grpc.setIcon(api.getIcon());
+	if (api.getMetadata() != null) {
+	    grpc.putAllMetadata(api.getMetadata());
+	}
+	return grpc.build();
+    }
+
+    /**
+     * Convert area type search criteria from API to GRPC.
+     * 
+     * @param code
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GAreaTypeSearchCriteria asApiAreaTypeSearchCriteria(ISearchCriteria criteria)
+	    throws SiteWhereException {
+	GAreaTypeSearchCriteria.Builder gcriteria = GAreaTypeSearchCriteria.newBuilder();
+	gcriteria.setPaging(CommonModelConverter.asGrpcPaging(criteria));
+	return gcriteria.build();
+    }
+
+    /**
+     * Convert area type search results from GRPC to API.
+     * 
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ISearchResults<IAreaType> asApiAreaTypeSearchResults(GAreaTypeSearchResults response)
+	    throws SiteWhereException {
+	List<IAreaType> results = new ArrayList<IAreaType>();
+	for (GAreaType grpc : response.getAreaTypesList()) {
+	    results.add(DeviceModelConverter.asApiAreaType(grpc));
+	}
+	return new SearchResults<IAreaType>(results, response.getCount());
+    }
+
+    /**
+     * Convert area type from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static AreaType asApiAreaType(GAreaType grpc) throws SiteWhereException {
+	AreaType api = new AreaType();
+	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
+	api.setToken(grpc.getToken());
+	api.setName(grpc.getName());
+	api.setDescription(grpc.getDescription());
+	api.setIcon(grpc.getIcon());
+	api.setMetadata(grpc.getMetadataMap());
+	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
+	return api;
+    }
+
+    /**
+     * Convert area type from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GAreaType asGrpcAreaType(IAreaType api) throws SiteWhereException {
+	GAreaType.Builder grpc = GAreaType.newBuilder();
+	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
+	grpc.setToken(api.getToken());
+	grpc.setName(api.getName());
+	grpc.setDescription(api.getDescription());
+	grpc.setIcon(api.getIcon());
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
 	}

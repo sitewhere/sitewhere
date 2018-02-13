@@ -29,6 +29,7 @@ import com.sitewhere.device.marshaling.AreaMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.rest.model.area.Zone;
 import com.sitewhere.rest.model.area.request.AreaCreateRequest;
+import com.sitewhere.rest.model.area.request.AreaTypeCreateRequest;
 import com.sitewhere.rest.model.area.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.asset.DeviceAlertWithAsset;
@@ -44,6 +45,7 @@ import com.sitewhere.rest.model.search.device.AssignmentSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.area.IArea;
+import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
@@ -82,6 +84,91 @@ public class Areas extends RestControllerBase {
     private static Logger LOGGER = LogManager.getLogger();
 
     /**
+     * Create an area type.
+     * 
+     * @param input
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/types", method = RequestMethod.POST)
+    @ApiOperation(value = "Create new area type")
+    @Secured({ SiteWhereRoles.REST })
+    public IAreaType createAreaType(@RequestBody AreaTypeCreateRequest input) throws SiteWhereException {
+	return getDeviceManagement().createAreaType(input);
+    }
+
+    /**
+     * Get information for a given area type based on token.
+     * 
+     * @param areaTypeToken
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/types/{areaTypeToken}", method = RequestMethod.GET)
+    @ApiOperation(value = "Get area type by token")
+    @Secured({ SiteWhereRoles.REST })
+    public IAreaType getAreaTypeByToken(
+	    @ApiParam(value = "Token that identifies area type", required = true) @PathVariable String areaTypeToken)
+	    throws SiteWhereException {
+	return assertAreaType(areaTypeToken);
+    }
+
+    /**
+     * Update information for an area type.
+     * 
+     * @param areaTypeToken
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/types/{areaTypeToken}", method = RequestMethod.PUT)
+    @ApiOperation(value = "Update existing area")
+    @Secured({ SiteWhereRoles.REST })
+    public IAreaType updateAreaType(
+	    @ApiParam(value = "Token that identifies area type", required = true) @PathVariable String areaTypeToken,
+	    @RequestBody AreaTypeCreateRequest request) throws SiteWhereException {
+	IAreaType existing = assertAreaType(areaTypeToken);
+	return getDeviceManagement().updateAreaType(existing.getId(), request);
+    }
+
+    /**
+     * List all area types.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/types", method = RequestMethod.GET)
+    @ApiOperation(value = "List area types matching criteria")
+    @Secured({ SiteWhereRoles.REST })
+    public ISearchResults<IAreaType> listAreaTypes(
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	SearchCriteria criteria = new SearchCriteria(page, pageSize);
+	ISearchResults<IAreaType> matches = getDeviceManagement().listAreaTypes(criteria);
+	return matches;
+    }
+
+    /**
+     * Delete information for an area type based on token.
+     * 
+     * @param areaTypeToken
+     * @param force
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/types/{areaTypeToken}", method = RequestMethod.DELETE)
+    @ApiOperation(value = "Delete area by token")
+    @Secured({ SiteWhereRoles.REST })
+    public IAreaType deleteAreaType(
+	    @ApiParam(value = "Token that identifies area type", required = true) @PathVariable String areaTypeToken,
+	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	IAreaType existing = assertAreaType(areaTypeToken);
+	return getDeviceManagement().deleteAreaType(existing.getId(), force);
+    }
+
+    /**
      * Create a new area.
      * 
      * @param input
@@ -89,10 +176,9 @@ public class Areas extends RestControllerBase {
      * @throws SiteWhereException
      */
     @RequestMapping(method = RequestMethod.POST)
-    @ApiOperation(value = "Create new site")
+    @ApiOperation(value = "Create new area")
     @Secured({ SiteWhereRoles.REST })
-    public IArea createArea(@RequestBody AreaCreateRequest input, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
+    public IArea createArea(@RequestBody AreaCreateRequest input) throws SiteWhereException {
 	return getDeviceManagement().createArea(input);
     }
 
@@ -123,29 +209,10 @@ public class Areas extends RestControllerBase {
     @ApiOperation(value = "Update existing area")
     @Secured({ SiteWhereRoles.REST })
     public IArea updateArea(
-	    @ApiParam(value = "Token that identifies site", required = true) @PathVariable String areaToken,
-	    @RequestBody AreaCreateRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
+	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
+	    @RequestBody AreaCreateRequest request) throws SiteWhereException {
 	IArea existing = assertArea(areaToken);
 	return getDeviceManagement().updateArea(existing.getId(), request);
-    }
-
-    /**
-     * Delete information for a given area based on token.
-     * 
-     * @param areaToken
-     * @param force
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/{areaToken}", method = RequestMethod.DELETE)
-    @ApiOperation(value = "Delete area by token")
-    @Secured({ SiteWhereRoles.REST })
-    public IArea deleteSite(
-	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
-	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IArea existing = assertArea(areaToken);
-	return getDeviceManagement().deleteArea(existing.getId(), force);
     }
 
     /**
@@ -174,6 +241,25 @@ public class Areas extends RestControllerBase {
 	    results.add(helper.convert(area));
 	}
 	return new SearchResults<IArea>(results, matches.getNumResults());
+    }
+
+    /**
+     * Delete information for a given area based on token.
+     * 
+     * @param areaToken
+     * @param force
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{areaToken}", method = RequestMethod.DELETE)
+    @ApiOperation(value = "Delete area by token")
+    @Secured({ SiteWhereRoles.REST })
+    public IArea deleteArea(
+	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
+	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
+	    HttpServletRequest servletRequest) throws SiteWhereException {
+	IArea existing = assertArea(areaToken);
+	return getDeviceManagement().deleteArea(existing.getId(), force);
     }
 
     /**
@@ -302,7 +388,7 @@ public class Areas extends RestControllerBase {
     /**
      * Get device command responses for a given area.
      * 
-     * @param siteToken
+     * @param areaToken
      * @param count
      * @return
      * @throws SiteWhereException
@@ -371,12 +457,11 @@ public class Areas extends RestControllerBase {
     @RequestMapping(value = "/{areaToken}/assignments", method = RequestMethod.GET)
     @ApiOperation(value = "List device assignments for an area")
     @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<DeviceAssignment> listAssignmentsForSite(
+    public ISearchResults<DeviceAssignment> listAssignmentsForArea(
 	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Limit results to the given status", required = false) @RequestParam(required = false) String status,
 	    @ApiParam(value = "Include detailed device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
 	    @ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "false") boolean includeAsset,
-	    @ApiParam(value = "Include detailed site information", required = false) @RequestParam(defaultValue = "false") boolean includeSite,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
@@ -399,7 +484,7 @@ public class Areas extends RestControllerBase {
     }
 
     @RequestMapping(value = "/{areaToken}/assignments/lastinteraction", method = RequestMethod.GET)
-    @ApiOperation(value = "List device assignments for site with qualifying last interaction date")
+    @ApiOperation(value = "List device assignments for area with qualifying last interaction date")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<DeviceAssignment> listAssignmentsWithLastInteractionDate(
 	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
@@ -498,6 +583,21 @@ public class Areas extends RestControllerBase {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	IArea existing = assertArea(areaToken);
 	return getDeviceManagement().listZones(existing.getId(), criteria);
+    }
+
+    /**
+     * Get area type associated with token or throw an exception if invalid.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IAreaType assertAreaType(String token) throws SiteWhereException {
+	IAreaType type = getDeviceManagement().getAreaTypeByToken(token);
+	if (type == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaTypeToken, ErrorLevel.ERROR);
+	}
+	return type;
     }
 
     /**

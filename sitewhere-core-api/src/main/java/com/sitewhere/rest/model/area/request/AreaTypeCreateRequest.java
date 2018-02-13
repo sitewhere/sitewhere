@@ -7,6 +7,10 @@
  */
 package com.sitewhere.rest.model.area.request;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 
 /**
@@ -15,6 +19,9 @@ import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
  * @author Derek
  */
 public class AreaTypeCreateRequest implements IAreaTypeCreateRequest {
+
+    /** Serial version UID */
+    private static final long serialVersionUID = 7654388850917582565L;
 
     /** Alias token */
     private String token;
@@ -27,6 +34,9 @@ public class AreaTypeCreateRequest implements IAreaTypeCreateRequest {
 
     /** Icon */
     private String icon;
+
+    /** Metadata values */
+    private Map<String, String> metadata;
 
     /*
      * @see com.sitewhere.spi.area.request.IAreaTypeCreateRequest#getToken()
@@ -74,5 +84,63 @@ public class AreaTypeCreateRequest implements IAreaTypeCreateRequest {
 
     public void setIcon(String icon) {
 	this.icon = icon;
+    }
+
+    /*
+     * @see com.sitewhere.spi.area.request.IAreaTypeCreateRequest#getMetadata()
+     */
+    @Override
+    public Map<String, String> getMetadata() {
+	return metadata;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+	this.metadata = metadata;
+    }
+
+    public static class Builder {
+
+	/** Request being built */
+	private AreaTypeCreateRequest request = new AreaTypeCreateRequest();
+
+	public Builder(IAreaType api) {
+	    request.setToken(api.getToken());
+	    request.setName(api.getName());
+	    request.setDescription(api.getDescription());
+	    request.setIcon(api.getIcon());
+	    if (api.getMetadata() != null) {
+		request.setMetadata(new HashMap<String, String>());
+		request.getMetadata().putAll(api.getMetadata());
+	    }
+	}
+
+	public Builder(String token, String name) {
+	    request.setToken(token);
+	    request.setName(name);
+	    request.setDescription("");
+	    request.setIcon("fa-question");
+	}
+
+	public Builder withDescription(String description) {
+	    request.setDescription(description);
+	    return this;
+	}
+
+	public Builder withIcon(String icon) {
+	    request.setIcon(icon);
+	    return this;
+	}
+
+	public Builder metadata(String name, String value) {
+	    if (request.getMetadata() == null) {
+		request.setMetadata(new HashMap<String, String>());
+	    }
+	    request.getMetadata().put(name, value);
+	    return this;
+	}
+
+	public AreaTypeCreateRequest build() {
+	    return request;
+	}
     }
 }

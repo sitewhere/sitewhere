@@ -36,23 +36,23 @@ public class TenantManagementPersistenceLogic extends Persistence {
 	Tenant tenant = new Tenant();
 
 	// Id is required.
-	requireFormat(request.getId(), "[\\w]*", ErrorCode.TenantIdFormat);
+	requireFormat("Tenant Id", request.getId(), "[\\w]*", ErrorCode.TenantIdFormat);
 	tenant.setId(request.getId());
 
 	// Name is required.
-	require(request.getName());
+	require("Name", request.getName());
 	tenant.setName(request.getName());
 
 	// Logo is required.
-	require(request.getLogoUrl());
+	require("Logo Url", request.getLogoUrl());
 	tenant.setLogoUrl(request.getLogoUrl());
 
 	// Auth token is required.
-	require(request.getAuthenticationToken());
+	require("Auth Token", request.getAuthenticationToken());
 	tenant.setAuthenticationToken(request.getAuthenticationToken());
 
 	// Tenant template is required.
-	require(request.getTenantTemplateId());
+	require("Template Id", request.getTenantTemplateId());
 	tenant.setTenantTemplateId(request.getTenantTemplateId());
 
 	tenant.getAuthorizedUserIds().addAll(request.getAuthorizedUserIds());

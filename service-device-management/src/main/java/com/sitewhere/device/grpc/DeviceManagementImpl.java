@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.model.DeviceModel.GAreaSearchResults;
+import com.sitewhere.grpc.model.DeviceModel.GAreaTypeSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceAssignmentSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupElementsSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupSearchResults;
@@ -24,8 +25,10 @@ import com.sitewhere.grpc.model.converter.DeviceModelConverter;
 import com.sitewhere.grpc.service.*;
 import com.sitewhere.rest.model.asset.AssetReference;
 import com.sitewhere.spi.area.IArea;
+import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.area.request.IAreaCreateRequest;
+import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
 import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.IDevice;
@@ -1366,6 +1369,147 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
 	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_STREAMS, e, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * createAreaType(com.sitewhere.grpc.service.GCreateAreaTypeRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void createAreaType(GCreateAreaTypeRequest request,
+	    StreamObserver<GCreateAreaTypeResponse> responseObserver) {
+	try {
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_CREATE_AREA_TYPE);
+	    IAreaTypeCreateRequest apiRequest = DeviceModelConverter.asApiAreaTypeCreateRequest(request.getRequest());
+	    IAreaType apiResult = getDeviceManagement().createAreaType(apiRequest);
+	    GCreateAreaTypeResponse.Builder response = GCreateAreaTypeResponse.newBuilder();
+	    response.setAreaType(DeviceModelConverter.asGrpcAreaType(apiResult));
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_AREA_TYPE, e, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getAreaType(com.sitewhere.grpc.service.GGetAreaTypeRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getAreaType(GGetAreaTypeRequest request, StreamObserver<GGetAreaTypeResponse> responseObserver) {
+	try {
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_AREA_TYPE);
+	    IAreaType apiResult = getDeviceManagement().getAreaType(CommonModelConverter.asApiUuid(request.getId()));
+	    GGetAreaTypeResponse.Builder response = GGetAreaTypeResponse.newBuilder();
+	    if (apiResult != null) {
+		response.setAreaType(DeviceModelConverter.asGrpcAreaType(apiResult));
+	    }
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_AREA_TYPE, e, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getAreaTypeByToken(com.sitewhere.grpc.service.GGetAreaTypeByTokenRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getAreaTypeByToken(GGetAreaTypeByTokenRequest request,
+	    StreamObserver<GGetAreaTypeByTokenResponse> responseObserver) {
+	try {
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_AREA_TYPE_BY_TOKEN);
+	    IAreaType apiResult = getDeviceManagement().getAreaTypeByToken(request.getToken());
+	    GGetAreaTypeByTokenResponse.Builder response = GGetAreaTypeByTokenResponse.newBuilder();
+	    if (apiResult != null) {
+		response.setAreaType(DeviceModelConverter.asGrpcAreaType(apiResult));
+	    }
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_AREA_TYPE_BY_TOKEN, e,
+		    responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * updateAreaType(com.sitewhere.grpc.service.GUpdateAreaTypeRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void updateAreaType(GUpdateAreaTypeRequest request,
+	    StreamObserver<GUpdateAreaTypeResponse> responseObserver) {
+	try {
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_UPDATE_AREA_TYPE);
+	    IAreaTypeCreateRequest update = DeviceModelConverter.asApiAreaTypeCreateRequest(request.getRequest());
+	    IAreaType apiResult = getDeviceManagement().updateAreaType(CommonModelConverter.asApiUuid(request.getId()),
+		    update);
+	    GUpdateAreaTypeResponse.Builder response = GUpdateAreaTypeResponse.newBuilder();
+	    if (apiResult != null) {
+		response.setAreaType(DeviceModelConverter.asGrpcAreaType(apiResult));
+	    }
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_AREA_TYPE, e, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listAreaTypes(com.sitewhere.grpc.service.GListAreaTypesRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void listAreaTypes(GListAreaTypesRequest request, StreamObserver<GListAreaTypesResponse> responseObserver) {
+	try {
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_AREA_TYPES);
+	    ISearchResults<IAreaType> apiResult = getDeviceManagement()
+		    .listAreaTypes(CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
+	    GListAreaTypesResponse.Builder response = GListAreaTypesResponse.newBuilder();
+	    GAreaTypeSearchResults.Builder results = GAreaTypeSearchResults.newBuilder();
+	    for (IAreaType api : apiResult.getResults()) {
+		results.addAreaTypes(DeviceModelConverter.asGrpcAreaType(api));
+	    }
+	    results.setCount(apiResult.getNumResults());
+	    response.setResults(results.build());
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_AREA_TYPES, e, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * deleteAreaType(com.sitewhere.grpc.service.GDeleteAreaTypeRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void deleteAreaType(GDeleteAreaTypeRequest request,
+	    StreamObserver<GDeleteAreaTypeResponse> responseObserver) {
+	try {
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_DELETE_AREA_TYPE);
+	    IAreaType apiResult = getDeviceManagement().deleteAreaType(CommonModelConverter.asApiUuid(request.getId()),
+		    request.getForce());
+	    GDeleteAreaTypeResponse.Builder response = GDeleteAreaTypeResponse.newBuilder();
+	    response.setAreaType(DeviceModelConverter.asGrpcAreaType(apiResult));
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_DELETE_AREA_TYPE, e, responseObserver);
 	}
     }
 

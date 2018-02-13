@@ -49,9 +49,9 @@ public class UserManagementPersistence extends Persistence {
 
 	User user = new User();
 
-	require(source.getUsername());
-	user.setUsername(source.getUsername());
+	require("Username", source.getUsername());
 
+	user.setUsername(source.getUsername());
 	user.setHashedPassword(password);
 	user.setFirstName(source.getFirstName());
 	user.setLastName(source.getLastName());
@@ -124,8 +124,7 @@ public class UserManagementPersistence extends Persistence {
     }
 
     /**
-     * Common logic for creating a granted authority based on an incoming
-     * request.
+     * Common logic for creating a granted authority based on an incoming request.
      * 
      * @param source
      * @return
@@ -135,9 +134,9 @@ public class UserManagementPersistence extends Persistence {
 	    throws SiteWhereException {
 	GrantedAuthority auth = new GrantedAuthority();
 
-	require(source.getAuthority());
-	auth.setAuthority(source.getAuthority());
+	require("Authority", source.getAuthority());
 
+	auth.setAuthority(source.getAuthority());
 	auth.setDescription(source.getDescription());
 	auth.setParent(source.getParent());
 	auth.setGroup(source.isGroup());

@@ -149,8 +149,9 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
 	// }
 	// }
 
-	public Builder(String hardwareId, String moduleId, String assetId) {
+	public Builder(String hardwareId, String areaToken, String moduleId, String assetId) {
 	    request.setDeviceHardwareId(hardwareId);
+	    request.setAreaToken(areaToken);
 	    request.setAssetReference(new AssetReference.Builder(moduleId, assetId).build());
 	    request.setAssignmentType(DeviceAssignmentType.Associated);
 	}
