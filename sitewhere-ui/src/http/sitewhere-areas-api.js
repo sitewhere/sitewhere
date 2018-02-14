@@ -1,6 +1,3 @@
-/**
- * API calls associated with SiteWhere device assignments.
- */
 import {restAuthGet, restAuthPost, restAuthPut, restAuthDelete} from './sitewhere-api'
 
 /**
@@ -11,7 +8,7 @@ export function createArea (axios, area) {
 }
 
 /**
- * Get a area by unique token.
+ * Get an area by unique token.
  */
 export function getArea (axios, areaToken) {
   return restAuthGet(axios, 'areas/' + areaToken)
@@ -22,17 +19,6 @@ export function getArea (axios, areaToken) {
  */
 export function updateArea (axios, areaToken, payload) {
   return restAuthPut(axios, 'areas/' + areaToken, payload)
-}
-
-/**
- * Delete an existing area.
- */
-export function deleteArea (axios, areaToken, force) {
-  let query = ''
-  if (force) {
-    query += '?force=true'
-  }
-  return restAuthDelete(axios, 'areas/' + areaToken + query)
 }
 
 /**
@@ -48,6 +34,17 @@ export function listAreas (axios, includeAssignments, includeZones, paging) {
     query += '&' + paging
   }
   return restAuthGet(axios, 'areas' + query)
+}
+
+/**
+ * Delete an existing area.
+ */
+export function deleteArea (axios, areaToken, force) {
+  let query = ''
+  if (force) {
+    query += '?force=true'
+  }
+  return restAuthDelete(axios, 'areas/' + areaToken + query)
 }
 
 /**

@@ -21,6 +21,7 @@ import TenantAdministration from '@/components/tenants/TenantAdministration'
 import Server from '@/components/server/Server'
 import AreasList from '@/components/areas/AreasList'
 import AreaDetail from '@/components/areas/AreaDetail'
+import AreaTypesList from '@/components/areatypes/AreaTypesList'
 import AssignmentDetail from '@/components/assignments/AssignmentDetail'
 import AssignmentEmulator from '@/components/assignments/AssignmentEmulator'
 import DeviceTypesList from '@/components/devicetypes/DeviceTypesList'
@@ -119,6 +120,9 @@ export default new Router({
         }, {
           path: 'areas/:token',
           component: AreaDetail
+        }, {
+          path: 'areatypes',
+          component: AreaTypesList
         }, {
           path: 'assignments/:token',
           component: AssignmentDetail

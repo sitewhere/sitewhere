@@ -58,7 +58,7 @@ export default {
       subsections: [{
         id: 'areatypes',
         title: 'Area Types',
-        icon: 'map',
+        icon: 'description',
         route: 'areatypes',
         longTitle: 'Manage Area Types'
       }, {
@@ -71,7 +71,7 @@ export default {
     },
     {
       id: 'deviceGroup',
-      title: 'Devices',
+      title: 'Device Management',
       icon: 'developer_board',
       route: 'devices',
       longTitle: 'Manage Devices',
@@ -97,7 +97,7 @@ export default {
     },
     {
       id: 'assets',
-      title: 'Assets',
+      title: 'Asset Management',
       icon: 'local_offer',
       route: 'assets/categories',
       longTitle: 'Manage Asset Categories'

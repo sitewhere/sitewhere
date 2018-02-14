@@ -996,8 +996,18 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
      */
     @Override
     public IAreaType createAreaType(IAreaTypeCreateRequest request) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_CREATE_AREA_TYPE);
+	    GCreateAreaTypeRequest.Builder grequest = GCreateAreaTypeRequest.newBuilder();
+	    grequest.setRequest(DeviceModelConverter.asGrpcAreaTypeCreateRequest(request));
+	    GCreateAreaTypeResponse gresponse = getGrpcChannel().getBlockingStub().createAreaType(grequest.build());
+	    IAreaType response = (gresponse.hasAreaType()) ? DeviceModelConverter.asApiAreaType(gresponse.getAreaType())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_AREA_TYPE, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_AREA_TYPE, t);
+	}
     }
 
     /*
@@ -1005,8 +1015,18 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
      */
     @Override
     public IAreaType getAreaType(UUID id) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_AREA_TYPE);
+	    GGetAreaTypeRequest.Builder grequest = GGetAreaTypeRequest.newBuilder();
+	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
+	    GGetAreaTypeResponse gresponse = getGrpcChannel().getBlockingStub().getAreaType(grequest.build());
+	    IAreaType response = (gresponse.hasAreaType()) ? DeviceModelConverter.asApiAreaType(gresponse.getAreaType())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_AREA_TYPE, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_AREA_TYPE, t);
+	}
     }
 
     /*
@@ -1015,8 +1035,19 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
      */
     @Override
     public IAreaType getAreaTypeByToken(String token) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_AREA_TYPE_BY_TOKEN);
+	    GGetAreaTypeByTokenRequest.Builder grequest = GGetAreaTypeByTokenRequest.newBuilder();
+	    grequest.setToken(token);
+	    GGetAreaTypeByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .getAreaTypeByToken(grequest.build());
+	    IAreaType response = (gresponse.hasAreaType()) ? DeviceModelConverter.asApiAreaType(gresponse.getAreaType())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_AREA_TYPE_BY_TOKEN, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_AREA_TYPE_BY_TOKEN, t);
+	}
     }
 
     /*
@@ -1026,8 +1057,19 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
      */
     @Override
     public IAreaType updateAreaType(UUID id, IAreaTypeCreateRequest request) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_UPDATE_AREA_TYPE);
+	    GUpdateAreaTypeRequest.Builder grequest = GUpdateAreaTypeRequest.newBuilder();
+	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
+	    grequest.setRequest(DeviceModelConverter.asGrpcAreaTypeCreateRequest(request));
+	    GUpdateAreaTypeResponse gresponse = getGrpcChannel().getBlockingStub().updateAreaType(grequest.build());
+	    IAreaType response = (gresponse.hasAreaType()) ? DeviceModelConverter.asApiAreaType(gresponse.getAreaType())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_AREA_TYPE, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_AREA_TYPE, t);
+	}
     }
 
     /*
@@ -1037,8 +1079,17 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
      */
     @Override
     public ISearchResults<IAreaType> listAreaTypes(ISearchCriteria criteria) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_AREA_TYPES);
+	    GListAreaTypesRequest.Builder grequest = GListAreaTypesRequest.newBuilder();
+	    grequest.setCriteria(DeviceModelConverter.asApiAreaTypeSearchCriteria(criteria));
+	    GListAreaTypesResponse gresponse = getGrpcChannel().getBlockingStub().listAreaTypes(grequest.build());
+	    ISearchResults<IAreaType> results = DeviceModelConverter.asApiAreaTypeSearchResults(gresponse.getResults());
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_AREA_TYPES, results);
+	    return results;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_AREA_TYPES, t);
+	}
     }
 
     /*
@@ -1048,8 +1099,19 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
      */
     @Override
     public IAreaType deleteAreaType(UUID id, boolean force) throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_DELETE_AREA_TYPE);
+	    GDeleteAreaTypeRequest.Builder grequest = GDeleteAreaTypeRequest.newBuilder();
+	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
+	    grequest.setForce(force);
+	    GDeleteAreaTypeResponse gresponse = getGrpcChannel().getBlockingStub().deleteAreaType(grequest.build());
+	    IAreaType response = (gresponse.hasAreaType()) ? DeviceModelConverter.asApiAreaType(gresponse.getAreaType())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_AREA_TYPE, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_AREA_TYPE, t);
+	}
     }
 
     /*

@@ -6,10 +6,7 @@
       <v-tabs v-model="active">
         <v-tabs-bar dark color="primary">
           <v-tabs-item key="details" href="#details">
-            Area Details
-          </v-tabs-item>
-          <v-tabs-item key="map" href="#map">
-            Map Information
+            Area Type Details
           </v-tabs-item>
           <v-tabs-item key="metadata" href="#metadata">
             Metadata
@@ -23,21 +20,18 @@
                 <v-container fluid>
                   <v-layout row wrap>
                     <v-flex xs12>
-                      <v-text-field class="mt-1" label="Area name" v-model="areaName" prepend-icon="info"></v-text-field>
+                      <v-text-field class="mt-1" label="Name" v-model="typeName" prepend-icon="info"></v-text-field>
                     </v-flex>
                     <v-flex xs12>
-                      <v-text-field class="mt-1" multi-line label="Description" v-model="areaDescription" prepend-icon="subject"></v-text-field>
+                      <v-text-field class="mt-1" multi-line label="Description" v-model="typeDescription" prepend-icon="subject"></v-text-field>
                     </v-flex>
                     <v-flex xs12>
-                      <v-text-field class="mt-1" label="Image URL" v-model="areaImageUrl" prepend-icon="image"></v-text-field>
+                      <v-text-field class="mt-1" label="Icon" v-model="typeIcon" prepend-icon="image"></v-text-field>
                     </v-flex>
                   </v-layout>
                 </v-container>
                 </v-card-text>
             </v-card>
-          </v-tabs-content>
-          <v-tabs-content key="map" id="map">
-            <map-panel :json="mapConfig" @mapConfig="onMapConfigUpdated"/>
           </v-tabs-content>
           <v-tabs-content key="metadata" id="metadata">
             <metadata-panel :metadata="metadata"
@@ -52,7 +46,6 @@
 <script>
 import Utils from '../common/Utils'
 import BaseDialog from '../common/BaseDialog'
-import MapPanel from './MapPanel'
 import MetadataPanel from '../common/MetadataPanel'
 
 export default {
@@ -60,17 +53,15 @@ export default {
   data: () => ({
     active: null,
     dialogVisible: false,
-    areaName: '',
-    areaDescription: '',
-    areaImageUrl: '',
-    mapConfig: {},
+    typeName: '',
+    typeDescription: '',
+    typeIcon: '',
     metadata: [],
     error: null
   }),
 
   components: {
     BaseDialog,
-    MapPanel,
     MetadataPanel
   },
 
@@ -80,20 +71,18 @@ export default {
     // Generate payload from UI.
     generatePayload: function () {
       var payload = {}
-      payload.name = this.$data.siteName
-      payload.description = this.$data.siteDescription
-      payload.imageUrl = this.$data.siteImageUrl
-      payload.map = this.$data.mapConfig
+      payload.name = this.$data.typeName
+      payload.description = this.$data.typeDescription
+      payload.icon = this.$data.typeIcon
       payload.metadata = Utils.arrayToMetadata(this.$data.metadata)
       return payload
     },
 
     // Reset dialog contents.
     reset: function (e) {
-      this.$data.siteName = null
-      this.$data.siteDescription = null
-      this.$data.siteImageUrl = null
-      this.$data.mapConfig = {}
+      this.$data.typeName = null
+      this.$data.typeDescription = null
+      this.$data.typeIcon = null
       this.$data.metadata = []
       this.$data.active = 'details'
     },
@@ -103,10 +92,9 @@ export default {
       this.reset()
 
       if (payload) {
-        this.$data.siteName = payload.name
-        this.$data.siteDescription = payload.description
-        this.$data.siteImageUrl = payload.imageUrl
-        this.$data.mapConfig = payload.map
+        this.$data.typeName = payload.name
+        this.$data.typeDescription = payload.description
+        this.$data.typeIcon = payload.icon
         this.$data.metadata = Utils.metadataToArray(payload.metadata)
       }
     },

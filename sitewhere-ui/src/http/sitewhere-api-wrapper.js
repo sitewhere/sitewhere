@@ -47,6 +47,15 @@ import {
   getTenantTemplates
 } from './sitewhere-tenants-api.js'
 
+// Area types.
+import {
+  createAreaType,
+  getAreaType,
+  updateAreaType,
+  listAreaTypes,
+  deleteAreaType
+} from './sitewhere-areatypes-api.js'
+
 // Areas.
 import {
   createArea,
@@ -504,6 +513,51 @@ export function _getTenantTemplates (store) {
 }
 
 /**
+ * Create an area type.
+ */
+export function _createAreaType (store, areaType) {
+  let axios = createCoreApiCall(store)
+  let api = createAreaType(axios, areaType)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get an area type by unique token.
+ */
+export function _getAreaType (store, areaTypeToken) {
+  let axios = createCoreApiCall(store)
+  let api = getAreaType(axios, areaTypeToken)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Update an existing area type.
+ */
+export function _updateAreaType (store, areaTypeToken, payload) {
+  let axios = createCoreApiCall(store)
+  let api = updateAreaType(axios, areaTypeToken, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * List area types.
+ */
+export function _listAreaTypes (store, paging) {
+  let axios = createCoreApiCall(store)
+  let api = listAreaTypes(axios, paging)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Delete an existing area type.
+ */
+export function _deleteAreaType (store, areaTypeToken, force) {
+  let axios = createCoreApiCall(store)
+  let api = deleteAreaType(axios, areaTypeToken, force)
+  return loaderWrapper(store, api)
+}
+
+/**
  * Create an area.
  */
 export function _createArea (store, area) {
@@ -513,7 +567,7 @@ export function _createArea (store, area) {
 }
 
 /**
- * Get a area by unique token.
+ * Get an area by unique token.
  */
 export function _getArea (store, areaToken) {
   let axios = createCoreApiCall(store)

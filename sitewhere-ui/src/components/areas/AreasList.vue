@@ -40,7 +40,7 @@ export default {
       this.refresh()
     },
 
-    // Refresh list of sites.
+    // Refresh list of areas.
     refresh: function () {
       var paging = this.$data.paging.query
       var component = this
