@@ -47,15 +47,15 @@
 </template>
 
 <script>
-import SiteDetailHeader from './SiteDetailHeader'
-import SiteAssignments from './SiteAssignments'
-import SiteLocationEvents from './SiteLocationEvents'
-import SiteMeasurementEvents from './SiteMeasurementEvents'
-import SiteAlertEvents from './SiteAlertEvents'
-import SiteZones from './SiteZones'
+import AreaDetailHeader from './AreaDetailHeader'
+import AreaAssignments from './AreaAssignments'
+import AreaLocationEvents from './AreaLocationEvents'
+import AreaMeasurementEvents from './AreaMeasurementEvents'
+import AreaAlertEvents from './AreaAlertEvents'
+import AreaZones from './AreaZones'
 import ZoneCreateDialog from './ZoneCreateDialog'
 
-import {_getSite} from '../../http/sitewhere-api-wrapper'
+import {_getArea} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -66,12 +66,12 @@ export default {
   }),
 
   components: {
-    SiteDetailHeader,
-    SiteAssignments,
-    SiteLocationEvents,
-    SiteMeasurementEvents,
-    SiteAlertEvents,
-    SiteZones,
+    AreaDetailHeader,
+    AreaAssignments,
+    AreaLocationEvents,
+    AreaMeasurementEvents,
+    AreaAlertEvents,
+    AreaZones,
     ZoneCreateDialog
   },
 
@@ -87,7 +87,7 @@ export default {
       var component = this
 
       // Load site information.
-      _getSite(this.$store, token)
+      _getArea(this.$store, token)
         .then(function (response) {
           component.onSiteLoaded(response.data)
         }).catch(function (e) {

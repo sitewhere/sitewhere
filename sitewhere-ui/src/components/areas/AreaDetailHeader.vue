@@ -34,8 +34,8 @@
 
 <script>
 import Utils from '../common/Utils'
-import SiteDeleteDialog from './SiteDeleteDialog'
-import SiteUpdateDialog from './SiteUpdateDialog'
+import AreaDeleteDialog from './AreaDeleteDialog'
+import AreaUpdateDialog from './AreaUpdateDialog'
 
 export default {
 
@@ -47,8 +47,8 @@ export default {
   props: ['site'],
 
   components: {
-    SiteDeleteDialog,
-    SiteUpdateDialog
+    AreaDeleteDialog,
+    AreaUpdateDialog
   },
 
   computed: {

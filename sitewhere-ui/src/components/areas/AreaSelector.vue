@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import {_listSites} from '../../http/sitewhere-api-wrapper'
+import {_listAreas} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -29,7 +29,7 @@ export default {
   created: function () {
     this.$data.selectedToken = this.value
     var component = this
-    _listSites(component.$store)
+    _listAreas(component.$store)
       .then(function (response) {
         component.$data.sites = response.data.results
       }).catch(function (e) {

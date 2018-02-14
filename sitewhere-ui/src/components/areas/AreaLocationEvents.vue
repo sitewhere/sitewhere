@@ -1,26 +1,26 @@
 <template>
   <div>
-    <v-layout row wrap v-if="mxs">
+    <v-layout row wrap v-if="locations">
       <v-flex xs12>
-        <no-results-panel v-if="mxs.length === 0"
-          text="No Measurement Events Found for Site">
+        <no-results-panel v-if="locations.length === 0"
+          text="No Location Events Found for Site">
         </no-results-panel>
-        <v-data-table v-if="mxs.length > 0" class="elevation-2 pa-0"
-          :headers="headers" :items="mxs" :hide-actions="true"
-          no-data-text="No Measurements Found for Site"
+        <v-data-table v-if="locations.length > 0" class="elevation-2 pa-0"
+          :headers="headers" :items="locations" :hide-actions="true"
+          no-data-text="No Locations Found for Site"
           :total-items="0">
           <template slot="items" slot-scope="props">
-            <td width="30%" :title="props.item.assetName">
+            <td width="40%" :title="props.item.assetName">
               {{ props.item.assetName }}
             </td>
-            <td width="50%" :title="props.item.measurementsSummary">
-              {{ props.item.measurementsSummary }}
+            <td width="40%" title="Lat/Lon/Elevation">
+              {{ utils.fourDecimalPlaces(props.item.latitude) + ', ' + utils.fourDecimalPlaces(props.item.longitude) + ', ' + utils.fourDecimalPlaces(props.item.elevation) }}
             </td>
-            <td width="10%" style="white-space: nowrap" :title="formatDate(props.item.eventDate)">
-              {{ formatDate(props.item.eventDate) }}
+            <td width="10%" style="white-space: nowrap" :title="utils.formatDate(props.item.eventDate)">
+              {{ utils.formatDate(props.item.eventDate) }}
             </td>
-            <td width="10%" style="white-space: nowrap" :title="formatDate(props.item.receivedDate)">
-              {{ formatDate(props.item.receivedDate) }}
+            <td width="10%" style="white-space: nowrap" :title="utils.formatDate(props.item.receivedDate)">
+              {{ utils.formatDate(props.item.receivedDate) }}
             </td>
           </template>
         </v-data-table>
@@ -31,16 +31,17 @@
 </template>
 
 <script>
+import Utils from '../common/Utils'
 import Pager from '../common/Pager'
 import NoResultsPanel from '../common/NoResultsPanel'
-import {_listMeasurementsForSite} from '../../http/sitewhere-api-wrapper'
+import {_listLocationsForArea} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
   data: () => ({
     results: null,
     paging: null,
-    mxs: null,
+    locations: null,
     headers: [
       {
         align: 'left',
@@ -50,8 +51,8 @@ export default {
       }, {
         align: 'left',
         sortable: false,
-        text: 'Measurements',
-        value: 'mxs'
+        text: 'Latitude/Longitude/Elevation',
+        value: 'lle'
       }, {
         align: 'left',
         sortable: false,
@@ -85,6 +86,13 @@ export default {
     NoResultsPanel
   },
 
+  computed: {
+    // Accessor for utility functions.
+    utils: function () {
+      return Utils
+    }
+  },
+
   methods: {
     // Update paging values and run query.
     updatePaging: function (paging) {
@@ -96,11 +104,11 @@ export default {
     refresh: function () {
       var component = this
       var siteToken = this.siteToken
-      var query = this.$data.paging.query
-      _listMeasurementsForSite(this.$store, siteToken, query)
+      var paging = this.$data.paging.query
+      _listLocationsForArea(this.$store, siteToken, paging)
         .then(function (response) {
           component.results = response.data
-          component.mxs = response.data.results
+          component.locations = response.data.results
         }).catch(function (e) {
         })
     },
@@ -109,14 +117,6 @@ export default {
     onPageUpdated: function (pageNumber) {
       this.$data.pager.page = pageNumber
       this.refresh()
-    },
-
-    // Format date.
-    formatDate: function (date) {
-      if (!date) {
-        return 'N/A'
-      }
-      return this.$moment(date).format('YYYY-MM-DD H:mm:ss')
     }
   }
 }

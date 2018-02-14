@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import SiteSelector from '../sites/SiteSelector'
+import AreaSelector from '../areas/AreaSelector'
 import DeviceTypeSelector from '../devicetypes/DeviceTypeSelector'
 import ScriptsSelector from '../tenants/ScriptsSelector'
 
@@ -73,7 +73,7 @@ export default {
   }),
 
   components: {
-    SiteSelector,
+    AreaSelector,
     DeviceTypeSelector,
     ScriptsSelector
   },

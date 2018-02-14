@@ -47,23 +47,23 @@ import {
   getTenantTemplates
 } from './sitewhere-tenants-api.js'
 
-// Sites.
+// Areas.
 import {
-  createSite,
-  getSite,
-  updateSite,
-  listSites,
-  deleteSite,
-  listAssignmentsForSite,
-  listLocationsForSite,
-  listMeasurementsForSite,
-  listAlertsForSite,
-  listZonesForSite,
+  createArea,
+  getArea,
+  updateArea,
+  listAreas,
+  deleteArea,
+  listAssignmentsForArea,
+  listLocationsForArea,
+  listMeasurementsForArea,
+  listAlertsForArea,
+  listZonesForArea,
   createZone,
   getZone,
   updateZone,
   deleteZone
-} from './sitewhere-sites-api.js'
+} from './sitewhere-areas-api.js'
 
 // Device types.
 import {
@@ -504,102 +504,102 @@ export function _getTenantTemplates (store) {
 }
 
 /**
- * Create a site.
+ * Create an area.
  */
-export function _createSite (store, site) {
+export function _createArea (store, area) {
   let axios = createCoreApiCall(store)
-  let api = createSite(axios, site)
+  let api = createArea(axios, area)
   return loaderWrapper(store, api)
 }
 
 /**
- * Get a site by unique token.
+ * Get a area by unique token.
  */
-export function _getSite (store, siteToken) {
+export function _getArea (store, areaToken) {
   let axios = createCoreApiCall(store)
-  let api = getSite(axios, siteToken)
+  let api = getArea(axios, areaToken)
   return loaderWrapper(store, api)
 }
 
 /**
- * Update an existing site.
+ * Update an existing area.
  */
-export function _updateSite (store, siteToken, payload) {
+export function _updateArea (store, areaToken, payload) {
   let axios = createCoreApiCall(store)
-  let api = updateSite(axios, siteToken, payload)
+  let api = updateArea(axios, areaToken, payload)
   return loaderWrapper(store, api)
 }
 
 /**
- * List sites.
+ * List areas.
  */
-export function _listSites (store, includeAssignments, includeZones, paging) {
+export function _listAreas (store, includeAssignments, includeZones, paging) {
   let axios = createCoreApiCall(store)
-  let api = listSites(axios, includeAssignments, includeZones, paging)
+  let api = listAreas(axios, includeAssignments, includeZones, paging)
   return loaderWrapper(store, api)
 }
 
 /**
- * Delete an existing site.
+ * Delete an existing area.
  */
-export function _deleteSite (store, siteToken, force) {
+export function _deleteArea (store, areaToken, force) {
   let axios = createCoreApiCall(store)
-  let api = deleteSite(axios, siteToken, force)
+  let api = deleteArea(axios, areaToken, force)
   return loaderWrapper(store, api)
 }
 
 /**
- * List assignments for a given site.
+ * List assignments for a given area.
  */
-export function _listAssignmentsForSite (store, siteToken, includeDevice,
+export function _listAssignmentsForArea (store, areaToken, includeDevice,
   includeAsset, paging) {
   let axios = createCoreApiCall(store)
-  let api = listAssignmentsForSite(axios, siteToken, includeDevice, includeAsset, paging)
+  let api = listAssignmentsForArea(axios, areaToken, includeDevice, includeAsset, paging)
   return loaderWrapper(store, api)
 }
 
 /**
- * List location events for a given site.
+ * List location events for a given area.
  */
-export function _listLocationsForSite (store, siteToken, paging) {
+export function _listLocationsForArea (store, areaToken, paging) {
   let axios = createCoreApiCall(store)
-  let api = listLocationsForSite(axios, siteToken, paging)
+  let api = listLocationsForArea(axios, areaToken, paging)
   return loaderWrapper(store, api)
 }
 
 /**
- * List measurement events for a given site.
+ * List measurement events for a given area.
  */
-export function _listMeasurementsForSite (store, siteToken, paging) {
+export function _listMeasurementsForArea (store, areaToken, paging) {
   let axios = createCoreApiCall(store)
-  let api = listMeasurementsForSite(axios, siteToken, paging)
+  let api = listMeasurementsForArea(axios, areaToken, paging)
   return loaderWrapper(store, api)
 }
 
 /**
- * List alert events for a given site.
+ * List alert events for a given area.
  */
-export function _listAlertsForSite (store, siteToken, paging) {
+export function _listAlertsForArea (store, areaToken, paging) {
   let axios = createCoreApiCall(store)
-  let api = listAlertsForSite(axios, siteToken, paging)
+  let api = listAlertsForArea(axios, areaToken, paging)
   return loaderWrapper(store, api)
 }
 
 /**
  * List zones for a given site.
  */
-export function _listZonesForSite (store, siteToken, paging) {
+export function _listZonesForArea (store, areaToken, paging) {
   let axios = createCoreApiCall(store)
-  let api = listZonesForSite(axios, siteToken, paging)
+  let api = listZonesForArea(axios, areaToken, paging)
   return loaderWrapper(store, api)
 }
 
 /**
  * Create a zone.
  */
-export function _createZone (store, siteToken, zone) {
+export function _createZone (store, areaToken, zone) {
   let axios = createCoreApiCall(store)
-  let api = createZone(axios, siteToken, zone)
+  let api = createZone(axios, areaToken, zone)
   return loaderWrapper(store, api)
 }
 

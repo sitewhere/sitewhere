@@ -106,7 +106,7 @@
 import Utils from '../common/Utils'
 import BaseDialog from '../common/BaseDialog'
 import MetadataPanel from '../common/MetadataPanel'
-import SiteChooser from '../sites/SiteChooser'
+import AreaChooser from '../areas/AreaChooser'
 import DeviceTypeChooser from '../devicetypes/DeviceTypeChooser'
 import {_getAssetModules} from '../../http/sitewhere-api-wrapper'
 
@@ -127,7 +127,7 @@ export default {
   components: {
     BaseDialog,
     MetadataPanel,
-    SiteChooser,
+    AreaChooser,
     DeviceTypeChooser
   },
 

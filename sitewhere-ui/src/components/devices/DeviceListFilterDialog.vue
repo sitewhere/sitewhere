@@ -103,7 +103,7 @@
 
 <script>
 import BaseDialog from '../common/BaseDialog'
-import SiteChooser from '../sites/SiteChooser'
+import AreaChooser from '../areas/AreaChooser'
 import DeviceTypeChooser from '../devicetypes/DeviceTypeChooser'
 import DeviceGroupChooser from '../groups/DeviceGroupChooser'
 import DateTimePicker from '../common/DateTimePicker'
@@ -148,7 +148,7 @@ export default {
 
   components: {
     BaseDialog,
-    SiteChooser,
+    AreaChooser,
     DeviceTypeChooser,
     DeviceGroupChooser,
     DateTimePicker

@@ -14,8 +14,8 @@
 </template>
 
 <script>
-import SiteDialog from './SiteDialog'
-import {_getSite, _updateSite} from '../../http/sitewhere-api-wrapper'
+import AreaDialog from './AreaDialog'
+import {_getArea, _updateArea} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -23,7 +23,7 @@ export default {
   }),
 
   components: {
-    SiteDialog
+    AreaDialog
   },
 
   props: ['token'],
@@ -32,7 +32,7 @@ export default {
     // Send event to open dialog.
     onOpenDialog: function () {
       var component = this
-      _getSite(this.$store, this.token)
+      _getArea(this.$store, this.token)
         .then(function (response) {
           component.onSiteLoaded(response)
         }).catch(function (e) {
@@ -48,7 +48,7 @@ export default {
     // Handle payload commit.
     onCommit: function (payload) {
       var component = this
-      _updateSite(this.$store, this.token, payload)
+      _updateArea(this.$store, this.token, payload)
         .then(function (response) {
           component.onCommitted(response)
         }).catch(function (e) {

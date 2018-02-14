@@ -11,8 +11,8 @@
 
 <script>
 import L from 'leaflet'
-import MapWithZoneOverlayPanel from '../sites/MapWithZoneOverlayPanel'
-import {_getSite, _listLocationsForAssignment} from '../../http/sitewhere-api-wrapper'
+import MapWithZoneOverlayPanel from '../areas/MapWithZoneOverlayPanel'
+import {_getArea, _listLocationsForAssignment} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -35,7 +35,7 @@ export default {
   created: function () {
     // Load site information for map.
     var component = this
-    _getSite(this.$store, this.assignment.site.token)
+    _getArea(this.$store, this.assignment.site.token)
       .then(function (response) {
         component.onSiteLoaded(response.data)
       }).catch(function (e) {

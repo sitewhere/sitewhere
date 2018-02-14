@@ -19,8 +19,8 @@ import GlobalMicroservicesList from '@/components/global/GlobalMicroservicesList
 import GlobalMicroserviceEditor from '@/components/global/GlobalMicroserviceEditor'
 import TenantAdministration from '@/components/tenants/TenantAdministration'
 import Server from '@/components/server/Server'
-import SitesList from '@/components/sites/SitesList'
-import SiteDetail from '@/components/sites/SiteDetail'
+import AreasList from '@/components/areas/AreasList'
+import AreaDetail from '@/components/areas/AreaDetail'
 import AssignmentDetail from '@/components/assignments/AssignmentDetail'
 import AssignmentEmulator from '@/components/assignments/AssignmentEmulator'
 import DeviceTypesList from '@/components/devicetypes/DeviceTypesList'
@@ -114,11 +114,11 @@ export default new Router({
           path: 'server',
           component: Server
         }, {
-          path: 'sites',
-          component: SitesList
+          path: 'areas',
+          component: AreasList
         }, {
-          path: 'sites/:token',
-          component: SiteDetail
+          path: 'areas/:token',
+          component: AreaDetail
         }, {
           path: 'assignments/:token',
           component: AssignmentDetail

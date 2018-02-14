@@ -1,23 +1,20 @@
 <template>
   <div>
-    <v-layout row wrap v-if="alerts">
+    <v-layout row wrap v-if="mxs">
       <v-flex xs12>
-        <no-results-panel v-if="alerts.length === 0"
-          text="No Alert Events Found for Site">
+        <no-results-panel v-if="mxs.length === 0"
+          text="No Measurement Events Found for Site">
         </no-results-panel>
-        <v-data-table v-if="alerts.length > 0" class="elevation-2 pa-0"
-          :headers="headers" :items="alerts" :hide-actions="true"
-          no-data-text="No Alerts Found for Site"
+        <v-data-table v-if="mxs.length > 0" class="elevation-2 pa-0"
+          :headers="headers" :items="mxs" :hide-actions="true"
+          no-data-text="No Measurements Found for Site"
           :total-items="0">
           <template slot="items" slot-scope="props">
             <td width="30%" :title="props.item.assetName">
               {{ props.item.assetName }}
             </td>
-            <td width="20%" :title="props.item.type">
-              {{ props.item.type }}
-            </td>
-            <td width="30%" :title="props.item.message">
-              {{ props.item.message }}
+            <td width="50%" :title="props.item.measurementsSummary">
+              {{ props.item.measurementsSummary }}
             </td>
             <td width="10%" style="white-space: nowrap" :title="formatDate(props.item.eventDate)">
               {{ formatDate(props.item.eventDate) }}
@@ -36,14 +33,14 @@
 <script>
 import Pager from '../common/Pager'
 import NoResultsPanel from '../common/NoResultsPanel'
-import {_listAlertsForSite} from '../../http/sitewhere-api-wrapper'
+import {_listMeasurementsForArea} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
   data: () => ({
     results: null,
     paging: null,
-    alerts: null,
+    mxs: null,
     headers: [
       {
         align: 'left',
@@ -53,13 +50,8 @@ export default {
       }, {
         align: 'left',
         sortable: false,
-        text: 'Type',
-        value: 'type'
-      }, {
-        align: 'left',
-        sortable: false,
-        text: 'Message',
-        value: 'message'
+        text: 'Measurements',
+        value: 'mxs'
       }, {
         align: 'left',
         sortable: false,
@@ -105,10 +97,10 @@ export default {
       var component = this
       var siteToken = this.siteToken
       var query = this.$data.paging.query
-      _listAlertsForSite(this.$store, siteToken, query)
+      _listMeasurementsForArea(this.$store, siteToken, query)
         .then(function (response) {
           component.results = response.data
-          component.alerts = response.data.results
+          component.mxs = response.data.results
         }).catch(function (e) {
         })
     },

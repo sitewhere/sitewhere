@@ -49,7 +49,7 @@ import ActionsBlock from '../common/ActionsBlock'
 import NoResultsPanel from '../common/NoResultsPanel'
 import ZoneUpdateDialog from './ZoneUpdateDialog'
 import ZoneDeleteDialog from './ZoneDeleteDialog'
-import {_listZonesForSite} from '../../http/sitewhere-api-wrapper'
+import {_listZonesForArea} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -121,7 +121,7 @@ export default {
       var component = this
       var site = this.site
       var paging = this.$data.paging.query
-      _listZonesForSite(this.$store, site.token, paging)
+      _listZonesForArea(this.$store, site.token, paging)
         .then(function (response) {
           component.results = response.data
           component.zones = response.data.results

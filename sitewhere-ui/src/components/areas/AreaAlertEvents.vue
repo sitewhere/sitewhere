@@ -1,26 +1,29 @@
 <template>
   <div>
-    <v-layout row wrap v-if="locations">
+    <v-layout row wrap v-if="alerts">
       <v-flex xs12>
-        <no-results-panel v-if="locations.length === 0"
-          text="No Location Events Found for Site">
+        <no-results-panel v-if="alerts.length === 0"
+          text="No Alert Events Found for Site">
         </no-results-panel>
-        <v-data-table v-if="locations.length > 0" class="elevation-2 pa-0"
-          :headers="headers" :items="locations" :hide-actions="true"
-          no-data-text="No Locations Found for Site"
+        <v-data-table v-if="alerts.length > 0" class="elevation-2 pa-0"
+          :headers="headers" :items="alerts" :hide-actions="true"
+          no-data-text="No Alerts Found for Site"
           :total-items="0">
           <template slot="items" slot-scope="props">
-            <td width="40%" :title="props.item.assetName">
+            <td width="30%" :title="props.item.assetName">
               {{ props.item.assetName }}
             </td>
-            <td width="40%" title="Lat/Lon/Elevation">
-              {{ utils.fourDecimalPlaces(props.item.latitude) + ', ' + utils.fourDecimalPlaces(props.item.longitude) + ', ' + utils.fourDecimalPlaces(props.item.elevation) }}
+            <td width="20%" :title="props.item.type">
+              {{ props.item.type }}
             </td>
-            <td width="10%" style="white-space: nowrap" :title="utils.formatDate(props.item.eventDate)">
-              {{ utils.formatDate(props.item.eventDate) }}
+            <td width="30%" :title="props.item.message">
+              {{ props.item.message }}
             </td>
-            <td width="10%" style="white-space: nowrap" :title="utils.formatDate(props.item.receivedDate)">
-              {{ utils.formatDate(props.item.receivedDate) }}
+            <td width="10%" style="white-space: nowrap" :title="formatDate(props.item.eventDate)">
+              {{ formatDate(props.item.eventDate) }}
+            </td>
+            <td width="10%" style="white-space: nowrap" :title="formatDate(props.item.receivedDate)">
+              {{ formatDate(props.item.receivedDate) }}
             </td>
           </template>
         </v-data-table>
@@ -31,17 +34,16 @@
 </template>
 
 <script>
-import Utils from '../common/Utils'
 import Pager from '../common/Pager'
 import NoResultsPanel from '../common/NoResultsPanel'
-import {_listLocationsForSite} from '../../http/sitewhere-api-wrapper'
+import {_listAlertsForArea} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
   data: () => ({
     results: null,
     paging: null,
-    locations: null,
+    alerts: null,
     headers: [
       {
         align: 'left',
@@ -51,8 +53,13 @@ export default {
       }, {
         align: 'left',
         sortable: false,
-        text: 'Latitude/Longitude/Elevation',
-        value: 'lle'
+        text: 'Type',
+        value: 'type'
+      }, {
+        align: 'left',
+        sortable: false,
+        text: 'Message',
+        value: 'message'
       }, {
         align: 'left',
         sortable: false,
@@ -86,13 +93,6 @@ export default {
     NoResultsPanel
   },
 
-  computed: {
-    // Accessor for utility functions.
-    utils: function () {
-      return Utils
-    }
-  },
-
   methods: {
     // Update paging values and run query.
     updatePaging: function (paging) {
@@ -104,11 +104,11 @@ export default {
     refresh: function () {
       var component = this
       var siteToken = this.siteToken
-      var paging = this.$data.paging.query
-      _listLocationsForSite(this.$store, siteToken, paging)
+      var query = this.$data.paging.query
+      _listAlertsForArea(this.$store, siteToken, query)
         .then(function (response) {
           component.results = response.data
-          component.locations = response.data.results
+          component.alerts = response.data.results
         }).catch(function (e) {
         })
     },
@@ -117,6 +117,14 @@ export default {
     onPageUpdated: function (pageNumber) {
       this.$data.pager.page = pageNumber
       this.refresh()
+    },
+
+    // Format date.
+    formatDate: function (date) {
+      if (!date) {
+        return 'N/A'
+      }
+      return this.$moment(date).format('YYYY-MM-DD H:mm:ss')
     }
   }
 }

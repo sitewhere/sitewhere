@@ -50,11 +50,24 @@ export default {
     drawer: true,
     tenantId: null,
     sections: [{
-      id: 'sites',
-      title: 'Sites',
+      id: 'areasGroup',
+      title: 'Area Management',
       icon: 'map',
-      route: 'sites',
-      longTitle: 'Manage Sites'
+      route: 'areas',
+      longTitle: 'Manage Areas',
+      subsections: [{
+        id: 'areatypes',
+        title: 'Area Types',
+        icon: 'map',
+        route: 'areatypes',
+        longTitle: 'Manage Area Types'
+      }, {
+        id: 'areas',
+        title: 'Areas',
+        icon: 'map',
+        route: 'areas',
+        longTitle: 'Manage Areas'
+      }]
     },
     {
       id: 'deviceGroup',
