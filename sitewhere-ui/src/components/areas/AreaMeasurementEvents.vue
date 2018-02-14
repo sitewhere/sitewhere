@@ -3,11 +3,11 @@
     <v-layout row wrap v-if="mxs">
       <v-flex xs12>
         <no-results-panel v-if="mxs.length === 0"
-          text="No Measurement Events Found for Site">
+          text="No Measurement Events Found for Area">
         </no-results-panel>
         <v-data-table v-if="mxs.length > 0" class="elevation-2 pa-0"
           :headers="headers" :items="mxs" :hide-actions="true"
-          no-data-text="No Measurements Found for Site"
+          no-data-text="No Measurements Found for Area"
           :total-items="0">
           <template slot="items" slot-scope="props">
             <td width="30%" :title="props.item.assetName">
@@ -78,7 +78,7 @@ export default {
     ]
   }),
 
-  props: ['siteToken'],
+  props: ['area'],
 
   components: {
     Pager,
@@ -95,9 +95,9 @@ export default {
     // Refresh list of assignments.
     refresh: function () {
       var component = this
-      var siteToken = this.siteToken
+      var areaToken = this.area.token
       var query = this.$data.paging.query
-      _listMeasurementsForArea(this.$store, siteToken, query)
+      _listMeasurementsForArea(this.$store, areaToken, query)
         .then(function (response) {
           component.results = response.data
           component.mxs = response.data.results

@@ -28,7 +28,7 @@
             </td>
             <td width="1%" style="white-space: nowrap" title="Edit/Delete">
               <actions-block @edited="refresh" @deleted="refresh">
-                <zone-update-dialog slot="edit" :site="site"
+                <zone-update-dialog slot="edit" :area="area"
                   :token="props.item.token">
                 </zone-update-dialog>
                 <zone-delete-dialog slot="delete" :token="props.item.token">
@@ -99,7 +99,7 @@ export default {
     ]
   }),
 
-  props: ['site'],
+  props: ['area'],
 
   components: {
     Pager,
@@ -119,9 +119,9 @@ export default {
     // Refresh list of assignments.
     refresh: function () {
       var component = this
-      var site = this.site
+      var area = this.area
       var paging = this.$data.paging.query
-      _listZonesForArea(this.$store, site.token, paging)
+      _listZonesForArea(this.$store, area.token, paging)
         .then(function (response) {
           component.results = response.data
           component.zones = response.data.results

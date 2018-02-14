@@ -32,7 +32,7 @@ export default {
     assignments: null
   }),
 
-  props: ['siteToken'],
+  props: ['area'],
 
   components: {
     Pager,
@@ -50,9 +50,9 @@ export default {
     // Refresh list of assignments.
     refresh: function () {
       var component = this
-      var siteToken = this.siteToken
+      var areaToken = this.area.token
       var paging = this.$data.paging.query
-      _listAssignmentsForArea(this.$store, siteToken, true, true, paging)
+      _listAssignmentsForArea(this.$store, areaToken, true, true, paging)
         .then(function (response) {
           component.results = response.data
           component.assignments = response.data.results

@@ -7,7 +7,7 @@
         </no-results-panel>
         <v-data-table v-if="locations.length > 0" class="elevation-2 pa-0"
           :headers="headers" :items="locations" :hide-actions="true"
-          no-data-text="No Locations Found for Site"
+          no-data-text="No Locations Found for Area"
           :total-items="0">
           <template slot="items" slot-scope="props">
             <td width="40%" :title="props.item.assetName">
@@ -79,7 +79,7 @@ export default {
     ]
   }),
 
-  props: ['siteToken'],
+  props: ['area'],
 
   components: {
     Pager,
@@ -103,9 +103,9 @@ export default {
     // Refresh list of assignments.
     refresh: function () {
       var component = this
-      var siteToken = this.siteToken
+      var areaToken = this.area.token
       var paging = this.$data.paging.query
-      _listLocationsForArea(this.$store, siteToken, paging)
+      _listLocationsForArea(this.$store, areaToken, paging)
         .then(function (response) {
           component.results = response.data
           component.locations = response.data.results

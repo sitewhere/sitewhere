@@ -1,10 +1,10 @@
 <template>
-  <v-card class="site white pa-2">
+  <v-card class="area white pa-2">
     <v-card-text>
-      <div class="site-logo" :style="logoStyle">
+      <div class="area-logo" :style="logoStyle">
       </div>
-      <div class="site-token">
-        Token: {{site.token}}
+      <div class="area-token">
+        Token: {{area.token}}
         <v-tooltip top>
           <v-btn light icon class="grey--text"
             v-clipboard="copyData" @click.stop="onOpenEdit" slot="activator"
@@ -14,17 +14,17 @@
           <span>Copy to Clipboard</span>
         </v-tooltip>
       </div>
-      <div class="site-name">{{site.name}}</div>
-      <div class="site-desc">{{site.description}}</div>
-      <div class="site-right">
-        <div class="site-created-label">Created:</div>
-        <div class="site-created">{{ formatDate(site.createdDate) }}</div>
-        <div class="site-updated-label">Updated:</div>
-        <div class="site-updated">{{ formatDate(site.updatedDate) }}</div>
-        <site-update-dialog :token="site.token" class="site-update" @siteUpdated="onSiteUpdated"></site-update-dialog>
-        <site-delete-dialog :token="site.token" class="site-delete" @siteDeleted="onSiteDeleted"></site-delete-dialog>
+      <div class="area-name">{{area.name}}</div>
+      <div class="area-desc">{{area.description}}</div>
+      <div class="area-right">
+        <div class="area-created-label">Created:</div>
+        <div class="area-created">{{ formatDate(area.createdDate) }}</div>
+        <div class="area-updated-label">Updated:</div>
+        <div class="area-updated">{{ formatDate(area.updatedDate) }}</div>
+        <area-update-dialog :token="area.token" class="area-update" @areaUpdated="onAreaUpdated"></area-update-dialog>
+        <area-delete-dialog :token="area.token" class="area-delete" @areaDeleted="onAreaDeleted"></area-delete-dialog>
       </div>
-      <div class="site-divider"></div>
+      <div class="area-divider"></div>
     </v-card-text>
     <v-snackbar :timeout="2000" success v-model="showTokenCopied">Token copied to clipboard
       <v-btn dark flat @click.native="showTokenCopied = false">Close</v-btn>
@@ -44,7 +44,7 @@ export default {
     showTokenCopied: false
   }),
 
-  props: ['site'],
+  props: ['area'],
 
   components: {
     AreaDeleteDialog,
@@ -55,7 +55,7 @@ export default {
     // Compute style of logo.
     logoStyle: function () {
       return {
-        'background-image': 'url(' + this.site.imageUrl + ')',
+        'background-image': 'url(' + this.area.imageUrl + ')',
         'background-size': 'cover',
         'background-repeat': 'no-repeat',
         'background-position': '50% 50%'
@@ -64,18 +64,18 @@ export default {
   },
 
   created: function () {
-    this.$data.copyData = this.site.token
+    this.$data.copyData = this.area.token
   },
 
   methods: {
-    // Called when site is deleted.
-    onSiteDeleted: function () {
-      this.$emit('siteDeleted')
+    // Called when area is deleted.
+    onAreaDeleted: function () {
+      this.$emit('areaDeleted')
     },
 
-    // Called when site is updated.
-    onSiteUpdated: function () {
-      this.$emit('siteUpdated')
+    // Called when area is updated.
+    onAreaUpdated: function () {
+      this.$emit('areaUpdated')
     },
 
     // Called after token is copied.
@@ -98,13 +98,13 @@ export default {
 </script>
 
 <style scoped>
-.site {
+.area {
   min-height: 180px;
   min-width: 800px;
   overflow-y: hidden;
 }
 
-.site-logo {
+.area-logo {
   position: absolute;
   top: 0px;
   left: 0px;
@@ -112,7 +112,7 @@ export default {
   width: 140px;
 }
 
-.site-name {
+.area-name {
   position: absolute;
   top: 5px;
   left: 158px;
@@ -123,7 +123,7 @@ export default {
   overflow-x: hidden;
 }
 
-.site-token {
+.area-token {
   position: absolute;
   top: 40px;
   left: 158px;
@@ -133,7 +133,7 @@ export default {
   overflow-x: hidden;
 }
 
-.site-desc {
+.area-desc {
   position: absolute;
   top: 80px;
   left: 160px;
@@ -143,7 +143,7 @@ export default {
   overflow-y: hidden;
 }
 
-.site-divider {
+.area-divider {
   position: absolute;
   top: 10px;
   right: 280px;
@@ -151,7 +151,7 @@ export default {
   border-left: 1px solid #eee;
 }
 
-.site-right {
+.area-right {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -159,14 +159,14 @@ export default {
   width: 260px;
 }
 
-.site-created-label {
+.area-created-label {
   position: absolute;
   top: 10px;
   left: 10px;
   font-size: 14px;
 }
 
-.site-created {
+.area-created {
   position: absolute;
   top: 10px;
   left: 100px;
@@ -174,14 +174,14 @@ export default {
   white-space: nowrap;
 }
 
-.site-updated-label {
+.area-updated-label {
   position: absolute;
   top: 35px;
   left: 10px;
   font-size: 14px;
 }
 
-.site-updated {
+.area-updated {
   position: absolute;
   top: 35px;
   left: 100px;
@@ -189,13 +189,13 @@ export default {
   white-space: nowrap;
 }
 
-.site-update {
+.area-update {
   position: absolute;
   bottom: 0px;
   left: 7px;
 }
 
-.site-delete {
+.area-delete {
   position: absolute;
   bottom: 0px;
   left: 42px;

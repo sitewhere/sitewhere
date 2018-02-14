@@ -17,11 +17,11 @@ export default {
     newZoneLayer: null
   }),
 
-  props: ['site', 'zone', 'height', 'visible', 'borderColor',
+  props: ['area', 'zone', 'height', 'visible', 'borderColor',
     'fillColor', 'fillOpacity', 'mode'],
 
   watch: {
-    site: function () {
+    area: function () {
       this.onMapReady()
       this.invalidateMap()
     },
@@ -132,18 +132,18 @@ export default {
       }
     },
 
-    // Configure tile layer based on site preferences.
+    // Configure tile layer based on area preferences.
     configureMapTiles: function () {
       // MapQuest tiles no longer available. Use OSM.
-      var site = this.site
-      var meta = site.map.metadata
-      if ((site.map.type === 'openstreetmap') || (site.map.type === 'mapquest')) {
+      let area = this.area
+      let meta = area.map.metadata
+      if ((area.map.type === 'openstreetmap') || (area.map.type === 'mapquest')) {
         var osmUrl = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png'
         var osm = new L.TileLayer(osmUrl, {
           maxZoom: 20
         })
         osm.addTo(this.getMap())
-      } else if (site.map.type === 'geoserver') {
+      } else if (area.map.type === 'geoserver') {
         var gsBaseUrl = meta.geoserverBaseUrl || 'http://localhost:8080/geoserver/'
         var gsRelativeUrl = 'geoserver/gwc/service/gmaps?layers='
         var gsLayerName = meta.geoserverLayerName || 'tiger:tiger_roads'
@@ -156,22 +156,22 @@ export default {
       }
     },
 
-    // Zoom and center based on site preferences.
+    // Zoom and center based on area preferences.
     zoomAndCenterSite: function () {
-      var meta = this.site.map.metadata
-      var latitude = meta.centerLatitude || 33.7490
-      var longitude = meta.centerLongitude || -84.3880
-      var zoomLevel = meta.zoomLevel || 10
+      let meta = this.area.map.metadata
+      let latitude = meta.centerLatitude || 33.7490
+      let longitude = meta.centerLongitude || -84.3880
+      let zoomLevel = meta.zoomLevel || 10
       this.getMap().setView([ latitude, longitude ], zoomLevel)
     },
 
-    // Load layers for site zones.
+    // Load layers for area zones.
     loadZoneLayers: function () {
       // Asyncronously load zones and add layer to map.
       var component = this
-      var site = this.site
-      if (site) {
-        _listZonesForArea(this.$store, site.token)
+      var area = this.area
+      if (area) {
+        _listZonesForArea(this.$store, area.token)
           .then(function (response) {
             component.addZonesToFeatureGroup(response.data.results)
           }).catch(function (e) {

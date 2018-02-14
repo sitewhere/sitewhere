@@ -1,9 +1,9 @@
 <template>
   <span>
-    <delete-dialog title="Delete Site" width="400" :error="error"
+    <delete-dialog title="Delete Area" width="400" :error="error"
       @delete="onDeleteConfirmed">
       <v-card-text>
-        Are you sure you want to delete this site?
+        Are you sure you want to delete this area?
       </v-card-text>
     </delete-dialog>
     <v-tooltip top>
@@ -11,7 +11,7 @@
         @click.stop="showDeleteDialog" slot="activator">
         <v-icon class="grey--text">fa-times</v-icon>
       </v-btn>
-      <span>Delete Site</span>
+      <span>Delete Area</span>
     </v-tooltip>
   </span>
 </template>
@@ -51,7 +51,7 @@ export default {
     // Handle successful delete.
     onDeleted: function (result) {
       this.$children[0].closeDialog()
-      this.$emit('siteDeleted')
+      this.$emit('areaDeleted')
     }
   }
 }

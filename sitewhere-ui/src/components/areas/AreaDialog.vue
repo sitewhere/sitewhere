@@ -23,13 +23,13 @@
                 <v-container fluid>
                   <v-layout row wrap>
                     <v-flex xs12>
-                      <v-text-field class="mt-1" label="Site name" v-model="siteName" prepend-icon="info"></v-text-field>
+                      <v-text-field class="mt-1" label="Area name" v-model="areaName" prepend-icon="info"></v-text-field>
                     </v-flex>
                     <v-flex xs12>
-                      <v-text-field class="mt-1" multi-line label="Description" v-model="siteDescription" prepend-icon="subject"></v-text-field>
+                      <v-text-field class="mt-1" multi-line label="Description" v-model="areaDescription" prepend-icon="subject"></v-text-field>
                     </v-flex>
                     <v-flex xs12>
-                      <v-text-field class="mt-1" label="Image URL" v-model="siteImageUrl" prepend-icon="image"></v-text-field>
+                      <v-text-field class="mt-1" label="Image URL" v-model="areaImageUrl" prepend-icon="image"></v-text-field>
                     </v-flex>
                   </v-layout>
                 </v-container>
@@ -60,9 +60,9 @@ export default {
   data: () => ({
     active: null,
     dialogVisible: false,
-    siteName: '',
-    siteDescription: '',
-    siteImageUrl: '',
+    areaName: '',
+    areaDescription: '',
+    areaImageUrl: '',
     mapConfig: {},
     metadata: [],
     error: null

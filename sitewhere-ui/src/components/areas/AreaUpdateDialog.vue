@@ -1,19 +1,20 @@
 <template>
   <div>
-    <site-dialog title="Edit Site" width="600" resetOnOpen="true"
+    <area-dialog title="Edit Area" width="600" resetOnOpen="true"
       createLabel="Update" cancelLabel="Cancel" @payload="onCommit">
-    </site-dialog>
+    </area-dialog>
     <v-tooltip top>
       <v-btn dark icon small
         @click.stop="onOpenDialog" slot="activator">
         <v-icon class="grey--text">fa-edit</v-icon>
       </v-btn>
-      <span>Edit Site</span>
+      <span>Edit Area</span>
     </v-tooltip>
   </div>
 </template>
 
 <script>
+import FloatingActionButton from '../common/FloatingActionButton'
 import AreaDialog from './AreaDialog'
 import {_getArea, _updateArea} from '../../http/sitewhere-api-wrapper'
 
@@ -23,6 +24,7 @@ export default {
   }),
 
   components: {
+    FloatingActionButton,
     AreaDialog
   },
 

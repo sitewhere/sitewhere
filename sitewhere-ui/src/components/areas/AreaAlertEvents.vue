@@ -3,11 +3,11 @@
     <v-layout row wrap v-if="alerts">
       <v-flex xs12>
         <no-results-panel v-if="alerts.length === 0"
-          text="No Alert Events Found for Site">
+          text="No Alert Events Found for AreaAlertEvents">
         </no-results-panel>
         <v-data-table v-if="alerts.length > 0" class="elevation-2 pa-0"
           :headers="headers" :items="alerts" :hide-actions="true"
-          no-data-text="No Alerts Found for Site"
+          no-data-text="No Alerts Found for Area"
           :total-items="0">
           <template slot="items" slot-scope="props">
             <td width="30%" :title="props.item.assetName">
@@ -86,7 +86,7 @@ export default {
     ]
   }),
 
-  props: ['siteToken'],
+  props: ['area'],
 
   components: {
     Pager,
@@ -103,9 +103,9 @@ export default {
     // Refresh list of assignments.
     refresh: function () {
       var component = this
-      var siteToken = this.siteToken
+      var areaToken = this.area.token
       var query = this.$data.paging.query
-      _listAlertsForArea(this.$store, siteToken, query)
+      _listAlertsForArea(this.$store, areaToken, query)
         .then(function (response) {
           component.results = response.data
           component.alerts = response.data.results

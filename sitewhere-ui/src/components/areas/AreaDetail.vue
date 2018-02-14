@@ -1,9 +1,9 @@
 <template>
-  <div v-if="site">
+  <div v-if="area">
     <v-app>
-      <site-detail-header :site="site"
-        @siteDeleted="onSiteDeleted" @siteUpdated="onSiteUpdated">
-      </site-detail-header>
+      <area-detail-header :area="area"
+        @areaDeleted="onAreaDeleted" @areaUpdated="onAreaUpdated">
+      </area-detail-header>
       <v-tabs v-model="active">
         <v-tabs-bar dark color="primary">
           <v-tabs-item key="assignments" href="#assignments">
@@ -25,23 +25,23 @@
         </v-tabs-bar>
         <v-tabs-items>
           <v-tabs-content key="assignments" id="assignments">
-            <site-assignments :siteToken="site.token"></site-assignments>
+            <area-assignments :area="area"></area-assignments>
           </v-tabs-content>
           <v-tabs-content key="locations" id="locations">
-            <site-location-events :siteToken="site.token"></site-location-events>
+            <area-location-events :area="area"></area-location-events>
           </v-tabs-content>
           <v-tabs-content key="measurements" id="measurements">
-            <site-measurement-events :siteToken="site.token"></site-measurement-events>
+            <area-measurement-events :area="area"></area-measurement-events>
           </v-tabs-content>
           <v-tabs-content key="alerts" id="alerts">
-            <site-alert-events :siteToken="site.token"></site-alert-events>
+            <area-alert-events :area="area"></area-alert-events>
           </v-tabs-content>
           <v-tabs-content key="zones" id="zones">
-            <site-zones :site="site"></site-zones>
+            <area-zones :area="area"></area-zones>
           </v-tabs-content>
         </v-tabs-items>
       </v-tabs>
-      <zone-create-dialog v-if="active === 'zones'" :site="site" @zoneAdded="onZoneAdded"/>
+      <zone-create-dialog v-if="active === 'zones'" :area="area" @zoneAdded="onZoneAdded"/>
     </v-app>
   </div>
 </template>
@@ -61,7 +61,7 @@ export default {
 
   data: () => ({
     token: null,
-    site: null,
+    area: null,
     active: null
   }),
 
@@ -81,42 +81,42 @@ export default {
   },
 
   methods: {
-    // Called to refresh site data.
+    // Called to refresh area data.
     refresh: function () {
       var token = this.$data.token
       var component = this
 
-      // Load site information.
+      // Load area information.
       _getArea(this.$store, token)
         .then(function (response) {
-          component.onSiteLoaded(response.data)
+          component.onAreaLoaded(response.data)
         }).catch(function (e) {
         })
     },
 
-    // Called after site data is loaded.
-    onSiteLoaded: function (site) {
-      this.$data.site = site
+    // Called after ara data is loaded.
+    onAreaLoaded: function (area) {
+      this.$data.area = area
       var section = {
-        id: 'sites',
-        title: 'Sites',
+        id: 'areas',
+        title: 'Areas',
         icon: 'map',
-        route: '/admin/sites/' + site.token,
-        longTitle: 'Manage Site: ' + site.name
+        route: '/admin/areas/' + area.token,
+        longTitle: 'Manage Area: ' + area.name
       }
       this.$store.commit('currentSection', section)
     },
 
-    // Called after site is deleted.
-    onSiteDeleted: function () {
+    // Called after area is deleted.
+    onAreaDeleted: function () {
       var tenant = this.$store.getters.selectedTenant
       if (tenant) {
-        this.$router.push('/tenants/' + tenant.id + '/sites')
+        this.$router.push('/tenants/' + tenant.id + '/areas')
       }
     },
 
-    // Called after site is updated.
-    onSiteUpdated: function () {
+    // Called after area is updated.
+    onAreaUpdated: function () {
       this.refresh()
     },
 
