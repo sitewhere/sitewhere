@@ -26,7 +26,7 @@ import com.sitewhere.spi.area.IArea;
 public class MongoArea implements MongoConverter<IArea> {
 
     /** Property for id */
-    public static final String PROP_ID = "arid";
+    public static final String PROP_ID = "_id";
 
     /** Property for area type id */
     public static final String PROP_AREA_TYPE_ID = "atid";

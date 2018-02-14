@@ -36,22 +36,22 @@ public class MongoDeviceType implements MongoConverter<IDeviceType> {
     private static Logger LOGGER = LogManager.getLogger();
 
     /** Property for id */
-    public static final String PROP_ID = "id";
+    public static final String PROP_ID = "_id";
 
     /** Property for unique token */
-    public static final String PROP_TOKEN = "tk";
+    public static final String PROP_TOKEN = "tokn";
 
     /** Property for specification name */
-    public static final String PROP_NAME = "nm";
+    public static final String PROP_NAME = "name";
 
     /** Property for asset module id */
-    public static final String PROP_ASSET_REFERENCE = "ar";
+    public static final String PROP_ASSET_REFERENCE = "aref";
 
     /** Property for container policy */
-    public static final String PROP_CONTAINER_POLICY = "cp";
+    public static final String PROP_CONTAINER_POLICY = "cpol";
 
     /** Property for device element schema */
-    public static final String PROP_DEVICE_ELEMENT_SCHEMA = "es";
+    public static final String PROP_DEVICE_ELEMENT_SCHEMA = "elsc";
 
     /*
      * (non-Javadoc)

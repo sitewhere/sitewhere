@@ -22,19 +22,19 @@ import com.sitewhere.spi.common.ISiteWhereEntity;
 public class MongoSiteWhereEntity {
 
     /** Property for date entity was created */
-    public static final String PROP_CREATED_DATE = "createdDate";
+    public static final String PROP_CREATED_DATE = "crdt";
 
     /** Property for user that created entity */
-    public static final String PROP_CREATED_BY = "createdBy";
+    public static final String PROP_CREATED_BY = "crby";
 
     /** Property for date entity was last updated */
-    public static final String PROP_UPDATED_DATE = "updatedDate";
+    public static final String PROP_UPDATED_DATE = "updt";
 
     /** Property for user that updated entity */
-    public static final String PROP_UPDATED_BY = "updatedBy";
+    public static final String PROP_UPDATED_BY = "upby";
 
     /** Property for deleted flag */
-    public static final String PROP_DELETED = "deleted";
+    public static final String PROP_DELETED = "dltd";
 
     /**
      * Copy information from SPI into Mongo {@link Document}.

@@ -133,14 +133,10 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     protected void ensureIndexes() throws SiteWhereException {
 	// Area indexes.
-	getMongoClient().getAreasCollection().createIndex(new Document(MongoArea.PROP_ID, 1),
-		new IndexOptions().unique(true));
 	getMongoClient().getAreasCollection().createIndex(new Document(MongoArea.PROP_TOKEN, 1),
 		new IndexOptions().unique(true));
 
-	// Specification-related indexes.
-	getMongoClient().getDeviceTypesCollection().createIndex(new Document(MongoDeviceType.PROP_ID, 1),
-		new IndexOptions().unique(true));
+	// Device-type-related indexes.
 	getMongoClient().getDeviceTypesCollection().createIndex(new Document(MongoDeviceType.PROP_TOKEN, 1),
 		new IndexOptions().unique(true));
 	getMongoClient().getDeviceStatusesCollection().createIndex(
@@ -148,14 +144,10 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 		new IndexOptions().unique(true));
 
 	// Devices.
-	getMongoClient().getDevicesCollection().createIndex(new Document(MongoDevice.PROP_ID, 1),
-		new IndexOptions().unique(true));
 	getMongoClient().getDevicesCollection().createIndex(new Document(MongoDevice.PROP_HARDWARE_ID, 1),
 		new IndexOptions().unique(true));
 
 	// Device assignments.
-	getMongoClient().getDeviceAssignmentsCollection().createIndex(new Document(MongoDeviceAssignment.PROP_ID, 1),
-		new IndexOptions().unique(true));
 	getMongoClient().getDeviceAssignmentsCollection().createIndex(new Document(MongoDeviceAssignment.PROP_TOKEN, 1),
 		new IndexOptions().unique(true));
 	getMongoClient().getDeviceAssignmentsCollection()
@@ -164,8 +156,6 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 			.append(MongoDeviceAssignment.PROP_STATUS, 1));
 
 	// Device group indexes.
-	getMongoClient().getDeviceGroupsCollection().createIndex(new Document(MongoDeviceGroup.PROP_ID, 1),
-		new IndexOptions().unique(true));
 	getMongoClient().getDeviceGroupsCollection().createIndex(new Document(MongoDeviceGroup.PROP_TOKEN, 1),
 		new IndexOptions().unique(true));
 	getMongoClient().getDeviceGroupsCollection().createIndex(new Document(MongoDeviceGroup.PROP_ROLES, 1));

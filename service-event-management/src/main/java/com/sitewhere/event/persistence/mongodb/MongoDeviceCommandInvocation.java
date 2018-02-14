@@ -27,25 +27,25 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 public class MongoDeviceCommandInvocation implements MongoConverter<IDeviceCommandInvocation> {
 
     /** Property for initiator */
-    public static final String PROP_INITIATOR = "in";
+    public static final String PROP_INITIATOR = "init";
 
     /** Property for initiator id */
-    public static final String PROP_INITIATOR_ID = "ii";
+    public static final String PROP_INITIATOR_ID = "inid";
 
     /** Property for target */
-    public static final String PROP_TARGET = "tg";
+    public static final String PROP_TARGET = "targ";
 
     /** Property for target id */
-    public static final String PROP_TARGET_ID = "ti";
+    public static final String PROP_TARGET_ID = "tgid";
 
     /** Property for command token */
-    public static final String PROP_COMMAND_TOKEN = "ct";
+    public static final String PROP_COMMAND_TOKEN = "cmtk";
 
     /** Property for parameter values */
-    public static final String PROP_PARAMETER_VALUES = "pv";
+    public static final String PROP_PARAMETER_VALUES = "pmvl";
 
     /** Property for status */
-    public static final String PROP_STATUS = "st";
+    public static final String PROP_STATUS = "stat";
 
     /*
      * (non-Javadoc)

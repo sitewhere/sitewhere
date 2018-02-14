@@ -25,19 +25,19 @@ import com.sitewhere.spi.device.group.IDeviceGroupElement;
 public class MongoDeviceGroupElement implements MongoConverter<IDeviceGroupElement> {
 
     /** Property for element group id */
-    public static final String PROP_GROUP_ID = "gi";
+    public static final String PROP_GROUP_ID = "grid";
 
     /** Property for element type */
-    public static final String PROP_TYPE = "tp";
+    public static final String PROP_TYPE = "type";
 
     /** Property for element id */
-    public static final String PROP_ELEMENT_ID = "ei";
+    public static final String PROP_ELEMENT_ID = "elid";
 
     /** Property for list of roles */
-    public static final String PROP_ROLES = "rl";
+    public static final String PROP_ROLES = "role";
 
     /** Property for element index */
-    public static final String PROP_INDEX = "ix";
+    public static final String PROP_INDEX = "indx";
 
     /*
      * (non-Javadoc)

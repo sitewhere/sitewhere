@@ -20,7 +20,7 @@ import com.sitewhere.spi.common.IMetadataProvider;
 public class MongoMetadataProvider {
 
     /** Property for entity metadata */
-    public static final String PROP_METADATA = "metadata";
+    public static final String PROP_METADATA = "meta";
 
     /**
      * Store data into a {@link Document} using default property name.

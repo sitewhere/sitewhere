@@ -29,37 +29,37 @@ import com.sitewhere.spi.common.ILocation;
 public class MongoZone implements MongoConverter<IZone> {
 
     /** Property for id */
-    public static final String PROP_ID = "id";
+    public static final String PROP_ID = "_id";
 
     /** Property for unique token */
-    public static final String PROP_TOKEN = "tk";
+    public static final String PROP_TOKEN = "tokn";
 
     /** Property for area id */
-    public static final String PROP_AREA_ID = "ai";
+    public static final String PROP_AREA_ID = "arid";
 
     /** Property for name */
-    public static final String PROP_NAME = "nm";
+    public static final String PROP_NAME = "name";
 
     /** Property for border color */
-    public static final String PROP_BORDER_COLOR = "bc";
+    public static final String PROP_BORDER_COLOR = "cdcl";
 
     /** Property for fill color */
-    public static final String PROP_FILL_COLOR = "fc";
+    public static final String PROP_FILL_COLOR = "flcl";
 
     /** Property for opacity */
-    public static final String PROP_OPACITY = "op";
+    public static final String PROP_OPACITY = "opac";
 
     /** Property for coordinates */
-    public static final String PROP_COORDINATES = "co";
+    public static final String PROP_COORDINATES = "coor";
 
     /** Property for latitude */
-    public static final String PROP_LATITUDE = "la";
+    public static final String PROP_LATITUDE = "lati";
 
     /** Property for longitude */
-    public static final String PROP_LONGITUDE = "ln";
+    public static final String PROP_LONGITUDE = "long";
 
     /** Property for elevation */
-    public static final String PROP_ELEVATION = "el";
+    public static final String PROP_ELEVATION = "elev";
 
     /*
      * (non-Javadoc)

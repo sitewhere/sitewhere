@@ -29,31 +29,31 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> {
 
     /** Property for id */
-    public static final String PROP_ID = "id";
+    public static final String PROP_ID = "_id";
 
     /** Property for active date */
-    public static final String PROP_ACTIVE_DATE = "ad";
+    public static final String PROP_ACTIVE_DATE = "acdt";
 
     /** Property for asset reference */
-    public static final String PROP_ASSET_REFERENCE = "ar";
+    public static final String PROP_ASSET_REFERENCE = "asrf";
 
     /** Property for assignment type */
-    public static final String PROP_ASSIGNMENT_TYPE = "at";
+    public static final String PROP_ASSIGNMENT_TYPE = "asty";
 
     /** Property for released date */
-    public static final String PROP_RELEASED_DATE = "rd";
+    public static final String PROP_RELEASED_DATE = "asrd";
 
     /** Property for status */
-    public static final String PROP_STATUS = "st";
+    public static final String PROP_STATUS = "stat";
 
     /** Property for token */
-    public static final String PROP_TOKEN = "tk";
+    public static final String PROP_TOKEN = "tokn";
 
     /** Property for device hardware id */
-    public static final String PROP_DEVICE_ID = "di";
+    public static final String PROP_DEVICE_ID = "dvid";
 
     /** Property for area id */
-    public static final String PROP_AREA_ID = "ai";
+    public static final String PROP_AREA_ID = "arid";
 
     /*
      * (non-Javadoc)

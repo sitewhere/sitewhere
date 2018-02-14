@@ -22,13 +22,13 @@ import com.sitewhere.spi.device.event.IDeviceStreamData;
 public class MongoDeviceStreamData implements MongoConverter<IDeviceStreamData> {
 
     /** Property for parent stream id */
-    public static final String PROP_STREAM_ID = "st";
+    public static final String PROP_STREAM_ID = "stid";
 
     /** Property for sequence number */
-    public static final String PROP_SEQUENCE_NUMBER = "sq";
+    public static final String PROP_SEQUENCE_NUMBER = "seqn";
 
     /** Property for binary data */
-    public static final String PROP_DATA = "dt";
+    public static final String PROP_DATA = "data";
 
     /*
      * (non-Javadoc)
