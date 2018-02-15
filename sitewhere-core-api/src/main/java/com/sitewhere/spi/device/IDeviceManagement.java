@@ -33,6 +33,7 @@ import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
@@ -549,7 +550,7 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IArea> listAreas(ISearchCriteria criteria) throws SiteWhereException;
+    public ISearchResults<IArea> listAreas(IAreaSearchCriteria criteria) throws SiteWhereException;
 
     /**
      * Delete an area based on unique id. If 'force' is specified, the database

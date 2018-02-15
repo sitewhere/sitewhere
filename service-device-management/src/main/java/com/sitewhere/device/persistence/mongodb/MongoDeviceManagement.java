@@ -74,6 +74,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.error.ResourceExistsException;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
@@ -1126,7 +1127,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     @Override
     public IAreaType getAreaType(UUID id) throws SiteWhereException {
-	Document document = getAreaDocumentById(id);
+	Document document = getAreaTypeDocumentById(id);
 	if (document != null) {
 	    return MongoAreaType.fromDocument(document);
 	}
@@ -1265,12 +1266,19 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     /*
      * @see
      * com.sitewhere.spi.device.IDeviceManagement#listAreas(com.sitewhere.spi.search
-     * .ISearchCriteria)
+     * .area.IAreaSearchCriteria)
      */
     @Override
-    public SearchResults<IArea> listAreas(ISearchCriteria criteria) throws SiteWhereException {
+    public SearchResults<IArea> listAreas(IAreaSearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> areas = getMongoClient().getAreasCollection();
 	Document query = new Document();
+	if ((criteria.getRootOnly() != null) && (criteria.getRootOnly().booleanValue() == true)) {
+	    query.append(MongoArea.PROP_PARENT_AREA_ID, null);
+	} else if (criteria.getParentAreaId() != null) {
+	    query.append(MongoArea.PROP_PARENT_AREA_ID, criteria.getParentAreaId());
+	}
+	getLogger().info("Mongo query " + query);
+	getLogger().info("Criteria rootOnly:" + criteria.getRootOnly() + " parentAreaId:" + criteria.getParentAreaId());
 	Document sort = new Document(MongoArea.PROP_NAME, 1);
 	return MongoPersistence.search(IArea.class, areas, query, sort, criteria, LOOKUP);
     }

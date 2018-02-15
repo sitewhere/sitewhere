@@ -587,9 +587,11 @@ export function _updateArea (store, areaToken, payload) {
 /**
  * List areas.
  */
-export function _listAreas (store, includeAssignments, includeZones, paging) {
+export function _listAreas (store, rootOnly, parentAreaToken,
+  includeAreaType, includeAssignments, includeZones, paging) {
   let axios = createCoreApiCall(store)
-  let api = listAreas(axios, includeAssignments, includeZones, paging)
+  let api = listAreas(axios, rootOnly, parentAreaToken, includeAreaType,
+    includeAssignments, includeZones, paging)
   return loaderWrapper(store, api)
 }
 

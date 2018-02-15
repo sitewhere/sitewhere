@@ -102,6 +102,7 @@ import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceTypeCreateRequest;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.search.SearchResults;
+import com.sitewhere.rest.model.search.area.AreaSearchCriteria;
 import com.sitewhere.rest.model.search.device.AssignmentSearchCriteria;
 import com.sitewhere.rest.model.search.device.AssignmentsForAssetSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
@@ -141,6 +142,7 @@ import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
@@ -1971,16 +1973,37 @@ public class DeviceModelConverter {
     }
 
     /**
+     * Convert area search criteria from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static AreaSearchCriteria asApiAreaSearchCriteria(GAreaSearchCriteria grpc) throws SiteWhereException {
+	AreaSearchCriteria api = new AreaSearchCriteria(grpc.getPaging().getPageNumber(),
+		grpc.getPaging().getPageSize());
+	api.setRootOnly(grpc.hasRootOnly() ? grpc.getRootOnly().getValue() : null);
+	api.setParentAreaId(grpc.hasParentAreaId() ? CommonModelConverter.asApiUuid(grpc.getParentAreaId()) : null);
+	return api;
+    }
+
+    /**
      * Convert area search criteria from API to GRPC.
      * 
      * @param code
      * @return
      * @throws SiteWhereException
      */
-    public static GAreaSearchCriteria asApiAreaSearchCriteria(ISearchCriteria criteria) throws SiteWhereException {
-	GAreaSearchCriteria.Builder gcriteria = GAreaSearchCriteria.newBuilder();
-	gcriteria.setPaging(CommonModelConverter.asGrpcPaging(criteria));
-	return gcriteria.build();
+    public static GAreaSearchCriteria asGrpcAreaSearchCriteria(IAreaSearchCriteria api) throws SiteWhereException {
+	GAreaSearchCriteria.Builder grpc = GAreaSearchCriteria.newBuilder();
+	if (api.getRootOnly() != null) {
+	    grpc.setRootOnly(GOptionalBoolean.newBuilder().setValue(api.getRootOnly()));
+	}
+	if (api.getParentAreaId() != null) {
+	    grpc.setParentAreaId(CommonModelConverter.asGrpcUuid(api.getParentAreaId()));
+	}
+	grpc.setPaging(CommonModelConverter.asGrpcPaging(api));
+	return grpc.build();
     }
 
     /**
@@ -2009,6 +2032,8 @@ public class DeviceModelConverter {
 	Area api = new Area();
 	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
 	api.setToken(grpc.getToken());
+	api.setAreaTypeId(CommonModelConverter.asApiUuid(grpc.getAreaTypeId()));
+	api.setParentAreaId(grpc.hasParentAreaId() ? CommonModelConverter.asApiUuid(grpc.getParentAreaId()) : null);
 	api.setName(grpc.getName());
 	api.setDescription(grpc.getDescription());
 	api.setImageUrl(grpc.getImageUrl());
@@ -2029,6 +2054,10 @@ public class DeviceModelConverter {
 	GArea.Builder grpc = GArea.newBuilder();
 	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
 	grpc.setToken(api.getToken());
+	grpc.setAreaTypeId(CommonModelConverter.asGrpcUuid(api.getAreaTypeId()));
+	if (api.getParentAreaId() != null) {
+	    grpc.setParentAreaId(CommonModelConverter.asGrpcUuid(api.getParentAreaId()));
+	}
 	grpc.setName(api.getName());
 	grpc.setDescription(api.getDescription());
 	grpc.setImageUrl(api.getImageUrl());

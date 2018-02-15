@@ -42,6 +42,7 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
@@ -569,10 +570,10 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator<IDevi
     /*
      * @see
      * com.sitewhere.spi.device.IDeviceManagement#listAreas(com.sitewhere.spi.search
-     * .ISearchCriteria)
+     * .area.IAreaSearchCriteria)
      */
     @Override
-    public ISearchResults<IArea> listAreas(ISearchCriteria criteria) throws SiteWhereException {
+    public ISearchResults<IArea> listAreas(IAreaSearchCriteria criteria) throws SiteWhereException {
 	return getDelegate().listAreas(criteria);
     }
 

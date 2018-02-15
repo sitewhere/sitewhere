@@ -51,6 +51,7 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
@@ -1194,14 +1195,14 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * @see
      * com.sitewhere.spi.device.IDeviceManagement#listAreas(com.sitewhere.spi.search
-     * .ISearchCriteria)
+     * .area.IAreaSearchCriteria)
      */
     @Override
-    public ISearchResults<IArea> listAreas(ISearchCriteria criteria) throws SiteWhereException {
+    public ISearchResults<IArea> listAreas(IAreaSearchCriteria criteria) throws SiteWhereException {
 	try {
 	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_AREAS);
 	    GListAreasRequest.Builder grequest = GListAreasRequest.newBuilder();
-	    grequest.setCriteria(DeviceModelConverter.asApiAreaSearchCriteria(criteria));
+	    grequest.setCriteria(DeviceModelConverter.asGrpcAreaSearchCriteria(criteria));
 	    GListAreasResponse gresponse = getGrpcChannel().getBlockingStub().listAreas(grequest.build());
 	    ISearchResults<IArea> results = DeviceModelConverter.asApiAreaSearchResults(gresponse.getResults());
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_AREAS, results);

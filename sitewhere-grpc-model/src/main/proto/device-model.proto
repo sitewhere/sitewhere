@@ -408,7 +408,9 @@ message GAreaCreateRequest {
 
 // Criteria for searching areas.
 message GAreaSearchCriteria {
-	GPaging paging = 1;
+	GOptionalBoolean rootOnly = 1;
+	GUUID parentAreaId = 2;
+	GPaging paging = 3;
 }
 
 // Results for area search.
@@ -421,12 +423,14 @@ message GAreaSearchResults {
 message GArea {
 	GUUID id = 1;
 	string token = 2;
-	string name = 3;
-	string description = 4;
-	string imageUrl = 5;
-	GAreaMapData mapData = 6;
-	map<string, string> metadata = 7;
-	GEntityInformation entityInformation = 8;
+	GUUID areaTypeId = 3;
+	GUUID parentAreaId = 4;
+	string name = 5;
+	string description = 6;
+	string imageUrl = 7;
+	GAreaMapData mapData = 8;
+	map<string, string> metadata = 9;
+	GEntityInformation entityInformation = 10;
 }
 
 // #############

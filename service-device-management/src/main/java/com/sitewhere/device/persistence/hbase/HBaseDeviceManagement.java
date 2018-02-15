@@ -54,6 +54,7 @@ import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
@@ -664,10 +665,10 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
     /*
      * @see
      * com.sitewhere.spi.device.IDeviceManagement#listAreas(com.sitewhere.spi.search
-     * .ISearchCriteria)
+     * .area.IAreaSearchCriteria)
      */
     @Override
-    public SearchResults<IArea> listAreas(ISearchCriteria criteria) throws SiteWhereException {
+    public SearchResults<IArea> listAreas(IAreaSearchCriteria criteria) throws SiteWhereException {
 	return HBaseArea.listAreas(context, criteria);
     }
 

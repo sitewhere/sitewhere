@@ -50,8 +50,11 @@ public class AreaMarshalHelper {
     /** Asset resolver */
     private IAssetResolver assetResolver;
 
+    /** Include area type information */
+    private boolean includeAreaType = false;
+
     /** Indicates whether assignments for site should be included */
-    private boolean includeAssignements = false;
+    private boolean includeAssignments = false;
 
     /** Indicates whether zones are to be included */
     private boolean includeZones = false;
@@ -80,12 +83,17 @@ public class AreaMarshalHelper {
 	MarshaledArea area = new MarshaledArea();
 	area.setId(source.getId());
 	area.setToken(source.getToken());
+	area.setAreaTypeId(source.getAreaTypeId());
+	area.setParentAreaId(source.getParentAreaId());
 	area.setName(source.getName());
 	area.setDescription(source.getDescription());
 	area.setImageUrl(source.getImageUrl());
 	area.setMap(AreaMapData.copy(source.getMap()));
 	MetadataProviderEntity.copy(source, area);
-	if (isIncludeAssignements()) {
+	if (isIncludeAreaType()) {
+	    area.setAreaType(getDeviceManagement().getAreaType(source.getAreaTypeId()));
+	}
+	if (isIncludeAssignments()) {
 	    AssignmentSearchCriteria criteria = new AssignmentSearchCriteria(1, 0);
 	    criteria.setStatus(DeviceAssignmentStatus.Active);
 	    ISearchResults<IDeviceAssignment> matches = getDeviceManagement().getDeviceAssignmentsForArea(area.getId(),
@@ -131,12 +139,20 @@ public class AreaMarshalHelper {
 	this.assetResolver = assetResolver;
     }
 
-    public boolean isIncludeAssignements() {
-	return includeAssignements;
+    public boolean isIncludeAreaType() {
+	return includeAreaType;
     }
 
-    public void setIncludeAssignements(boolean includeAssignements) {
-	this.includeAssignements = includeAssignements;
+    public void setIncludeAreaType(boolean includeAreaType) {
+	this.includeAreaType = includeAreaType;
+    }
+
+    public boolean isIncludeAssignments() {
+	return includeAssignments;
+    }
+
+    public void setIncludeAssignments(boolean includeAssignments) {
+	this.includeAssignments = includeAssignments;
     }
 
     public boolean isIncludeZones() {

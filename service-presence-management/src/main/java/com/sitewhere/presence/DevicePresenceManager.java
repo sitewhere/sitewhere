@@ -20,7 +20,7 @@ import org.joda.time.format.PeriodFormatterBuilder;
 
 import com.sitewhere.presence.spi.IDevicePresenceManager;
 import com.sitewhere.presence.spi.IPresenceNotificationStrategy;
-import com.sitewhere.rest.model.search.SearchCriteria;
+import com.sitewhere.rest.model.search.area.AreaSearchCriteria;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
@@ -144,7 +144,7 @@ public class DevicePresenceManager extends TenantEngineLifecycleComponent implem
 
 		try {
 		    // Loop through all sites and detect presence changes.
-		    List<IArea> areas = devices.listAreas(SearchCriteria.ALL).getResults();
+		    List<IArea> areas = devices.listAreas(new AreaSearchCriteria(1, 0)).getResults();
 		    for (@SuppressWarnings("unused")
 		    IArea area : areas) {
 			// // Calculate time window for presence calculation.

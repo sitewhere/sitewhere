@@ -12,6 +12,7 @@ import java.util.List;
 import com.sitewhere.rest.model.area.Area;
 import com.sitewhere.rest.model.area.Zone;
 import com.sitewhere.rest.model.device.DeviceAssignment;
+import com.sitewhere.spi.area.IAreaType;
 
 /**
  * Extends {@link Area} to support fields that can be included on REST calls.
@@ -23,11 +24,22 @@ public class MarshaledArea extends Area {
     /** Serial version UID */
     private static final long serialVersionUID = 129857679204159756L;
 
+    /** Area type */
+    private IAreaType areaType;
+
     /** List of assignments for site */
     private List<DeviceAssignment> deviceAssignments;
 
     /** List of zones for site */
     private List<Zone> zones;
+
+    public IAreaType getAreaType() {
+	return areaType;
+    }
+
+    public void setAreaType(IAreaType areaType) {
+	this.areaType = areaType;
+    }
 
     public List<DeviceAssignment> getDeviceAssignments() {
 	return deviceAssignments;

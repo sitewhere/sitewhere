@@ -1,6 +1,6 @@
 <template>
   <v-card hover color="white">
-    <v-container fluid grid-list-lg @click="onOpenArea">
+    <v-container fluid grid-list-lg @click="onViewSubAreas">
       <v-layout row>
         <v-flex xs3>
           <v-card-media>
@@ -10,7 +10,16 @@
         <v-flex xs9>
           <div>
             <div class="headline">{{ area.name }}</div>
-            <div style="height: 80px; overflow: hidden;">{{ area.description }}</div>
+            <div style="height: 40px; overflow: hidden;">{{ area.description }}</div>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn flat color="orange" @click.stop="onViewData">
+                View Data
+              </v-btn>
+              <v-btn flat color="orange" @click.stop="onViewSubAreas">
+                View Subareas
+              </v-btn>
+            </v-card-actions>
           </div>
         </v-flex>
       </v-layout>
@@ -43,9 +52,13 @@ export default {
   },
 
   methods: {
-    // Called when an area is clicked.
-    onOpenArea: function () {
-      this.$emit('areaOpened', this.area.token)
+    // Called to view data for area.
+    onViewData: function () {
+      this.$emit('viewAreaData', this.area)
+    },
+    // Called to view sub-areas.
+    onViewSubAreas: function () {
+      this.$emit('viewSubAreas', this.area)
     }
   }
 }

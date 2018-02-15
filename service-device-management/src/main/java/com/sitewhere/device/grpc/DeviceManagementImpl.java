@@ -1613,7 +1613,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	try {
 	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_AREAS);
 	    ISearchResults<IArea> apiResult = getDeviceManagement()
-		    .listAreas(CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
+		    .listAreas(DeviceModelConverter.asApiAreaSearchCriteria(request.getCriteria()));
 	    GListAreasResponse.Builder response = GListAreasResponse.newBuilder();
 	    GAreaSearchResults.Builder results = GAreaSearchResults.newBuilder();
 	    for (IArea api : apiResult.getResults()) {
