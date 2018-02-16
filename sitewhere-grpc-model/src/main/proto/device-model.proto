@@ -357,11 +357,12 @@ message GDeviceStream {
 
 // Request data for creating an area type.
 message GAreaTypeCreateRequest {
-	string token = 1;
+	GOptionalString token = 1;
 	string name = 2;
 	string description = 3;
 	string icon = 4;
-	map<string, string> metadata = 5;
+	repeated string containedAreaTypeTokens = 5;
+	map<string, string> metadata = 6;
 }
 
 // Criteria for searching area types.
@@ -382,6 +383,7 @@ message GAreaType {
 	string name = 3;
 	string description = 4;
 	string icon = 5;
+	repeated GUUID containedAreaTypeIds = 6;
 	map<string, string> metadata = 7;
 	GEntityInformation entityInformation = 8;
 }
@@ -398,12 +400,14 @@ message GAreaMapData {
 
 // Request data for creating an area.
 message GAreaCreateRequest {
-	string token = 1;
-	string name = 2;
-	string description = 3;
-	string imageUrl = 4;
-	GAreaMapData mapData = 5;
-	map<string, string> metadata = 6;
+	GOptionalString token = 1;
+	string areaTypeToken = 2;
+	GOptionalString parentAreaToken = 3;
+	string name = 4;
+	string description = 5;
+	string imageUrl = 6;
+	GAreaMapData mapData = 7;
+	map<string, string> metadata = 8;
 }
 
 // Criteria for searching areas.

@@ -7,6 +7,9 @@
  */
 package com.sitewhere.web.rest.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.access.annotation.Secured;
@@ -18,8 +21,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sitewhere.device.marshaling.AreaTypeMarshalHelper;
 import com.sitewhere.rest.model.area.request.AreaTypeCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
+import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.area.IAreaType;
@@ -84,7 +89,7 @@ public class AreaTypes extends RestControllerBase {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{areaTypeToken}", method = RequestMethod.PUT)
-    @ApiOperation(value = "Update existing area")
+    @ApiOperation(value = "Update existing area type")
     @Secured({ SiteWhereRoles.REST })
     public IAreaType updateAreaType(
 	    @ApiParam(value = "Token that identifies area type", required = true) @PathVariable String areaTypeToken,
@@ -103,12 +108,21 @@ public class AreaTypes extends RestControllerBase {
     @ApiOperation(value = "List area types matching criteria")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IAreaType> listAreaTypes(
+	    @ApiParam(value = "Include contained area types", required = false) @RequestParam(defaultValue = "false") boolean includeContainedAreaTypes,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<IAreaType> matches = getDeviceManagement().listAreaTypes(criteria);
-	return matches;
+
+	AreaTypeMarshalHelper helper = new AreaTypeMarshalHelper(getDeviceManagement());
+	helper.setIncludeContainedAreaTypes(includeContainedAreaTypes);
+
+	List<IAreaType> results = new ArrayList<IAreaType>();
+	for (IAreaType area : matches.getResults()) {
+	    results.add(helper.convert(area));
+	}
+	return new SearchResults<IAreaType>(results, matches.getNumResults());
     }
 
     /**
@@ -120,7 +134,7 @@ public class AreaTypes extends RestControllerBase {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{areaTypeToken}", method = RequestMethod.DELETE)
-    @ApiOperation(value = "Delete area by token")
+    @ApiOperation(value = "Delete area type by token")
     @Secured({ SiteWhereRoles.REST })
     public IAreaType deleteAreaType(
 	    @ApiParam(value = "Token that identifies area type", required = true) @PathVariable String areaTypeToken,

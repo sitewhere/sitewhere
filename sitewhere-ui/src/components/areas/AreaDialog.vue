@@ -26,6 +26,10 @@
                       <v-text-field class="mt-1" label="Area name" v-model="areaName" prepend-icon="info"></v-text-field>
                     </v-flex>
                     <v-flex xs12>
+                      <area-type-selector>
+                      </area-type-selector>
+                    </v-flex>
+                    <v-flex xs12>
                       <v-text-field class="mt-1" multi-line label="Description" v-model="areaDescription" prepend-icon="subject"></v-text-field>
                     </v-flex>
                     <v-flex xs12>
@@ -52,6 +56,7 @@
 <script>
 import Utils from '../common/Utils'
 import BaseDialog from '../common/BaseDialog'
+import AreaTypeSelector from '../areatypes/AreaTypeSelector'
 import MapPanel from './MapPanel'
 import MetadataPanel from '../common/MetadataPanel'
 
@@ -70,6 +75,7 @@ export default {
 
   components: {
     BaseDialog,
+    AreaTypeSelector,
     MapPanel,
     MetadataPanel
   },

@@ -35,6 +35,7 @@ import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.area.IArea;
+import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.area.request.IAreaCreateRequest;
 import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
@@ -508,10 +509,12 @@ public class DeviceManagementPersistence extends Persistence {
      * request.
      * 
      * @param request
+     * @param containedAreaTypeIds
      * @return
      * @throws SiteWhereException
      */
-    public static AreaType areaTypeCreateLogic(IAreaTypeCreateRequest request) throws SiteWhereException {
+    public static AreaType areaTypeCreateLogic(IAreaTypeCreateRequest request, List<UUID> containedAreaTypeIds)
+	    throws SiteWhereException {
 	AreaType type = new AreaType();
 	type.setId(UUID.randomUUID());
 
@@ -524,6 +527,7 @@ public class DeviceManagementPersistence extends Persistence {
 	type.setName(request.getName());
 	type.setDescription(request.getDescription());
 	type.setIcon(request.getIcon());
+	type.setContainedAreaTypeIds(containedAreaTypeIds);
 
 	DeviceManagementPersistence.initializeEntityMetadata(type);
 	MetadataProvider.copy(request.getMetadata(), type);
@@ -535,10 +539,12 @@ public class DeviceManagementPersistence extends Persistence {
      * type.
      * 
      * @param request
+     * @param containedAreaTypeIds
      * @param target
      * @throws SiteWhereException
      */
-    public static void areaTypeUpdateLogic(IAreaTypeCreateRequest request, AreaType target) throws SiteWhereException {
+    public static void areaTypeUpdateLogic(IAreaTypeCreateRequest request, List<UUID> containedAreaTypeIds,
+	    AreaType target) throws SiteWhereException {
 	if (request.getToken() != null) {
 	    target.setToken(request.getToken());
 	}
@@ -551,6 +557,9 @@ public class DeviceManagementPersistence extends Persistence {
 	if (request.getIcon() != null) {
 	    target.setIcon(request.getIcon());
 	}
+	if (request.getContainedAreaTypeTokens() != null) {
+	    target.setContainedAreaTypeIds(containedAreaTypeIds);
+	}
 	if (request.getMetadata() != null) {
 	    target.getMetadata().clear();
 	    MetadataProvider.copy(request.getMetadata(), target);
@@ -562,10 +571,13 @@ public class DeviceManagementPersistence extends Persistence {
      * Common logic for creating new area object and populating it from request.
      * 
      * @param request
+     * @param areaType
+     * @param parentArea
      * @return
      * @throws SiteWhereException
      */
-    public static Area areaCreateLogic(IAreaCreateRequest request) throws SiteWhereException {
+    public static Area areaCreateLogic(IAreaCreateRequest request, IAreaType areaType, IArea parentArea)
+	    throws SiteWhereException {
 	Area area = new Area();
 	area.setId(UUID.randomUUID());
 
@@ -575,11 +587,8 @@ public class DeviceManagementPersistence extends Persistence {
 	    area.setToken(UUID.randomUUID().toString());
 	}
 
-	requireNotNull("Area Type Id", request.getAreaTypeId());
-	requireNotNull("Name", request.getName());
-
-	area.setAreaTypeId(request.getAreaTypeId());
-	area.setParentAreaId(request.getParentAreaId());
+	area.setAreaTypeId(areaType.getId());
+	area.setParentAreaId(parentArea != null ? parentArea.getId() : null);
 	area.setName(request.getName());
 	area.setDescription(request.getDescription());
 	area.setImageUrl(request.getImageUrl());

@@ -8,6 +8,7 @@
 package com.sitewhere.spi.area.request;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -51,4 +52,11 @@ public interface IAreaTypeCreateRequest extends Serializable {
      * @return
      */
     public Map<String, String> getMetadata();
+
+    /**
+     * Get list of area type tokens which may be contained.
+     * 
+     * @return
+     */
+    public List<String> getContainedAreaTypeTokens();
 }

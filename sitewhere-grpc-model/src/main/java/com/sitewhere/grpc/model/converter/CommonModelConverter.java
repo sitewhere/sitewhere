@@ -257,6 +257,21 @@ public class CommonModelConverter {
     }
 
     /**
+     * Convert UUIDs from GRPC to API.
+     * 
+     * @param grpcs
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<UUID> asApiUuids(List<GUUID> grpcs) throws SiteWhereException {
+	List<UUID> api = new ArrayList<UUID>();
+	for (GUUID grpc : grpcs) {
+	    api.add(CommonModelConverter.asApiUuid(grpc));
+	}
+	return api;
+    }
+
+    /**
      * Convert UUID from API to GRPC.
      * 
      * @param api
@@ -271,5 +286,20 @@ public class CommonModelConverter {
 	grpc.setMsb(api.getMostSignificantBits());
 	grpc.setLsb(api.getLeastSignificantBits());
 	return grpc.build();
+    }
+
+    /**
+     * Convert UUIDs from API to GRPC.
+     * 
+     * @param apis
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<GUUID> asGrpcUuids(List<UUID> apis) throws SiteWhereException {
+	List<GUUID> grpcs = new ArrayList<GUUID>();
+	for (UUID api : apis) {
+	    grpcs.add(CommonModelConverter.asGrpcUuid(api));
+	}
+	return grpcs;
     }
 }

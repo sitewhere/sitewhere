@@ -88,7 +88,7 @@ public class HBaseArea {
      */
     public static IArea createArea(IHBaseContext context, IAreaCreateRequest request) throws SiteWhereException {
 	// Use common logic so all backend implementations work the same.
-	Area area = DeviceManagementPersistence.areaCreateLogic(request);
+	Area area = DeviceManagementPersistence.areaCreateLogic(request, null, null);
 
 	Long value = context.getDeviceIdManager().getSiteKeys().getNextCounterValue();
 	context.getDeviceIdManager().getSiteKeys().create(area.getToken(), value);

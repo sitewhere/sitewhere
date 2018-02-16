@@ -9,7 +9,6 @@ package com.sitewhere.rest.model.device.request.scripting;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import com.sitewhere.rest.model.area.request.AreaCreateRequest;
 import com.sitewhere.rest.model.area.request.AreaTypeCreateRequest;
@@ -72,14 +71,14 @@ public class DeviceManagementRequestBuilder {
     /**
      * Create a new area.
      * 
-     * @param areaTypeId
-     * @param parentId
+     * @param areaTypeToken
+     * @param parentAreaToken
      * @param token
      * @param name
      * @return
      */
-    public AreaCreateRequest.Builder newArea(UUID areaTypeId, UUID parentId, String token, String name) {
-	return new AreaCreateRequest.Builder(areaTypeId, parentId, token, name);
+    public AreaCreateRequest.Builder newArea(String areaTypeToken, String parentAreaToken, String token, String name) {
+	return new AreaCreateRequest.Builder(areaTypeToken, parentAreaToken, token, name);
     }
 
     /**

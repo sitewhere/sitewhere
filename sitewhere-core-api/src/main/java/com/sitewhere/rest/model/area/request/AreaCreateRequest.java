@@ -9,13 +9,11 @@ package com.sitewhere.rest.model.area.request;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.area.AreaMapData;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.IAreaMapMetadata;
 import com.sitewhere.spi.area.request.IAreaCreateRequest;
 
@@ -33,11 +31,11 @@ public class AreaCreateRequest implements IAreaCreateRequest {
     /** Unique token */
     private String token;
 
-    /** Area type id */
-    public UUID areaTypeId;
+    /** Area type token */
+    public String areaTypeToken;
 
-    /** Parent area id */
-    public UUID parentAreaId;
+    /** Parent area token */
+    public String parentAreaToken;
 
     /** Site name */
     private String name;
@@ -67,27 +65,27 @@ public class AreaCreateRequest implements IAreaCreateRequest {
     }
 
     /*
-     * @see com.sitewhere.spi.area.request.IAreaCreateRequest#getAreaTypeId()
+     * @see com.sitewhere.spi.area.request.IAreaCreateRequest#getAreaTypeToken()
      */
     @Override
-    public UUID getAreaTypeId() {
-	return areaTypeId;
+    public String getAreaTypeToken() {
+	return areaTypeToken;
     }
 
-    public void setAreaTypeId(UUID areaTypeId) {
-	this.areaTypeId = areaTypeId;
+    public void setAreaTypeToken(String areaTypeToken) {
+	this.areaTypeToken = areaTypeToken;
     }
 
     /*
-     * @see com.sitewhere.spi.area.request.IAreaCreateRequest#getParentAreaId()
+     * @see com.sitewhere.spi.area.request.IAreaCreateRequest#getParentAreaToken()
      */
     @Override
-    public UUID getParentAreaId() {
-	return parentAreaId;
+    public String getParentAreaToken() {
+	return parentAreaToken;
     }
 
-    public void setParentAreaId(UUID parentAreaId) {
-	this.parentAreaId = parentAreaId;
+    public void setParentAreaToken(String parentAreaToken) {
+	this.parentAreaToken = parentAreaToken;
     }
 
     /*
@@ -155,26 +153,9 @@ public class AreaCreateRequest implements IAreaCreateRequest {
 	/** Request being built */
 	private AreaCreateRequest request = new AreaCreateRequest();
 
-	public Builder(IArea api) {
-	    request.setToken(api.getToken());
-	    request.setAreaTypeId(api.getAreaTypeId());
-	    request.setParentAreaId(api.getParentAreaId());
-	    request.setName(api.getName());
-	    request.setDescription(api.getDescription());
-	    request.setImageUrl(api.getImageUrl());
-	    if (api.getMetadata() != null) {
-		request.setMetadata(new HashMap<String, String>());
-		request.getMetadata().putAll(api.getMetadata());
-	    }
-	    try {
-		request.setMap(AreaMapData.copy(api.getMap()));
-	    } catch (SiteWhereException e) {
-	    }
-	}
-
-	public Builder(UUID areaTypeId, UUID parent, String token, String name) {
-	    request.setAreaTypeId(areaTypeId);
-	    request.setParentAreaId(parent);
+	public Builder(String areaTypeToken, String parentAreaToken, String token, String name) {
+	    request.setAreaTypeToken(areaTypeToken);
+	    request.setParentAreaToken(parentAreaToken);
 	    request.setToken(token);
 	    request.setName(name);
 	    request.setDescription("");

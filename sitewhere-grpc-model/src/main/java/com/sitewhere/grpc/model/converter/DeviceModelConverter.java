@@ -1806,10 +1806,11 @@ public class DeviceModelConverter {
     public static AreaTypeCreateRequest asApiAreaTypeCreateRequest(GAreaTypeCreateRequest grpc)
 	    throws SiteWhereException {
 	AreaTypeCreateRequest api = new AreaTypeCreateRequest();
-	api.setToken(grpc.getToken());
+	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
 	api.setName(grpc.getName());
 	api.setDescription(grpc.getDescription());
 	api.setIcon(grpc.getIcon());
+	api.setContainedAreaTypeTokens(grpc.getContainedAreaTypeTokensList());
 	api.setMetadata(grpc.getMetadataMap());
 	return api;
     }
@@ -1824,10 +1825,15 @@ public class DeviceModelConverter {
     public static GAreaTypeCreateRequest asGrpcAreaTypeCreateRequest(IAreaTypeCreateRequest api)
 	    throws SiteWhereException {
 	GAreaTypeCreateRequest.Builder grpc = GAreaTypeCreateRequest.newBuilder();
-	grpc.setToken(api.getToken());
+	if (api.getToken() != null) {
+	    grpc.setToken(GOptionalString.newBuilder().setValue(api.getToken()));
+	}
 	grpc.setName(api.getName());
 	grpc.setDescription(api.getDescription());
 	grpc.setIcon(api.getIcon());
+	if (api.getContainedAreaTypeTokens() != null) {
+	    grpc.addAllContainedAreaTypeTokens(api.getContainedAreaTypeTokens());
+	}
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
 	}
@@ -1878,6 +1884,7 @@ public class DeviceModelConverter {
 	api.setName(grpc.getName());
 	api.setDescription(grpc.getDescription());
 	api.setIcon(grpc.getIcon());
+	api.setContainedAreaTypeIds(CommonModelConverter.asApiUuids(grpc.getContainedAreaTypeIdsList()));
 	api.setMetadata(grpc.getMetadataMap());
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
 	return api;
@@ -1897,6 +1904,9 @@ public class DeviceModelConverter {
 	grpc.setName(api.getName());
 	grpc.setDescription(api.getDescription());
 	grpc.setIcon(api.getIcon());
+	if (api.getContainedAreaTypeIds() != null) {
+	    grpc.addAllContainedAreaTypeIds(CommonModelConverter.asGrpcUuids(api.getContainedAreaTypeIds()));
+	}
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
 	}
@@ -1943,7 +1953,9 @@ public class DeviceModelConverter {
      */
     public static AreaCreateRequest asApiAreaCreateRequest(GAreaCreateRequest grpc) throws SiteWhereException {
 	AreaCreateRequest api = new AreaCreateRequest();
-	api.setToken(grpc.getToken());
+	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
+	api.setAreaTypeToken(grpc.getAreaTypeToken());
+	api.setParentAreaToken(grpc.hasParentAreaToken() ? grpc.getParentAreaToken().getValue() : null);
 	api.setName(grpc.getName());
 	api.setDescription(grpc.getDescription());
 	api.setImageUrl(grpc.getImageUrl());
@@ -1961,7 +1973,13 @@ public class DeviceModelConverter {
      */
     public static GAreaCreateRequest asGrpcAreaCreateRequest(IAreaCreateRequest api) throws SiteWhereException {
 	GAreaCreateRequest.Builder grpc = GAreaCreateRequest.newBuilder();
-	grpc.setToken(api.getToken());
+	if (api.getToken() != null) {
+	    grpc.setToken(GOptionalString.newBuilder().setValue(api.getToken()));
+	}
+	grpc.setAreaTypeToken(api.getAreaTypeToken());
+	if (api.getParentAreaToken() != null) {
+	    grpc.setParentAreaToken(GOptionalString.newBuilder().setValue(api.getParentAreaToken()));
+	}
 	grpc.setName(api.getName());
 	grpc.setDescription(api.getDescription());
 	grpc.setImageUrl(api.getImageUrl());

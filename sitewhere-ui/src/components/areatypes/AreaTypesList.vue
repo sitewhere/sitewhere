@@ -3,14 +3,14 @@
     <v-container fluid grid-list-md v-if="areaTypes">
       <v-layout row wrap>
          <v-flex xs6 v-for="(areaType, index) in areaTypes" :key="areaType.token">
-          <area-type-list-entry :areaType="areaType"
-            @areaTypeOpened="onOpenAreaType">
+          <area-type-list-entry :areaType="areaType" :areaTypes="areaTypes"
+            @areaTypeOpened="onOpenAreaType" @areaTypeDeleted="refresh">
           </area-type-list-entry>
         </v-flex>
       </v-layout>
     </v-container>
     <pager :results="results" @pagingUpdated="updatePaging"></pager>
-    <area-type-create-dialog @areaAdded="onAreaTypeAdded"/>
+    <area-type-create-dialog @areaTypeAdded="onAreaTypeAdded"/>
   </div>
 </template>
 
@@ -25,7 +25,7 @@ export default {
   data: () => ({
     results: null,
     paging: null,
-    areaTypes: null
+    areaTypes: []
   }),
 
   components: {
@@ -45,10 +45,10 @@ export default {
     refresh: function () {
       var paging = this.$data.paging.query
       var component = this
-      _listAreaTypes(this.$store, false, false, paging)
+      _listAreaTypes(this.$store, false, paging)
         .then(function (response) {
           component.results = response.data
-          component.areaTypes = response.data.results
+          component.$data.areaTypes = response.data.results
         }).catch(function (e) {
         })
     },

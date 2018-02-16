@@ -125,7 +125,7 @@ public enum ErrorCode {
     InvalidAreaToken(510, "Area not found."),
 
     /** Invalid area type token */
-    InvalidAreaTypeToken(510, "Area type not found."),
+    InvalidAreaTypeToken(511, "Area type not found."),
 
     /** Duplicate device assignment token */
     DuplicateDeviceAssignment(519, "Device assignment token already in use."),

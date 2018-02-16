@@ -8,6 +8,7 @@
 package com.sitewhere.spi.area;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.UUID;
 
 import com.sitewhere.spi.common.IMetadataProviderEntity;
@@ -54,4 +55,11 @@ public interface IAreaType extends IMetadataProviderEntity, Serializable {
      * @return
      */
     public String getIcon();
+
+    /**
+     * Get list of area type ids which may be contained.
+     * 
+     * @return
+     */
+    public List<UUID> getContainedAreaTypeIds();
 }

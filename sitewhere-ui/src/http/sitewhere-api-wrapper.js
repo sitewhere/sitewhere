@@ -542,9 +542,9 @@ export function _updateAreaType (store, areaTypeToken, payload) {
 /**
  * List area types.
  */
-export function _listAreaTypes (store, paging) {
+export function _listAreaTypes (store, includeContainedAreaTypes, paging) {
   let axios = createCoreApiCall(store)
-  let api = listAreaTypes(axios, paging)
+  let api = listAreaTypes(axios, includeContainedAreaTypes, paging)
   return loaderWrapper(store, api)
 }
 

@@ -1113,13 +1113,36 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     @Override
     public IAreaType createAreaType(IAreaTypeCreateRequest request) throws SiteWhereException {
+	// Convert contained area type tokens to ids.
+	List<UUID> catids = convertAreaTypeTokensToIds(request.getContainedAreaTypeTokens());
+
 	// Use common logic so all backend implementations work the same.
-	AreaType type = DeviceManagementPersistence.areaTypeCreateLogic(request);
+	AreaType type = DeviceManagementPersistence.areaTypeCreateLogic(request, catids);
 
 	MongoCollection<Document> types = getMongoClient().getAreaTypesCollection();
 	Document created = MongoAreaType.toDocument(type);
 	MongoPersistence.insert(types, created, ErrorCode.DuplicateAreaTypeToken);
 	return MongoAreaType.fromDocument(created);
+    }
+
+    /**
+     * Convert a list of area type tokens to ids.
+     * 
+     * @param tokens
+     * @return
+     * @throws SiteWhereException
+     */
+    protected List<UUID> convertAreaTypeTokensToIds(List<String> tokens) throws SiteWhereException {
+	List<UUID> catids = new ArrayList<>();
+	if (tokens != null) {
+	    for (String token : tokens) {
+		IAreaType contained = getAreaTypeByToken(token);
+		if (contained != null) {
+		    catids.add(contained.getId());
+		}
+	    }
+	}
+	return catids;
     }
 
     /*
@@ -1156,8 +1179,11 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     public IAreaType updateAreaType(UUID id, IAreaTypeCreateRequest request) throws SiteWhereException {
 	IAreaType type = getApiAreaTypeById(id);
 
+	// Convert contained area type tokens to ids.
+	List<UUID> catids = convertAreaTypeTokensToIds(request.getContainedAreaTypeTokens());
+
 	// Use common update logic.
-	DeviceManagementPersistence.areaTypeUpdateLogic(request, (AreaType) type);
+	DeviceManagementPersistence.areaTypeUpdateLogic(request, catids, (AreaType) type);
 
 	Document updated = MongoAreaType.toDocument(type);
 
@@ -1191,14 +1217,14 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	if (existing == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaTypeToken, ErrorLevel.ERROR);
 	}
-	MongoCollection<Document> areas = getMongoClient().getAreasCollection();
+	MongoCollection<Document> types = getMongoClient().getAreaTypesCollection();
 	if (force) {
-	    MongoPersistence.delete(areas, existing);
+	    MongoPersistence.delete(types, existing);
 	    return MongoAreaType.fromDocument(existing);
 	} else {
 	    MongoSiteWhereEntity.setDeleted(existing, true);
 	    Document query = new Document(MongoAreaType.PROP_ID, id);
-	    MongoPersistence.update(areas, query, existing);
+	    MongoPersistence.update(types, query, existing);
 	    return MongoAreaType.fromDocument(existing);
 	}
     }
@@ -1210,8 +1236,17 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     @Override
     public IArea createArea(IAreaCreateRequest request) throws SiteWhereException {
+	// Look up area type.
+	IAreaType areaType = getAreaTypeByToken(request.getAreaTypeToken());
+	if (areaType == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaTypeToken, ErrorLevel.ERROR);
+	}
+
+	// Look up parent area.
+	IArea parentArea = (request.getParentAreaToken() != null) ? getAreaByToken(request.getParentAreaToken()) : null;
+
 	// Use common logic so all backend implementations work the same.
-	Area area = DeviceManagementPersistence.areaCreateLogic(request);
+	Area area = DeviceManagementPersistence.areaCreateLogic(request, areaType, parentArea);
 
 	MongoCollection<Document> sites = getMongoClient().getAreasCollection();
 	Document created = MongoArea.toDocument(area);
@@ -1729,7 +1764,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      * @throws SiteWhereException
      */
     protected IAreaType getApiAreaTypeById(UUID id) throws SiteWhereException {
-	Document match = getAreaDocumentById(id);
+	Document match = getAreaTypeDocumentById(id);
 	if (match == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaTypeToken, ErrorLevel.ERROR);
 	}

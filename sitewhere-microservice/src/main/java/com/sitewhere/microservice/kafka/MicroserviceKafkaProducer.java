@@ -9,11 +9,15 @@ package com.sitewhere.microservice.kafka;
 
 import java.util.Properties;
 
+import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -27,7 +31,20 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public abstract class MicroserviceKafkaProducer extends TenantEngineLifecycleComponent implements IMicroserviceKafkaProducer {
+public abstract class MicroserviceKafkaProducer extends TenantEngineLifecycleComponent
+	implements IMicroserviceKafkaProducer {
+
+    /** Static logger instance for callback */
+    private static Logger CALLBACK_LOGGER = LogManager.getLogger();
+
+    /** Create single callback */
+    private static Callback CALLBACK = new Callback() {
+	public void onCompletion(RecordMetadata metadata, Exception e) {
+	    if (e != null) {
+		CALLBACK_LOGGER.error("Unable to complete delivery of Kafka message.", e);
+	    }
+	}
+    };
 
     /** Producer */
     private KafkaProducer<String, byte[]> producer;
@@ -78,7 +95,7 @@ public abstract class MicroserviceKafkaProducer extends TenantEngineLifecycleCom
     @Override
     public void send(String key, byte[] message) throws SiteWhereException {
 	ProducerRecord<String, byte[]> record = new ProducerRecord<String, byte[]>(getTargetTopicName(), key, message);
-	getProducer().send(record);
+	getProducer().send(record, CALLBACK);
     }
 
     /**

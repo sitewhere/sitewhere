@@ -7,6 +7,7 @@
  */
 package com.sitewhere.device.persistence.mongodb;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.bson.Document;
@@ -38,6 +39,9 @@ public class MongoAreaType implements MongoConverter<IAreaType> {
 
     /** Property for icon */
     public static final String PROP_ICON = "icon";
+
+    /** Property for contained area type ids */
+    public static final String PROP_CONTAINED_AREA_TYPE_IDS = "caty";
 
     /*
      * (non-Javadoc)
@@ -71,6 +75,7 @@ public class MongoAreaType implements MongoConverter<IAreaType> {
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_DESCRIPTION, source.getDescription());
 	target.append(PROP_ICON, source.getIcon());
+	target.append(PROP_CONTAINED_AREA_TYPE_IDS, source.getContainedAreaTypeIds());
 
 	MongoSiteWhereEntity.toDocument(source, target);
 	MongoMetadataProvider.toDocument(source, target);
@@ -82,18 +87,21 @@ public class MongoAreaType implements MongoConverter<IAreaType> {
      * @param source
      * @param target
      */
+    @SuppressWarnings("unchecked")
     public static void fromDocument(Document source, AreaType target) {
 	UUID id = (UUID) source.get(PROP_ID);
 	String token = (String) source.get(PROP_TOKEN);
 	String name = (String) source.get(PROP_NAME);
 	String description = (String) source.get(PROP_DESCRIPTION);
 	String icon = (String) source.get(PROP_ICON);
+	List<UUID> containedAreaTypeIds = (List<UUID>) source.get(PROP_CONTAINED_AREA_TYPE_IDS);
 
 	target.setId(id);
 	target.setToken(token);
 	target.setName(name);
 	target.setDescription(description);
 	target.setIcon(icon);
+	target.setContainedAreaTypeIds(containedAreaTypeIds);
 
 	MongoSiteWhereEntity.fromDocument(source, target);
 	MongoMetadataProvider.fromDocument(source, target);

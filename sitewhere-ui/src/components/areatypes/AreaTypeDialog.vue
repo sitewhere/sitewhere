@@ -8,6 +8,9 @@
           <v-tabs-item key="details" href="#details">
             Area Type Details
           </v-tabs-item>
+          <v-tabs-item key="catypes" href="#catypes">
+            Contained Area Types
+          </v-tabs-item>
           <v-tabs-item key="metadata" href="#metadata">
             Metadata
           </v-tabs-item>
@@ -20,18 +23,26 @@
                 <v-container fluid>
                   <v-layout row wrap>
                     <v-flex xs12>
-                      <v-text-field class="mt-1" label="Name" v-model="typeName" prepend-icon="info"></v-text-field>
+                      <v-text-field class="mt-1" label="Name" v-model="typeName"
+                        prepend-icon="info"></v-text-field>
                     </v-flex>
                     <v-flex xs12>
-                      <v-text-field class="mt-1" multi-line label="Description" v-model="typeDescription" prepend-icon="subject"></v-text-field>
+                      <v-text-field class="mt-1" multi-line label="Description"
+                        v-model="typeDescription" prepend-icon="subject"></v-text-field>
                     </v-flex>
                     <v-flex xs12>
-                      <v-text-field class="mt-1" label="Icon" v-model="typeIcon" prepend-icon="image"></v-text-field>
+                      <icon-selector v-model="typeIcon"></icon-selector>
                     </v-flex>
                   </v-layout>
                 </v-container>
                 </v-card-text>
             </v-card>
+          </v-tabs-content>
+          <v-tabs-content key="catypes" id="catypes">
+            <area-types-multiselect :areaTypes="areaTypes"
+              :selectedAreaTypeIds="typeContainedAreaTypeIds"
+              @selectedAreaTypesUpdated="onContainedAreaTypesUpdated">
+          </area-types-multiselect>
           </v-tabs-content>
           <v-tabs-content key="metadata" id="metadata">
             <metadata-panel :metadata="metadata"
@@ -46,6 +57,8 @@
 <script>
 import Utils from '../common/Utils'
 import BaseDialog from '../common/BaseDialog'
+import IconSelector from '../common/IconSelector'
+import AreaTypesMultiselect from './AreaTypesMultiselect'
 import MetadataPanel from '../common/MetadataPanel'
 
 export default {
@@ -56,16 +69,20 @@ export default {
     typeName: '',
     typeDescription: '',
     typeIcon: '',
+    typeContainedAreaTypeIds: [],
+    typeContainedAreaTypeTokens: [],
     metadata: [],
     error: null
   }),
 
   components: {
     BaseDialog,
+    IconSelector,
+    AreaTypesMultiselect,
     MetadataPanel
   },
 
-  props: ['title', 'width', 'createLabel', 'cancelLabel'],
+  props: ['title', 'width', 'createLabel', 'cancelLabel', 'areaTypes'],
 
   methods: {
     // Generate payload from UI.
@@ -74,6 +91,7 @@ export default {
       payload.name = this.$data.typeName
       payload.description = this.$data.typeDescription
       payload.icon = this.$data.typeIcon
+      payload.containedAreaTypeTokens = this.$data.typeContainedAreaTypeTokens
       payload.metadata = Utils.arrayToMetadata(this.$data.metadata)
       return payload
     },
@@ -83,6 +101,8 @@ export default {
       this.$data.typeName = null
       this.$data.typeDescription = null
       this.$data.typeIcon = null
+      this.$data.typeContainedAreaTypeIds = []
+      this.$data.typeContainedAreaTypeTokens = []
       this.$data.metadata = []
       this.$data.active = 'details'
     },
@@ -90,11 +110,11 @@ export default {
     // Load dialog from a given payload.
     load: function (payload) {
       this.reset()
-
       if (payload) {
         this.$data.typeName = payload.name
         this.$data.typeDescription = payload.description
         this.$data.typeIcon = payload.icon
+        this.$data.typeContainedAreaTypeIds = payload.containedAreaTypeIds
         this.$data.metadata = Utils.metadataToArray(payload.metadata)
       }
     },
@@ -112,6 +132,16 @@ export default {
     // Called to show an error message.
     showError: function (error) {
       this.$data.error = error
+    },
+
+    // Called when list of contained area types is updated.
+    onContainedAreaTypesUpdated: function (selected) {
+      let tokens = []
+      for (let i = 0; i < selected.length; i++) {
+        let at = selected[i]
+        tokens.push(at.token)
+      }
+      this.$data.typeContainedAreaTypeTokens = tokens
     },
 
     // Called after create button is clicked.

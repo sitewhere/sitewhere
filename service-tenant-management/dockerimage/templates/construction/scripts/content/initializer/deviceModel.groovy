@@ -23,20 +23,21 @@ def randomItem = { items ->
 // Create Area Types, Areas and Zone //
 // ################################# //
 
-// Region type.
-def regionType = deviceBuilder.newAreaType '44d554e8-b71b-44f0-b04b-600ff8c25e27', 'Region'
-regionType.withDescription 'Subsection of the United States.' withIcon 'fa-map'
-regionType = deviceBuilder.persist regionType
-logger.info "[Create Area Type] ${regionType.name}"
-
 // Construction area type.
 def constAreaType = deviceBuilder.newAreaType 'c66b3da1-329c-4b6f-9e81-912e111d8c86', 'Construction Area'
 constAreaType.withDescription 'A construction area.' withIcon 'fa-truck'
 constAreaType = deviceBuilder.persist constAreaType
 logger.info "[Create Area Type] ${constAreaType.name}"
 
+// Region type.
+def regionType = deviceBuilder.newAreaType '44d554e8-b71b-44f0-b04b-600ff8c25e27', 'Region'
+regionType.withDescription 'Subsection of the United States.' withIcon 'fa-map'
+regionType.withContainedAreaType constAreaType.token
+regionType = deviceBuilder.persist regionType
+logger.info "[Create Area Type] ${regionType.name}"
+
 // Southeast region.
-def seRegion = deviceBuilder.newArea regionType.id, null, '3901e090-904a-4b26-bc78-645e790256b5', 'Southeast Region'
+def seRegion = deviceBuilder.newArea regionType.token, null, '3901e090-904a-4b26-bc78-645e790256b5', 'Southeast Region'
 seRegion.withDescription 'Region including the southeastern portion of the United States.'
 seRegion.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/construction.jpg'
 seRegion.openStreetMap 34.10469794977326, -84.23966646194458, 15
@@ -44,7 +45,7 @@ seRegion = deviceBuilder.persist seRegion
 logger.info "[Create Area] ${seRegion.name}"
 
 // Peachtree construction site.
-def ptreeSite = deviceBuilder.newArea constAreaType.id, seRegion.id, 'f57b85b4-3dcf-4a70-88d9-b5ab1193d86c', 'Peachtree Construction Site'
+def ptreeSite = deviceBuilder.newArea constAreaType.token, seRegion.token, 'f57b85b4-3dcf-4a70-88d9-b5ab1193d86c', 'Peachtree Construction Site'
 ptreeSite.withDescription '''A construction site with many high-value assets that should not be taken offsite. 
 The system provides location tracking for the assets and notifies administrators if any of the assets move 
 outside of the general site area or into areas where they are not allowed.'''

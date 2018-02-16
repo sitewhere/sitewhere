@@ -24,10 +24,12 @@ export function updateAreaType (axios, areaTypeToken, payload) {
 /**
  * List area types.
  */
-export function listAreaTypes (axios, paging) {
+export function listAreaTypes (axios, includeContainedAreaTypes, paging) {
   let query = ''
+  query += (includeContainedAreaTypes) ? '?includeContainedAreaTypes=true'
+    : '?includeContainedAreaTypes=false'
   if (paging) {
-    query += '?' + paging
+    query += '&' + paging
   }
   return restAuthGet(axios, 'areatypes' + query)
 }

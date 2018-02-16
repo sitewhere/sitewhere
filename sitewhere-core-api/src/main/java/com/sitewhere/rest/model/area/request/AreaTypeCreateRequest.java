@@ -7,7 +7,9 @@
  */
 package com.sitewhere.rest.model.area.request;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.sitewhere.spi.area.IAreaType;
@@ -37,6 +39,9 @@ public class AreaTypeCreateRequest implements IAreaTypeCreateRequest {
 
     /** Metadata values */
     private Map<String, String> metadata;
+
+    /** List of contained area type tokens */
+    private List<String> containedAreaTypeTokens;
 
     /*
      * @see com.sitewhere.spi.area.request.IAreaTypeCreateRequest#getToken()
@@ -98,6 +103,19 @@ public class AreaTypeCreateRequest implements IAreaTypeCreateRequest {
 	this.metadata = metadata;
     }
 
+    /*
+     * @see com.sitewhere.spi.area.request.IAreaTypeCreateRequest#
+     * getContainedAreaTypeTokens()
+     */
+    @Override
+    public List<String> getContainedAreaTypeTokens() {
+	return containedAreaTypeTokens;
+    }
+
+    public void setContainedAreaTypeTokens(List<String> containedAreaTypeTokens) {
+	this.containedAreaTypeTokens = containedAreaTypeTokens;
+    }
+
     public static class Builder {
 
 	/** Request being built */
@@ -128,6 +146,14 @@ public class AreaTypeCreateRequest implements IAreaTypeCreateRequest {
 
 	public Builder withIcon(String icon) {
 	    request.setIcon(icon);
+	    return this;
+	}
+
+	public Builder withContainedAreaType(String areaTypeToken) {
+	    if (request.getContainedAreaTypeTokens() == null) {
+		request.setContainedAreaTypeTokens(new ArrayList<String>());
+	    }
+	    request.getContainedAreaTypeTokens().add(areaTypeToken);
 	    return this;
 	}
 

@@ -7,6 +7,8 @@
  */
 package com.sitewhere.rest.model.area;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
@@ -36,6 +38,9 @@ public class AreaType extends MetadataProviderEntity implements IAreaType {
 
     /** Icon */
     private String icon;
+
+    /** List of contained area type ids */
+    private List<UUID> containedAreaTypeIds = new ArrayList<>();
 
     /*
      * @see com.sitewhere.spi.area.IAreaType#getId()
@@ -95,5 +100,17 @@ public class AreaType extends MetadataProviderEntity implements IAreaType {
 
     public void setIcon(String icon) {
 	this.icon = icon;
+    }
+
+    /*
+     * @see com.sitewhere.spi.area.IAreaType#getContainedAreaTypeIds()
+     */
+    @Override
+    public List<UUID> getContainedAreaTypeIds() {
+	return containedAreaTypeIds;
+    }
+
+    public void setContainedAreaTypeIds(List<UUID> containedAreaTypeIds) {
+	this.containedAreaTypeIds = containedAreaTypeIds;
     }
 }

@@ -9,7 +9,6 @@ package com.sitewhere.spi.area.request;
 
 import java.io.Serializable;
 import java.util.Map;
-import java.util.UUID;
 
 import com.sitewhere.spi.area.IAreaMapData;
 
@@ -28,18 +27,18 @@ public interface IAreaCreateRequest extends Serializable {
     public String getToken();
 
     /**
-     * Get id of corresponding area type.
+     * Get token for corresponding area type.
      * 
      * @return
      */
-    public UUID getAreaTypeId();
+    public String getAreaTypeToken();
 
     /**
-     * Get id of parent id (null if none).
+     * Get token for parent id (null if none).
      * 
      * @return
      */
-    public UUID getParentAreaId();
+    public String getParentAreaToken();
 
     /**
      * Get name.
