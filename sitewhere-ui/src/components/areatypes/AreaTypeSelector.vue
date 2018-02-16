@@ -1,6 +1,6 @@
 <template>
   <v-select :items="areaTypes" item-text="name" item-value="token"
-    v-model="selectedToken" hide-details single-line>
+    v-model="selectedToken" label="Area type" prepend-icon="subject">
   </v-select>
 </template>
 
@@ -16,12 +16,28 @@ export default {
 
   props: ['value'],
 
+  computed: {
+    // Indexes area types by token.
+    areaTypesByToken: function () {
+      let ats = this.$data.areaTypes
+      let atById = {}
+      if (ats) {
+        for (let i = 0; i < ats.length; i++) {
+          let at = ats[i]
+          atById[at.token] = at
+        }
+      }
+      return atById
+    }
+  },
+
   watch: {
     value: function (updated) {
       this.$data.selectedToken = updated
     },
     selectedToken: function (updated) {
       this.$emit('input', updated)
+      this.$emit('areaTypeUpdated', this.areaTypesByToken[updated])
     }
   },
 

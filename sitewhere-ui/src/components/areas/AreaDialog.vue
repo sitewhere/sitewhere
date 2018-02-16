@@ -26,7 +26,8 @@
                       <v-text-field class="mt-1" label="Area name" v-model="areaName" prepend-icon="info"></v-text-field>
                     </v-flex>
                     <v-flex xs12>
-                      <area-type-selector>
+                      <area-type-selector v-model="areaTypeId"
+                        @areaTypeUpdated="onAreaTypeUpdated">
                       </area-type-selector>
                     </v-flex>
                     <v-flex xs12>
@@ -65,6 +66,8 @@ export default {
   data: () => ({
     active: null,
     dialogVisible: false,
+    areaTypeId: '',
+    areaTypeToken: null,
     areaName: '',
     areaDescription: '',
     areaImageUrl: '',
@@ -80,15 +83,16 @@ export default {
     MetadataPanel
   },
 
-  props: ['title', 'width', 'createLabel', 'cancelLabel'],
+  props: ['title', 'width', 'createLabel', 'cancelLabel', 'parentArea'],
 
   methods: {
     // Generate payload from UI.
     generatePayload: function () {
       var payload = {}
-      payload.name = this.$data.siteName
-      payload.description = this.$data.siteDescription
-      payload.imageUrl = this.$data.siteImageUrl
+      payload.areaTypeToken = this.$data.areaTypeToken
+      payload.name = this.$data.areaName
+      payload.description = this.$data.areaDescription
+      payload.imageUrl = this.$data.areaImageUrl
       payload.map = this.$data.mapConfig
       payload.metadata = Utils.arrayToMetadata(this.$data.metadata)
       return payload
@@ -96,9 +100,11 @@ export default {
 
     // Reset dialog contents.
     reset: function (e) {
-      this.$data.siteName = null
-      this.$data.siteDescription = null
-      this.$data.siteImageUrl = null
+      this.$data.areaTypeId = null
+      this.$data.areaTypeToken = null
+      this.$data.areaName = null
+      this.$data.areaDescription = null
+      this.$data.areaImageUrl = null
       this.$data.mapConfig = {}
       this.$data.metadata = []
       this.$data.active = 'details'
@@ -109,9 +115,10 @@ export default {
       this.reset()
 
       if (payload) {
-        this.$data.siteName = payload.name
-        this.$data.siteDescription = payload.description
-        this.$data.siteImageUrl = payload.imageUrl
+        this.$data.areaTypeId = payload.areaTypeId
+        this.$data.areaName = payload.name
+        this.$data.areaDescription = payload.description
+        this.$data.areaImageUrl = payload.imageUrl
         this.$data.mapConfig = payload.map
         this.$data.metadata = Utils.metadataToArray(payload.metadata)
       }
@@ -130,6 +137,11 @@ export default {
     // Called to show an error message.
     showError: function (error) {
       this.$data.error = error
+    },
+
+    // Called when area type is updated.
+    onAreaTypeUpdated: function (areaType) {
+      this.$data.areaTypeToken = areaType ? areaType.token : null
     },
 
     // Called after create button is clicked.

@@ -14,8 +14,9 @@
       </v-tooltip>
     </v-toolbar>
     <v-toolbar v-else flat dark dense card class="primary">
+      <v-icon>fa-map</v-icon>
       <v-toolbar-title class="white--text">
-        Displaying areas at the top of the hierarchy
+        Root of Area Hierarchy
       </v-toolbar-title>
     </v-toolbar>
   </v-card>

@@ -34,7 +34,7 @@ export default {
   data: () => ({
   }),
 
-  props: ['area'],
+  props: ['area', 'parentArea'],
 
   computed: {
     // Determines whether area may have sub-areas.

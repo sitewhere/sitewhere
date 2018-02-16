@@ -1,7 +1,8 @@
 <template>
   <div>
     <area-dialog title="Edit Area Type" width="600" resetOnOpen="true"
-      createLabel="Update" cancelLabel="Cancel" @payload="onCommit">
+      createLabel="Update" cancelLabel="Cancel" @payload="onCommit"
+      :parentArea="parentArea">
     </area-dialog>
     <v-tooltip top>
       <v-btn dark icon small
@@ -28,7 +29,7 @@ export default {
     AreaDialog
   },
 
-  props: ['token'],
+  props: ['token', 'parentArea'],
 
   methods: {
     // Send event to open dialog.

@@ -1,7 +1,8 @@
 <template>
   <div>
-    <area-dialog ref="dialog" title="Create Area" width="600" resetOnOpen="true"
-      createLabel="Create" cancelLabel="Cancel" @payload="onCommit">
+    <area-dialog ref="dialog" title="Create Area" width="600"
+      resetOnOpen="true" createLabel="Create" cancelLabel="Cancel"
+      @payload="onCommit" :parentArea="parentArea">
     </area-dialog>
     <floating-action-button label="Add Area" icon="fa-plus"
       @action="onOpenDialog">
@@ -23,6 +24,8 @@ export default {
     AreaDialog,
     FloatingActionButton
   },
+
+  props: ['parentArea'],
 
   methods: {
     // Get handle to nested dialog component.

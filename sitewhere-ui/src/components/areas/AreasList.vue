@@ -6,14 +6,14 @@
     <v-container fluid grid-list-md v-if="areas">
       <v-layout row wrap>
          <v-flex xs6 v-for="(area, index) in areas" :key="area.token">
-          <area-list-entry :area="area" @viewAreaData="onViewAreaData"
-            @viewSubAreas="onViewSubAreas">
+          <area-list-entry :area="area" :parentArea="parentArea"
+            @viewAreaData="onViewAreaData" @viewSubAreas="onViewSubAreas">
           </area-list-entry>
         </v-flex>
       </v-layout>
     </v-container>
     <pager :results="results" @pagingUpdated="updatePaging"></pager>
-    <area-create-dialog @areaAdded="onAreaAdded"/>
+    <area-create-dialog @areaAdded="onAreaAdded" :parentArea="parentArea"/>
   </span>
 </template>
 

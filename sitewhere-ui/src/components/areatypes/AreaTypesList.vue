@@ -10,7 +10,8 @@
       </v-layout>
     </v-container>
     <pager :results="results" @pagingUpdated="updatePaging"></pager>
-    <area-type-create-dialog @areaTypeAdded="onAreaTypeAdded"/>
+    <area-type-create-dialog @areaTypeAdded="onAreaTypeAdded"
+      :areaTypes="areaTypes"/>
   </div>
 </template>
 
