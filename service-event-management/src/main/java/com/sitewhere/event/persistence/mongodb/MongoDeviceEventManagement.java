@@ -38,7 +38,6 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceAlert;
@@ -281,14 +280,14 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceMeasurementsForArea(com.sitewhere.spi.area.IArea,
+     * listDeviceMeasurementsForAreas(java.util.List,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public SearchResults<IDeviceMeasurements> listDeviceMeasurementsForArea(IArea area,
+    public SearchResults<IDeviceMeasurements> listDeviceMeasurementsForAreas(List<UUID> areaIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> events = getMongoClient().getEventsCollection();
-	Document query = new Document(MongoDeviceEvent.PROP_AREA_ID, area.getId())
+	Document query = new Document(MongoDeviceEvent.PROP_AREA_ID, createAreasInClause(areaIds))
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Measurements.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
@@ -336,14 +335,14 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceLocationsForArea(com.sitewhere.spi.area.IArea,
+     * listDeviceLocationsForAreas(java.util.List,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public SearchResults<IDeviceLocation> listDeviceLocationsForArea(IArea area, IDateRangeSearchCriteria criteria)
-	    throws SiteWhereException {
+    public SearchResults<IDeviceLocation> listDeviceLocationsForAreas(List<UUID> areaIds,
+	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> events = getMongoClient().getEventsCollection();
-	Document query = new Document(MongoDeviceEvent.PROP_AREA_ID, area.getId())
+	Document query = new Document(MongoDeviceEvent.PROP_AREA_ID, createAreasInClause(areaIds))
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Location.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
@@ -391,16 +390,15 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceAlertsForArea
-     * (com.sitewhere.spi.area.IArea,
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+     * listDeviceAlertsForAreas(java.util.List,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public SearchResults<IDeviceAlert> listDeviceAlertsForArea(IArea area, IDateRangeSearchCriteria criteria)
+    public SearchResults<IDeviceAlert> listDeviceAlertsForAreas(List<UUID> areaIds, IDateRangeSearchCriteria criteria)
 	    throws SiteWhereException {
 	MongoCollection<Document> events = getMongoClient().getEventsCollection();
-	Document query = new Document(MongoDeviceEvent.PROP_AREA_ID, area.getId())
+	Document query = new Document(MongoDeviceEvent.PROP_AREA_ID, createAreasInClause(areaIds))
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Alert.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
@@ -508,14 +506,14 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandInvocationsForArea(com.sitewhere.spi.area.IArea,
+     * listDeviceCommandInvocationsForAreas(java.util.List,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForArea(IArea area,
+    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForAreas(List<UUID> areaIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> events = getMongoClient().getEventsCollection();
-	Document query = new Document(MongoDeviceEvent.PROP_AREA_ID, area.getId())
+	Document query = new Document(MongoDeviceEvent.PROP_AREA_ID, createAreasInClause(areaIds))
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandInvocation.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
@@ -582,14 +580,14 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandResponsesForArea(com.sitewhere.spi.area.IArea,
+     * listDeviceCommandResponsesForAreas(java.util.List,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForArea(IArea area,
+    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForAreas(List<UUID> areaIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> events = getMongoClient().getEventsCollection();
-	Document query = new Document(MongoDeviceEvent.PROP_AREA_ID, area.getId())
+	Document query = new Document(MongoDeviceEvent.PROP_AREA_ID, createAreasInClause(areaIds))
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandResponse.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
@@ -636,14 +634,14 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceStateChangesForArea(com.sitewhere.spi.area.IArea,
+     * listDeviceStateChangesForAreas(java.util.List,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceStateChange> listDeviceStateChangesForArea(IArea area,
+    public ISearchResults<IDeviceStateChange> listDeviceStateChangesForAreas(List<UUID> areaIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> events = getMongoClient().getEventsCollection();
-	Document query = new Document(MongoDeviceEvent.PROP_AREA_ID, area.getId())
+	Document query = new Document(MongoDeviceEvent.PROP_AREA_ID, createAreasInClause(areaIds))
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.StateChange.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
@@ -695,6 +693,16 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 	} catch (MongoTimeoutException e) {
 	    throw new SiteWhereException("Connection to MongoDB lost.", e);
 	}
+    }
+
+    /**
+     * Create "in" clause for a list of areas.
+     * 
+     * @param areas
+     * @return
+     */
+    protected Document createAreasInClause(List<UUID> areas) {
+	return new Document("$in", areas);
     }
 
     public IDeviceEventBuffer getEventBuffer() {

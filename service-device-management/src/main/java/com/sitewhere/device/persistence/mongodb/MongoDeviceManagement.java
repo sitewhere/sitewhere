@@ -39,6 +39,7 @@ import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
+import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -997,14 +998,14 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForArea(java.
-     * util.UUID, com.sitewhere.spi.search.device.IAssignmentSearchCriteria)
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAreas(java.
+     * util.List, com.sitewhere.spi.search.device.IAssignmentSearchCriteria)
      */
     @Override
-    public SearchResults<IDeviceAssignment> getDeviceAssignmentsForArea(UUID areaId, IAssignmentSearchCriteria criteria)
-	    throws SiteWhereException {
+    public SearchResults<IDeviceAssignment> getDeviceAssignmentsForAreas(List<UUID> areaIds,
+	    IAssignmentSearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
-	Document query = new Document(MongoDeviceAssignment.PROP_AREA_ID, areaId);
+	Document query = new Document(MongoDeviceAssignment.PROP_AREA_ID, createAreasInClause(areaIds));
 	if (criteria.getStatus() != null) {
 	    query.append(MongoDeviceAssignment.PROP_STATUS, criteria.getStatus().name());
 	}
@@ -1280,6 +1281,25 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getAreaChildren(java.lang.String)
+     */
+    @Override
+    public List<IArea> getAreaChildren(String token) throws SiteWhereException {
+	IArea existing = getAreaByToken(token);
+	if (existing == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
+	}
+
+	MongoCollection<Document> areas = getMongoClient().getAreasCollection();
+	Document query = new Document(MongoArea.PROP_PARENT_AREA_ID, existing.getId());
+	Document sort = new Document(MongoArea.PROP_NAME, 1);
+	SearchResults<IArea> matches = MongoPersistence.search(IArea.class, areas, query, sort, SearchCriteria.ALL,
+		LOOKUP);
+	return matches.getResults();
+    }
+
+    /*
      * @see com.sitewhere.spi.device.IDeviceManagement#updateArea(java.util.UUID,
      * com.sitewhere.spi.area.request.IAreaCreateRequest)
      */
@@ -1312,8 +1332,6 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	} else if (criteria.getParentAreaId() != null) {
 	    query.append(MongoArea.PROP_PARENT_AREA_ID, criteria.getParentAreaId());
 	}
-	getLogger().info("Mongo query " + query);
-	getLogger().info("Criteria rootOnly:" + criteria.getRootOnly() + " parentAreaId:" + criteria.getParentAreaId());
 	Document sort = new Document(MongoArea.PROP_NAME, 1);
 	return MongoPersistence.search(IArea.class, areas, query, sort, criteria, LOOKUP);
     }
@@ -1970,6 +1988,16 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceGroupToken, ErrorLevel.ERROR);
 	}
 	return match;
+    }
+
+    /**
+     * Create "in" clause for a list of areas.
+     * 
+     * @param areas
+     * @return
+     */
+    protected Document createAreasInClause(List<UUID> areas) {
+	return new Document("$in", areas);
     }
 
     public IDeviceManagementMongoClient getMongoClient() {

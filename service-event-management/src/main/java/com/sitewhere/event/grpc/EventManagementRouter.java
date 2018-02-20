@@ -35,32 +35,32 @@ import com.sitewhere.grpc.service.GGetDeviceEventByIdRequest;
 import com.sitewhere.grpc.service.GGetDeviceEventByIdResponse;
 import com.sitewhere.grpc.service.GGetStreamDataForAssignmentRequest;
 import com.sitewhere.grpc.service.GGetStreamDataForAssignmentResponse;
-import com.sitewhere.grpc.service.GListAlertsForAreaRequest;
-import com.sitewhere.grpc.service.GListAlertsForAreaResponse;
+import com.sitewhere.grpc.service.GListAlertsForAreasRequest;
+import com.sitewhere.grpc.service.GListAlertsForAreasResponse;
 import com.sitewhere.grpc.service.GListAlertsForAssignmentRequest;
 import com.sitewhere.grpc.service.GListAlertsForAssignmentResponse;
-import com.sitewhere.grpc.service.GListCommandInvocationsForAreaRequest;
-import com.sitewhere.grpc.service.GListCommandInvocationsForAreaResponse;
+import com.sitewhere.grpc.service.GListCommandInvocationsForAreasRequest;
+import com.sitewhere.grpc.service.GListCommandInvocationsForAreasResponse;
 import com.sitewhere.grpc.service.GListCommandInvocationsForAssignmentRequest;
 import com.sitewhere.grpc.service.GListCommandInvocationsForAssignmentResponse;
-import com.sitewhere.grpc.service.GListCommandResponsesForAreaRequest;
-import com.sitewhere.grpc.service.GListCommandResponsesForAreaResponse;
+import com.sitewhere.grpc.service.GListCommandResponsesForAreasRequest;
+import com.sitewhere.grpc.service.GListCommandResponsesForAreasResponse;
 import com.sitewhere.grpc.service.GListCommandResponsesForAssignmentRequest;
 import com.sitewhere.grpc.service.GListCommandResponsesForAssignmentResponse;
 import com.sitewhere.grpc.service.GListCommandResponsesForInvocationRequest;
 import com.sitewhere.grpc.service.GListCommandResponsesForInvocationResponse;
 import com.sitewhere.grpc.service.GListDeviceEventsRequest;
 import com.sitewhere.grpc.service.GListDeviceEventsResponse;
-import com.sitewhere.grpc.service.GListLocationsForAreaRequest;
-import com.sitewhere.grpc.service.GListLocationsForAreaResponse;
+import com.sitewhere.grpc.service.GListLocationsForAreasRequest;
+import com.sitewhere.grpc.service.GListLocationsForAreasResponse;
 import com.sitewhere.grpc.service.GListLocationsForAssignmentRequest;
 import com.sitewhere.grpc.service.GListLocationsForAssignmentResponse;
-import com.sitewhere.grpc.service.GListMeasurementsForAreaRequest;
-import com.sitewhere.grpc.service.GListMeasurementsForAreaResponse;
+import com.sitewhere.grpc.service.GListMeasurementsForAreasRequest;
+import com.sitewhere.grpc.service.GListMeasurementsForAreasResponse;
 import com.sitewhere.grpc.service.GListMeasurementsForAssignmentRequest;
 import com.sitewhere.grpc.service.GListMeasurementsForAssignmentResponse;
-import com.sitewhere.grpc.service.GListStateChangesForAreaRequest;
-import com.sitewhere.grpc.service.GListStateChangesForAreaResponse;
+import com.sitewhere.grpc.service.GListStateChangesForAreasRequest;
+import com.sitewhere.grpc.service.GListStateChangesForAreasResponse;
 import com.sitewhere.grpc.service.GListStateChangesForAssignmentRequest;
 import com.sitewhere.grpc.service.GListStateChangesForAssignmentResponse;
 import com.sitewhere.grpc.service.GListStreamDataForAssignmentRequest;
@@ -208,13 +208,13 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
 
     /*
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listMeasurementsForArea(com.sitewhere.grpc.
-     * service.GListMeasurementsForAreaRequest, io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#listMeasurementsForAreas(com.sitewhere.grpc.
+     * service.GListMeasurementsForAreasRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listMeasurementsForArea(GListMeasurementsForAreaRequest request,
-	    StreamObserver<GListMeasurementsForAreaResponse> responseObserver) {
-	getTenantImplementation().listMeasurementsForArea(request, responseObserver);
+    public void listMeasurementsForAreas(GListMeasurementsForAreasRequest request,
+	    StreamObserver<GListMeasurementsForAreasResponse> responseObserver) {
+	getTenantImplementation().listMeasurementsForAreas(request, responseObserver);
     }
 
     /*
@@ -245,13 +245,13 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
 
     /*
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listLocationsForArea(com.sitewhere.grpc.service
-     * .GListLocationsForAreaRequest, io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#listLocationsForAreas(com.sitewhere.grpc.
+     * service.GListLocationsForAreasRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listLocationsForArea(GListLocationsForAreaRequest request,
-	    StreamObserver<GListLocationsForAreaResponse> responseObserver) {
-	getTenantImplementation().listLocationsForArea(request, responseObserver);
+    public void listLocationsForAreas(GListLocationsForAreasRequest request,
+	    StreamObserver<GListLocationsForAreasResponse> responseObserver) {
+	getTenantImplementation().listLocationsForAreas(request, responseObserver);
     }
 
     /*
@@ -282,13 +282,13 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
 
     /*
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listAlertsForArea(com.sitewhere.grpc.service.
-     * GListAlertsForAreaRequest, io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#listAlertsForAreas(com.sitewhere.grpc.service.
+     * GListAlertsForAreasRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listAlertsForArea(GListAlertsForAreaRequest request,
-	    StreamObserver<GListAlertsForAreaResponse> responseObserver) {
-	getTenantImplementation().listAlertsForArea(request, responseObserver);
+    public void listAlertsForAreas(GListAlertsForAreasRequest request,
+	    StreamObserver<GListAlertsForAreasResponse> responseObserver) {
+	getTenantImplementation().listAlertsForAreas(request, responseObserver);
     }
 
     /*
@@ -361,14 +361,14 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
 
     /*
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listCommandInvocationsForArea(com.sitewhere.
-     * grpc.service.GListCommandInvocationsForAreaRequest,
+     * DeviceEventManagementImplBase#listCommandInvocationsForAreas(com.sitewhere.
+     * grpc.service.GListCommandInvocationsForAreasRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listCommandInvocationsForArea(GListCommandInvocationsForAreaRequest request,
-	    StreamObserver<GListCommandInvocationsForAreaResponse> responseObserver) {
-	getTenantImplementation().listCommandInvocationsForArea(request, responseObserver);
+    public void listCommandInvocationsForAreas(GListCommandInvocationsForAreasRequest request,
+	    StreamObserver<GListCommandInvocationsForAreasResponse> responseObserver) {
+	getTenantImplementation().listCommandInvocationsForAreas(request, responseObserver);
     }
 
     /*
@@ -415,13 +415,13 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
 
     /*
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listCommandResponsesForArea(com.sitewhere.grpc.
-     * service.GListCommandResponsesForAreaRequest, io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#listCommandResponsesForAreas(com.sitewhere.grpc
+     * .service.GListCommandResponsesForAreasRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listCommandResponsesForArea(GListCommandResponsesForAreaRequest request,
-	    StreamObserver<GListCommandResponsesForAreaResponse> responseObserver) {
-	getTenantImplementation().listCommandResponsesForArea(request, responseObserver);
+    public void listCommandResponsesForAreas(GListCommandResponsesForAreasRequest request,
+	    StreamObserver<GListCommandResponsesForAreasResponse> responseObserver) {
+	getTenantImplementation().listCommandResponsesForAreas(request, responseObserver);
     }
 
     /*
@@ -454,13 +454,13 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
 
     /*
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listStateChangesForArea(com.sitewhere.grpc.
-     * service.GListStateChangesForAreaRequest, io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#listStateChangesForAreas(com.sitewhere.grpc.
+     * service.GListStateChangesForAreasRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listStateChangesForArea(GListStateChangesForAreaRequest request,
-	    StreamObserver<GListStateChangesForAreaResponse> responseObserver) {
-	getTenantImplementation().listStateChangesForArea(request, responseObserver);
+    public void listStateChangesForAreas(GListStateChangesForAreasRequest request,
+	    StreamObserver<GListStateChangesForAreasResponse> responseObserver) {
+	getTenantImplementation().listStateChangesForAreas(request, responseObserver);
     }
 
     public IEventManagementMicroservice getMicroservice() {

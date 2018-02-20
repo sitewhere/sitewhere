@@ -499,16 +499,10 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
 	return HBaseDevice.getDeviceAssignmentHistory(context, device, criteria);
     }
 
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForArea(java.
-     * util.UUID, com.sitewhere.spi.search.device.IAssignmentSearchCriteria)
-     */
     @Override
-    public SearchResults<IDeviceAssignment> getDeviceAssignmentsForArea(UUID areaId, IAssignmentSearchCriteria criteria)
-	    throws SiteWhereException {
-	IArea area = getArea(areaId);
-	return HBaseArea.listDeviceAssignmentsForArea(context, area, criteria);
+    public SearchResults<IDeviceAssignment> getDeviceAssignmentsForAreas(List<UUID> areaIds,
+	    IAssignmentSearchCriteria criteria) throws SiteWhereException {
+	return HBaseArea.listDeviceAssignmentsForArea(context, null, criteria);
     }
 
     /*
@@ -660,6 +654,15 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
     @Override
     public IArea getAreaByToken(String token) throws SiteWhereException {
 	return HBaseArea.getAreaByToken(context, token);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getAreaChildren(java.lang.String)
+     */
+    @Override
+    public List<IArea> getAreaChildren(String token) throws SiteWhereException {
+	return null;
     }
 
     /*

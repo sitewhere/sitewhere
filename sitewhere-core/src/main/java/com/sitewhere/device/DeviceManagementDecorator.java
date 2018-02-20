@@ -421,13 +421,13 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator<IDevi
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForArea(java.
-     * util.UUID, com.sitewhere.spi.search.device.IAssignmentSearchCriteria)
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAreas(java.
+     * util.List, com.sitewhere.spi.search.device.IAssignmentSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForArea(UUID areaId,
+    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAreas(List<UUID> areaIds,
 	    IAssignmentSearchCriteria criteria) throws SiteWhereException {
-	return getDelegate().getDeviceAssignmentsForArea(areaId, criteria);
+	return getDelegate().getDeviceAssignmentsForAreas(areaIds, criteria);
     }
 
     /*
@@ -556,6 +556,15 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator<IDevi
     @Override
     public IArea getAreaByToken(String token) throws SiteWhereException {
 	return getDelegate().getAreaByToken(token);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getAreaChildren(java.lang.String)
+     */
+    @Override
+    public List<IArea> getAreaChildren(String token) throws SiteWhereException {
+	return getDelegate().getAreaChildren(token);
     }
 
     /*

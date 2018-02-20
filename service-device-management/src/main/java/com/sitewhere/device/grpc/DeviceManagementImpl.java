@@ -1230,18 +1230,18 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getDeviceAssignmentsForArea(com.sitewhere.grpc.service.
-     * GGetDeviceAssignmentsForAreaRequest, io.grpc.stub.StreamObserver)
+     * getDeviceAssignmentsForAreas(com.sitewhere.grpc.service.
+     * GGetDeviceAssignmentsForAreasRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void getDeviceAssignmentsForArea(GGetDeviceAssignmentsForAreaRequest request,
-	    StreamObserver<GGetDeviceAssignmentsForAreaResponse> responseObserver) {
+    public void getDeviceAssignmentsForAreas(GGetDeviceAssignmentsForAreasRequest request,
+	    StreamObserver<GGetDeviceAssignmentsForAreasResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_AREA);
-	    ISearchResults<IDeviceAssignment> apiResult = getDeviceManagement().getDeviceAssignmentsForArea(
-		    CommonModelConverter.asApiUuid(request.getAreaId()),
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_AREAS);
+	    ISearchResults<IDeviceAssignment> apiResult = getDeviceManagement().getDeviceAssignmentsForAreas(
+		    CommonModelConverter.asApiUuids(request.getAreaIdsList()),
 		    DeviceModelConverter.asApiAssignmentSearchCriteria(request.getCriteria()));
-	    GGetDeviceAssignmentsForAreaResponse.Builder response = GGetDeviceAssignmentsForAreaResponse.newBuilder();
+	    GGetDeviceAssignmentsForAreasResponse.Builder response = GGetDeviceAssignmentsForAreasResponse.newBuilder();
 	    GDeviceAssignmentSearchResults.Builder results = GDeviceAssignmentSearchResults.newBuilder();
 	    for (IDeviceAssignment api : apiResult.getResults()) {
 		results.addAssignments(DeviceModelConverter.asGrpcDeviceAssignment(api));
@@ -1251,7 +1251,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_AREA, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_AREAS, e,
 		    responseObserver);
 	}
     }
@@ -1576,6 +1576,29 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
 	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_AREA_BY_TOKEN, e, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getAreaChildren(com.sitewhere.grpc.service.GGetAreaChildrenRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getAreaChildren(GGetAreaChildrenRequest request,
+	    StreamObserver<GGetAreaChildrenResponse> responseObserver) {
+	try {
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_AREA_CHILDREN);
+	    List<IArea> apiResult = getDeviceManagement().getAreaChildren(request.getToken());
+	    GGetAreaChildrenResponse.Builder response = GGetAreaChildrenResponse.newBuilder();
+	    if (apiResult != null) {
+		response.addAllAreas(DeviceModelConverter.asGrpcAreas(apiResult));
+	    }
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_AREA_CHILDREN, e, responseObserver);
 	}
     }
 

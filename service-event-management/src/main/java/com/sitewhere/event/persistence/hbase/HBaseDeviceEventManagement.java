@@ -7,6 +7,9 @@
  */
 package com.sitewhere.event.persistence.hbase;
 
+import java.util.List;
+import java.util.UUID;
+
 import org.apache.hadoop.hbase.regionserver.BloomType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,7 +25,6 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceAlert;
@@ -223,13 +225,13 @@ public class HBaseDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceMeasurementsForArea(com.sitewhere.spi.area.IArea,
+     * listDeviceMeasurementsForAreas(java.util.List,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public SearchResults<IDeviceMeasurements> listDeviceMeasurementsForArea(IArea area,
+    public SearchResults<IDeviceMeasurements> listDeviceMeasurementsForAreas(List<UUID> areaIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return HBaseDeviceEvent.listDeviceMeasurementsForArea(context, area, criteria);
+	return HBaseDeviceEvent.listDeviceMeasurementsForArea(context, null, criteria);
     }
 
     /*
@@ -261,13 +263,13 @@ public class HBaseDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceLocationsForArea(com.sitewhere.spi.area.IArea,
+     * listDeviceLocationsForAreas(java.util.List,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public SearchResults<IDeviceLocation> listDeviceLocationsForArea(IArea area, IDateRangeSearchCriteria criteria)
-	    throws SiteWhereException {
-	return HBaseDeviceEvent.listDeviceLocationsForArea(context, area, criteria);
+    public SearchResults<IDeviceLocation> listDeviceLocationsForAreas(List<UUID> areaIds,
+	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
+	return HBaseDeviceEvent.listDeviceLocationsForArea(context, null, criteria);
     }
 
     /*
@@ -298,15 +300,14 @@ public class HBaseDeviceEventManagement extends TenantEngineLifecycleComponent i
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceAlertsForArea
-     * (com.sitewhere.spi.area.IArea,
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+     * listDeviceAlertsForAreas(java.util.List,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public SearchResults<IDeviceAlert> listDeviceAlertsForArea(IArea area, IDateRangeSearchCriteria criteria)
+    public SearchResults<IDeviceAlert> listDeviceAlertsForAreas(List<UUID> areaIds, IDateRangeSearchCriteria criteria)
 	    throws SiteWhereException {
-	return HBaseDeviceEvent.listDeviceAlertsForArea(context, area, criteria);
+	return HBaseDeviceEvent.listDeviceAlertsForArea(context, null, criteria);
     }
 
     /*
@@ -379,13 +380,13 @@ public class HBaseDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandInvocationsForArea(com.sitewhere.spi.area.IArea,
+     * listDeviceCommandInvocationsForAreas(java.util.List,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForArea(IArea area,
+    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForAreas(List<UUID> areaIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return HBaseDeviceEvent.listDeviceCommandInvocationsForArea(context, area, criteria);
+	return HBaseDeviceEvent.listDeviceCommandInvocationsForArea(context, null, criteria);
     }
 
     /*
@@ -428,13 +429,13 @@ public class HBaseDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandResponsesForArea(com.sitewhere.spi.area.IArea,
+     * listDeviceCommandResponsesForAreas(java.util.List,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForArea(IArea area,
+    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForAreas(List<UUID> areaIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return HBaseDeviceEvent.listDeviceCommandResponsesForArea(context, area, criteria);
+	return HBaseDeviceEvent.listDeviceCommandResponsesForArea(context, null, criteria);
     }
 
     /*
@@ -465,13 +466,13 @@ public class HBaseDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceStateChangesForArea(com.sitewhere.spi.area.IArea,
+     * listDeviceStateChangesForAreas(java.util.List,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceStateChange> listDeviceStateChangesForArea(IArea area,
+    public ISearchResults<IDeviceStateChange> listDeviceStateChangesForAreas(List<UUID> areaIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return HBaseDeviceEvent.listDeviceStateChangesForArea(context, area, criteria);
+	return HBaseDeviceEvent.listDeviceStateChangesForArea(context, null, criteria);
     }
 
     /*

@@ -11,16 +11,6 @@
           <div>
             <div class="headline">{{ areaType.name }}</div>
             <div class="atdesc">{{ areaType.description }}</div>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <area-type-update-dialog ref="update"
-                :token="areaType.token" :areaTypes="areaTypes"
-                @areaTypeUpdated="onAreaTypeUpdated">
-              </area-type-update-dialog>
-              <area-type-delete-dialog :token="areaType.token"
-                @areaTypeDeleted="onAreaTypeDeleted">
-              </area-type-delete-dialog>
-            </v-card-actions>
           </div>
         </v-flex>
       </v-layout>
@@ -29,8 +19,7 @@
 </template>
 
 <script>
-import AreaTypeUpdateDialog from './AreaTypeUpdateDialog'
-import AreaTypeDeleteDialog from './AreaTypeDeleteDialog'
+import Utils from '../common/Utils'
 
 export default {
 
@@ -38,8 +27,7 @@ export default {
   }),
 
   components: {
-    AreaTypeUpdateDialog,
-    AreaTypeDeleteDialog
+    Utils
   },
 
   props: ['areaType', 'areaTypes'],
@@ -47,15 +35,7 @@ export default {
   methods: {
     // Callen when card is clicked.
     onAreaTypeClicked: function () {
-      this.$refs['update'].onOpenDialog()
-    },
-    // Called when an area type is updated.
-    onAreaTypeUpdated: function () {
-      this.$emit('areaTypeUpdated', this.areaType.token)
-    },
-    // Called when an area type is deleted.
-    onAreaTypeDeleted: function () {
-      this.$emit('areaTypeDeleted', this.areaType.token)
+      Utils.routeTo(this, '/areatypes/' + this.areaType.token)
     }
   }
 }
@@ -63,7 +43,8 @@ export default {
 
 <style scoped>
 .atlogo {
-  font-size: 45pt;
+  font-size: 30pt;
+  padding: 10px;
 }
 .atdesc {
   height: 40px;

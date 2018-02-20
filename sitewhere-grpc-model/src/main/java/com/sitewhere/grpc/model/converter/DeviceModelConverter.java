@@ -8,6 +8,7 @@
 package com.sitewhere.grpc.model.converter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -2066,6 +2067,21 @@ public class DeviceModelConverter {
     }
 
     /**
+     * Convert list of areas from GRPC to API.
+     * 
+     * @param grpcs
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<IArea> asApiAreas(Collection<GArea> grpcs) throws SiteWhereException {
+	List<IArea> apis = new ArrayList<>();
+	for (GArea grpc : grpcs) {
+	    apis.add(DeviceModelConverter.asApiArea(grpc));
+	}
+	return apis;
+    }
+
+    /**
      * Convert area from API to GRPC.
      * 
      * @param api
@@ -2089,6 +2105,21 @@ public class DeviceModelConverter {
 	}
 	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
 	return grpc.build();
+    }
+
+    /**
+     * Convert list of areas from API to GRPC.
+     * 
+     * @param apis
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<GArea> asGrpcAreas(List<IArea> apis) throws SiteWhereException {
+	List<GArea> grpcs = new ArrayList<>();
+	for (IArea api : apis) {
+	    grpcs.add(DeviceModelConverter.asGrpcArea(api));
+	}
+	return grpcs;
     }
 
     /**

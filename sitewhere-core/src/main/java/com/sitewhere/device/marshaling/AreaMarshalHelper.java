@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -105,7 +106,9 @@ public class AreaMarshalHelper {
 	if (isIncludeAssignments()) {
 	    AssignmentSearchCriteria criteria = new AssignmentSearchCriteria(1, 0);
 	    criteria.setStatus(DeviceAssignmentStatus.Active);
-	    ISearchResults<IDeviceAssignment> matches = getDeviceManagement().getDeviceAssignmentsForArea(area.getId(),
+	    List<UUID> areaIds = new ArrayList<>();
+	    areaIds.add(area.getId());
+	    ISearchResults<IDeviceAssignment> matches = getDeviceManagement().getDeviceAssignmentsForAreas(areaIds,
 		    criteria);
 	    List<DeviceAssignment> assignments = new ArrayList<DeviceAssignment>();
 	    for (IDeviceAssignment match : matches.getResults()) {

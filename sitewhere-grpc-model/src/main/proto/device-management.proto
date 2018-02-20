@@ -168,8 +168,8 @@ service DeviceManagement {
 	// Get device assignment history.
 	rpc GetDeviceAssignmentHistory (GGetDeviceAssignmentHistoryRequest) returns (GGetDeviceAssignmentHistoryResponse) {}
 	
-	// Get device assignments for an area.
-	rpc GetDeviceAssignmentsForArea (GGetDeviceAssignmentsForAreaRequest) returns (GGetDeviceAssignmentsForAreaResponse) {}
+	// Get device assignments for one or more areas.
+	rpc GetDeviceAssignmentsForAreas (GGetDeviceAssignmentsForAreasRequest) returns (GGetDeviceAssignmentsForAreasResponse) {}
 	
 	// Get device assignments linked to an asset.
 	rpc GetDeviceAssignmentsForAsset (GGetDeviceAssignmentsForAssetRequest) returns (GGetDeviceAssignmentsForAssetResponse) {}
@@ -221,6 +221,9 @@ service DeviceManagement {
 	
 	// Get area by unique token.
 	rpc GetAreaByToken (GGetAreaByTokenRequest) returns (GGetAreaByTokenResponse) {}
+	
+	// Get children of an area.
+	rpc GetAreaChildren (GGetAreaChildrenRequest) returns (GGetAreaChildrenResponse) {}
 	
 	// Update an existing area.
 	rpc UpdateArea (GUpdateAreaRequest) returns (GUpdateAreaResponse) {}
@@ -632,14 +635,14 @@ message GGetDeviceAssignmentHistoryResponse {
 	com.sitewhere.grpc.model.GDeviceAssignmentSearchResults results = 1;
 }
 	
-// Request for getting device assignments for an area.
-message GGetDeviceAssignmentsForAreaRequest {
-	com.sitewhere.grpc.model.GUUID areaId = 1;
+// Request for getting device assignments for one or more areas.
+message GGetDeviceAssignmentsForAreasRequest {
+	repeated com.sitewhere.grpc.model.GUUID areaIds = 1;
 	com.sitewhere.grpc.model.GDeviceAssignmentSearchCriteria criteria = 2;
 }
 	
-// Response for getting device assignments for an area.
-message GGetDeviceAssignmentsForAreaResponse {
+// Response for getting device assignments for one or more areas.
+message GGetDeviceAssignmentsForAreasResponse {
 	com.sitewhere.grpc.model.GDeviceAssignmentSearchResults results = 1;
 }
 	
@@ -790,6 +793,16 @@ message GGetAreaByTokenRequest {
 // Response for getting an area by token.
 message GGetAreaByTokenResponse {
 	com.sitewhere.grpc.model.GArea area = 1;
+}
+
+// Request for getting area children.
+message GGetAreaChildrenRequest {
+	string token = 1;
+}
+
+// Response for getting area children.
+message GGetAreaChildrenResponse {
+	repeated com.sitewhere.grpc.model.GArea areas = 1;
 }
 	
 // Request for updating an existing area.

@@ -9,7 +9,10 @@ package com.sitewhere.web.rest.controllers;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -214,9 +217,9 @@ public class Areas extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
 	    throws SiteWhereException {
-	IArea existing = assertArea(areaToken);
+	List<UUID> areas = resolveAreas(areaToken, true);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-	ISearchResults<IDeviceMeasurements> results = getDeviceEventManagement().listDeviceMeasurementsForArea(existing,
+	ISearchResults<IDeviceMeasurements> results = getDeviceEventManagement().listDeviceMeasurementsForAreas(areas,
 		criteria);
 
 	// Marshal with asset info since multiple assignments might match.
@@ -245,9 +248,9 @@ public class Areas extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
 	    throws SiteWhereException {
-	IArea existing = assertArea(areaToken);
+	List<UUID> areas = resolveAreas(areaToken, true);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-	ISearchResults<IDeviceLocation> results = getDeviceEventManagement().listDeviceLocationsForArea(existing,
+	ISearchResults<IDeviceLocation> results = getDeviceEventManagement().listDeviceLocationsForAreas(areas,
 		criteria);
 
 	// Marshal with asset info since multiple assignments might match.
@@ -277,8 +280,8 @@ public class Areas extends RestControllerBase {
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
 	    throws SiteWhereException {
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-	IArea existing = assertArea(areaToken);
-	ISearchResults<IDeviceAlert> results = getDeviceEventManagement().listDeviceAlertsForArea(existing, criteria);
+	List<UUID> areas = resolveAreas(areaToken, true);
+	ISearchResults<IDeviceAlert> results = getDeviceEventManagement().listDeviceAlertsForAreas(areas, criteria);
 
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceAlert> wrapped = new ArrayList<IDeviceAlert>();
@@ -306,10 +309,10 @@ public class Areas extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
 	    throws SiteWhereException {
-	IArea existing = assertArea(areaToken);
+	List<UUID> areas = resolveAreas(areaToken, true);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 	ISearchResults<IDeviceCommandInvocation> results = getDeviceEventManagement()
-		.listDeviceCommandInvocationsForArea(existing, criteria);
+		.listDeviceCommandInvocationsForAreas(areas, criteria);
 
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceCommandInvocation> wrapped = new ArrayList<IDeviceCommandInvocation>();
@@ -337,10 +340,10 @@ public class Areas extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
 	    throws SiteWhereException {
-	IArea existing = assertArea(areaToken);
+	List<UUID> areas = resolveAreas(areaToken, true);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 	ISearchResults<IDeviceCommandResponse> results = getDeviceEventManagement()
-		.listDeviceCommandResponsesForArea(existing, criteria);
+		.listDeviceCommandResponsesForAreas(areas, criteria);
 
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceCommandResponse> wrapped = new ArrayList<IDeviceCommandResponse>();
@@ -368,9 +371,9 @@ public class Areas extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
 	    throws SiteWhereException {
-	IArea existing = assertArea(areaToken);
+	List<UUID> areas = resolveAreas(areaToken, true);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-	ISearchResults<IDeviceStateChange> results = getDeviceEventManagement().listDeviceStateChangesForArea(existing,
+	ISearchResults<IDeviceStateChange> results = getDeviceEventManagement().listDeviceStateChangesForAreas(areas,
 		criteria);
 
 	// Marshal with asset info since multiple assignments might match.
@@ -404,9 +407,8 @@ public class Areas extends RestControllerBase {
 	if (decodedStatus != null) {
 	    criteria.setStatus(decodedStatus);
 	}
-	IArea existing = assertArea(areaToken);
-	ISearchResults<IDeviceAssignment> matches = getDeviceManagement().getDeviceAssignmentsForArea(existing.getId(),
-		criteria);
+	List<UUID> areas = resolveAreas(areaToken, true);
+	ISearchResults<IDeviceAssignment> matches = getDeviceManagement().getDeviceAssignmentsForAreas(areas, criteria);
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(includeAsset);
 	helper.setIncludeDevice(includeDevice);
@@ -532,6 +534,43 @@ public class Areas extends RestControllerBase {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
 	}
 	return area;
+    }
+
+    /**
+     * Resolve areas including nested areas.
+     * 
+     * @param areaToken
+     * @param recursive
+     * @return
+     * @throws SiteWhereException
+     */
+    protected List<UUID> resolveAreas(String areaToken, boolean recursive) throws SiteWhereException {
+	IArea existing = getDeviceManagement().getAreaByToken(areaToken);
+	if (existing == null) {
+	    return new ArrayList<UUID>();
+	}
+	Map<String, UUID> resolved = new HashMap<>();
+	resolveAreasRecursively(existing, recursive, resolved);
+	List<UUID> response = new ArrayList<>();
+	response.addAll(resolved.values());
+	return response;
+    }
+
+    /**
+     * Resolve areas recursively.
+     * 
+     * @param current
+     * @param recursive
+     * @param matches
+     * @throws SiteWhereException
+     */
+    protected void resolveAreasRecursively(IArea current, boolean recursive, Map<String, UUID> matches)
+	    throws SiteWhereException {
+	matches.put(current.getToken(), current.getId());
+	List<IArea> children = getDeviceManagement().getAreaChildren(current.getToken());
+	for (IArea child : children) {
+	    resolveAreasRecursively(child, recursive, matches);
+	}
     }
 
     private IDeviceManagement getDeviceManagement() {

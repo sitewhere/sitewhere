@@ -4,13 +4,6 @@
       resetOnOpen="true" createLabel="Update" cancelLabel="Cancel"
       @payload="onCommit" :areaTypes="areaTypes">
     </area-type-dialog>
-    <v-tooltip left>
-      <v-btn dark icon small
-        @click.stop="onOpenDialog" slot="activator">
-        <v-icon class="grey--text">fa-edit</v-icon>
-      </v-btn>
-      <span>Edit Area Type</span>
-    </v-tooltip>
   </div>
 </template>
 

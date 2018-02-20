@@ -32,7 +32,7 @@ public class MongoArea implements MongoConverter<IArea> {
     public static final String PROP_AREA_TYPE_ID = "atid";
 
     /** Property for parent area id */
-    public static final String PROP_PARENT_AREA_ID = "ptid";
+    public static final String PROP_PARENT_AREA_ID = "paid";
 
     /** Property for name */
     public static final String PROP_NAME = "name";

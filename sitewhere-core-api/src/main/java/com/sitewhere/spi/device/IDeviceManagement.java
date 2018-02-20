@@ -395,14 +395,14 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
 	    throws SiteWhereException;
 
     /**
-     * Get a list of device assignments for an area.
+     * Get a list of device assignments for one or more areas.
      * 
-     * @param areaId
+     * @param areaIds
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForArea(UUID areaId,
+    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAreas(List<UUID> areaIds,
 	    IAssignmentSearchCriteria criteria) throws SiteWhereException;
 
     /**
@@ -532,6 +532,15 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
      * @throws SiteWhereException
      */
     public IArea getAreaByToken(String token) throws SiteWhereException;
+
+    /**
+     * Get list of areas that are children of the given area.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    public List<IArea> getAreaChildren(String token) throws SiteWhereException;
 
     /**
      * Update information for an area.

@@ -30,7 +30,6 @@ import com.sitewhere.rest.model.asset.DefaultAssetReferenceEncoder;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.DeviceEventType;
@@ -136,9 +135,9 @@ public class InfluxDbDeviceEvent {
     }
 
     /**
-     * Search for of events of a given type associated with an area.
+     * Search for of events of a given type associated with one or more areas.
      * 
-     * @param area
+     * @param areaIds
      * @param type
      * @param criteria
      * @param client
@@ -146,15 +145,15 @@ public class InfluxDbDeviceEvent {
      * @return
      * @throws SiteWhereException
      */
-    public static <T> SearchResults<T> searchByArea(IArea area, DeviceEventType type, ISearchCriteria criteria,
-	    InfluxDbClient client, Class<T> clazz) throws SiteWhereException {
-	Query query = InfluxDbDeviceEvent.queryEventsOfTypeForArea(type, area, criteria,
+    public static <T> SearchResults<T> searchByAreaIds(List<UUID> areaIds, DeviceEventType type,
+	    ISearchCriteria criteria, InfluxDbClient client, Class<T> clazz) throws SiteWhereException {
+	Query query = InfluxDbDeviceEvent.queryEventsOfTypeForAreas(type, areaIds, criteria,
 		client.getDatabase().getValue());
 	LOGGER.debug("Query: " + query.getCommand());
 	QueryResult response = client.getInflux().query(query, TimeUnit.MILLISECONDS);
 	List<T> results = InfluxDbDeviceEvent.eventsOfType(response, clazz);
 
-	Query countQuery = InfluxDbDeviceEvent.queryEventsOfTypeForAreaCount(type, area, criteria,
+	Query countQuery = InfluxDbDeviceEvent.queryEventsOfTypeForAreasCount(type, areaIds, criteria,
 		client.getDatabase().getValue());
 	LOGGER.debug("Count: " + countQuery.getCommand());
 	QueryResult countResponse = client.getInflux().query(countQuery);
@@ -205,16 +204,16 @@ public class InfluxDbDeviceEvent {
      * the search criteria.
      * 
      * @param type
-     * @param area
+     * @param areaIds
      * @param criteria
      * @param database
      * @return
      * @throws SiteWhereException
      */
-    protected static Query queryEventsOfTypeForArea(DeviceEventType type, IArea area, ISearchCriteria criteria,
+    protected static Query queryEventsOfTypeForAreas(DeviceEventType type, List<UUID> areaIds, ISearchCriteria criteria,
 	    String database) throws SiteWhereException {
-	return new Query("SELECT * FROM " + COLLECTION_EVENTS + " where type='" + type.name() + "' and " + EVENT_AREA
-		+ "='" + area.getId() + "'" + buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_AREA
+	return new Query("SELECT * FROM " + COLLECTION_EVENTS + " where type='" + type.name() + "' and "
+		+ buildAreasClause(areaIds) + buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_AREA
 		+ " ORDER BY time DESC" + buildPagingCriteria(criteria), database);
     }
 
@@ -223,17 +222,18 @@ public class InfluxDbDeviceEvent {
      * meeting the search criteria.
      * 
      * @param type
-     * @param area
+     * @param areaIds
      * @param criteria
      * @param database
      * @return
      * @throws SiteWhereException
      */
-    protected static Query queryEventsOfTypeForAreaCount(DeviceEventType type, IArea area, ISearchCriteria criteria,
-	    String database) throws SiteWhereException {
-	return new Query("SELECT count(" + EVENT_ID + ") FROM " + COLLECTION_EVENTS + " where type='" + type.name()
-		+ "' and " + EVENT_AREA + "='" + area.getId() + "'" + buildDateRangeCriteria(criteria) + " GROUP BY "
-		+ EVENT_AREA, database);
+    protected static Query queryEventsOfTypeForAreasCount(DeviceEventType type, List<UUID> areaIds,
+	    ISearchCriteria criteria, String database) throws SiteWhereException {
+	return new Query(
+		"SELECT count(" + EVENT_ID + ") FROM " + COLLECTION_EVENTS + " where type='" + type.name() + "' and "
+			+ buildAreasClause(areaIds) + buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_AREA,
+		database);
     }
 
     /**
@@ -548,6 +548,20 @@ public class InfluxDbDeviceEvent {
 	for (String key : event.getMetadata().keySet()) {
 	    builder.addField(EVENT_METADATA_PREFIX + key, event.getMetadata(key));
 	}
+    }
+
+    /**
+     * Get clause that includes areas list.
+     * 
+     * @param areas
+     * @return
+     */
+    protected static String buildAreasClause(List<UUID> areaIds) {
+	List<String> clauses = new ArrayList<>();
+	for (UUID areaId : areaIds) {
+	    clauses.add(EVENT_AREA + "='" + areaId.toString() + "'");
+	}
+	return String.join(" or ", clauses);
     }
 
     /**

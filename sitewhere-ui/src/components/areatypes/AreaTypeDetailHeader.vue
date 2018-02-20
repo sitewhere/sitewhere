@@ -1,42 +1,43 @@
 <template>
-  <v-card class="area white pa-2">
+  <v-card class="areatype white pa-2">
     <v-card-text>
-      <span class="area-logo" :style="logoStyle"></span>
-      <span class="area-qrcode" :style="qrCodeStyle"></span>
-      <div class="area-headers">
+      <span class="areatype-logo">
+        <v-icon :style="iconStyle">{{ areaType.icon }}</v-icon>
+      </span>
+      <span class="areatype-qrcode" :style="qrCodeStyle"></span>
+      <div class="areatype-headers">
         <header-field label="Token">
-          <clipboard-copy-field :field="area.token"
+          <clipboard-copy-field :field="areaType.token"
             message="Token copied to clipboard">
           </clipboard-copy-field>
         </header-field>
-        <linked-header-field label="Area Type" :text="area.areaType.name"
-          :url="'/areatypes/' + area.areaType.token">
-        </linked-header-field>
         <header-field label="Name">
-          <span>{{ area.name }}</span>
+          <span>{{ areaType.name }}</span>
         </header-field>
         <header-field label="Description">
-          <span>{{ area.description }}</span>
+          <span>{{ areaType.description }}</span>
         </header-field>
         <header-field label="Created">
-          <span>{{ formatDate(area.createdDate) }}</span>
+          <span>{{ formatDate(areaType.createdDate) }}</span>
         </header-field>
         <header-field label="Updated">
-          <span>{{ formatDate(area.updatedDate) }}</span>
+          <span>{{ formatDate(areaType.updatedDate) }}</span>
         </header-field>
       </div>
       <options-menu class="options-menu">
         <v-list slot="options">
           <v-list-tile>
-            <v-btn block class="blue white--text" @click="onEditArea">
-              Edit Area
+            <v-btn block class="blue white--text"
+              @click="onEditAreaType">
+              Edit Area Type
               <v-spacer></v-spacer>
               <v-icon class="white--text pl-2">fa-edit</v-icon>
             </v-btn>
           </v-list-tile>
           <v-list-tile>
-            <v-btn block class="red darken-2 white--text" @click="onDeleteArea">
-              Delete Area
+            <v-btn block class="red darken-2 white--text"
+              @click="onDeleteAreaType">
+              Delete Area Type
               <v-spacer></v-spacer>
               <v-icon class="white--text pl-2">fa-times</v-icon>
             </v-btn>
@@ -44,23 +45,23 @@
         </v-list>
       </options-menu>
     </v-card-text>
-    <area-update-dialog ref="update" :token="area.token"
-      @areaUpdated="onAreaUpdated">
-    </area-update-dialog>
-    <area-delete-dialog ref="delete" :token="area.token"
-      @areaDeleted="onAreaDeleted">
-    </area-delete-dialog>
+    <area-type-update-dialog ref="update"
+      :token="areaType.token" :areaTypes="areaTypes"
+      @areaUpdated="onAreaTypeUpdated">
+    </area-type-update-dialog>
+    <area-type-delete-dialog ref="delete" :token="areaType.token"
+      @areaDeleted="onAreaTypeDeleted">
+    </area-type-delete-dialog>
   </v-card>
 </template>
 
 <script>
 import Utils from '../common/Utils'
 import HeaderField from '../common/HeaderField'
-import LinkedHeaderField from '../common/LinkedHeaderField'
 import ClipboardCopyField from '../common/ClipboardCopyField'
 import OptionsMenu from '../common/OptionsMenu'
-import AreaDeleteDialog from './AreaDeleteDialog'
-import AreaUpdateDialog from './AreaUpdateDialog'
+import AreaTypeDeleteDialog from './AreaTypeDeleteDialog'
+import AreaTypeUpdateDialog from './AreaTypeUpdateDialog'
 import {createCoreApiUrl} from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -68,37 +69,32 @@ export default {
   data: () => ({
   }),
 
-  props: ['area'],
+  props: ['areaType', 'areaTypes'],
 
   components: {
     HeaderField,
-    LinkedHeaderField,
     ClipboardCopyField,
     OptionsMenu,
-    AreaDeleteDialog,
-    AreaUpdateDialog
+    AreaTypeDeleteDialog,
+    AreaTypeUpdateDialog
   },
 
   computed: {
-    // Compute style of logo.
-    logoStyle: function () {
+    // Compute style for icon.
+    iconStyle: function () {
       return {
-        'background-color': '#fff',
-        'background-image': 'url(' + this.area.imageUrl + ')',
-        'background-size': 'cover',
-        'background-repeat': 'no-repeat',
-        'background-position': '50% 50%',
+        'font-size': '80px',
+        'padding': '40px',
         'border': '1px solid #eee'
       }
     },
-
     // Compute style for QR code URL.
     qrCodeStyle: function () {
       var tenant = this.$store.getters.selectedTenant
       return {
         'background-color': '#fff',
-        'background-image': 'url(' + createCoreApiUrl(this.$store) + 'areas/' +
-          this.area.token + '/symbol?tenantAuthToken=' +
+        'background-image': 'url(' + createCoreApiUrl(this.$store) +
+          'areatypes/' + this.areaType.token + '/symbol?tenantAuthToken=' +
           tenant.authenticationToken + ')',
         'background-size': 'contain',
         'background-repeat': 'no-repeat',
@@ -109,20 +105,20 @@ export default {
   },
 
   methods: {
-    // Called to open area edit dialog.
-    onEditArea: function () {
+    // Called to open area type edit dialog.
+    onEditAreaType: function () {
       this.$refs['update'].onOpenDialog()
     },
-    // Called when area is updated.
-    onAreaUpdated: function () {
-      this.$emit('areaUpdated')
+    // Called when area type is updated.
+    onAreaTypeUpdated: function () {
+      this.$emit('areaTypeUpdated')
     },
-    onDeleteArea: function () {
+    onDeleteAreaType: function () {
       this.$refs['delete'].showDeleteDialog()
     },
-    // Called when area is deleted.
-    onAreaDeleted: function () {
-      this.$emit('areaDeleted')
+    // Called when area type is deleted.
+    onAreaTypeDeleted: function () {
+      this.$emit('areaTypeDeleted')
     },
     // Format date.
     formatDate: function (date) {
@@ -133,13 +129,13 @@ export default {
 </script>
 
 <style scoped>
-.area {
-  min-height: 210px;
+.areatype {
+  min-height: 180px;
   min-width: 920px;
   overflow-y: hidden;
 }
 
-.area-logo {
+.areatype-logo {
   position: absolute;
   top: 10px;
   left: 7px;
@@ -147,7 +143,7 @@ export default {
   width: 180px;
 }
 
-.area-qrcode {
+.areatype-qrcode {
   position: absolute;
   top: 10px;
   right: 7px;
@@ -155,7 +151,7 @@ export default {
   width: 180px;
 }
 
-.area-headers {
+.areatype-headers {
   position: absolute;
   top: 20px;
   left: 200px;

@@ -586,13 +586,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getDeviceAssignmentsForArea(com.sitewhere.grpc.service.
-     * GGetDeviceAssignmentsForAreaRequest, io.grpc.stub.StreamObserver)
+     * getDeviceAssignmentsForAreas(com.sitewhere.grpc.service.
+     * GGetDeviceAssignmentsForAreasRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void getDeviceAssignmentsForArea(GGetDeviceAssignmentsForAreaRequest request,
-	    StreamObserver<GGetDeviceAssignmentsForAreaResponse> responseObserver) {
-	getTenantImplementation().getDeviceAssignmentsForArea(request, responseObserver);
+    public void getDeviceAssignmentsForAreas(GGetDeviceAssignmentsForAreasRequest request,
+	    StreamObserver<GGetDeviceAssignmentsForAreasResponse> responseObserver) {
+	getTenantImplementation().getDeviceAssignmentsForAreas(request, responseObserver);
     }
 
     /*
@@ -745,6 +745,18 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     public void getAreaByToken(GGetAreaByTokenRequest request,
 	    StreamObserver<GGetAreaByTokenResponse> responseObserver) {
 	getTenantImplementation().getAreaByToken(request, responseObserver);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getAreaChildren(com.sitewhere.grpc.service.GGetAreaChildrenRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getAreaChildren(GGetAreaChildrenRequest request,
+	    StreamObserver<GGetAreaChildrenResponse> responseObserver) {
+	getTenantImplementation().getAreaChildren(request, responseObserver);
     }
 
     /*

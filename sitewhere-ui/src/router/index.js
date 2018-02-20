@@ -22,6 +22,7 @@ import Server from '@/components/server/Server'
 import AreasList from '@/components/areas/AreasList'
 import AreaDetail from '@/components/areas/AreaDetail'
 import AreaTypesList from '@/components/areatypes/AreaTypesList'
+import AreaTypeDetail from '@/components/areatypes/AreaTypeDetail'
 import AssignmentDetail from '@/components/assignments/AssignmentDetail'
 import AssignmentEmulator from '@/components/assignments/AssignmentEmulator'
 import DeviceTypesList from '@/components/devicetypes/DeviceTypesList'
@@ -123,6 +124,9 @@ export default new Router({
         }, {
           path: 'areatypes',
           component: AreaTypesList
+        }, {
+          path: 'areatypes/:token',
+          component: AreaTypeDetail
         }, {
           path: 'assignments/:token',
           component: AssignmentDetail

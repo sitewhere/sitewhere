@@ -870,25 +870,26 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForArea(java.
-     * util.UUID, com.sitewhere.spi.search.device.IAssignmentSearchCriteria)
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAreas(java.
+     * util.List, com.sitewhere.spi.search.device.IAssignmentSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForArea(UUID areaId,
+    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAreas(List<UUID> areaIds,
 	    IAssignmentSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_AREA);
-	    GGetDeviceAssignmentsForAreaRequest.Builder grequest = GGetDeviceAssignmentsForAreaRequest.newBuilder();
-	    grequest.setAreaId(CommonModelConverter.asGrpcUuid(areaId));
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_AREAS);
+	    GGetDeviceAssignmentsForAreasRequest.Builder grequest = GGetDeviceAssignmentsForAreasRequest.newBuilder();
+	    grequest.addAllAreaIds(CommonModelConverter.asGrpcUuids(areaIds));
 	    grequest.setCriteria(DeviceModelConverter.asApiDeviceAssignmentSearchCriteria(criteria));
-	    GGetDeviceAssignmentsForAreaResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .getDeviceAssignmentsForArea(grequest.build());
+	    GGetDeviceAssignmentsForAreasResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .getDeviceAssignmentsForAreas(grequest.build());
 	    ISearchResults<IDeviceAssignment> results = DeviceModelConverter
 		    .asApiDeviceAssignmentSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_AREA, results);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_AREAS, results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_AREA, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_AREAS,
+		    t);
 	}
     }
 
@@ -1169,6 +1170,25 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 	    return response;
 	} catch (Throwable t) {
 	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_AREA_BY_TOKEN, t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getAreaChildren(java.lang.String)
+     */
+    @Override
+    public List<IArea> getAreaChildren(String token) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_AREA_CHILDREN);
+	    GGetAreaChildrenRequest.Builder grequest = GGetAreaChildrenRequest.newBuilder();
+	    grequest.setToken(token);
+	    GGetAreaChildrenResponse gresponse = getGrpcChannel().getBlockingStub().getAreaChildren(grequest.build());
+	    List<IArea> response = DeviceModelConverter.asApiAreas(gresponse.getAreasList());
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_AREA_CHILDREN, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_AREA_CHILDREN, t);
 	}
     }
 
