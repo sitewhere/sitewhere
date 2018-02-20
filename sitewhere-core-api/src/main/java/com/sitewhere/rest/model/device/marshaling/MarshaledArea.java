@@ -12,6 +12,7 @@ import java.util.List;
 import com.sitewhere.rest.model.area.Area;
 import com.sitewhere.rest.model.area.Zone;
 import com.sitewhere.rest.model.device.DeviceAssignment;
+import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.IAreaType;
 
 /**
@@ -27,6 +28,9 @@ public class MarshaledArea extends Area {
     /** Area type */
     private IAreaType areaType;
 
+    /** Parent area information */
+    private IArea parentArea;
+
     /** List of assignments for site */
     private List<DeviceAssignment> deviceAssignments;
 
@@ -39,6 +43,14 @@ public class MarshaledArea extends Area {
 
     public void setAreaType(IAreaType areaType) {
 	this.areaType = areaType;
+    }
+
+    public IArea getParentArea() {
+	return parentArea;
+    }
+
+    public void setParentArea(IArea parentArea) {
+	this.parentArea = parentArea;
     }
 
     public List<DeviceAssignment> getDeviceAssignments() {

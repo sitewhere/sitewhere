@@ -1937,7 +1937,9 @@ public class DeviceModelConverter {
      */
     public static GAreaMapData asGrpcAreaMapData(IAreaMapData api) throws SiteWhereException {
 	GAreaMapData.Builder grpc = GAreaMapData.newBuilder();
-	grpc.setType(api.getType());
+	if (api.getType() != null) {
+	    grpc.setType(api.getType());
+	}
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
 	}
@@ -1959,7 +1961,7 @@ public class DeviceModelConverter {
 	api.setName(grpc.getName());
 	api.setDescription(grpc.getDescription());
 	api.setImageUrl(grpc.getImageUrl());
-	api.setMap(DeviceModelConverter.asApiAreaMapData(grpc.getMapData()));
+	api.setMap(grpc.hasMapData() ? DeviceModelConverter.asApiAreaMapData(grpc.getMapData()) : null);
 	api.setMetadata(grpc.getMetadataMap());
 	return api;
     }
@@ -1983,7 +1985,9 @@ public class DeviceModelConverter {
 	grpc.setName(api.getName());
 	grpc.setDescription(api.getDescription());
 	grpc.setImageUrl(api.getImageUrl());
-	grpc.setMapData(DeviceModelConverter.asGrpcAreaMapData(api.getMap()));
+	if (api.getMap() != null) {
+	    grpc.setMapData(DeviceModelConverter.asGrpcAreaMapData(api.getMap()));
+	}
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
 	}

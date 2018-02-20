@@ -1,45 +1,44 @@
 <template>
   <div>
-    <v-layout row wrap v-if="zones">
-      <v-flex xs12>
-        <no-results-panel v-if="zones.length === 0"
-          text="No Zones Found for Site">
-        </no-results-panel>
-        <v-data-table v-if="zones.length > 0" class="elevation-2 pa-0" :headers="headers" :items="zones"
-          :hide-actions="true" no-data-text="No Zones Found for Site">
-          <template slot="items" slot-scope="props">
-            <td width="30%" :title="props.item.name">
-              <span class="zone-name">
-                <div class="zone-outer" :style="{'border-color': props.item.borderColor}">
-                  <div class="zone-inner"
-                    :style="{'background-color': props.item.fillColor, 'opacity': props.item.opacity}">
-                  </div>
-                </div>{{ props.item.name }}
-              </span>
-            </td>
-            <td width="40%" :title="props.item.token" class="zone-token">
-              {{ props.item.token }}
-            </td>
-            <td width="10%" style="white-space: nowrap" :title="formatDate(props.item.createdDate)">
-              {{ formatDate(props.item.createdDate) }}
-            </td>
-            <td width="10%" style="white-space: nowrap" :title="formatDate(props.item.updatedDate)">
-              {{ formatDate(props.item.updatedDate) }}
-            </td>
-            <td width="1%" style="white-space: nowrap" title="Edit/Delete">
-              <actions-block @edited="refresh" @deleted="refresh">
-                <zone-update-dialog slot="edit" :area="area"
-                  :token="props.item.token">
-                </zone-update-dialog>
-                <zone-delete-dialog slot="delete" :token="props.item.token">
-                </zone-delete-dialog>
-              </actions-block>
-            </td>
-          </template>
-        </v-data-table>
-      </v-flex>
-    </v-layout>
-    <pager :pageSizes="pageSizes" :results="results" @pagingUpdated="updatePaging"></pager>
+    <v-data-table v-if="zones && zones.length > 0" class="elevation-2 pa-0"
+      :headers="headers" :items="zones" :hide-actions="true"
+      no-data-text="No Zones Found for Area">
+      <template slot="items" slot-scope="props">
+        <td width="30%" :title="props.item.name">
+          <span class="zone-name">
+            <div class="zone-outer" :style="{'border-color': props.item.borderColor}">
+              <div class="zone-inner"
+                :style="{'background-color': props.item.fillColor, 'opacity': props.item.opacity}">
+              </div>
+            </div>{{ props.item.name }}
+          </span>
+        </td>
+        <td width="40%" :title="props.item.token" class="zone-token">
+          {{ props.item.token }}
+        </td>
+        <td width="10%" style="white-space: nowrap" :title="formatDate(props.item.createdDate)">
+          {{ formatDate(props.item.createdDate) }}
+        </td>
+        <td width="10%" style="white-space: nowrap" :title="formatDate(props.item.updatedDate)">
+          {{ formatDate(props.item.updatedDate) }}
+        </td>
+        <td width="1%" style="white-space: nowrap" title="Edit/Delete">
+          <actions-block @edited="refresh" @deleted="refresh">
+            <zone-update-dialog slot="edit" :area="area"
+              :token="props.item.token">
+            </zone-update-dialog>
+            <zone-delete-dialog slot="delete" :token="props.item.token">
+            </zone-delete-dialog>
+          </actions-block>
+        </td>
+      </template>
+    </v-data-table>
+    <pager :pageSizes="pageSizes" :results="results"
+      @pagingUpdated="updatePaging">
+      <no-results-panel slot="noresults"
+        text="No Zones Found">
+      </no-results-panel>
+    </pager>
   </div>
 </template>
 
@@ -107,6 +106,13 @@ export default {
     NoResultsPanel,
     ZoneUpdateDialog,
     ZoneDeleteDialog
+  },
+
+  watch: {
+    // Refresh component if area is updated.
+    area: function (value) {
+      this.refresh()
+    }
   },
 
   methods: {

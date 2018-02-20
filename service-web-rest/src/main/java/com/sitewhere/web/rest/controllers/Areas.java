@@ -105,9 +105,15 @@ public class Areas extends RestControllerBase {
     @ApiOperation(value = "Get area by token")
     @Secured({ SiteWhereRoles.REST })
     public IArea getAreaByToken(
-	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken)
+	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
+	    @ApiParam(value = "Include area type", required = false) @RequestParam(defaultValue = "true") boolean includeAreaType,
+	    @ApiParam(value = "Include parent area information", required = false) @RequestParam(defaultValue = "true") boolean includeParentArea)
 	    throws SiteWhereException {
-	return assertArea(areaToken);
+	IArea existing = assertArea(areaToken);
+	AreaMarshalHelper helper = new AreaMarshalHelper(getDeviceManagement(), getAssetResolver());
+	helper.setIncludeAreaType(includeAreaType);
+	helper.setIncludeParentArea(includeParentArea);
+	return helper.convert(existing);
     }
 
     /**

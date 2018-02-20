@@ -1,11 +1,22 @@
 <template>
-  <div v-if="area">
-    <v-app>
+  <navigation-page icon="fa-map" :title="area.name">
+    <div v-if="area.parentArea" slot="actions">
+      <v-tooltip left>
+        <v-btn icon slot="activator" @click="onUpOneLevel">
+          <v-icon>fa-arrow-circle-up</v-icon>
+        </v-btn>
+        <span>Up One Level</span>
+      </v-tooltip>
+    </div>
+    <div v-if="area" slot="content">
       <area-detail-header :area="area"
         @areaDeleted="onAreaDeleted" @areaUpdated="onAreaUpdated">
       </area-detail-header>
       <v-tabs v-model="active">
         <v-tabs-bar dark color="primary">
+          <v-tabs-item key="contained" href="#contained">
+            Contained Areas
+          </v-tabs-item>
           <v-tabs-item key="assignments" href="#assignments">
             Device Assignments
           </v-tabs-item>
@@ -24,6 +35,9 @@
           <v-tabs-slider></v-tabs-slider>
         </v-tabs-bar>
         <v-tabs-items>
+          <v-tabs-content key="contained" id="contained">
+            <area-contained-areas :area="area"></area-contained-areas>
+          </v-tabs-content>
           <v-tabs-content key="assignments" id="assignments">
             <area-assignments :area="area"></area-assignments>
           </v-tabs-content>
@@ -42,12 +56,15 @@
         </v-tabs-items>
       </v-tabs>
       <zone-create-dialog v-if="active === 'zones'" :area="area" @zoneAdded="onZoneAdded"/>
-    </v-app>
-  </div>
+    </div>
+  </navigation-page>
 </template>
 
 <script>
+import Utils from '../common/Utils'
+import NavigationPage from '../common/NavigationPage'
 import AreaDetailHeader from './AreaDetailHeader'
+import AreaContainedAreas from './AreaContainedAreas'
 import AreaAssignments from './AreaAssignments'
 import AreaLocationEvents from './AreaLocationEvents'
 import AreaMeasurementEvents from './AreaMeasurementEvents'
@@ -66,7 +83,10 @@ export default {
   }),
 
   components: {
+    Utils,
+    NavigationPage,
     AreaDetailHeader,
+    AreaContainedAreas,
     AreaAssignments,
     AreaLocationEvents,
     AreaMeasurementEvents,
@@ -75,12 +95,23 @@ export default {
     ZoneCreateDialog
   },
 
+  // Called on initial create.
   created: function () {
-    this.$data.token = this.$route.params.token
-    this.refresh()
+    this.display(this.$route.params.token)
+  },
+
+  // Called when component is reused.
+  beforeRouteUpdate (to, from, next) {
+    this.display(to.params.token)
+    next()
   },
 
   methods: {
+    // Display area with the given token.
+    display: function (token) {
+      this.$data.token = token
+      this.refresh()
+    },
     // Called to refresh area data.
     refresh: function () {
       var token = this.$data.token
@@ -93,7 +124,6 @@ export default {
         }).catch(function (e) {
         })
     },
-
     // Called after ara data is loaded.
     onAreaLoaded: function (area) {
       this.$data.area = area
@@ -106,7 +136,6 @@ export default {
       }
       this.$store.commit('currentSection', section)
     },
-
     // Called after area is deleted.
     onAreaDeleted: function () {
       var tenant = this.$store.getters.selectedTenant
@@ -114,12 +143,14 @@ export default {
         this.$router.push('/tenants/' + tenant.id + '/areas')
       }
     },
-
     // Called after area is updated.
     onAreaUpdated: function () {
       this.refresh()
     },
-
+    // Move up one level in the area hierarchy.
+    onUpOneLevel: function () {
+      Utils.routeTo(this, '/areas/' + this.area.parentArea.token)
+    },
     // Called when a zone is added.
     onZoneAdded: function () {
       this.refresh()
@@ -129,9 +160,4 @@ export default {
 </script>
 
 <style scoped>
-.add-button {
-  position: fixed;
-  right: 16px;
-  bottom: 16px;
-}
 </style>

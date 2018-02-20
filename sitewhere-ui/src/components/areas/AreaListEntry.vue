@@ -11,16 +11,6 @@
           <div>
             <div class="headline">{{ area.name }}</div>
             <div class="areadesc">{{ area.description }}</div>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn flat color="orange" @click.stop="onViewData">
-                View Data
-              </v-btn>
-              <v-btn v-if="hasSubareas" flat color="orange"
-                @click.stop="onViewSubAreas">
-                View Subareas
-              </v-btn>
-            </v-card-actions>
           </div>
         </v-flex>
       </v-layout>
@@ -34,13 +24,9 @@ export default {
   data: () => ({
   }),
 
-  props: ['area', 'parentArea'],
+  props: ['area'],
 
   computed: {
-    // Determines whether area may have sub-areas.
-    hasSubareas: function () {
-      return this.area.areaType.containedAreaTypeIds.length > 0
-    },
     // Compute style of logo.
     logoStyle: function () {
       return {
@@ -57,21 +43,9 @@ export default {
   },
 
   methods: {
-    // Determines action taken when area is clicked.
+    // Handle area clicked.
     onAreaClicked: function () {
-      if (this.hasSubareas) {
-        this.onViewSubAreas()
-      } else {
-        this.onViewData()
-      }
-    },
-    // Called to view data for area.
-    onViewData: function () {
-      this.$emit('viewAreaData', this.area)
-    },
-    // Called to view sub-areas.
-    onViewSubAreas: function () {
-      this.$emit('viewSubAreas', this.area)
+      this.$emit('openArea', this.area)
     }
   }
 }

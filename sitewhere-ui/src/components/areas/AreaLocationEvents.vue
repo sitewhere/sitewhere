@@ -1,32 +1,30 @@
 <template>
   <div>
-    <v-layout row wrap v-if="locations">
-      <v-flex xs12>
-        <no-results-panel v-if="locations.length === 0"
-          text="No Location Events Found for Site">
-        </no-results-panel>
-        <v-data-table v-if="locations.length > 0" class="elevation-2 pa-0"
-          :headers="headers" :items="locations" :hide-actions="true"
-          no-data-text="No Locations Found for Area"
-          :total-items="0">
-          <template slot="items" slot-scope="props">
-            <td width="40%" :title="props.item.assetName">
-              {{ props.item.assetName }}
-            </td>
-            <td width="40%" title="Lat/Lon/Elevation">
-              {{ utils.fourDecimalPlaces(props.item.latitude) + ', ' + utils.fourDecimalPlaces(props.item.longitude) + ', ' + utils.fourDecimalPlaces(props.item.elevation) }}
-            </td>
-            <td width="10%" style="white-space: nowrap" :title="utils.formatDate(props.item.eventDate)">
-              {{ utils.formatDate(props.item.eventDate) }}
-            </td>
-            <td width="10%" style="white-space: nowrap" :title="utils.formatDate(props.item.receivedDate)">
-              {{ utils.formatDate(props.item.receivedDate) }}
-            </td>
-          </template>
-        </v-data-table>
-      </v-flex>
-    </v-layout>
-    <pager :pageSizes="pageSizes" :results="results" @pagingUpdated="updatePaging"></pager>
+    <v-data-table v-if="locations && locations.length > 0"
+      class="elevation-2 pa-0" :headers="headers" :items="locations"
+      :hide-actions="true" no-data-text="No Locations Found for Area"
+      :total-items="0">
+      <template slot="items" slot-scope="props">
+        <td width="40%" :title="props.item.assetName">
+          {{ props.item.assetName }}
+        </td>
+        <td width="40%" title="Lat/Lon/Elevation">
+          {{ utils.fourDecimalPlaces(props.item.latitude) + ', ' + utils.fourDecimalPlaces(props.item.longitude) + ', ' + utils.fourDecimalPlaces(props.item.elevation) }}
+        </td>
+        <td width="10%" style="white-space: nowrap" :title="utils.formatDate(props.item.eventDate)">
+          {{ utils.formatDate(props.item.eventDate) }}
+        </td>
+        <td width="10%" style="white-space: nowrap" :title="utils.formatDate(props.item.receivedDate)">
+          {{ utils.formatDate(props.item.receivedDate) }}
+        </td>
+      </template>
+    </v-data-table>
+    <pager :pageSizes="pageSizes" :results="results"
+      @pagingUpdated="updatePaging">
+      <no-results-panel slot="noresults"
+        text="No Locations Found">
+      </no-results-panel>
+    </pager>
   </div>
 </template>
 
@@ -84,6 +82,13 @@ export default {
   components: {
     Pager,
     NoResultsPanel
+  },
+
+  watch: {
+    // Refresh component if area is updated.
+    area: function (value) {
+      this.refresh()
+    }
   },
 
   computed: {

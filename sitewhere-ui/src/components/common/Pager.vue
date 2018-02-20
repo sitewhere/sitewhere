@@ -1,7 +1,8 @@
 <template>
   <v-card class="grey lighten-3 black--text pa-0">
+    <slot  v-if="results && results.numResults === 0" name="noresults"></slot>
     <v-divider></v-divider>
-    <v-container class="ma-0 pa-0">
+    <v-container v-if="results && results.numResults > 0" class="ma-0 pa-0">
       <v-layout row wrap>
         <v-flex xs2>
           <v-subheader class="ma-0 pt-0 pr-0">Rows per page</v-subheader>

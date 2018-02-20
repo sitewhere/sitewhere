@@ -1,6 +1,6 @@
 <template>
-  <v-select :items="areaTypes" item-text="name" item-value="token"
-    v-model="selectedToken" label="Area type" prepend-icon="subject">
+  <v-select :items="areaTypes" item-text="name" item-value="id"
+    v-model="selectedId" label="Area type" prepend-icon="subject">
   </v-select>
 </template>
 
@@ -11,20 +11,20 @@ export default {
 
   data: () => ({
     areaTypes: [],
-    selectedToken: null
+    selectedId: null
   }),
 
   props: ['value'],
 
   computed: {
-    // Indexes area types by token.
-    areaTypesByToken: function () {
+    // Indexes area types by id.
+    areaTypesById: function () {
       let ats = this.$data.areaTypes
       let atById = {}
       if (ats) {
         for (let i = 0; i < ats.length; i++) {
           let at = ats[i]
-          atById[at.token] = at
+          atById[at.id] = at
         }
       }
       return atById
@@ -33,17 +33,17 @@ export default {
 
   watch: {
     value: function (updated) {
-      this.$data.selectedToken = updated
+      this.$data.selectedId = updated
     },
-    selectedToken: function (updated) {
+    selectedId: function (updated) {
       this.$emit('input', updated)
-      this.$emit('areaTypeUpdated', this.areaTypesByToken[updated])
+      this.$emit('areaTypeUpdated', this.areaTypesById[updated])
     }
   },
 
-  // Initially load list of all sites.
+  // Initially load list of all area types.
   created: function () {
-    this.$data.selectedToken = this.value
+    this.$data.selectedId = this.value
     var paging = 'page=1&pageSize=0'
     var component = this
     _listAreaTypes(this.$store, false, paging)

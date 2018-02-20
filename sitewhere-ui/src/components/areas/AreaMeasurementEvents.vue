@@ -1,32 +1,30 @@
 <template>
   <div>
-    <v-layout row wrap v-if="mxs">
-      <v-flex xs12>
-        <no-results-panel v-if="mxs.length === 0"
-          text="No Measurement Events Found for Area">
-        </no-results-panel>
-        <v-data-table v-if="mxs.length > 0" class="elevation-2 pa-0"
-          :headers="headers" :items="mxs" :hide-actions="true"
-          no-data-text="No Measurements Found for Area"
-          :total-items="0">
-          <template slot="items" slot-scope="props">
-            <td width="30%" :title="props.item.assetName">
-              {{ props.item.assetName }}
-            </td>
-            <td width="50%" :title="props.item.measurementsSummary">
-              {{ props.item.measurementsSummary }}
-            </td>
-            <td width="10%" style="white-space: nowrap" :title="formatDate(props.item.eventDate)">
-              {{ formatDate(props.item.eventDate) }}
-            </td>
-            <td width="10%" style="white-space: nowrap" :title="formatDate(props.item.receivedDate)">
-              {{ formatDate(props.item.receivedDate) }}
-            </td>
-          </template>
-        </v-data-table>
-      </v-flex>
-    </v-layout>
-    <pager :pageSizes="pageSizes" :results="results" @pagingUpdated="updatePaging"></pager>
+    <v-data-table v-if="mxs && mxs.length > 0" class="elevation-2 pa-0"
+      :headers="headers" :items="mxs" :hide-actions="true"
+      no-data-text="No Measurements Found for Area"
+      :total-items="0">
+      <template slot="items" slot-scope="props">
+        <td width="30%" :title="props.item.assetName">
+          {{ props.item.assetName }}
+        </td>
+        <td width="50%" :title="props.item.measurementsSummary">
+          {{ props.item.measurementsSummary }}
+        </td>
+        <td width="10%" style="white-space: nowrap" :title="formatDate(props.item.eventDate)">
+          {{ formatDate(props.item.eventDate) }}
+        </td>
+        <td width="10%" style="white-space: nowrap" :title="formatDate(props.item.receivedDate)">
+          {{ formatDate(props.item.receivedDate) }}
+        </td>
+      </template>
+    </v-data-table>
+    <pager :pageSizes="pageSizes" :results="results"
+      @pagingUpdated="updatePaging">
+      <no-results-panel slot="noresults"
+        text="No Measurements Found">
+      </no-results-panel>
+    </pager>
   </div>
 </template>
 
@@ -83,6 +81,13 @@ export default {
   components: {
     Pager,
     NoResultsPanel
+  },
+
+  watch: {
+    // Refresh component if area is updated.
+    area: function (value) {
+      this.refresh()
+    }
   },
 
   methods: {

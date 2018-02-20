@@ -53,6 +53,9 @@ public class AreaMarshalHelper {
     /** Include area type information */
     private boolean includeAreaType = false;
 
+    /** Include parent area information */
+    private boolean includeParentArea = false;
+
     /** Indicates whether assignments for site should be included */
     private boolean includeAssignments = false;
 
@@ -92,6 +95,12 @@ public class AreaMarshalHelper {
 	MetadataProviderEntity.copy(source, area);
 	if (isIncludeAreaType()) {
 	    area.setAreaType(getDeviceManagement().getAreaType(source.getAreaTypeId()));
+	}
+	if (isIncludeParentArea()) {
+	    if (source.getParentAreaId() != null) {
+		IArea parent = getDeviceManagement().getArea(source.getParentAreaId());
+		area.setParentArea(parent);
+	    }
 	}
 	if (isIncludeAssignments()) {
 	    AssignmentSearchCriteria criteria = new AssignmentSearchCriteria(1, 0);
@@ -145,6 +154,14 @@ public class AreaMarshalHelper {
 
     public void setIncludeAreaType(boolean includeAreaType) {
 	this.includeAreaType = includeAreaType;
+    }
+
+    public boolean isIncludeParentArea() {
+	return includeParentArea;
+    }
+
+    public void setIncludeParentArea(boolean includeParentArea) {
+	this.includeParentArea = includeParentArea;
     }
 
     public boolean isIncludeAssignments() {

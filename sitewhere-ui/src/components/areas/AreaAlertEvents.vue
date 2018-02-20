@@ -1,35 +1,33 @@
 <template>
   <div>
-    <v-layout row wrap v-if="alerts">
-      <v-flex xs12>
-        <no-results-panel v-if="alerts.length === 0"
-          text="No Alert Events Found for AreaAlertEvents">
-        </no-results-panel>
-        <v-data-table v-if="alerts.length > 0" class="elevation-2 pa-0"
-          :headers="headers" :items="alerts" :hide-actions="true"
-          no-data-text="No Alerts Found for Area"
-          :total-items="0">
-          <template slot="items" slot-scope="props">
-            <td width="30%" :title="props.item.assetName">
-              {{ props.item.assetName }}
-            </td>
-            <td width="20%" :title="props.item.type">
-              {{ props.item.type }}
-            </td>
-            <td width="30%" :title="props.item.message">
-              {{ props.item.message }}
-            </td>
-            <td width="10%" style="white-space: nowrap" :title="formatDate(props.item.eventDate)">
-              {{ formatDate(props.item.eventDate) }}
-            </td>
-            <td width="10%" style="white-space: nowrap" :title="formatDate(props.item.receivedDate)">
-              {{ formatDate(props.item.receivedDate) }}
-            </td>
-          </template>
-        </v-data-table>
-      </v-flex>
-    </v-layout>
-    <pager :pageSizes="pageSizes" :results="results" @pagingUpdated="updatePaging"></pager>
+    <v-data-table v-if="alerts && alerts.length > 0" class="elevation-2 pa-0"
+      :headers="headers" :items="alerts" :hide-actions="true"
+      no-data-text="No Alerts Found for Area"
+      :total-items="0">
+      <template slot="items" slot-scope="props">
+        <td width="30%" :title="props.item.assetName">
+          {{ props.item.assetName }}
+        </td>
+        <td width="20%" :title="props.item.type">
+          {{ props.item.type }}
+        </td>
+        <td width="30%" :title="props.item.message">
+          {{ props.item.message }}
+        </td>
+        <td width="10%" style="white-space: nowrap" :title="formatDate(props.item.eventDate)">
+          {{ formatDate(props.item.eventDate) }}
+        </td>
+        <td width="10%" style="white-space: nowrap" :title="formatDate(props.item.receivedDate)">
+          {{ formatDate(props.item.receivedDate) }}
+        </td>
+      </template>
+    </v-data-table>
+    <pager :pageSizes="pageSizes" :results="results"
+      @pagingUpdated="updatePaging">
+      <no-results-panel slot="noresults"
+        text="No Alerts Found">
+      </no-results-panel>
+    </pager>
   </div>
 </template>
 
@@ -91,6 +89,13 @@ export default {
   components: {
     Pager,
     NoResultsPanel
+  },
+
+  watch: {
+    // Refresh component if area is updated.
+    area: function (value) {
+      this.refresh()
+    }
   },
 
   methods: {

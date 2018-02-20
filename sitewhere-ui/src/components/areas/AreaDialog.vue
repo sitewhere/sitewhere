@@ -90,6 +90,7 @@ export default {
     generatePayload: function () {
       var payload = {}
       payload.areaTypeToken = this.$data.areaTypeToken
+      payload.parentAreaToken = this.parentArea ? this.parentArea.token : null
       payload.name = this.$data.areaName
       payload.description = this.$data.areaDescription
       payload.imageUrl = this.$data.areaImageUrl

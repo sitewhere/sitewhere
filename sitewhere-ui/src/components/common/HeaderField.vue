@@ -3,7 +3,7 @@
     <v-flex xs4 class="text-xs-right subheading pr-4">
       <strong>{{ label }}</strong>:
     </v-flex>
-    <v-flex xs8>
+    <v-flex class="field" xs8>
       <slot></slot>
     </v-flex>
   </v-layout>
@@ -24,4 +24,9 @@ export default {
 </script>
 
 <style scoped>
+.field {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
 </style>

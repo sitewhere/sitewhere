@@ -1,18 +1,17 @@
 <template>
   <div>
-    <v-layout row wrap v-if="assignments">
-      <v-flex xs12>
-        <assignment-list-panel :assignment="assignment"
-          v-for="(assignment, index) in assignments" :key="assignment.token"
-          @click.native="onOpenAssignment(assignment.token)"
-          @refresh="refresh"
-          class="ma-2">
-        </assignment-list-panel>
-      </v-flex>
-    </v-layout>
+    <v-container fluid grid-list-md v-if="areas">
+      <v-layout row wrap>
+        <v-flex xs6 v-for="(area, index) in areas" :key="area.token">
+          <area-list-entry :area="area" @openArea="onOpenArea">
+          </area-list-entry>
+       </v-flex>
+      </v-layout>
+    </v-container>
+    <area-create-dialog @areaAdded="refresh" :parentArea="area"/>
     <pager :results="results" @pagingUpdated="updatePaging">
       <no-results-panel slot="noresults"
-        text="No Assignments Found">
+        text="No Contained Areas Found">
       </no-results-panel>
     </pager>
   </div>
@@ -22,15 +21,16 @@
 import Utils from '../common/Utils'
 import Pager from '../common/Pager'
 import NoResultsPanel from '../common/NoResultsPanel'
-import AssignmentListPanel from '../assignments/AssignmentListPanel'
-import {_listAssignmentsForArea} from '../../http/sitewhere-api-wrapper'
+import AreaListEntry from './AreaListEntry'
+import AreaCreateDialog from './AreaCreateDialog'
+import {_listAreas} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
   data: () => ({
     results: null,
     paging: null,
-    assignments: null
+    areas: null
   }),
 
   props: ['area'],
@@ -38,7 +38,8 @@ export default {
   components: {
     Pager,
     NoResultsPanel,
-    AssignmentListPanel
+    AreaListEntry,
+    AreaCreateDialog
   },
 
   watch: {
@@ -60,10 +61,11 @@ export default {
       var component = this
       var areaToken = this.area.token
       var paging = this.$data.paging.query
-      _listAssignmentsForArea(this.$store, areaToken, true, true, paging)
+      _listAreas(this.$store, false, areaToken,
+        true, false, false, paging)
         .then(function (response) {
           component.results = response.data
-          component.assignments = response.data.results
+          component.areas = response.data.results
         }).catch(function (e) {
         })
     },
@@ -74,9 +76,9 @@ export default {
       this.refresh()
     },
 
-    // Called to open detail page for assignment.
-    onOpenAssignment: function (token) {
-      Utils.routeTo(this, '/assignments/' + token)
+    // Called to open an area.
+    onOpenArea: function (area) {
+      Utils.routeTo(this, '/areas/' + area.token)
     }
   }
 }
