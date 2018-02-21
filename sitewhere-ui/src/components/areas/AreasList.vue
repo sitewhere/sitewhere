@@ -48,8 +48,16 @@ export default {
     refresh: function () {
       var paging = this.$data.paging.query
       var component = this
-      _listAreas(this.$store, !this.parentArea, this.parentArea,
-        true, false, false, paging)
+
+      // Search options.
+      let options = {}
+      options.rootOnly = !this.parentArea
+      options.parentAreaToken = this.parentArea
+      options.includeAreaType = true
+      options.includeAssignments = false
+      options.includeZones = false
+
+      _listAreas(this.$store, options, paging)
         .then(function (response) {
           component.results = response.data
           component.areas = response.data.results

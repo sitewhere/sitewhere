@@ -1,5 +1,5 @@
 <template>
-  <navigation-page icon="fa-map" :title="area.name">
+  <navigation-page v-if="area" icon="fa-map" :title="area.name">
     <div v-if="area.parentArea" slot="actions">
       <v-tooltip left>
         <v-btn icon slot="activator" @click="onUpOneLevel">

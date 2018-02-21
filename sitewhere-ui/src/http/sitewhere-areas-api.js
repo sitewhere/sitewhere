@@ -24,14 +24,16 @@ export function updateArea (axios, areaToken, payload) {
 /**
  * List areas.
  */
-export function listAreas (axios, rootOnly, parentAreaToken,
-  includeAreaType, includeAssignments, includeZones, paging) {
+export function listAreas (axios, options, paging) {
   let query = ''
-  query += (rootOnly) ? '?rootOnly=true' : '?rootOnly=false'
-  query += (parentAreaToken) ? '&parentAreaToken=' + parentAreaToken : ''
-  query += (includeAreaType) ? '&includeAreaType=true' : ''
-  query += (includeAssignments) ? '&includeAssignments=true' : ''
-  query += (includeZones) ? '&includeZones=true' : ''
+  query += (options.rootOnly) ? '?rootOnly=true' : '?rootOnly=false'
+  query += (options.parentAreaToken)
+    ? '&parentAreaToken=' + options.parentAreaToken : ''
+  query += (options.areaTypeToken)
+    ? '&areaTypeToken=' + options.areaTypeToken : ''
+  query += (options.includeAreaType) ? '&includeAreaType=true' : ''
+  query += (options.includeAssignments) ? '&includeAssignments=true' : ''
+  query += (options.includeZones) ? '&includeZones=true' : ''
   if (paging) {
     query += '&' + paging
   }

@@ -59,7 +59,7 @@ export default {
   // Initially load list of all sites.
   created: function () {
     var component = this
-    _listAreas(component.$store)
+    _listAreas(component.$store, {}, 'page=1&pageSize=0')
       .then(function (response) {
         component.sites = response.data.results
         if (component.selected) {

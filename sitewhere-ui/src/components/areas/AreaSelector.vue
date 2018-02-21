@@ -29,7 +29,7 @@ export default {
   created: function () {
     this.$data.selectedToken = this.value
     var component = this
-    _listAreas(component.$store)
+    _listAreas(component.$store, {}, 'page=1&pageSize=0')
       .then(function (response) {
         component.$data.sites = response.data.results
       }).catch(function (e) {

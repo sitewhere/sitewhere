@@ -14,7 +14,19 @@
         </v-tabs-bar>
         <v-tabs-items>
           <v-tabs-content key="areas" id="areas">
-            <v-card></v-card>
+            <v-container fluid grid-list-md v-if="areas">
+              <v-layout row wrap>
+                <v-flex xs6 v-for="(area, index) in areas" :key="area.token">
+                  <area-list-entry :area="area" @openArea="onOpenArea">
+                  </area-list-entry>
+               </v-flex>
+              </v-layout>
+            </v-container>
+            <pager :results="results" @pagingUpdated="updatePaging">
+              <no-results-panel slot="noresults"
+                text="No Areas of This Type Found">
+              </no-results-panel>
+            </pager>
           </v-tabs-content>
         </v-tabs-items>
       </v-tabs>
@@ -23,11 +35,16 @@
 </template>
 
 <script>
+import Utils from '../common/Utils'
+import Pager from '../common/Pager'
+import NoResultsPanel from '../common/NoResultsPanel'
 import NavigationPage from '../common/NavigationPage'
 import AreaTypeDetailHeader from './AreaTypeDetailHeader'
+import AreaListEntry from '../areas/AreaListEntry'
 import {
   _getAreaType,
-  _listAreaTypes
+  _listAreaTypes,
+  _listAreas
 } from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -36,12 +53,18 @@ export default {
     token: null,
     areaType: null,
     areaTypes: [],
+    results: null,
+    areas: [],
+    paging: null,
     active: null
   }),
 
   components: {
+    Pager,
+    NoResultsPanel,
     NavigationPage,
-    AreaTypeDetailHeader
+    AreaTypeDetailHeader,
+    AreaListEntry
   },
 
   // Called on initial create.
@@ -56,6 +79,11 @@ export default {
   },
 
   methods: {
+    // Update paging values and run query.
+    updatePaging: function (paging) {
+      this.$data.paging = paging
+      this.refreshAreas()
+    },
     // Display area with the given token.
     display: function (token) {
       this.$data.token = token
@@ -65,7 +93,6 @@ export default {
     refresh: function () {
       var token = this.$data.token
       var component = this
-      let paging = 'page=1&pageSize=0'
 
       // Load area information.
       _getAreaType(this.$store, token)
@@ -73,9 +100,29 @@ export default {
           component.onDataLoaded(response.data)
         }).catch(function (e) {
         })
-      _listAreaTypes(this.$store, false, paging)
+      _listAreaTypes(this.$store, false, 'page=1&pageSize=0')
         .then(function (response) {
           component.$data.areaTypes = response.data.results
+        }).catch(function (e) {
+        })
+
+      this.refreshAreas()
+    },
+    refreshAreas: function () {
+      var component = this
+
+      // Search options.
+      let options = {}
+      options.rootOnly = false
+      options.areaTypeToken = this.$data.token
+      options.includeAreaType = false
+      options.includeAssignments = false
+      options.includeZones = false
+
+      _listAreas(this.$store, options, this.$data.paging)
+        .then(function (response) {
+          component.results = response.data
+          component.areas = response.data.results
         }).catch(function (e) {
         })
     },
@@ -101,6 +148,10 @@ export default {
     // Called after area type is updated.
     onAreaTypeUpdated: function () {
       this.refresh()
+    },
+    // Called to open an area.
+    onOpenArea: function (area) {
+      Utils.routeTo(this, '/areas/' + area.token)
     }
   }
 }

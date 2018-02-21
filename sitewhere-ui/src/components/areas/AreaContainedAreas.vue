@@ -61,8 +61,16 @@ export default {
       var component = this
       var areaToken = this.area.token
       var paging = this.$data.paging.query
-      _listAreas(this.$store, false, areaToken,
-        true, false, false, paging)
+
+      // Search options.
+      let options = {}
+      options.rootOnly = false
+      options.parentAreaToken = areaToken
+      options.includeAreaType = true
+      options.includeAssignments = false
+      options.includeZones = false
+
+      _listAreas(this.$store, options, paging)
         .then(function (response) {
           component.results = response.data
           component.areas = response.data.results
