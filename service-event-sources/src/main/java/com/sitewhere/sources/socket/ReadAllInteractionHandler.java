@@ -12,8 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
@@ -62,14 +62,14 @@ public class ReadAllInteractionHandler implements ISocketInteractionHandler<byte
     public static class Factory extends LifecycleComponent implements ISocketInteractionHandlerFactory<byte[]> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+	private static Log LOGGER = LogFactory.getLog(Factory.class);
 
 	public Factory() {
 	    super(LifecycleComponentType.Other);
 	}
 
 	@Override
-	public Logger getLogger() {
+	public Log getLogger() {
 	    return LOGGER;
 	}
 

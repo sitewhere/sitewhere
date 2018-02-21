@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.client.JwtClientInterceptor;
@@ -43,7 +43,7 @@ import io.jsonwebtoken.Claims;
 public class JwtServerInterceptor implements ServerInterceptor {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(JwtServerInterceptor.class);
 
     /** Parent microservice */
     private IMicroservice microservice;

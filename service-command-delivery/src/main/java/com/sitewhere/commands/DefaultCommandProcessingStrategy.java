@@ -9,8 +9,8 @@ package com.sitewhere.commands;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.commands.spi.ICommandExecutionBuilder;
 import com.sitewhere.commands.spi.ICommandProcessingStrategy;
@@ -39,7 +39,7 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
 	implements ICommandProcessingStrategy {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(DefaultCommandProcessingStrategy.class);
 
     /** Configured command target resolver */
     private ICommandTargetResolver commandTargetResolver = new DefaultCommandTargetResolver();
@@ -133,7 +133,7 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

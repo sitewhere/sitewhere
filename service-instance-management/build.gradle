@@ -23,7 +23,7 @@ task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, depends
 	copyFile("templates", "/templates")
 
 	// Run Java command to start application.
-	defaultCommand 'java', "-Xmx${rootProject.ext['docker.java.memory']}", '-jar', "/${project.name}-${project.version}.jar"
+	defaultCommand 'java', '-Xmx768M', '-XX:+UnlockExperimentalVMOptions', '-XX:+UseCGroupMemoryLimitForHeap', '-jar', "/${project.name}-${project.version}.jar"
 }
 
 // Copy artifact to Docker input folder.

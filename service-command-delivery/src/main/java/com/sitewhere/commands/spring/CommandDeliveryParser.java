@@ -9,8 +9,8 @@ package com.sitewhere.commands.spring;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -55,7 +55,7 @@ public class CommandDeliveryParser extends AbstractBeanDefinitionParser {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(CommandDeliveryParser.class);
 
     /** Used to generate unique names for nested beans */
     private DefaultBeanNameGenerator nameGenerator = new DefaultBeanNameGenerator();

@@ -9,8 +9,8 @@ package com.sitewhere.sources.socket;
 
 import java.net.Socket;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.groovy.GroovyComponent;
@@ -32,7 +32,7 @@ import groovy.lang.Binding;
 public class GroovySocketInteractionHandler implements ISocketInteractionHandler<byte[]> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(GroovySocketInteractionHandler.class);
 
     /** Variable that holds the socket */
     public static final String VAR_SOCKET = "socket";
@@ -76,7 +76,7 @@ public class GroovySocketInteractionHandler implements ISocketInteractionHandler
     public static class Factory extends GroovyComponent implements ISocketInteractionHandlerFactory<byte[]> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+	private static Log LOGGER = LogFactory.getLog(Factory.class);
 
 	public Factory() {
 	    super(LifecycleComponentType.Other);
@@ -102,8 +102,11 @@ public class GroovySocketInteractionHandler implements ISocketInteractionHandler
 	public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	}
 
+	/*
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
 	@Override
-	public Logger getLogger() {
+	public Log getLogger() {
 	    return LOGGER;
 	}
 

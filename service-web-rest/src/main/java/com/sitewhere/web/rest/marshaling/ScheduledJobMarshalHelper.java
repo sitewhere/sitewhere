@@ -10,8 +10,8 @@ package com.sitewhere.web.rest.marshaling;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.device.marshaling.CommandHtmlHelper;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
@@ -43,7 +43,7 @@ public class ScheduledJobMarshalHelper {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(ScheduledJobMarshalHelper.class);
 
     /** Device management */
     private IDeviceManagement deviceManagement;

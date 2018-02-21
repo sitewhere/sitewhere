@@ -7,8 +7,8 @@
  */
 package com.sitewhere.rules.microservice;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.rules.spi.IRuleProcessorsManager;
@@ -32,7 +32,7 @@ import com.sitewhere.spi.tenant.ITenant;
 public class RuleProcessingTenantEngine extends MicroserviceTenantEngine implements IRuleProcessingTenantEngine {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(RuleProcessingTenantEngine.class);
 
     /** Rule processors manager */
     private IRuleProcessorsManager ruleProcessorsManager;
@@ -120,7 +120,7 @@ public class RuleProcessingTenantEngine extends MicroserviceTenantEngine impleme
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

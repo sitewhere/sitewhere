@@ -7,8 +7,8 @@
  */
 package com.sitewhere.user.persistence.mongodb;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
@@ -24,7 +24,7 @@ import com.sitewhere.spi.SiteWhereException;
 public class UserManagementMongoClient extends MongoDbClient implements IUserManagementMongoClient {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(UserManagementMongoClient.class);
 
     /** Injected name used for users collection */
     private String usersCollectionName = IUserManagementMongoClient.DEFAULT_USERS_COLLECTION_NAME;
@@ -63,7 +63,7 @@ public class UserManagementMongoClient extends MongoDbClient implements IUserMan
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

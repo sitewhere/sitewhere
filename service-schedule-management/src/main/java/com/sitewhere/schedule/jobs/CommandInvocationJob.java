@@ -11,8 +11,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -38,7 +38,7 @@ import com.sitewhere.spi.tenant.ITenantManagement;
 public class CommandInvocationJob implements Job {
 
     /** Static logger instance */
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(CommandInvocationJob.class);
 
     /** Assignment token */
     private String assignmentToken;

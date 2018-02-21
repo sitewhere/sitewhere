@@ -7,8 +7,8 @@
  */
 package com.sitewhere.labels.microservice;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.labels.spi.microservice.ILabelGenerationTenantEngine;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
@@ -28,7 +28,7 @@ import com.sitewhere.spi.tenant.ITenant;
 public class LabelGenerationTenantEngine extends MicroserviceTenantEngine implements ILabelGenerationTenantEngine {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(LabelGenerationTenantEngine.class);
 
     public LabelGenerationTenantEngine(IMultitenantMicroservice<?> microservice, ITenant tenant) {
 	super(microservice, tenant);
@@ -72,7 +72,7 @@ public class LabelGenerationTenantEngine extends MicroserviceTenantEngine implem
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

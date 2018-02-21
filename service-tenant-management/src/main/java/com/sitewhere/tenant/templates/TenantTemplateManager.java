@@ -18,9 +18,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sitewhere.common.MarshalUtils;
@@ -48,7 +48,7 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
     private static final String DEFAULT_TENANT_CONTENT_FOLDER = "default";
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(TenantTemplateManager.class);
 
     /** Injected handle to microservice */
     @Autowired
@@ -160,7 +160,7 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

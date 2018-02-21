@@ -7,8 +7,8 @@
  */
 package com.sitewhere.commands;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.commands.spi.ICommandExecutionBuilder;
 import com.sitewhere.rest.model.device.command.DeviceCommandExecution;
@@ -35,7 +35,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class DefaultCommandExecutionBuilder extends LifecycleComponent implements ICommandExecutionBuilder {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(DefaultCommandExecutionBuilder.class);
 
     public DefaultCommandExecutionBuilder() {
 	super(LifecycleComponentType.CommandExecutionBuilder);
@@ -73,23 +73,23 @@ public class DefaultCommandExecutionBuilder extends LifecycleComponent implement
 	    boolean parameterValueIsNull = (paramValue == null);
 	    boolean parameterValueIsEmpty = true;
 
-	    if (! parameterValueIsNull) {
-	            paramValue = paramValue.trim();
-	            parameterValueIsEmpty = paramValue.length() == 0;
+	    if (!parameterValueIsNull) {
+		paramValue = paramValue.trim();
+		parameterValueIsEmpty = paramValue.length() == 0;
 	    }
 
-	    //Handle the required parameters first
+	    // Handle the required parameters first
 	    if (parameter.isRequired()) {
-	        if (parameterValueIsNull) {
-	        throw new SiteWhereSystemException(ErrorCode.RequiredCommandParameterMissing, ErrorLevel.ERROR);
-	    }
+		if (parameterValueIsNull) {
+		    throw new SiteWhereSystemException(ErrorCode.RequiredCommandParameterMissing, ErrorLevel.ERROR);
+		}
 
-	    if (parameterValueIsEmpty){
-	        throw new SiteWhereSystemException(ErrorCode.RequiredCommandParameterValueMissing, ErrorLevel.ERROR);
-	        }
-	    }
-	    else if (parameterValueIsNull || parameterValueIsEmpty) {
-	    continue;
+		if (parameterValueIsEmpty) {
+		    throw new SiteWhereSystemException(ErrorCode.RequiredCommandParameterValueMissing,
+			    ErrorLevel.ERROR);
+		}
+	    } else if (parameterValueIsNull || parameterValueIsEmpty) {
+		continue;
 	    }
 
 	    Object converted = null;
@@ -177,7 +177,7 @@ public class DefaultCommandExecutionBuilder extends LifecycleComponent implement
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

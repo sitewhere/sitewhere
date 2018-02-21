@@ -9,8 +9,8 @@ package com.sitewhere.sources.mqtt;
 
 import java.net.URISyntaxException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.fusesource.hawtbuf.Buffer;
 import org.fusesource.hawtbuf.UTF8Buffer;
 import org.fusesource.mqtt.client.Callback;
@@ -35,7 +35,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public class MqttCallbackInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(MqttCallbackInboundEventReceiver.class);
 
     /** Default hostname if not set via Spring */
     public static final String DEFAULT_HOSTNAME = "localhost";
@@ -155,7 +155,7 @@ public class MqttCallbackInboundEventReceiver extends InboundEventReceiver<byte[
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

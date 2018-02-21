@@ -28,12 +28,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class EventHubReceiverTask {
 
-    private static Logger logger = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(EventHubReceiverTask.class);
 
     @SuppressWarnings("unused")
     private final UUID instanceId;
@@ -105,18 +105,18 @@ public class EventHubReceiverTask {
 
     @SuppressWarnings("rawtypes")
     public void open(Map context) {
-	logger.info("begin: open()");
+	LOGGER.info("begin: open()");
 	int totalTasks;
 	totalTasks = (Integer) context.get(Constants.TotalTaskKey);
 	int taskIndex = (Integer) context.get(Constants.TaskIndexKey);
 	try {
 	    preparePartitions(context, totalTasks, taskIndex);
 	} catch (Exception e) {
-	    logger.error(e.getMessage());
+	    LOGGER.error(e.getMessage());
 	    throw new RuntimeException(e);
 	}
 
-	logger.info("end open()");
+	LOGGER.info("end open()");
     }
 
     public EventData receive() {
@@ -140,7 +140,7 @@ public class EventHubReceiverTask {
 
 	if (eventData != null) {
 	    MessageId messageId = eventData.getMessageId();
-	    logger.info(messageId.toString());
+	    LOGGER.info(messageId.toString());
 	    ack(eventData.getMessageId());
 	}
 

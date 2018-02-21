@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.EventDecodeException;
@@ -31,7 +31,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class EchoStringDecoder extends TenantEngineLifecycleComponent implements IDeviceEventDecoder<String> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(EchoStringDecoder.class);
 
     public EchoStringDecoder() {
 	super(LifecycleComponentType.DeviceEventDecoder);
@@ -40,8 +40,7 @@ public class EchoStringDecoder extends TenantEngineLifecycleComponent implements
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.
+     * @see com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.
      * lang.Object, java.util.Map)
      */
     @Override
@@ -78,7 +77,7 @@ public class EchoStringDecoder extends TenantEngineLifecycleComponent implements
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

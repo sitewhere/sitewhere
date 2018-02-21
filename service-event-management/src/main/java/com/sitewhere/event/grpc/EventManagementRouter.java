@@ -7,8 +7,8 @@
  */
 package com.sitewhere.event.grpc;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
@@ -81,7 +81,7 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
 
     /** Static logger instance */
     @SuppressWarnings("unused")
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(EventManagementRouter.class);
 
     /** Parent microservice */
     private IEventManagementMicroservice microservice;

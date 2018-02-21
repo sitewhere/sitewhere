@@ -10,8 +10,8 @@ package com.sitewhere.tenant.persistence.mongodb;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 
 import com.mongodb.BasicDBList;
@@ -46,7 +46,7 @@ import com.sitewhere.tenant.persistence.TenantManagementPersistenceLogic;
 public class MongoTenantManagement extends LifecycleComponent implements ITenantManagement {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(MongoTenantManagement.class);
 
     /** Converter lookup */
     private static IMongoConverterLookup LOOKUP = new MongoConverters();
@@ -76,7 +76,7 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

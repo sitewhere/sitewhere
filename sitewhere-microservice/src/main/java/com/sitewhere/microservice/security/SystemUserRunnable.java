@@ -7,8 +7,8 @@
  */
 package com.sitewhere.microservice.security;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -26,7 +26,7 @@ import com.sitewhere.spi.tenant.ITenant;
 public abstract class SystemUserRunnable implements Runnable {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(SystemUserRunnable.class);
 
     /** Tenant engine if tenant operation */
     private IMicroservice microservice;

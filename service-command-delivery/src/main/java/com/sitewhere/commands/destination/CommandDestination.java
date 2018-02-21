@@ -7,8 +7,8 @@
  */
 package com.sitewhere.commands.destination;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor;
 import com.sitewhere.commands.spi.ICommandDeliveryProvider;
@@ -33,7 +33,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class CommandDestination<T, P> extends TenantEngineLifecycleComponent implements ICommandDestination<T, P> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(CommandDestination.class);
 
     /** Unique destination id */
     private String destinationId;
@@ -138,7 +138,7 @@ public class CommandDestination<T, P> extends TenantEngineLifecycleComponent imp
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

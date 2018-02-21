@@ -9,8 +9,8 @@ package com.sitewhere.device.persistence.mongodb;
 
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 import org.bson.types.Binary;
 
@@ -33,7 +33,7 @@ import com.sitewhere.spi.device.IDeviceType;
 public class MongoDeviceType implements MongoConverter<IDeviceType> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(MongoDeviceType.class);
 
     /** Property for id */
     public static final String PROP_ID = "_id";

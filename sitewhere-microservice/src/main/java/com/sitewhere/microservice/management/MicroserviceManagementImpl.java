@@ -7,8 +7,8 @@
  */
 package com.sitewhere.microservice.management;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.google.protobuf.ByteString;
 import com.sitewhere.grpc.client.GrpcUtils;
@@ -42,7 +42,7 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 
     /** Static logger instance */
     @SuppressWarnings("unused")
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(MicroserviceManagementImpl.class);
 
     /** Microservice */
     private IMicroservice microservice;

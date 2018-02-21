@@ -3,8 +3,10 @@ description = 'SiteWhere Tenant Management Microservice'
 dependencies {
 	compile project(':sitewhere-core')
 	compile project(':sitewhere-mongodb')
-	compile project(':sitewhere-hbase')
 	compile project(':sitewhere-microservice')
+	
+	// HBase not currently supported.
+	compileOnly project(':sitewhere-hbase')
 }
 
 apply plugin: 'org.springframework.boot'
@@ -25,7 +27,7 @@ task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, depends
 	copyFile("templates", "/templates")
 
 	// Run Java command to start application.
-	defaultCommand 'java', "-Xmx${rootProject.ext['docker.java.memory']}", '-jar', "/${project.name}-${project.version}.jar"
+	defaultCommand 'java', '-Xmx768M', '-XX:+UnlockExperimentalVMOptions', '-XX:+UseCGroupMemoryLimitForHeap', '-jar', "/${project.name}-${project.version}.jar"
 }
 
 // Copy artifacts to Docker input folder.

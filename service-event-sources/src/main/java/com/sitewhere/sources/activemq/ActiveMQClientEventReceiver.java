@@ -25,8 +25,8 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.sources.InboundEventReceiver;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
@@ -42,7 +42,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public class ActiveMQClientEventReceiver extends InboundEventReceiver<byte[]> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(ActiveMQClientEventReceiver.class);
 
     /** Number of consumers reading messages from the queue */
     private static final int DEFAULT_NUM_CONSUMERS = 3;
@@ -127,7 +127,7 @@ public class ActiveMQClientEventReceiver extends InboundEventReceiver<byte[]> {
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

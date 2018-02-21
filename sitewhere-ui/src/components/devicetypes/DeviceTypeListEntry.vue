@@ -45,7 +45,7 @@ export default {
 
 <style scoped>
 .deviceType {
-  min-height: 180px;
+  min-height: 140px;
   overflow-y: hidden;
 }
 
@@ -54,7 +54,7 @@ export default {
   top: 10px;
   left: 10px;
   bottom: 10px;
-  width: 120px;
+  width: 100px;
 }
 
 .type-name {

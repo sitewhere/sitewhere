@@ -7,8 +7,8 @@
  */
 package com.sitewhere.web.ws.components;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.core.MessageSendingOperations;
@@ -34,7 +34,7 @@ public class TopologyBroadcaster
 	implements ApplicationListener<BrokerAvailabilityEvent>, IInstanceTopologyUpdatesListener {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(TopologyBroadcaster.class);
 
     /** Base path for topology broadcasts */
     private static final String BASE_TOPOLOGY_PATH = "/topic/topology/";
@@ -174,7 +174,7 @@ public class TopologyBroadcaster
 	this.messagingTemplate = messagingTemplate;
     }
 
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

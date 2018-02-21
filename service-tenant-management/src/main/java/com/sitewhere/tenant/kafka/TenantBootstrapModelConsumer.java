@@ -15,9 +15,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.zookeeper.data.Stat;
 
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdate;
@@ -41,7 +41,7 @@ import com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice;
 public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer implements ITenantBootstrapModelConsumer {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(TenantBootstrapModelConsumer.class);
 
     /** Consumer id */
     private static String CONSUMER_ID = UUID.randomUUID().toString();
@@ -93,8 +93,7 @@ public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer impl
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer#start(com.
+     * @see com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer#start(com.
      * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
@@ -142,7 +141,7 @@ public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer impl
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

@@ -9,8 +9,8 @@ package com.sitewhere.microservice.security;
 
 import java.util.concurrent.Callable;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -29,7 +29,7 @@ public abstract class SystemUserCallable<V> implements Callable<V> {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(SystemUserCallable.class);
 
     /** Tenant engine if tenant operation */
     private IMicroservice microservice;

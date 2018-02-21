@@ -7,8 +7,8 @@
  */
 package com.sitewhere.event.microservice;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.event.configuration.EventManagementModelProvider;
 import com.sitewhere.event.grpc.EventManagementGrpcServer;
@@ -33,7 +33,7 @@ public class EventManagementMicroservice extends MultitenantMicroservice<IEventM
 	implements IEventManagementMicroservice {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(EventManagementMicroservice.class);
 
     /** Microservice name */
     private static final String NAME = "Event Management";
@@ -154,7 +154,7 @@ public class EventManagementMicroservice extends MultitenantMicroservice<IEventM
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

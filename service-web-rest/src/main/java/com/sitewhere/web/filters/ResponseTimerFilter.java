@@ -14,8 +14,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
@@ -26,13 +26,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class ResponseTimerFilter extends OncePerRequestFilter {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(ResponseTimerFilter.class);
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.springframework.web.filter.OncePerRequestFilter#doFilterInternal(
+     * @see org.springframework.web.filter.OncePerRequestFilter#doFilterInternal(
      * javax.servlet.http.HttpServletRequest ,
      * javax.servlet.http.HttpServletResponse, javax.servlet.FilterChain)
      */

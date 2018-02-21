@@ -7,8 +7,8 @@
  */
 package com.sitewhere.device.initializer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.device.spi.initializer.IDeviceModelInitializer;
 import com.sitewhere.groovy.IGroovyVariables;
@@ -33,7 +33,7 @@ import groovy.lang.Binding;
 public class GroovyDeviceModelInitializer extends ModelInitializer implements IDeviceModelInitializer {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(GroovyDeviceModelInitializer.class);
 
     /** Tenant Groovy configuration */
     private GroovyConfiguration groovyConfiguration;

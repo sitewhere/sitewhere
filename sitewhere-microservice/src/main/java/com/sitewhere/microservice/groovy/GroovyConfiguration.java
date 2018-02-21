@@ -10,8 +10,8 @@ package com.sitewhere.microservice.groovy;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.control.CompilationFailedException;
 
 import com.sitewhere.server.lifecycle.LifecycleComponent;
@@ -35,7 +35,7 @@ import groovy.util.ScriptException;
 public class GroovyConfiguration extends LifecycleComponent implements IGroovyConfiguration {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(GroovyConfiguration.class);
 
     /** Synchronizer for loading Zk scripts to filesystem */
     private IScriptSynchronizer scriptSynchronizer;
@@ -110,7 +110,7 @@ public class GroovyConfiguration extends LifecycleComponent implements IGroovyCo
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

@@ -7,8 +7,8 @@
  */
 package com.sitewhere.grpc.client.cache;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.spi.SiteWhereException;
@@ -21,7 +21,7 @@ import com.sitewhere.spi.SiteWhereException;
 public class CacheUtils {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(CacheUtils.class);
 
     /**
      * Log object returned from a cache hit.

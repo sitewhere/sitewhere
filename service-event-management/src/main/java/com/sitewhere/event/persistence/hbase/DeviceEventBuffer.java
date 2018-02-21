@@ -16,10 +16,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.client.BufferedMutator;
 import org.apache.hadoop.hbase.client.Put;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.hbase.IDeviceEventBuffer;
 import com.sitewhere.hbase.IHBaseContext;
@@ -35,7 +35,7 @@ import com.sitewhere.spi.SiteWhereException;
 public class DeviceEventBuffer implements IDeviceEventBuffer {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(DeviceEventBuffer.class);
 
     /** Max number of puts that can be stored in the queue */
     private static final int MAX_QUEUE_SIZE = 10000;

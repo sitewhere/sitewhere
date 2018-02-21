@@ -7,8 +7,8 @@
  */
 package com.sitewhere.grpc.client.tenant;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.grpc.client.ApiDemux;
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
@@ -28,7 +28,7 @@ public class TenantManagementApiDemux extends ApiDemux<ITenantManagementApiChann
 	implements ITenantManagementApiDemux {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(TenantManagementApiDemux.class);
 
     public TenantManagementApiDemux(IMicroservice microservice) {
 	super(microservice);
@@ -55,7 +55,7 @@ public class TenantManagementApiDemux extends ApiDemux<ITenantManagementApiChann
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

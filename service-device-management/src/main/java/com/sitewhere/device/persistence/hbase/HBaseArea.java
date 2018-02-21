@@ -10,6 +10,8 @@ package com.sitewhere.device.persistence.hbase;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Increment;
@@ -24,8 +26,6 @@ import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
 import org.apache.hadoop.hbase.filter.RegexStringComparator;
 import org.apache.hadoop.hbase.filter.RowFilter;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.device.persistence.DeviceManagementPersistence;
 import com.sitewhere.hbase.IHBaseContext;
@@ -61,7 +61,7 @@ public class HBaseArea {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(HBaseArea.class);
 
     /** Length of site identifier (subset of 8 byte long) */
     public static final int SITE_IDENTIFIER_LENGTH = 2;

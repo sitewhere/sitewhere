@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.rest.model.area.AreaType;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
@@ -31,7 +31,7 @@ public class AreaTypeMarshalHelper {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(AreaTypeMarshalHelper.class);
 
     /** Device management */
     private IDeviceManagement deviceManagement;

@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -42,7 +42,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class JsonBatchEventDecoder extends TenantEngineLifecycleComponent implements IDeviceEventDecoder<byte[]> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(JsonBatchEventDecoder.class);
 
     /** Used to map data into an object based on JSON parsing */
     private ObjectMapper mapper = new ObjectMapper();
@@ -54,8 +54,7 @@ public class JsonBatchEventDecoder extends TenantEngineLifecycleComponent implem
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.
+     * @see com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.
      * lang.Object, java.util.Map)
      */
     @Override
@@ -98,7 +97,7 @@ public class JsonBatchEventDecoder extends TenantEngineLifecycleComponent implem
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

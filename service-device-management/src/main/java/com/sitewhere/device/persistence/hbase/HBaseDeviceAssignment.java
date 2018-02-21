@@ -12,14 +12,14 @@ import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.device.persistence.DeviceManagementPersistence;
 import com.sitewhere.hbase.IHBaseContext;
@@ -48,7 +48,7 @@ public class HBaseDeviceAssignment {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(HBaseDeviceAssignment.class);
 
     /** Length of device identifier (subset of 8 byte long) */
     public static final int ASSIGNMENT_IDENTIFIER_LENGTH = 4;

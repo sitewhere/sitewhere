@@ -9,8 +9,8 @@ package com.sitewhere.grpc.client.device;
 
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.grpc.client.cache.CacheProvider;
 import com.sitewhere.spi.area.IArea;
@@ -58,7 +58,7 @@ public class DeviceManagementCacheProviders {
     public static class AreaCache extends CacheProvider<String, IArea> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+	private static Log LOGGER = LogFactory.getLog(AreaCache.class);
 
 	public AreaCache(IMicroservice microservice, boolean createOnStartup) {
 	    super(microservice, ID_AREA_CACHE, createOnStartup);
@@ -68,7 +68,7 @@ public class DeviceManagementCacheProviders {
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override
-	public Logger getLogger() {
+	public Log getLogger() {
 	    return LOGGER;
 	}
     }
@@ -81,7 +81,7 @@ public class DeviceManagementCacheProviders {
     public static class AreaByIdCache extends CacheProvider<UUID, IArea> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+	private static Log LOGGER = LogFactory.getLog(AreaByIdCache.class);
 
 	public AreaByIdCache(IMicroservice microservice, boolean createOnStartup) {
 	    super(microservice, ID_AREA_ID_CACHE, createOnStartup);
@@ -91,7 +91,7 @@ public class DeviceManagementCacheProviders {
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override
-	public Logger getLogger() {
+	public Log getLogger() {
 	    return LOGGER;
 	}
     }
@@ -104,7 +104,7 @@ public class DeviceManagementCacheProviders {
     public static class DeviceTypeCache extends CacheProvider<String, IDeviceType> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+	private static Log LOGGER = LogFactory.getLog(DeviceTypeCache.class);
 
 	public DeviceTypeCache(IMicroservice microservice, boolean createOnStartup) {
 	    super(microservice, ID_DEVICE_TYPE_CACHE, createOnStartup);
@@ -114,7 +114,7 @@ public class DeviceManagementCacheProviders {
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override
-	public Logger getLogger() {
+	public Log getLogger() {
 	    return LOGGER;
 	}
     }
@@ -127,7 +127,7 @@ public class DeviceManagementCacheProviders {
     public static class DeviceTypeByIdCache extends CacheProvider<UUID, IDeviceType> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+	private static Log LOGGER = LogFactory.getLog(DeviceTypeByIdCache.class);
 
 	public DeviceTypeByIdCache(IMicroservice microservice, boolean createOnStartup) {
 	    super(microservice, ID_DEVICE_TYPE_ID_CACHE, createOnStartup);
@@ -137,7 +137,7 @@ public class DeviceManagementCacheProviders {
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override
-	public Logger getLogger() {
+	public Log getLogger() {
 	    return LOGGER;
 	}
     }
@@ -150,7 +150,7 @@ public class DeviceManagementCacheProviders {
     public static class DeviceCache extends CacheProvider<String, IDevice> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+	private static Log LOGGER = LogFactory.getLog(DeviceCache.class);
 
 	public DeviceCache(IMicroservice microservice, boolean createOnStartup) {
 	    super(microservice, ID_DEVICE_CACHE, createOnStartup);
@@ -160,7 +160,7 @@ public class DeviceManagementCacheProviders {
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override
-	public Logger getLogger() {
+	public Log getLogger() {
 	    return LOGGER;
 	}
     }
@@ -173,7 +173,7 @@ public class DeviceManagementCacheProviders {
     public static class DeviceByIdCache extends CacheProvider<UUID, IDevice> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+	private static Log LOGGER = LogFactory.getLog(DeviceByIdCache.class);
 
 	public DeviceByIdCache(IMicroservice microservice, boolean createOnStartup) {
 	    super(microservice, ID_DEVICE_ID_CACHE, createOnStartup);
@@ -183,7 +183,7 @@ public class DeviceManagementCacheProviders {
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override
-	public Logger getLogger() {
+	public Log getLogger() {
 	    return LOGGER;
 	}
     }
@@ -196,7 +196,7 @@ public class DeviceManagementCacheProviders {
     public static class DeviceAssignmentCache extends CacheProvider<String, IDeviceAssignment> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+	private static Log LOGGER = LogFactory.getLog(DeviceAssignmentCache.class);
 
 	public DeviceAssignmentCache(IMicroservice microservice, boolean createOnStartup) {
 	    super(microservice, ID_ASSIGNMENT_CACHE, createOnStartup);
@@ -206,7 +206,7 @@ public class DeviceManagementCacheProviders {
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override
-	public Logger getLogger() {
+	public Log getLogger() {
 	    return LOGGER;
 	}
     }
@@ -219,7 +219,7 @@ public class DeviceManagementCacheProviders {
     public static class DeviceAssignmentByIdCache extends CacheProvider<UUID, IDeviceAssignment> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+	private static Log LOGGER = LogFactory.getLog(DeviceAssignmentByIdCache.class);
 
 	public DeviceAssignmentByIdCache(IMicroservice microservice, boolean createOnStartup) {
 	    super(microservice, ID_ASSIGNMENT_ID_CACHE, createOnStartup);
@@ -229,7 +229,7 @@ public class DeviceManagementCacheProviders {
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override
-	public Logger getLogger() {
+	public Log getLogger() {
 	    return LOGGER;
 	}
     }

@@ -11,8 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -72,7 +72,7 @@ import com.sitewhere.spi.microservice.spring.EventSourcesBeans;
 public class EventSourcesParser extends AbstractBeanDefinitionParser {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(EventSourcesParser.class);
 
     /** Used to generate unique names for nested beans */
     private DefaultBeanNameGenerator nameGenerator = new DefaultBeanNameGenerator();

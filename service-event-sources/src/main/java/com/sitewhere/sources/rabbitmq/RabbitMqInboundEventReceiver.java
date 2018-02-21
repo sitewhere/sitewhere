@@ -14,8 +14,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
@@ -38,7 +38,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(RabbitMqInboundEventReceiver.class);
 
     /** Default connection URI */
     private static final String DEFAULT_CONNECTION_URI = "amqp://localhost";
@@ -207,7 +207,7 @@ public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

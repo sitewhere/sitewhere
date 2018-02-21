@@ -7,8 +7,8 @@
  */
 package com.sitewhere.microservice.scripting;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -23,7 +23,7 @@ import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
 public class TenantEngineScriptManager extends TenantEngineLifecycleComponent implements IScriptManager {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(TenantEngineScriptManager.class);
 
     /*
      * @see
@@ -39,7 +39,7 @@ public class TenantEngineScriptManager extends TenantEngineLifecycleComponent im
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

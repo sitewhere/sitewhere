@@ -7,8 +7,8 @@
  */
 package com.sitewhere.inbound.processing;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
 import com.sitewhere.grpc.model.DeviceEventModel.GAnyDeviceEventCreateRequest;
@@ -45,7 +45,7 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
 public class InboundPayloadProcessingLogic {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(InboundPayloadProcessingLogic.class);
 
     /** Handle to inbound processing tenant engine */
     private IInboundProcessingTenantEngine tenantEngine;
@@ -178,7 +178,7 @@ public class InboundPayloadProcessingLogic {
 		.getApiChannel();
     }
 
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

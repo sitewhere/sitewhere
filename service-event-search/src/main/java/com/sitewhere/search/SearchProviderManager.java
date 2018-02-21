@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.search.spi.ISearchProviderManager;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
@@ -31,7 +31,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class SearchProviderManager extends LifecycleComponent implements ISearchProviderManager {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(SearchProviderManager.class);
 
     /** List of available search providers */
     private List<ISearchProvider> searchProviders = new ArrayList<ISearchProvider>();
@@ -63,7 +63,7 @@ public class SearchProviderManager extends LifecycleComponent implements ISearch
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

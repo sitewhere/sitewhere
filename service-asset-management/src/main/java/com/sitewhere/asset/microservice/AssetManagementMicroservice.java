@@ -7,8 +7,8 @@
  */
 package com.sitewhere.asset.microservice;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.asset.configuration.AssetManagementModelProvider;
 import com.sitewhere.asset.grpc.AssetManagementGrpcServer;
@@ -33,7 +33,7 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
 	implements IAssetManagementMicroservice {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(AssetManagementMicroservice.class);
 
     /** Microservice name */
     private static final String NAME = "Asset Management";
@@ -154,7 +154,7 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

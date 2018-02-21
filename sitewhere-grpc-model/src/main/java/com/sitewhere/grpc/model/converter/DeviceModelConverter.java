@@ -2007,6 +2007,7 @@ public class DeviceModelConverter {
 		grpc.getPaging().getPageSize());
 	api.setRootOnly(grpc.hasRootOnly() ? grpc.getRootOnly().getValue() : null);
 	api.setParentAreaId(grpc.hasParentAreaId() ? CommonModelConverter.asApiUuid(grpc.getParentAreaId()) : null);
+	api.setAreaTypeId(grpc.hasAreaTypeId() ? CommonModelConverter.asApiUuid(grpc.getAreaTypeId()) : null);
 	return api;
     }
 
@@ -2024,6 +2025,9 @@ public class DeviceModelConverter {
 	}
 	if (api.getParentAreaId() != null) {
 	    grpc.setParentAreaId(CommonModelConverter.asGrpcUuid(api.getParentAreaId()));
+	}
+	if (api.getAreaTypeId() != null) {
+	    grpc.setAreaTypeId(CommonModelConverter.asGrpcUuid(api.getAreaTypeId()));
 	}
 	grpc.setPaging(CommonModelConverter.asGrpcPaging(api));
 	return grpc.build();

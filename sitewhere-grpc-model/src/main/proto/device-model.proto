@@ -414,7 +414,8 @@ message GAreaCreateRequest {
 message GAreaSearchCriteria {
 	GOptionalBoolean rootOnly = 1;
 	GUUID parentAreaId = 2;
-	GPaging paging = 3;
+	GUUID areaTypeId = 3;
+	GPaging paging = 4;
 }
 
 // Results for area search.

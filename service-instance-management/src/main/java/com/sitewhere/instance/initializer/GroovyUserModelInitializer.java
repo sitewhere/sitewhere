@@ -7,8 +7,8 @@
  */
 package com.sitewhere.instance.initializer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.instance.spi.initializer.IUserModelInitializer;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
@@ -28,7 +28,7 @@ import groovy.lang.Binding;
 public class GroovyUserModelInitializer extends ModelInitializer implements IUserModelInitializer {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(GroovyUserModelInitializer.class);
 
     /** Groovy configuration */
     private GroovyConfiguration groovyConfiguration;

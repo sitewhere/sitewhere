@@ -22,10 +22,10 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -62,7 +62,7 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
     private static final long serialVersionUID = 1382873664520089825L;
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(Wso2ScimAssetModule.class);
 
     /** Module id */
     private static final String DEFAULT_MODULE_ID = "wso2scim";
@@ -137,7 +137,7 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 
@@ -243,8 +243,7 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetModule#refresh(com.sitewhere.spi.server.
+     * @see com.sitewhere.spi.asset.IAssetModule#refresh(com.sitewhere.spi.server.
      * lifecycle.ILifecycleProgressMonitor)
      */
     public ICommandResponse refresh(ILifecycleProgressMonitor monitor) throws SiteWhereException {

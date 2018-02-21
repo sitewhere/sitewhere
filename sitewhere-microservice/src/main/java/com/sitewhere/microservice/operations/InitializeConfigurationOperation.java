@@ -10,8 +10,8 @@ package com.sitewhere.microservice.operations;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
@@ -31,7 +31,7 @@ public class InitializeConfigurationOperation<T extends IConfigurableMicroservic
 	extends CompletableConfigurationOperation<T> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(InitializeConfigurationOperation.class);
 
     /** Tenant engine being started */
     private T microservice;

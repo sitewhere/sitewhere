@@ -10,10 +10,10 @@ package com.sitewhere.microservice.multitenant.operations;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
@@ -34,10 +34,11 @@ import io.opentracing.Tracer;
  *
  * @param <T>
  */
-public class BootstrapTenantEngineOperation<T extends IMicroserviceTenantEngine> extends CompletableTenantEngineOperation<T> {
+public class BootstrapTenantEngineOperation<T extends IMicroserviceTenantEngine>
+	extends CompletableTenantEngineOperation<T> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(BootstrapTenantEngineOperation.class);
 
     /** Tenant engine being started */
     private T tenantEngine;

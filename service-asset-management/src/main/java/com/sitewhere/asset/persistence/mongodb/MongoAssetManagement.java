@@ -7,8 +7,8 @@
  */
 package com.sitewhere.asset.persistence.mongodb;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 
 import com.mongodb.MongoTimeoutException;
@@ -52,7 +52,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class MongoAssetManagement extends TenantEngineLifecycleComponent implements IAssetManagement {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(MongoAssetManagement.class);
 
     /** Converter lookup */
     private static IMongoConverterLookup LOOKUP = new MongoConverters();
@@ -82,7 +82,7 @@ public class MongoAssetManagement extends TenantEngineLifecycleComponent impleme
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

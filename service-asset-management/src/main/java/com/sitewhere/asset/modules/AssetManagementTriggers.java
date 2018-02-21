@@ -7,8 +7,8 @@
  */
 package com.sitewhere.asset.modules;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.asset.AssetManagementDecorator;
 import com.sitewhere.asset.spi.modules.IAssetModuleManager;
@@ -37,7 +37,7 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(AssetManagementTriggers.class);
 
     /** Asset module manager */
     private IAssetModuleManager assetModuleManager;

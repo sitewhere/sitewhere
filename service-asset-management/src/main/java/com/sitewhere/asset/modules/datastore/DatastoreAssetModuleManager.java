@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.asset.spi.modules.IAssetModule;
 import com.sitewhere.asset.spi.modules.IAssetModuleManager;
@@ -38,7 +38,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class DatastoreAssetModuleManager extends TenantEngineLifecycleComponent implements IAssetModuleManager {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(DatastoreAssetModuleManager.class);
 
     /** Map of datastore modules by id */
     private Map<String, IAssetModule<?>> dsModulesById = new HashMap<String, IAssetModule<?>>();
@@ -86,8 +86,7 @@ public class DatastoreAssetModuleManager extends TenantEngineLifecycleComponent 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetModuleManager#getModule(java.lang.String)
+     * @see com.sitewhere.spi.asset.IAssetModuleManager#getModule(java.lang.String)
      */
     @Override
     public IAssetModule<?> getModule(String assetModuleId) throws SiteWhereException {
@@ -125,8 +124,7 @@ public class DatastoreAssetModuleManager extends TenantEngineLifecycleComponent 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetModuleManager#onAssetCategoryAdded(com.
+     * @see com.sitewhere.spi.asset.IAssetModuleManager#onAssetCategoryAdded(com.
      * sitewhere.spi.asset.IAssetCategory,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
@@ -140,8 +138,7 @@ public class DatastoreAssetModuleManager extends TenantEngineLifecycleComponent 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetModuleManager#onAssetCategoryUpdated(com.
+     * @see com.sitewhere.spi.asset.IAssetModuleManager#onAssetCategoryUpdated(com.
      * sitewhere.spi.asset.IAssetCategory,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
@@ -159,8 +156,7 @@ public class DatastoreAssetModuleManager extends TenantEngineLifecycleComponent 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.asset.IAssetModuleManager#onAssetCategoryRemoved(com.
+     * @see com.sitewhere.spi.asset.IAssetModuleManager#onAssetCategoryRemoved(com.
      * sitewhere.spi.asset.IAssetCategory,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
@@ -280,7 +276,7 @@ public class DatastoreAssetModuleManager extends TenantEngineLifecycleComponent 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

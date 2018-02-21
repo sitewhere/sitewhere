@@ -14,8 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.asset.modules.datastore.DatastoreAssetModuleManager;
 import com.sitewhere.asset.spi.modules.IAssetModule;
@@ -39,7 +39,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class AssetModuleManager extends TenantEngineLifecycleComponent implements IAssetModuleManager {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(AssetModuleManager.class);
 
     /** List of asset modules */
     private List<IAssetModule<?>> modules;
@@ -94,7 +94,7 @@ public class AssetModuleManager extends TenantEngineLifecycleComponent implement
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

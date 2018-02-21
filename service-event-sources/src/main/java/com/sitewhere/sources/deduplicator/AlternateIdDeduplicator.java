@@ -7,8 +7,8 @@
  */
 package com.sitewhere.sources.deduplicator;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
@@ -31,7 +31,7 @@ import com.sitewhere.spi.tenant.ITenant;
 public class AlternateIdDeduplicator extends TenantEngineLifecycleComponent implements IDeviceEventDeduplicator {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(AlternateIdDeduplicator.class);
 
     public AlternateIdDeduplicator() {
 	super(LifecycleComponentType.DeviceEventDeduplicator);
@@ -66,7 +66,7 @@ public class AlternateIdDeduplicator extends TenantEngineLifecycleComponent impl
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

@@ -16,6 +16,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Put;
@@ -24,8 +26,6 @@ import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.core.Base58;
 import com.sitewhere.event.persistence.DeviceEventManagementPersistence;
@@ -76,7 +76,7 @@ import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 public class HBaseDeviceEvent {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(HBaseDeviceEvent.class);
 
     /** Size of a row in milliseconds */
     private static final long ROW_IN_MS = (1 << 24);

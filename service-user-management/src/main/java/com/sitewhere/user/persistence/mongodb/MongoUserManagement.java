@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 import org.springframework.stereotype.Component;
 
@@ -53,7 +53,7 @@ import com.sitewhere.user.persistence.UserManagementPersistence;
 public class MongoUserManagement extends LifecycleComponent implements IUserManagement {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(MongoUserManagement.class);
 
     /** Injected with global SiteWhere Mongo client */
     private IUserManagementMongoClient mongoClient;
@@ -80,7 +80,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 
@@ -140,8 +140,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.user.IUserManagement#authenticate(java.lang.String,
+     * @see com.sitewhere.spi.user.IUserManagement#authenticate(java.lang.String,
      * java.lang.String, boolean)
      */
     @Override
@@ -209,8 +208,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.user.IUserManagement#getGrantedAuthorities(java.lang.
+     * @see com.sitewhere.spi.user.IUserManagement#getGrantedAuthorities(java.lang.
      * String)
      */
     @Override
@@ -230,8 +228,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.user.IUserManagement#addGrantedAuthorities(java.lang.
+     * @see com.sitewhere.spi.user.IUserManagement#addGrantedAuthorities(java.lang.
      * String, java.util.List)
      */
     @Override
@@ -256,8 +253,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.user.IUserManagement#listUsers(com.sitewhere.spi.user.
+     * @see com.sitewhere.spi.user.IUserManagement#listUsers(com.sitewhere.spi.user.
      * request .IUserSearchCriteria)
      */
     @Override
@@ -327,8 +323,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.user.IUserManagement#getGrantedAuthorityByName(java.
+     * @see com.sitewhere.spi.user.IUserManagement#getGrantedAuthorityByName(java.
      * lang.String)
      */
     @Override
@@ -343,8 +338,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.user.IUserManagement#updateGrantedAuthority(java.lang.
+     * @see com.sitewhere.spi.user.IUserManagement#updateGrantedAuthority(java.lang.
      * String, com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest)
      */
     @Override
@@ -386,8 +380,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.user.IUserManagement#deleteGrantedAuthority(java.lang.
+     * @see com.sitewhere.spi.user.IUserManagement#deleteGrantedAuthority(java.lang.
      * String)
      */
     @Override
@@ -396,8 +389,8 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
     }
 
     /**
-     * Get the {@link DBObject} for a User given username. Throw an exception if
-     * not found.
+     * Get the {@link DBObject} for a User given username. Throw an exception if not
+     * found.
      * 
      * @param username
      * @return

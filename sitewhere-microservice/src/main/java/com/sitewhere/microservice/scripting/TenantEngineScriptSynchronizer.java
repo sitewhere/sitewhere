@@ -9,8 +9,8 @@ package com.sitewhere.microservice.scripting;
 
 import java.io.File;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
@@ -26,7 +26,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public class TenantEngineScriptSynchronizer extends ScriptSynchronizer {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(TenantEngineScriptSynchronizer.class);
 
     /** Subpath that holds tenant scripts */
     private static final String TENANTS_SUBPATH = "tenants";
@@ -107,7 +107,7 @@ public class TenantEngineScriptSynchronizer extends ScriptSynchronizer {
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

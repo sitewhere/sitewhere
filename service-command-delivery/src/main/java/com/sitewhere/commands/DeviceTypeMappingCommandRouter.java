@@ -11,8 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.commands.spi.ICommandDestination;
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
@@ -31,7 +31,7 @@ import com.sitewhere.spi.device.command.ISystemCommand;
 public class DeviceTypeMappingCommandRouter extends OutboundCommandRouter {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(DeviceTypeMappingCommandRouter.class);
 
     /** Map of specification tokens to command destination ids */
     private Map<UUID, String> mappings = new HashMap<UUID, String>();
@@ -45,7 +45,7 @@ public class DeviceTypeMappingCommandRouter extends OutboundCommandRouter {
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

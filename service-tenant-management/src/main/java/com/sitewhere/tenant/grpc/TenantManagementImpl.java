@@ -9,8 +9,8 @@ package com.sitewhere.tenant.grpc;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.model.converter.TenantModelConverter;
@@ -47,7 +47,7 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
 
     /** Static logger instance */
     @SuppressWarnings("unused")
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(TenantManagementImpl.class);
 
     /** Tenant management persistence */
     private ITenantManagement tenantMangagement;

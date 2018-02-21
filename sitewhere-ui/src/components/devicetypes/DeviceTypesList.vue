@@ -1,20 +1,23 @@
 <template>
-  <div>
-    <v-container fluid grid-list-md  v-if="deviceTypes">
-      <v-layout row wrap>
-         <v-flex xs6 v-for="(deviceType, index) in deviceTypes"
-          :key="deviceType.token">
-          <device-type-list-entry :deviceType="deviceType">
-          </device-type-list-entry>
-        </v-flex>
-      </v-layout>
-    </v-container>
-    <pager :results="results" @pagingUpdated="updatePaging"></pager>
-    <device-type-create-dialog @deviceTypeAdded="onDeviceTypeAdded"/>
-  </div>
+  <navigation-page icon="fa-file" title="Manage Device Types">
+    <div slot="content">
+      <v-container fluid grid-list-md  v-if="deviceTypes">
+        <v-layout row wrap>
+           <v-flex xs6 v-for="(deviceType, index) in deviceTypes"
+            :key="deviceType.token">
+            <device-type-list-entry :deviceType="deviceType">
+            </device-type-list-entry>
+          </v-flex>
+        </v-layout>
+      </v-container>
+      <pager :results="results" @pagingUpdated="updatePaging"></pager>
+      <device-type-create-dialog @deviceTypeAdded="onDeviceTypeAdded"/>
+    </div>
+  </navigation-page>
 </template>
 
 <script>
+import NavigationPage from '../common/NavigationPage'
 import Pager from '../common/Pager'
 import DeviceTypeListEntry from './DeviceTypeListEntry'
 import DeviceTypeCreateDialog from './DeviceTypeCreateDialog'
@@ -29,6 +32,7 @@ export default {
   }),
 
   components: {
+    NavigationPage,
     Pager,
     DeviceTypeListEntry,
     DeviceTypeCreateDialog

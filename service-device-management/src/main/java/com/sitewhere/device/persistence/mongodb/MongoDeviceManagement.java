@@ -14,8 +14,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 
 import com.mongodb.MongoTimeoutException;
@@ -94,7 +94,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class MongoDeviceManagement extends TenantEngineLifecycleComponent implements IDeviceManagement {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(MongoDeviceManagement.class);
 
     /** Converter lookup */
     private static IMongoConverterLookup LOOKUP = new MongoConverters();
@@ -124,7 +124,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 
@@ -1331,6 +1331,9 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    query.append(MongoArea.PROP_PARENT_AREA_ID, null);
 	} else if (criteria.getParentAreaId() != null) {
 	    query.append(MongoArea.PROP_PARENT_AREA_ID, criteria.getParentAreaId());
+	}
+	if (criteria.getAreaTypeId() != null) {
+	    query.append(MongoArea.PROP_AREA_TYPE_ID, criteria.getAreaTypeId());
 	}
 	Document sort = new Document(MongoArea.PROP_NAME, 1);
 	return MongoPersistence.search(IArea.class, areas, query, sort, criteria, LOOKUP);

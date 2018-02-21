@@ -7,8 +7,8 @@
  */
 package com.sitewhere.commands.encoding.json;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.commands.encoding.EncodedCommandExecution;
 import com.sitewhere.commands.spi.ICommandExecutionEncoder;
@@ -27,10 +27,11 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class JsonCommandExecutionEncoder extends TenantEngineLifecycleComponent implements ICommandExecutionEncoder<byte[]> {
+public class JsonCommandExecutionEncoder extends TenantEngineLifecycleComponent
+	implements ICommandExecutionEncoder<byte[]> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(JsonCommandExecutionEncoder.class);
 
     public JsonCommandExecutionEncoder() {
 	super(LifecycleComponentType.CommandExecutionEncoder);
@@ -42,15 +43,14 @@ public class JsonCommandExecutionEncoder extends TenantEngineLifecycleComponent 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.communication.ICommandExecutionEncoder#encode(
+     * @see com.sitewhere.spi.device.communication.ICommandExecutionEncoder#encode(
      * com.sitewhere .spi.device.command.IDeviceCommandExecution,
      * com.sitewhere.spi.device.IDeviceNestingContext,
      * com.sitewhere.spi.device.IDeviceAssignment)

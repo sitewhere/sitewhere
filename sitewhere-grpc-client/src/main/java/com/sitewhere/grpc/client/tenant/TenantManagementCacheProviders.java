@@ -7,8 +7,8 @@
  */
 package com.sitewhere.grpc.client.tenant;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.grpc.client.cache.CacheProvider;
 import com.sitewhere.spi.microservice.IMicroservice;
@@ -32,7 +32,7 @@ public class TenantManagementCacheProviders {
     public static class TenantCache extends CacheProvider<String, ITenant> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+	private static Log LOGGER = LogFactory.getLog(TenantCache.class);
 
 	public TenantCache(IMicroservice microservice, boolean createOnStartup) {
 	    super(microservice, ID_TENANT_CACHE, createOnStartup);
@@ -42,7 +42,7 @@ public class TenantManagementCacheProviders {
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override
-	public Logger getLogger() {
+	public Log getLogger() {
 	    return LOGGER;
 	}
     }

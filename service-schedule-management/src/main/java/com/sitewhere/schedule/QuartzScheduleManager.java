@@ -10,8 +10,8 @@ package com.sitewhere.schedule;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -43,7 +43,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class QuartzScheduleManager extends TenantEngineLifecycleComponent implements IScheduleManager {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(QuartzScheduleManager.class);
 
     /** Instance id common to all schedulers */
     private static final String INSTANCE_ID = "sitewhere";
@@ -210,7 +210,7 @@ public class QuartzScheduleManager extends TenantEngineLifecycleComponent implem
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

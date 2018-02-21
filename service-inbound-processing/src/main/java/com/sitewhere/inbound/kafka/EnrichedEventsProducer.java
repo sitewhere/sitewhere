@@ -7,8 +7,8 @@
  */
 package com.sitewhere.inbound.kafka;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.inbound.spi.kafka.IEnrichedEventsProducer;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
@@ -24,7 +24,7 @@ import com.sitewhere.spi.microservice.IMicroservice;
 public class EnrichedEventsProducer extends MicroserviceKafkaProducer implements IEnrichedEventsProducer {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(EnrichedEventsProducer.class);
 
     public EnrichedEventsProducer(IMicroservice microservice) {
 	super(microservice);
@@ -43,7 +43,7 @@ public class EnrichedEventsProducer extends MicroserviceKafkaProducer implements
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

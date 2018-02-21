@@ -7,8 +7,8 @@
  */
 package com.sitewhere.schedule.grpc;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.grpc.service.GCreateScheduleRequest;
 import com.sitewhere.grpc.service.GCreateScheduleResponse;
@@ -48,7 +48,7 @@ public class ScheduleManagementRouter extends ScheduleManagementGrpc.ScheduleMan
 
     /** Static logger instance */
     @SuppressWarnings("unused")
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(ScheduleManagementRouter.class);
 
     /** Parent microservice */
     private IScheduleManagementMicroservice microservice;

@@ -10,8 +10,8 @@ package com.sitewhere.grpc.client.event;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.grpc.client.ApiChannel;
 import com.sitewhere.grpc.client.GrpcChannel;
@@ -113,7 +113,7 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
 	implements IDeviceEventManagementApiChannel {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(DeviceEventManagementApiChannel.class);
 
     public DeviceEventManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
 	super(demux, microservice, host);
@@ -914,7 +914,7 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

@@ -7,8 +7,8 @@
  */
 package com.sitewhere.tenant.kafka;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdateType;
 import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
@@ -27,7 +27,7 @@ import com.sitewhere.tenant.spi.kafka.ITenantModelProducer;
 public class TenantModelProducer extends MicroserviceKafkaProducer implements ITenantModelProducer {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(TenantModelProducer.class);
 
     public TenantModelProducer(IMicroservice microservice) {
 	super(microservice);
@@ -36,8 +36,7 @@ public class TenantModelProducer extends MicroserviceKafkaProducer implements IT
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.tenant.spi.kafka.ITenantModelProducer#onTenantAdded(com.
+     * @see com.sitewhere.tenant.spi.kafka.ITenantModelProducer#onTenantAdded(com.
      * sitewhere.spi.tenant.ITenant)
      */
     @Override
@@ -51,8 +50,7 @@ public class TenantModelProducer extends MicroserviceKafkaProducer implements IT
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.tenant.spi.kafka.ITenantModelProducer#onTenantUpdated(com.
+     * @see com.sitewhere.tenant.spi.kafka.ITenantModelProducer#onTenantUpdated(com.
      * sitewhere.spi.tenant.ITenant)
      */
     @Override
@@ -66,8 +64,7 @@ public class TenantModelProducer extends MicroserviceKafkaProducer implements IT
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.tenant.spi.kafka.ITenantModelProducer#onTenantDeleted(com.
+     * @see com.sitewhere.tenant.spi.kafka.ITenantModelProducer#onTenantDeleted(com.
      * sitewhere.spi.tenant.ITenant)
      */
     @Override
@@ -81,8 +78,7 @@ public class TenantModelProducer extends MicroserviceKafkaProducer implements IT
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.kafka.IKafkaProducer#getTargetTopicName()
+     * @see com.sitewhere.microservice.spi.kafka.IKafkaProducer#getTargetTopicName()
      */
     @Override
     public String getTargetTopicName() throws SiteWhereException {
@@ -95,7 +91,7 @@ public class TenantModelProducer extends MicroserviceKafkaProducer implements IT
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

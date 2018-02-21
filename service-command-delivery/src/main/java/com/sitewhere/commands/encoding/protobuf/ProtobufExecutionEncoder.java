@@ -10,8 +10,8 @@ package com.sitewhere.commands.encoding.protobuf;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.google.protobuf.ByteString;
 import com.sitewhere.commands.spi.ICommandExecutionEncoder;
@@ -49,7 +49,7 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
 	implements ICommandExecutionEncoder<byte[]> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(ProtobufExecutionEncoder.class);
 
     public ProtobufExecutionEncoder() {
 	super(LifecycleComponentType.CommandExecutionEncoder);
@@ -226,7 +226,7 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

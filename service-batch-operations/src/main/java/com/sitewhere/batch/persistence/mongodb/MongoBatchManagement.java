@@ -9,8 +9,8 @@ package com.sitewhere.batch.persistence.mongodb;
 
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 
 import com.mongodb.MongoTimeoutException;
@@ -43,7 +43,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class MongoBatchManagement extends TenantEngineLifecycleComponent implements IBatchManagement {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(MongoBatchManagement.class);
 
     /** Converter lookup */
     private static IMongoConverterLookup LOOKUP = new MongoConverters();
@@ -303,7 +303,7 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

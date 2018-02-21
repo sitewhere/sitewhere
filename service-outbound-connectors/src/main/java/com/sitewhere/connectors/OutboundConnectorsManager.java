@@ -10,8 +10,8 @@ package com.sitewhere.connectors;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.connectors.kafka.KafkaOutboundConnectorHost;
 import com.sitewhere.connectors.spi.IOutboundConnector;
@@ -30,7 +30,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public class OutboundConnectorsManager extends TenantEngineLifecycleComponent implements IOutboundConnectorsManager {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(OutboundConnectorsManager.class);
 
     /** List of connectors */
     private List<IOutboundConnector> outboundConnectors;
@@ -97,7 +97,7 @@ public class OutboundConnectorsManager extends TenantEngineLifecycleComponent im
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

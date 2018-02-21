@@ -10,8 +10,8 @@ package com.sitewhere.device.marshaling;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
@@ -30,7 +30,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 public class DeviceCommandInvocationMarshalHelper {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(DeviceCommandInvocationMarshalHelper.class);
 
     /** Device Management */
     private IDeviceManagement deviceManagement;
@@ -52,8 +52,8 @@ public class DeviceCommandInvocationMarshalHelper {
 
     /**
      * Convert an {@link IDeviceCommandInvocation} to a
-     * {@link DeviceCommandInvocation}, populating command information if
-     * requested so the marshaled data includes it.
+     * {@link DeviceCommandInvocation}, populating command information if requested
+     * so the marshaled data includes it.
      * 
      * @param source
      * @return

@@ -25,8 +25,8 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.connectors.FilteredOutboundConnector;
@@ -42,15 +42,15 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
- * Implementation of {@link IOutboundConnector} that sends events to an
- * EventHub running on Azure.
+ * Implementation of {@link IOutboundConnector} that sends events to an EventHub
+ * running on Azure.
  * 
  * @author Derek
  */
 public class EventHubOutboundEventProcessor extends FilteredOutboundConnector {
 
     /** Static logger instance */
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(EventHubOutboundEventProcessor.class);
 
     /** SAS identity name */
     private String sasName;
@@ -225,7 +225,7 @@ public class EventHubOutboundEventProcessor extends FilteredOutboundConnector {
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

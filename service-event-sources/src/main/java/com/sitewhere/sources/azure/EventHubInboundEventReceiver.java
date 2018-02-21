@@ -32,8 +32,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.qpid.amqp_1_0.client.Message;
 
 import com.sitewhere.sources.InboundEventReceiver;
@@ -46,7 +46,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
-    private static final Logger logger = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(EventHubInboundEventReceiver.class);
     private static String username = "";
     private static String password = "";
     private static String namespace = "";
@@ -115,8 +115,8 @@ public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
      * @see com.sitewhere.device.communication.InboundEventReceiver#getLogger()
      */
     @Override
-    public Logger getLogger() {
-	return logger;
+    public Log getLogger() {
+	return LOGGER;
     }
 
     private class EventProcessor implements Runnable {
@@ -145,7 +145,7 @@ public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
 		try {
 		    task.open(context);
 		} catch (Exception e) {
-		    logger.warn(
+		    getLogger().warn(
 			    "Task " + taskIndex + " failed to open, retry in " + EH_RETRY_SLEEP_SECONDS + "seconds.",
 			    e);
 		    try {
@@ -167,7 +167,7 @@ public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
 			if (p == null || p.getApplicationProperties() == null
 				|| p.getApplicationProperties().getValue() == null
 				|| p.getApplicationProperties().getValue().get(Constants.AmqpPayloadKey) == null) {
-			    logger.warn("Skipped message without a valid payload received.");
+			    getLogger().warn("Skipped message without a valid payload received.");
 			    continue;
 			}
 			byte[] payload = p.getApplicationProperties().getValue().get(Constants.AmqpPayloadKey)
@@ -178,7 +178,7 @@ public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
 			onEventPayloadReceived(payload, null);
 		    } catch (Exception e) {
 			e.printStackTrace();
-			logger.warn(
+			getLogger().warn(
 				"Task " + taskIndex + " exception, restart in " + EH_RETRY_SLEEP_SECONDS + " seconds",
 				e);
 			try {
@@ -187,11 +187,11 @@ public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
 			}
 			break;
 		    } catch (Throwable t) {
-			logger.error("Error in task " + taskIndex + ":" + t.getMessage());
+			getLogger().error("Error in task " + taskIndex + ":" + t.getMessage());
 			try {
 			    task.close();
 			} catch (Throwable t1) {
-			    logger.error(t1.getMessage());
+			    getLogger().error(t1.getMessage());
 			}
 			SWITCH = false;
 		    }

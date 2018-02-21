@@ -10,8 +10,8 @@ package com.sitewhere.rules;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.rules.kafka.KafkaRuleProcessorHost;
 import com.sitewhere.rules.spi.IRuleProcessor;
@@ -29,7 +29,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public class RuleProcessorsManager extends TenantEngineLifecycleComponent implements IRuleProcessorsManager {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(RuleProcessorsManager.class);
 
     /** List of rule processors */
     private List<IRuleProcessor> ruleProcessors;
@@ -94,7 +94,7 @@ public class RuleProcessorsManager extends TenantEngineLifecycleComponent implem
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

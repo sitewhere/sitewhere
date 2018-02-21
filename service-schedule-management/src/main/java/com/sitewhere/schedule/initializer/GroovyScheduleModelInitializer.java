@@ -7,8 +7,8 @@
  */
 package com.sitewhere.schedule.initializer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.rest.model.scheduling.request.scripting.ScheduleManagementRequestBuilder;
@@ -28,7 +28,7 @@ import groovy.lang.Binding;
 public class GroovyScheduleModelInitializer extends ModelInitializer implements IScheduleModelInitializer {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(GroovyScheduleModelInitializer.class);
 
     /** Tenant Groovy configuration */
     private GroovyConfiguration groovyConfiguration;

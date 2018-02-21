@@ -14,13 +14,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.framework.recipes.cache.TreeCacheListener;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
@@ -39,7 +39,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public class ConfigurationMonitor extends LifecycleComponent implements IConfigurationMonitor {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(ConfigurationMonitor.class);
 
     /** Number of threads dedicated to handling configuration changes */
     private static final int CONFIGURATION_UPDATE_THREAD_COUNT = 3;
@@ -92,8 +92,7 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see
-		 * org.apache.curator.framework.recipes.cache.TreeCacheListener#
+		 * @see org.apache.curator.framework.recipes.cache.TreeCacheListener#
 		 * childEvent(org.apache.curator.framework.CuratorFramework,
 		 * org.apache.curator.framework.recipes.cache.TreeCacheEvent)
 		 */
@@ -288,7 +287,7 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

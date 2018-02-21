@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.rest.model.microservice.state.InstanceMicroservice;
 import com.sitewhere.rest.model.microservice.state.InstanceTenantEngine;
@@ -41,7 +41,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsumer implements ITopologyStateAggregator {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(TopologyStateAggregator.class);
 
     /** Latest inferred instance topology snapshot */
     private IInstanceTopologySnapshot instanceTopologySnapshot = new InstanceTopologySnapshot();
@@ -359,7 +359,7 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

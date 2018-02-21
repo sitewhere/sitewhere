@@ -10,9 +10,9 @@ package com.sitewhere.microservice.multitenant.operations;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
@@ -36,7 +36,7 @@ public class InitializeTenantEngineOperation<T extends IMicroserviceTenantEngine
 	extends CompletableTenantEngineOperation<T> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(InitializeTenantEngineOperation.class);
 
     /** Max time to wait for tenant to be bootstrapped from template */
     private static final long MAX_WAIT_FOR_TENANT_BOOTSTRAPPED = 5 * 1000;

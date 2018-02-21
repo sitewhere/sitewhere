@@ -10,8 +10,8 @@ package com.sitewhere.configuration;
 import java.io.ByteArrayInputStream;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
@@ -29,7 +29,7 @@ public class ConfigurationUtils {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(ConfigurationUtils.class);
 
     /**
      * Builds a Spring {@link ApplicationContext} from a byte array containing the

@@ -10,8 +10,8 @@ package com.sitewhere.rest.client;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.ResponseErrorHandler;
@@ -31,7 +31,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 public class SiteWhereErrorHandler implements ResponseErrorHandler {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(SiteWhereErrorHandler.class);
 
     /** Delegate to default error handler */
     private ResponseErrorHandler errorHandler = new DefaultResponseErrorHandler();

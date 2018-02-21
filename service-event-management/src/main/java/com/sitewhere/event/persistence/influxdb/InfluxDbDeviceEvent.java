@@ -15,8 +15,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.influxdb.dto.Point;
 import org.influxdb.dto.Query;
 import org.influxdb.dto.QueryResult;
@@ -45,7 +45,7 @@ import com.sitewhere.spi.search.ISearchCriteria;
 public class InfluxDbDeviceEvent {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(InfluxDbDeviceEvent.class);
 
     /** Collection for events */
     public static final String COLLECTION_EVENTS = "events";

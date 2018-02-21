@@ -14,9 +14,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.instance.spi.templates.IInstanceTemplate;
@@ -34,7 +34,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public class InstanceTemplateManager extends LifecycleComponent implements IInstanceTemplateManager {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(InstanceTemplateManager.class);
 
     /** Root folder for instance templates */
     private static final String TEMPLATES_ROOT = "/templates";
@@ -162,7 +162,7 @@ public class InstanceTemplateManager extends LifecycleComponent implements IInst
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

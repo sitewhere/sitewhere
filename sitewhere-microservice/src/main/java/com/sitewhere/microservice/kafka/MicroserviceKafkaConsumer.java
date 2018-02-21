@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -68,7 +70,7 @@ public abstract class MicroserviceKafkaConsumer extends TenantEngineLifecycleCom
 		"Consumer connecting to Kafka: " + getMicroservice().getInstanceSettings().getKafkaBootstrapServers());
 	getLogger().info("Will be consuming messages from: " + getSourceTopicNames());
 	this.consumer = new KafkaConsumer<>(buildConfiguration());
-	this.executor = Executors.newSingleThreadExecutor();
+	this.executor = Executors.newSingleThreadExecutor(new MicroserviceConsumerThreadFactory());
 	executor.execute(new MessageConsumer());
     }
 
@@ -170,6 +172,17 @@ public abstract class MicroserviceKafkaConsumer extends TenantEngineLifecycleCom
 	    } finally {
 		getConsumer().close();
 	    }
+	}
+    }
+
+    /** Used for naming microservice consumer thread */
+    private class MicroserviceConsumerThreadFactory implements ThreadFactory {
+
+	/** Counts threads */
+	private AtomicInteger counter = new AtomicInteger();
+
+	public Thread newThread(Runnable r) {
+	    return new Thread(r, "Microservice Consumer " + counter.incrementAndGet());
 	}
     }
 }

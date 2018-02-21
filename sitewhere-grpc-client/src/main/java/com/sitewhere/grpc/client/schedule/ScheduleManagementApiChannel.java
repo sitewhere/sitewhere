@@ -7,8 +7,8 @@
  */
 package com.sitewhere.grpc.client.schedule;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.grpc.client.ApiChannel;
 import com.sitewhere.grpc.client.GrpcChannel;
@@ -57,7 +57,7 @@ public class ScheduleManagementApiChannel extends ApiChannel<ScheduleManagementG
 	implements IScheduleManagementApiChannel {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(ScheduleManagementApiChannel.class);
 
     public ScheduleManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
 	super(demux, microservice, host);
@@ -307,7 +307,7 @@ public class ScheduleManagementApiChannel extends ApiChannel<ScheduleManagementG
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

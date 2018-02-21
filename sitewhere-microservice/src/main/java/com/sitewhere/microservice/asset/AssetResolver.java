@@ -7,8 +7,8 @@
  */
 package com.sitewhere.microservice.asset;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiDemux;
 import com.sitewhere.spi.asset.IAssetManagement;
@@ -24,7 +24,7 @@ public class AssetResolver implements IAssetResolver {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(AssetResolver.class);
 
     /** Asset management demux */
     private IAssetManagementApiDemux assetManagementDemux;

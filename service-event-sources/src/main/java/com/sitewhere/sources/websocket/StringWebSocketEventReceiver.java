@@ -13,8 +13,8 @@ import javax.websocket.EndpointConfig;
 import javax.websocket.MessageHandler;
 import javax.websocket.Session;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 
@@ -27,7 +27,7 @@ import com.sitewhere.sources.spi.IInboundEventReceiver;
 public class StringWebSocketEventReceiver extends WebSocketEventReceiver<String> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(StringWebSocketEventReceiver.class);
 
     /*
      * (non-Javadoc)

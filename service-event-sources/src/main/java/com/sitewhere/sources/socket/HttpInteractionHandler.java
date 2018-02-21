@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpException;
@@ -22,8 +24,6 @@ import org.apache.http.HttpVersion;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.DefaultBHttpServerConnection;
 import org.apache.http.message.BasicHttpResponse;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
@@ -92,14 +92,17 @@ public class HttpInteractionHandler implements ISocketInteractionHandler<byte[]>
     public static class Factory extends LifecycleComponent implements ISocketInteractionHandlerFactory<byte[]> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+	private static Log LOGGER = LogFactory.getLog(Factory.class);
 
 	public Factory() {
 	    super(LifecycleComponentType.Other);
 	}
 
+	/*
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
 	@Override
-	public Logger getLogger() {
+	public Log getLogger() {
 	    return LOGGER;
 	}
 

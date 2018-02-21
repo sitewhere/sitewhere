@@ -10,8 +10,8 @@ package com.sitewhere.connectors.mqtt;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.fusesource.hawtdispatch.Dispatch;
 import org.fusesource.hawtdispatch.DispatchQueue;
 import org.fusesource.mqtt.client.Future;
@@ -47,7 +47,7 @@ public class MqttOutboundConnector extends FilteredOutboundConnector
 	implements IMulticastingOutboundConnector<String>, IMqttComponent {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(MqttOutboundConnector.class);
 
     private String protocol = MqttLifecycleComponent.DEFAULT_PROTOCOL;
 
@@ -260,7 +260,7 @@ public class MqttOutboundConnector extends FilteredOutboundConnector
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

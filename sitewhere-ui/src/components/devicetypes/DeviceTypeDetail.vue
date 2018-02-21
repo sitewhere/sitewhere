@@ -1,6 +1,7 @@
 <template>
-  <div v-if="deviceType">
-    <v-app>
+  <navigation-page v-if="deviceType" icon="fa-file"
+    :title="deviceType.name">
+    <div slot="content">
       <device-type-detail-header :deviceType="deviceType"
         @deviceTypeDeleted="onDeleted" @deviceTypeUpdated="onUpdated"
         class="mb-3">
@@ -48,12 +49,13 @@
       <device-status-create-dialog v-if="active === 'statuses'"
         :deviceType="deviceType" @statusAdded="onStatusAdded">
       </device-status-create-dialog>
-    </v-app>
-  </div>
+    </div>
+  </navigation-page>
 </template>
 
 <script>
 import Utils from '../common/Utils'
+import NavigationPage from '../common/NavigationPage'
 import DeviceTypeDetailHeader from './DeviceTypeDetailHeader'
 import DeviceTypeCommands from './DeviceTypeCommands'
 import DeviceTypeDeviceStatuses from './DeviceTypeDeviceStatuses'
@@ -74,6 +76,7 @@ export default {
   }),
 
   components: {
+    NavigationPage,
     DeviceTypeDetailHeader,
     DeviceTypeCommands,
     DeviceTypeDeviceStatuses,

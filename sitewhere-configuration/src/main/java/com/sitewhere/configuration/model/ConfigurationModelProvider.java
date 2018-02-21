@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.rest.model.configuration.ConfigurationModel;
@@ -36,7 +36,7 @@ import com.sitewhere.spi.microservice.configuration.model.IRoleKey;
 public abstract class ConfigurationModelProvider implements IConfigurationModelProvider {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(ConfigurationModelProvider.class);
 
     /** Map of elements by role */
     private Map<String, List<IElementNode>> elementsByRole = new HashMap<String, List<IElementNode>>();

@@ -15,8 +15,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 
 import com.mongodb.MongoBulkWriteException;
@@ -34,7 +34,7 @@ import com.sitewhere.spi.SiteWhereException;
 public class DeviceEventBuffer implements IDeviceEventBuffer {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(DeviceEventBuffer.class);
 
     /** Max number of puts that can be stored in the queue */
     private static final int MAX_QUEUE_SIZE = 10000;
@@ -81,8 +81,7 @@ public class DeviceEventBuffer implements IDeviceEventBuffer {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.mongodb.device.IDeviceEventBuffer#add(org.bson.Document)
+     * @see com.sitewhere.mongodb.device.IDeviceEventBuffer#add(org.bson.Document)
      */
     public void add(Document record) {
 	try {

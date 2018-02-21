@@ -1,9 +1,10 @@
 <template>
-  <div v-if="assignment">
-    <v-app>
+  <navigation-page v-if="assignment" icon="fa-link"
+    title="Manage Device Assignment">
+    <div slot="content">
       <assignment-detail-header @emulatorOpened="onEmulatorOpened"
         @assignmentDeleted="onAssignmentDeleted"
-        :assignment="assignment" class="mb-3">
+        :assignment="assignment">
       </assignment-detail-header>
       <v-tabs v-model="active">
         <v-tabs-bar dark color="primary">
@@ -45,11 +46,12 @@
       <invocation-create-dialog v-if="active === 'invocations'"
         :token="assignment.token" @invocationAdded="onInvocationAdded"
         :deviceType="assignment.device.deviceType"/>
-    </v-app>
-  </div>
+    </div>
+  </navigation-page>
 </template>
 
 <script>
+import NavigationPage from '../common/NavigationPage'
 import AssignmentDetailHeader from './AssignmentDetailHeader'
 import AssignmentLocationEvents from './AssignmentLocationEvents'
 import AssignmentMeasurementEvents from './AssignmentMeasurementEvents'
@@ -69,6 +71,7 @@ export default {
   }),
 
   components: {
+    NavigationPage,
     AssignmentDetailHeader,
     AssignmentLocationEvents,
     AssignmentMeasurementEvents,

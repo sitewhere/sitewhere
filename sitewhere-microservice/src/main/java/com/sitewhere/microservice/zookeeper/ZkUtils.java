@@ -14,9 +14,9 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
 
@@ -28,7 +28,7 @@ import com.sitewhere.spi.SiteWhereException;
 public class ZkUtils {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(ZkUtils.class);
 
     /**
      * Copy a folder recursively into Zk.

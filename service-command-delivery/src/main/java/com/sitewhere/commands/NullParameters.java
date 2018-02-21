@@ -7,8 +7,8 @@
  */
 package com.sitewhere.commands;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor;
 import com.sitewhere.commands.spi.ICommandDeliveryProvider;
@@ -37,7 +37,7 @@ public class NullParameters {
 	    implements ICommandDeliveryParameterExtractor<NullParameters> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = LogManager.getLogger();
+	private static Log LOGGER = LogFactory.getLog(Extractor.class);
 
 	/** Value to be returned */
 	private NullParameters parameters = new NullParameters();
@@ -51,8 +51,8 @@ public class NullParameters {
 	 * 
 	 * @see com.sitewhere.spi.device.communication.
 	 * ICommandDeliveryParameterExtractor#
-	 * extractDeliveryParameters(com.sitewhere.spi.device.
-	 * IDeviceNestingContext, com.sitewhere.spi.device.IDeviceAssignment,
+	 * extractDeliveryParameters(com.sitewhere.spi.device. IDeviceNestingContext,
+	 * com.sitewhere.spi.device.IDeviceAssignment,
 	 * com.sitewhere.spi.device.command.IDeviceCommandExecution)
 	 */
 	@Override
@@ -64,11 +64,10 @@ public class NullParameters {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override
-	public Logger getLogger() {
+	public Log getLogger() {
 	    return LOGGER;
 	}
     }

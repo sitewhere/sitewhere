@@ -7,8 +7,8 @@
  */
 package com.sitewhere.registration.microservice;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.grpc.client.device.DeviceManagementApiDemux;
 import com.sitewhere.grpc.client.spi.ApiNotAvailableException;
@@ -34,7 +34,7 @@ public class DeviceRegistrationMicroservice extends MultitenantMicroservice<IDev
 	implements IDeviceRegistrationMicroservice {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(DeviceRegistrationMicroservice.class);
 
     /** Microservice name */
     private static final String NAME = "Device Registration";
@@ -188,7 +188,7 @@ public class DeviceRegistrationMicroservice extends MultitenantMicroservice<IDev
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

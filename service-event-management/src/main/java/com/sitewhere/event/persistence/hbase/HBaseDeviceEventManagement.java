@@ -10,9 +10,9 @@ package com.sitewhere.event.persistence.hbase;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.regionserver.BloomType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.event.persistence.DeviceEventManagementPersistence;
 import com.sitewhere.hbase.DeviceIdManager;
@@ -62,7 +62,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class HBaseDeviceEventManagement extends TenantEngineLifecycleComponent implements IDeviceEventManagement {
 
     /** Static logger instance */
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(HBaseDeviceEventManagement.class);
 
     /** Device management implementation */
     private IDeviceManagement deviceManagement;
@@ -143,7 +143,7 @@ public class HBaseDeviceEventManagement extends TenantEngineLifecycleComponent i
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

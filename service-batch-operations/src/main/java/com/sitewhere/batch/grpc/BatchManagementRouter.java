@@ -7,8 +7,8 @@
  */
 package com.sitewhere.batch.grpc;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
@@ -44,7 +44,7 @@ public class BatchManagementRouter extends BatchManagementGrpc.BatchManagementIm
 
     /** Static logger instance */
     @SuppressWarnings("unused")
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(BatchManagementRouter.class);
 
     /** Parent microservice */
     private IBatchOperationsMicroservice microservice;

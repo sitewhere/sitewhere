@@ -9,8 +9,8 @@ package com.sitewhere.registration;
 
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.registration.spi.IRegistrationManager;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice;
@@ -44,7 +44,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class DefaultRegistrationManager extends TenantEngineLifecycleComponent implements IRegistrationManager {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(DefaultRegistrationManager.class);
 
     /** Indicates if new devices can register with the system */
     private boolean allowNewDevices = true;
@@ -278,7 +278,7 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

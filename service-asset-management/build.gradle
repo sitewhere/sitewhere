@@ -2,9 +2,11 @@ description = 'SiteWhere Asset Management Microservice'
 
 dependencies {
 	compile project(':sitewhere-core')
-	compile project(':sitewhere-hbase')
 	compile project(':sitewhere-mongodb')
 	compile project(':sitewhere-microservice')
+	
+	// HBase not currently supported.
+	compileOnly project(':sitewhere-hbase')
 	
 	// REST template for SCIM access.
     compile group: 'org.springframework', name: 'spring-web'
@@ -38,7 +40,7 @@ task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, depends
 	copyFile("${project.name}-${project.version}.jar", "/")
 
 	// Run Java command to start application.
-	defaultCommand 'java', "-Xmx${rootProject.ext['docker.java.memory']}", '-jar', "/${project.name}-${project.version}.jar"
+	defaultCommand 'java', '-Xmx768M', '-XX:+UnlockExperimentalVMOptions', '-XX:+UseCGroupMemoryLimitForHeap', '-jar', "/${project.name}-${project.version}.jar"
 }
 
 // Copy artifact to Docker input folder.

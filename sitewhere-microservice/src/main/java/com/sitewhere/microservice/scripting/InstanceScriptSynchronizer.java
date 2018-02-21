@@ -9,8 +9,8 @@ package com.sitewhere.microservice.scripting;
 
 import java.io.File;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
@@ -24,7 +24,7 @@ import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
 public class InstanceScriptSynchronizer extends ScriptSynchronizer {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(InstanceScriptSynchronizer.class);
 
     /** File system root */
     private File fileSystemRoot;
@@ -72,7 +72,7 @@ public class InstanceScriptSynchronizer extends ScriptSynchronizer {
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

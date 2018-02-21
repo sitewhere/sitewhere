@@ -21,8 +21,8 @@ import javax.websocket.Endpoint;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.sources.InboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
@@ -38,7 +38,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public abstract class WebSocketEventReceiver<T> extends InboundEventReceiver<T> {
 
     /** Static logger */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(WebSocketEventReceiver.class);
 
     /** User property that references the event reciever */
     public static final String PROP_EVENT_RECEIVER = "sw.event.receiver";
@@ -103,7 +103,7 @@ public abstract class WebSocketEventReceiver<T> extends InboundEventReceiver<T> 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

@@ -13,8 +13,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.config.GroupConfig;
@@ -45,7 +45,7 @@ public class HazelcastManager extends LifecycleComponent implements IHazelcastMa
     private static final int HZ_PORT = 5701;
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(HazelcastManager.class);
 
     /** Microservice */
     private IMicroservice microservice;
@@ -146,7 +146,7 @@ public class HazelcastManager extends LifecycleComponent implements IHazelcastMa
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

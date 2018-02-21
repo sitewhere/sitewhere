@@ -7,8 +7,8 @@
  */
 package com.sitewhere.device.communication;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.rest.model.device.command.DeviceStreamAckCommand;
 import com.sitewhere.rest.model.device.command.SendDeviceStreamDataCommand;
@@ -39,7 +39,7 @@ import com.sitewhere.spi.tenant.ITenant;
 public class DeviceStreamManager extends TenantEngineLifecycleComponent implements IDeviceStreamManager {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(DeviceStreamManager.class);
 
     public DeviceStreamManager() {
 	super(LifecycleComponentType.DeviceStreamManager);
@@ -122,7 +122,7 @@ public class DeviceStreamManager extends TenantEngineLifecycleComponent implemen
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

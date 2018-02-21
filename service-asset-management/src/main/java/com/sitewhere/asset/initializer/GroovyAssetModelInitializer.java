@@ -7,8 +7,8 @@
  */
 package com.sitewhere.asset.initializer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.asset.spi.IAssetModelInitializer;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
@@ -28,7 +28,7 @@ import groovy.lang.Binding;
 public class GroovyAssetModelInitializer extends ModelInitializer implements IAssetModelInitializer {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(GroovyAssetModelInitializer.class);
 
     /** Tenant Groovy configuration */
     private GroovyConfiguration groovyConfiguration;

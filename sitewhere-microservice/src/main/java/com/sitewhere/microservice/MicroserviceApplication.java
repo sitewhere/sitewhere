@@ -14,8 +14,8 @@ import java.util.concurrent.ThreadFactory;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.ComponentScan;
 
 import com.sitewhere.microservice.docker.InitializationMarkerUtils;
@@ -38,7 +38,7 @@ import io.opentracing.ActiveSpan;
 public abstract class MicroserviceApplication<T extends IMicroservice> implements IMicroserviceApplication<T> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(MicroserviceApplication.class);
 
     /** Executor for background thread */
     private ExecutorService executor;

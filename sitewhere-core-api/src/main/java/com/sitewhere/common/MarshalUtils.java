@@ -7,19 +7,12 @@
  */
 package com.sitewhere.common;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.sitewhere.spi.SiteWhereException;
 
 public class MarshalUtils {
-
-    /** Static logger instance */
-    @SuppressWarnings("unused")
-    private static Logger LOGGER = LogManager.getLogger();
 
     /** Singleton object mapper for JSON marshaling */
     public static ObjectMapper MAPPER = new ObjectMapper();

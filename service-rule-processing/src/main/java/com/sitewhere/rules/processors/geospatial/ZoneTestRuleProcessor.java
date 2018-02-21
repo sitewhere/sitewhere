@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.geospatial.GeoUtils;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
@@ -37,7 +37,7 @@ import com.vividsolutions.jts.geom.Polygon;
 public class ZoneTestRuleProcessor extends RuleProcessor {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(ZoneTestRuleProcessor.class);
 
     /** Map of polygons by zone token */
     private Map<String, Polygon> zoneMap = new HashMap<String, Polygon>();
@@ -51,7 +51,7 @@ public class ZoneTestRuleProcessor extends RuleProcessor {
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.NoOpResponseParser;
@@ -52,7 +52,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class SolrSearchProvider extends LifecycleComponent implements IDeviceEventSearchProvider {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(SolrSearchProvider.class);
 
     /** Id returned for provider */
     private static final String ID = "solr";
@@ -108,7 +108,7 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
 
 import com.sitewhere.spi.SiteWhereException;
 
@@ -257,7 +257,7 @@ public interface ILifecycleComponent {
      * 
      * @return
      */
-    public Logger getLogger();
+    public Log getLogger();
 
     /**
      * Logs the state of this component and all nested components.

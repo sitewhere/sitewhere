@@ -7,8 +7,8 @@
  */
 package com.sitewhere.batch.microservice;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.batch.configuration.BatchOperationsModelProvider;
 import com.sitewhere.batch.grpc.BatchManagementGrpcServer;
@@ -38,7 +38,7 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
 	implements IBatchOperationsMicroservice {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(BatchOperationsMicroservice.class);
 
     /** Microservice name */
     private static final String NAME = "Batch Operations";
@@ -249,7 +249,7 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

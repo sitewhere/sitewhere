@@ -12,6 +12,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Put;
@@ -20,8 +22,6 @@ import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.batch.persistence.BatchManagementPersistence;
 import com.sitewhere.hbase.IHBaseContext;
@@ -45,7 +45,7 @@ import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 public class HBaseBatchElement {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(HBaseBatchElement.class);
 
     /** Length of element index info (subset of 8 byte long) */
     public static final int INDEX_LENGTH = 4;
@@ -127,8 +127,8 @@ public class HBaseBatchElement {
     }
 
     /**
-     * Gets the batch operation element given the parent operation token and
-     * unique index.
+     * Gets the batch operation element given the parent operation token and unique
+     * index.
      * 
      * @param context
      * @param devices
@@ -275,8 +275,8 @@ public class HBaseBatchElement {
     }
 
     /**
-     * Truncate element id value to expected length. This will be a subset of
-     * the full 8-bit long value.
+     * Truncate element id value to expected length. This will be a subset of the
+     * full 8-bit long value.
      * 
      * @param value
      * @return

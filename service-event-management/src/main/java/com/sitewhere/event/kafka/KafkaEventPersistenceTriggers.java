@@ -7,8 +7,8 @@
  */
 package com.sitewhere.event.kafka;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.event.DeviceEventManagementDecorator;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
@@ -46,7 +46,7 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
 
     /** Static logger instance */
     @SuppressWarnings("unused")
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(KafkaEventPersistenceTriggers.class);
 
     /** Parent tenant engine */
     private IEventManagementTenantEngine tenantEngine;

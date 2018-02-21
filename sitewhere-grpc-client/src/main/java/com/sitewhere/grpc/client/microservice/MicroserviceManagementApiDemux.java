@@ -7,8 +7,8 @@
  */
 package com.sitewhere.grpc.client.microservice;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.grpc.client.ApiDemux;
 import com.sitewhere.grpc.client.spi.client.IMicroserviceManagementApiChannel;
@@ -28,7 +28,7 @@ public class MicroserviceManagementApiDemux extends ApiDemux<IMicroserviceManage
 	implements IMicroserviceManagementApiDemux {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(MicroserviceManagementApiDemux.class);
 
     /** Target identifier */
     private String targetIdentifier;
@@ -59,7 +59,7 @@ public class MicroserviceManagementApiDemux extends ApiDemux<IMicroserviceManage
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

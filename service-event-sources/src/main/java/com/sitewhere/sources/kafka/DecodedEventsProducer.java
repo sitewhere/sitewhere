@@ -7,8 +7,8 @@
  */
 package com.sitewhere.sources.kafka;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
@@ -23,7 +23,7 @@ import com.sitewhere.spi.microservice.IMicroservice;
 public class DecodedEventsProducer extends MicroserviceKafkaProducer {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(DecodedEventsProducer.class);
 
     public DecodedEventsProducer(IMicroservice microservice) {
 	super(microservice);
@@ -42,7 +42,7 @@ public class DecodedEventsProducer extends MicroserviceKafkaProducer {
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

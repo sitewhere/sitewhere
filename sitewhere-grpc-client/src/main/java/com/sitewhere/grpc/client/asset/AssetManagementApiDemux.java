@@ -7,8 +7,8 @@
  */
 package com.sitewhere.grpc.client.asset;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.grpc.client.ApiDemux;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
@@ -27,7 +27,7 @@ import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
 public class AssetManagementApiDemux extends ApiDemux<IAssetManagementApiChannel> implements IAssetManagementApiDemux {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(AssetManagementApiChannel.class);
 
     public AssetManagementApiDemux(IMicroservice microservice) {
 	super(microservice);
@@ -54,7 +54,7 @@ public class AssetManagementApiDemux extends ApiDemux<IAssetManagementApiChannel
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

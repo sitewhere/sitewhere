@@ -7,8 +7,8 @@
  */
 package com.sitewhere.commands.groovy;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.commands.spi.CommandEncodeException;
 import com.sitewhere.commands.spi.ICommandExecutionEncoder;
@@ -36,7 +36,7 @@ public class GroovyCommandExecutionEncoder extends GroovyComponent implements IC
     }
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(GroovyCommandExecutionEncoder.class);
 
     /*
      * (non-Javadoc)
@@ -90,7 +90,7 @@ public class GroovyCommandExecutionEncoder extends GroovyComponent implements IC
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

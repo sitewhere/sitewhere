@@ -7,8 +7,8 @@
  */
 package com.sitewhere.device.persistence.mongodb;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
@@ -24,7 +24,7 @@ import com.sitewhere.spi.SiteWhereException;
 public class DeviceManagementMongoClient extends MongoDbClient implements IDeviceManagementMongoClient {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(DeviceManagementMongoClient.class);
 
     /** Injected name used for device types collection */
     private String deviceTypesCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICE_TYPES_COLLECTION_NAME;
@@ -179,7 +179,7 @@ public class DeviceManagementMongoClient extends MongoDbClient implements IDevic
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

@@ -15,10 +15,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import com.sitewhere.communication.protobuf.proto.Sitewhere.SiteWhere;
 import com.sitewhere.communication.protobuf.proto.Sitewhere.Model.DeviceAlert;
 import com.sitewhere.communication.protobuf.proto.Sitewhere.Model.DeviceLocation;
 import com.sitewhere.communication.protobuf.proto.Sitewhere.Model.DeviceMeasurements;
@@ -26,6 +25,7 @@ import com.sitewhere.communication.protobuf.proto.Sitewhere.Model.DeviceStream;
 import com.sitewhere.communication.protobuf.proto.Sitewhere.Model.DeviceStreamData;
 import com.sitewhere.communication.protobuf.proto.Sitewhere.Model.Measurement;
 import com.sitewhere.communication.protobuf.proto.Sitewhere.Model.Metadata;
+import com.sitewhere.communication.protobuf.proto.Sitewhere.SiteWhere;
 import com.sitewhere.communication.protobuf.proto.Sitewhere.SiteWhere.Acknowledge;
 import com.sitewhere.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest;
 import com.sitewhere.communication.protobuf.proto.Sitewhere.SiteWhere.Header;
@@ -64,7 +64,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent implements IDeviceEventDecoder<byte[]> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(ProtobufDeviceEventDecoder.class);
 
     public ProtobufDeviceEventDecoder() {
 	super(LifecycleComponentType.DeviceEventDecoder);
@@ -314,7 +314,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

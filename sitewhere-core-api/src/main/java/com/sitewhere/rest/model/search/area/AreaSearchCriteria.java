@@ -19,11 +19,14 @@ import com.sitewhere.spi.search.area.IAreaSearchCriteria;
  */
 public class AreaSearchCriteria extends SearchCriteria implements IAreaSearchCriteria {
 
-    /** Return only root areas */
+    /** Only return root areas */
     private Boolean rootOnly;
 
-    /** Token for parent area */
+    /** Only return areas with the given parent */
     private UUID parentAreaId;
+
+    /** Only return areas of the given type */
+    private UUID areaTypeId;
 
     public AreaSearchCriteria(int pageNumber, int pageSize) {
 	super(pageNumber, pageSize);
@@ -51,5 +54,17 @@ public class AreaSearchCriteria extends SearchCriteria implements IAreaSearchCri
 
     public void setParentAreaId(UUID parentAreaId) {
 	this.parentAreaId = parentAreaId;
+    }
+
+    /*
+     * @see com.sitewhere.spi.search.area.IAreaSearchCriteria#getAreaTypeId()
+     */
+    @Override
+    public UUID getAreaTypeId() {
+	return areaTypeId;
+    }
+
+    public void setAreaTypeId(UUID areaTypeId) {
+	this.areaTypeId = areaTypeId;
     }
 }

@@ -9,6 +9,8 @@ package com.sitewhere.hbase;
 
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.TableName;
@@ -17,8 +19,6 @@ import org.apache.hadoop.hbase.client.BufferedMutator;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.hbase.client.Table;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.sitewhere.hbase.common.SiteWhereTables;
@@ -33,7 +33,7 @@ import com.sitewhere.spi.tenant.ITenant;
 public class DefaultHBaseClient implements InitializingBean, ISiteWhereHBaseClient {
 
     /** Static logger instance */
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(DefaultHBaseClient.class);
 
     /** Zookeeper quorum */
     private String quorum;
@@ -59,8 +59,7 @@ public class DefaultHBaseClient implements InitializingBean, ISiteWhereHBaseClie
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
     public void afterPropertiesSet() throws Exception {
 	try {

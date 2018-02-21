@@ -7,8 +7,8 @@
  */
 package com.sitewhere.grpc.client.device;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.grpc.client.MultitenantGrpcChannel;
 import com.sitewhere.grpc.service.DeviceManagementGrpc;
@@ -26,7 +26,7 @@ public class DeviceManagementGrpcChannel
 	extends MultitenantGrpcChannel<DeviceManagementBlockingStub, DeviceManagementStub> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(DeviceManagementGrpcChannel.class);
 
     public DeviceManagementGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
 	super(tracerProvider, host, port);
@@ -58,7 +58,7 @@ public class DeviceManagementGrpcChannel
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

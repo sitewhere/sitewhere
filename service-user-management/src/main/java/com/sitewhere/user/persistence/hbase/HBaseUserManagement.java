@@ -9,9 +9,9 @@ package com.sitewhere.user.persistence.hbase;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.regionserver.BloomType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.hbase.HBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
@@ -39,7 +39,7 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
 public class HBaseUserManagement extends LifecycleComponent implements IUserManagement {
 
     /** Static logger instance */
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(HBaseUserManagement.class);
 
     /** Used to communicate with HBase */
     private ISiteWhereHBaseClient client;
@@ -85,7 +85,7 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 
@@ -126,8 +126,7 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.user.IUserManagement#authenticate(java.lang.String,
+     * @see com.sitewhere.spi.user.IUserManagement#authenticate(java.lang.String,
      * java.lang.String)
      */
     @Override
@@ -161,8 +160,7 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.user.IUserManagement#getGrantedAuthorities(java.lang.
+     * @see com.sitewhere.spi.user.IUserManagement#getGrantedAuthorities(java.lang.
      * String)
      */
     @Override
@@ -173,8 +171,7 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.user.IUserManagement#addGrantedAuthorities(java.lang.
+     * @see com.sitewhere.spi.user.IUserManagement#addGrantedAuthorities(java.lang.
      * String, java.util.List)
      */
     @Override
@@ -199,8 +196,7 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.user.IUserManagement#listUsers(com.sitewhere.spi.user.
+     * @see com.sitewhere.spi.user.IUserManagement#listUsers(com.sitewhere.spi.user.
      * IUserSearchCriteria)
      */
     @Override
@@ -233,8 +229,7 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.user.IUserManagement#getGrantedAuthorityByName(java.
+     * @see com.sitewhere.spi.user.IUserManagement#getGrantedAuthorityByName(java.
      * lang.String)
      */
     @Override
@@ -245,8 +240,7 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.user.IUserManagement#updateGrantedAuthority(java.lang.
+     * @see com.sitewhere.spi.user.IUserManagement#updateGrantedAuthority(java.lang.
      * String, com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest)
      */
     @Override
@@ -270,8 +264,7 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.user.IUserManagement#deleteGrantedAuthority(java.lang.
+     * @see com.sitewhere.spi.user.IUserManagement#deleteGrantedAuthority(java.lang.
      * String)
      */
     @Override

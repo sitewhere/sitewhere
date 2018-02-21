@@ -7,9 +7,9 @@
  */
 package com.sitewhere.tenant.persistence.hbase;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.regionserver.BloomType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.hbase.HBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
@@ -35,7 +35,7 @@ import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
 public class HBaseTenantManagement extends LifecycleComponent implements ITenantManagement {
 
     /** Static logger instance */
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(HBaseTenantManagement.class);
 
     /** Used to communicate with HBase */
     private ISiteWhereHBaseClient client;
@@ -92,7 +92,7 @@ public class HBaseTenantManagement extends LifecycleComponent implements ITenant
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

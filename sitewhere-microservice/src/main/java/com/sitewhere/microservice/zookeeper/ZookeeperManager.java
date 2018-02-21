@@ -9,12 +9,12 @@ package com.sitewhere.microservice.zookeeper;
 
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sitewhere.server.lifecycle.LifecycleComponent;
@@ -31,7 +31,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public class ZookeeperManager extends LifecycleComponent implements IZookeeperManager {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(ZookeeperManager.class);
 
     /** Base namespace for all SiteWhere Zookeeper artifacts */
     private static final String SITEWHERE_ZK_NAMESPACE = "sitewhere";
@@ -103,8 +103,7 @@ public class ZookeeperManager extends LifecycleComponent implements IZookeeperMa
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.microservice.spi.configuration.IZookeeperManager#getCurator
-     * ()
+     * com.sitewhere.microservice.spi.configuration.IZookeeperManager#getCurator ()
      */
     public CuratorFramework getCurator() {
 	return curator;
@@ -120,7 +119,7 @@ public class ZookeeperManager extends LifecycleComponent implements IZookeeperMa
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

@@ -7,8 +7,8 @@
  */
 package com.sitewhere.device.marshaling;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
@@ -29,7 +29,7 @@ import com.sitewhere.spi.device.IDeviceType;
 public class DeviceTypeMarshalHelper {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(DeviceTypeMarshalHelper.class);
 
     /** Device Management */
     private IDeviceManagement deviceManagement;

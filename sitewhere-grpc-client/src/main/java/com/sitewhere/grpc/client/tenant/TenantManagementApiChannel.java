@@ -9,8 +9,8 @@ package com.sitewhere.grpc.client.tenant;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.grpc.client.ApiChannel;
 import com.sitewhere.grpc.client.GrpcChannel;
@@ -52,7 +52,7 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
 	implements ITenantManagementApiChannel {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(TenantManagementApiChannel.class);
 
     public TenantManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
 	super(demux, microservice, host);
@@ -229,7 +229,7 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

@@ -7,8 +7,8 @@
  */
 package com.sitewhere.event.persistence.mongodb;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
@@ -24,7 +24,7 @@ import com.sitewhere.spi.SiteWhereException;
 public class DeviceEventManagementMongoClient extends MongoDbClient implements IDeviceEventManagementMongoClient {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(DeviceEventManagementMongoClient.class);
 
     /** Injected name used for events collection */
     private String eventsCollectionName = IDeviceEventManagementMongoClient.DEFAULT_EVENTS_COLLECTION_NAME;
@@ -48,7 +48,7 @@ public class DeviceEventManagementMongoClient extends MongoDbClient implements I
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

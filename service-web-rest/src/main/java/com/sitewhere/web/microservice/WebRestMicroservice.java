@@ -7,8 +7,8 @@
  */
 package com.sitewhere.web.microservice;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.grpc.client.asset.AssetManagementApiDemux;
 import com.sitewhere.grpc.client.batch.BatchManagementApiDemux;
@@ -47,7 +47,7 @@ import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 public class WebRestMicroservice extends GlobalMicroservice implements IWebRestMicroservice {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(WebRestMicroservice.class);
 
     /** Microservice name */
     private static final String NAME = "Web/REST";
@@ -419,7 +419,7 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

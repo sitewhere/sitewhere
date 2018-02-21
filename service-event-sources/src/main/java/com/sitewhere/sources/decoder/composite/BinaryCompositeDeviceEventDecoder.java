@@ -10,8 +10,8 @@ package com.sitewhere.sources.decoder.composite;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.sources.spi.ICompositeDeviceEventDecoder;
 import com.sitewhere.spi.SiteWhereException;
@@ -27,7 +27,7 @@ import com.sitewhere.spi.tenant.ITenant;
 public class BinaryCompositeDeviceEventDecoder extends CompositeDeviceEventDecoder<byte[]> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(BinaryCompositeDeviceEventDecoder.class);
 
     /** Metadata extractor implementation */
     private IMessageMetadataExtractor<byte[]> metadataExtractor;
@@ -93,7 +93,7 @@ public class BinaryCompositeDeviceEventDecoder extends CompositeDeviceEventDecod
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

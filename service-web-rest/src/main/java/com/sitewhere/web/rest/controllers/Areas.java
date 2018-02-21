@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -46,6 +46,7 @@ import com.sitewhere.rest.model.search.device.AssignmentSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.area.IArea;
+import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
@@ -81,7 +82,7 @@ public class Areas extends RestControllerBase {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(Areas.class);
 
     /**
      * Create a new area.
@@ -148,6 +149,7 @@ public class Areas extends RestControllerBase {
     public ISearchResults<IArea> listAreas(
 	    @ApiParam(value = "Limit to root elements", required = false) @RequestParam(required = false, defaultValue = "true") Boolean rootOnly,
 	    @ApiParam(value = "Limit by parent area token", required = false) @RequestParam(required = false) String parentAreaToken,
+	    @ApiParam(value = "Limit by area type token", required = false) @RequestParam(required = false) String areaTypeToken,
 	    @ApiParam(value = "Include area type", required = false) @RequestParam(defaultValue = "false") boolean includeAreaType,
 	    @ApiParam(value = "Include assignments", required = false) @RequestParam(defaultValue = "false") boolean includeAssignments,
 	    @ApiParam(value = "Include zones", required = false) @RequestParam(defaultValue = "false") boolean includeZones,
@@ -155,16 +157,7 @@ public class Areas extends RestControllerBase {
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize)
 	    throws SiteWhereException {
 	// Build criteria.
-	AreaSearchCriteria criteria = new AreaSearchCriteria(page, pageSize);
-	criteria.setRootOnly(rootOnly);
-
-	// Look up parent area if provided.
-	if (parentAreaToken != null) {
-	    IArea parent = getDeviceManagement().getAreaByToken(parentAreaToken);
-	    if (parent != null) {
-		criteria.setParentAreaId(parent.getId());
-	    }
-	}
+	AreaSearchCriteria criteria = buildAreaSearchCriteria(page, pageSize, rootOnly, parentAreaToken, areaTypeToken);
 
 	// Perform search.
 	ISearchResults<IArea> matches = getDeviceManagement().listAreas(criteria);
@@ -178,6 +171,42 @@ public class Areas extends RestControllerBase {
 	    results.add(helper.convert(area));
 	}
 	return new SearchResults<IArea>(results, matches.getNumResults());
+    }
+
+    /**
+     * Build area search criteria from parameters.
+     * 
+     * @param page
+     * @param pageSize
+     * @param rootOnly
+     * @param parentAreaToken
+     * @param areaTypeToken
+     * @return
+     * @throws SiteWhereException
+     */
+    protected AreaSearchCriteria buildAreaSearchCriteria(int page, int pageSize, boolean rootOnly,
+	    String parentAreaToken, String areaTypeToken) throws SiteWhereException {
+	// Build criteria.
+	AreaSearchCriteria criteria = new AreaSearchCriteria(page, pageSize);
+	criteria.setRootOnly(rootOnly);
+
+	// Look up parent area if provided.
+	if (parentAreaToken != null) {
+	    IArea parent = getDeviceManagement().getAreaByToken(parentAreaToken);
+	    if (parent != null) {
+		criteria.setParentAreaId(parent.getId());
+	    }
+	}
+
+	// Look up area type if provided.
+	if (areaTypeToken != null) {
+	    IAreaType areaType = getDeviceManagement().getAreaTypeByToken(areaTypeToken);
+	    if (areaType != null) {
+		criteria.setAreaTypeId(areaType.getId());
+	    }
+	}
+
+	return criteria;
     }
 
     /**

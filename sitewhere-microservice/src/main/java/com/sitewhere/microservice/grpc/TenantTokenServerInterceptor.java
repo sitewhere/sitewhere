@@ -7,8 +7,8 @@
  */
 package com.sitewhere.microservice.grpc;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.grpc.client.TenantTokenClientInterceptor;
 import com.sitewhere.spi.microservice.IMicroservice;
@@ -34,7 +34,7 @@ public class TenantTokenServerInterceptor implements ServerInterceptor {
     public static final Context.Key<String> TENANT_ID_KEY = Context.key("tenant");
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(TenantTokenServerInterceptor.class);
 
     /** Parent microservice */
     private IMicroservice microservice;

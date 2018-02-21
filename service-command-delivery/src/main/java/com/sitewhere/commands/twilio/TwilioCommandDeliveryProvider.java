@@ -10,10 +10,10 @@ package com.sitewhere.commands.twilio;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.sitewhere.commands.destination.sms.SmsParameters;
 import com.sitewhere.commands.spi.ICommandDeliveryProvider;
@@ -39,7 +39,7 @@ public class TwilioCommandDeliveryProvider extends TenantEngineLifecycleComponen
 	implements ICommandDeliveryProvider<String, SmsParameters> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(TwilioCommandDeliveryProvider.class);
 
     /** Account SID */
     private String accountSid;
@@ -86,19 +86,18 @@ public class TwilioCommandDeliveryProvider extends TenantEngineLifecycleComponen
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.communication.ICommandDeliveryProvider#deliver(
+     * @see com.sitewhere.spi.device.communication.ICommandDeliveryProvider#deliver(
      * com.sitewhere .spi.device.IDeviceNestingContext,
      * com.sitewhere.spi.device.IDeviceAssignment,
-     * com.sitewhere.spi.device.command.IDeviceCommandExecution,
-     * java.lang.Object, java.lang.Object)
+     * com.sitewhere.spi.device.command.IDeviceCommandExecution, java.lang.Object,
+     * java.lang.Object)
      */
     @Override
     public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment, IDeviceCommandExecution execution,

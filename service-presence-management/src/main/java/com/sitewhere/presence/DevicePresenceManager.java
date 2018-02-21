@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.joda.time.Period;
 import org.joda.time.format.ISOPeriodFormat;
 import org.joda.time.format.PeriodFormatter;
@@ -37,7 +37,7 @@ import com.sitewhere.spi.tenant.ITenant;
 public class DevicePresenceManager extends TenantEngineLifecycleComponent implements IDevicePresenceManager {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(DevicePresenceManager.class);
 
     /** Default presence check interval (10 min) */
     private static final String DEFAULT_PRESENCE_CHECK_INTERVAL = "10m";
@@ -106,7 +106,7 @@ public class DevicePresenceManager extends TenantEngineLifecycleComponent implem
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

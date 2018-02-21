@@ -9,8 +9,8 @@ package com.sitewhere.instance.microservice;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.zookeeper.data.Stat;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -48,7 +48,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 public class InstanceManagementMicroservice extends GlobalMicroservice implements IInstanceManagementMicroservice {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(InstanceManagementMicroservice.class);
 
     /** Microservice name */
     private static final String NAME = "Instance Management";
@@ -415,7 +415,7 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

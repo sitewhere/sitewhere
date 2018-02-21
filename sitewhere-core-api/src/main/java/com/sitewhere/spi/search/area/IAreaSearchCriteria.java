@@ -31,4 +31,11 @@ public interface IAreaSearchCriteria extends ISearchCriteria {
      * @return
      */
     public UUID getParentAreaId();
+
+    /**
+     * Require that areas have the given area type.
+     * 
+     * @return
+     */
+    public UUID getAreaTypeId();
 }

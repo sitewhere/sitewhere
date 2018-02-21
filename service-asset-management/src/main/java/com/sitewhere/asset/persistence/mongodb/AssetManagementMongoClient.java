@@ -7,8 +7,8 @@
  */
 package com.sitewhere.asset.persistence.mongodb;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
@@ -24,7 +24,7 @@ import com.sitewhere.spi.SiteWhereException;
 public class AssetManagementMongoClient extends MongoDbClient implements IAssetManagementMongoClient {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(AssetManagementMongoClient.class);
 
     /** Injected name used for asset categories collection */
     private String assetCategoriesCollectionName = IAssetManagementMongoClient.DEFAULT_ASSET_CATEGORIES_COLLECTION_NAME;
@@ -37,14 +37,16 @@ public class AssetManagementMongoClient extends MongoDbClient implements IAssetM
     }
 
     /*
-     * @see com.sitewhere.asset.persistence.mongodb.IAssetManagementMongoClient#getAssetCategoriesCollection()
+     * @see com.sitewhere.asset.persistence.mongodb.IAssetManagementMongoClient#
+     * getAssetCategoriesCollection()
      */
     public MongoCollection<Document> getAssetCategoriesCollection() throws SiteWhereException {
 	return getDatabase().getCollection(getAssetCategoriesCollectionName());
     }
 
     /*
-     * @see com.sitewhere.asset.persistence.mongodb.IAssetManagementMongoClient#getAssetsCollection()
+     * @see com.sitewhere.asset.persistence.mongodb.IAssetManagementMongoClient#
+     * getAssetsCollection()
      */
     public MongoCollection<Document> getAssetsCollection() throws SiteWhereException {
 	return getDatabase().getCollection(getAssetsCollectionName());
@@ -56,7 +58,7 @@ public class AssetManagementMongoClient extends MongoDbClient implements IAssetM
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

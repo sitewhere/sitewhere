@@ -16,8 +16,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.SolrPingResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
@@ -34,15 +34,15 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
- * {@link IOutboundConnector} implementation that takes saved events and
- * indexes them in Apache Solr for advanced analytics processing.
+ * {@link IOutboundConnector} implementation that takes saved events and indexes
+ * them in Apache Solr for advanced analytics processing.
  * 
  * @author Derek
  */
 public class SolrDeviceEventProcessor extends FilteredOutboundConnector {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(SolrDeviceEventProcessor.class);
 
     /** Number of documents to buffer before blocking calls */
     private static final int BUFFER_SIZE = 1000;
@@ -108,7 +108,7 @@ public class SolrDeviceEventProcessor extends FilteredOutboundConnector {
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

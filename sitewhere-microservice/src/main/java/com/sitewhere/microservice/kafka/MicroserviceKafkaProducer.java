@@ -9,6 +9,8 @@ package com.sitewhere.microservice.kafka;
 
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -16,9 +18,8 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
+import com.sitewhere.microservice.MicroserviceApplication;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
@@ -35,7 +36,7 @@ public abstract class MicroserviceKafkaProducer extends TenantEngineLifecycleCom
 	implements IMicroserviceKafkaProducer {
 
     /** Static logger instance for callback */
-    private static Logger CALLBACK_LOGGER = LogManager.getLogger();
+    private static Log CALLBACK_LOGGER = LogFactory.getLog(MicroserviceApplication.class);
 
     /** Create single callback */
     private static Callback CALLBACK = new Callback() {

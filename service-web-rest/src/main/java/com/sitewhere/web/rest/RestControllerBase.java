@@ -9,8 +9,8 @@ package com.sitewhere.web.rest;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sitewhere.security.UserContextManager;
@@ -30,7 +30,7 @@ import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 public class RestControllerBase {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(RestControllerBase.class);
 
     @Autowired
     private IWebRestMicroservice microservice;

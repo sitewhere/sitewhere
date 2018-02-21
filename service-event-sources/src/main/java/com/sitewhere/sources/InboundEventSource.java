@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.EventDecodeException;
@@ -36,7 +36,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public abstract class InboundEventSource<T> extends TenantEngineLifecycleComponent implements IInboundEventSource<T> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(InboundEventSource.class);
 
     /** Manager for all event sources in a tenant */
     private IEventSourcesManager eventSourcesManager;
@@ -180,7 +180,7 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

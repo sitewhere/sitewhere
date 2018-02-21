@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -46,7 +46,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public class InitialStateEventProcessor extends FilteredOutboundConnector {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(InitialStateEventProcessor.class);
 
     /** Base URI for REST calls */
     private static final String API_BASE = "https://groker.initialstate.com/api/";
@@ -232,8 +232,11 @@ public class InitialStateEventProcessor extends FilteredOutboundConnector {
 	}
     }
 
+    /*
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

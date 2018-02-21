@@ -7,8 +7,8 @@
  */
 package com.sitewhere.inbound.microservice;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.inbound.kafka.DecodedEventsConsumer;
 import com.sitewhere.inbound.kafka.EnrichedCommandInvocationsProducer;
@@ -41,7 +41,7 @@ import com.sitewhere.spi.tenant.ITenant;
 public class InboundProcessingTenantEngine extends MicroserviceTenantEngine implements IInboundProcessingTenantEngine {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(InboundProcessingTenantEngine.class);
 
     /** Kafka consumer that received inbound decoded events */
     private IDecodedEventsConsumer decodedEventsConsumer;
@@ -234,7 +234,7 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

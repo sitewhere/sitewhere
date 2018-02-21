@@ -13,8 +13,8 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.sources.InboundEventReceiver;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
@@ -32,7 +32,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public class SocketInboundEventReceiver<T> extends InboundEventReceiver<T> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(SocketInboundEventReceiver.class);
 
     /** Default number of threads used to service requests */
     private static final int DEFAULT_NUM_THREADS = 5;
@@ -103,7 +103,7 @@ public class SocketInboundEventReceiver<T> extends InboundEventReceiver<T> {
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

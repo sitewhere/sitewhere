@@ -1,10 +1,5 @@
 description = 'SiteWhere Core Library'
 
-configurations {
-    compile.exclude module: 'spring-boot-starter-logging'
-    compile.exclude module: 'spring-boot-autoconfigure'
-}
-
 dependencies {
     compile project(':sitewhere-core-lifecycle')
      
@@ -12,9 +7,6 @@ dependencies {
     compile group: 'org.springframework', name: 'spring-beans'
     compile group: 'org.springframework', name: 'spring-context'
     compile group: 'org.springframework', name: 'spring-context-support'
-    
-	compile ('org.springframework.boot:spring-boot-starter')
-	compile ('org.springframework.boot:spring-boot-starter-log4j2')
     
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'

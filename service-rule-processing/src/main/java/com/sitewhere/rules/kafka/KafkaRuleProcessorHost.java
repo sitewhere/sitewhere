@@ -16,8 +16,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GEnrichedEventPayload;
@@ -49,7 +49,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public class KafkaRuleProcessorHost extends MicroserviceKafkaConsumer {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(KafkaRuleProcessorHost.class);
 
     /** Consumer id */
     private static String CONSUMER_ID = UUID.randomUUID().toString();
@@ -156,7 +156,7 @@ public class KafkaRuleProcessorHost extends MicroserviceKafkaConsumer {
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

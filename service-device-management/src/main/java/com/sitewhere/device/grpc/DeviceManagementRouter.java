@@ -7,8 +7,8 @@
  */
 package com.sitewhere.device.grpc;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
@@ -29,7 +29,7 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
 
     /** Static logger instance */
     @SuppressWarnings("unused")
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(DeviceManagementRouter.class);
 
     /** Parent microservice */
     private IDeviceManagementMicroservice microservice;

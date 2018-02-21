@@ -7,8 +7,8 @@
  */
 package com.sitewhere.sources.microservice;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
@@ -32,7 +32,7 @@ import com.sitewhere.spi.tenant.ITenant;
 public class EventSourcesTenantEngine extends MicroserviceTenantEngine implements IEventSourcesTenantEngine {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(EventSourcesTenantEngine.class);
 
     /** Event sources manager */
     private IEventSourcesManager eventSourcesManager;
@@ -44,8 +44,7 @@ public class EventSourcesTenantEngine extends MicroserviceTenantEngine implement
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
      * tenantInitialize(com.sitewhere.spi.server.lifecycle.
      * ILifecycleProgressMonitor)
      */
@@ -67,8 +66,7 @@ public class EventSourcesTenantEngine extends MicroserviceTenantEngine implement
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
      * tenantStart(com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
@@ -86,10 +84,8 @@ public class EventSourcesTenantEngine extends MicroserviceTenantEngine implement
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
-     * tenantBootstrap(com.sitewhere.microservice.spi.multitenant.
-     * ITenantTemplate,
+     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * tenantBootstrap(com.sitewhere.microservice.spi.multitenant. ITenantTemplate,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
@@ -99,8 +95,7 @@ public class EventSourcesTenantEngine extends MicroserviceTenantEngine implement
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
      * tenantStop(com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
@@ -134,7 +129,7 @@ public class EventSourcesTenantEngine extends MicroserviceTenantEngine implement
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

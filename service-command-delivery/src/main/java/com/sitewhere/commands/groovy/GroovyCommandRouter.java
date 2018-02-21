@@ -9,8 +9,8 @@ package com.sitewhere.commands.groovy;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.commands.spi.ICommandDestination;
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
@@ -34,7 +34,7 @@ import groovy.lang.Binding;
 public class GroovyCommandRouter extends GroovyComponent implements IOutboundCommandRouter {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(GroovyCommandRouter.class);
 
     /** List of available command destinations */
     private List<ICommandDestination<?, ?>> commandDestinations;
@@ -128,7 +128,7 @@ public class GroovyCommandRouter extends GroovyComponent implements IOutboundCom
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

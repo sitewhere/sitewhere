@@ -7,8 +7,8 @@
  */
 package com.sitewhere.commands.destination;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.commands.spi.ICommandDestinationsManager;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -23,13 +23,13 @@ import com.sitewhere.spi.microservice.kafka.payload.IEnrichedEventPayload;
 public class CommandDestinationsManager extends TenantEngineLifecycleComponent implements ICommandDestinationsManager {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(CommandDestinationsManager.class);
 
     /*
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

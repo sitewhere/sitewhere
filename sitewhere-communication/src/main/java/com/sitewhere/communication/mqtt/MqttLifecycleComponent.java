@@ -17,8 +17,8 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.fusesource.hawtdispatch.Dispatch;
 import org.fusesource.hawtdispatch.DispatchQueue;
 import org.fusesource.mqtt.client.Future;
@@ -40,7 +40,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class MqttLifecycleComponent extends TenantEngineLifecycleComponent implements IMqttComponent {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(MqttLifecycleComponent.class);
 
     /** Default protocol if not set via Spring */
     public static final String DEFAULT_PROTOCOL = "tcp";
@@ -251,7 +251,7 @@ public class MqttLifecycleComponent extends TenantEngineLifecycleComponent imple
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 
@@ -329,8 +329,7 @@ public class MqttLifecycleComponent extends TenantEngineLifecycleComponent imple
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.device.communication.mqtt.IMqttComponent#getTrustStorePath(
-     * )
+     * com.sitewhere.device.communication.mqtt.IMqttComponent#getTrustStorePath( )
      */
     @Override
     public String getTrustStorePath() {
@@ -359,8 +358,7 @@ public class MqttLifecycleComponent extends TenantEngineLifecycleComponent imple
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.device.communication.mqtt.IMqttComponent#getKeyStorePath()
+     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getKeyStorePath()
      */
     public String getKeyStorePath() {
 	return keyStorePath;

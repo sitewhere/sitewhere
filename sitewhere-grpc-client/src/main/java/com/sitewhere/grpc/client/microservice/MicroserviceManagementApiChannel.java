@@ -7,8 +7,8 @@
  */
 package com.sitewhere.grpc.client.microservice;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.google.protobuf.ByteString;
 import com.sitewhere.grpc.client.ApiChannel;
@@ -42,7 +42,7 @@ public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceMan
 	implements IMicroserviceManagementApiChannel {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(MicroserviceManagementApiChannel.class);
 
     public MicroserviceManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
 	super(demux, microservice, host, microservice.getInstanceSettings().getManagementGrpcPort());
@@ -167,7 +167,7 @@ public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceMan
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

@@ -9,8 +9,8 @@ package com.sitewhere.sources;
 
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
@@ -27,7 +27,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class InboundEventReceiver<T> extends TenantEngineLifecycleComponent implements IInboundEventReceiver<T> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(InboundEventReceiver.class);
 
     /** Parent event source */
     private IInboundEventSource<T> eventSource;
@@ -37,12 +37,10 @@ public class InboundEventReceiver<T> extends TenantEngineLifecycleComponent impl
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

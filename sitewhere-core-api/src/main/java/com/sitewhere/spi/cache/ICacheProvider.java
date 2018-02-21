@@ -7,7 +7,7 @@
  */
 package com.sitewhere.spi.cache;
 
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
@@ -56,5 +56,5 @@ public interface ICacheProvider<K, V> {
      * 
      * @return
      */
-    public Logger getLogger();
+    public Log getLogger();
 }

@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
@@ -30,7 +30,7 @@ import groovy.lang.Binding;
 public class PollingRestInboundEventReceiver extends PollingInboundEventReceiver<byte[]> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(PollingRestInboundEventReceiver.class);
 
     /** Groovy variable that contains rest client helper class */
     private static final String VAR_REST_CLIENT = "rest";

@@ -7,8 +7,8 @@
  */
 package com.sitewhere.asset.grpc;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
@@ -64,7 +64,7 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
 
     /** Static logger instance */
     @SuppressWarnings("unused")
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(AssetManagementRouter.class);
 
     /** Parent microservice */
     private IAssetManagementMicroservice microservice;

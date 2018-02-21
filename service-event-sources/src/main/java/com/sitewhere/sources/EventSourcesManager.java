@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
 import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
@@ -38,7 +38,7 @@ import io.opentracing.ActiveSpan;
 public class EventSourcesManager extends TenantEngineLifecycleComponent implements IEventSourcesManager {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(EventSourcesManager.class);
 
     /** Count of decoded events */
     private AtomicInteger decodedCount = new AtomicInteger();
@@ -271,7 +271,7 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

@@ -10,8 +10,8 @@ package com.sitewhere.sources;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -27,7 +27,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public abstract class PollingInboundEventReceiver<T> extends InboundEventReceiver<T> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(PollingInboundEventReceiver.class);
 
     /** Default polling interval in milliseconds */
     private static final int DEFAULT_POLL_INTERVAL_MS = 10000;
@@ -105,7 +105,7 @@ public abstract class PollingInboundEventReceiver<T> extends InboundEventReceive
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

@@ -7,8 +7,8 @@
  */
 package com.sitewhere.grpc.client.tenant;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.grpc.client.GrpcChannel;
 import com.sitewhere.grpc.service.TenantManagementGrpc;
@@ -25,7 +25,7 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public class TenantManagementGrpcChannel extends GrpcChannel<TenantManagementBlockingStub, TenantManagementStub> {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(TenantManagementGrpcChannel.class);
 
     public TenantManagementGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
 	super(tracerProvider, host, port);
@@ -57,7 +57,7 @@ public class TenantManagementGrpcChannel extends GrpcChannel<TenantManagementBlo
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }

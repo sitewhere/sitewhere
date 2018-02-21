@@ -13,8 +13,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.rest.model.area.Area;
 import com.sitewhere.rest.model.area.AreaMapData;
@@ -43,7 +43,7 @@ public class AreaMarshalHelper {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(AreaMarshalHelper.class);
 
     /** Device management */
     private IDeviceManagement deviceManagement;

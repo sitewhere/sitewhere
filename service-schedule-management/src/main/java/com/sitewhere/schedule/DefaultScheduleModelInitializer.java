@@ -7,8 +7,8 @@
  */
 package com.sitewhere.schedule;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.schedule.spi.initializer.IScheduleModelInitializer;
 import com.sitewhere.server.ModelInitializer;
@@ -24,14 +24,14 @@ import com.sitewhere.spi.scheduling.IScheduleManagement;
 public class DefaultScheduleModelInitializer extends ModelInitializer implements IScheduleModelInitializer {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(DefaultScheduleModelInitializer.class);
 
     /** Schedule management implementation */
     private IScheduleManagement scheduleManagement;
 
     /**
-     * Indiates whether model should be initialized if no console is available
-     * for input
+     * Indiates whether model should be initialized if no console is available for
+     * input
      */
     private boolean initializeIfNoConsole = false;
 

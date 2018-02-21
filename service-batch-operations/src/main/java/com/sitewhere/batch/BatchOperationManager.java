@@ -17,8 +17,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.batch.handler.BatchCommandInvocationHandler;
 import com.sitewhere.batch.spi.IBatchOperationHandler;
@@ -49,7 +49,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 public class BatchOperationManager extends TenantEngineLifecycleComponent implements IBatchOperationManager {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(BatchOperationManager.class);
 
     /** Number of threads used for batch operation processing */
     private static final int BATCH_PROCESSOR_THREAD_COUNT = 10;
@@ -121,7 +121,7 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 

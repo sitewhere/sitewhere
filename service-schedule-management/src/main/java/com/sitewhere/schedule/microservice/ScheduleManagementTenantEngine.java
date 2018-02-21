@@ -9,8 +9,8 @@ package com.sitewhere.schedule.microservice;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -43,7 +43,7 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine
 	implements IScheduleManagementTenantEngine {
 
     /** Static logger instance */
-    private static Logger LOGGER = LogManager.getLogger();
+    private static Log LOGGER = LogFactory.getLog(ScheduleManagementTenantEngine.class);
 
     /** Schedule management persistence API */
     private IScheduleManagement scheduleManagement;
@@ -177,7 +177,7 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Logger getLogger() {
+    public Log getLogger() {
 	return LOGGER;
     }
 }
