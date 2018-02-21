@@ -13,9 +13,6 @@
         <header-field label="Device Type">
           <span>{{ device.deviceType.assetName }}</span>
         </header-field>
-        <header-field label="Site">
-          <span>{{ device.site.name }}</span>
-        </header-field>
         <header-field label="Assignment">
           <span v-if="device.assignment">{{ device.assignment.assetName }}</span>
           <span v-else>Device is not assigned</span>
@@ -147,7 +144,7 @@ export default {
 
 <style scoped>
 .device {
-  min-height: 210px;
+  min-height: 170px;
   min-width: 920px;
   overflow-y: hidden;
 }

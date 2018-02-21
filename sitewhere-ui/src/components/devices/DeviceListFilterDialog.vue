@@ -25,11 +25,11 @@
         <v-tabs-content key="site" id="site">
           <v-card flat>
             <v-card-text>
-              <site-chooser :chosenText="siteChosenText"
-                :notChosenText="siteNotChosenText"
-                :selected="siteFilter"
-                @siteUpdated="onSiteUpdated">
-              </site-chooser>
+              <area-chooser :chosenText="areaChosenText"
+                :notChosenText="areaNotChosenText"
+                :selected="areaFilter"
+                @areaUpdated="onAreaUpdated">
+              </area-chooser>
             </v-card-text>
           </v-card>
         </v-tabs-content>
@@ -113,13 +113,13 @@ export default {
   data: () => ({
     active: null,
     menu: null,
-    siteFilter: null,
+    areaFilter: null,
     deviceTypeFilter: null,
     deviceGroupFilter: null,
     createdDateFilter: 'all',
     createdAfter: null,
-    siteChosenText: 'Search results will be limited to devices assigned to the site below.',
-    siteNotChosenText: 'Choose a site from the list below to limit search results to devices assigned to the given site.',
+    areaChosenText: 'Search results will be limited to devices assigned to the area below.',
+    areaNotChosenText: 'Choose an area from the list below to limit search results to devices assigned to the given area.',
     deviceTypeChosenText: 'Search results will be limited to devices implementing the device type below.',
     deviceTypeNotChosenText: 'Choose a device type from the list below to limit search results to devices implementing the device type.',
     groupChosenText: 'Search results will be limited to devices in the device group below.',
@@ -163,9 +163,9 @@ export default {
   },
 
   methods: {
-    // Called when site filter is updated.
-    onSiteUpdated: function (site) {
-      this.$data.siteFilter = site
+    // Called when area filter is updated.
+    onAreaUpdated: function (area) {
+      this.$data.areaFilter = area
     },
 
     // Called when deviceType filter is updated.

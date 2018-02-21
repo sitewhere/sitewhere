@@ -1,26 +1,28 @@
 <template>
-  <div v-if="device">
-    <device-detail-header :device="device" class="mb-3"
-      @deviceDeleted="onDeviceDeleted">
-    </device-detail-header>
-    <v-tabs v-model="active">
-      <v-tabs-bar dark color="primary">
-        <v-tabs-slider class="blue lighten-3"></v-tabs-slider>
-        <v-tabs-item key="assignments" href="#assignments">
-          Assignment History
-        </v-tabs-item>
-      </v-tabs-bar>
-      <v-tabs-items>
-        <v-tabs-content key="assignments" id="assignments">
-          <device-assignment-history :device="device"></device-assignment-history>
-        </v-tabs-content>
-      </v-tabs-items>
-    </v-tabs>
-  </div>
+  <navigation-page v-if="device" icon="developer_board" title="Manage Device">
+    <div slot="content">
+      <device-detail-header :device="device" @deviceDeleted="onDeviceDeleted">
+      </device-detail-header>
+      <v-tabs v-model="active">
+        <v-tabs-bar dark color="primary">
+          <v-tabs-slider class="blue lighten-3"></v-tabs-slider>
+          <v-tabs-item key="assignments" href="#assignments">
+            Assignment History
+          </v-tabs-item>
+        </v-tabs-bar>
+        <v-tabs-items>
+          <v-tabs-content key="assignments" id="assignments">
+            <device-assignment-history :device="device"></device-assignment-history>
+          </v-tabs-content>
+        </v-tabs-items>
+      </v-tabs>
+    </div>
+  </navigation-page>
 </template>
 
 <script>
 import Utils from '../common/Utils'
+import NavigationPage from '../common/NavigationPage'
 import DeviceDetailHeader from './DeviceDetailHeader'
 import DeviceAssignmentHistory from './DeviceAssignmentHistory'
 
@@ -36,6 +38,7 @@ export default {
   }),
 
   components: {
+    NavigationPage,
     DeviceDetailHeader,
     DeviceAssignmentHistory
   },

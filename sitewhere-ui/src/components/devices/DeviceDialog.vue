@@ -36,18 +36,18 @@
             <v-spacer></v-spacer>
             <v-btn flat @click.native="onCancelClicked">{{ cancelLabel }}</v-btn>
             <v-btn color="primary" :disabled="!firstPageComplete" flat
-              @click="step = 2">Assign Site
+              @click="step = 2">Assign Area
               <v-icon light>keyboard_arrow_right</v-icon>
             </v-btn>
           </v-card-actions>
         </v-stepper-content>
         <v-stepper-content step="2">
-          <site-chooser
-            chosenText="Device will be associated with the site below."
-            notChosenText="Choose which site the device will be associated with:"
-            :selectedToken="devSiteToken"
-            @siteUpdated="onSiteUpdated">
-          </site-chooser>
+          <area-chooser
+            chosenText="Device will be associated with the area below."
+            notChosenText="Choose which area the device will be associated with:"
+            :selectedToken="devAreaToken"
+            @siteUpdated="onAreaUpdated">
+          </area-chooser>
           <v-card-actions>
             <v-btn color="primary" flat @click="step = 1">
               <v-icon light>keyboard_arrow_left</v-icon>
@@ -117,7 +117,7 @@ export default {
     dialogVisible: false,
     devHardwareId: null,
     devComments: null,
-    devSiteToken: null,
+    devAreaToken: null,
     devDeviceTypeToken: null,
     metadata: [],
     assetModules: [],
@@ -141,7 +141,7 @@ export default {
 
     // Indicates if second page is complete.
     secondPageComplete: function () {
-      return this.firstPageComplete && (this.$data.devSiteToken != null)
+      return this.firstPageComplete && (this.$data.devAreaToken != null)
     },
 
     // Indicates if third page is complete.
@@ -157,7 +157,7 @@ export default {
       var payload = {}
       payload.hardwareId = this.$data.devHardwareId
       payload.comments = this.$data.devComments
-      payload.siteToken = this.$data.devSiteToken
+      payload.areaToken = this.$data.devAreaToken
       payload.deviceTypeToken = this.$data.devDeviceTypeToken
       payload.metadata = Utils.arrayToMetadata(this.$data.metadata)
       return payload
@@ -167,7 +167,7 @@ export default {
     reset: function () {
       this.$data.devHardwareId = null
       this.$data.devComments = null
-      this.$data.devSiteToken = null
+      this.$data.devAreaToken = null
       this.$data.devDeviceTypeToken = null
       this.$data.metadata = []
       this.$data.step = 1
@@ -189,7 +189,7 @@ export default {
       if (payload) {
         this.$data.devHardwareId = payload.hardwareId
         this.$data.devComments = payload.comments
-        this.$data.devSiteToken = payload.siteToken
+        this.$data.devAreaToken = payload.areaToken
         this.$data.devDeviceTypeToken = payload.deviceTypeToken
         this.$data.metadata = Utils.metadataToArray(payload.metadata)
       }
@@ -221,12 +221,12 @@ export default {
       this.$data.dialogVisible = false
     },
 
-    // Called when site choice is updated.
-    onSiteUpdated: function (site) {
-      if (site) {
-        this.$data.devSiteToken = site.token
+    // Called when area choice is updated.
+    onAreaUpdated: function (area) {
+      if (area) {
+        this.$data.devAreaToken = area.token
       } else {
-        this.$data.devSiteToken = null
+        this.$data.devAreaToken = null
       }
     },
 
