@@ -7,8 +7,8 @@
  */
 package com.sitewhere.rest.model.device.marshaling;
 
-import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.device.DeviceType;
+import com.sitewhere.spi.asset.IAsset;
 
 /**
  * Extends {@link DeviceSpecification} to support fields that can be included on
@@ -19,7 +19,7 @@ import com.sitewhere.rest.model.device.DeviceType;
 public class MarshaledDeviceType extends DeviceType {
 
     /** Serial version UID */
-    private static final long serialVersionUID = 4141074574302862101L;
+    private static final long serialVersionUID = 8391781508712506005L;
 
     /** Asset name */
     private String assetName;
@@ -27,8 +27,8 @@ public class MarshaledDeviceType extends DeviceType {
     /** Asset image url */
     private String assetImageUrl;
 
-    /** Asset representing device hardware */
-    private HardwareAsset asset;
+    /** Device asset */
+    private IAsset asset;
 
     public String getAssetName() {
 	return assetName;
@@ -46,11 +46,11 @@ public class MarshaledDeviceType extends DeviceType {
 	this.assetImageUrl = assetImageUrl;
     }
 
-    public HardwareAsset getAsset() {
+    public IAsset getAsset() {
 	return asset;
     }
 
-    public void setAsset(HardwareAsset asset) {
+    public void setAsset(IAsset asset) {
 	this.asset = asset;
     }
 }

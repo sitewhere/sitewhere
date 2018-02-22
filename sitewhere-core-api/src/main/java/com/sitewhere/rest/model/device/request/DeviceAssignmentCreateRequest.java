@@ -13,9 +13,6 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.asset.AssetReference;
-import com.sitewhere.spi.asset.IAssetReference;
-import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 
 /**
@@ -38,11 +35,8 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
     /** Area token */
     private String areaToken;
 
-    /** Type of assignment */
-    private DeviceAssignmentType assignmentType;
-
-    /** Asset reference */
-    private IAssetReference assetReference;
+    /** Asset token */
+    private String assetToken;
 
     /** Metadata values */
     private Map<String, String> metadata;
@@ -92,31 +86,17 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#
-     * getAssignmentType()
+     * @see
+     * com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#getAssetToken
+     * ()
      */
     @Override
-    public DeviceAssignmentType getAssignmentType() {
-	return assignmentType;
+    public String getAssetToken() {
+	return assetToken;
     }
 
-    public void setAssignmentType(DeviceAssignmentType assignmentType) {
-	this.assignmentType = assignmentType;
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#
-     * getAssetReference()
-     */
-    @Override
-    public IAssetReference getAssetReference() {
-	return assetReference;
-    }
-
-    public void setAssetReference(AssetReference assetReference) {
-	this.assetReference = assetReference;
+    public void setAssetToken(String assetToken) {
+	this.assetToken = assetToken;
     }
 
     /*
@@ -138,22 +118,10 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
 	/** Request being built */
 	private DeviceAssignmentCreateRequest request = new DeviceAssignmentCreateRequest();
 
-	// public Builder(IDeviceAssignment api) {
-	// request.setToken(api.getToken());
-	// request.setDeviceHardwareId(api.getDeviceHardwareId());
-	// request.setAssetReference(api.getAssetReference());
-	// request.setAssignmentType(api.getAssignmentType());
-	// if (api.getMetadata() != null) {
-	// request.setMetadata(new HashMap<String, String>());
-	// request.getMetadata().putAll(api.getMetadata());
-	// }
-	// }
-
-	public Builder(String hardwareId, String areaToken, String moduleId, String assetId) {
+	public Builder(String hardwareId, String areaToken, String assetToken) {
 	    request.setDeviceHardwareId(hardwareId);
 	    request.setAreaToken(areaToken);
-	    request.setAssetReference(new AssetReference.Builder(moduleId, assetId).build());
-	    request.setAssignmentType(DeviceAssignmentType.Associated);
+	    request.setAssetToken(assetToken);
 	}
 
 	public Builder metadata(String name, String value) {

@@ -29,7 +29,6 @@ import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.area.request.IAreaCreateRequest;
 import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
-import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -895,16 +894,17 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAsset(com.
-     * sitewhere.spi.asset.IAssetReference,
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAsset(java.
+     * util.UUID,
      * com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(IAssetReference assetReference,
+    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(UUID assetId,
 	    IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException {
 	try {
 	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_ASSET);
 	    GGetDeviceAssignmentsForAssetRequest.Builder grequest = GGetDeviceAssignmentsForAssetRequest.newBuilder();
+	    grequest.setAssetId(CommonModelConverter.asGrpcUuid(assetId));
 	    grequest.setCriteria(DeviceModelConverter.asApiDeviceAssignmentSearchCriteria(criteria));
 	    GGetDeviceAssignmentsForAssetResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getDeviceAssignmentsForAsset(grequest.build());

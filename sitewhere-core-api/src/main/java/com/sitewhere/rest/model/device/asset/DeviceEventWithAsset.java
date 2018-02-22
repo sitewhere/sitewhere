@@ -15,9 +15,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
-import com.sitewhere.spi.asset.IAssetReference;
-import com.sitewhere.spi.asset.IAssetResolver;
-import com.sitewhere.spi.device.DeviceAssignmentType;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.asset.IDeviceEventWithAsset;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceEvent;
@@ -42,10 +40,10 @@ public class DeviceEventWithAsset implements IDeviceEventWithAsset {
     /** Associated asset */
     protected IAsset asset;
 
-    public DeviceEventWithAsset(IDeviceEvent wrapped, IAssetResolver assetResolver) throws SiteWhereException {
+    public DeviceEventWithAsset(IDeviceEvent wrapped, IAssetManagement assetManagement) throws SiteWhereException {
 	this.wrapped = wrapped;
-	if (wrapped.getAssignmentType() == DeviceAssignmentType.Associated) {
-	    this.asset = assetResolver.getAssetModuleManagement().getAsset(wrapped.getAssetReference());
+	if (wrapped.getAssetId() != null) {
+	    this.asset = assetManagement.getAsset(wrapped.getAssetId());
 	}
     }
 
@@ -156,11 +154,11 @@ public class DeviceEventWithAsset implements IDeviceEventWithAsset {
     }
 
     /*
-     * @see com.sitewhere.spi.device.event.IDeviceEvent#getAreaId()
+     * @see com.sitewhere.spi.device.event.IDeviceEvent#getDeviceId()
      */
     @Override
-    public UUID getAreaId() {
-	return getWrapped().getAreaId();
+    public UUID getDeviceId() {
+	return getWrapped().getDeviceId();
     }
 
     /*
@@ -172,21 +170,19 @@ public class DeviceEventWithAsset implements IDeviceEventWithAsset {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceEvent#getAssignmentType()
+     * @see com.sitewhere.spi.device.event.IDeviceEvent#getAreaId()
      */
     @Override
-    public DeviceAssignmentType getAssignmentType() {
-	return getWrapped().getAssignmentType();
+    public UUID getAreaId() {
+	return getWrapped().getAreaId();
     }
 
     /*
-     * @see com.sitewhere.spi.device.event.IDeviceEvent#getAssetReference()
+     * @see com.sitewhere.spi.device.event.IDeviceEvent#getAssetId()
      */
     @Override
-    public IAssetReference getAssetReference() {
-	return getWrapped().getAssetReference();
+    public UUID getAssetId() {
+	return getWrapped().getDeviceId();
     }
 
     /*

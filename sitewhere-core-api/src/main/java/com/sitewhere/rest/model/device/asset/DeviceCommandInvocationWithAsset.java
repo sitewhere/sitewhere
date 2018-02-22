@@ -10,7 +10,7 @@ package com.sitewhere.rest.model.device.asset;
 import java.util.Map;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetResolver;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandStatus;
 import com.sitewhere.spi.device.event.CommandTarget;
@@ -21,16 +21,15 @@ public class DeviceCommandInvocationWithAsset extends DeviceEventWithAsset imple
     /** Serial version UID */
     private static final long serialVersionUID = 5274138683101218581L;
 
-    public DeviceCommandInvocationWithAsset(IDeviceCommandInvocation wrapped, IAssetResolver assetResolver)
+    public DeviceCommandInvocationWithAsset(IDeviceCommandInvocation wrapped, IAssetManagement assetManagement)
 	    throws SiteWhereException {
-	super(wrapped, assetResolver);
+	super(wrapped, assetManagement);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceCommandInvocation#getInitiator()
+     * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getInitiator()
      */
     @Override
     public CommandInitiator getInitiator() {
@@ -40,8 +39,7 @@ public class DeviceCommandInvocationWithAsset extends DeviceEventWithAsset imple
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceCommandInvocation#getInitiatorId()
+     * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getInitiatorId()
      */
     @Override
     public String getInitiatorId() {
@@ -61,8 +59,7 @@ public class DeviceCommandInvocationWithAsset extends DeviceEventWithAsset imple
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceCommandInvocation#getTargetId()
+     * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getTargetId()
      */
     @Override
     public String getTargetId() {

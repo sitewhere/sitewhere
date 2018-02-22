@@ -5,18 +5,14 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.device;
+package com.sitewhere.spi.search.area;
+
+import com.sitewhere.spi.search.ISearchCriteria;
 
 /**
- * Indicates what type of asset is linked via the assignment.
+ * Specifies criteria for searching a list of assets.
  * 
  * @author Derek
  */
-public enum DeviceAssignmentType {
-
-    /** No associated asset */
-    Unassociated,
-
-    /** Assignment is associated with an asset */
-    Associated;
+public interface IAssetTypeSearchCritiera extends ISearchCriteria {
 }

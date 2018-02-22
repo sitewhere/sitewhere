@@ -7,64 +7,41 @@
  */
 package com.sitewhere.asset.grpc;
 
-import java.util.List;
-
-import com.sitewhere.asset.spi.modules.IAssetModule;
 import com.sitewhere.grpc.client.GrpcUtils;
-import com.sitewhere.grpc.model.AssetModel.GAssetCategorySearchResults;
 import com.sitewhere.grpc.model.AssetModel.GAssetSearchResults;
+import com.sitewhere.grpc.model.AssetModel.GAssetTypeSearchResults;
 import com.sitewhere.grpc.model.converter.AssetModelConverter;
 import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
-import com.sitewhere.grpc.service.GCreateAssetCategoryRequest;
-import com.sitewhere.grpc.service.GCreateAssetCategoryResponse;
-import com.sitewhere.grpc.service.GCreateHardwareAssetRequest;
-import com.sitewhere.grpc.service.GCreateHardwareAssetResponse;
-import com.sitewhere.grpc.service.GCreateLocationAssetRequest;
-import com.sitewhere.grpc.service.GCreateLocationAssetResponse;
-import com.sitewhere.grpc.service.GCreatePersonAssetRequest;
-import com.sitewhere.grpc.service.GCreatePersonAssetResponse;
-import com.sitewhere.grpc.service.GDeleteAssetCategoryRequest;
-import com.sitewhere.grpc.service.GDeleteAssetCategoryResponse;
+import com.sitewhere.grpc.service.GCreateAssetRequest;
+import com.sitewhere.grpc.service.GCreateAssetResponse;
+import com.sitewhere.grpc.service.GCreateAssetTypeRequest;
+import com.sitewhere.grpc.service.GCreateAssetTypeResponse;
 import com.sitewhere.grpc.service.GDeleteAssetRequest;
 import com.sitewhere.grpc.service.GDeleteAssetResponse;
+import com.sitewhere.grpc.service.GDeleteAssetTypeRequest;
+import com.sitewhere.grpc.service.GDeleteAssetTypeResponse;
 import com.sitewhere.grpc.service.GGetAssetByIdRequest;
 import com.sitewhere.grpc.service.GGetAssetByIdResponse;
-import com.sitewhere.grpc.service.GGetAssetCategoryByIdRequest;
-import com.sitewhere.grpc.service.GGetAssetCategoryByIdResponse;
-import com.sitewhere.grpc.service.GGetAssetModuleAssetRequest;
-import com.sitewhere.grpc.service.GGetAssetModuleAssetResponse;
-import com.sitewhere.grpc.service.GGetAssetModuleAssetsByCriteriaRequest;
-import com.sitewhere.grpc.service.GGetAssetModuleAssetsByCriteriaResponse;
-import com.sitewhere.grpc.service.GGetAssetModuleDescriptorByModuleIdRequest;
-import com.sitewhere.grpc.service.GGetAssetModuleDescriptorByModuleIdResponse;
-import com.sitewhere.grpc.service.GListAssetCategoriesRequest;
-import com.sitewhere.grpc.service.GListAssetCategoriesResponse;
-import com.sitewhere.grpc.service.GListAssetModuleDescriptorsRequest;
-import com.sitewhere.grpc.service.GListAssetModuleDescriptorsResponse;
+import com.sitewhere.grpc.service.GGetAssetByTokenRequest;
+import com.sitewhere.grpc.service.GGetAssetByTokenResponse;
+import com.sitewhere.grpc.service.GGetAssetTypeByIdRequest;
+import com.sitewhere.grpc.service.GGetAssetTypeByIdResponse;
+import com.sitewhere.grpc.service.GGetAssetTypeByTokenRequest;
+import com.sitewhere.grpc.service.GGetAssetTypeByTokenResponse;
+import com.sitewhere.grpc.service.GListAssetTypesRequest;
+import com.sitewhere.grpc.service.GListAssetTypesResponse;
 import com.sitewhere.grpc.service.GListAssetsRequest;
 import com.sitewhere.grpc.service.GListAssetsResponse;
-import com.sitewhere.grpc.service.GUpdateAssetCategoryRequest;
-import com.sitewhere.grpc.service.GUpdateAssetCategoryResponse;
-import com.sitewhere.grpc.service.GUpdateHardwareAssetRequest;
-import com.sitewhere.grpc.service.GUpdateHardwareAssetResponse;
-import com.sitewhere.grpc.service.GUpdateLocationAssetRequest;
-import com.sitewhere.grpc.service.GUpdateLocationAssetResponse;
-import com.sitewhere.grpc.service.GUpdatePersonAssetRequest;
-import com.sitewhere.grpc.service.GUpdatePersonAssetResponse;
-import com.sitewhere.rest.model.asset.AssetModuleDescriptor;
-import com.sitewhere.rest.model.asset.AssetReference;
+import com.sitewhere.grpc.service.GUpdateAssetRequest;
+import com.sitewhere.grpc.service.GUpdateAssetResponse;
+import com.sitewhere.grpc.service.GUpdateAssetTypeRequest;
+import com.sitewhere.grpc.service.GUpdateAssetTypeResponse;
 import com.sitewhere.spi.asset.IAsset;
-import com.sitewhere.spi.asset.IAssetCategory;
-import com.sitewhere.spi.asset.IAssetModuleDescriptor;
-import com.sitewhere.spi.asset.IAssetResolver;
-import com.sitewhere.spi.asset.IHardwareAsset;
-import com.sitewhere.spi.asset.ILocationAsset;
-import com.sitewhere.spi.asset.IPersonAsset;
-import com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest;
-import com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest;
-import com.sitewhere.spi.asset.request.ILocationAssetCreateRequest;
-import com.sitewhere.spi.asset.request.IPersonAssetCreateRequest;
+import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.asset.IAssetType;
+import com.sitewhere.spi.asset.request.IAssetCreateRequest;
+import com.sitewhere.spi.asset.request.IAssetTypeCreateRequest;
 import com.sitewhere.spi.search.ISearchResults;
 
 import io.grpc.stub.StreamObserver;
@@ -76,292 +53,187 @@ import io.grpc.stub.StreamObserver;
  */
 public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImplBase {
 
-    /** Asset resolver */
-    private IAssetResolver assetResolver;
+    /** Asset management */
+    private IAssetManagement assetManagement;
 
-    public AssetManagementImpl(IAssetResolver assetResolver) {
-	this.assetResolver = assetResolver;
+    public AssetManagementImpl(IAssetManagement assetManagement) {
+	this.assetManagement = assetManagement;
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * createAssetCategory(com.sitewhere.grpc.service. GCreateAssetCategoryRequest,
+     * createAssetType(com.sitewhere.grpc.service.GCreateAssetTypeRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void createAssetCategory(GCreateAssetCategoryRequest request,
-	    StreamObserver<GCreateAssetCategoryResponse> responseObserver) {
+    public void createAssetType(GCreateAssetTypeRequest request,
+	    StreamObserver<GCreateAssetTypeResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_CREATE_ASSET_CATEGORY);
-	    IAssetCategoryCreateRequest apiRequest = AssetModelConverter
-		    .asApiAssetCategoryCreateRequest(request.getRequest());
-	    IAssetCategory apiResult = getAssetResolver().getAssetManagement().createAssetCategory(apiRequest);
-	    GCreateAssetCategoryResponse.Builder response = GCreateAssetCategoryResponse.newBuilder();
-	    response.setAssetCategory(AssetModelConverter.asGrpcAssetCategory(apiResult));
+	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_CREATE_ASSET_TYPE);
+	    IAssetTypeCreateRequest apiRequest = AssetModelConverter.asApiAssetTypeCreateRequest(request.getRequest());
+	    IAssetType apiResult = getAssetManagement().createAssetType(apiRequest);
+	    GCreateAssetTypeResponse.Builder response = GCreateAssetTypeResponse.newBuilder();
+	    response.setAssetType(AssetModelConverter.asGrpcAssetType(apiResult));
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_CREATE_ASSET_CATEGORY, e,
-		    responseObserver);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_CREATE_ASSET_TYPE, e, responseObserver);
 	}
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * getAssetCategoryById(com.sitewhere.grpc.service.
-     * GGetAssetCategoryByIdRequest, io.grpc.stub.StreamObserver)
+     * updateAssetType(com.sitewhere.grpc.service.GUpdateAssetTypeRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void getAssetCategoryById(GGetAssetCategoryByIdRequest request,
-	    StreamObserver<GGetAssetCategoryByIdResponse> responseObserver) {
+    public void updateAssetType(GUpdateAssetTypeRequest request,
+	    StreamObserver<GUpdateAssetTypeResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_CATEGORY_BY_ID);
-	    IAssetCategory apiResult = getAssetResolver().getAssetManagement().getAssetCategory(request.getId());
-	    GGetAssetCategoryByIdResponse.Builder response = GGetAssetCategoryByIdResponse.newBuilder();
+	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_UPDATE_ASSET_TYPE);
+	    IAssetTypeCreateRequest apiRequest = AssetModelConverter.asApiAssetTypeCreateRequest(request.getRequest());
+	    IAssetType apiResult = getAssetManagement()
+		    .updateAssetType(CommonModelConverter.asApiUuid(request.getAssetTypeId()), apiRequest);
+	    GUpdateAssetTypeResponse.Builder response = GUpdateAssetTypeResponse.newBuilder();
+	    response.setAssetType(AssetModelConverter.asGrpcAssetType(apiResult));
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_UPDATE_ASSET_TYPE, e, responseObserver);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
+     * getAssetTypeById(com.sitewhere.grpc.service.GGetAssetTypeByIdRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getAssetTypeById(GGetAssetTypeByIdRequest request,
+	    StreamObserver<GGetAssetTypeByIdResponse> responseObserver) {
+	try {
+	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_TYPE_BY_ID);
+	    IAssetType apiResult = getAssetManagement()
+		    .getAssetType(CommonModelConverter.asApiUuid(request.getAssetTypeId()));
+	    GGetAssetTypeByIdResponse.Builder response = GGetAssetTypeByIdResponse.newBuilder();
 	    if (apiResult != null) {
-		response.setAssetCategory(AssetModelConverter.asGrpcAssetCategory(apiResult));
+		response.setAssetType(AssetModelConverter.asGrpcAssetType(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_GET_ASSET_CATEGORY_BY_ID, e,
-		    responseObserver);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_GET_ASSET_TYPE_BY_ID, e, responseObserver);
 	}
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * updateAssetCategory(com.sitewhere.grpc.service. GUpdateAssetCategoryRequest,
+     * getAssetTypeByToken(com.sitewhere.grpc.service.GGetAssetTypeByTokenRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void updateAssetCategory(GUpdateAssetCategoryRequest request,
-	    StreamObserver<GUpdateAssetCategoryResponse> responseObserver) {
+    public void getAssetTypeByToken(GGetAssetTypeByTokenRequest request,
+	    StreamObserver<GGetAssetTypeByTokenResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_UPDATE_ASSET_CATEGORY);
-	    IAssetCategoryCreateRequest apiRequest = AssetModelConverter
-		    .asApiAssetCategoryCreateRequest(request.getRequest());
-	    IAssetCategory apiResult = getAssetResolver().getAssetManagement().updateAssetCategory(request.getId(),
-		    apiRequest);
-	    GUpdateAssetCategoryResponse.Builder response = GUpdateAssetCategoryResponse.newBuilder();
-	    response.setAssetCategory(AssetModelConverter.asGrpcAssetCategory(apiResult));
+	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_TYPE_BY_TOKEN);
+	    IAssetType apiResult = getAssetManagement().getAssetTypeByToken(request.getToken());
+	    GGetAssetTypeByTokenResponse.Builder response = GGetAssetTypeByTokenResponse.newBuilder();
+	    if (apiResult != null) {
+		response.setAssetType(AssetModelConverter.asGrpcAssetType(apiResult));
+	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_UPDATE_ASSET_CATEGORY, e,
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_GET_ASSET_TYPE_BY_TOKEN, e,
 		    responseObserver);
 	}
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * listAssetCategories(com.sitewhere.grpc.service. GListAssetCategoriesRequest,
+     * deleteAssetType(com.sitewhere.grpc.service.GDeleteAssetTypeRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listAssetCategories(GListAssetCategoriesRequest request,
-	    StreamObserver<GListAssetCategoriesResponse> responseObserver) {
+    public void deleteAssetType(GDeleteAssetTypeRequest request,
+	    StreamObserver<GDeleteAssetTypeResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_LIST_ASSET_CATEGORIES);
-	    ISearchResults<IAssetCategory> apiResult = getAssetResolver().getAssetManagement()
-		    .listAssetCategories(CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
-	    GListAssetCategoriesResponse.Builder response = GListAssetCategoriesResponse.newBuilder();
-	    GAssetCategorySearchResults.Builder results = GAssetCategorySearchResults.newBuilder();
-	    for (IAssetCategory api : apiResult.getResults()) {
-		results.addCategories(AssetModelConverter.asGrpcAssetCategory(api));
+	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_DELETE_ASSET_TYPE);
+	    IAssetType apiResult = getAssetManagement()
+		    .deleteAssetType(CommonModelConverter.asApiUuid(request.getAssetTypeId()), request.getForce());
+	    GDeleteAssetTypeResponse.Builder response = GDeleteAssetTypeResponse.newBuilder();
+	    response.setAssetType(AssetModelConverter.asGrpcAssetType(apiResult));
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_DELETE_ASSET_TYPE, e, responseObserver);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
+     * listAssetTypes(com.sitewhere.grpc.service.GListAssetTypesRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void listAssetTypes(GListAssetTypesRequest request,
+	    StreamObserver<GListAssetTypesResponse> responseObserver) {
+	try {
+	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_LIST_ASSET_TYPES);
+	    ISearchResults<IAssetType> apiResult = getAssetManagement()
+		    .listAssetTypes(AssetModelConverter.asApiAssetTypeSearchCriteria(request.getCriteria()));
+	    GListAssetTypesResponse.Builder response = GListAssetTypesResponse.newBuilder();
+	    GAssetTypeSearchResults.Builder results = GAssetTypeSearchResults.newBuilder();
+	    for (IAssetType api : apiResult.getResults()) {
+		results.addAssetTypes(AssetModelConverter.asGrpcAssetType(api));
 	    }
 	    results.setCount(apiResult.getNumResults());
 	    response.setResults(results.build());
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_LIST_ASSET_CATEGORIES, e,
-		    responseObserver);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_LIST_ASSET_TYPES, e, responseObserver);
 	}
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * deleteAssetCategory(com.sitewhere.grpc.service. GDeleteAssetCategoryRequest,
+     * createAsset(com.sitewhere.grpc.service.GCreateAssetRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void deleteAssetCategory(GDeleteAssetCategoryRequest request,
-	    StreamObserver<GDeleteAssetCategoryResponse> responseObserver) {
+    public void createAsset(GCreateAssetRequest request, StreamObserver<GCreateAssetResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_DELETE_ASSET_CATEGORY);
-	    IAssetCategory apiResult = getAssetResolver().getAssetManagement().deleteAssetCategory(request.getId());
-	    GDeleteAssetCategoryResponse.Builder response = GDeleteAssetCategoryResponse.newBuilder();
-	    response.setAssetCategory(AssetModelConverter.asGrpcAssetCategory(apiResult));
+	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_CREATE_ASSET);
+	    IAssetCreateRequest apiRequest = AssetModelConverter.asApiAssetCreateRequest(request.getRequest());
+	    IAsset apiResult = getAssetManagement().createAsset(apiRequest);
+	    GCreateAssetResponse.Builder response = GCreateAssetResponse.newBuilder();
+	    response.setAsset(AssetModelConverter.asGrpcAsset(apiResult));
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_DELETE_ASSET_CATEGORY, e,
-		    responseObserver);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_CREATE_ASSET, e, responseObserver);
 	}
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * createHardwareAsset(com.sitewhere.grpc.service. GCreateHardwareAssetRequest,
+     * updateAsset(com.sitewhere.grpc.service.GUpdateAssetRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void createHardwareAsset(GCreateHardwareAssetRequest request,
-	    StreamObserver<GCreateHardwareAssetResponse> responseObserver) {
+    public void updateAsset(GUpdateAssetRequest request, StreamObserver<GUpdateAssetResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_CREATE_HARDWARE_ASSET);
-	    IHardwareAssetCreateRequest apiRequest = AssetModelConverter
-		    .asApiHardwareAssetCreateRequest(request.getRequest());
-	    IHardwareAsset apiResult = getAssetResolver().getAssetManagement()
-		    .createHardwareAsset(request.getCategoryId(), apiRequest);
-	    GCreateHardwareAssetResponse.Builder response = GCreateHardwareAssetResponse.newBuilder();
-	    response.setAsset(AssetModelConverter.asGrpcHardwareAsset(apiResult));
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_CREATE_HARDWARE_ASSET, e,
-		    responseObserver);
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * updateHardwareAsset(com.sitewhere.grpc.service. GUpdateHardwareAssetRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void updateHardwareAsset(GUpdateHardwareAssetRequest request,
-	    StreamObserver<GUpdateHardwareAssetResponse> responseObserver) {
-	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_UPDATE_HARDWARE_ASSET);
-	    IHardwareAssetCreateRequest apiRequest = AssetModelConverter
-		    .asApiHardwareAssetCreateRequest(request.getRequest());
-	    IHardwareAsset apiResult = getAssetResolver().getAssetManagement()
-		    .updateHardwareAsset(request.getCategoryId(), request.getAssetId(), apiRequest);
-	    GUpdateHardwareAssetResponse.Builder response = GUpdateHardwareAssetResponse.newBuilder();
-	    response.setAsset(AssetModelConverter.asGrpcHardwareAsset(apiResult));
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_UPDATE_HARDWARE_ASSET, e,
-		    responseObserver);
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * createPersonAsset(com.sitewhere.grpc.service.GCreatePersonAssetRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void createPersonAsset(GCreatePersonAssetRequest request,
-	    StreamObserver<GCreatePersonAssetResponse> responseObserver) {
-	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_CREATE_PERSON_ASSET);
-	    IPersonAssetCreateRequest apiRequest = AssetModelConverter
-		    .asApiPersonAssetCreateRequest(request.getRequest());
-	    IPersonAsset apiResult = getAssetResolver().getAssetManagement().createPersonAsset(request.getCategoryId(),
+	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_UPDATE_ASSET);
+	    IAssetCreateRequest apiRequest = AssetModelConverter.asApiAssetCreateRequest(request.getRequest());
+	    IAsset apiResult = getAssetManagement().updateAsset(CommonModelConverter.asApiUuid(request.getAssetId()),
 		    apiRequest);
-	    GCreatePersonAssetResponse.Builder response = GCreatePersonAssetResponse.newBuilder();
-	    response.setAsset(AssetModelConverter.asGrpcPersonAsset(apiResult));
+	    GUpdateAssetResponse.Builder response = GUpdateAssetResponse.newBuilder();
+	    response.setAsset(AssetModelConverter.asGrpcAsset(apiResult));
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_CREATE_PERSON_ASSET, e, responseObserver);
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * updatePersonAsset(com.sitewhere.grpc.service.GUpdatePersonAssetRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void updatePersonAsset(GUpdatePersonAssetRequest request,
-	    StreamObserver<GUpdatePersonAssetResponse> responseObserver) {
-	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_UPDATE_PERSON_ASSET);
-	    IPersonAssetCreateRequest apiRequest = AssetModelConverter
-		    .asApiPersonAssetCreateRequest(request.getRequest());
-	    IPersonAsset apiResult = getAssetResolver().getAssetManagement().updatePersonAsset(request.getCategoryId(),
-		    request.getAssetId(), apiRequest);
-	    GUpdatePersonAssetResponse.Builder response = GUpdatePersonAssetResponse.newBuilder();
-	    response.setAsset(AssetModelConverter.asGrpcPersonAsset(apiResult));
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_UPDATE_PERSON_ASSET, e, responseObserver);
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * createLocationAsset(com.sitewhere.grpc.service. GCreateLocationAssetRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void createLocationAsset(GCreateLocationAssetRequest request,
-	    StreamObserver<GCreateLocationAssetResponse> responseObserver) {
-	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_CREATE_LOCATION_ASSET);
-	    ILocationAssetCreateRequest apiRequest = AssetModelConverter
-		    .asApiLocationAssetCreateRequest(request.getRequest());
-	    ILocationAsset apiResult = getAssetResolver().getAssetManagement()
-		    .createLocationAsset(request.getCategoryId(), apiRequest);
-	    GCreateLocationAssetResponse.Builder response = GCreateLocationAssetResponse.newBuilder();
-	    response.setAsset(AssetModelConverter.asGrpcLocationAsset(apiResult));
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_CREATE_LOCATION_ASSET, e,
-		    responseObserver);
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * updateLocationAsset(com.sitewhere.grpc.service. GUpdateLocationAssetRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void updateLocationAsset(GUpdateLocationAssetRequest request,
-	    StreamObserver<GUpdateLocationAssetResponse> responseObserver) {
-	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_UPDATE_LOCATION_ASSET);
-	    ILocationAssetCreateRequest apiRequest = AssetModelConverter
-		    .asApiLocationAssetCreateRequest(request.getRequest());
-	    ILocationAsset apiResult = getAssetResolver().getAssetManagement()
-		    .updateLocationAsset(request.getCategoryId(), request.getAssetId(), apiRequest);
-	    GUpdateLocationAssetResponse.Builder response = GUpdateLocationAssetResponse.newBuilder();
-	    response.setAsset(AssetModelConverter.asGrpcLocationAsset(apiResult));
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_UPDATE_LOCATION_ASSET, e,
-		    responseObserver);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_UPDATE_ASSET, e, responseObserver);
 	}
     }
 
@@ -376,16 +248,37 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
     public void getAssetById(GGetAssetByIdRequest request, StreamObserver<GGetAssetByIdResponse> responseObserver) {
 	try {
 	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_BY_ID);
-	    IAsset apiResult = getAssetResolver().getAssetManagement().getAsset(request.getCategoryId(),
-		    request.getAssetId());
+	    IAsset apiResult = getAssetManagement().getAsset(CommonModelConverter.asApiUuid(request.getAssetId()));
 	    GGetAssetByIdResponse.Builder response = GGetAssetByIdResponse.newBuilder();
 	    if (apiResult != null) {
-		response.setAsset(AssetModelConverter.asGrpcGenericAsset(apiResult));
+		response.setAsset(AssetModelConverter.asGrpcAsset(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
 	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_GET_ASSET_BY_ID, e, responseObserver);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
+     * getAssetByToken(com.sitewhere.grpc.service.GGetAssetByTokenRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getAssetByToken(GGetAssetByTokenRequest request,
+	    StreamObserver<GGetAssetByTokenResponse> responseObserver) {
+	try {
+	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_BY_TOKEN);
+	    IAsset apiResult = getAssetManagement().getAssetByToken(request.getToken());
+	    GGetAssetByTokenResponse.Builder response = GGetAssetByTokenResponse.newBuilder();
+	    if (apiResult != null) {
+		response.setAsset(AssetModelConverter.asGrpcAsset(apiResult));
+	    }
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_GET_ASSET_BY_TOKEN, e, responseObserver);
 	}
     }
 
@@ -400,10 +293,10 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
     public void deleteAsset(GDeleteAssetRequest request, StreamObserver<GDeleteAssetResponse> responseObserver) {
 	try {
 	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_DELETE_ASSET);
-	    IAsset apiResult = getAssetResolver().getAssetManagement().deleteAsset(request.getCategoryId(),
-		    request.getAssetId());
+	    IAsset apiResult = getAssetManagement().deleteAsset(CommonModelConverter.asApiUuid(request.getAssetId()),
+		    request.getForce());
 	    GDeleteAssetResponse.Builder response = GDeleteAssetResponse.newBuilder();
-	    response.setAsset(AssetModelConverter.asGrpcGenericAsset(apiResult));
+	    response.setAsset(AssetModelConverter.asGrpcAsset(apiResult));
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
@@ -422,13 +315,12 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
     public void listAssets(GListAssetsRequest request, StreamObserver<GListAssetsResponse> responseObserver) {
 	try {
 	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_LIST_ASSETS);
-	    ISearchResults<IAsset> apiResult = getAssetResolver().getAssetManagement().listAssets(
-		    request.getCategoryId(),
-		    CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
+	    ISearchResults<IAsset> apiResult = getAssetManagement()
+		    .listAssets(AssetModelConverter.asApiAssetSearchCriteria(request.getCriteria()));
 	    GListAssetsResponse.Builder response = GListAssetsResponse.newBuilder();
 	    GAssetSearchResults.Builder results = GAssetSearchResults.newBuilder();
 	    for (IAsset api : apiResult.getResults()) {
-		results.addAssets(AssetModelConverter.asGrpcGenericAsset(api));
+		results.addAssets(AssetModelConverter.asGrpcAsset(api));
 	    }
 	    results.setCount(apiResult.getNumResults());
 	    response.setResults(results.build());
@@ -439,127 +331,11 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	}
     }
 
-    /*
-     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * listAssetModuleDescriptors(com.sitewhere.grpc.service.
-     * GListAssetModuleDescriptorsRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void listAssetModuleDescriptors(GListAssetModuleDescriptorsRequest request,
-	    StreamObserver<GListAssetModuleDescriptorsResponse> responseObserver) {
-	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_LIST_ASSET_MODULE_DESCRIPTORS);
-	    List<IAssetModuleDescriptor> apiResult = getAssetResolver().getAssetModuleManagement()
-		    .listAssetModuleDescriptors(null);
-
-	    GListAssetModuleDescriptorsResponse.Builder response = GListAssetModuleDescriptorsResponse.newBuilder();
-	    for (IAssetModuleDescriptor api : apiResult) {
-		response.addAssetModuleDescriptor(AssetModelConverter.asGrpcAssetModuleDescriptor(api));
-	    }
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_LIST_ASSET_MODULE_DESCRIPTORS, e,
-		    responseObserver);
-	}
+    public IAssetManagement getAssetManagement() {
+	return assetManagement;
     }
 
-    /**
-     * Create a descriptor for the given asset module.
-     * 
-     * @param module
-     * @return
-     */
-    protected IAssetModuleDescriptor getDescriptorFor(IAssetModule<?> module) {
-	AssetModuleDescriptor descriptor = new AssetModuleDescriptor();
-	descriptor.setId(module.getId());
-	descriptor.setName(module.getName());
-	descriptor.setAssetType(module.getAssetType());
-	return descriptor;
-    }
-
-    /*
-     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * getAssetModuleDescriptorByModuleId(com.sitewhere.grpc.service.
-     * GGetAssetModuleDescriptorByModuleIdRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getAssetModuleDescriptorByModuleId(GGetAssetModuleDescriptorByModuleIdRequest request,
-	    StreamObserver<GGetAssetModuleDescriptorByModuleIdResponse> responseObserver) {
-	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_DESCRIPTOR_BY_MODULE_ID);
-	    IAssetModuleDescriptor apiResult = getAssetResolver().getAssetModuleManagement()
-		    .getAssetModuleDescriptor(request.getModuleId());
-	    GGetAssetModuleDescriptorByModuleIdResponse.Builder response = GGetAssetModuleDescriptorByModuleIdResponse
-		    .newBuilder();
-	    if (apiResult != null) {
-		response.setAssetModuleDescriptor(AssetModelConverter.asGrpcAssetModuleDescriptor(apiResult));
-	    }
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_DESCRIPTOR_BY_MODULE_ID,
-		    e, responseObserver);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * getAssetModuleAssetsByCriteria(com.sitewhere.grpc.service.
-     * GGetAssetModuleAssetsByCriteriaRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getAssetModuleAssetsByCriteria(GGetAssetModuleAssetsByCriteriaRequest request,
-	    StreamObserver<GGetAssetModuleAssetsByCriteriaResponse> responseObserver) {
-	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_ASSETS_BY_CRITERIA);
-	    List<? extends IAsset> apiResult = getAssetResolver().getAssetModuleManagement()
-		    .searchAssetModule(request.getModuleId(), request.getCriteria());
-
-	    GGetAssetModuleAssetsByCriteriaResponse.Builder response = GGetAssetModuleAssetsByCriteriaResponse
-		    .newBuilder();
-	    for (IAsset api : apiResult) {
-		response.addAsset(AssetModelConverter.asGrpcGenericAsset(api));
-	    }
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_ASSETS_BY_CRITERIA, e,
-		    responseObserver);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * getAssetModuleAsset(com.sitewhere.grpc.service.GGetAssetModuleAssetRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getAssetModuleAsset(GGetAssetModuleAssetRequest request,
-	    StreamObserver<GGetAssetModuleAssetResponse> responseObserver) {
-	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_ASSET);
-	    AssetReference reference = new AssetReference();
-	    reference.setModule(request.getModuleId());
-	    reference.setId(request.getAssetId());
-	    IAsset apiResult = getAssetResolver().getAssetModuleManagement().getAsset(reference);
-	    GGetAssetModuleAssetResponse.Builder response = GGetAssetModuleAssetResponse.newBuilder();
-	    if (apiResult != null) {
-		response.setAsset(AssetModelConverter.asGrpcGenericAsset(apiResult));
-	    }
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_GET_ASSET_MODULE_ASSET, e,
-		    responseObserver);
-	}
-    }
-
-    public IAssetResolver getAssetResolver() {
-	return assetResolver;
-    }
-
-    public void setAssetResolver(IAssetResolver assetResolver) {
-	this.assetResolver = assetResolver;
+    public void setAssetManagement(IAssetManagement assetManagement) {
+	this.assetManagement = assetManagement;
     }
 }

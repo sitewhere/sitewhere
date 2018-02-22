@@ -15,7 +15,6 @@ import java.util.UUID;
 
 import com.sitewhere.grpc.model.CommonModel.GAreaReference;
 import com.sitewhere.grpc.model.CommonModel.GDeviceAssignmentStatus;
-import com.sitewhere.grpc.model.CommonModel.GDeviceAssignmentType;
 import com.sitewhere.grpc.model.CommonModel.GDeviceContainerPolicy;
 import com.sitewhere.grpc.model.CommonModel.GDeviceGroupElementType;
 import com.sitewhere.grpc.model.CommonModel.GOptionalBoolean;
@@ -116,7 +115,6 @@ import com.sitewhere.spi.area.request.IAreaCreateRequest;
 import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
-import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -389,7 +387,7 @@ public class DeviceModelConverter {
 	DeviceTypeCreateRequest api = new DeviceTypeCreateRequest();
 	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
 	api.setName(grpc.getName());
-	api.setAssetReference(AssetModelConverter.asApiAssetReference(grpc.getAssetReference()));
+	api.setAssetTypeToken(grpc.getAssetTypeToken());
 	api.setContainerPolicy(DeviceModelConverter.asApiDeviceContainerPolicy(grpc.getContainerPolicy()));
 	api.setDeviceElementSchema(DeviceModelConverter.asApiDeviceElementSchema(grpc.getDeviceElementSchema()));
 	api.setMetadata(grpc.getMetadataMap());
@@ -410,7 +408,7 @@ public class DeviceModelConverter {
 	    grpc.setToken(GOptionalString.newBuilder().setValue(api.getToken()));
 	}
 	grpc.setName(api.getName());
-	grpc.setAssetReference(AssetModelConverter.asGrpcAssetReference(api.getAssetReference()));
+	grpc.setAssetTypeToken(api.getAssetTypeToken());
 	grpc.setContainerPolicy(DeviceModelConverter.asGrpcDeviceContainerPolicy(api.getContainerPolicy()));
 	if (api.getDeviceElementSchema() != null) {
 	    grpc.setDeviceElementSchema(DeviceModelConverter.asGrpcDeviceElementSchema(api.getDeviceElementSchema()));
@@ -430,8 +428,8 @@ public class DeviceModelConverter {
 	DeviceType api = new DeviceType();
 	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
 	api.setToken(grpc.getToken());
+	api.setAssetTypeId(CommonModelConverter.asApiUuid(grpc.getAssetTypeId()));
 	api.setName(grpc.getName());
-	api.setAssetReference(AssetModelConverter.asApiAssetReference(grpc.getAssetReference()));
 	api.setContainerPolicy(DeviceModelConverter.asApiDeviceContainerPolicy(grpc.getContainerPolicy()));
 	api.setDeviceElementSchema(DeviceModelConverter.asApiDeviceElementSchema(grpc.getDeviceElementSchema()));
 	api.setMetadata(grpc.getMetadataMap());
@@ -450,8 +448,8 @@ public class DeviceModelConverter {
 	GDeviceType.Builder grpc = GDeviceType.newBuilder();
 	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
 	grpc.setToken(api.getToken());
+	grpc.setAssetTypeId(CommonModelConverter.asGrpcUuid(api.getAssetTypeId()));
 	grpc.setName(api.getName());
-	grpc.setAssetReference(AssetModelConverter.asGrpcAssetReference(api.getAssetReference()));
 	grpc.setContainerPolicy(DeviceModelConverter.asGrpcDeviceContainerPolicy(api.getContainerPolicy()));
 	if (api.getDeviceElementSchema() != null) {
 	    grpc.setDeviceElementSchema(DeviceModelConverter.asGrpcDeviceElementSchema(api.getDeviceElementSchema()));
@@ -1389,25 +1387,6 @@ public class DeviceModelConverter {
     }
 
     /**
-     * Convert a device assignment type from GRPC to API.
-     * 
-     * @param grpc
-     * @return
-     * @throws SiteWhereException
-     */
-    public static DeviceAssignmentType asApiDeviceAssignmentType(GDeviceAssignmentType grpc) throws SiteWhereException {
-	switch (grpc) {
-	case ASSN_TYPE_ASSOCIATED:
-	    return DeviceAssignmentType.Associated;
-	case ASSN_TYPE_UNASSOCIATED:
-	    return DeviceAssignmentType.Unassociated;
-	case UNRECOGNIZED:
-	    throw new SiteWhereException("Unknown device assignment type: " + grpc.name());
-	}
-	return null;
-    }
-
-    /**
      * Convert device assignment search criteria from API to GRPC.
      * 
      * @param code
@@ -1442,23 +1421,6 @@ public class DeviceModelConverter {
 	}
 	gcriteria.setPaging(CommonModelConverter.asGrpcPaging(criteria));
 	return gcriteria.build();
-    }
-
-    /**
-     * Convert a device assignment type from API to GRPC.
-     * 
-     * @param api
-     * @return
-     * @throws SiteWhereException
-     */
-    public static GDeviceAssignmentType asGrpcDeviceAssignmentType(DeviceAssignmentType api) throws SiteWhereException {
-	switch (api) {
-	case Associated:
-	    return GDeviceAssignmentType.ASSN_TYPE_ASSOCIATED;
-	case Unassociated:
-	    return GDeviceAssignmentType.ASSN_TYPE_UNASSOCIATED;
-	}
-	throw new SiteWhereException("Unknown device assignment type: " + api.name());
     }
 
     /**
@@ -1544,9 +1506,9 @@ public class DeviceModelConverter {
 	    throws SiteWhereException {
 	DeviceAssignmentCreateRequest api = new DeviceAssignmentCreateRequest();
 	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
-	api.setAssignmentType(DeviceModelConverter.asApiDeviceAssignmentType(grpc.getAssignmentType()));
 	api.setDeviceHardwareId(grpc.getDeviceHardwareId());
-	api.setAssetReference(AssetModelConverter.asApiAssetReference(grpc.getAssetReference()));
+	api.setAreaToken(grpc.hasAreaToken() ? grpc.getAreaToken().getValue() : null);
+	api.setAssetToken(grpc.hasAssetToken() ? grpc.getAssetToken().getValue() : null);
 	api.setMetadata(grpc.getMetadataMap());
 	return api;
     }
@@ -1564,9 +1526,13 @@ public class DeviceModelConverter {
 	if (api.getToken() != null) {
 	    grpc.setToken(GOptionalString.newBuilder().setValue(api.getToken()));
 	}
-	grpc.setAssignmentType(DeviceModelConverter.asGrpcDeviceAssignmentType(api.getAssignmentType()));
 	grpc.setDeviceHardwareId(api.getDeviceHardwareId());
-	grpc.setAssetReference(AssetModelConverter.asGrpcAssetReference(api.getAssetReference()));
+	if (api.getAreaToken() != null) {
+	    grpc.setAreaToken(GOptionalString.newBuilder().setValue(api.getAreaToken()));
+	}
+	if (api.getAssetToken() != null) {
+	    grpc.setAssetToken(GOptionalString.newBuilder().setValue(api.getAssetToken()));
+	}
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
 	}
@@ -1584,11 +1550,10 @@ public class DeviceModelConverter {
 	DeviceAssignment api = new DeviceAssignment();
 	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
 	api.setToken(grpc.getToken());
-	api.setAssignmentType(DeviceModelConverter.asApiDeviceAssignmentType(grpc.getAssignmentType()));
 	api.setStatus(DeviceModelConverter.asApiDeviceAssignmentStatus(grpc.getStatus()));
-	api.setAreaId(CommonModelConverter.asApiUuid(grpc.getAreaId()));
 	api.setDeviceId(CommonModelConverter.asApiUuid(grpc.getDeviceId()));
-	api.setAssetReference(AssetModelConverter.asApiAssetReference(grpc.getAssetReference()));
+	api.setAreaId(CommonModelConverter.asApiUuid(grpc.getAreaId()));
+	api.setAssetId(CommonModelConverter.asApiUuid(grpc.getAssetId()));
 	if (grpc.hasActiveDate()) {
 	    api.setActiveDate(CommonModelConverter.asDate(grpc.getActiveDate()));
 	}
@@ -1611,13 +1576,14 @@ public class DeviceModelConverter {
 	GDeviceAssignment.Builder grpc = GDeviceAssignment.newBuilder();
 	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
 	grpc.setToken(api.getToken());
-	grpc.setAssignmentType(DeviceModelConverter.asGrpcDeviceAssignmentType(api.getAssignmentType()));
 	grpc.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(api.getStatus()));
+	grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
 	if (api.getAreaId() != null) {
 	    grpc.setAreaId(CommonModelConverter.asGrpcUuid(api.getAreaId()));
 	}
-	grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
-	grpc.setAssetReference(AssetModelConverter.asGrpcAssetReference(api.getAssetReference()));
+	if (api.getAssetId() != null) {
+	    grpc.setAssetId(CommonModelConverter.asGrpcUuid(api.getAssetId()));
+	}
 	if (api.getActiveDate() != null) {
 	    grpc.setActiveDate(CommonModelConverter.asGrpcTimestamp(api.getActiveDate()));
 	}

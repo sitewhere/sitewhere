@@ -9,7 +9,6 @@ package com.sitewhere.spi.device;
 
 import java.util.UUID;
 
-import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 
@@ -42,11 +41,11 @@ public interface IDeviceType extends IMetadataProviderEntity {
     public String getName();
 
     /**
-     * Get asset reference information.
+     * Get id of device asset type.
      * 
      * @return
      */
-    public IAssetReference getAssetReference();
+    public UUID getAssetTypeId();
 
     /**
      * Indicates whether this device contains other devices.

@@ -139,12 +139,6 @@ enum GDeviceGroupElementType {
 	ELEMENT_TYPE_GROUP = 1;
 }
 
-// Device assignment type.
-enum GDeviceAssignmentType {
-	ASSN_TYPE_UNASSOCIATED = 0;
-	ASSN_TYPE_ASSOCIATED = 1;
-}
-
 // Device assignment status.
 enum GDeviceAssignmentStatus {
 	ASSN_STATUS_ACTIVE = 0;
@@ -189,10 +183,9 @@ enum GStateChangeType {
 	STATE_CHANGE_TYPE_REGISTRATION_REQUESTED = 4;
 }
 
-// Asset type.
-enum GAssetType {
-	ASSET_TYPE_DEVICE = 0;
-	ASSET_TYPE_PERSON = 1;
-	ASSET_TYPE_HARDWARE = 2;
-	ASSET_TYPE_LOCATION = 3;
+// Asset type category.
+enum GAssetCategory {
+	ASSET_CATEGORY_DEVICE = 0;
+	ASSET_CATEGORY_PERSON = 1;
+	ASSET_CATEGORY_HARDWARE = 2;
 }

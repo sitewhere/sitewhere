@@ -27,8 +27,8 @@ public class MarshaledDevice extends Device {
     /** Current device assignment */
     private DeviceAssignment assignment;
 
-    /** Asset id from device specification (only for marshaling) */
-    private String assetId;
+    /** Asset token from device specification (only for marshaling) */
+    private String assetToken;
 
     /** Asset name from device specification (only for marshaling) */
     private String assetName;
@@ -52,12 +52,12 @@ public class MarshaledDevice extends Device {
 	this.assignment = assignment;
     }
 
-    public String getAssetId() {
-	return assetId;
+    public String getAssetToken() {
+	return assetToken;
     }
 
-    public void setAssetId(String assetId) {
-	this.assetId = assetId;
+    public void setAssetToken(String assetToken) {
+	this.assetToken = assetToken;
     }
 
     public String getAssetName() {

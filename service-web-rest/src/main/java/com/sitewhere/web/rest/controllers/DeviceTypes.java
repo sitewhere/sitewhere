@@ -41,8 +41,7 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.asset.IAsset;
-import com.sitewhere.spi.asset.IAssetResolver;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceStatus;
@@ -85,15 +84,10 @@ public class DeviceTypes extends RestControllerBase {
     @Secured({ SiteWhereRoles.REST })
     public IDeviceType createDeviceType(@RequestBody DeviceTypeCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	IAsset asset = getAssetResolver().getAssetModuleManagement().getAsset(request.getAssetReference());
-	if (asset == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidAssetReferenceId, ErrorLevel.ERROR,
-		    HttpServletResponse.SC_NOT_FOUND);
-	}
 	IDeviceType result = getDeviceManagement().createDeviceType(request);
 	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
-	return helper.convert(result, getAssetResolver());
+	return helper.convert(result, getAssetManagement());
     }
 
     /**
@@ -113,7 +107,7 @@ public class DeviceTypes extends RestControllerBase {
 	IDeviceType result = assertDeviceTypeByToken(token);
 	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(includeAsset);
-	return helper.convert(result, getAssetResolver());
+	return helper.convert(result, getAssetManagement());
     }
 
     /**
@@ -173,7 +167,7 @@ public class DeviceTypes extends RestControllerBase {
 	IDeviceType result = getDeviceManagement().updateDeviceType(deviceType.getId(), request);
 	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
-	return helper.convert(result, getAssetResolver());
+	return helper.convert(result, getAssetManagement());
     }
 
     /**
@@ -201,7 +195,7 @@ public class DeviceTypes extends RestControllerBase {
 	helper.setIncludeAsset(includeAsset);
 	List<IDeviceType> typesConv = new ArrayList<IDeviceType>();
 	for (IDeviceType type : results.getResults()) {
-	    typesConv.add(helper.convert(type, getAssetResolver()));
+	    typesConv.add(helper.convert(type, getAssetManagement()));
 	}
 	Collections.sort(typesConv, new Comparator<IDeviceType>() {
 	    public int compare(IDeviceType o1, IDeviceType o2) {
@@ -242,7 +236,7 @@ public class DeviceTypes extends RestControllerBase {
 	IDeviceType result = devices.deleteDeviceType(existing.getId(), force);
 	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
-	return helper.convert(result, getAssetResolver());
+	return helper.convert(result, getAssetManagement());
     }
 
     /**
@@ -452,7 +446,7 @@ public class DeviceTypes extends RestControllerBase {
 	return getMicroservice().getDeviceManagementApiDemux().getApiChannel();
     }
 
-    private IAssetResolver getAssetResolver() {
-	return getMicroservice().getAssetResolver();
+    private IAssetManagement getAssetManagement() {
+	return getMicroservice().getAssetManagementApiDemux().getApiChannel();
     }
 }

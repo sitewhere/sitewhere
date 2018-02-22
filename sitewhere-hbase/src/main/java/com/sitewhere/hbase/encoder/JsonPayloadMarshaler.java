@@ -10,10 +10,6 @@ package com.sitewhere.hbase.encoder;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.rest.model.area.Area;
 import com.sitewhere.rest.model.area.Zone;
-import com.sitewhere.rest.model.asset.AssetCategory;
-import com.sitewhere.rest.model.asset.HardwareAsset;
-import com.sitewhere.rest.model.asset.LocationAsset;
-import com.sitewhere.rest.model.asset.PersonAsset;
 import com.sitewhere.rest.model.batch.BatchElement;
 import com.sitewhere.rest.model.batch.BatchOperation;
 import com.sitewhere.rest.model.device.Device;
@@ -37,10 +33,6 @@ import com.sitewhere.rest.model.user.User;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.IZone;
-import com.sitewhere.spi.asset.IAssetCategory;
-import com.sitewhere.spi.asset.IHardwareAsset;
-import com.sitewhere.spi.asset.ILocationAsset;
-import com.sitewhere.spi.asset.IPersonAsset;
 import com.sitewhere.spi.batch.IBatchElement;
 import com.sitewhere.spi.batch.IBatchOperation;
 import com.sitewhere.spi.device.IDevice;
@@ -555,93 +547,6 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
     @Override
     public GrantedAuthority decodeGrantedAuthority(byte[] payload) throws SiteWhereException {
 	return MarshalUtils.unmarshalJson(payload, GrantedAuthority.class);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeAssetCategory(com.
-     * sitewhere .spi.asset.IAssetCategory)
-     */
-    @Override
-    public byte[] encodeAssetCategory(IAssetCategory category) throws SiteWhereException {
-	return MarshalUtils.marshalJson(category);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeAssetCategory(byte[])
-     */
-    @Override
-    public AssetCategory decodeAssetCategory(byte[] payload) throws SiteWhereException {
-	return MarshalUtils.unmarshalJson(payload, AssetCategory.class);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#encodePersonAsset(com.
-     * sitewhere.spi .asset.IPersonAsset)
-     */
-    @Override
-    public byte[] encodePersonAsset(IPersonAsset asset) throws SiteWhereException {
-	return MarshalUtils.marshalJson(asset);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#decodePersonAsset(byte[])
-     */
-    @Override
-    public PersonAsset decodePersonAsset(byte[] payload) throws SiteWhereException {
-	return MarshalUtils.unmarshalJson(payload, PersonAsset.class);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeHardwareAsset(com.
-     * sitewhere .spi.asset.IHardwareAsset)
-     */
-    @Override
-    public byte[] encodeHardwareAsset(IHardwareAsset asset) throws SiteWhereException {
-	return MarshalUtils.marshalJson(asset);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeHardwareAsset(byte[])
-     */
-    @Override
-    public HardwareAsset decodeHardwareAsset(byte[] payload) throws SiteWhereException {
-	return MarshalUtils.unmarshalJson(payload, HardwareAsset.class);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeLocationAsset(com.
-     * sitewhere .spi.asset.ILocationAsset)
-     */
-    @Override
-    public byte[] encodeLocationAsset(ILocationAsset asset) throws SiteWhereException {
-	return MarshalUtils.marshalJson(asset);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeLocationAsset(byte[])
-     */
-    @Override
-    public LocationAsset decodeLocationAsset(byte[] payload) throws SiteWhereException {
-	return MarshalUtils.unmarshalJson(payload, LocationAsset.class);
     }
 
     /*

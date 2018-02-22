@@ -13,11 +13,9 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.asset.AssetReference;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.rest.model.device.element.DeviceSlot;
 import com.sitewhere.rest.model.device.element.DeviceUnit;
-import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
@@ -39,8 +37,8 @@ public class DeviceTypeCreateRequest implements IDeviceTypeCreateRequest, Serial
     /** Specification name */
     private String name;
 
-    /** Asset reference */
-    private IAssetReference assetReference;
+    /** Asset type token */
+    private String assetTypeToken;
 
     /** Indicates if device instances can contain nested devices */
     private DeviceContainerPolicy containerPolicy;
@@ -65,15 +63,15 @@ public class DeviceTypeCreateRequest implements IDeviceTypeCreateRequest, Serial
 
     /*
      * @see
-     * com.sitewhere.spi.device.request.IDeviceTypeCreateRequest#getAssetReference()
+     * com.sitewhere.spi.device.request.IDeviceTypeCreateRequest#getAssetTypeToken()
      */
     @Override
-    public IAssetReference getAssetReference() {
-	return assetReference;
+    public String getAssetTypeToken() {
+	return assetTypeToken;
     }
 
-    public void setAssetReference(AssetReference assetReference) {
-	this.assetReference = assetReference;
+    public void setAssetTypeToken(String assetTypeToken) {
+	this.assetTypeToken = assetTypeToken;
     }
 
     /*
@@ -132,10 +130,10 @@ public class DeviceTypeCreateRequest implements IDeviceTypeCreateRequest, Serial
 	/** Request being built */
 	private DeviceTypeCreateRequest request = new DeviceTypeCreateRequest();
 
-	public Builder(String token, String name, String moduleId, String assetId) {
+	public Builder(String token, String assetTypeToken, String name) {
 	    request.setToken(token);
+	    request.setAssetTypeToken(assetTypeToken);
 	    request.setName(name);
-	    request.setAssetReference(new AssetReference.Builder(moduleId, assetId).build());
 	    request.setContainerPolicy(DeviceContainerPolicy.Standalone);
 	}
 

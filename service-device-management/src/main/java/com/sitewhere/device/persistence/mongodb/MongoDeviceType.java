@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
-import com.sitewhere.rest.model.asset.DefaultAssetReferenceEncoder;
 import com.sitewhere.rest.model.device.DeviceType;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
@@ -44,8 +43,8 @@ public class MongoDeviceType implements MongoConverter<IDeviceType> {
     /** Property for specification name */
     public static final String PROP_NAME = "name";
 
-    /** Property for asset module id */
-    public static final String PROP_ASSET_REFERENCE = "aref";
+    /** Property for asset type id */
+    public static final String PROP_ASSET_TYPE_ID = "astd";
 
     /** Property for container policy */
     public static final String PROP_CONTAINER_POLICY = "cpol";
@@ -83,7 +82,7 @@ public class MongoDeviceType implements MongoConverter<IDeviceType> {
 	target.append(PROP_ID, source.getId());
 	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_NAME, source.getName());
-	target.append(PROP_ASSET_REFERENCE, new DefaultAssetReferenceEncoder().encode(source.getAssetReference()));
+	target.append(PROP_ASSET_TYPE_ID, source.getAssetTypeId());
 	target.append(PROP_CONTAINER_POLICY, source.getContainerPolicy().name());
 	MongoSiteWhereEntity.toDocument(source, target);
 	MongoMetadataProvider.toDocument(source, target);
@@ -110,14 +109,14 @@ public class MongoDeviceType implements MongoConverter<IDeviceType> {
 	UUID id = (UUID) source.get(PROP_ID);
 	String token = (String) source.get(PROP_TOKEN);
 	String name = (String) source.get(PROP_NAME);
-	String assetReference = (String) source.get(PROP_ASSET_REFERENCE);
+	UUID assetTypeId = (UUID) source.get(PROP_ASSET_TYPE_ID);
 	String containerPolicy = (String) source.get(PROP_CONTAINER_POLICY);
 	Binary schemaBytes = (Binary) source.get(PROP_DEVICE_ELEMENT_SCHEMA);
 
 	target.setId(id);
 	target.setToken(token);
+	target.setAssetTypeId(assetTypeId);
 	target.setName(name);
-	target.setAssetReference(new DefaultAssetReferenceEncoder().decode(assetReference));
 
 	if (containerPolicy != null) {
 	    target.setContainerPolicy(DeviceContainerPolicy.valueOf(containerPolicy));

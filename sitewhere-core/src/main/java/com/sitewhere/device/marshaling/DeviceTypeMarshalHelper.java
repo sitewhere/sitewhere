@@ -10,13 +10,13 @@ package com.sitewhere.device.marshaling;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.DeviceType;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceType;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetResolver;
+import com.sitewhere.spi.asset.IAsset;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceType;
 
@@ -51,19 +51,18 @@ public class DeviceTypeMarshalHelper {
      * @return
      * @throws SiteWhereException
      */
-    public MarshaledDeviceType convert(IDeviceType source, IAssetResolver assetResolver) throws SiteWhereException {
+    public MarshaledDeviceType convert(IDeviceType source, IAssetManagement assetManagement) throws SiteWhereException {
 	MarshaledDeviceType deviceType = new MarshaledDeviceType();
 	MetadataProviderEntity.copy(source, deviceType);
 	deviceType.setId(source.getId());
 	deviceType.setToken(source.getToken());
 	deviceType.setName(source.getName());
-	deviceType.setAssetReference(source.getAssetReference());
+	deviceType.setAssetTypeId(source.getAssetTypeId());
 
 	// Look up asset reference and handle asset not found.
-	HardwareAsset asset = (HardwareAsset) assetResolver.getAssetModuleManagement()
-		.getAsset(source.getAssetReference());
+	IAsset asset = assetManagement.getAsset(source.getAssetTypeId());
 	if (asset == null) {
-	    LOGGER.warn("Device specification has reference to non-existent asset.");
+	    LOGGER.warn("Device type has reference to non-existent asset type.");
 	    asset = new InvalidAsset();
 	}
 

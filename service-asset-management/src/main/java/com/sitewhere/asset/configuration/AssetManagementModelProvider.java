@@ -47,8 +47,6 @@ public class AssetManagementModelProvider extends ConfigurationModelProvider {
     @Override
     public void initializeElements() {
 	addElement(createAssetManagement());
-	addElement(createAssetModules());
-	addElement(createWso2IdentityAssetModuleElement());
     }
 
     /*
@@ -84,19 +82,6 @@ public class AssetManagementModelProvider extends ConfigurationModelProvider {
     }
 
     /**
-     * Create the container for asset management configuration.
-     * 
-     * @return
-     */
-    protected ElementNode createAssetModules() {
-	ElementNode.Builder builder = new ElementNode.Builder("Asset Modules",
-		IAssetManagementParser.Elements.AssetModules.getLocalName(), "tag",
-		AssetManagementRoleKeys.AssetModules, this);
-	builder.description("Configure asset modules.");
-	return builder.build();
-    }
-
-    /**
      * Add common asset module attributes.
      * 
      * @param builder
@@ -104,36 +89,5 @@ public class AssetManagementModelProvider extends ConfigurationModelProvider {
     protected void addCommonAssetModuleAttributes(ElementNode.Builder builder) {
 	builder.attribute((new AttributeNode.Builder("Module id", "moduleId", AttributeType.String)
 		.description("Unique id used to reference the asset module").build()));
-    }
-
-    /**
-     * Create element configuration for WSO2 Identity asset module.
-     * 
-     * @return
-     */
-    protected ElementNode createWso2IdentityAssetModuleElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("WSO2 Identity Asset Module",
-		com.sitewhere.configuration.parser.IAssetManagementParser.IAssetModulesParser.Elements.Wso2IdentityAssetModule
-			.getLocalName(),
-		"users", AssetManagementRoleKeys.AssetModule, this);
-
-	builder.description("Asset module that interacts with a WSO2 Identity Server instance "
-		+ "to provide a list of person assets.");
-	addCommonAssetModuleAttributes(builder);
-
-	builder.attribute((new AttributeNode.Builder("SCIM users URL", "scimUsersUrl", AttributeType.String)
-		.description("SCIM URL for accessing the list of users.")
-		.defaultValue("https://localhost:9443/wso2/scim/Users").build()));
-	builder.attribute((new AttributeNode.Builder("Username", "username", AttributeType.String)
-		.description("Basic authentication username for web service calls.").defaultValue("admin").build()));
-	builder.attribute((new AttributeNode.Builder("Password", "password", AttributeType.String)
-		.description("Basic authentication password for web service calls.").defaultValue("admin").build()));
-	builder.attribute(
-		(new AttributeNode.Builder("Ignore bad certificate", "ignoreBadCertificate", AttributeType.Boolean)
-			.description("Indicates whether an invalid SSL certificate on the server should be ignored. "
-				+ "Do not enable in production systems.")
-			.defaultValue("false").build()));
-
-	return builder.build();
     }
 }

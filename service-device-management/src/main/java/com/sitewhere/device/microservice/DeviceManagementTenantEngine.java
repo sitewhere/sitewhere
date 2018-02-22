@@ -28,7 +28,6 @@ import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
@@ -137,7 +136,8 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 		    getMicroservice()));
 	    for (String script : scripts) {
 		GroovyDeviceModelInitializer initializer = new GroovyDeviceModelInitializer(groovy, script);
-		initializer.initialize(getDeviceManagement(), getEventManagementApiChannel(), getAssetResolver());
+		initializer.initialize(getDeviceManagement(), getEventManagementApiChannel(),
+			getAssetManagementApiChannel());
 	    }
 	} finally {
 	    SecurityContextHolder.getContext().setAuthentication(previous);
@@ -211,9 +211,5 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 
     public IDeviceEventManagementApiChannel getEventManagementApiChannel() {
 	return ((IDeviceManagementMicroservice) getMicroservice()).getEventManagementApiDemux().waitForApiChannel();
-    }
-
-    public IAssetResolver getAssetResolver() {
-	return ((IDeviceManagementMicroservice) getMicroservice()).getAssetResolver();
     }
 }

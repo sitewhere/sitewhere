@@ -27,7 +27,7 @@ import com.sitewhere.rest.model.scheduling.request.ScheduledJobCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetResolver;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduledJob;
@@ -122,7 +122,7 @@ public class ScheduledJobs extends RestControllerBase {
 	} else {
 	    List<IScheduledJob> converted = new ArrayList<IScheduledJob>();
 	    ScheduledJobMarshalHelper helper = new ScheduledJobMarshalHelper(getScheduleManagement(),
-		    getDeviceManagement(), getAssetResolver(), true);
+		    getDeviceManagement(), getAssetManagement(), true);
 	    for (IScheduledJob job : results.getResults()) {
 		converted.add(helper.convert(job));
 	    }
@@ -156,7 +156,7 @@ public class ScheduledJobs extends RestControllerBase {
 	return getMicroservice().getDeviceManagementApiDemux().getApiChannel();
     }
 
-    private IAssetResolver getAssetResolver() {
-	return getMicroservice().getAssetResolver();
+    private IAssetManagement getAssetManagement() {
+	return getMicroservice().getAssetManagementApiDemux().getApiChannel();
     }
 }

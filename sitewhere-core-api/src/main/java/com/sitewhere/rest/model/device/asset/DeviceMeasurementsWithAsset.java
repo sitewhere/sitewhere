@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetResolver;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 
 /**
@@ -30,16 +30,15 @@ public class DeviceMeasurementsWithAsset extends DeviceEventWithAsset implements
     /** Serial version UID */
     private static final long serialVersionUID = -732056996257170342L;
 
-    public DeviceMeasurementsWithAsset(IDeviceMeasurements wrapped, IAssetResolver assetResolver)
+    public DeviceMeasurementsWithAsset(IDeviceMeasurements wrapped, IAssetManagement assetManagement)
 	    throws SiteWhereException {
-	super(wrapped, assetResolver);
+	super(wrapped, assetManagement);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IMeasurementsProvider#addOrReplaceMeasurement(
+     * @see com.sitewhere.spi.device.IMeasurementsProvider#addOrReplaceMeasurement(
      * java.lang .String, java.lang.Double)
      */
     @Override
@@ -50,8 +49,7 @@ public class DeviceMeasurementsWithAsset extends DeviceEventWithAsset implements
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IMeasurementsProvider#removeMeasurement(java.
+     * @see com.sitewhere.spi.device.IMeasurementsProvider#removeMeasurement(java.
      * lang.String)
      */
     @Override
@@ -62,8 +60,7 @@ public class DeviceMeasurementsWithAsset extends DeviceEventWithAsset implements
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IMeasurementsProvider#getMeasurement(java.lang.
+     * @see com.sitewhere.spi.device.IMeasurementsProvider#getMeasurement(java.lang.
      * String)
      */
     @Override
@@ -94,8 +91,7 @@ public class DeviceMeasurementsWithAsset extends DeviceEventWithAsset implements
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceMeasurements#getMeasurementsSummary()
+     * @see com.sitewhere.spi.device.IDeviceMeasurements#getMeasurementsSummary()
      */
     public String getMeasurementsSummary() {
 	String result = "";

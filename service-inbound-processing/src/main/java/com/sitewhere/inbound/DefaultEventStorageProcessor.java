@@ -15,7 +15,6 @@ import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreate
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -150,7 +149,6 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	LOGGER.debug("Creating unassociated assignment for " + hardwareId + ".");
 	DeviceAssignmentCreateRequest assnCreate = new DeviceAssignmentCreateRequest();
 	assnCreate.setDeviceHardwareId(hardwareId);
-	assnCreate.setAssignmentType(DeviceAssignmentType.Unassociated);
 	return getDeviceManagement().createDeviceAssignment(assnCreate);
     }
 

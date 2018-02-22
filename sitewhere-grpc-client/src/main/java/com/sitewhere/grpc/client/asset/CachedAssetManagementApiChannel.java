@@ -9,12 +9,9 @@ package com.sitewhere.grpc.client.asset;
 
 import com.sitewhere.grpc.client.cache.CacheUtils;
 import com.sitewhere.grpc.client.spi.IApiDemux;
-import com.sitewhere.rest.model.asset.DefaultAssetReferenceEncoder;
 import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
-import com.sitewhere.spi.asset.IAssetReference;
-import com.sitewhere.spi.asset.IAssetReferenceEncoder;
 import com.sitewhere.spi.cache.ICacheProvider;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.tenant.ITenant;
@@ -26,51 +23,36 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class CachedAssetManagementApiChannel extends AssetManagementApiChannel {
 
-    /** Reference encoder */
-    private IAssetReferenceEncoder assetReferenceEncoder = new DefaultAssetReferenceEncoder();
-
     /** Asset by reference cache */
-    private ICacheProvider<String, IAsset> assetByReferenceCache;
+    private ICacheProvider<String, IAsset> assetByTokenCache;
 
     public CachedAssetManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
 	super(demux, microservice, host);
-	this.assetByReferenceCache = new AssetManagementCacheProviders.AssetReferenceCache(microservice, false);
+	this.assetByTokenCache = new AssetManagementCacheProviders.AssetByTokenCache(microservice, false);
     }
 
     /*
-     * @see com.sitewhere.grpc.client.asset.AssetManagementApiChannel#getAsset(com.
-     * sitewhere.spi.asset.IAssetReference)
+     * @see
+     * com.sitewhere.spi.asset.IAssetManagement#getAssetByToken(java.lang.String)
      */
     @Override
-    public IAsset getAsset(IAssetReference reference) throws SiteWhereException {
-	if (reference == null) {
-	    throw new SiteWhereException("Attempting to look up asset with null reference.");
-	}
+    public IAsset getAssetByToken(String token) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	String encoded = getAssetReferenceEncoder().encode(reference);
-	IAsset asset = getAssetByReferenceCache().getCacheEntry(tenant, encoded);
+	IAsset asset = getAssetByTokenCache().getCacheEntry(tenant, token);
 	if (asset != null) {
 	    CacheUtils.logCacheHit(asset);
 	    return asset;
 	} else {
-	    getLogger().debug("No cached information for asset reference '" + encoded + "'.");
+	    getLogger().debug("No cached information for asset token '" + token + "'.");
 	}
-	return super.getAsset(reference);
+	return super.getAssetByToken(token);
     }
 
-    public IAssetReferenceEncoder getAssetReferenceEncoder() {
-	return assetReferenceEncoder;
+    public ICacheProvider<String, IAsset> getAssetByTokenCache() {
+	return assetByTokenCache;
     }
 
-    public void setAssetReferenceEncoder(IAssetReferenceEncoder assetReferenceEncoder) {
-	this.assetReferenceEncoder = assetReferenceEncoder;
-    }
-
-    protected ICacheProvider<String, IAsset> getAssetByReferenceCache() {
-	return assetByReferenceCache;
-    }
-
-    protected void setAssetByReferenceCache(ICacheProvider<String, IAsset> assetByReferenceCache) {
-	this.assetByReferenceCache = assetByReferenceCache;
+    public void setAssetByTokenCache(ICacheProvider<String, IAsset> assetByTokenCache) {
+	this.assetByTokenCache = assetByTokenCache;
     }
 }

@@ -13,10 +13,6 @@ import java.util.Map;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.spi.asset.IAsset;
-import com.sitewhere.spi.asset.IAssetCategory;
-import com.sitewhere.spi.asset.IHardwareAsset;
-import com.sitewhere.spi.asset.ILocationAsset;
-import com.sitewhere.spi.asset.IPersonAsset;
 
 /**
  * Manages classes used to convert between Mongo and SPI objects.
@@ -31,18 +27,13 @@ public class MongoConverters implements IMongoConverterLookup {
     /** Create a list of converters for various types */
     static {
 	// Converters for asset management.
-	CONVERTERS.put(IAssetCategory.class, new MongoAssetCategory());
-	CONVERTERS.put(IHardwareAsset.class, new MongoHardwareAsset());
-	CONVERTERS.put(IPersonAsset.class, new MongoPersonAsset());
-	CONVERTERS.put(ILocationAsset.class, new MongoLocationAsset());
 	CONVERTERS.put(IAsset.class, new MongoAsset());
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.mongodb.IMongoConverterLookup#getConverterFor(java.lang.
+     * @see com.sitewhere.mongodb.IMongoConverterLookup#getConverterFor(java.lang.
      * Class)
      */
     @SuppressWarnings("unchecked")

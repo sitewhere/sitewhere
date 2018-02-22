@@ -20,14 +20,14 @@ public interface ISolrFields {
     /** Event type indicator */
     public static final String EVENT_TYPE = "eventType";
 
+    /** Unique device identifier */
+    public static final String DEVICE_ID = "deviceId";
+
     /** Unique device assignment identifier */
-    public static final String ASSIGNMENT_TOKEN = "assignmentToken";
+    public static final String ASSIGNMENT_ID = "assignmentId";
 
-    /** Assignment type indicator */
-    public static final String ASSIGNMENT_TYPE = "assignmentType";
-
-    /** Asset reference */
-    public static final String ASSET_REFERENCE = "assetReference";
+    /** Unique asset identifier */
+    public static final String ASSET_ID = "assetId";
 
     /** Unique area identifier */
     public static final String AREA_ID = "areaId";

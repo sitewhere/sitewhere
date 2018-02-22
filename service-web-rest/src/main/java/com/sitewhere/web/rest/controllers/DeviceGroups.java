@@ -31,7 +31,7 @@ import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.asset.IAssetResolver;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.group.GroupElementType;
 import com.sitewhere.spi.device.group.IDeviceGroup;
@@ -190,7 +190,7 @@ public class DeviceGroups extends RestControllerBase {
 		criteria);
 	List<IDeviceGroupElement> elmConv = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElement elm : results.getResults()) {
-	    elmConv.add(helper.convert(elm, getAssetResolver()));
+	    elmConv.add(helper.convert(elm, getAssetManagement()));
 	}
 	return new SearchResults<IDeviceGroupElement>(elmConv, results.getNumResults());
     }
@@ -222,7 +222,7 @@ public class DeviceGroups extends RestControllerBase {
 	List<IDeviceGroupElement> results = getDeviceManagement().addDeviceGroupElements(group.getId(), elements, true);
 	List<IDeviceGroupElement> converted = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElement elm : results) {
-	    converted.add(helper.convert(elm, getAssetResolver()));
+	    converted.add(helper.convert(elm, getAssetManagement()));
 	}
 	return new SearchResults<IDeviceGroupElement>(converted);
     }
@@ -304,7 +304,7 @@ public class DeviceGroups extends RestControllerBase {
 	List<IDeviceGroupElement> results = getDeviceManagement().removeDeviceGroupElements(group.getId(), elements);
 	List<IDeviceGroupElement> converted = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElement elm : results) {
-	    converted.add(helper.convert(elm, getAssetResolver()));
+	    converted.add(helper.convert(elm, getAssetManagement()));
 	}
 	return new SearchResults<IDeviceGroupElement>(converted);
     }
@@ -328,7 +328,7 @@ public class DeviceGroups extends RestControllerBase {
 	return getMicroservice().getDeviceManagementApiDemux().getApiChannel();
     }
 
-    private IAssetResolver getAssetResolver() {
-	return getMicroservice().getAssetResolver();
+    private IAssetManagement getAssetManagement() {
+	return getMicroservice().getAssetManagementApiDemux().getApiChannel();
     }
 }

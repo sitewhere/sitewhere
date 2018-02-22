@@ -13,42 +13,30 @@ import org.apache.commons.logging.LogFactory;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
-import com.sitewhere.grpc.service.GCreateAssetCategoryRequest;
-import com.sitewhere.grpc.service.GCreateAssetCategoryResponse;
-import com.sitewhere.grpc.service.GCreateHardwareAssetRequest;
-import com.sitewhere.grpc.service.GCreateHardwareAssetResponse;
-import com.sitewhere.grpc.service.GCreateLocationAssetRequest;
-import com.sitewhere.grpc.service.GCreateLocationAssetResponse;
-import com.sitewhere.grpc.service.GCreatePersonAssetRequest;
-import com.sitewhere.grpc.service.GCreatePersonAssetResponse;
-import com.sitewhere.grpc.service.GDeleteAssetCategoryRequest;
-import com.sitewhere.grpc.service.GDeleteAssetCategoryResponse;
+import com.sitewhere.grpc.service.GCreateAssetRequest;
+import com.sitewhere.grpc.service.GCreateAssetResponse;
+import com.sitewhere.grpc.service.GCreateAssetTypeRequest;
+import com.sitewhere.grpc.service.GCreateAssetTypeResponse;
 import com.sitewhere.grpc.service.GDeleteAssetRequest;
 import com.sitewhere.grpc.service.GDeleteAssetResponse;
+import com.sitewhere.grpc.service.GDeleteAssetTypeRequest;
+import com.sitewhere.grpc.service.GDeleteAssetTypeResponse;
 import com.sitewhere.grpc.service.GGetAssetByIdRequest;
 import com.sitewhere.grpc.service.GGetAssetByIdResponse;
-import com.sitewhere.grpc.service.GGetAssetCategoryByIdRequest;
-import com.sitewhere.grpc.service.GGetAssetCategoryByIdResponse;
-import com.sitewhere.grpc.service.GGetAssetModuleAssetRequest;
-import com.sitewhere.grpc.service.GGetAssetModuleAssetResponse;
-import com.sitewhere.grpc.service.GGetAssetModuleAssetsByCriteriaRequest;
-import com.sitewhere.grpc.service.GGetAssetModuleAssetsByCriteriaResponse;
-import com.sitewhere.grpc.service.GGetAssetModuleDescriptorByModuleIdRequest;
-import com.sitewhere.grpc.service.GGetAssetModuleDescriptorByModuleIdResponse;
-import com.sitewhere.grpc.service.GListAssetCategoriesRequest;
-import com.sitewhere.grpc.service.GListAssetCategoriesResponse;
-import com.sitewhere.grpc.service.GListAssetModuleDescriptorsRequest;
-import com.sitewhere.grpc.service.GListAssetModuleDescriptorsResponse;
+import com.sitewhere.grpc.service.GGetAssetByTokenRequest;
+import com.sitewhere.grpc.service.GGetAssetByTokenResponse;
+import com.sitewhere.grpc.service.GGetAssetTypeByIdRequest;
+import com.sitewhere.grpc.service.GGetAssetTypeByIdResponse;
+import com.sitewhere.grpc.service.GGetAssetTypeByTokenRequest;
+import com.sitewhere.grpc.service.GGetAssetTypeByTokenResponse;
+import com.sitewhere.grpc.service.GListAssetTypesRequest;
+import com.sitewhere.grpc.service.GListAssetTypesResponse;
 import com.sitewhere.grpc.service.GListAssetsRequest;
 import com.sitewhere.grpc.service.GListAssetsResponse;
-import com.sitewhere.grpc.service.GUpdateAssetCategoryRequest;
-import com.sitewhere.grpc.service.GUpdateAssetCategoryResponse;
-import com.sitewhere.grpc.service.GUpdateHardwareAssetRequest;
-import com.sitewhere.grpc.service.GUpdateHardwareAssetResponse;
-import com.sitewhere.grpc.service.GUpdateLocationAssetRequest;
-import com.sitewhere.grpc.service.GUpdateLocationAssetResponse;
-import com.sitewhere.grpc.service.GUpdatePersonAssetRequest;
-import com.sitewhere.grpc.service.GUpdatePersonAssetResponse;
+import com.sitewhere.grpc.service.GUpdateAssetRequest;
+import com.sitewhere.grpc.service.GUpdateAssetResponse;
+import com.sitewhere.grpc.service.GUpdateAssetTypeRequest;
+import com.sitewhere.grpc.service.GUpdateAssetTypeResponse;
 import com.sitewhere.microservice.grpc.TenantTokenServerInterceptor;
 import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
@@ -97,146 +85,79 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * createAssetCategory(com.sitewhere.grpc.service. GCreateAssetCategoryRequest,
+     * createAssetType(com.sitewhere.grpc.service.GCreateAssetTypeRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void createAssetCategory(GCreateAssetCategoryRequest request,
-	    StreamObserver<GCreateAssetCategoryResponse> responseObserver) {
-	getTenantImplementation().createAssetCategory(request, responseObserver);
+    public void createAssetType(GCreateAssetTypeRequest request,
+	    StreamObserver<GCreateAssetTypeResponse> responseObserver) {
+	getTenantImplementation().createAssetType(request, responseObserver);
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * getAssetCategoryById(com.sitewhere.grpc.service.
-     * GGetAssetCategoryByIdRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getAssetCategoryById(GGetAssetCategoryByIdRequest request,
-	    StreamObserver<GGetAssetCategoryByIdResponse> responseObserver) {
-	getTenantImplementation().getAssetCategoryById(request, responseObserver);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * updateAssetCategory(com.sitewhere.grpc.service. GUpdateAssetCategoryRequest,
+     * updateAssetType(com.sitewhere.grpc.service.GUpdateAssetTypeRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void updateAssetCategory(GUpdateAssetCategoryRequest request,
-	    StreamObserver<GUpdateAssetCategoryResponse> responseObserver) {
-	getTenantImplementation().updateAssetCategory(request, responseObserver);
+    public void updateAssetType(GUpdateAssetTypeRequest request,
+	    StreamObserver<GUpdateAssetTypeResponse> responseObserver) {
+	getTenantImplementation().updateAssetType(request, responseObserver);
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * listAssetCategories(com.sitewhere.grpc.service. GListAssetCategoriesRequest,
+     * getAssetTypeById(com.sitewhere.grpc.service.GGetAssetTypeByIdRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listAssetCategories(GListAssetCategoriesRequest request,
-	    StreamObserver<GListAssetCategoriesResponse> responseObserver) {
-	getTenantImplementation().listAssetCategories(request, responseObserver);
+    public void getAssetTypeById(GGetAssetTypeByIdRequest request,
+	    StreamObserver<GGetAssetTypeByIdResponse> responseObserver) {
+	getTenantImplementation().getAssetTypeById(request, responseObserver);
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * deleteAssetCategory(com.sitewhere.grpc.service. GDeleteAssetCategoryRequest,
+     * getAssetTypeByToken(com.sitewhere.grpc.service.GGetAssetTypeByTokenRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void deleteAssetCategory(GDeleteAssetCategoryRequest request,
-	    StreamObserver<GDeleteAssetCategoryResponse> responseObserver) {
-	getTenantImplementation().deleteAssetCategory(request, responseObserver);
+    public void getAssetTypeByToken(GGetAssetTypeByTokenRequest request,
+	    StreamObserver<GGetAssetTypeByTokenResponse> responseObserver) {
+	getTenantImplementation().getAssetTypeByToken(request, responseObserver);
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * createHardwareAsset(com.sitewhere.grpc.service. GCreateHardwareAssetRequest,
+     * deleteAssetType(com.sitewhere.grpc.service.GDeleteAssetTypeRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void createHardwareAsset(GCreateHardwareAssetRequest request,
-	    StreamObserver<GCreateHardwareAssetResponse> responseObserver) {
-	getTenantImplementation().createHardwareAsset(request, responseObserver);
+    public void deleteAssetType(GDeleteAssetTypeRequest request,
+	    StreamObserver<GDeleteAssetTypeResponse> responseObserver) {
+	getTenantImplementation().deleteAssetType(request, responseObserver);
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * updateHardwareAsset(com.sitewhere.grpc.service. GUpdateHardwareAssetRequest,
+     * listAssetTypes(com.sitewhere.grpc.service.GListAssetTypesRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void updateHardwareAsset(GUpdateHardwareAssetRequest request,
-	    StreamObserver<GUpdateHardwareAssetResponse> responseObserver) {
-	getTenantImplementation().updateHardwareAsset(request, responseObserver);
+    public void listAssetTypes(GListAssetTypesRequest request,
+	    StreamObserver<GListAssetTypesResponse> responseObserver) {
+	getTenantImplementation().listAssetTypes(request, responseObserver);
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * createPersonAsset(com.sitewhere.grpc.service.GCreatePersonAssetRequest,
+     * createAsset(com.sitewhere.grpc.service.GCreateAssetRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void createPersonAsset(GCreatePersonAssetRequest request,
-	    StreamObserver<GCreatePersonAssetResponse> responseObserver) {
-	getTenantImplementation().createPersonAsset(request, responseObserver);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * updatePersonAsset(com.sitewhere.grpc.service.GUpdatePersonAssetRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void updatePersonAsset(GUpdatePersonAssetRequest request,
-	    StreamObserver<GUpdatePersonAssetResponse> responseObserver) {
-	getTenantImplementation().updatePersonAsset(request, responseObserver);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * createLocationAsset(com.sitewhere.grpc.service. GCreateLocationAssetRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void createLocationAsset(GCreateLocationAssetRequest request,
-	    StreamObserver<GCreateLocationAssetResponse> responseObserver) {
-	getTenantImplementation().createLocationAsset(request, responseObserver);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * updateLocationAsset(com.sitewhere.grpc.service. GUpdateLocationAssetRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void updateLocationAsset(GUpdateLocationAssetRequest request,
-	    StreamObserver<GUpdateLocationAssetResponse> responseObserver) {
-	getTenantImplementation().updateLocationAsset(request, responseObserver);
+    public void createAsset(GCreateAssetRequest request, StreamObserver<GCreateAssetResponse> responseObserver) {
+	getTenantImplementation().createAsset(request, responseObserver);
     }
 
     /*
@@ -249,6 +170,27 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     @Override
     public void getAssetById(GGetAssetByIdRequest request, StreamObserver<GGetAssetByIdResponse> responseObserver) {
 	getTenantImplementation().getAssetById(request, responseObserver);
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
+     * getAssetByToken(com.sitewhere.grpc.service.GGetAssetByTokenRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getAssetByToken(GGetAssetByTokenRequest request,
+	    StreamObserver<GGetAssetByTokenResponse> responseObserver) {
+	getTenantImplementation().getAssetByToken(request, responseObserver);
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
+     * updateAsset(com.sitewhere.grpc.service.GUpdateAssetRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void updateAsset(GUpdateAssetRequest request, StreamObserver<GUpdateAssetResponse> responseObserver) {
+	getTenantImplementation().updateAsset(request, responseObserver);
     }
 
     /*
@@ -273,50 +215,6 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     @Override
     public void listAssets(GListAssetsRequest request, StreamObserver<GListAssetsResponse> responseObserver) {
 	getTenantImplementation().listAssets(request, responseObserver);
-    }
-
-    /*
-     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * listAssetModuleDescriptors(com.sitewhere.grpc.service.
-     * GListAssetModuleDescriptorsRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void listAssetModuleDescriptors(GListAssetModuleDescriptorsRequest request,
-	    StreamObserver<GListAssetModuleDescriptorsResponse> responseObserver) {
-	getTenantImplementation().listAssetModuleDescriptors(request, responseObserver);
-    }
-
-    /*
-     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * getAssetModuleDescriptorByModuleId(com.sitewhere.grpc.service.
-     * GGetAssetModuleDescriptorByModuleIdRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getAssetModuleDescriptorByModuleId(GGetAssetModuleDescriptorByModuleIdRequest request,
-	    StreamObserver<GGetAssetModuleDescriptorByModuleIdResponse> responseObserver) {
-	getTenantImplementation().getAssetModuleDescriptorByModuleId(request, responseObserver);
-    }
-
-    /*
-     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * getAssetModuleAssetsByCriteria(com.sitewhere.grpc.service.
-     * GGetAssetModuleAssetsByCriteriaRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getAssetModuleAssetsByCriteria(GGetAssetModuleAssetsByCriteriaRequest request,
-	    StreamObserver<GGetAssetModuleAssetsByCriteriaResponse> responseObserver) {
-	getTenantImplementation().getAssetModuleAssetsByCriteria(request, responseObserver);
-    }
-
-    /*
-     * @see com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementImplBase#
-     * getAssetModuleAsset(com.sitewhere.grpc.service.GGetAssetModuleAssetRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getAssetModuleAsset(GGetAssetModuleAssetRequest request,
-	    StreamObserver<GGetAssetModuleAssetResponse> responseObserver) {
-	getTenantImplementation().getAssetModuleAsset(request, responseObserver);
     }
 
     public IAssetManagementMicroservice getMicroservice() {

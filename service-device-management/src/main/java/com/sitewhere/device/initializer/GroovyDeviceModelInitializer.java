@@ -18,7 +18,7 @@ import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventReques
 import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequestBuilder;
 import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetResolver;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 
@@ -47,22 +47,15 @@ public class GroovyDeviceModelInitializer extends ModelInitializer implements ID
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.spi.initializer.IDeviceModelInitializer#initialize(
-     * com.sitewhere.spi.device.IDeviceManagement,
+     * @see
+     * com.sitewhere.device.spi.initializer.IDeviceModelInitializer#initialize(com.
+     * sitewhere.spi.device.IDeviceManagement,
      * com.sitewhere.spi.device.event.IDeviceEventManagement,
-     * com.sitewhere.spi.asset.IAssetManagement,
-     * com.sitewhere.spi.asset.IAssetResolver)
+     * com.sitewhere.spi.asset.IAssetManagement)
      */
     @Override
     public void initialize(IDeviceManagement deviceManagement, IDeviceEventManagement deviceEventManagement,
-	    IAssetResolver assetResolver) throws SiteWhereException {
-	// Skip if not enabled.
-	if (!isEnabled()) {
-	    return;
-	}
-
+	    IAssetManagement assetManagement) throws SiteWhereException {
 	Binding binding = new Binding();
 	binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
 	binding.setVariable(IGroovyVariables.VAR_DEVICE_MANAGEMENT_BUILDER,
@@ -70,7 +63,7 @@ public class GroovyDeviceModelInitializer extends ModelInitializer implements ID
 	binding.setVariable(IGroovyVariables.VAR_EVENT_MANAGEMENT_BUILDER,
 		new DeviceEventRequestBuilder(deviceManagement, deviceEventManagement));
 	binding.setVariable(IGroovyVariables.VAR_ASSET_MANAGEMENT_BUILDER,
-		new AssetManagementRequestBuilder(assetResolver));
+		new AssetManagementRequestBuilder(assetManagement));
 
 	try {
 	    getGroovyConfiguration().run(getScriptPath(), binding);

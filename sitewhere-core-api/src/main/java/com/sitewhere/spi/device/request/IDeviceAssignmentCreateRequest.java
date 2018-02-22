@@ -9,9 +9,6 @@ package com.sitewhere.spi.device.request;
 
 import java.util.Map;
 
-import com.sitewhere.spi.asset.IAssetReference;
-import com.sitewhere.spi.device.DeviceAssignmentType;
-
 /**
  * Interface for arguments needed to create a device assignment.
  * 
@@ -34,25 +31,18 @@ public interface IDeviceAssignmentCreateRequest {
     public String getDeviceHardwareId();
 
     /**
-     * Get token of area where device is assigned.
+     * Get token of assigned area.
      * 
      * @return
      */
     public String getAreaToken();
 
     /**
-     * Get assignment type.
+     * Get token of assigned asset.
      * 
      * @return
      */
-    public DeviceAssignmentType getAssignmentType();
-
-    /**
-     * Get asset reference.
-     * 
-     * @return
-     */
-    public IAssetReference getAssetReference();
+    public String getAssetToken();
 
     /**
      * Get metadata values.

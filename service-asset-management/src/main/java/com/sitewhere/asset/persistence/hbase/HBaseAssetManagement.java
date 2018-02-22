@@ -7,6 +7,8 @@
  */
 package com.sitewhere.asset.persistence.hbase;
 
+import java.util.UUID;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.regionserver.BloomType;
@@ -19,17 +21,13 @@ import com.sitewhere.hbase.encoder.IPayloadMarshaler;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
-import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.asset.IHardwareAsset;
-import com.sitewhere.spi.asset.ILocationAsset;
-import com.sitewhere.spi.asset.IPersonAsset;
-import com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest;
-import com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest;
-import com.sitewhere.spi.asset.request.ILocationAssetCreateRequest;
-import com.sitewhere.spi.asset.request.IPersonAssetCreateRequest;
-import com.sitewhere.spi.search.ISearchCriteria;
+import com.sitewhere.spi.asset.IAssetType;
+import com.sitewhere.spi.asset.request.IAssetCreateRequest;
+import com.sitewhere.spi.asset.request.IAssetTypeCreateRequest;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.area.IAssetTypeSearchCritiera;
+import com.sitewhere.spi.search.asset.IAssetSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -103,167 +101,113 @@ public class HBaseAssetManagement extends TenantEngineLifecycleComponent impleme
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#createAssetCategory(com.
-     * sitewhere.spi. asset.request.IAssetCategoryCreateRequest)
+     * @see
+     * com.sitewhere.spi.asset.IAssetManagement#createAssetType(com.sitewhere.spi.
+     * asset.request.IAssetTypeCreateRequest)
      */
     @Override
-    public IAssetCategory createAssetCategory(IAssetCategoryCreateRequest request) throws SiteWhereException {
-	return HBaseAssetCategory.createAssetCategory(context, request);
+    public IAssetType createAssetType(IAssetTypeCreateRequest request) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase asset managment.");
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#getAssetCategory(java.lang.
+     * @see com.sitewhere.spi.asset.IAssetManagement#updateAssetType(java.util.UUID,
+     * com.sitewhere.spi.asset.request.IAssetTypeCreateRequest)
+     */
+    @Override
+    public IAssetType updateAssetType(UUID assetTypeId, IAssetTypeCreateRequest request) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase asset managment.");
+    }
+
+    /*
+     * @see com.sitewhere.spi.asset.IAssetManagement#getAssetType(java.util.UUID)
+     */
+    @Override
+    public IAssetType getAssetType(UUID assetTypeId) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase asset managment.");
+    }
+
+    /*
+     * @see com.sitewhere.spi.asset.IAssetManagement#getAssetTypeByToken(java.lang.
      * String)
      */
     @Override
-    public IAssetCategory getAssetCategory(String categoryId) throws SiteWhereException {
-	return HBaseAssetCategory.getAssetCategoryById(context, categoryId);
+    public IAssetType getAssetTypeByToken(String token) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase asset managment.");
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#updateAssetCategory(java.lang.
-     * String, com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest)
+     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAssetType(java.util.UUID,
+     * boolean)
      */
     @Override
-    public IAssetCategory updateAssetCategory(String categoryId, IAssetCategoryCreateRequest request)
-	    throws SiteWhereException {
-	return HBaseAssetCategory.updateAssetCategory(context, categoryId, request);
+    public IAssetType deleteAssetType(UUID assetTypeId, boolean force) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase asset managment.");
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#listAssetCategories(com.
-     * sitewhere.spi. search.ISearchCriteria)
+     * @see
+     * com.sitewhere.spi.asset.IAssetManagement#listAssetTypes(com.sitewhere.spi.
+     * search.area.IAssetTypeSearchCritiera)
      */
     @Override
-    public ISearchResults<IAssetCategory> listAssetCategories(ISearchCriteria criteria) throws SiteWhereException {
-	return HBaseAssetCategory.listAssetCategories(context, criteria);
+    public ISearchResults<IAssetType> listAssetTypes(IAssetTypeSearchCritiera criteria) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase asset managment.");
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAssetCategory(java.lang.
-     * String)
+     * @see
+     * com.sitewhere.spi.asset.IAssetManagement#createAsset(com.sitewhere.spi.asset.
+     * request.IAssetCreateRequest)
      */
     @Override
-    public IAssetCategory deleteAssetCategory(String categoryId) throws SiteWhereException {
-	return HBaseAssetCategory.deleteAssetCategory(context, categoryId);
+    public IAsset createAsset(IAssetCreateRequest request) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase asset managment.");
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#createPersonAsset(java.lang.
-     * String, com.sitewhere.spi.asset.request.IPersonAssetCreateRequest)
+     * @see com.sitewhere.spi.asset.IAssetManagement#updateAsset(java.util.UUID,
+     * com.sitewhere.spi.asset.request.IAssetCreateRequest)
      */
     @Override
-    public IPersonAsset createPersonAsset(String categoryId, IPersonAssetCreateRequest request)
-	    throws SiteWhereException {
-	return HBaseAsset.createOrUpdatePersonAsset(context, categoryId, null, request);
+    public IAsset updateAsset(UUID assetId, IAssetCreateRequest request) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase asset managment.");
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#updatePersonAsset(java.lang.
-     * String, java.lang.String,
-     * com.sitewhere.spi.asset.request.IPersonAssetCreateRequest)
+     * @see com.sitewhere.spi.asset.IAssetManagement#getAsset(java.util.UUID)
      */
     @Override
-    public IPersonAsset updatePersonAsset(String categoryId, String assetId, IPersonAssetCreateRequest request)
-	    throws SiteWhereException {
-	return HBaseAsset.createOrUpdatePersonAsset(context, categoryId, assetId, request);
+    public IAsset getAsset(UUID assetId) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase asset managment.");
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#createHardwareAsset(java.lang.
-     * String, com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest)
+     * @see
+     * com.sitewhere.spi.asset.IAssetManagement#getAssetByToken(java.lang.String)
      */
     @Override
-    public IHardwareAsset createHardwareAsset(String categoryId, IHardwareAssetCreateRequest request)
-	    throws SiteWhereException {
-	return HBaseAsset.createOrUpdateHardwareAsset(context, categoryId, null, request);
+    public IAsset getAssetByToken(String token) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase asset managment.");
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#updateHardwareAsset(java.lang.
-     * String, java.lang.String,
-     * com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest)
+     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAsset(java.util.UUID,
+     * boolean)
      */
     @Override
-    public IHardwareAsset updateHardwareAsset(String categoryId, String assetId, IHardwareAssetCreateRequest request)
-	    throws SiteWhereException {
-	return HBaseAsset.createOrUpdateHardwareAsset(context, categoryId, assetId, request);
+    public IAsset deleteAsset(UUID assetId, boolean force) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase asset managment.");
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#createLocationAsset(java.lang.
-     * String, com.sitewhere.spi.asset.request.ILocationAssetCreateRequest)
+     * @see
+     * com.sitewhere.spi.asset.IAssetManagement#listAssets(com.sitewhere.spi.search.
+     * asset.IAssetSearchCriteria)
      */
     @Override
-    public ILocationAsset createLocationAsset(String categoryId, ILocationAssetCreateRequest request)
-	    throws SiteWhereException {
-	return HBaseAsset.createOrUpdateLocationAsset(context, categoryId, null, request);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#updateLocationAsset(java.lang.
-     * String, java.lang.String,
-     * com.sitewhere.spi.asset.request.ILocationAssetCreateRequest)
-     */
-    @Override
-    public ILocationAsset updateLocationAsset(String categoryId, String assetId, ILocationAssetCreateRequest request)
-	    throws SiteWhereException {
-	return HBaseAsset.createOrUpdateLocationAsset(context, categoryId, assetId, request);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#getAsset(java.lang.String,
-     * java.lang.String)
-     */
-    @Override
-    public IAsset getAsset(String categoryId, String assetId) throws SiteWhereException {
-	return HBaseAsset.getAsset(context, categoryId, assetId);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAsset(java.lang.String,
-     * java.lang.String)
-     */
-    @Override
-    public IAsset deleteAsset(String categoryId, String assetId) throws SiteWhereException {
-	return HBaseAsset.deleteAsset(context, categoryId, assetId);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#listAssets(java.lang.String,
-     * com.sitewhere.spi.search.ISearchCriteria)
-     */
-    @Override
-    public ISearchResults<IAsset> listAssets(String categoryId, ISearchCriteria criteria) throws SiteWhereException {
-	return HBaseAsset.listAssets(context, categoryId, criteria);
+    public ISearchResults<IAsset> listAssets(IAssetSearchCriteria criteria) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase asset managment.");
     }
 
     public ISiteWhereHBaseClient getClient() {

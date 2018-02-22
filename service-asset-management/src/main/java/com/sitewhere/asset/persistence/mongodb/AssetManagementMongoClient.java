@@ -26,8 +26,8 @@ public class AssetManagementMongoClient extends MongoDbClient implements IAssetM
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(AssetManagementMongoClient.class);
 
-    /** Injected name used for asset categories collection */
-    private String assetCategoriesCollectionName = IAssetManagementMongoClient.DEFAULT_ASSET_CATEGORIES_COLLECTION_NAME;
+    /** Injected name used for asset types collection */
+    private String assetTypesCollectionName = IAssetManagementMongoClient.DEFAULT_ASSET_TYPES_COLLECTION_NAME;
 
     /** Injected name used for assets collection */
     private String assetsCollectionName = IAssetManagementMongoClient.DEFAULT_ASSETS_COLLECTION_NAME;
@@ -38,10 +38,11 @@ public class AssetManagementMongoClient extends MongoDbClient implements IAssetM
 
     /*
      * @see com.sitewhere.asset.persistence.mongodb.IAssetManagementMongoClient#
-     * getAssetCategoriesCollection()
+     * getAssetTypesCollection()
      */
-    public MongoCollection<Document> getAssetCategoriesCollection() throws SiteWhereException {
-	return getDatabase().getCollection(getAssetCategoriesCollectionName());
+    @Override
+    public MongoCollection<Document> getAssetTypesCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getAssetTypesCollectionName());
     }
 
     /*
@@ -62,12 +63,12 @@ public class AssetManagementMongoClient extends MongoDbClient implements IAssetM
 	return LOGGER;
     }
 
-    public String getAssetCategoriesCollectionName() {
-	return assetCategoriesCollectionName;
+    public String getAssetTypesCollectionName() {
+	return assetTypesCollectionName;
     }
 
-    public void setAssetCategoriesCollectionName(String assetCategoriesCollectionName) {
-	this.assetCategoriesCollectionName = assetCategoriesCollectionName;
+    public void setAssetTypesCollectionName(String assetTypesCollectionName) {
+	this.assetTypesCollectionName = assetTypesCollectionName;
     }
 
     public String getAssetsCollectionName() {

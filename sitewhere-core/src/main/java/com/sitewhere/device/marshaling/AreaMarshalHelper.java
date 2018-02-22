@@ -27,7 +27,7 @@ import com.sitewhere.rest.model.search.device.AssignmentSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.IZone;
-import com.sitewhere.spi.asset.IAssetResolver;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -48,8 +48,8 @@ public class AreaMarshalHelper {
     /** Device management */
     private IDeviceManagement deviceManagement;
 
-    /** Asset resolver */
-    private IAssetResolver assetResolver;
+    /** Asset management */
+    private IAssetManagement assetManagement;
 
     /** Include area type information */
     private boolean includeAreaType = false;
@@ -66,9 +66,9 @@ public class AreaMarshalHelper {
     /** Device assignment marshal helper */
     private DeviceAssignmentMarshalHelper assignmentHelper;
 
-    public AreaMarshalHelper(IDeviceManagement deviceManagement, IAssetResolver assetResolver) {
+    public AreaMarshalHelper(IDeviceManagement deviceManagement, IAssetManagement assetManagement) {
 	this.deviceManagement = deviceManagement;
-	this.assetResolver = assetResolver;
+	this.assetManagement = assetManagement;
 
 	this.assignmentHelper = new DeviceAssignmentMarshalHelper(deviceManagement);
 	assignmentHelper.setIncludeDevice(true);
@@ -84,6 +84,9 @@ public class AreaMarshalHelper {
      * @throws SiteWhereException
      */
     public MarshaledArea convert(IArea source) throws SiteWhereException {
+	if (source == null) {
+	    return null;
+	}
 	MarshaledArea area = new MarshaledArea();
 	area.setId(source.getId());
 	area.setToken(source.getToken());
@@ -112,7 +115,7 @@ public class AreaMarshalHelper {
 		    criteria);
 	    List<DeviceAssignment> assignments = new ArrayList<DeviceAssignment>();
 	    for (IDeviceAssignment match : matches.getResults()) {
-		assignments.add(assignmentHelper.convert(match, getAssetResolver()));
+		assignments.add(assignmentHelper.convert(match, getAssetManagement()));
 	    }
 	    area.setDeviceAssignments(assignments);
 	}
@@ -143,12 +146,12 @@ public class AreaMarshalHelper {
 	this.deviceManagement = deviceManagement;
     }
 
-    public IAssetResolver getAssetResolver() {
-	return assetResolver;
+    public IAssetManagement getAssetManagement() {
+	return assetManagement;
     }
 
-    public void setAssetResolver(IAssetResolver assetResolver) {
-	this.assetResolver = assetResolver;
+    public void setAssetManagement(IAssetManagement assetManagement) {
+	this.assetManagement = assetManagement;
     }
 
     public boolean isIncludeAreaType() {

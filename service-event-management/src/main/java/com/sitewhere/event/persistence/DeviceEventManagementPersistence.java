@@ -83,10 +83,10 @@ public class DeviceEventManagementPersistence extends Persistence {
     public static void deviceEventCreateLogic(IDeviceEventCreateRequest request, IDeviceAssignment assignment,
 	    DeviceEvent target) throws SiteWhereException {
 	target.setAlternateId(request.getAlternateId());
-	target.setAreaId(assignment.getAreaId());
+	target.setDeviceId(assignment.getDeviceId());
 	target.setDeviceAssignmentId(assignment.getId());
-	target.setAssignmentType(assignment.getAssignmentType());
-	target.setAssetReference(assignment.getAssetReference());
+	target.setAreaId(assignment.getAreaId());
+	target.setAssetId(assignment.getAssetId());
 	if (request.getEventDate() != null) {
 	    target.setEventDate(request.getEventDate());
 	} else {

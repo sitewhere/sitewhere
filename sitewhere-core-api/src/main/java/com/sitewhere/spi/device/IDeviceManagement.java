@@ -18,7 +18,6 @@ import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.area.request.IAreaCreateRequest;
 import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
-import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
@@ -408,12 +407,12 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     /**
      * Get a list of device assignments associated with a given asset.
      * 
-     * @param assetReference
+     * @param assetId
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(IAssetReference assetReference,
+    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(UUID assetId,
 	    IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException;
 
     /**

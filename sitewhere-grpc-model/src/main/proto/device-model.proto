@@ -35,8 +35,8 @@ message GDeviceElementSchema {
 // Request for creating a device type.
 message GDeviceTypeCreateRequest {
 	GOptionalString token = 1;
-	string name = 2;
-	GAssetReference assetReference = 3;
+	string assetTypeToken = 2;
+	string name = 3;
 	GDeviceContainerPolicy containerPolicy = 4;
 	GDeviceElementSchema deviceElementSchema = 5;
 	map<string, string> metadata = 6;
@@ -64,7 +64,7 @@ message GDeviceType {
 	GUUID id = 1;
 	string token = 2;
 	string name = 3;
-	GAssetReference assetReference = 4;
+	GUUID assetTypeId = 4;
 	GDeviceContainerPolicy containerPolicy = 5;
 	GDeviceElementSchema deviceElementSchema = 6;
 	map<string, string> metadata = 7;
@@ -275,9 +275,8 @@ message GDeviceAssignmentCreateRequest {
 	GOptionalString token = 1;
 	string deviceHardwareId = 2;
 	GOptionalString areaToken = 3;
-	GDeviceAssignmentType assignmentType = 4;
-	GAssetReference assetReference = 5;
-	map<string, string> metadata = 6;
+	GOptionalString assetToken = 4;
+	map<string, string> metadata = 5;
 }
 
 // Criteria for searching device assignments.
@@ -310,13 +309,12 @@ message GDeviceAssignment {
 	string token = 2;
 	GUUID deviceId = 3;
 	GUUID areaId = 4;
-	GDeviceAssignmentType assignmentType = 5;
+	GUUID assetId = 5;
 	GDeviceAssignmentStatus status = 6;
-	GAssetReference assetReference = 7;
-	google.protobuf.Timestamp activeDate = 8;
-	google.protobuf.Timestamp releasedDate = 9;
-	map<string, string> metadata = 10;
-	GEntityInformation entityInformation = 11;
+	google.protobuf.Timestamp activeDate = 7;
+	google.protobuf.Timestamp releasedDate = 8;
+	map<string, string> metadata = 9;
+	GEntityInformation entityInformation = 10;
 }
 
 // ######################

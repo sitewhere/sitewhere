@@ -9,10 +9,6 @@ package com.sitewhere.hbase.encoder;
 
 import com.sitewhere.rest.model.area.Area;
 import com.sitewhere.rest.model.area.Zone;
-import com.sitewhere.rest.model.asset.AssetCategory;
-import com.sitewhere.rest.model.asset.HardwareAsset;
-import com.sitewhere.rest.model.asset.LocationAsset;
-import com.sitewhere.rest.model.asset.PersonAsset;
 import com.sitewhere.rest.model.batch.BatchElement;
 import com.sitewhere.rest.model.batch.BatchOperation;
 import com.sitewhere.rest.model.device.Device;
@@ -36,10 +32,6 @@ import com.sitewhere.rest.model.user.User;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.IZone;
-import com.sitewhere.spi.asset.IAssetCategory;
-import com.sitewhere.spi.asset.IHardwareAsset;
-import com.sitewhere.spi.asset.ILocationAsset;
-import com.sitewhere.spi.asset.IPersonAsset;
 import com.sitewhere.spi.batch.IBatchElement;
 import com.sitewhere.spi.batch.IBatchOperation;
 import com.sitewhere.spi.device.IDevice;
@@ -472,78 +464,6 @@ public interface IPayloadMarshaler {
      * @throws SiteWhereException
      */
     public GrantedAuthority decodeGrantedAuthority(byte[] payload) throws SiteWhereException;
-
-    /**
-     * Encode an {@link IAssetCategory}.
-     * 
-     * @param category
-     * @return
-     * @throws SiteWhereException
-     */
-    public byte[] encodeAssetCategory(IAssetCategory category) throws SiteWhereException;
-
-    /**
-     * Decode an {@link IAssetCategory} from the binary payload.
-     * 
-     * @param payload
-     * @return
-     * @throws SiteWhereException
-     */
-    public AssetCategory decodeAssetCategory(byte[] payload) throws SiteWhereException;
-
-    /**
-     * Encode an {@link IPersonAsset}.
-     * 
-     * @param asset
-     * @return
-     * @throws SiteWhereException
-     */
-    public byte[] encodePersonAsset(IPersonAsset asset) throws SiteWhereException;
-
-    /**
-     * Decode a {@link PersonAsset}.
-     * 
-     * @param payload
-     * @return
-     * @throws SiteWhereException
-     */
-    public PersonAsset decodePersonAsset(byte[] payload) throws SiteWhereException;
-
-    /**
-     * Encode an {@link IHardwareAsset}.
-     * 
-     * @param asset
-     * @return
-     * @throws SiteWhereException
-     */
-    public byte[] encodeHardwareAsset(IHardwareAsset asset) throws SiteWhereException;
-
-    /**
-     * Decode a {@link HardwareAsset}.
-     * 
-     * @param payload
-     * @return
-     * @throws SiteWhereException
-     */
-    public HardwareAsset decodeHardwareAsset(byte[] payload) throws SiteWhereException;
-
-    /**
-     * Encode an {@link ILocationAsset}.
-     * 
-     * @param asset
-     * @return
-     * @throws SiteWhereException
-     */
-    public byte[] encodeLocationAsset(ILocationAsset asset) throws SiteWhereException;
-
-    /**
-     * Decode a {@link LocationAsset}.
-     * 
-     * @param payload
-     * @return
-     * @throws SiteWhereException
-     */
-    public LocationAsset decodeLocationAsset(byte[] payload) throws SiteWhereException;
 
     /**
      * Encode an {@link ITenant}.

@@ -16,6 +16,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import com.mongodb.ErrorCategory;
+import com.mongodb.MongoClientException;
 import com.mongodb.MongoCommandException;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.MongoWriteException;
@@ -268,5 +269,18 @@ public class MongoPersistence {
 	    dateClause.append("$lte", criteria.getEndDate());
 	}
 	query.put(dateField, dateClause);
+    }
+
+    /**
+     * Common handler for MongoDB client exceptions.
+     * 
+     * @param e
+     * @throws SiteWhereException
+     */
+    public static SiteWhereException handleClientException(MongoClientException e) {
+	if (e instanceof MongoTimeoutException) {
+	    return new SiteWhereException("Connection to MongoDB lost.", e);
+	}
+	return new SiteWhereException("Exception in MongoDB client.", e);
     }
 }

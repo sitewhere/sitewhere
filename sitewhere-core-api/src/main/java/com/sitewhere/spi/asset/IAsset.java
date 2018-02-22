@@ -8,21 +8,37 @@
 package com.sitewhere.spi.asset;
 
 import java.io.Serializable;
-import java.util.Map;
+import java.util.UUID;
+
+import com.sitewhere.spi.common.IMetadataProviderEntity;
 
 /**
- * Unique item to which a device may be associated.
+ * Item that represents a tangible object (person, place, thing) in the world.
  * 
- * @author dadams
+ * @author Derek
  */
-public interface IAsset extends Comparable<IAsset>, Serializable {
+public interface IAsset extends IMetadataProviderEntity, Serializable {
 
     /**
      * Unique asset id.
      * 
      * @return
      */
-    public String getId();
+    public UUID getId();
+
+    /**
+     * Get token used to reference asset.
+     * 
+     * @return
+     */
+    public String getToken();
+
+    /**
+     * Get unique id of asset type.
+     * 
+     * @return
+     */
+    public UUID getAssetTypeId();
 
     /**
      * Get asset name.
@@ -32,30 +48,9 @@ public interface IAsset extends Comparable<IAsset>, Serializable {
     public String getName();
 
     /**
-     * Get the asset type indicator.
-     * 
-     * @return
-     */
-    public AssetType getType();
-
-    /**
-     * Get id of parent asset category.
-     * 
-     * @return
-     */
-    public String getAssetCategoryId();
-
-    /**
      * Get URL for asset image.
      * 
      * @return
      */
     public String getImageUrl();
-
-    /**
-     * Get properties associated with asset.
-     * 
-     * @return
-     */
-    public Map<String, String> getProperties();
 }

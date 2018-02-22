@@ -26,11 +26,9 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.influxdb.InfluxDbClient;
-import com.sitewhere.rest.model.asset.DefaultAssetReferenceEncoder;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceEvent;
@@ -56,23 +54,23 @@ public class InfluxDbDeviceEvent {
     /** Event type tag */
     public static final String EVENT_TYPE = "type";
 
+    /** Event device tag */
+    public static final String EVENT_DEVICE = "device";
+
     /** Event assignment tag */
     public static final String EVENT_ASSIGNMENT = "assignment";
 
     /** Event area tag */
     public static final String EVENT_AREA = "area";
 
-    /** Event asset reference tag */
-    public static final String EVENT_ASSET_REFERENCE = "assetReference";
+    /** Event asset tag */
+    public static final String EVENT_ASSET = "asset";
 
     /** Event received date field */
     public static final String RECEIVED_DATE = "rcvdate";
 
     /** Event metadata field */
     public static final String EVENT_METADATA_PREFIX = "meta:";
-
-    /** Event assignmentType field */
-    public static final String ASSIGNMENT_TYPE = "assignmenttype";
 
     /** The meta data field to check if user has specified a time precision */
     private static final String EVENT_TIME_PRECISION_META_DATA_KEY = "precision";
@@ -463,12 +461,10 @@ public class InfluxDbDeviceEvent {
      */
     protected static void loadFromMap(DeviceEvent event, Map<String, Object> values) throws SiteWhereException {
 	event.setId((String) values.get(EVENT_ID));
+	event.setDeviceId(validateUUID((String) values.get(EVENT_DEVICE)));
 	event.setDeviceAssignmentId(validateUUID((String) values.get(EVENT_ASSIGNMENT)));
 	event.setAreaId(validateUUID((String) values.get(EVENT_AREA)));
-	event.setAssetReference(
-		new DefaultAssetReferenceEncoder().decode(((String) values.get(EVENT_ASSET_REFERENCE))));
-
-	event.setAssignmentType(DeviceAssignmentType.valueOf((String) values.get(ASSIGNMENT_TYPE)));
+	event.setAssetId(validateUUID((String) values.get(EVENT_ASSET)));
 	event.setReceivedDate(parseDateField(values, RECEIVED_DATE));
 	event.setEventDate(parseDateField(values, "time"));
 
@@ -536,12 +532,10 @@ public class InfluxDbDeviceEvent {
 	builder.time(event.getEventDate().getTime(), precision);
 	builder.addField(EVENT_ID, event.getId());
 	builder.tag(EVENT_TYPE, event.getEventType().name());
+	builder.tag(EVENT_DEVICE, event.getDeviceId().toString());
 	builder.tag(EVENT_ASSIGNMENT, event.getDeviceAssignmentId().toString());
-	builder.tag(ASSIGNMENT_TYPE, String.valueOf(event.getAssignmentType()));
 	builder.tag(EVENT_AREA, event.getAreaId().toString());
-	if (event.getAssetReference() != null) {
-	    builder.tag(EVENT_ASSET_REFERENCE, new DefaultAssetReferenceEncoder().encode(event.getAssetReference()));
-	}
+	builder.tag(EVENT_ASSET, event.getAssetId().toString());
 	builder.addField(RECEIVED_DATE, ISODateTimeFormat.dateTime().print(event.getReceivedDate().getTime()));
 
 	// Add field for each metadata value.

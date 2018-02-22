@@ -21,21 +21,21 @@ import com.sitewhere.spi.microservice.IMicroservice;
  */
 public class AssetManagementCacheProviders {
 
-    /** Cache id for asset reference cache */
-    public static final String ID_ASSET_REFERENCE_CACHE = "aref";
+    /** Cache id for asset by token cache */
+    public static final String ID_ASSET_BY_TOKEN_CACHE = "atok";
 
     /**
      * Cache for assets by reference.
      * 
      * @author Derek
      */
-    public static class AssetReferenceCache extends CacheProvider<String, IAsset> {
+    public static class AssetByTokenCache extends CacheProvider<String, IAsset> {
 
 	/** Static logger instance */
-	private static Log LOGGER = LogFactory.getLog(AssetReferenceCache.class);
+	private static Log LOGGER = LogFactory.getLog(AssetByTokenCache.class);
 
-	public AssetReferenceCache(IMicroservice microservice, boolean createOnStartup) {
-	    super(microservice, ID_ASSET_REFERENCE_CACHE, createOnStartup);
+	public AssetByTokenCache(IMicroservice microservice, boolean createOnStartup) {
+	    super(microservice, ID_ASSET_BY_TOKEN_CACHE, createOnStartup);
 	}
 
 	/*

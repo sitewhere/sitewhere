@@ -10,13 +10,13 @@ package com.sitewhere.device.marshaling;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.marshaling.MarshaledDevice;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetResolver;
+import com.sitewhere.spi.asset.IAsset;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
@@ -72,7 +72,7 @@ public class DeviceMarshalHelper {
      * @return
      * @throws SiteWhereException
      */
-    public MarshaledDevice convert(IDevice source, IAssetResolver assetResolver) throws SiteWhereException {
+    public MarshaledDevice convert(IDevice source, IAssetManagement assetManagement) throws SiteWhereException {
 	MarshaledDevice result = new MarshaledDevice();
 	result.setId(source.getId());
 	result.setHardwareId(source.getHardwareId());
@@ -87,7 +87,7 @@ public class DeviceMarshalHelper {
 	    DeviceElementMapping cnvMapping = DeviceElementMapping.copy(mapping);
 	    if (isIncludeNested()) {
 		IDevice device = getDeviceManagement().getDeviceByHardwareId(mapping.getHardwareId());
-		cnvMapping.setDevice(getNestedHelper().convert(device, assetResolver));
+		cnvMapping.setDevice(getNestedHelper().convert(device, assetManagement));
 	    }
 	    result.getDeviceElementMappings().add(cnvMapping);
 	}
@@ -99,12 +99,11 @@ public class DeviceMarshalHelper {
 		throw new SiteWhereException("Device references non-existent device type.");
 	    }
 	    if (isIncludeDeviceType()) {
-		result.setDeviceType(getDeviceTypeHelper().convert(deviceType, assetResolver));
+		result.setDeviceType(getDeviceTypeHelper().convert(deviceType, assetManagement));
 	    } else {
-		HardwareAsset asset = (HardwareAsset) assetResolver.getAssetModuleManagement()
-			.getAsset(deviceType.getAssetReference());
+		IAsset asset = assetManagement.getAsset(deviceType.getAssetTypeId());
 		if (asset != null) {
-		    result.setAssetId(asset.getId());
+		    result.setAssetToken(asset.getToken());
 		    result.setAssetName(asset.getName());
 		    result.setAssetImageUrl(asset.getImageUrl());
 		} else {
@@ -119,7 +118,7 @@ public class DeviceMarshalHelper {
 		if (assignment == null) {
 		    throw new SiteWhereException("Device contains an invalid assignment reference.");
 		}
-		result.setAssignment(getAssignmentHelper().convert(assignment, assetResolver));
+		result.setAssignment(getAssignmentHelper().convert(assignment, assetManagement));
 	    } catch (SiteWhereException e) {
 		LOGGER.warn("Device has token for non-existent assignment.");
 	    }

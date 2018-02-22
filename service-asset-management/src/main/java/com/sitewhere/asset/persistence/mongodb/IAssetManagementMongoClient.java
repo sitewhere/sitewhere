@@ -19,19 +19,19 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public interface IAssetManagementMongoClient {
 
-    /** Default collection name for SiteWhere asset categories */
-    public static final String DEFAULT_ASSET_CATEGORIES_COLLECTION_NAME = "assetcategories";
+    /** Default collection name for asset types */
+    public static final String DEFAULT_ASSET_TYPES_COLLECTION_NAME = "assettypes";
 
-    /** Default collection name for SiteWhere assets */
+    /** Default collection name for assets */
     public static final String DEFAULT_ASSETS_COLLECTION_NAME = "assets";
 
     /**
-     * Get asset categories collection.
+     * Get asset types collection.
      * 
      * @return
      * @throws SiteWhereException
      */
-    public MongoCollection<Document> getAssetCategoriesCollection() throws SiteWhereException;
+    public MongoCollection<Document> getAssetTypesCollection() throws SiteWhereException;
 
     /**
      * Get assets collection.

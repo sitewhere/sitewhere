@@ -20,7 +20,6 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 
-import com.sitewhere.device.persistence.DeviceManagementPersistence;
 import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.common.HBaseUtils;
@@ -105,7 +104,7 @@ public class HBaseDeviceType {
 	}
 
 	// Use common logic so all backend implementations work the same.
-	DeviceType deviceType = DeviceManagementPersistence.deviceTypeCreateLogic(request, uuid);
+	DeviceType deviceType = new DeviceType();
 
 	Map<byte[], byte[]> qualifiers = new HashMap<byte[], byte[]>();
 	byte[] maxLong = Bytes.toBytes(Long.MAX_VALUE);
@@ -137,7 +136,8 @@ public class HBaseDeviceType {
      */
     public static IDeviceType updateDeviceType(IHBaseContext context, IDeviceType deviceType,
 	    IDeviceTypeCreateRequest request) throws SiteWhereException {
-	DeviceManagementPersistence.deviceTypeUpdateLogic(request, (DeviceType) deviceType);
+	// DeviceManagementPersistence.deviceTypeUpdateLogic(request, (DeviceType)
+	// deviceType);
 	return HBaseUtils.put(context, context.getPayloadMarshaler(), ISiteWhereHBase.DEVICES_TABLE_NAME, deviceType,
 		deviceType.getToken(), KEY_BUILDER);
     }

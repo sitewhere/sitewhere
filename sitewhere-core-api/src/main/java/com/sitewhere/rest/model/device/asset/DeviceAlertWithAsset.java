@@ -9,7 +9,7 @@ package com.sitewhere.rest.model.device.asset;
 
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetResolver;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
 import com.sitewhere.spi.device.event.IDeviceAlert;
@@ -25,8 +25,8 @@ public class DeviceAlertWithAsset extends DeviceEventWithAsset implements IDevic
     /** Serial version UID */
     private static final long serialVersionUID = -8737823382691759826L;
 
-    public DeviceAlertWithAsset(IDeviceAlert wrapped, IAssetResolver assetResolver) throws SiteWhereException {
-	super(wrapped, assetResolver);
+    public DeviceAlertWithAsset(IDeviceAlert wrapped, IAssetManagement assetManagement) throws SiteWhereException {
+	super(wrapped, assetManagement);
     }
 
     /*

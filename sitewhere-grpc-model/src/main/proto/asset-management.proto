@@ -12,277 +12,179 @@ import "asset-model.proto";
 // Asset management APIs.
 service AssetManagement {
 
-	// ########################
-	// ### ASSET CATEGORIES ###
-	// ########################
+	// ###################
+	// ### ASSET TYPES ###
+	// ###################
 
-	// Create a new asset category.
-	rpc CreateAssetCategory (GCreateAssetCategoryRequest) returns (GCreateAssetCategoryResponse) {}
+	// Create an asset type.
+	rpc CreateAssetType (GCreateAssetTypeRequest) returns (GCreateAssetTypeResponse) {}
 
-	// Get an asset category by unique id.
-	rpc GetAssetCategoryById (GGetAssetCategoryByIdRequest) returns (GGetAssetCategoryByIdResponse) {}
+	// Update an existing asset type.
+	rpc UpdateAssetType (GUpdateAssetTypeRequest) returns (GUpdateAssetTypeResponse) {}
 
-	// Update an existing asset category.
-	rpc UpdateAssetCategory (GUpdateAssetCategoryRequest) returns (GUpdateAssetCategoryResponse) {}
+	// Get an asset type by unique id.
+	rpc GetAssetTypeById (GGetAssetTypeByIdRequest) returns (GGetAssetTypeByIdResponse) {}
 
-	// List asset categories that match criteria.
-	rpc ListAssetCategories (GListAssetCategoriesRequest) returns (GListAssetCategoriesResponse) {}
+	// Get an asset type by token.
+	rpc GetAssetTypeByToken (GGetAssetTypeByTokenRequest) returns (GGetAssetTypeByTokenResponse) {}
 
-	// Delete an asset category.
-	rpc DeleteAssetCategory (GDeleteAssetCategoryRequest) returns (GDeleteAssetCategoryResponse) {}
+	// Delete an asset type.
+	rpc DeleteAssetType (GDeleteAssetTypeRequest) returns (GDeleteAssetTypeResponse) {}
+
+	// List asset types that match criteria.
+	rpc ListAssetTypes (GListAssetTypesRequest) returns (GListAssetTypesResponse) {}
 
 	// ##############
 	// ### ASSETS ###
 	// ##############
 
-	// Create a new hardware asset.
-	rpc CreateHardwareAsset (GCreateHardwareAssetRequest) returns (GCreateHardwareAssetResponse) {}
+	// Create an asset.
+	rpc CreateAsset (GCreateAssetRequest) returns (GCreateAssetResponse) {}
 
-	// Update an existing hardware asset.
-	rpc UpdateHardwareAsset (GUpdateHardwareAssetRequest) returns (GUpdateHardwareAssetResponse) {}
-
-	// Create a new person asset.
-	rpc CreatePersonAsset (GCreatePersonAssetRequest) returns (GCreatePersonAssetResponse) {}
-
-	// Update an existing person asset.
-	rpc UpdatePersonAsset (GUpdatePersonAssetRequest) returns (GUpdatePersonAssetResponse) {}
-
-	// Create a new location asset.
-	rpc CreateLocationAsset (GCreateLocationAssetRequest) returns (GCreateLocationAssetResponse) {}
-
-	// Update an existing location asset.
-	rpc UpdateLocationAsset (GUpdateLocationAssetRequest) returns (GUpdateLocationAssetResponse) {}
+	// Update an existing asset.
+	rpc UpdateAsset (GUpdateAssetRequest) returns (GUpdateAssetResponse) {}
 
 	// Get an asset by unique id.
 	rpc GetAssetById (GGetAssetByIdRequest) returns (GGetAssetByIdResponse) {}
+
+	// Get an asset by token.
+	rpc GetAssetByToken (GGetAssetByTokenRequest) returns (GGetAssetByTokenResponse) {}
 
 	// Delete an asset.
 	rpc DeleteAsset (GDeleteAssetRequest) returns (GDeleteAssetResponse) {}
 
 	// List assets that match criteria.
 	rpc ListAssets (GListAssetsRequest) returns (GListAssetsResponse) {}
-
-	// #####################
-	// ### ASSET MODULES ###
-	// #####################
-
-	// List asset module descriptors for a type of asset.
-	rpc ListAssetModuleDescriptors (GListAssetModuleDescriptorsRequest) returns (GListAssetModuleDescriptorsResponse) {}
-	
-	// Get asset module descriptor by module id.
-	rpc GetAssetModuleDescriptorByModuleId (GGetAssetModuleDescriptorByModuleIdRequest) returns (GGetAssetModuleDescriptorByModuleIdResponse) {}
-	
-	// Get assets from an asset module that match the given criteria.
-	rpc GetAssetModuleAssetsByCriteria (GGetAssetModuleAssetsByCriteriaRequest) returns (GGetAssetModuleAssetsByCriteriaResponse) {}
-	
-	// Get asset from an asset module.
-	rpc GetAssetModuleAsset (GGetAssetModuleAssetRequest) returns (GGetAssetModuleAssetResponse) {}
 }
 
-// ########################
-// ### ASSET CATEGORIES ###
-// ########################
-	
-// Request for creating an asset category.
-message GCreateAssetCategoryRequest {
-	com.sitewhere.grpc.model.GAssetCategoryCreateRequest request = 1;
+// ###################
+// ### ASSET TYPES ###
+// ###################
+		
+// Request for creating an asset type.
+message GCreateAssetTypeRequest {
+	com.sitewhere.grpc.model.GAssetTypeCreateRequest request = 1;
 }
 
-// Response from creating an asset category.
-message GCreateAssetCategoryResponse {
-	com.sitewhere.grpc.model.GAssetCategory assetCategory = 1;
+// Response from creating an asset type.
+message GCreateAssetTypeResponse {
+	com.sitewhere.grpc.model.GAssetType assetType = 1;
+}
+		
+// Request for updating an asset type.
+message GUpdateAssetTypeRequest {
+	com.sitewhere.grpc.model.GUUID assetTypeId = 1;
+	com.sitewhere.grpc.model.GAssetTypeCreateRequest request = 2;
+}
+
+// Response from updating an asset type.
+message GUpdateAssetTypeResponse {
+	com.sitewhere.grpc.model.GAssetType assetType = 1;
 }
 	
-// Request for getting an asset category by id.
-message GGetAssetCategoryByIdRequest {
-	string id = 1;
+// Request for getting an asset type by id.
+message GGetAssetTypeByIdRequest {
+	com.sitewhere.grpc.model.GUUID assetTypeId = 1;
 }
 
-// Response for getting an asset category by id.
-message GGetAssetCategoryByIdResponse {
-	com.sitewhere.grpc.model.GAssetCategory assetCategory = 1;
+// Response for getting an asset type by id.
+message GGetAssetTypeByIdResponse {
+	com.sitewhere.grpc.model.GAssetType assetType = 1;
 }
 	
-// Request for updating an asset category.
-message GUpdateAssetCategoryRequest {
-	string id = 1;
-	com.sitewhere.grpc.model.GAssetCategoryCreateRequest request = 2;
+// Request for getting an asset type by token.
+message GGetAssetTypeByTokenRequest {
+	string token = 1;
 }
 
-// Response from updating an asset category.
-message GUpdateAssetCategoryResponse {
-	com.sitewhere.grpc.model.GAssetCategory assetCategory = 1;
+// Response for getting an asset type by token.
+message GGetAssetTypeByTokenResponse {
+	com.sitewhere.grpc.model.GAssetType assetType = 1;
 }
 
-// Request for listing asset categories by critieria.
-message GListAssetCategoriesRequest {
-	com.sitewhere.grpc.model.GAssetCategorySearchCriteria criteria = 1; 
-}
-
-// Response for listing asset categories by critieria.
-message GListAssetCategoriesResponse {
-	com.sitewhere.grpc.model.GAssetCategorySearchResults results = 1; 
-}
-
-// Request for deleting an asset category.
-message GDeleteAssetCategoryRequest {
-	string id = 1;
+// Request for deleting an asset type.
+message GDeleteAssetTypeRequest {
+	com.sitewhere.grpc.model.GUUID assetTypeId = 1;
 	bool force = 2;
 }
 
-// Response for deleting an asset category.
-message GDeleteAssetCategoryResponse {
-	com.sitewhere.grpc.model.GAssetCategory assetCategory = 1;
+// Response for deleting an asset type.
+message GDeleteAssetTypeResponse {
+	com.sitewhere.grpc.model.GAssetType assetType = 1;
+}
+
+// Request for listing asset types by critieria.
+message GListAssetTypesRequest {
+	com.sitewhere.grpc.model.GAssetTypeSearchCriteria criteria = 1; 
+}
+
+// Response for listing asset types by critieria.
+message GListAssetTypesResponse {
+	com.sitewhere.grpc.model.GAssetTypeSearchResults results = 1; 
 }
 
 // ##############
 // ### ASSETS ###
 // ##############
 		
-// Request for creating a hardware asset.
-message GCreateHardwareAssetRequest {
-	string categoryId = 1;
-	com.sitewhere.grpc.model.GHardwareAssetCreateRequest request = 2;
+// Request for creating an asset.
+message GCreateAssetRequest {
+	com.sitewhere.grpc.model.GAssetCreateRequest request = 1;
 }
 
-// Response from creating a hardware asset.
-message GCreateHardwareAssetResponse {
-	com.sitewhere.grpc.model.GHardwareAsset asset = 1;
+// Response from creating an asset.
+message GCreateAssetResponse {
+	com.sitewhere.grpc.model.GAsset asset = 1;
 }
 		
-// Request for updating a hardware asset.
-message GUpdateHardwareAssetRequest {
-	string categoryId = 1;
-	string assetId = 2;
-	com.sitewhere.grpc.model.GHardwareAssetCreateRequest request = 3;
+// Request for updating an asset.
+message GUpdateAssetRequest {
+	com.sitewhere.grpc.model.GUUID assetId = 1;
+	com.sitewhere.grpc.model.GAssetCreateRequest request = 2;
 }
 
-// Response from updating a hardware asset.
-message GUpdateHardwareAssetResponse {
-	com.sitewhere.grpc.model.GHardwareAsset asset = 1;
-}
-	
-// Request for creating a person asset.
-message GCreatePersonAssetRequest {
-	string categoryId = 1;
-	com.sitewhere.grpc.model.GPersonAssetCreateRequest request = 2;
-}
-
-// Response from creating a person asset.
-message GCreatePersonAssetResponse {
-	com.sitewhere.grpc.model.GPersonAsset asset = 1;
-}
-		
-// Request for updating a person asset.
-message GUpdatePersonAssetRequest {
-	string categoryId = 1;
-	string assetId = 2;
-	com.sitewhere.grpc.model.GPersonAssetCreateRequest request = 3;
-}
-
-// Response from updating a person asset.
-message GUpdatePersonAssetResponse {
-	com.sitewhere.grpc.model.GPersonAsset asset = 1;
-}
-	
-// Request for creating a location asset.
-message GCreateLocationAssetRequest {
-	string categoryId = 1;
-	com.sitewhere.grpc.model.GLocationAssetCreateRequest request = 2;
-}
-
-// Response from creating a location asset.
-message GCreateLocationAssetResponse {
-	com.sitewhere.grpc.model.GLocationAsset asset = 1;
-}
-		
-// Request for updating a location asset.
-message GUpdateLocationAssetRequest {
-	string categoryId = 1;
-	string assetId = 2;
-	com.sitewhere.grpc.model.GLocationAssetCreateRequest request = 3;
-}
-
-// Response from updating a location asset.
-message GUpdateLocationAssetResponse {
-	com.sitewhere.grpc.model.GLocationAsset asset = 1;
+// Response from updating an asset.
+message GUpdateAssetResponse {
+	com.sitewhere.grpc.model.GAsset asset = 1;
 }
 	
 // Request for getting an asset by id.
 message GGetAssetByIdRequest {
-	string categoryId = 1;
-	string assetId = 2;
+	com.sitewhere.grpc.model.GUUID assetId = 1;
 }
 
 // Response for getting an asset by id.
 message GGetAssetByIdResponse {
-	com.sitewhere.grpc.model.GAnyAsset asset = 1;
+	com.sitewhere.grpc.model.GAsset asset = 1;
+}
+	
+// Request for getting an asset by token.
+message GGetAssetByTokenRequest {
+	string token = 1;
+}
+
+// Response for getting an asset by token.
+message GGetAssetByTokenResponse {
+	com.sitewhere.grpc.model.GAsset asset = 1;
 }
 
 // Request for deleting an asset.
 message GDeleteAssetRequest {
-	string categoryId = 1;
-	string assetId = 2;
+	com.sitewhere.grpc.model.GUUID assetId = 1;
+	bool force = 2;
 }
 
 // Response for deleting an asset.
 message GDeleteAssetResponse {
-	com.sitewhere.grpc.model.GAnyAsset asset = 1;
+	com.sitewhere.grpc.model.GAsset asset = 1;
 }
 
 // Request for listing assets by critieria.
 message GListAssetsRequest {
-	string categoryId = 1;
-	com.sitewhere.grpc.model.GAssetSearchCriteria criteria = 2; 
+	com.sitewhere.grpc.model.GAssetSearchCriteria criteria = 1; 
 }
 
 // Response for listing assets by critieria.
 message GListAssetsResponse {
 	com.sitewhere.grpc.model.GAssetSearchResults results = 1; 
-}
-
-// #####################
-// ### ASSET MODULES ###
-// #####################
-
-// Request for listing asset module descriptors.
-message GListAssetModuleDescriptorsRequest {
-	com.sitewhere.grpc.model.GAssetType assetType = 1;
-}
-
-// Response for listing asset module descriptors.
-message GListAssetModuleDescriptorsResponse {
-	repeated com.sitewhere.grpc.model.GAssetModuleDescriptor assetModuleDescriptor = 1; 
-}
-
-// Request for getting an asset module descriptor by module id.
-message GGetAssetModuleDescriptorByModuleIdRequest {
-	string moduleId = 1;
-}
-
-// Response for getting an asset module descriptor by module id.
-message GGetAssetModuleDescriptorByModuleIdResponse {
-	com.sitewhere.grpc.model.GAssetModuleDescriptor assetModuleDescriptor = 1;
-}
-
-// Request for searching asset module for asset matching criteria.
-message GGetAssetModuleAssetsByCriteriaRequest {
-	string moduleId = 1;
-	string criteria = 2;
-}
-
-// Response for searching asset module for asset matching criteria.
-message GGetAssetModuleAssetsByCriteriaResponse {
-	repeated com.sitewhere.grpc.model.GAnyAsset asset = 1; 
-}
-
-// Request for getting an asset from an asset module.
-message GGetAssetModuleAssetRequest {
-	string moduleId = 1;
-	string assetId = 2;
-}
-
-// Response for getting an asset from an asset module.
-message GGetAssetModuleAssetResponse {
-	com.sitewhere.grpc.model.GAnyAsset asset = 1; 
 }

@@ -7,136 +7,73 @@ option java_outer_classname = "AssetModel";
 import "sitewhere-common.proto";
 import "google/protobuf/timestamp.proto";
 
-// ########################
-// ### ASSET CATEGORIES ###
-// ########################
+// ###################
+// ### ASSET TYPES ###
+// ###################
 
-// Asset category create request.
-message GAssetCategoryCreateRequest {
-	string id = 1;
+// Asset type create request.
+message GAssetTypeCreateRequest {
+	GOptionalString token = 1;
 	string name = 2;
-	GAssetType assetType = 3;
+	string description = 3;
+	string imageUrl = 4;
+	GAssetCategory assetCategory = 5;
+	map<string, string> metadata = 6;
 }
 
-// Criteria for asset category search.
-message GAssetCategorySearchCriteria {
-	GPaging paging = 1;
+// Asset type.
+message GAssetType {
+	GUUID id = 1;
+	string token = 2;
+	string name = 3;
+	string description = 4;
+	string imageUrl = 5;
+	GAssetCategory assetCategory = 6;
+	map<string, string> metadata = 7;
 }
 
-// Results for asset category search.
-message GAssetCategorySearchResults {
+// Criteria for searching asset types.
+message GAssetTypeSearchCriteria {
+	GPaging paging = 2;
+}
+
+// Results for asset type search.
+message GAssetTypeSearchResults {
 	int64 count = 1;
-	repeated GAssetCategory categories = 2;
-}
-
-// Asset category.
-message GAssetCategory {
-	string id = 1;
-	string name = 2;
-	GAssetType assetType = 3;
+	repeated GAssetType assetTypes = 2;
 }
 
 // ##############
 // ### ASSETS ###
 // ##############
 
-// Common asset creation fields.
+// Asset create request.
 message GAssetCreateRequest {
-	string id = 1;
-	string name = 2;
-	string imageUrl = 3;
-	map<string, string> properties = 4;
+	GOptionalString token = 1;
+	string assetTypeToken = 2;
+	string name = 3;
+	string imageUrl = 4;
+	map<string, string> metadata = 5;
 }
 
-// Hardware asset create request.
-message GHardwareAssetCreateRequest {
-	string sku = 1;
-	string description = 2;
-	GAssetCreateRequest asset = 3;
-}
-
-// Hardware asset create request.
-message GPersonAssetCreateRequest {
-	string userName = 1;
-	string emailAddress = 2;
-	repeated string roles = 3;
-	GAssetCreateRequest asset = 4;
-}
-
-// Location asset create request.
-message GLocationAssetCreateRequest {
-	GOptionalDouble latitude = 1;
-	GOptionalDouble longitude = 2;
-	GOptionalDouble elevation = 3;
-	GAssetCreateRequest asset = 4;
-}
-
-// Asset reference.
-message GAssetReference {
-	string module = 1;
-	string assetId = 2;
-}
-
-// Common asset fields.
+// Asset.
 message GAsset {
-	string id = 1;
-	string name = 2;
-	GAssetType assetType = 3;
-	string assetCategoryId = 4;
+	GUUID id = 1;
+	string token = 2;
+	GUUID assetTypeId = 3;
+	string name = 4;
 	string imageUrl = 5;
-	map<string, string> properties = 6;
-}
-
-// Hardware asset.
-message GHardwareAsset {
-	string sku = 1;
-	string description = 2;
-	GAsset asset = 3;
-}
-
-// Person asset.
-message GPersonAsset {
-	string userName = 1;
-	string emailAddress = 2;
-	repeated string roles = 3;
-	GAsset asset = 4;
-}
-
-// Location asset.
-message GLocationAsset {
-	GOptionalDouble latitude = 1;
-	GOptionalDouble longitude = 2;
-	GOptionalDouble elevation = 3;
-	GAsset asset = 4;
+	map<string, string> metadata = 6;
 }
 
 // Criteria for searching assets.
 message GAssetSearchCriteria {
-	string categoryId = 1;
 	GPaging paging = 2;
+	GUUID assetTypeId = 3;
 }
 
 // Results for asset search.
 message GAssetSearchResults {
 	int64 count = 1;
-	repeated GAnyAsset assets = 2;
-}
-
-// Message that can contain any type of asset.
-message GAnyAsset {
-	oneof asset {
-		GHardwareAsset hardware = 1;
-		GPersonAsset person = 2;
-		GLocationAsset location = 3;
-	}
-}
-
-// #####################
-// ### ASSET MODULES ###
-// #####################
-
-message GAssetModuleDescriptor {
-	string id = 1;
-	string name = 2;
-	GAssetType assetType = 3;
+	repeated GAsset assets = 2;
 }

@@ -249,11 +249,10 @@ public class EventModelConverter {
 	api.setId(grpc.getId());
 	api.setAlternateId(grpc.hasAlternateId() ? grpc.getAlternateId().getValue() : null);
 	api.setEventType(EventModelConverter.asApiDeviceEventType(grpc.getEventType()));
-	api.setAreaId(CommonModelConverter.asApiUuid(grpc.getAreaId()));
+	api.setDeviceId(CommonModelConverter.asApiUuid(grpc.getDeviceId()));
 	api.setDeviceAssignmentId(CommonModelConverter.asApiUuid(grpc.getDeviceAssignmentId()));
-	api.setAssignmentType(DeviceModelConverter.asApiDeviceAssignmentType(grpc.getAssignmentType()));
-	api.setAssetReference(
-		grpc.hasAssetReference() ? AssetModelConverter.asApiAssetReference(grpc.getAssetReference()) : null);
+	api.setAreaId(CommonModelConverter.asApiUuid(grpc.getAreaId()));
+	api.setAssetId(CommonModelConverter.asApiUuid(grpc.getAssetId()));
 	api.setEventDate(grpc.hasEventDate() ? CommonModelConverter.asDate(grpc.getEventDate()) : null);
 	api.setReceivedDate(grpc.hasReceivedDate() ? CommonModelConverter.asDate(grpc.getReceivedDate()) : null);
 	api.setMetadata(grpc.getMetadataMap());
@@ -273,11 +272,13 @@ public class EventModelConverter {
 	    grpc.setAlternateId(GOptionalString.newBuilder().setValue(api.getAlternateId()).build());
 	}
 	grpc.setEventType(EventModelConverter.asGrpcDeviceEventType(api.getEventType()));
-	grpc.setAreaId(CommonModelConverter.asGrpcUuid(api.getAreaId()));
+	grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
 	grpc.setDeviceAssignmentId(CommonModelConverter.asGrpcUuid(api.getDeviceAssignmentId()));
-	grpc.setAssignmentType(DeviceModelConverter.asGrpcDeviceAssignmentType(api.getAssignmentType()));
-	if (api.getAssetReference() != null) {
-	    grpc.setAssetReference(AssetModelConverter.asGrpcAssetReference(api.getAssetReference()));
+	if (api.getAreaId() != null) {
+	    grpc.setAreaId(CommonModelConverter.asGrpcUuid(api.getAreaId()));
+	}
+	if (api.getAssetId() != null) {
+	    grpc.setAssetId(CommonModelConverter.asGrpcUuid(api.getAssetId()));
 	}
 	if (api.getEventDate() != null) {
 	    grpc.setEventDate(CommonModelConverter.asGrpcTimestamp(api.getEventDate()));

@@ -39,9 +39,10 @@ import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.area.request.IAreaCreateRequest;
 import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
+import com.sitewhere.spi.asset.IAsset;
+import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.common.ILocation;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
-import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -83,7 +84,7 @@ public class DeviceManagementPersistence extends Persistence {
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceType deviceTypeCreateLogic(IDeviceTypeCreateRequest request, String token)
+    public static DeviceType deviceTypeCreateLogic(IAssetType assetType, IDeviceTypeCreateRequest request, String token)
 	    throws SiteWhereException {
 	DeviceType type = new DeviceType();
 	type.setId(UUID.randomUUID());
@@ -96,9 +97,9 @@ public class DeviceManagementPersistence extends Persistence {
 	require("Name", request.getName());
 	type.setName(request.getName());
 
-	// Asset reference is required.
-	requireNotNull("Asset Reference", request.getAssetReference());
-	type.setAssetReference(request.getAssetReference());
+	// Asset type is required.
+	requireNotNull("Asset Type", assetType);
+	type.setAssetTypeId(assetType.getId());
 
 	// Container policy is required.
 	requireNotNull("Container Policy", request.getContainerPolicy());
@@ -122,11 +123,12 @@ public class DeviceManagementPersistence extends Persistence {
     /**
      * Common logic for updating a device type from request.
      * 
+     * @param assetType
      * @param request
      * @param target
      * @throws SiteWhereException
      */
-    public static void deviceTypeUpdateLogic(IDeviceTypeCreateRequest request, DeviceType target)
+    public static void deviceTypeUpdateLogic(IAssetType assetType, IDeviceTypeCreateRequest request, DeviceType target)
 	    throws SiteWhereException {
 	if (request.getName() != null) {
 	    target.setName(request.getName());
@@ -147,8 +149,8 @@ public class DeviceManagementPersistence extends Persistence {
 		target.setDeviceElementSchema((DeviceElementSchema) schema);
 	    }
 	}
-	if (request.getAssetReference() != null) {
-	    target.setAssetReference(request.getAssetReference());
+	if (assetType != null) {
+	    target.setAssetTypeId(assetType.getId());
 	}
 	if (request.getMetadata() != null) {
 	    target.getMetadata().clear();
@@ -639,30 +641,20 @@ public class DeviceManagementPersistence extends Persistence {
      * @throws SiteWhereException
      */
     public static DeviceAssignment deviceAssignmentCreateLogic(IDeviceAssignmentCreateRequest source, IArea area,
-	    IDevice device) throws SiteWhereException {
-	DeviceAssignment newAssignment = new DeviceAssignment();
-	newAssignment.setId(UUID.randomUUID());
-	newAssignment.setToken(source.getToken());
-	newAssignment.setAreaId(area != null ? area.getId() : null);
-	newAssignment.setDeviceId(device.getId());
+	    IAsset asset, IDevice device) throws SiteWhereException {
+	DeviceAssignment assignment = new DeviceAssignment();
+	assignment.setId(UUID.randomUUID());
+	assignment.setToken(source.getToken());
+	assignment.setAreaId(area != null ? area.getId() : null);
+	assignment.setAssetId(asset != null ? asset.getId() : null);
+	assignment.setDeviceId(device.getId());
+	assignment.setActiveDate(new Date());
+	assignment.setStatus(DeviceAssignmentStatus.Active);
 
-	requireNotNull("Assignment Type", source.getAssignmentType());
-	newAssignment.setAssignmentType(source.getAssignmentType());
+	DeviceManagementPersistence.initializeEntityMetadata(assignment);
+	MetadataProvider.copy(source.getMetadata(), assignment);
 
-	if (source.getAssignmentType() == DeviceAssignmentType.Associated) {
-	    if (source.getAssetReference() == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidAssetReferenceId, ErrorLevel.ERROR);
-	    }
-	    newAssignment.setAssetReference(source.getAssetReference());
-	}
-
-	newAssignment.setActiveDate(new Date());
-	newAssignment.setStatus(DeviceAssignmentStatus.Active);
-
-	DeviceManagementPersistence.initializeEntityMetadata(newAssignment);
-	MetadataProvider.copy(source.getMetadata(), newAssignment);
-
-	return newAssignment;
+	return assignment;
     }
 
     /**

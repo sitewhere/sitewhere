@@ -23,7 +23,6 @@ import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
-import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceType;
@@ -107,7 +106,6 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 	    LOGGER.debug("Handling unassigned device for registration.");
 	    DeviceAssignmentCreateRequest assnCreate = new DeviceAssignmentCreateRequest();
 	    assnCreate.setDeviceHardwareId(device.getHardwareId());
-	    assnCreate.setAssignmentType(DeviceAssignmentType.Unassociated);
 	    getDeviceManagement().createDeviceAssignment(assnCreate);
 	}
 	boolean isNewRegistration = (device != null);

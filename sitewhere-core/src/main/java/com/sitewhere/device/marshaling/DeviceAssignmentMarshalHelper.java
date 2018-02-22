@@ -10,17 +10,12 @@ package com.sitewhere.device.marshaling;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitewhere.rest.model.area.Area;
-import com.sitewhere.rest.model.asset.HardwareAsset;
-import com.sitewhere.rest.model.asset.LocationAsset;
-import com.sitewhere.rest.model.asset.PersonAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceAssignment;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.asset.IAsset;
-import com.sitewhere.spi.asset.IAssetResolver;
-import com.sitewhere.spi.device.DeviceAssignmentType;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -66,7 +61,7 @@ public class DeviceAssignmentMarshalHelper {
      * @return
      * @throws SiteWhereException
      */
-    public MarshaledDeviceAssignment convert(IDeviceAssignment source, IAssetResolver assetResolver)
+    public MarshaledDeviceAssignment convert(IDeviceAssignment source, IAssetManagement assetManagement)
 	    throws SiteWhereException {
 	MarshaledDeviceAssignment result = new MarshaledDeviceAssignment();
 	result.setId(source.getId());
@@ -74,14 +69,12 @@ public class DeviceAssignmentMarshalHelper {
 	result.setActiveDate(source.getActiveDate());
 	result.setReleasedDate(source.getReleasedDate());
 	result.setStatus(source.getStatus());
-	result.setAssignmentType(source.getAssignmentType());
-	result.setAssetReference(source.getAssetReference());
 	MetadataProviderEntity.copy(source, result);
 
-	if (source.getAssignmentType() != DeviceAssignmentType.Unassociated) {
-
-	    // Look up asset and handle case where not found.
-	    IAsset asset = assetResolver.getAssetModuleManagement().getAsset(source.getAssetReference());
+	// If asset is assigned, look it up.
+	result.setAssetId(source.getAssetId());
+	if (source.getAssetId() != null) {
+	    IAsset asset = assetManagement.getAsset(source.getAssetId());
 	    if (asset == null) {
 		LOGGER.warn("Device assignment has reference to non-existent asset.");
 		asset = new InvalidAsset();
@@ -89,25 +82,23 @@ public class DeviceAssignmentMarshalHelper {
 	    result.setAssetName(asset.getName());
 	    result.setAssetImageUrl(asset.getImageUrl());
 	    if (isIncludeAsset()) {
-		if (asset instanceof HardwareAsset) {
-		    result.setAssociatedHardware((HardwareAsset) asset);
-		} else if (asset instanceof PersonAsset) {
-		    result.setAssociatedPerson((PersonAsset) asset);
-		} else if (asset instanceof LocationAsset) {
-		    result.setAssociatedLocation((LocationAsset) asset);
-		}
+		result.setAsset(asset);
 	    }
 	}
+
+	// If area is assigned, look it up.
 	result.setAreaId(source.getAreaId());
 	if (isIncludeArea()) {
 	    IArea area = getDeviceManagement().getArea(source.getAreaId());
-	    result.setArea((Area) area);
+	    result.setArea(area);
 	}
+
+	// Add device information.
 	result.setDeviceId(source.getDeviceId());
 	if (isIncludeDevice()) {
 	    IDevice device = getDeviceManagement().getDevice(source.getDeviceId());
 	    if (device != null) {
-		result.setDevice(getDeviceHelper().convert(device, assetResolver));
+		result.setDevice(getDeviceHelper().convert(device, assetManagement));
 	    } else {
 		LOGGER.error("Assignment references invalid hardware id.");
 	    }

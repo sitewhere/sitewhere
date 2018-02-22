@@ -59,9 +59,8 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.schedule.ScheduledJobHelper;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.asset.IAssetResolver;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
-import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.charting.IChartSeries;
@@ -114,24 +113,13 @@ public class Assignments extends RestControllerBase {
     @Secured({ SiteWhereRoles.REST })
     public DeviceAssignment createDeviceAssignment(@RequestBody DeviceAssignmentCreateRequest request,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	if (StringUtils.isEmpty(request.getDeviceHardwareId())) {
-	    throw new SiteWhereException("Hardware id required.");
-	}
-	if (request.getAssignmentType() == null) {
-	    throw new SiteWhereException("Assignment type required.");
-	}
-	if (request.getAssignmentType() != DeviceAssignmentType.Unassociated) {
-	    if (request.getAssetReference() == null) {
-		throw new SiteWhereException("Asset reference required.");
-	    }
-	}
 	IDeviceManagement management = getDeviceManagement();
 	IDeviceAssignment created = management.createDeviceAssignment(request);
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
 	helper.setIncludeArea(true);
-	return helper.convert(created, getAssetResolver());
+	return helper.convert(created, getAssetManagement());
     }
 
     /**
@@ -153,7 +141,7 @@ public class Assignments extends RestControllerBase {
 	helper.setIncludeDevice(true);
 	helper.setIncludeArea(true);
 	helper.setIncludeDeviceType(true);
-	return helper.convert(assignment, getAssetResolver());
+	return helper.convert(assignment, getAssetManagement());
     }
 
     /**
@@ -176,7 +164,7 @@ public class Assignments extends RestControllerBase {
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
 	helper.setIncludeArea(true);
-	return helper.convert(assignment, getAssetResolver());
+	return helper.convert(assignment, getAssetManagement());
     }
 
     /**
@@ -198,7 +186,7 @@ public class Assignments extends RestControllerBase {
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
 	helper.setIncludeArea(true);
-	return helper.convert(result, getAssetResolver());
+	return helper.convert(result, getAssetManagement());
     }
 
     /**
@@ -823,7 +811,7 @@ public class Assignments extends RestControllerBase {
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
 	helper.setIncludeArea(true);
-	return helper.convert(updated, getAssetResolver());
+	return helper.convert(updated, getAssetManagement());
     }
 
     /**
@@ -847,7 +835,7 @@ public class Assignments extends RestControllerBase {
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
 	helper.setIncludeArea(true);
-	return helper.convert(updated, getAssetResolver());
+	return helper.convert(updated, getAssetManagement());
     }
 
     /**
@@ -942,8 +930,8 @@ public class Assignments extends RestControllerBase {
 	return getMicroservice().getDeviceEventManagementApiDemux().getApiChannel();
     }
 
-    private IAssetResolver getAssetResolver() {
-	return getMicroservice().getAssetResolver();
+    private IAssetManagement getAssetManagement() {
+	return getMicroservice().getAssetManagementApiDemux().getApiChannel();
     }
 
     private IScheduleManagement getScheduleManagement() {

@@ -19,7 +19,6 @@ import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.area.request.IAreaCreateRequest;
 import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
-import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -432,14 +431,14 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator<IDevi
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAsset(com.
-     * sitewhere.spi.asset.IAssetReference,
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAsset(java.
+     * util.UUID,
      * com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(IAssetReference assetReference,
+    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(UUID assetId,
 	    IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException {
-	return getDelegate().getDeviceAssignmentsForAsset(assetReference, criteria);
+	return getDelegate().getDeviceAssignmentsForAsset(assetId, criteria);
     }
 
     /*

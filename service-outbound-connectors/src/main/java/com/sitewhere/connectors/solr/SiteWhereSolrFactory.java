@@ -16,13 +16,11 @@ import java.util.UUID;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
 
-import com.sitewhere.rest.model.asset.DefaultAssetReferenceEncoder;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
 import com.sitewhere.spi.device.event.IDeviceAlert;
@@ -210,18 +208,18 @@ public class SiteWhereSolrFactory {
     protected static void addFieldsFromEventDocument(SolrDocument document, DeviceEvent event)
 	    throws SiteWhereException {
 	String id = (String) document.get(ISolrFields.EVENT_ID);
-	UUID assignmentId = (UUID) document.get(ISolrFields.ASSIGNMENT_TOKEN);
-	String assignmentTypeStr = (String) document.get(ISolrFields.ASSIGNMENT_TYPE);
-	String assetReference = (String) document.get(ISolrFields.ASSET_REFERENCE);
+	UUID deviceId = (UUID) document.get(ISolrFields.DEVICE_ID);
+	UUID assignmentId = (UUID) document.get(ISolrFields.ASSIGNMENT_ID);
 	UUID areaId = (UUID) document.get(ISolrFields.AREA_ID);
+	UUID assetId = (UUID) document.get(ISolrFields.ASSET_ID);
 	Date eventDate = (Date) document.get(ISolrFields.EVENT_DATE);
 	Date receivedDate = (Date) document.get(ISolrFields.RECEIVED_DATE);
 
 	event.setId(id);
+	event.setDeviceId(deviceId);
 	event.setDeviceAssignmentId(assignmentId);
-	event.setAssignmentType(DeviceAssignmentType.valueOf(assignmentTypeStr));
-	event.setAssetReference(new DefaultAssetReferenceEncoder().decode(assetReference));
 	event.setAreaId(areaId);
+	event.setAssetId(assetId);
 	event.setEventDate(eventDate);
 	event.setReceivedDate(receivedDate);
 
@@ -246,11 +244,10 @@ public class SiteWhereSolrFactory {
      */
     protected static void addFieldsForEvent(SolrInputDocument document, IDeviceEvent event) throws SiteWhereException {
 	document.addField(ISolrFields.EVENT_ID, event.getId());
-	document.addField(ISolrFields.ASSIGNMENT_TOKEN, event.getDeviceAssignmentId());
-	document.addField(ISolrFields.ASSIGNMENT_TYPE, event.getAssignmentType().name());
-	document.addField(ISolrFields.ASSET_REFERENCE,
-		new DefaultAssetReferenceEncoder().encode(event.getAssetReference()));
+	document.addField(ISolrFields.DEVICE_ID, event.getDeviceId());
+	document.addField(ISolrFields.ASSIGNMENT_ID, event.getDeviceAssignmentId());
 	document.addField(ISolrFields.AREA_ID, event.getAreaId());
+	document.addField(ISolrFields.ASSET_ID, event.getAssetId());
 	document.addField(ISolrFields.EVENT_DATE, event.getEventDate());
 	document.addField(ISolrFields.RECEIVED_DATE, event.getReceivedDate());
 	addMetadata(document, event.getMetadata());

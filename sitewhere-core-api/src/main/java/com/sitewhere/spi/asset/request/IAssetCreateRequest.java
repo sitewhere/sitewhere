@@ -18,11 +18,18 @@ import java.util.Map;
 public interface IAssetCreateRequest extends Serializable {
 
     /**
-     * Unique asset id.
+     * Get token used to reference asset.
      * 
      * @return
      */
-    public String getId();
+    public String getToken();
+
+    /**
+     * Get reference token for asset type.
+     * 
+     * @return
+     */
+    public String getAssetTypeToken();
 
     /**
      * Get asset name.
@@ -39,9 +46,9 @@ public interface IAssetCreateRequest extends Serializable {
     public String getImageUrl();
 
     /**
-     * Get properties associated with asset.
+     * Get metadata values.
      * 
      * @return
      */
-    public Map<String, String> getProperties();
+    public Map<String, String> getMetadata();
 }

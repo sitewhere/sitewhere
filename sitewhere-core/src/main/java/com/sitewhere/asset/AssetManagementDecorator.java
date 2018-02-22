@@ -7,21 +7,19 @@
  */
 package com.sitewhere.asset;
 
+import java.util.UUID;
+
 import com.sitewhere.server.lifecycle.LifecycleComponentDecorator;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
-import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.asset.IHardwareAsset;
-import com.sitewhere.spi.asset.ILocationAsset;
-import com.sitewhere.spi.asset.IPersonAsset;
-import com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest;
-import com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest;
-import com.sitewhere.spi.asset.request.ILocationAssetCreateRequest;
-import com.sitewhere.spi.asset.request.IPersonAssetCreateRequest;
+import com.sitewhere.spi.asset.IAssetType;
+import com.sitewhere.spi.asset.request.IAssetCreateRequest;
+import com.sitewhere.spi.asset.request.IAssetTypeCreateRequest;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.area.IAssetTypeSearchCritiera;
+import com.sitewhere.spi.search.asset.IAssetSearchCriteria;
 
 /**
  * Wraps an asset management implementation. Subclasses can implement only the
@@ -34,6 +32,116 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator<IAsset
 
     public AssetManagementDecorator(IAssetManagement delegate) {
 	super(delegate);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.asset.IAssetManagement#createAsset(com.sitewhere.spi.asset.
+     * request.IAssetCreateRequest)
+     */
+    @Override
+    public IAsset createAsset(IAssetCreateRequest request) throws SiteWhereException {
+	return getDelegate().createAsset(request);
+    }
+
+    /*
+     * @see com.sitewhere.spi.asset.IAssetManagement#updateAsset(java.util.UUID,
+     * com.sitewhere.spi.asset.request.IAssetCreateRequest)
+     */
+    @Override
+    public IAsset updateAsset(UUID assetId, IAssetCreateRequest request) throws SiteWhereException {
+	return getDelegate().updateAsset(assetId, request);
+    }
+
+    /*
+     * @see com.sitewhere.spi.asset.IAssetManagement#getAsset(java.util.UUID)
+     */
+    @Override
+    public IAsset getAsset(UUID assetId) throws SiteWhereException {
+	return getDelegate().getAsset(assetId);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.asset.IAssetManagement#getAssetByToken(java.lang.String)
+     */
+    @Override
+    public IAsset getAssetByToken(String token) throws SiteWhereException {
+	return getDelegate().getAssetByToken(token);
+    }
+
+    /*
+     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAsset(java.util.UUID,
+     * boolean)
+     */
+    @Override
+    public IAsset deleteAsset(UUID assetId, boolean force) throws SiteWhereException {
+	return getDelegate().deleteAsset(assetId, force);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.asset.IAssetManagement#listAssets(com.sitewhere.spi.asset.
+     * IAssetSearchCriteria)
+     */
+    @Override
+    public ISearchResults<IAsset> listAssets(IAssetSearchCriteria criteria) throws SiteWhereException {
+	return getDelegate().listAssets(criteria);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.asset.IAssetManagement#createAssetType(com.sitewhere.spi.
+     * asset.request.IAssetTypeCreateRequest)
+     */
+    @Override
+    public IAssetType createAssetType(IAssetTypeCreateRequest request) throws SiteWhereException {
+	return getDelegate().createAssetType(request);
+    }
+
+    /*
+     * @see com.sitewhere.spi.asset.IAssetManagement#updateAssetType(java.util.UUID,
+     * com.sitewhere.spi.asset.request.IAssetTypeCreateRequest)
+     */
+    @Override
+    public IAssetType updateAssetType(UUID assetTypeId, IAssetTypeCreateRequest request) throws SiteWhereException {
+	return getDelegate().updateAssetType(assetTypeId, request);
+    }
+
+    /*
+     * @see com.sitewhere.spi.asset.IAssetManagement#getAssetType(java.util.UUID)
+     */
+    @Override
+    public IAssetType getAssetType(UUID assetTypeId) throws SiteWhereException {
+	return getDelegate().getAssetType(assetTypeId);
+    }
+
+    /*
+     * @see com.sitewhere.spi.asset.IAssetManagement#getAssetTypeByToken(java.lang.
+     * String)
+     */
+    @Override
+    public IAssetType getAssetTypeByToken(String token) throws SiteWhereException {
+	return getDelegate().getAssetTypeByToken(token);
+    }
+
+    /*
+     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAssetType(java.util.UUID,
+     * boolean)
+     */
+    @Override
+    public IAssetType deleteAssetType(UUID assetTypeId, boolean force) throws SiteWhereException {
+	return getDelegate().deleteAssetType(assetTypeId, force);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.asset.IAssetManagement#listAssetTypes(com.sitewhere.spi.
+     * search.area.IAssetTypeSearchCritiera)
+     */
+    @Override
+    public ISearchResults<IAssetType> listAssetTypes(IAssetTypeSearchCritiera criteria) throws SiteWhereException {
+	return getDelegate().listAssetTypes(criteria);
     }
 
     /*
@@ -53,169 +161,5 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator<IAsset
     @Override
     public IMicroserviceTenantEngine getTenantEngine() {
 	return getDelegate().getTenantEngine();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#createAssetCategory(com.
-     * sitewhere.spi. asset.request.IAssetCategoryCreateRequest)
-     */
-    @Override
-    public IAssetCategory createAssetCategory(IAssetCategoryCreateRequest request) throws SiteWhereException {
-	return getDelegate().createAssetCategory(request);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#getAssetCategory(java.lang.
-     * String)
-     */
-    @Override
-    public IAssetCategory getAssetCategory(String categoryId) throws SiteWhereException {
-	return getDelegate().getAssetCategory(categoryId);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#updateAssetCategory(java.lang.
-     * String, com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest)
-     */
-    @Override
-    public IAssetCategory updateAssetCategory(String categoryId, IAssetCategoryCreateRequest request)
-	    throws SiteWhereException {
-	return getDelegate().updateAssetCategory(categoryId, request);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#listAssetCategories(com.
-     * sitewhere.spi. search.ISearchCriteria)
-     */
-    @Override
-    public ISearchResults<IAssetCategory> listAssetCategories(ISearchCriteria criteria) throws SiteWhereException {
-	return getDelegate().listAssetCategories(criteria);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAssetCategory(java.lang.
-     * String)
-     */
-    @Override
-    public IAssetCategory deleteAssetCategory(String categoryId) throws SiteWhereException {
-	return getDelegate().deleteAssetCategory(categoryId);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#createPersonAsset(java.lang.
-     * String, com.sitewhere.spi.asset.request.IPersonAssetCreateRequest)
-     */
-    @Override
-    public IPersonAsset createPersonAsset(String categoryId, IPersonAssetCreateRequest request)
-	    throws SiteWhereException {
-	return getDelegate().createPersonAsset(categoryId, request);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#updatePersonAsset(java.lang.
-     * String, java.lang.String,
-     * com.sitewhere.spi.asset.request.IPersonAssetCreateRequest)
-     */
-    @Override
-    public IPersonAsset updatePersonAsset(String categoryId, String assetId, IPersonAssetCreateRequest request)
-	    throws SiteWhereException {
-	return getDelegate().updatePersonAsset(categoryId, assetId, request);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#createHardwareAsset(java.lang.
-     * String, com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest)
-     */
-    @Override
-    public IHardwareAsset createHardwareAsset(String categoryId, IHardwareAssetCreateRequest request)
-	    throws SiteWhereException {
-	return getDelegate().createHardwareAsset(categoryId, request);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#updateHardwareAsset(java.lang.
-     * String, java.lang.String,
-     * com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest)
-     */
-    @Override
-    public IHardwareAsset updateHardwareAsset(String categoryId, String assetId, IHardwareAssetCreateRequest request)
-	    throws SiteWhereException {
-	return getDelegate().updateHardwareAsset(categoryId, assetId, request);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#createLocationAsset(java.lang.
-     * String, com.sitewhere.spi.asset.request.ILocationAssetCreateRequest)
-     */
-    @Override
-    public ILocationAsset createLocationAsset(String categoryId, ILocationAssetCreateRequest request)
-	    throws SiteWhereException {
-	return getDelegate().createLocationAsset(categoryId, request);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#updateLocationAsset(java.lang.
-     * String, java.lang.String,
-     * com.sitewhere.spi.asset.request.ILocationAssetCreateRequest)
-     */
-    @Override
-    public ILocationAsset updateLocationAsset(String categoryId, String assetId, ILocationAssetCreateRequest request)
-	    throws SiteWhereException {
-	return getDelegate().updateLocationAsset(categoryId, assetId, request);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#getAsset(java.lang.String,
-     * java.lang.String)
-     */
-    @Override
-    public IAsset getAsset(String categoryId, String assetId) throws SiteWhereException {
-	return getDelegate().getAsset(categoryId, assetId);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAsset(java.lang.String,
-     * java.lang.String)
-     */
-    @Override
-    public IAsset deleteAsset(String categoryId, String assetId) throws SiteWhereException {
-	return getDelegate().deleteAsset(categoryId, assetId);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.asset.IAssetManagement#listAssets(java.lang.String,
-     * com.sitewhere.spi.search.ISearchCriteria)
-     */
-    @Override
-    public ISearchResults<IAsset> listAssets(String categoryId, ISearchCriteria criteria) throws SiteWhereException {
-	return getDelegate().listAssets(categoryId, criteria);
     }
 }

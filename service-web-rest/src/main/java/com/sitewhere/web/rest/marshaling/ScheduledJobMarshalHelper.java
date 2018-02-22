@@ -23,7 +23,7 @@ import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.scheduling.ScheduledJob;
 import com.sitewhere.schedule.BatchCommandInvocationJobParser;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetResolver;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceType;
@@ -51,8 +51,8 @@ public class ScheduledJobMarshalHelper {
     /** Schedule management */
     private IScheduleManagement scheduleManagement;
 
-    /** Asset resolver */
-    private IAssetResolver assetResolver;
+    /** Asset management */
+    private IAssetManagement assetManagement;
 
     /** Indicates whether to include context information */
     private boolean includeContextInfo = false;
@@ -64,15 +64,15 @@ public class ScheduledJobMarshalHelper {
     private DeviceTypeMarshalHelper deviceTypeHelper;
 
     public ScheduledJobMarshalHelper(IScheduleManagement scheduleManagement, IDeviceManagement deviceManagement,
-	    IAssetResolver assetResolver) {
-	this(scheduleManagement, deviceManagement, assetResolver, false);
+	    IAssetManagement assetManagement) {
+	this(scheduleManagement, deviceManagement, assetManagement, false);
     }
 
     public ScheduledJobMarshalHelper(IScheduleManagement scheduleManagement, IDeviceManagement deviceManagement,
-	    IAssetResolver assetResolver, boolean includeContextInfo) {
+	    IAssetManagement assetManagement, boolean includeContextInfo) {
 	this.scheduleManagement = scheduleManagement;
 	this.deviceManagement = deviceManagement;
-	this.assetResolver = assetResolver;
+	this.assetManagement = assetManagement;
 	this.includeContextInfo = includeContextInfo;
 	this.assignmentHelper = new DeviceAssignmentMarshalHelper(deviceManagement).setIncludeDevice(true)
 		.setIncludeAsset(false);
@@ -132,7 +132,7 @@ public class ScheduledJobMarshalHelper {
 	if (assnToken != null) {
 	    IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(assnToken);
 	    if (assignment != null) {
-		job.getContext().put("assignment", getAssignmentHelper().convert(assignment, getAssetResolver()));
+		job.getContext().put("assignment", getAssignmentHelper().convert(assignment, getAssetManagement()));
 	    }
 	}
 	if (commandToken != null) {
@@ -170,7 +170,7 @@ public class ScheduledJobMarshalHelper {
 	if (deviceTypeToken != null) {
 	    IDeviceType deviceType = getDeviceManagement().getDeviceTypeByToken(deviceTypeToken);
 	    if (deviceType != null) {
-		job.getContext().put("deviceType", getDeviceTypeHelper().convert(deviceType, getAssetResolver()));
+		job.getContext().put("deviceType", getDeviceTypeHelper().convert(deviceType, getAssetManagement()));
 	    }
 	    BatchCommandForCriteriaRequest criteria = BatchCommandInvocationJobParser.parse(job.getJobConfiguration());
 	    String html = CommandHtmlHelper.getHtml(criteria, getDeviceManagement(), "..");
@@ -234,12 +234,12 @@ public class ScheduledJobMarshalHelper {
 	this.scheduleManagement = scheduleManagement;
     }
 
-    public IAssetResolver getAssetResolver() {
-	return assetResolver;
+    public IAssetManagement getAssetManagement() {
+	return assetManagement;
     }
 
-    public void setAssetResolver(IAssetResolver assetResolver) {
-	this.assetResolver = assetResolver;
+    public void setAssetManagement(IAssetManagement assetManagement) {
+	this.assetManagement = assetManagement;
     }
 
     public boolean isIncludeContextInfo() {

@@ -7,23 +7,16 @@
  */
 package com.sitewhere.asset.persistence;
 
+import java.util.UUID;
+
 import com.sitewhere.persistence.Persistence;
 import com.sitewhere.rest.model.asset.Asset;
-import com.sitewhere.rest.model.asset.AssetCategory;
-import com.sitewhere.rest.model.asset.HardwareAsset;
-import com.sitewhere.rest.model.asset.LocationAsset;
-import com.sitewhere.rest.model.asset.PersonAsset;
+import com.sitewhere.rest.model.asset.AssetType;
+import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.asset.AssetType;
-import com.sitewhere.spi.asset.IAssetCategory;
-import com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest;
+import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.asset.request.IAssetCreateRequest;
-import com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest;
-import com.sitewhere.spi.asset.request.ILocationAssetCreateRequest;
-import com.sitewhere.spi.asset.request.IPersonAssetCreateRequest;
-import com.sitewhere.spi.error.ErrorCode;
-import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.asset.request.IAssetTypeCreateRequest;
 
 /**
  * Persistence logic for asset management components.
@@ -31,71 +24,23 @@ import com.sitewhere.spi.error.ErrorLevel;
  * @author Derek
  */
 public class AssetManagementPersistence extends Persistence {
+
     /**
-     * Common logic for creating an asset category.
+     * Handle base logic for creating an asset type.
      * 
+     * @param assetType
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public static AssetCategory assetCategoryCreateLogic(IAssetCategoryCreateRequest request)
-	    throws SiteWhereException {
-	AssetCategory category = new AssetCategory();
+    public static AssetType assetTypeCreateLogic(IAssetTypeCreateRequest request) throws SiteWhereException {
+	AssetType asset = new AssetType();
+	asset.setId(UUID.randomUUID());
+	asset.setDescription(request.getDescription());
 
-	require("Category Id", request.getId());
-	category.setId(request.getId());
-
-	// Name is required.
-	require("Name", request.getName());
-	category.setName(request.getName());
-
-	// Type is required.
-	requireNotNull("Type", request.getAssetType());
-	category.setAssetType(request.getAssetType());
-
-	return category;
-    }
-
-    /**
-     * Common logic for updating an existing asset category.
-     * 
-     * @param request
-     * @param existing
-     * @return
-     * @throws SiteWhereException
-     */
-    public static AssetCategory assetCategoryUpdateLogic(IAssetCategoryCreateRequest request, AssetCategory existing)
-	    throws SiteWhereException {
-	if (!request.getId().equals(existing.getId())) {
-	    throw new SiteWhereException("Can not change the id of an existing asset category.");
-	}
-
-	if (request.getAssetType() != existing.getAssetType()) {
-	    throw new SiteWhereException("Can not change the asset type of an existing asset category.");
-	}
-
-	if (request.getName() != null) {
-	    existing.setName(request.getName());
-	}
-
-	return existing;
-    }
-
-    /**
-     * Handle base logic common to all asset types.
-     * 
-     * @param category
-     * @param request
-     * @param asset
-     * @throws SiteWhereException
-     */
-    public static void assetCreateLogic(IAssetCategory category, IAssetCreateRequest request, Asset asset)
-	    throws SiteWhereException {
-	asset.setType(category.getAssetType());
-	asset.setAssetCategoryId(category.getId());
-
-	require("Asset Id", request.getId());
-	asset.setId(request.getId());
+	// Unique token is required.
+	require("Token", request.getToken());
+	asset.setToken(request.getToken());
 
 	require("Name", request.getName());
 	asset.setName(request.getName());
@@ -103,165 +48,95 @@ public class AssetManagementPersistence extends Persistence {
 	require("Image URL", request.getImageUrl());
 	asset.setImageUrl(request.getImageUrl());
 
-	asset.getProperties().putAll(request.getProperties());
+	MetadataProvider.copy(request.getMetadata(), asset);
+	AssetManagementPersistence.initializeEntityMetadata(asset);
+
+	return asset;
     }
 
     /**
-     * Common logic for updating assets.
+     * Handle common asset type create logic.
      * 
-     * @param asset
+     * @param target
      * @param request
      * @throws SiteWhereException
      */
-    public static void assetUpdateLogic(Asset asset, IAssetCreateRequest request) throws SiteWhereException {
-	if (!asset.getId().equals(request.getId())) {
-	    throw new SiteWhereException("Asset id can not be changed.");
+    public static void assetTypeUpdateLogic(AssetType target, IAssetTypeCreateRequest request)
+	    throws SiteWhereException {
+	if (request.getToken() != null) {
+	    target.setToken(request.getToken());
 	}
-
 	if (request.getName() != null) {
-	    asset.setName(request.getName());
-	}
-	if (request.getImageUrl() != null) {
-	    asset.setImageUrl(request.getImageUrl());
-	}
-	if (request.getProperties() != null) {
-	    asset.getProperties().clear();
-	    asset.getProperties().putAll(request.getProperties());
-	}
-    }
-
-    /**
-     * Handle common logic for creating a person asset.
-     * 
-     * @param category
-     * @param request
-     * @return
-     * @throws SiteWhereException
-     */
-    public static PersonAsset personAssetCreateLogic(IAssetCategory category, IPersonAssetCreateRequest request)
-	    throws SiteWhereException {
-	if (category.getAssetType() != AssetType.Person) {
-	    throw new SiteWhereSystemException(ErrorCode.AssetTypeNotAllowed, ErrorLevel.ERROR);
-	}
-
-	PersonAsset person = new PersonAsset();
-	assetCreateLogic(category, request, person);
-
-	person.setUserName(request.getUserName());
-	person.setEmailAddress(request.getEmailAddress());
-	person.getRoles().addAll(request.getRoles());
-
-	return person;
-    }
-
-    /**
-     * Handle common logic for updating a person asset.
-     * 
-     * @param person
-     * @param request
-     * @throws SiteWhereException
-     */
-    public static void personAssetUpdateLogic(PersonAsset person, IPersonAssetCreateRequest request)
-	    throws SiteWhereException {
-	assetUpdateLogic(person, request);
-
-	if (request.getUserName() != null) {
-	    person.setUserName(request.getUserName());
-	}
-	if (request.getEmailAddress() != null) {
-	    person.setEmailAddress(request.getEmailAddress());
-	}
-	if (request.getRoles() != null) {
-	    person.getRoles().clear();
-	    person.getRoles().addAll(request.getRoles());
-	}
-    }
-
-    /**
-     * Handle common logic for creating a hardware asset.
-     * 
-     * @param category
-     * @param request
-     * @return
-     * @throws SiteWhereException
-     */
-    public static HardwareAsset hardwareAssetCreateLogic(IAssetCategory category, IHardwareAssetCreateRequest request)
-	    throws SiteWhereException {
-	if ((category.getAssetType() != AssetType.Hardware) && (category.getAssetType() != AssetType.Device)) {
-	    throw new SiteWhereSystemException(ErrorCode.AssetTypeNotAllowed, ErrorLevel.ERROR);
-	}
-
-	HardwareAsset hardware = new HardwareAsset();
-	assetCreateLogic(category, request, hardware);
-
-	hardware.setSku(request.getSku());
-	hardware.setDescription(request.getDescription());
-
-	return hardware;
-    }
-
-    /**
-     * Handle common logic for updating a hardware asset.
-     * 
-     * @param hardware
-     * @param request
-     * @throws SiteWhereException
-     */
-    public static void hardwareAssetUpdateLogic(HardwareAsset hardware, IHardwareAssetCreateRequest request)
-	    throws SiteWhereException {
-	assetUpdateLogic(hardware, request);
-
-	if (request.getSku() != null) {
-	    hardware.setSku(request.getSku());
+	    target.setName(request.getName());
 	}
 	if (request.getDescription() != null) {
-	    hardware.setDescription(request.getDescription());
+	    target.setDescription(request.getDescription());
 	}
+	if (request.getImageUrl() != null) {
+	    target.setImageUrl(request.getImageUrl());
+	}
+	if (request.getMetadata() != null) {
+	    target.getMetadata().clear();
+	    MetadataProvider.copy(request.getMetadata(), target);
+	}
+	AssetManagementPersistence.setUpdatedEntityMetadata(target);
     }
 
     /**
-     * Handle common logic for creating a location asset.
+     * Handle base logic for creating an asset.
      * 
-     * @param category
+     * @param assetType
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public static LocationAsset locationAssetCreateLogic(IAssetCategory category, ILocationAssetCreateRequest request)
-	    throws SiteWhereException {
-	if (category.getAssetType() != AssetType.Location) {
-	    throw new SiteWhereSystemException(ErrorCode.AssetTypeNotAllowed, ErrorLevel.ERROR);
-	}
+    public static Asset assetCreateLogic(IAssetType assetType, IAssetCreateRequest request) throws SiteWhereException {
+	Asset asset = new Asset();
+	asset.setId(UUID.randomUUID());
+	asset.setAssetTypeId(assetType.getId());
 
-	LocationAsset loc = new LocationAsset();
-	assetCreateLogic(category, request, loc);
+	// Unique token is required.
+	require("Token", request.getToken());
+	asset.setToken(request.getToken());
 
-	loc.setLatitude(request.getLatitude());
-	loc.setLongitude(request.getLongitude());
-	loc.setElevation(request.getElevation());
+	require("Name", request.getName());
+	asset.setName(request.getName());
 
-	return loc;
+	require("Image URL", request.getImageUrl());
+	asset.setImageUrl(request.getImageUrl());
+
+	MetadataProvider.copy(request.getMetadata(), asset);
+	AssetManagementPersistence.initializeEntityMetadata(asset);
+
+	return asset;
     }
 
     /**
-     * Handle common logic for updating a location asset.
+     * Handle base logic for updating an asset.
      * 
-     * @param location
+     * @param assetType
+     * @param target
      * @param request
      * @throws SiteWhereException
      */
-    public static void locationAssetUpdateLogic(LocationAsset location, ILocationAssetCreateRequest request)
+    public static void assetUpdateLogic(IAssetType assetType, Asset target, IAssetCreateRequest request)
 	    throws SiteWhereException {
-	assetUpdateLogic(location, request);
-
-	if (request.getLatitude() != null) {
-	    location.setLatitude(request.getLatitude());
+	if (request.getAssetTypeToken() != null) {
+	    target.setAssetTypeId(assetType.getId());
 	}
-	if (request.getLongitude() != null) {
-	    location.setLongitude(request.getLongitude());
+	if (request.getToken() != null) {
+	    target.setToken(request.getToken());
 	}
-	if (request.getElevation() != null) {
-	    location.setElevation(request.getElevation());
+	if (request.getName() != null) {
+	    target.setName(request.getName());
 	}
+	if (request.getImageUrl() != null) {
+	    target.setImageUrl(request.getImageUrl());
+	}
+	if (request.getMetadata() != null) {
+	    target.getMetadata().clear();
+	    MetadataProvider.copy(request.getMetadata(), target);
+	}
+	AssetManagementPersistence.setUpdatedEntityMetadata(target);
     }
 }

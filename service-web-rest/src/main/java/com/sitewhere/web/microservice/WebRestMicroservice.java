@@ -26,11 +26,9 @@ import com.sitewhere.grpc.client.spi.client.IUserManagementApiDemux;
 import com.sitewhere.grpc.client.tenant.TenantManagementApiDemux;
 import com.sitewhere.grpc.client.user.UserManagementApiDemux;
 import com.sitewhere.microservice.GlobalMicroservice;
-import com.sitewhere.microservice.asset.AssetResolver;
 import com.sitewhere.microservice.management.MicroserviceManagementCoordinator;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordinator;
@@ -75,9 +73,6 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
     /** Schedule management API demux */
     private IScheduleManagementApiDemux scheduleManagementApiDemux;
-
-    /** Asset resolver */
-    private IAssetResolver assetResolver;
 
     /** Microservice management coordinator */
     private IMicroserviceManagementCoordinator microserviceManagementCoordinator;
@@ -217,7 +212,6 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
 	// Asset management.
 	this.assetManagementApiDemux = new AssetManagementApiDemux(this);
-	this.assetResolver = new AssetResolver(getAssetManagementApiDemux());
 
 	// Batch management.
 	this.batchManagementApiDemux = new BatchManagementApiDemux(this);
@@ -421,13 +415,5 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     @Override
     public Log getLogger() {
 	return LOGGER;
-    }
-
-    public IAssetResolver getAssetResolver() {
-	return assetResolver;
-    }
-
-    public void setAssetResolver(IAssetResolver assetResolver) {
-	this.assetResolver = assetResolver;
     }
 }

@@ -15,7 +15,7 @@ import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.rest.model.asset.request.scripting.AssetManagementRequestBuilder;
 import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetResolver;
+import com.sitewhere.spi.asset.IAssetManagement;
 
 import groovy.lang.Binding;
 
@@ -42,21 +42,15 @@ public class GroovyAssetModelInitializer extends ModelInitializer implements IAs
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.asset.spi.IAssetModelInitializer#initialize(com.sitewhere.
-     * spi.asset.IAssetResolver)
+     * @see
+     * com.sitewhere.asset.spi.IAssetModelInitializer#initialize(com.sitewhere.spi.
+     * asset.IAssetManagement)
      */
     @Override
-    public void initialize(IAssetResolver assetResolver) throws SiteWhereException {
-	// Skip if not enabled.
-	if (!isEnabled()) {
-	    return;
-	}
-
+    public void initialize(IAssetManagement assetManagement) throws SiteWhereException {
 	Binding binding = new Binding();
 	binding.setVariable("logger", LOGGER);
-	binding.setVariable("assetBuilder", new AssetManagementRequestBuilder(assetResolver));
+	binding.setVariable("assetBuilder", new AssetManagementRequestBuilder(assetManagement));
 
 	try {
 	    getGroovyConfiguration().run(getScriptPath(), binding);

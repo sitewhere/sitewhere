@@ -11,9 +11,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
-import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.common.IMetadataProvider;
-import com.sitewhere.spi.device.DeviceAssignmentType;
 
 /**
  * Event that originates from a device.
@@ -45,32 +43,32 @@ public interface IDeviceEvent extends IMetadataProvider, Comparable<IDeviceEvent
     public DeviceEventType getEventType();
 
     /**
-     * Get id for area the event pertains to.
+     * Get device id.
      * 
      * @return
      */
-    public UUID getAreaId();
+    public UUID getDeviceId();
 
     /**
-     * Get the device assignment the event pertains to.
+     * Get assignment id.
      * 
      * @return
      */
     public UUID getDeviceAssignmentId();
 
     /**
-     * Get assignment type.
+     * Get area id if assigned.
      * 
      * @return
      */
-    public DeviceAssignmentType getAssignmentType();
+    public UUID getAreaId();
 
     /**
-     * Get asset reference.
+     * Get asset id if assigned.
      * 
      * @return
      */
-    public IAssetReference getAssetReference();
+    public UUID getAssetId();
 
     /**
      * Get the date the event occurred.

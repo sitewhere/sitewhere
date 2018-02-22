@@ -14,7 +14,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
-import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
@@ -39,8 +38,8 @@ public class DeviceType extends MetadataProviderEntity implements IDeviceType, S
     /** Specification name */
     private String name;
 
-    /** Asset reference */
-    private IAssetReference assetReference;
+    /** Asset type id */
+    private UUID assetTypeId;
 
     /** Device container policy */
     private DeviceContainerPolicy containerPolicy = DeviceContainerPolicy.Standalone;
@@ -85,15 +84,15 @@ public class DeviceType extends MetadataProviderEntity implements IDeviceType, S
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceType#getAssetReference()
+     * @see com.sitewhere.spi.device.IDeviceType#getAssetTypeId()
      */
     @Override
-    public IAssetReference getAssetReference() {
-	return assetReference;
+    public UUID getAssetTypeId() {
+	return assetTypeId;
     }
 
-    public void setAssetReference(IAssetReference assetReference) {
-	this.assetReference = assetReference;
+    public void setAssetTypeId(UUID assetTypeId) {
+	this.assetTypeId = assetTypeId;
     }
 
     /*

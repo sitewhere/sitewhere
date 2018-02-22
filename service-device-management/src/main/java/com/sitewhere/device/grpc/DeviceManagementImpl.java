@@ -23,14 +23,12 @@ import com.sitewhere.grpc.model.DeviceModel.GZoneSearchResults;
 import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.grpc.model.converter.DeviceModelConverter;
 import com.sitewhere.grpc.service.*;
-import com.sitewhere.rest.model.asset.AssetReference;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.area.request.IAreaCreateRequest;
 import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
-import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
@@ -1269,9 +1267,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GGetDeviceAssignmentsForAssetResponse> responseObserver) {
 	try {
 	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_ASSET);
-	    IAssetReference reference = new AssetReference.Builder(request.getAssetModuleId(), request.getAssetId())
-		    .build();
-	    ISearchResults<IDeviceAssignment> apiResult = getDeviceManagement().getDeviceAssignmentsForAsset(reference,
+	    ISearchResults<IDeviceAssignment> apiResult = getDeviceManagement().getDeviceAssignmentsForAsset(
+		    CommonModelConverter.asApiUuid(request.getAssetId()),
 		    DeviceModelConverter.asApiAssignmentsForAssetSearchCriteria(request.getCriteria()));
 	    GGetDeviceAssignmentsForAssetResponse.Builder response = GGetDeviceAssignmentsForAssetResponse.newBuilder();
 	    GDeviceAssignmentSearchResults.Builder results = GDeviceAssignmentSearchResults.newBuilder();

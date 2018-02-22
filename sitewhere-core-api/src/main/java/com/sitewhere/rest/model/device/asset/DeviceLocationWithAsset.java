@@ -9,7 +9,7 @@ package com.sitewhere.rest.model.device.asset;
 
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetResolver;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 
 /**
@@ -23,8 +23,9 @@ public class DeviceLocationWithAsset extends DeviceEventWithAsset implements IDe
     /** Serial version UID */
     private static final long serialVersionUID = -8449689938042640635L;
 
-    public DeviceLocationWithAsset(IDeviceLocation wrapped, IAssetResolver assetResolver) throws SiteWhereException {
-	super(wrapped, assetResolver);
+    public DeviceLocationWithAsset(IDeviceLocation wrapped, IAssetManagement assetManagement)
+	    throws SiteWhereException {
+	super(wrapped, assetManagement);
     }
 
     /*

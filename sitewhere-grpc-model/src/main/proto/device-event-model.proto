@@ -16,9 +16,10 @@ import "google/protobuf/timestamp.proto";
 message GDeviceEventCreateRequest {
 	GOptionalString alternateId = 1;
 	GOptionalString areaToken = 2;
-	google.protobuf.Timestamp eventDate = 3;
-	GOptionalBoolean updateState = 4;
-	map<string, string> metadata = 5;
+	GOptionalString assetToken = 3;
+	google.protobuf.Timestamp eventDate = 4;
+	GOptionalBoolean updateState = 5;
+	map<string, string> metadata = 6;
 }
 
 // Request data for creating device measurements.
@@ -126,10 +127,10 @@ message GDeviceEvent {
 	string id = 1;
 	GOptionalString alternateId = 2;
 	GDeviceEventType eventType = 3;
-	GUUID areaId = 4;
+	GUUID deviceId = 4;
 	GUUID deviceAssignmentId = 5;
-	GDeviceAssignmentType assignmentType = 6;
-	GAssetReference assetReference = 7;
+	GUUID areaId = 6;
+	GUUID assetId = 7;
 	google.protobuf.Timestamp eventDate = 8;
 	google.protobuf.Timestamp receivedDate = 9;
 	map<string, string> metadata = 10;

@@ -7,13 +7,14 @@
  */
 package com.sitewhere.spi.asset;
 
+import java.util.UUID;
+
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest;
-import com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest;
-import com.sitewhere.spi.asset.request.ILocationAssetCreateRequest;
-import com.sitewhere.spi.asset.request.IPersonAssetCreateRequest;
-import com.sitewhere.spi.search.ISearchCriteria;
+import com.sitewhere.spi.asset.request.IAssetCreateRequest;
+import com.sitewhere.spi.asset.request.IAssetTypeCreateRequest;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.area.IAssetTypeSearchCritiera;
+import com.sitewhere.spi.search.asset.IAssetSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
@@ -24,148 +25,114 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 public interface IAssetManagement extends ITenantEngineLifecycleComponent {
 
     /**
-     * Create a new asset category.
+     * Create a new asset.
      * 
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public IAssetCategory createAssetCategory(IAssetCategoryCreateRequest request) throws SiteWhereException;
+    public IAsset createAsset(IAssetCreateRequest request) throws SiteWhereException;
 
     /**
-     * Get an asset category by id.
+     * Update an existing asset.
      * 
-     * @param categoryId
-     * @return
-     * @throws SiteWhereException
-     */
-    public IAssetCategory getAssetCategory(String categoryId) throws SiteWhereException;
-
-    /**
-     * Update an existing asset category.
-     * 
-     * @param categoryId
+     * @param assetId
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public IAssetCategory updateAssetCategory(String categoryId, IAssetCategoryCreateRequest request)
-	    throws SiteWhereException;
+    public IAsset updateAsset(UUID assetId, IAssetCreateRequest request) throws SiteWhereException;
 
     /**
-     * List asset categories.
+     * Get asset by unique id.
+     * 
+     * @param assetId
+     * @return
+     * @throws SiteWhereException
+     */
+    public IAsset getAsset(UUID assetId) throws SiteWhereException;
+
+    /**
+     * Get asset by unique token.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    public IAsset getAssetByToken(String token) throws SiteWhereException;
+
+    /**
+     * Delete an existing asset based on unique id.
+     * 
+     * @param assetId
+     * @param force
+     * @return
+     * @throws SiteWhereException
+     */
+    public IAsset deleteAsset(UUID assetId, boolean force) throws SiteWhereException;
+
+    /**
+     * List assets that match the given criteria.
      * 
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IAssetCategory> listAssetCategories(ISearchCriteria criteria) throws SiteWhereException;
+    public ISearchResults<IAsset> listAssets(IAssetSearchCriteria criteria) throws SiteWhereException;
 
     /**
-     * Delete an asset category and all contained assets.
+     * Create a new asset type.
      * 
-     * @param categoryId
-     * @return
-     * @throws SiteWhereException
-     */
-    public IAssetCategory deleteAssetCategory(String categoryId) throws SiteWhereException;
-
-    /**
-     * Create a new {@link IPersonAsset}.
-     * 
-     * @param categoryId
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public IPersonAsset createPersonAsset(String categoryId, IPersonAssetCreateRequest request)
-	    throws SiteWhereException;
+    public IAssetType createAssetType(IAssetTypeCreateRequest request) throws SiteWhereException;
 
     /**
-     * Update an existing person asset.
+     * Update an existing asset type.
      * 
-     * @param categoryId
-     * @param assetId
+     * @param assetTypeId
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public IPersonAsset updatePersonAsset(String categoryId, String assetId, IPersonAssetCreateRequest request)
-	    throws SiteWhereException;
+    public IAssetType updateAssetType(UUID assetTypeId, IAssetTypeCreateRequest request) throws SiteWhereException;
 
     /**
-     * Create a new {@link IHardwareAsset}.
+     * Get asset type by unique id.
      * 
-     * @param categoryId
-     * @param request
+     * @param assetTypeId
      * @return
      * @throws SiteWhereException
      */
-    public IHardwareAsset createHardwareAsset(String categoryId, IHardwareAssetCreateRequest request)
-	    throws SiteWhereException;
+    public IAssetType getAssetType(UUID assetTypeId) throws SiteWhereException;
 
     /**
-     * Update an existing hardware asset.
+     * Get asset type by unique token.
      * 
-     * @param categoryId
-     * @param assetId
-     * @param request
+     * @param token
      * @return
      * @throws SiteWhereException
      */
-    public IHardwareAsset updateHardwareAsset(String categoryId, String assetId, IHardwareAssetCreateRequest request)
-	    throws SiteWhereException;
+    public IAssetType getAssetTypeByToken(String token) throws SiteWhereException;
 
     /**
-     * Create a new {@link ILocationAsset}.
+     * Delete an existing asset type based on unique id.
      * 
-     * @param categoryId
-     * @param request
+     * @param assetTypeId
+     * @param force
      * @return
      * @throws SiteWhereException
      */
-    public ILocationAsset createLocationAsset(String categoryId, ILocationAssetCreateRequest request)
-	    throws SiteWhereException;
+    public IAssetType deleteAssetType(UUID assetTypeId, boolean force) throws SiteWhereException;
 
     /**
-     * Update an existing location asset.
+     * List asset types that match the given criteria.
      * 
-     * @param categoryId
-     * @param assetId
-     * @param request
-     * @return
-     * @throws SiteWhereException
-     */
-    public ILocationAsset updateLocationAsset(String categoryId, String assetId, ILocationAssetCreateRequest request)
-	    throws SiteWhereException;
-
-    /**
-     * Get the asset for the given id in the given category.
-     * 
-     * @param categoryId
-     * @param assetId
-     * @return
-     * @throws SiteWhereException
-     */
-    public IAsset getAsset(String categoryId, String assetId) throws SiteWhereException;
-
-    /**
-     * Delete the asset with the given id in the given category.
-     * 
-     * @param categoryId
-     * @param assetId
-     * @return
-     * @throws SiteWhereException
-     */
-    public IAsset deleteAsset(String categoryId, String assetId) throws SiteWhereException;
-
-    /**
-     * List assets in a category that meet the given criteria.
-     * 
-     * @param categoryId
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IAsset> listAssets(String categoryId, ISearchCriteria criteria) throws SiteWhereException;
+    public ISearchResults<IAssetType> listAssetTypes(IAssetTypeSearchCritiera criteria) throws SiteWhereException;
 }

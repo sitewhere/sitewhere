@@ -648,8 +648,7 @@ message GGetDeviceAssignmentsForAreasResponse {
 	
 // Request for getting device assignments linked to an asset.
 message GGetDeviceAssignmentsForAssetRequest {
-	string assetModuleId = 1;
-	string assetId = 2;
+	com.sitewhere.grpc.model.GUUID assetId = 1;
 	com.sitewhere.grpc.model.GAssetsForAssignmentSearchCriteria criteria = 3;
 }
 	

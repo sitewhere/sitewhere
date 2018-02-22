@@ -9,7 +9,6 @@ package com.sitewhere.spi.device.request;
 
 import java.util.Map;
 
-import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 
@@ -21,25 +20,25 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
 public interface IDeviceTypeCreateRequest {
 
     /**
-     * Get name that describes specification.
-     * 
-     * @return
-     */
-    public String getName();
-
-    /**
-     * Get asset reference information.
-     * 
-     * @return
-     */
-    public IAssetReference getAssetReference();
-
-    /**
      * Allows the type token to be specified. (Optional)
      * 
      * @return
      */
     public String getToken();
+
+    /**
+     * Get token of device asset type.
+     * 
+     * @return
+     */
+    public String getAssetTypeToken();
+
+    /**
+     * Get name that describes specification.
+     * 
+     * @return
+     */
+    public String getName();
 
     /**
      * Get container policy.

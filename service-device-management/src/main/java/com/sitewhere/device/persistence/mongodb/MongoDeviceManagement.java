@@ -18,12 +18,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 
-import com.mongodb.MongoTimeoutException;
+import com.mongodb.MongoClientException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.result.DeleteResult;
+import com.sitewhere.device.microservice.DeviceManagementMicroservice;
 import com.sitewhere.device.persistence.DeviceManagementPersistence;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
@@ -50,7 +51,9 @@ import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.area.request.IAreaCreateRequest;
 import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
-import com.sitewhere.spi.asset.IAssetReference;
+import com.sitewhere.spi.asset.IAsset;
+import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -154,8 +157,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 		new IndexOptions().unique(true));
 	getMongoClient().getDeviceAssignmentsCollection()
 		.createIndex(new Document(MongoDeviceAssignment.PROP_AREA_ID, 1)
-			.append(MongoDeviceAssignment.PROP_ASSET_REFERENCE, 1)
-			.append(MongoDeviceAssignment.PROP_STATUS, 1));
+			.append(MongoDeviceAssignment.PROP_ASSET_ID, 1).append(MongoDeviceAssignment.PROP_STATUS, 1));
 
 	// Device group indexes.
 	getMongoClient().getDeviceGroupsCollection().createIndex(new Document(MongoDeviceGroup.PROP_TOKEN, 1),
@@ -181,8 +183,16 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    uuid = UUID.randomUUID().toString();
 	}
 
+	IAssetType assetType = null;
+	if (request.getAssetTypeToken() != null) {
+	    assetType = getAssetManagement().getAssetTypeByToken(request.getAssetTypeToken());
+	    if (assetType == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidAssetTypeToken, ErrorLevel.ERROR);
+	    }
+	}
+
 	// Use common logic so all backend implementations work the same.
-	DeviceType deviceType = DeviceManagementPersistence.deviceTypeCreateLogic(request, uuid);
+	DeviceType deviceType = DeviceManagementPersistence.deviceTypeCreateLogic(assetType, request, uuid);
 
 	MongoCollection<Document> types = getMongoClient().getDeviceTypesCollection();
 	Document created = MongoDeviceType.toDocument(deviceType);
@@ -227,8 +237,14 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	Document match = assertDeviceType(id);
 	DeviceType deviceType = MongoDeviceType.fromDocument(match);
 
+	// Look up asset type if provided.
+	IAssetType assetType = null;
+	if (request.getAssetTypeToken() != null) {
+	    assetType = getAssetManagement().getAssetTypeByToken(request.getAssetTypeToken());
+	}
+
 	// Use common update logic.
-	DeviceManagementPersistence.deviceTypeUpdateLogic(request, deviceType);
+	DeviceManagementPersistence.deviceTypeUpdateLogic(assetType, request, deviceType);
 	Document updated = MongoDeviceType.toDocument(deviceType);
 
 	Document query = new Document(MongoDeviceType.PROP_ID, id);
@@ -848,8 +864,17 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    }
 	}
 
+	// Look up asset if specified.
+	IAsset asset = null;
+	if (request.getAssetToken() != null) {
+	    asset = getAssetManagement().getAssetByToken(request.getAreaToken());
+	    if (asset == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidAssetToken, ErrorLevel.ERROR);
+	    }
+	}
+
 	// Use common logic to load assignment from request.
-	DeviceAssignment newAssignment = DeviceManagementPersistence.deviceAssignmentCreateLogic(request, area,
+	DeviceAssignment newAssignment = DeviceManagementPersistence.deviceAssignmentCreateLogic(request, area, asset,
 		existing);
 	if (newAssignment.getToken() == null) {
 	    newAssignment.setToken(UUID.randomUUID().toString());
@@ -1015,15 +1040,15 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAsset(com.
-     * sitewhere.spi.asset.IAssetReference,
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAsset(java.
+     * util.UUID,
      * com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(IAssetReference assetReference,
+    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(UUID assetId,
 	    IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
-	Document query = new Document(MongoDeviceAssignment.PROP_ASSET_REFERENCE, assetReference);
+	Document query = new Document(MongoDeviceAssignment.PROP_ASSET_ID, assetId);
 	if (criteria.getAreaToken() != null) {
 	    IArea area = getAreaByToken(criteria.getAreaToken());
 	    query.append(MongoDeviceAssignment.PROP_AREA_ID, area.getId());
@@ -1845,8 +1870,8 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    MongoCollection<Document> zones = getMongoClient().getZonesCollection();
 	    Document query = new Document(MongoZone.PROP_TOKEN, token);
 	    return zones.find(query).first();
-	} catch (MongoTimeoutException e) {
-	    throw new SiteWhereException("Connection to MongoDB lost.", e);
+	} catch (MongoClientException e) {
+	    throw MongoPersistence.handleClientException(e);
 	}
     }
 
@@ -1862,8 +1887,8 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    MongoCollection<Document> zones = getMongoClient().getZonesCollection();
 	    Document query = new Document(MongoZone.PROP_ID, id);
 	    return zones.find(query).first();
-	} catch (MongoTimeoutException e) {
-	    throw new SiteWhereException("Connection to MongoDB lost.", e);
+	} catch (MongoClientException e) {
+	    throw MongoPersistence.handleClientException(e);
 	}
     }
 
@@ -1929,8 +1954,8 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    Document query = new Document(MongoDeviceStream.PROP_ASSIGNMENT_ID, assignmentId)
 		    .append(MongoDeviceStream.PROP_STREAM_ID, streamId);
 	    return streams.find(query).first();
-	} catch (MongoTimeoutException e) {
-	    throw new SiteWhereException("Connection to MongoDB lost.", e);
+	} catch (MongoClientException e) {
+	    throw MongoPersistence.handleClientException(e);
 	}
     }
 
@@ -1947,8 +1972,8 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection();
 	    Document query = new Document(MongoDeviceGroup.PROP_TOKEN, token);
 	    return groups.find(query).first();
-	} catch (MongoTimeoutException e) {
-	    throw new SiteWhereException("Connection to MongoDB lost.", e);
+	} catch (MongoClientException e) {
+	    throw MongoPersistence.handleClientException(e);
 	}
     }
 
@@ -1957,8 +1982,8 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection();
 	    Document query = new Document(MongoDeviceGroup.PROP_ID, id);
 	    return groups.find(query).first();
-	} catch (MongoTimeoutException e) {
-	    throw new SiteWhereException("Connection to MongoDB lost.", e);
+	} catch (MongoClientException e) {
+	    throw MongoPersistence.handleClientException(e);
 	}
     }
 
@@ -2001,6 +2026,16 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     protected Document createAreasInClause(List<UUID> areas) {
 	return new Document("$in", areas);
+    }
+
+    /**
+     * Get asset management implementation from microservice.
+     * 
+     * @return
+     */
+    public IAssetManagement getAssetManagement() {
+	return ((DeviceManagementMicroservice) getTenantEngine().getMicroservice()).getAssetManagementApiDemux()
+		.getApiChannel();
     }
 
     public IDeviceManagementMongoClient getMongoClient() {

@@ -7,15 +7,14 @@
  */
 package com.sitewhere.asset.persistence.mongodb;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.UUID;
 
 import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
+import com.sitewhere.mongodb.common.MongoMetadataProvider;
+import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.asset.Asset;
-import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAsset;
 
 /**
@@ -26,22 +25,19 @@ import com.sitewhere.spi.asset.IAsset;
 public class MongoAsset implements MongoConverter<IAsset> {
 
     /** Property for asset id */
-    public static final String PROP_ID = "id";
+    public static final String PROP_ID = "_id";
+
+    /** Property for token */
+    public static final String PROP_TOKEN = "tokn";
+
+    /** Property for asset type id */
+    public static final String PROP_ASSET_TYPE_ID = "atid";
 
     /** Property for asset name */
     public static final String PROP_NAME = "name";
 
-    /** Property for asset type */
-    public static final String PROP_ASSET_TYPE = "type";
-
-    /** Property for category id */
-    public static final String PROP_CATEGORY_ID = "category";
-
     /** Property for asset image URL */
     public static final String PROP_IMAGE_URL = "image";
-
-    /** Property for asset properties */
-    public static final String PROP_PROPERTIES = "properties";
 
     /*
      * (non-Javadoc)
@@ -50,11 +46,7 @@ public class MongoAsset implements MongoConverter<IAsset> {
      */
     @Override
     public Document convert(IAsset source) {
-	try {
-	    return (Document) MongoAssetManagement.marshalAsset(source);
-	} catch (SiteWhereException e) {
-	    throw new RuntimeException("Error marshaling asset.", e);
-	}
+	return MongoAsset.toDocument(source);
     }
 
     /*
@@ -64,11 +56,7 @@ public class MongoAsset implements MongoConverter<IAsset> {
      */
     @Override
     public IAsset convert(Document source) {
-	try {
-	    return MongoAssetManagement.unmarshalAsset(source);
-	} catch (SiteWhereException e) {
-	    throw new RuntimeException("Error unmarshaling asset.", e);
-	}
+	return MongoAsset.fromDocument(source);
     }
 
     /**
@@ -79,20 +67,13 @@ public class MongoAsset implements MongoConverter<IAsset> {
      */
     public static void toDocument(IAsset source, Document target) {
 	target.append(PROP_ID, source.getId());
+	target.append(PROP_TOKEN, source.getToken());
+	target.append(PROP_ASSET_TYPE_ID, source.getAssetTypeId());
 	target.append(PROP_NAME, source.getName());
-	target.append(PROP_ASSET_TYPE, source.getType().name());
-	target.append(PROP_CATEGORY_ID, source.getAssetCategoryId());
 	target.append(PROP_IMAGE_URL, source.getImageUrl());
 
-	// Save nested list of properties.
-	List<Document> props = new ArrayList<Document>();
-	for (String name : source.getProperties().keySet()) {
-	    Document prop = new Document();
-	    prop.put("name", name);
-	    prop.put("value", source.getProperties().get(name));
-	    props.add(prop);
-	}
-	target.append(PROP_PROPERTIES, props);
+	MongoSiteWhereEntity.toDocument(source, target);
+	MongoMetadataProvider.toDocument(source, target);
     }
 
     /**
@@ -101,28 +82,21 @@ public class MongoAsset implements MongoConverter<IAsset> {
      * @param source
      * @param target
      */
-    @SuppressWarnings("unchecked")
     public static void fromDocument(Document source, Asset target) {
-	String id = (String) source.get(PROP_ID);
+	UUID id = (UUID) source.get(PROP_ID);
+	String token = (String) source.get(PROP_TOKEN);
+	UUID assetTypeId = (UUID) source.get(PROP_ASSET_TYPE_ID);
 	String name = (String) source.get(PROP_NAME);
-	String assetTypeStr = (String) source.get(PROP_ASSET_TYPE);
-	String categoryId = (String) source.get(PROP_CATEGORY_ID);
 	String imageUrl = (String) source.get(PROP_IMAGE_URL);
 
 	target.setId(id);
+	target.setToken(token);
+	target.setAssetTypeId(assetTypeId);
 	target.setName(name);
-	target.setType(AssetType.valueOf(assetTypeStr));
-	target.setAssetCategoryId(categoryId);
 	target.setImageUrl(imageUrl);
 
-	List<Document> props = (List<Document>) source.get(PROP_PROPERTIES);
-	if (props != null) {
-	    for (Document prop : props) {
-		String pname = (String) prop.get("name");
-		String pvalue = (String) prop.get("value");
-		target.getProperties().put(pname, pvalue);
-	    }
-	}
+	MongoSiteWhereEntity.fromDocument(source, target);
+	MongoMetadataProvider.fromDocument(source, target);
     }
 
     /**

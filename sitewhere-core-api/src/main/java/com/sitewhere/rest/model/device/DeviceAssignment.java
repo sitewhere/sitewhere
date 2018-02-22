@@ -16,9 +16,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
-import com.sitewhere.spi.asset.IAssetReference;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
-import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDeviceAssignment;
 
 /**
@@ -29,8 +27,8 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 @JsonInclude(Include.NON_NULL)
 public class DeviceAssignment extends MetadataProviderEntity implements IDeviceAssignment, Serializable {
 
-    /** Serialization version identifier */
-    private static final long serialVersionUID = 4053925804888464375L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 7566369590280015769L;
 
     /** Unique device id */
     private UUID id;
@@ -41,14 +39,11 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
     /** Device id */
     private UUID deviceId;
 
-    /** Type of associated asset */
-    private DeviceAssignmentType assignmentType;
-
-    /** Asset reference */
-    private IAssetReference assetReference;
-
     /** Id of assigned area */
     private UUID areaId;
+
+    /** Id of assigned asset */
+    private UUID assetId;
 
     /** Assignment status */
     private DeviceAssignmentStatus status;
@@ -98,29 +93,15 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceAssignment#getAssignmentType()
+     * @see com.sitewhere.spi.device.IDeviceAssignment#getAssetId()
      */
     @Override
-    public DeviceAssignmentType getAssignmentType() {
-	return assignmentType;
+    public UUID getAssetId() {
+	return assetId;
     }
 
-    public void setAssignmentType(DeviceAssignmentType assignmentType) {
-	this.assignmentType = assignmentType;
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.IDeviceAssignment#getAssetReference()
-     */
-    @Override
-    public IAssetReference getAssetReference() {
-	return assetReference;
-    }
-
-    public void setAssetReference(IAssetReference assetReference) {
-	this.assetReference = assetReference;
+    public void setAssetId(UUID assetId) {
+	this.assetId = assetId;
     }
 
     /*

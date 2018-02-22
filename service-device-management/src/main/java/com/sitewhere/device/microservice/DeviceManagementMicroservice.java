@@ -19,11 +19,9 @@ import com.sitewhere.grpc.client.asset.AssetManagementApiDemux;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
-import com.sitewhere.microservice.asset.AssetResolver;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -52,9 +50,6 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 
     /** Asset management API demux */
     private IAssetManagementApiDemux assetManagementApiDemux;
-
-    /** Asset resolver */
-    private IAssetResolver assetResolver;
 
     /*
      * (non-Javadoc)
@@ -120,7 +115,6 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 
 	// Asset management microservice connectivity.
 	this.assetManagementApiDemux = new AssetManagementApiDemux(this);
-	this.assetResolver = new AssetResolver(getAssetManagementApiDemux());
 
 	// Create step that will start components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
@@ -235,18 +229,5 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 
     public void setAssetManagementApiDemux(IAssetManagementApiDemux assetManagementApiDemux) {
 	this.assetManagementApiDemux = assetManagementApiDemux;
-    }
-
-    /*
-     * @see com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice#
-     * getAssetResolver()
-     */
-    @Override
-    public IAssetResolver getAssetResolver() {
-	return assetResolver;
-    }
-
-    public void setAssetResolver(IAssetResolver assetResolver) {
-	this.assetResolver = assetResolver;
     }
 }

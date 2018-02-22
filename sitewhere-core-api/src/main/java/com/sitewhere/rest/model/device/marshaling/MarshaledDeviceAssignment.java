@@ -7,11 +7,10 @@
  */
 package com.sitewhere.rest.model.device.marshaling;
 
-import com.sitewhere.rest.model.area.Area;
-import com.sitewhere.rest.model.asset.HardwareAsset;
-import com.sitewhere.rest.model.asset.LocationAsset;
-import com.sitewhere.rest.model.asset.PersonAsset;
 import com.sitewhere.rest.model.device.DeviceAssignment;
+import com.sitewhere.spi.area.IArea;
+import com.sitewhere.spi.asset.IAsset;
+import com.sitewhere.spi.device.IDevice;
 
 /**
  * Extends {@link DeviceAssignment} to support fields that can be included on
@@ -22,22 +21,16 @@ import com.sitewhere.rest.model.device.DeviceAssignment;
 public class MarshaledDeviceAssignment extends DeviceAssignment {
 
     /** Serial version UID */
-    private static final long serialVersionUID = 2395477856520830666L;
+    private static final long serialVersionUID = -6149550465354186892L;
 
     /** Device being assigned */
-    private MarshaledDevice device;
-
-    /** Associated person asset */
-    private PersonAsset associatedPerson;
-
-    /** Associated hardware asset */
-    private HardwareAsset associatedHardware;
-
-    /** Associated location asset */
-    private LocationAsset associatedLocation;
+    private IDevice device;
 
     /** Assigned area */
-    private Area area;
+    private IArea area;
+
+    /** Associated asset */
+    private IAsset asset;
 
     /** Associated asset name */
     private String assetName;
@@ -45,44 +38,28 @@ public class MarshaledDeviceAssignment extends DeviceAssignment {
     /** Associated asset image */
     private String assetImageUrl;
 
-    public MarshaledDevice getDevice() {
+    public IDevice getDevice() {
 	return device;
     }
 
-    public void setDevice(MarshaledDevice device) {
+    public void setDevice(IDevice device) {
 	this.device = device;
     }
 
-    public PersonAsset getAssociatedPerson() {
-	return associatedPerson;
-    }
-
-    public void setAssociatedPerson(PersonAsset associatedPerson) {
-	this.associatedPerson = associatedPerson;
-    }
-
-    public HardwareAsset getAssociatedHardware() {
-	return associatedHardware;
-    }
-
-    public void setAssociatedHardware(HardwareAsset associatedHardware) {
-	this.associatedHardware = associatedHardware;
-    }
-
-    public LocationAsset getAssociatedLocation() {
-	return associatedLocation;
-    }
-
-    public void setAssociatedLocation(LocationAsset associatedLocation) {
-	this.associatedLocation = associatedLocation;
-    }
-
-    public Area getArea() {
+    public IArea getArea() {
 	return area;
     }
 
-    public void setArea(Area area) {
+    public void setArea(IArea area) {
 	this.area = area;
+    }
+
+    public IAsset getAsset() {
+	return asset;
+    }
+
+    public void setAsset(IAsset asset) {
+	this.asset = asset;
     }
 
     public String getAssetName() {

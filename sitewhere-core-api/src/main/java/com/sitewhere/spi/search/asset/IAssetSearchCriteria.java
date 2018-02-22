@@ -5,7 +5,9 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.asset;
+package com.sitewhere.spi.search.asset;
+
+import java.util.UUID;
 
 import com.sitewhere.spi.search.ISearchCriteria;
 
@@ -17,9 +19,9 @@ import com.sitewhere.spi.search.ISearchCriteria;
 public interface IAssetSearchCriteria extends ISearchCriteria {
 
     /**
-     * Get the search query.
+     * Only match assets of the given type.
      * 
      * @return
      */
-    public String getQuery();
+    public UUID getAssetTypeId();
 }

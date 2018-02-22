@@ -100,7 +100,7 @@ public class HBaseDeviceAssignment {
 	byte[] primary = getPrimaryRowkey(assnKey);
 
 	// Create device assignment for JSON.
-	DeviceAssignment newAssignment = DeviceManagementPersistence.deviceAssignmentCreateLogic(request, null, device);
+	DeviceAssignment newAssignment = new DeviceAssignment();
 	newAssignment.setToken(uuid);
 	byte[] payload = context.getPayloadMarshaler().encodeDeviceAssignment(newAssignment);
 

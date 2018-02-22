@@ -123,9 +123,8 @@ public class DeviceManagementRequestBuilder {
      * @param assetId
      * @return
      */
-    public DeviceTypeCreateRequest.Builder newDeviceType(String token, String name, String assetModuleId,
-	    String assetId) {
-	return new DeviceTypeCreateRequest.Builder(token, name, assetModuleId, assetId);
+    public DeviceTypeCreateRequest.Builder newDeviceType(String token, String assetTypeToken, String name) {
+	return new DeviceTypeCreateRequest.Builder(token, assetTypeToken, name);
     }
 
     /**
@@ -207,13 +206,11 @@ public class DeviceManagementRequestBuilder {
      * 
      * @param hardwareId
      * @param areaToken
-     * @param assetModuleId
-     * @param assetId
+     * @param assetToken
      * @return
      */
-    public DeviceAssignmentCreateRequest.Builder newAssignment(String hardwareId, String areaToken,
-	    String assetModuleId, String assetId) {
-	return new DeviceAssignmentCreateRequest.Builder(hardwareId, areaToken, assetModuleId, assetId);
+    public DeviceAssignmentCreateRequest.Builder newAssignment(String hardwareId, String areaToken, String assetToken) {
+	return new DeviceAssignmentCreateRequest.Builder(hardwareId, areaToken, assetToken);
     }
 
     /**

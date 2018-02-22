@@ -165,7 +165,7 @@ public class InitialStateEventProcessor extends FilteredOutboundConnector {
 	MarshaledDeviceAssignment converted = helper.convert(assignment, null);
 
 	createBucket(converted.getToken(),
-		converted.getAssetName() + " (" + converted.getDevice().getAssetName() + ")");
+		converted.getAssetName() + " (" + converted.getDevice().getHardwareId() + ")");
 	assignmentsById.put(assignmentId, converted);
 	return converted;
     }

@@ -17,8 +17,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetReference;
-import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 
@@ -31,8 +29,8 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 public abstract class DeviceEvent extends MetadataProvider
 	implements IDeviceEvent, Comparable<IDeviceEvent>, Serializable {
 
-    /** For Java serialization */
-    private static final long serialVersionUID = 6581066174724675701L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 3532362334243746084L;
 
     /** Unqiue id for event */
     private String id;
@@ -43,17 +41,17 @@ public abstract class DeviceEvent extends MetadataProvider
     /** Event type indicator */
     private DeviceEventType eventType;
 
-    /** Area id */
-    private UUID areaId;
+    /** Device id */
+    private UUID deviceId;
 
     /** Device assignment id */
     private UUID deviceAssignmentId;
 
-    /** Device assignment type */
-    private DeviceAssignmentType assignmentType;
+    /** Area id */
+    private UUID areaId;
 
-    /** Asset reference */
-    private IAssetReference assetReference;
+    /** Asset id */
+    private UUID assetId;
 
     /** Date event occurred */
     private Date eventDate;
@@ -108,15 +106,15 @@ public abstract class DeviceEvent extends MetadataProvider
     }
 
     /*
-     * @see com.sitewhere.spi.device.event.IDeviceEvent#getAreaId()
+     * @see com.sitewhere.spi.device.event.IDeviceEvent#getDeviceId()
      */
     @Override
-    public UUID getAreaId() {
-	return areaId;
+    public UUID getDeviceId() {
+	return deviceId;
     }
 
-    public void setAreaId(UUID areaId) {
-	this.areaId = areaId;
+    public void setDeviceId(UUID deviceId) {
+	this.deviceId = deviceId;
     }
 
     /*
@@ -132,29 +130,27 @@ public abstract class DeviceEvent extends MetadataProvider
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceEvent#getAssignmentType()
+     * @see com.sitewhere.spi.device.event.IDeviceEvent#getAreaId()
      */
     @Override
-    public DeviceAssignmentType getAssignmentType() {
-	return assignmentType;
+    public UUID getAreaId() {
+	return areaId;
     }
 
-    public void setAssignmentType(DeviceAssignmentType assignmentType) {
-	this.assignmentType = assignmentType;
+    public void setAreaId(UUID areaId) {
+	this.areaId = areaId;
     }
 
     /*
-     * @see com.sitewhere.spi.device.event.IDeviceEvent#getAssetReference()
+     * @see com.sitewhere.spi.device.event.IDeviceEvent#getAssetId()
      */
     @Override
-    public IAssetReference getAssetReference() {
-	return assetReference;
+    public UUID getAssetId() {
+	return assetId;
     }
 
-    public void setAssetReference(IAssetReference assetReference) {
-	this.assetReference = assetReference;
+    public void setAssetId(UUID assetId) {
+	this.assetId = assetId;
     }
 
     /*
@@ -209,10 +205,10 @@ public abstract class DeviceEvent extends MetadataProvider
     public static void copy(IDeviceEvent source, DeviceEvent target) throws SiteWhereException {
 	target.setId(source.getId());
 	target.setAlternateId(source.getAlternateId());
-	target.setAreaId(source.getAreaId());
+	target.setDeviceId(source.getDeviceId());
 	target.setDeviceAssignmentId(source.getDeviceAssignmentId());
-	target.setAssignmentType(source.getAssignmentType());
-	target.setAssetReference(source.getAssetReference());
+	target.setAreaId(source.getAreaId());
+	target.setAssetId(source.getAssetId());
 	target.setReceivedDate(source.getReceivedDate());
 	target.setEventDate(source.getEventDate());
 	MetadataProvider.copy(source, target);

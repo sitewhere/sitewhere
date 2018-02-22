@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.sitewhere.rest.client.SiteWhereClient;
 import com.sitewhere.rest.model.area.Zone;
 import com.sitewhere.rest.model.area.request.ZoneCreateRequest;
-import com.sitewhere.rest.model.asset.AssetReference;
 import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
@@ -53,7 +52,6 @@ import com.sitewhere.spi.ISiteWhereClient;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
-import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
 import com.sitewhere.spi.device.event.CommandInitiator;
@@ -159,8 +157,6 @@ public class ApiTests {
 
 	// Create a device assignment.
 	DeviceAssignmentCreateRequest assnRequest = new DeviceAssignmentCreateRequest();
-	assnRequest.setAssignmentType(DeviceAssignmentType.Associated);
-	assnRequest.setAssetReference(new AssetReference.Builder("testAssetModuleId", TEST_ASSET_ID).build());
 	assnRequest.setDeviceHardwareId(device.getHardwareId());
 	metadata = new HashMap<String, String>();
 	metadata.put("name1", "value1");

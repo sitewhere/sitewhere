@@ -7,9 +7,8 @@
  */
 package com.sitewhere.web.rest.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,29 +22,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sitewhere.rest.model.asset.AssetReference;
-import com.sitewhere.rest.model.asset.request.AssetCategoryCreateRequest;
-import com.sitewhere.rest.model.asset.request.HardwareAssetCreateRequest;
-import com.sitewhere.rest.model.asset.request.LocationAssetCreateRequest;
-import com.sitewhere.rest.model.asset.request.PersonAssetCreateRequest;
-import com.sitewhere.rest.model.search.SearchCriteria;
+import com.sitewhere.device.marshaling.AssetMarshalHelper;
+import com.sitewhere.rest.model.asset.request.AssetCreateRequest;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.rest.model.search.device.AssignmentsForAssetSearchCriteria;
+import com.sitewhere.rest.model.search.asset.AssetSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAsset;
-import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.asset.IAssetModuleDescriptor;
-import com.sitewhere.spi.asset.IAssetReference;
-import com.sitewhere.spi.asset.IAssetResolver;
-import com.sitewhere.spi.asset.IHardwareAsset;
-import com.sitewhere.spi.asset.ILocationAsset;
-import com.sitewhere.spi.asset.IPersonAsset;
-import com.sitewhere.spi.device.DeviceAssignmentStatus;
-import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
@@ -57,7 +41,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 /**
- * Controller for site operations.
+ * Controller for asset operations.
  * 
  * @author Derek Adams
  */
@@ -72,388 +56,121 @@ public class Assets extends RestControllerBase {
     private static Log LOGGER = LogFactory.getLog(Assets.class);
 
     /**
-     * Search for assets in an {@link IAssetModule} that meet the given criteria.
-     * 
-     * @param assetModuleId
-     * @param criteria
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/modules/{assetModuleId}", method = RequestMethod.GET)
-    @ApiOperation(value = "Get an asset module by unique id")
-    @Secured({ SiteWhereRoles.REST })
-    public IAssetModuleDescriptor getAssetModule(
-	    @ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getAssetResolver().getAssetModuleManagement().getAssetModuleDescriptor(assetModuleId);
-    }
-
-    /**
-     * Search for assets in an {@link IAssetModule} that meet the given criteria.
-     * 
-     * @param assetModuleId
-     * @param criteria
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/modules/{assetModuleId}/assets", method = RequestMethod.GET)
-    @ApiOperation(value = "Search for assets in an asset module")
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Secured({ SiteWhereRoles.REST })
-    public SearchResults<? extends IAsset> searchAssets(
-	    @ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
-	    @ApiParam(value = "Criteria for search", required = false) @RequestParam(defaultValue = "") String criteria,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	List<? extends IAsset> found = getAssetResolver().getAssetModuleManagement().searchAssetModule(assetModuleId,
-		criteria);
-	SearchResults<? extends IAsset> results = new SearchResults(found);
-	return results;
-    }
-
-    /**
-     * Get an asset from an {@link IAssetModule} by unique id.
-     * 
-     * @param moduleId
-     * @param assetId
-     * @param servletRequest
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/modules/{assetModuleId}/assets/{assetId}", method = RequestMethod.GET)
-    @ApiOperation(value = "Get an asset by unique id")
-    @Secured({ SiteWhereRoles.REST })
-    public IAsset getAssetById(
-	    @ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
-	    @ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getAssetResolver().getAssetModuleManagement()
-		.getAsset(new AssetReference.Builder(assetModuleId, assetId).build());
-    }
-
-    /**
-     * Get all assignments for a given asset.
-     * 
-     * @param moduleId
-     * @param assetId
-     * @param siteToken
-     * @param page
-     * @param pageSize
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/modules/{assetModuleId}/assets/{assetId}/assignments", method = RequestMethod.GET)
-    @ApiOperation(value = "List assignments associated with an asset")
-    @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IDeviceAssignment> getAssignmentsForAsset(
-	    @ApiParam(value = "Unique asset module id", required = true) @PathVariable String moduleId,
-	    @ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
-	    @ApiParam(value = "Limit results to the given area", required = false) @RequestParam(required = false) String areaToken,
-	    @ApiParam(value = "Limit results to the given status", required = false) @RequestParam(required = false) String status,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	try {
-	    AssignmentsForAssetSearchCriteria criteria = new AssignmentsForAssetSearchCriteria(page, pageSize);
-	    DeviceAssignmentStatus decodedStatus = (status != null) ? DeviceAssignmentStatus.valueOf(status) : null;
-	    criteria.setStatus(decodedStatus);
-	    criteria.setAreaToken(areaToken);
-
-	    IAssetReference assetReference = new AssetReference.Builder(moduleId, assetId).build();
-	    return getDeviceManagement().getDeviceAssignmentsForAsset(assetReference, criteria);
-	} catch (IllegalArgumentException e) {
-	    throw new SiteWhereException("Invalid device assignment status: " + status);
-	}
-    }
-
-    /**
-     * List all asset modules.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/modules", method = RequestMethod.GET)
-    @ResponseBody
-    @ApiOperation(value = "List asset modules that match criteria")
-    @Secured({ SiteWhereRoles.REST })
-    public List<IAssetModuleDescriptor> listAssetModules(
-	    @ApiParam(value = "Asset type", required = false) @RequestParam(required = false) String assetType,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	try {
-	    AssetType type = (assetType == null) ? null : AssetType.valueOf(assetType);
-	    return getAssetResolver().getAssetModuleManagement().listAssetModuleDescriptors(type);
-	} catch (IllegalArgumentException e) {
-	    throw new SiteWhereSystemException(ErrorCode.UnknownAssetType, ErrorLevel.ERROR);
-	}
-    }
-
-    /**
-     * Create a new asset category.
+     * Create a new asset.
      * 
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/categories", method = RequestMethod.POST)
-    @ApiOperation(value = "Create a new asset category")
+    @RequestMapping(method = RequestMethod.POST)
+    @ApiOperation(value = "Create a new asset")
     @Secured({ SiteWhereRoles.REST })
-    public IAssetCategory createAssetCategory(@RequestBody AssetCategoryCreateRequest request,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getAssetManagement().createAssetCategory(request);
+    public IAsset createAsset(@RequestBody AssetCreateRequest request) throws SiteWhereException {
+	return getAssetManagement().createAsset(request);
     }
 
     /**
-     * Update an existing asset category.
+     * Get information for an asset based on token.
      * 
-     * @param categoryId
-     * @param request
+     * @param assetToken
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/categories/{categoryId}", method = RequestMethod.PUT)
-    @ApiOperation(value = "Update an existing asset category")
+    @RequestMapping(value = "/{assetToken}", method = RequestMethod.GET)
+    @ApiOperation(value = "Get asset by token")
     @Secured({ SiteWhereRoles.REST })
-    public IAssetCategory updateAssetCategory(
-	    @ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
-	    @RequestBody AssetCategoryCreateRequest request, HttpServletRequest servletRequest)
+    public IAsset getAssetByToken(@ApiParam(value = "Asset token", required = true) @PathVariable String assetToken)
 	    throws SiteWhereException {
-	return getAssetManagement().updateAssetCategory(categoryId, request);
+	IAsset existing = assureAsset(assetToken);
+	AssetMarshalHelper helper = new AssetMarshalHelper(getAssetManagement());
+	helper.setIncludeAssetType(true);
+	return helper.convert(existing);
     }
 
     /**
-     * Get an asset category by unique id.
+     * Update an existing asset.
      * 
-     * @param categoryId
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/categories/{categoryId}", method = RequestMethod.GET)
-    @ApiOperation(value = "Get an asset category by unique id")
-    @Secured({ SiteWhereRoles.REST })
-    public IAssetCategory getAssetCategoryById(
-	    @ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getAssetManagement().getAssetCategory(categoryId);
-    }
-
-    /**
-     * Delete an existing asset category.
-     * 
-     * @param categoryId
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/categories/{categoryId}", method = RequestMethod.DELETE)
-    @ApiOperation(value = "Delete an existing asset category")
-    @Secured({ SiteWhereRoles.REST })
-    public IAssetCategory deleteAssetCategory(
-	    @ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getAssetManagement().deleteAssetCategory(categoryId);
-    }
-
-    /**
-     * List asset categories that match the given search criteria.
-     * 
-     * @param page
-     * @param pageSize
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/categories", method = RequestMethod.GET)
-    @ApiOperation(value = "List asset categories that match criteria")
-    @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IAssetCategory> listAssetCategories(
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	return getAssetManagement().listAssetCategories(criteria);
-    }
-
-    /**
-     * Creates a new person asset in the category. If the category does not support
-     * person assets, an exception will be thrown.
-     * 
-     * @param categoryId
+     * @param assetToken
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/categories/{categoryId}/persons", method = RequestMethod.POST)
-    @ApiOperation(value = "Create a new person asset in category")
-    @Secured({ SiteWhereRoles.REST })
-    public IPersonAsset createPersonAsset(
-	    @ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
-	    @RequestBody PersonAssetCreateRequest request, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	return getAssetManagement().createPersonAsset(categoryId, request);
-    }
-
-    /**
-     * Update an existing person asset.
-     * 
-     * @param categoryId
-     * @param assetId
-     * @param request
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/categories/{categoryId}/persons/{assetId}", method = RequestMethod.PUT)
-    @ApiOperation(value = "Update an existing person asset in category")
-    @Secured({ SiteWhereRoles.REST })
-    public IPersonAsset updatePersonAsset(
-	    @ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
-	    @ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
-	    @RequestBody PersonAssetCreateRequest request, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	return getAssetManagement().updatePersonAsset(categoryId, assetId, request);
-    }
-
-    /**
-     * Creates a new hardware asset in the category. If the category does not
-     * support hardware assets, an exception will be thrown.
-     * 
-     * @param categoryId
-     * @param request
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/categories/{categoryId}/hardware", method = RequestMethod.POST)
-    @ApiOperation(value = "Create a new hardware asset in category")
-    @Secured({ SiteWhereRoles.REST })
-    public IHardwareAsset createHardwareAsset(
-	    @ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
-	    @RequestBody HardwareAssetCreateRequest request, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	return getAssetManagement().createHardwareAsset(categoryId, request);
-    }
-
-    /**
-     * Update an existing hardware asset.
-     * 
-     * @param categoryId
-     * @param assetId
-     * @param request
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/categories/{categoryId}/hardware/{assetId}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{assetToken}", method = RequestMethod.PUT)
     @ResponseBody
     @ApiOperation(value = "Update an existing hardware asset in category")
     @Secured({ SiteWhereRoles.REST })
-    public IHardwareAsset updateHardwareAsset(
-	    @ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
-	    @ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
-	    @RequestBody HardwareAssetCreateRequest request, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	return getAssetManagement().updateHardwareAsset(categoryId, assetId, request);
+    public IAsset updateAsset(@ApiParam(value = "Asset token", required = true) @PathVariable String assetToken,
+	    @RequestBody AssetCreateRequest request) throws SiteWhereException {
+	IAsset existing = assureAsset(assetToken);
+	return getAssetManagement().updateAsset(existing.getId(), request);
     }
 
     /**
-     * Creates a new location asset in the category. If the category does not
-     * support location assets, an exception will be thrown.
+     * List assets matching criteria.
      * 
-     * @param categoryId
-     * @param request
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/categories/{categoryId}/locations", method = RequestMethod.POST)
-    @ApiOperation(value = "Create a new location asset in category")
-    @Secured({ SiteWhereRoles.REST })
-    public ILocationAsset createLocationAsset(
-	    @ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
-	    @RequestBody LocationAssetCreateRequest request, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	return getAssetManagement().createLocationAsset(categoryId, request);
-    }
-
-    /**
-     * Update an existing location asset.
-     * 
-     * @param categoryId
-     * @param assetId
-     * @param request
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/categories/{categoryId}/locations/{assetId}", method = RequestMethod.PUT)
-    @ApiOperation(value = "Update an existing location asset in category")
-    @Secured({ SiteWhereRoles.REST })
-    public ILocationAsset updateLocationAsset(
-	    @ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
-	    @ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
-	    @RequestBody LocationAssetCreateRequest request, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	return getAssetManagement().updateLocationAsset(categoryId, assetId, request);
-    }
-
-    /**
-     * Get an asset from a category by unique id.
-     * 
-     * @param categoryId
-     * @param assetId
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/categories/{categoryId}/assets/{assetId}", method = RequestMethod.GET)
-    @ApiOperation(value = "Get a category asset by unique id")
-    @Secured({ SiteWhereRoles.REST })
-    public IAsset getCategoryAsset(
-	    @ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
-	    @ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getAssetManagement().getAsset(categoryId, assetId);
-    }
-
-    /**
-     * Delete an asset from a category based on unique id.
-     * 
-     * @param categoryId
-     * @param assetId
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/categories/{categoryId}/assets/{assetId}", method = RequestMethod.DELETE)
-    @ApiOperation(value = "Delete an existing category asset")
-    @Secured({ SiteWhereRoles.REST })
-    public IAsset deleteCategoryAsset(
-	    @ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
-	    @ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getAssetManagement().deleteAsset(categoryId, assetId);
-    }
-
-    /**
-     * List all assets for a given category.
-     * 
-     * @param categoryId
+     * @param includeAssetType
      * @param page
      * @param pageSize
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/categories/{categoryId}/assets", method = RequestMethod.GET)
-    @ApiOperation(value = "List category assets that match criteria")
+    @RequestMapping(method = RequestMethod.GET)
+    @ApiOperation(value = "List assets matching criteria")
     @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IAsset> listCategoryAssets(
-	    @ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
+    public ISearchResults<IAsset> listAssets(
+	    @ApiParam(value = "Include asset type", required = false) @RequestParam(defaultValue = "false") boolean includeAssetType,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	return getAssetManagement().listAssets(categoryId, criteria);
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize)
+	    throws SiteWhereException {
+	// Build criteria.
+	AssetSearchCriteria criteria = new AssetSearchCriteria(page, pageSize);
+
+	// Perform search.
+	ISearchResults<IAsset> matches = getAssetManagement().listAssets(criteria);
+	AssetMarshalHelper helper = new AssetMarshalHelper(getAssetManagement());
+	helper.setIncludeAssetType(includeAssetType);
+
+	List<IAsset> results = new ArrayList<IAsset>();
+	for (IAsset asset : matches.getResults()) {
+	    results.add(helper.convert(asset));
+	}
+	return new SearchResults<IAsset>(results, matches.getNumResults());
     }
 
-    private IAssetResolver getAssetResolver() {
-	return getMicroservice().getAssetResolver();
+    /**
+     * Delete information for an asset based on token.
+     * 
+     * @param assetToken
+     * @param force
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{assetToken}", method = RequestMethod.DELETE)
+    @ApiOperation(value = "Delete asset by token")
+    @Secured({ SiteWhereRoles.REST })
+    public IAsset deleteAsset(@ApiParam(value = "Asset token", required = true) @PathVariable String assetToken,
+	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
+	    throws SiteWhereException {
+	IAsset existing = assureAsset(assetToken);
+	return getAssetManagement().deleteAsset(existing.getId(), force);
+    }
+
+    /**
+     * Find an asset by token or throw an exception if not found.
+     * 
+     * @param assetId
+     * @return
+     * @throws SiteWhereException
+     */
+    private IAsset assureAsset(String assetToken) throws SiteWhereException {
+	IAsset asset = getAssetManagement().getAssetByToken(assetToken);
+	if (asset == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidAssetToken, ErrorLevel.ERROR);
+	}
+	return asset;
     }
 
     private IAssetManagement getAssetManagement() throws SiteWhereException {
 	return getMicroservice().getAssetManagementApiDemux().getApiChannel();
-    }
-
-    private IDeviceManagement getDeviceManagement() {
-	return getMicroservice().getDeviceManagementApiDemux().getApiChannel();
     }
 }

@@ -100,9 +100,6 @@ public enum ErrorCode {
     /** Invalid device hardware id */
     InvalidHardwareId(501, "Hardware id not found."),
 
-    /** Invalid asset reference id */
-    InvalidAssetReferenceId(502, "Asset reference not found."),
-
     /** Invalid device type token */
     InvalidDeviceTypeToken(503, "Device type not found."),
 
@@ -166,8 +163,14 @@ public enum ErrorCode {
     /** Attempting to create a stream id that contains invalid characters */
     InvalidCharsInStreamId(531, "Stream id contains invalid characters."),
 
-    /** Invalid asset category id */
-    InvalidAssetCategoryId(535, "Asset category not found."),
+    /** Invalid asset type token */
+    InvalidAssetTypeToken(534, "Asset type token not found."),
+
+    /** Invalid asset type id */
+    InvalidAssetTypeId(535, "Asset type not found."),
+
+    /** Invalid asset token */
+    InvalidAssetToken(537, "Asset token not found."),
 
     /** Invalid asset id */
     InvalidAssetId(538, "Asset not found."),
@@ -288,19 +291,11 @@ public enum ErrorCode {
      * ASSETS *
      **********/
 
-    /** Attempting to create a new asset category with an id already in use */
-    AssetCategoryIdInUse(800, "Asset category id is already in use."),
+    /** Attempting to create a new asset type that conflicts with an existing one */
+    AssetTypeTokenInUse(800, "Asset type token is already in use."),
 
     /** Attempting to create a new asset that conflicts with an existing one */
-    AssetIdInUse(801, "Asset id is already in use for this category."),
-
-    /**
-     * Attempting to create a new asset in a category that does not allow the type
-     */
-    AssetTypeNotAllowed(805, "Asset category does not allow assets of this type."),
-
-    /** Reference to an unknown asset type */
-    UnknownAssetType(806, "Unknown asset type."),
+    AssetTokenInUse(801, "Asset token is already in use."),
 
     /***********
      * GENERIC *

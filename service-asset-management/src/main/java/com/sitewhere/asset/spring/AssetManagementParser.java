@@ -50,10 +50,6 @@ public class AssetManagementParser extends AbstractBeanDefinitionParser {
 		parseDeviceManagementDatastore(child, context);
 		break;
 	    }
-	    case AssetModules: {
-		(new AssetModulesParser()).parseInternal(child, context);
-		break;
-	    }
 	    }
 	}
 	return null;

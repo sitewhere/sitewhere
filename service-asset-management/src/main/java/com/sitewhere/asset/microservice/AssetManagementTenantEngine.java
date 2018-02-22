@@ -12,24 +12,18 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitewhere.asset.DirectAssetResolver;
 import com.sitewhere.asset.grpc.AssetManagementImpl;
 import com.sitewhere.asset.initializer.GroovyAssetModelInitializer;
-import com.sitewhere.asset.modules.AssetManagementTriggers;
-import com.sitewhere.asset.modules.AssetModuleManagementAdapter;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
-import com.sitewhere.asset.spi.modules.IAssetModuleManager;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.hazelcast.server.CacheAwareAssetManagement;
-import com.sitewhere.microservice.hazelcast.server.CacheAwareAssetModuleManagement;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.asset.IAssetResolver;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
@@ -49,14 +43,8 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(AssetManagementTenantEngine.class);
 
-    /** Asset resolver */
-    private IAssetResolver assetResolver;
-
     /** Asset management persistence API */
     private IAssetManagement assetManagement;
-
-    /** Asset module manager */
-    private IAssetModuleManager assetModuleManager;
 
     /** Responds to asset management GRPC requests */
     private AssetManagementGrpc.AssetManagementImplBase assetManagementImpl;
@@ -86,9 +74,6 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
 	// Initialize asset management persistence.
 	init.addInitializeStep(this, getAssetManagement(), true);
 
-	// Initialize asset module manager.
-	init.addInitializeStep(this, getAssetModuleManager(), true);
-
 	// Execute initialization steps.
 	init.execute(monitor);
     }
@@ -102,15 +87,9 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
 	// Load Spring bean implementations.
 	IAssetManagement implementation = (IAssetManagement) getModuleContext()
 		.getBean(AssetManagementBeans.BEAN_ASSET_MANAGEMENT);
-	this.assetModuleManager = (IAssetModuleManager) getModuleContext()
-		.getBean(AssetManagementBeans.BEAN_ASSET_MODULE_MANAGER);
-	getAssetModuleManager().setAssetManagement(implementation);
 
-	this.assetManagement = new CacheAwareAssetManagement(
-		new AssetManagementTriggers(implementation, getAssetModuleManager(), getMicroservice()));
-	this.assetResolver = new DirectAssetResolver(getAssetManagement(), new CacheAwareAssetModuleManagement(
-		new AssetModuleManagementAdapter(getAssetModuleManager()), getMicroservice()));
-	this.assetManagementImpl = new AssetManagementImpl(getAssetResolver());
+	this.assetManagement = new CacheAwareAssetManagement(implementation);
+	this.assetManagementImpl = new AssetManagementImpl(getAssetManagement());
     }
 
     /*
@@ -129,9 +108,6 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
 
 	// Start asset management persistence.
 	start.addStartStep(this, getAssetManagement(), true);
-
-	// Start asset module manager.
-	start.addStartStep(this, getAssetModuleManager(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -156,7 +132,7 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
 		getMicroservice()));
 	for (String script : scripts) {
 	    GroovyAssetModelInitializer initializer = new GroovyAssetModelInitializer(groovy, script);
-	    initializer.initialize(getAssetResolver());
+	    initializer.initialize(getAssetManagement());
 	}
     }
 
@@ -174,29 +150,11 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
 	// Stop asset management persistence.
 	stop.addStopStep(this, getAssetManagement());
 
-	// Stop asset module manager.
-	stop.addStopStep(this, getAssetModuleManager());
-
 	// Stop discoverable lifecycle components.
 	stop.addStep(stopDiscoverableBeans(getModuleContext()));
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine#
-     * getAssetResolver()
-     */
-    @Override
-    public IAssetResolver getAssetResolver() {
-	return assetResolver;
-    }
-
-    public void setAssetResolver(IAssetResolver assetResolver) {
-	this.assetResolver = assetResolver;
     }
 
     /*
@@ -212,19 +170,6 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
 
     public void setAssetManagement(IAssetManagement assetManagement) {
 	this.assetManagement = assetManagement;
-    }
-
-    /*
-     * @see com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine#
-     * getAssetModuleManager()
-     */
-    @Override
-    public IAssetModuleManager getAssetModuleManager() {
-	return assetModuleManager;
-    }
-
-    public void setAssetModuleManager(IAssetModuleManager assetModuleManager) {
-	this.assetModuleManager = assetModuleManager;
     }
 
     /*
