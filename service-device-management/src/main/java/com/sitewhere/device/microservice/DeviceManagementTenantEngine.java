@@ -8,6 +8,7 @@
 package com.sitewhere.device.microservice;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,6 +30,7 @@ import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
@@ -125,6 +127,7 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	// Wait for remote APIs to become available.
 	getAssetManagementApiChannel().waitForApiAvailable();
 	getEventManagementApiChannel().waitForApiAvailable();
+	waitForModuleBootstrapped(IMicroserviceIdentifiers.ASSET_MANAGEMENT, 2, TimeUnit.MINUTES);
 
 	// Execute remote calls as superuser.
 	Authentication previous = SecurityContextHolder.getContext().getAuthentication();

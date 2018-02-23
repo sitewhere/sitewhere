@@ -20,10 +20,6 @@
 			<ds:mongodb-datastore-reference id="tenant" />
 		</ds:device-management-datastore>
 
-		<!-- Configure asset modules -->
-		<am:asset-modules>
-		</am:asset-modules>
-
 	</am:asset-management>
 
 </beans>

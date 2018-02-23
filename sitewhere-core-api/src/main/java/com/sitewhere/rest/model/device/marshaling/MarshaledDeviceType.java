@@ -8,7 +8,7 @@
 package com.sitewhere.rest.model.device.marshaling;
 
 import com.sitewhere.rest.model.device.DeviceType;
-import com.sitewhere.spi.asset.IAsset;
+import com.sitewhere.spi.asset.IAssetType;
 
 /**
  * Extends {@link DeviceSpecification} to support fields that can be included on
@@ -22,35 +22,35 @@ public class MarshaledDeviceType extends DeviceType {
     private static final long serialVersionUID = 8391781508712506005L;
 
     /** Asset name */
-    private String assetName;
+    private String assetTypeName;
 
     /** Asset image url */
-    private String assetImageUrl;
+    private String assetTypeImageUrl;
 
-    /** Device asset */
-    private IAsset asset;
+    /** Device asset type */
+    private IAssetType assetType;
 
-    public String getAssetName() {
-	return assetName;
+    public String getAssetTypeName() {
+	return assetTypeName;
     }
 
-    public void setAssetName(String assetName) {
-	this.assetName = assetName;
+    public void setAssetTypeName(String assetTypeName) {
+	this.assetTypeName = assetTypeName;
     }
 
-    public String getAssetImageUrl() {
-	return assetImageUrl;
+    public String getAssetTypeImageUrl() {
+	return assetTypeImageUrl;
     }
 
-    public void setAssetImageUrl(String assetImageUrl) {
-	this.assetImageUrl = assetImageUrl;
+    public void setAssetTypeImageUrl(String assetTypeImageUrl) {
+	this.assetTypeImageUrl = assetTypeImageUrl;
     }
 
-    public IAsset getAsset() {
-	return asset;
+    public IAssetType getAssetType() {
+	return assetType;
     }
 
-    public void setAsset(IAsset asset) {
-	this.asset = asset;
+    public void setAssetType(IAssetType assetType) {
+	this.assetType = assetType;
     }
 }

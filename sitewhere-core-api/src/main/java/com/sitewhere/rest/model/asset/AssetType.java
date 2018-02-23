@@ -39,7 +39,7 @@ public class AssetType extends MetadataProviderEntity implements IAssetType {
     private String imageUrl;
 
     /** Asset category */
-    private AssetCategory assetCategory;
+    private AssetCategory assetCategory = AssetCategory.Device;
 
     /*
      * @see com.sitewhere.spi.asset.IAssetType#getId()

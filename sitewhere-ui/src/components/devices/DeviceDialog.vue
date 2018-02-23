@@ -8,11 +8,9 @@
         <v-stepper-header>
           <v-stepper-step step="1" :complete="step > 1">Device</v-stepper-step>
           <v-divider></v-divider>
-          <v-stepper-step step="2" :complete="step > 2">Site</v-stepper-step>
+          <v-stepper-step step="2" :complete="step > 3">Device Type</v-stepper-step>
           <v-divider></v-divider>
-          <v-stepper-step step="3" :complete="step > 3">Device Type</v-stepper-step>
-          <v-divider></v-divider>
-          <v-stepper-step step="4">Metadata<small>Optional</small></v-stepper-step>
+          <v-stepper-step step="3">Metadata<small>Optional</small></v-stepper-step>
         </v-stepper-header>
         <v-stepper-content step="1">
           <v-card flat>
@@ -36,18 +34,18 @@
             <v-spacer></v-spacer>
             <v-btn flat @click.native="onCancelClicked">{{ cancelLabel }}</v-btn>
             <v-btn color="primary" :disabled="!firstPageComplete" flat
-              @click="step = 2">Assign Area
+              @click="step = 2">Choose Device Type
               <v-icon light>keyboard_arrow_right</v-icon>
             </v-btn>
           </v-card-actions>
         </v-stepper-content>
         <v-stepper-content step="2">
-          <area-chooser
-            chosenText="Device will be associated with the area below."
-            notChosenText="Choose which area the device will be associated with:"
-            :selectedToken="devAreaToken"
-            @siteUpdated="onAreaUpdated">
-          </area-chooser>
+          <device-type-chooser
+            chosenText="Device will implement the device type below."
+            notChosenText="Choose a device type that will be implemented by the device:"
+            :selectedToken="devDeviceTypeToken"
+            @deviceTypeUpdated="onDeviceTypeUpdated">
+          </device-type-chooser>
           <v-card-actions>
             <v-btn color="primary" flat @click="step = 1">
               <v-icon light>keyboard_arrow_left</v-icon>
@@ -56,44 +54,24 @@
             <v-spacer></v-spacer>
             <v-btn flat @click="onCancelClicked">{{ cancelLabel }}</v-btn>
             <v-btn color="primary" flat :disabled="!secondPageComplete"
-              @click="step = 3">Assign Specification
+              @click="onCreateClicked">{{ createLabel }}</v-btn>
+            <v-btn color="primary" flat :disabled="!secondPageComplete"
+              @click="step = 3">Add Metadata
               <v-icon light>keyboard_arrow_right</v-icon>
             </v-btn>
           </v-card-actions>
         </v-stepper-content>
         <v-stepper-content step="3">
-          <device-type-chooser
-            chosenText="Device will implement the device type below."
-            notChosenText="Choose a device type that will be implemented by the device:"
-            :selectedToken="devDeviceTypeToken"
-            @deviceTypeUpdated="onDeviceTypeUpdated">
-          </device-type-chooser>
-          <v-card-actions>
-            <v-btn color="primary" flat @click="step = 2">
-              <v-icon light>keyboard_arrow_left</v-icon>
-              Back
-            </v-btn>
-            <v-spacer></v-spacer>
-            <v-btn flat @click="onCancelClicked">{{ cancelLabel }}</v-btn>
-            <v-btn color="primary" flat :disabled="!thirdPageComplete"
-              @click="onCreateClicked">{{ createLabel }}</v-btn>
-            <v-btn color="primary" flat :disabled="!thirdPageComplete"
-              @click="step = 4">Add Metadata
-              <v-icon light>keyboard_arrow_right</v-icon>
-            </v-btn>
-          </v-card-actions>
-        </v-stepper-content>
-        <v-stepper-content step="4">
           <metadata-panel class="mb-3" :metadata="metadata"
             @itemDeleted="onMetadataDeleted" @itemAdded="onMetadataAdded"/>
             <v-card-actions>
-              <v-btn color="primary" flat @click.native="step = 3">
+              <v-btn color="primary" flat @click.native="step = 2">
                 <v-icon light>keyboard_arrow_left</v-icon>
                 Back
               </v-btn>
               <v-spacer></v-spacer>
               <v-btn flat @click="onCancelClicked">{{ cancelLabel }}</v-btn>
-              <v-btn color="primary" flat :disabled="!thirdPageComplete"
+              <v-btn color="primary" flat :disabled="!secondPageComplete"
                 @click="onCreateClicked">{{ createLabel }}</v-btn>
             </v-card-actions>
         </v-stepper-content>
@@ -106,9 +84,7 @@
 import Utils from '../common/Utils'
 import BaseDialog from '../common/BaseDialog'
 import MetadataPanel from '../common/MetadataPanel'
-import AreaChooser from '../areas/AreaChooser'
 import DeviceTypeChooser from '../devicetypes/DeviceTypeChooser'
-import {_getAssetModules} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -117,7 +93,6 @@ export default {
     dialogVisible: false,
     devHardwareId: null,
     devComments: null,
-    devAreaToken: null,
     devDeviceTypeToken: null,
     metadata: [],
     assetModules: [],
@@ -127,7 +102,6 @@ export default {
   components: {
     BaseDialog,
     MetadataPanel,
-    AreaChooser,
     DeviceTypeChooser
   },
 
@@ -141,13 +115,7 @@ export default {
 
     // Indicates if second page is complete.
     secondPageComplete: function () {
-      return this.firstPageComplete && (this.$data.devAreaToken != null)
-    },
-
-    // Indicates if third page is complete.
-    thirdPageComplete: function () {
-      return this.firstPageComplete && this.secondPageComplete &&
-        (this.$data.devDeviceTypeToken != null)
+      return this.firstPageComplete && (this.$data.devDeviceTypeToken != null)
     }
   },
 
@@ -157,7 +125,6 @@ export default {
       var payload = {}
       payload.hardwareId = this.$data.devHardwareId
       payload.comments = this.$data.devComments
-      payload.areaToken = this.$data.devAreaToken
       payload.deviceTypeToken = this.$data.devDeviceTypeToken
       payload.metadata = Utils.arrayToMetadata(this.$data.metadata)
       return payload
@@ -167,19 +134,10 @@ export default {
     reset: function () {
       this.$data.devHardwareId = null
       this.$data.devComments = null
-      this.$data.devAreaToken = null
       this.$data.devDeviceTypeToken = null
       this.$data.metadata = []
       this.$data.step = 1
       this.$data.error = null
-
-      var component = this
-      _getAssetModules(this.$store, 'Device')
-        .then(function (response) {
-          component.assetModules = response.data
-          this.onAssetModulesLoaded()
-        }).catch(function (e) {
-        })
     },
 
     // Load dialog from a given payload.
@@ -189,7 +147,6 @@ export default {
       if (payload) {
         this.$data.devHardwareId = payload.hardwareId
         this.$data.devComments = payload.comments
-        this.$data.devAreaToken = payload.areaToken
         this.$data.devDeviceTypeToken = payload.deviceTypeToken
         this.$data.metadata = Utils.metadataToArray(payload.metadata)
       }
@@ -219,15 +176,6 @@ export default {
     // Called after cancel button is clicked.
     onCancelClicked: function (e) {
       this.$data.dialogVisible = false
-    },
-
-    // Called when area choice is updated.
-    onAreaUpdated: function (area) {
-      if (area) {
-        this.$data.devAreaToken = area.token
-      } else {
-        this.$data.devAreaToken = null
-      }
     },
 
     // Called when device type choice is updated.

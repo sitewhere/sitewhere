@@ -867,7 +867,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	// Look up asset if specified.
 	IAsset asset = null;
 	if (request.getAssetToken() != null) {
-	    asset = getAssetManagement().getAssetByToken(request.getAreaToken());
+	    asset = getAssetManagement().getAssetByToken(request.getAssetToken());
 	    if (asset == null) {
 		throw new SiteWhereSystemException(ErrorCode.InvalidAssetToken, ErrorLevel.ERROR);
 	    }

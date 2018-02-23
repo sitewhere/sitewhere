@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.microservice.multitenant;
 
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.spi.SiteWhereException;
@@ -158,6 +160,16 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
      * @throws SiteWhereException
      */
     public String getModuleBootstrappedPath() throws SiteWhereException;
+
+    /**
+     * Wait a given amount of time for another module to be bootstrapped.
+     * 
+     * @param identifier
+     * @param time
+     * @param unit
+     * @throws SiteWhereException
+     */
+    public void waitForModuleBootstrapped(String identifier, long time, TimeUnit unit) throws SiteWhereException;
 
     /**
      * Executes tenant initialization code. Called after Spring context has been

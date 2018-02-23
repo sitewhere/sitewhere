@@ -7,11 +7,11 @@
       <v-list two-line>
         <v-list-tile avatar :key="deviceType.token">
           <v-list-tile-avatar>
-            <img :src="deviceType.assetImageUrl"></v-list-tile-avatar>
+            <img :src="deviceType.assetType.imageUrl"></v-list-tile-avatar>
           </v-list-tile-avatar>
           <v-list-tile-content>
             <v-list-tile-title v-html="deviceType.name"></v-list-tile-title>
-            <v-list-tile-sub-title v-html="deviceType.asset.description">
+            <v-list-tile-sub-title v-html="deviceType.assetType.description">
             </v-list-tile-sub-title>
           </v-list-tile-content>
           <v-list-tile-action>
@@ -32,11 +32,11 @@
           <v-list-tile avatar :key="deviceType.token"
             @click.native.stop="onDeviceTypeChosen(deviceType, true)">
             <v-list-tile-avatar>
-              <img :src="deviceType.assetImageUrl"></v-list-tile-avatar>
+              <img :src="deviceType.assetType.imageUrl"></v-list-tile-avatar>
             </v-list-tile-avatar>
             <v-list-tile-content>
               <v-list-tile-title v-html="deviceType.name"></v-list-tile-title>
-              <v-list-tile-sub-title v-html="deviceType.asset.description">
+              <v-list-tile-sub-title v-html="deviceType.assetType.description">
               </v-list-tile-sub-title>
             </v-list-tile-content>
           </v-list-tile>

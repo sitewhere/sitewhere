@@ -127,6 +127,9 @@ public class MongoAssetType implements MongoConverter<IAssetType> {
      * @return
      */
     public static AssetType fromDocument(Document source) {
+	if (source == null) {
+	    return null;
+	}
 	AssetType result = new AssetType();
 	MongoAssetType.fromDocument(source, result);
 	return result;

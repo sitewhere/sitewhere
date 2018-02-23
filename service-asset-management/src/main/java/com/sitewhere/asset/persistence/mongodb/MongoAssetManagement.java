@@ -153,6 +153,9 @@ public class MongoAssetManagement extends TenantEngineLifecycleComponent impleme
 	    MongoCollection<Document> types = getMongoClient().getAssetTypesCollection();
 	    Document query = new Document(MongoAssetType.PROP_TOKEN, token);
 	    Document dbAssetType = types.find(query).first();
+	    if (dbAssetType == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidAssetTypeToken, ErrorLevel.ERROR);
+	    }
 	    return MongoAssetType.fromDocument(dbAssetType);
 	} catch (MongoClientException e) {
 	    throw MongoPersistence.handleClientException(e);
@@ -258,6 +261,9 @@ public class MongoAssetManagement extends TenantEngineLifecycleComponent impleme
 	    MongoCollection<Document> assets = getMongoClient().getAssetsCollection();
 	    Document query = new Document(MongoAsset.PROP_TOKEN, token);
 	    Document dbAsset = assets.find(query).first();
+	    if (dbAsset == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidAssetToken, ErrorLevel.ERROR);
+	    }
 	    return MongoAsset.fromDocument(dbAsset);
 	} catch (MongoClientException e) {
 	    throw MongoPersistence.handleClientException(e);

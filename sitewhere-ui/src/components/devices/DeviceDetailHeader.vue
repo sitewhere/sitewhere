@@ -11,7 +11,7 @@
           </clipboard-copy-field>
         </header-field>
         <header-field label="Device Type">
-          <span>{{ device.deviceType.assetName }}</span>
+          <span>{{ device.deviceType.assetType.name }}</span>
         </header-field>
         <header-field label="Assignment">
           <span v-if="device.assignment">{{ device.assignment.assetName }}</span>
@@ -94,7 +94,7 @@ export default {
     logoStyle: function () {
       return {
         'background-color': '#fff',
-        'background-image': 'url(' + this.device.deviceType.asset.imageUrl + ')',
+        'background-image': 'url(' + this.device.deviceType.assetType.imageUrl + ')',
         'background-size': 'contain',
         'background-repeat': 'no-repeat',
         'background-position': '50% 50%',

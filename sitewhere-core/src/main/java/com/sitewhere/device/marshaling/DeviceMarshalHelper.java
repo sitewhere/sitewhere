@@ -15,8 +15,8 @@ import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.marshaling.MarshaledDevice;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
@@ -101,13 +101,13 @@ public class DeviceMarshalHelper {
 	    if (isIncludeDeviceType()) {
 		result.setDeviceType(getDeviceTypeHelper().convert(deviceType, assetManagement));
 	    } else {
-		IAsset asset = assetManagement.getAsset(deviceType.getAssetTypeId());
-		if (asset != null) {
-		    result.setAssetToken(asset.getToken());
-		    result.setAssetName(asset.getName());
-		    result.setAssetImageUrl(asset.getImageUrl());
+		IAssetType assetType = assetManagement.getAssetType(deviceType.getAssetTypeId());
+		if (assetType != null) {
+		    result.setAssetToken(assetType.getToken());
+		    result.setAssetName(assetType.getName());
+		    result.setAssetImageUrl(assetType.getImageUrl());
 		} else {
-		    throw new SiteWhereException("Specification references non-existent asset.");
+		    throw new SiteWhereException("Device type references non-existent asset.");
 		}
 	    }
 	}

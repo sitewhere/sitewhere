@@ -10,6 +10,7 @@ package com.sitewhere.microservice.multitenant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.springframework.context.ApplicationContext;
@@ -469,6 +470,33 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to load tenant template from Zk.", e);
 	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * waitForModuleBootstrapped(java.lang.String, long,
+     * java.util.concurrent.TimeUnit)
+     */
+    @Override
+    public void waitForModuleBootstrapped(String identifier, long time, TimeUnit unit) throws SiteWhereException {
+	String bspath = getMicroservice().getInstanceTenantStatePath(getTenant().getId()) + "/" + identifier + "/"
+		+ MicroserviceTenantEngine.MODULE_BOOTSTRAPPED_NAME;
+	CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
+	long deadline = System.currentTimeMillis() + unit.toMillis(time);
+	while ((deadline - System.currentTimeMillis()) > 0) {
+	    try {
+		if (curator.checkExists().forPath(bspath) != null) {
+		    return;
+		}
+		getLogger().info("Waiting for '" + identifier + "' to be bootstrapped before continuing...");
+		Thread.sleep(3000);
+	    } catch (InterruptedException e) {
+		throw new SiteWhereException("Interrupted while waiting for module to be bootstrapped.", e);
+	    } catch (Exception e) {
+		throw new SiteWhereException("Error checking for module bootstrapped.", e);
+	    }
+	}
+	throw new SiteWhereException("Time limit exceeded for '" + identifier + "' to bootstrap.");
     }
 
     /*

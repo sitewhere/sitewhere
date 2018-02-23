@@ -3,7 +3,7 @@
     <v-card-text @click="onOpenDevice" :style="styleForDevice()"
       class="device-root">
       <div class="device-image"
-        :style="backgroundImageStyle(device.deviceType.assetImageUrl)"></div>
+        :style="backgroundImageStyle(device.deviceType.assetType.imageUrl)"></div>
       <div class="device-hardware-id">
         {{ ellipsis(device.hardwareId, charWidth) }}
       </div>
@@ -13,7 +13,7 @@
       <div class="device-comments">
         {{ ellipsis(device.comments, charWidth)  }}
       </div>
-      <div v-if="isAssociated" class="device-asset"
+      <div v-if="hasAssignedAsset" class="device-asset"
         :style="backgroundImageStyle(device.assignment.assetImageUrl)"></div>
       <div v-else-if="!device.assignment" class="device-assign-button">
         <v-tooltip top>
@@ -53,9 +53,8 @@ export default {
     styleForStatus: function () {
       return Style.styleForAssignmentStatus(this.device.assignment)
     },
-    isAssociated: function () {
-      return this.device.assignment &&
-        (this.device.assignment.assignmentType === 'Associated')
+    hasAssignedAsset: function () {
+      return this.device.assignment && this.device.assignment.assetId
     }
   },
 

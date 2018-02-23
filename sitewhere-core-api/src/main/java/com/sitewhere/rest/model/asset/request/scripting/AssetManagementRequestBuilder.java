@@ -8,9 +8,11 @@
 package com.sitewhere.rest.model.asset.request.scripting;
 
 import com.sitewhere.rest.model.asset.request.AssetCreateRequest;
+import com.sitewhere.rest.model.asset.request.AssetTypeCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.asset.IAssetType;
 
 /**
  * Builder that supports creating asset management entities.
@@ -24,6 +26,14 @@ public class AssetManagementRequestBuilder {
 
     public AssetManagementRequestBuilder(IAssetManagement assetManagement) {
 	this.assetManagement = assetManagement;
+    }
+
+    public AssetTypeCreateRequest.Builder newAssetType(String token, String name) {
+	return new AssetTypeCreateRequest.Builder(token, name);
+    }
+
+    public IAssetType persist(AssetTypeCreateRequest.Builder builder) throws SiteWhereException {
+	return getAssetManagement().createAssetType(builder.build());
     }
 
     public AssetCreateRequest.Builder newAsset(String token, String assetTypeToken, String name) {

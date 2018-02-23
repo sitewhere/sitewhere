@@ -15,8 +15,8 @@ import com.sitewhere.rest.model.device.DeviceType;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceType;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceType;
 
@@ -59,17 +59,17 @@ public class DeviceTypeMarshalHelper {
 	deviceType.setName(source.getName());
 	deviceType.setAssetTypeId(source.getAssetTypeId());
 
-	// Look up asset reference and handle asset not found.
-	IAsset asset = assetManagement.getAsset(source.getAssetTypeId());
-	if (asset == null) {
+	// Look up asset type reference and handle asset not found.
+	IAssetType assetType = assetManagement.getAssetType(source.getAssetTypeId());
+	if (assetType == null) {
 	    LOGGER.warn("Device type has reference to non-existent asset type.");
-	    asset = new InvalidAsset();
+	    assetType = new InvalidAssetType();
 	}
 
-	deviceType.setAssetName(asset.getName());
-	deviceType.setAssetImageUrl(asset.getImageUrl());
+	deviceType.setAssetTypeName(assetType.getName());
+	deviceType.setAssetTypeImageUrl(assetType.getImageUrl());
 	if (isIncludeAsset()) {
-	    deviceType.setAsset(asset);
+	    deviceType.setAssetType(assetType);
 	}
 	deviceType.setContainerPolicy(source.getContainerPolicy());
 	deviceType.setDeviceElementSchema((DeviceElementSchema) source.getDeviceElementSchema());

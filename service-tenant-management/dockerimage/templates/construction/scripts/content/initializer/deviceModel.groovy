@@ -24,20 +24,20 @@ def randomItem = { items ->
 // ################################# //
 
 // Construction area type.
-def constAreaType = deviceBuilder.newAreaType 'c66b3da1-329c-4b6f-9e81-912e111d8c86', 'Construction Area'
+def constAreaType = deviceBuilder.newAreaType 'construction', 'Construction Area'
 constAreaType.withDescription 'A construction area.' withIcon 'fa-truck'
 constAreaType = deviceBuilder.persist constAreaType
 logger.info "[Create Area Type] ${constAreaType.name}"
 
 // Region type.
-def regionType = deviceBuilder.newAreaType '44d554e8-b71b-44f0-b04b-600ff8c25e27', 'Region'
+def regionType = deviceBuilder.newAreaType 'region', 'Region'
 regionType.withDescription 'Subsection of the United States.' withIcon 'fa-map'
 regionType.withContainedAreaType constAreaType.token
 regionType = deviceBuilder.persist regionType
 logger.info "[Create Area Type] ${regionType.name}"
 
 // Southeast region.
-def seRegion = deviceBuilder.newArea regionType.token, null, '3901e090-904a-4b26-bc78-645e790256b5', 'Southeast Region'
+def seRegion = deviceBuilder.newArea regionType.token, null, 'southeast', 'Southeast Region'
 seRegion.withDescription 'Region including the southeastern portion of the United States.'
 seRegion.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/construction.jpg'
 seRegion.openStreetMap 34.10469794977326, -84.23966646194458, 15
@@ -45,7 +45,7 @@ seRegion = deviceBuilder.persist seRegion
 logger.info "[Create Area] ${seRegion.name}"
 
 // Peachtree construction site.
-def ptreeSite = deviceBuilder.newArea constAreaType.token, seRegion.token, 'f57b85b4-3dcf-4a70-88d9-b5ab1193d86c', 'Peachtree Construction Site'
+def ptreeSite = deviceBuilder.newArea constAreaType.token, seRegion.token, 'peachtree', 'Peachtree Construction Site'
 ptreeSite.withDescription '''A construction site with many high-value assets that should not be taken offsite. 
 The system provides location tracking for the assets and notifies administrators if any of the assets move 
 outside of the general site area or into areas where they are not allowed.'''
@@ -67,36 +67,41 @@ zone = deviceBuilder.persist ptreeSite, zone
 // Create Device Types //
 // ################### //
 
-def module = 'fs-devices' // Asset module with device assets.
 def ns = 'http://sitewhere/common' // Namespace used for commands.
 def allDeviceTypes = []
 
 // Data structure for assignment information.
-def assnChoice = { title, assetModuleId, assetId ->
-	return ['title': title, 'module': assetModuleId, 'asset': assetId];
+def assnChoice = { title, areaToken, assetToken ->
+	return ['title': title, 'areaToken': areaToken, 'assetToken': assetToken];
 }
 
 // Lists for heavy equipment device types and available assignment options.
 def heavyEquipment = []
 def heavyEquipmentItems = []
-heavyEquipmentItems << assnChoice('Equipment Tracker', 'fs-hardware', '300')
-heavyEquipmentItems << assnChoice('Equipment Tracker', 'fs-hardware', '301')
-heavyEquipmentItems << assnChoice('Equipment Tracker', 'fs-hardware', '302')
-heavyEquipmentItems << assnChoice('Equipment Tracker', 'fs-hardware', '303')
-heavyEquipmentItems << assnChoice('Equipment Tracker', 'fs-hardware', '304')
+heavyEquipmentItems << assnChoice('Equipment Tracker', 'peachtree', '923483933-SERIAL-NUMBER-416F')
+heavyEquipmentItems << assnChoice('Equipment Tracker', 'peachtree', '298383493-SERIAL-NUMBER-430F')
+heavyEquipmentItems << assnChoice('Equipment Tracker', 'peachtree', '593434849-SERIAL-NUMBER-D5K2')
+heavyEquipmentItems << assnChoice('Equipment Tracker', 'peachtree', '345438345-SERIAL-NUMBER-D5K2')
+heavyEquipmentItems << assnChoice('Equipment Tracker', 'peachtree', '847234833-SERIAL-NUMBER-320EL')
+heavyEquipmentItems << assnChoice('Equipment Tracker', 'peachtree', '349544949-SERIAL-NUMBER-324E')
 
 // Lists for personnel device types and available assignment options.
 def personnel = []
 def personnelItems = []
-personnelItems << assnChoice('Personnel Tracker', 'fs-persons', '1')
-personnelItems << assnChoice('Personnel Tracker', 'fs-persons', '2')
-personnelItems << assnChoice('Personnel Tracker', 'fs-persons', '3')
+personnelItems << assnChoice('Personnel Tracker', 'peachtree', 'derek')
+personnelItems << assnChoice('Personnel Tracker', 'peachtree', 'bryan')
+personnelItems << assnChoice('Personnel Tracker', 'peachtree', 'martin')
 
-// Lists for tool device types and available assignment options.
-def tools = []
-def toolsItems = []
-toolsItems << assnChoice('Tool Tracker', 'fs-locations', '1')
-toolsItems << assnChoice('Tool Tracker', 'fs-locations', '2')
+// Lists for sensor types and available assignment options.
+def sensors = []
+def sensorsItems = []
+sensorsItems << assnChoice('Sensor', 'peachtree', '342349343-SERIAL-NUMBER-EKA4')
+sensorsItems << assnChoice('Sensor', 'peachtree', '623947324-SERIAL-NUMBER-EKB4')
+sensorsItems << assnChoice('Sensor', 'peachtree', '392455494-SERIAL-NUMBER-T301W')
+sensorsItems << assnChoice('Sensor', 'peachtree', '734539339-SERIAL-NUMBER-TS1')
+sensorsItems << assnChoice('Sensor', 'peachtree', '193835744-SERIAL-NUMBER-TS1')
+sensorsItems << assnChoice('Sensor', 'peachtree', '398434398-SERIAL-NUMBER-HS1')
+sensorsItems << assnChoice('Sensor', 'peachtree', '239437373-SERIAL-NUMBER-S911')
 
 def addDeviceType = { type -> 
 	type = deviceBuilder.persist type
@@ -111,73 +116,73 @@ def addCommand = { type, command ->
 }
 
 // Android device type.
-def android = deviceBuilder.newDeviceType 'd2604433-e4eb-419b-97c7-88efe9b2cd41', 'Android Tablet', module, '173'
+def android = deviceBuilder.newDeviceType 'android', 'galaxytab3', 'Android Device'
 android = addDeviceType android
 def android_bgcolor = deviceBuilder.newCommand randomId(), 'http://android/example', 'changeBackground' withDescription 'Change background color of application.' withStringParameter('color', true)
 addCommand android, android_bgcolor
 personnel << android
 
 // Arduino high memory device type.
-def arduinohm = deviceBuilder.newDeviceType '417b36a8-21ef-4196-a8fe-cc756f994d0b', 'Arduino High Memory', module, '181'
-arduinohm = addDeviceType arduinohm
+def arduino = deviceBuilder.newDeviceType 'arduino', 'mega2560', 'Arduino High Memory'
+arduino = addDeviceType arduino
 def arduinohm_serial = deviceBuilder.newCommand randomId(), 'http://arduino/example', 'serialPrintln' withDescription 'Print a message to the serial output.' withStringParameter('message', true)
-addCommand arduinohm, arduinohm_serial
-tools << arduinohm
+addCommand arduino, arduinohm_serial
+sensors << arduino
 
 // Raspberry Pi device type.
-def rpi = deviceBuilder.newDeviceType '7dfd6d63-5e8d-4380-be04-fc5c73801dfb', 'Raspberry Pi', module, '174'
+def rpi = deviceBuilder.newDeviceType 'rpi', 'raspberrypi', 'Raspberry Pi'
 rpi = addDeviceType rpi
 def rpi_hello = deviceBuilder.newCommand randomId(), 'http://raspberrypi/example', 'helloWorld' withDescription 'Request a hello world response from device.' withStringParameter('greeting', true) withBooleanParameter('loud', true)
 addCommand rpi, rpi_hello
-tools << rpi
+sensors << rpi
 
 // Meitrack device type.
-def meitrack = deviceBuilder.newDeviceType '82043707-9e3d-441f-bdcc-33cf0f4f7260', 'MeiTrack GPS', module, '175'
+def meitrack = deviceBuilder.newDeviceType 'meitrack', 'mt90', 'MeiTrack GPS'
 meitrack = addDeviceType meitrack
 heavyEquipment << meitrack
 
 // Gateway default device type.
-def gateway = deviceBuilder.newDeviceType '75126a52-0607-4cca-b995-df40e73a707b', 'Gateway Default', module, '176'
+def gateway = deviceBuilder.newDeviceType 'gateway', 'gw1', 'Gateway Default'
 def schema = gateway.makeComposite() newSchema() addSlot 'Gateway Port 1', 'gw1'
 def dbus = schema.addUnit 'Default Bus', 'default'
 dbus.addUnit 'PCI Bus', 'pci' addSlot 'PCI Device 1', 'pci1' addSlot 'PCI Device 2', 'pci2'
 dbus.addUnit 'Serial Ports', 'serial' addSlot 'COM Port 1', 'com1' addSlot 'COM Port 2', 'com2'
 schema.addUnit 'High Voltage Bus 1', 'hv1' addSlot 'HV Slot 1', 'slot1' addSlot 'HV Slot 2', 'slot2'
 gateway = addDeviceType gateway
-tools << gateway
+sensors << gateway
 
 // OpenHAB device type.
-def openhab = deviceBuilder.newDeviceType '5a95f3f2-96f0-47f9-b98d-f5c081d01948', 'openHAB', module, '190'
+def openhab = deviceBuilder.newDeviceType 'openhab', 'openhab', 'openHAB'
 openhab = addDeviceType openhab
 def openhab_onoff = deviceBuilder.newCommand randomId(), ns, 'sendOnOffCommand' withDescription 'Send on/off command to an openHAB item.' withStringParameter('itemName', true) withStringParameter('command', true)
 addCommand openhab, openhab_onoff
 def openhab_openclose = deviceBuilder.newCommand randomId(), ns, 'sendOpenCloseCommand' withDescription 'Send open/close command to an openHAB item.' withStringParameter('itemName', true) withStringParameter('command', true)
 addCommand openhab, openhab_openclose
-tools << openhab
+sensors << openhab
 
 // Node-RED device type.
-def nodered = deviceBuilder.newDeviceType '964e7613-dab3-4fb3-8919-266a91370884', 'Node-RED', module, '195'
+def nodered = deviceBuilder.newDeviceType 'nodered', 'nodered', 'Node-RED'
 nodered = addDeviceType nodered
-tools << nodered
+sensors << meitrack
 
 // Laipac device type.
-def laipac = deviceBuilder.newDeviceType 'fc0f3d8d-c6e6-4fd2-b7d6-6f21bcf3a910', 'Laipac Health Bracelet', module, '300'
+def laipac = deviceBuilder.newDeviceType 'laipac', 'laipac-S911', 'Laipac Health Bracelet'
 laipac = addDeviceType laipac
-personnel << laipac
+personnel << meitrack
 
 // iPhone device type.
-def iphone = deviceBuilder.newDeviceType '9f2426bd-46de-49d6-833e-385784a9dc1a', 'Apple iPhone', module, '400'
+def iphone = deviceBuilder.newDeviceType 'iphone', 'iphone6s', 'Apple iPhone'
 iphone = addDeviceType iphone
 personnel << iphone
 
 // iPad device type.
-def ipad = deviceBuilder.newDeviceType 'cfe831ea-20ca-47f6-b0d7-809d26e45b5b', 'Apple iPad', module, '405'
+def ipad = deviceBuilder.newDeviceType 'ipad', 'ipad', 'Apple iPad'
 ipad = addDeviceType ipad
 personnel << ipad
 
 // Add common commands.
 allDeviceTypes.each { type ->
-	if (type != openhab) {
+	if (type != android) {
 		def ping = deviceBuilder.newCommand randomId(), ns, 'ping' withDescription 'Send a ping request to the device to verify it can be reached.'
 		addCommand type, ping
 		def testEvents = deviceBuilder.newCommand randomId(), ns, 'testEvents' withDescription 'Send a ping request to the device to verify it can be reached.'
@@ -311,9 +316,9 @@ def personGroup = deviceBuilder.newGroup randomId(), 'Personnel Tracking' withRo
 personGroup.withDescription 'Device group that contains devices for tracking location of people.'
 personGroup = addGroup personGroup
 
-def toolGroup = deviceBuilder.newGroup randomId(), 'Tool Tracking' withRole('tool-tracking') withRole('tracking')
-toolGroup.withDescription 'Device group that contains devices for tracking location of tools.'
-toolGroup = addGroup toolGroup
+def sensorGroup = deviceBuilder.newGroup randomId(), 'Sensors' withRole('monitoring') withRole('data-gathering')
+sensorGroup.withDescription 'Device group that contains sensors for tracking environmental conditions.'
+sensorGroup = addGroup sensorGroup
 
 // ############################## //
 // Create Devices and Assignments //
@@ -322,7 +327,7 @@ toolGroup = addGroup toolGroup
 // Create the requested number of devices and assignments per site.
 def heavyElements = []
 def personElements = []
-def toolElements = []
+def sensorElements = []
 devicesPerSite.times {
 	def type = randomItem(allDeviceTypes);
 	if (Math.random() > 0.75) {
@@ -330,8 +335,8 @@ devicesPerSite.times {
 	}
 	
 	def assnInfo
-	if (type in tools) {
-		assnInfo = randomItem(toolsItems);
+	if (type in sensors) {
+		assnInfo = randomItem(sensorsItems);
 	} else if (type in personnel) {
 		assnInfo = randomItem(personnelItems);
 	} else {
@@ -344,13 +349,13 @@ devicesPerSite.times {
 	logger.info "[Create Device] ${device.hardwareId}"
 	
 	// Create an assignment based on device type.
-	def assn = deviceBuilder.newAssignment device.hardwareId, ptreeSite.token, assnInfo.module, assnInfo.asset
+	def assn = deviceBuilder.newAssignment device.hardwareId, assnInfo.areaToken, assnInfo.assetToken
 	assn = deviceBuilder.persist assn
 	logger.info "[Create Assignment] ${assn.token}"
 	
 	def element = deviceBuilder.newGroupElement device.hardwareId;
-	if (type in tools) {
-		toolElements << element
+	if (type in sensors) {
+		sensorElements << element
 	} else if (type in personnel) {
 		personElements << element
 	} else {
@@ -364,4 +369,4 @@ devicesPerSite.times {
 }
 deviceBuilder.persist heavyGroup, heavyElements
 deviceBuilder.persist personGroup, personElements
-deviceBuilder.persist toolGroup, toolElements
+deviceBuilder.persist sensorGroup, sensorElements
