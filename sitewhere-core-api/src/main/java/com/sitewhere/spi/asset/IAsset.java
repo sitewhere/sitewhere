@@ -20,20 +20,6 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
 public interface IAsset extends IMetadataProviderEntity, Serializable {
 
     /**
-     * Unique asset id.
-     * 
-     * @return
-     */
-    public UUID getId();
-
-    /**
-     * Get token used to reference asset.
-     * 
-     * @return
-     */
-    public String getToken();
-
-    /**
      * Get unique id of asset type.
      * 
      * @return

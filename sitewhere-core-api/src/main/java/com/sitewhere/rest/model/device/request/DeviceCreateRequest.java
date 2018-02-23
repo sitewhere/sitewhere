@@ -29,14 +29,14 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
     /** Serialization version identifier */
     private static final long serialVersionUID = 5102270168736590229L;
 
-    /** Hardware id for new device */
-    private String hardwareId;
+    /** Token for new device */
+    private String token;
 
     /** Device type token */
     private String deviceTypeToken;
 
-    /** Parent hardware id (if nested) */
-    private String parentHardwareId;
+    /** Parent device token (if nested) */
+    private String parentDeviceToken;
 
     /** Indicates whether parent hardware id should be removed */
     private Boolean removeParentHardwareId;
@@ -54,16 +54,15 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
     private Map<String, String> metadata;
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.request.IDeviceCreateRequest#getHardwareId()
+     * @see com.sitewhere.spi.device.request.IDeviceCreateRequest#getToken()
      */
-    public String getHardwareId() {
-	return hardwareId;
+    @Override
+    public String getToken() {
+	return token;
     }
 
-    public void setHardwareId(String hardwareId) {
-	this.hardwareId = hardwareId;
+    public void setToken(String token) {
+	this.token = token;
     }
 
     /*
@@ -80,18 +79,16 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.device.request.IDeviceCreateRequest#getParentHardwareId ()
+     * com.sitewhere.spi.device.request.IDeviceCreateRequest#getParentDeviceToken()
      */
     @Override
-    public String getParentHardwareId() {
-	return parentHardwareId;
+    public String getParentDeviceToken() {
+	return parentDeviceToken;
     }
 
-    public void setParentHardwareId(String parentHardwareId) {
-	this.parentHardwareId = parentHardwareId;
+    public void setParentDeviceToken(String parentDeviceToken) {
+	this.parentDeviceToken = parentDeviceToken;
     }
 
     /*
@@ -170,26 +167,9 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
 	/** Request being built */
 	private DeviceCreateRequest request = new DeviceCreateRequest();
 
-	// public Builder(IDevice api) {
-	// request.setSiteToken(api.getSiteToken());
-	// request.setSpecificationToken(api.getSpecificationToken());
-	// request.setHardwareId(api.getHardwareId());
-	// request.setStatus(api.getStatus());
-	// request.setComments(api.getComments());
-	// request.setParentHardwareId(api.getParentHardwareId());
-	// if (api.getDeviceElementMappings() != null) {
-	// request.setDeviceElementMappings(new ArrayList<DeviceElementMapping>());
-	// request.getDeviceElementMappings().addAll(api.getDeviceElementMappings());
-	// }
-	// if (api.getMetadata() != null) {
-	// request.setMetadata(new HashMap<String, String>());
-	// request.getMetadata().putAll(api.getMetadata());
-	// }
-	// }
-
-	public Builder(String deviceTypeToken, String hardwareId) {
+	public Builder(String deviceTypeToken, String token) {
 	    request.setDeviceTypeToken(deviceTypeToken);
-	    request.setHardwareId(hardwareId);
+	    request.setToken(token);
 	    request.setStatus(null);
 	    request.setComments("");
 	}

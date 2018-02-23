@@ -1,5 +1,5 @@
 <template>
-  <navigation-page icon="description" title="Area Types">
+  <navigation-page icon="fa-cog" title="Area Types">
     <div v-if="areaTypes" slot="content">
       <v-container fluid grid-list-md>
         <v-layout row wrap>

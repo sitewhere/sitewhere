@@ -7,6 +7,8 @@
  */
 package com.sitewhere.grpc.client.microservice;
 
+import java.util.UUID;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -17,6 +19,7 @@ import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IMicroserviceManagementApiChannel;
 import com.sitewhere.grpc.model.MicroserviceModel.GConfigurationContent;
+import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.grpc.model.converter.MicroserviceModelConverter;
 import com.sitewhere.grpc.service.GGetConfigurationModelRequest;
 import com.sitewhere.grpc.service.GGetConfigurationModelResponse;
@@ -102,14 +105,14 @@ public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceMan
     /*
      * @see
      * com.sitewhere.spi.microservice.IMicroserviceManagement#getTenantConfiguration
-     * (java.lang.String)
+     * (java.util.UUID)
      */
     @Override
-    public byte[] getTenantConfiguration(String tenantId) throws SiteWhereException {
+    public byte[] getTenantConfiguration(UUID tenantId) throws SiteWhereException {
 	try {
 	    GrpcUtils.logClientMethodEntry(this, MicroserviceManagementGrpc.METHOD_GET_TENANT_CONFIGURATION);
 	    GGetTenantConfigurationRequest.Builder grequest = GGetTenantConfigurationRequest.newBuilder();
-	    grequest.setTenantId(tenantId);
+	    grequest.setTenantId(CommonModelConverter.asGrpcUuid(tenantId));
 	    GGetTenantConfigurationResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getTenantConfiguration(grequest.build());
 	    byte[] response = gresponse.getConfiguration().getContent().toByteArray();
@@ -142,17 +145,17 @@ public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceMan
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroserviceManagement#
-     * updateTenantConfiguration(java.lang.String, byte[])
+     * updateTenantConfiguration(java.util.UUID, byte[])
      */
     @Override
-    public void updateTenantConfiguration(String tenantId, byte[] config) throws SiteWhereException {
+    public void updateTenantConfiguration(UUID tenantId, byte[] config) throws SiteWhereException {
 	try {
 	    GrpcUtils.logClientMethodEntry(this, MicroserviceManagementGrpc.METHOD_UPDATE_TENANT_CONFIGURATION);
 	    GUpdateTenantConfigurationRequest.Builder grequest = GUpdateTenantConfigurationRequest.newBuilder();
 	    GConfigurationContent content = GConfigurationContent.newBuilder().setContent(ByteString.copyFrom(config))
 		    .build();
 	    grequest.setConfiguration(content);
-	    grequest.setTenantId(tenantId);
+	    grequest.setTenantId(CommonModelConverter.asGrpcUuid(tenantId));
 	    getGrpcChannel().getBlockingStub().updateTenantConfiguration(grequest.build());
 	    return;
 	} catch (Throwable t) {

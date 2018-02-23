@@ -74,7 +74,7 @@ public class QuartzScheduleManager extends TenantEngineLifecycleComponent implem
     public void setTenantEngine(IMicroserviceTenantEngine tenantEngine) {
 	super.setTenantEngine(tenantEngine);
 	try {
-	    DirectSchedulerFactory.getInstance().createScheduler(tenantEngine.getTenant().getId(), INSTANCE_ID,
+	    DirectSchedulerFactory.getInstance().createScheduler(tenantEngine.getTenant().getToken(), INSTANCE_ID,
 		    new SimpleThreadPool(getNumProcessingThreads(), Thread.NORM_PRIORITY), new RAMJobStore());
 	} catch (SchedulerException e) {
 	    throw new RuntimeException("Unable to create Quartz scheduler for schedule manager.", e);
@@ -222,7 +222,7 @@ public class QuartzScheduleManager extends TenantEngineLifecycleComponent implem
      */
     public Scheduler getScheduler() throws SiteWhereException {
 	try {
-	    return DirectSchedulerFactory.getInstance().getScheduler(getTenantEngine().getTenant().getId());
+	    return DirectSchedulerFactory.getInstance().getScheduler(getTenantEngine().getTenant().getToken());
 	} catch (SchedulerException e) {
 	    throw new SiteWhereException("Unable to get scheduler instance.", e);
 	}

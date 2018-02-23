@@ -47,10 +47,10 @@ public class BinaryCompositeDeviceEventDecoder extends CompositeDeviceEventDecod
 	BinaryDeviceContext context = new BinaryDeviceContext();
 
 	IDeviceManagement devices = getDeviceManagement(getTenantEngine().getTenant());
-	context.setDevice(devices.getDeviceByHardwareId(metadata.getHardwareId()));
+	context.setDevice(devices.getDeviceByToken(metadata.getDeviceToken()));
 	if (context.getDevice() == null) {
 	    throw new SiteWhereException(
-		    "Unable to build device context. Device not found for hardware id: " + metadata.getHardwareId());
+		    "Unable to build device context. Device not found for token: " + metadata.getDeviceToken());
 	}
 
 	context.setDeviceType(devices.getDeviceType(context.getDevice().getDeviceTypeId()));

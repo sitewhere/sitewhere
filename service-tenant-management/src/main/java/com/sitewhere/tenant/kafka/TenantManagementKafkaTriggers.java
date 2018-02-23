@@ -7,6 +7,8 @@
  */
 package com.sitewhere.tenant.kafka;
 
+import java.util.UUID;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
@@ -45,28 +47,24 @@ public class TenantManagementKafkaTriggers extends TenantManagementDecorator {
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.server.tenant.TenantManagementDecorator#updateTenant(java.
-     * lang. String, com.sitewhere.spi.tenant.request.ITenantCreateRequest)
+     * com.sitewhere.tenant.TenantManagementDecorator#updateTenant(java.util.UUID,
+     * com.sitewhere.spi.tenant.request.ITenantCreateRequest)
      */
     @Override
-    public ITenant updateTenant(String id, ITenantCreateRequest request) throws SiteWhereException {
+    public ITenant updateTenant(UUID id, ITenantCreateRequest request) throws SiteWhereException {
 	ITenant updated = super.updateTenant(id, request);
 	getTenantModelProducer().onTenantUpdated(updated);
 	return updated;
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.server.tenant.TenantManagementDecorator#deleteTenant(java.
-     * lang.String, boolean)
+     * com.sitewhere.tenant.TenantManagementDecorator#deleteTenant(java.util.UUID,
+     * boolean)
      */
     @Override
-    public ITenant deleteTenant(String tenantId, boolean force) throws SiteWhereException {
+    public ITenant deleteTenant(UUID tenantId, boolean force) throws SiteWhereException {
 	ITenant deleted = super.deleteTenant(tenantId, force);
 	getTenantModelProducer().onTenantDeleted(deleted);
 	return deleted;

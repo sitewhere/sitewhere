@@ -149,7 +149,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 		new IndexOptions().unique(true));
 
 	// Devices.
-	getMongoClient().getDevicesCollection().createIndex(new Document(MongoDevice.PROP_HARDWARE_ID, 1),
+	getMongoClient().getDevicesCollection().createIndex(new Document(MongoDevice.PROP_TOKEN, 1),
 		new IndexOptions().unique(true));
 
 	// Device assignments.
@@ -641,7 +641,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	// Convert and save device data.
 	MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
 	Document created = MongoDevice.toDocument(newDevice);
-	MongoPersistence.insert(devices, created, ErrorCode.DuplicateHardwareId);
+	MongoPersistence.insert(devices, created, ErrorCode.DuplicateDeviceToken);
 
 	return newDevice;
     }
@@ -664,10 +664,10 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	}
 
 	IDevice parent = null;
-	if (request.getParentHardwareId() != null) {
-	    parent = getDeviceByHardwareId(request.getParentHardwareId());
+	if (request.getParentDeviceToken() != null) {
+	    parent = getDeviceByToken(request.getParentDeviceToken());
 	    if (parent == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
+		throw new SiteWhereSystemException(ErrorCode.InvalidDeviceToken, ErrorLevel.ERROR);
 	    }
 	}
 
@@ -694,14 +694,12 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceByHardwareId(java
-     * .lang.String)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceByToken(java.lang.String)
      */
     @Override
-    public IDevice getDeviceByHardwareId(String hardwareId) throws SiteWhereException {
-	Document dbDevice = getDeviceDocumentByHardwareId(hardwareId);
+    public IDevice getDeviceByToken(String token) throws SiteWhereException {
+	Document dbDevice = getDeviceDocumentByToken(token);
 	if (dbDevice != null) {
 	    return MongoDevice.fromDocument(dbDevice);
 	}
@@ -807,27 +805,27 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     protected IDevice getApiDeviceById(UUID id) throws SiteWhereException {
 	IDevice device = getDevice(id);
 	if (device == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceId, ErrorLevel.ERROR);
 	}
 	return device;
     }
 
     /**
-     * Get the {@link Document} containing site information that matches the given
+     * Get the {@link Document} containing device information that matches the given
      * token.
      * 
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    protected Document getDeviceDocumentByHardwareId(String hardwareId) throws SiteWhereException {
+    protected Document getDeviceDocumentByToken(String token) throws SiteWhereException {
 	MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
-	Document query = new Document(MongoDevice.PROP_HARDWARE_ID, hardwareId);
+	Document query = new Document(MongoDevice.PROP_TOKEN, token);
 	return devices.find(query).first();
     }
 
     /**
-     * Get the {@link Document} containing site information that matches the given
+     * Get the {@link Document} containing device information that matches the given
      * id.
      * 
      * @param token
@@ -849,7 +847,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     @Override
     public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request) throws SiteWhereException {
 	// Verify device is not already assigned.
-	IDevice existing = getDeviceByHardwareId(request.getDeviceHardwareId());
+	IDevice existing = getDeviceByToken(request.getDeviceToken());
 	if (existing.getDeviceAssignmentId() != null) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceAlreadyAssigned, ErrorLevel.ERROR);
 	}
@@ -886,7 +884,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 
 	// Update device to point to created assignment.
 	MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
-	Document query = new Document(MongoDevice.PROP_HARDWARE_ID, request.getDeviceHardwareId());
+	Document query = new Document(MongoDevice.PROP_TOKEN, request.getDeviceToken());
 	deviceDb.put(MongoDevice.PROP_ASSIGNMENT_ID, newAssignment.getId());
 	MongoPersistence.update(devices, query, deviceDb);
 
@@ -1627,7 +1625,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    UUID elementId;
 	    switch (request.getType()) {
 	    case Device: {
-		IDevice elementDevice = getDeviceByHardwareId(request.getElementId());
+		IDevice elementDevice = getDeviceByToken(request.getElementId());
 		elementId = elementDevice.getId();
 		break;
 	    }
@@ -1741,7 +1739,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     protected Document assertDevice(UUID id) throws SiteWhereException {
 	Document match = getDeviceDocumentById(id);
 	if (match == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.INFO);
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceId, ErrorLevel.INFO);
 	}
 	return match;
     }

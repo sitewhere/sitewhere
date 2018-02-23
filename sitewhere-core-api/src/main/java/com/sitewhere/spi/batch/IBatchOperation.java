@@ -20,13 +20,6 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
 public interface IBatchOperation extends IMetadataProviderEntity {
 
     /**
-     * Get the unique group token.
-     * 
-     * @return
-     */
-    public String getToken();
-
-    /**
      * Gets the type of operation to be performed.
      * 
      * @return

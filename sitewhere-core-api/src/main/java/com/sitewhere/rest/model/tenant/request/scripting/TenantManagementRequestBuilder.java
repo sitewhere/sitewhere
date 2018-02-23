@@ -48,15 +48,15 @@ public class TenantManagementRequestBuilder {
      * specified.
      * 
      * @param id
-     * @param name
+     * @param token
      * @param authenticationToken
      * @param logoUrl
      * @param tenantTemplateId
      * @return
      */
-    public TenantCreateRequest.Builder newTenant(String id, String name, String authenticationToken, String logoUrl,
+    public TenantCreateRequest.Builder newTenant(String token, String name, String authenticationToken, String logoUrl,
 	    String tenantTemplateId) {
-	return new TenantCreateRequest.Builder(id, name, authenticationToken, logoUrl, tenantTemplateId);
+	return new TenantCreateRequest.Builder(token, name, authenticationToken, logoUrl, tenantTemplateId);
     }
 
     /**
@@ -71,25 +71,25 @@ public class TenantManagementRequestBuilder {
     }
 
     /**
-     * Get tenant by unique id.
+     * Get tenant by token.
      * 
-     * @param id
+     * @param token
      * @return
      * @throws SiteWhereException
      */
-    public ITenant getTenant(String id) throws SiteWhereException {
-	return getTenantManagement().getTenantById(id);
+    public ITenant getTenantByToken(String token) throws SiteWhereException {
+	return getTenantManagement().getTenantByToken(token);
     }
 
     /**
-     * Indicates whether a tenant exists for the given id.
+     * Indicates whether a tenant exists for the given token.
      * 
      * @param id
      * @return
      * @throws SiteWhereException
      */
-    public boolean hasTenant(String id) throws SiteWhereException {
-	return getTenant(id) != null;
+    public boolean hasTenant(String token) throws SiteWhereException {
+	return getTenantByToken(token) != null;
     }
 
     public ITenantManagement getTenantManagement() {

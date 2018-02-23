@@ -34,7 +34,7 @@ message GTenantModelUpdate {
 // Inbound event payload.
 message GInboundEventPayload {
 	string sourceId = 1;
-	string hardwareId = 2;
+	string deviceToken = 2;
 	com.sitewhere.grpc.model.GOptionalString originator = 3;
 	com.sitewhere.grpc.model.GAnyDeviceEventCreateRequest event = 4;
 }
@@ -79,7 +79,7 @@ message GMicroserviceState {
 // Tenant engine state.
 message GTenantEngineState {
 	com.sitewhere.grpc.model.GMicroserviceDetails microservice = 1;
-	string tenantId = 2;
+	string tenantToken = 2;
 	GLifecycleStatus status = 3;
 	repeated string error = 4;
 }

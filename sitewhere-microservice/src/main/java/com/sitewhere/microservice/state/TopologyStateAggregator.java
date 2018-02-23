@@ -105,12 +105,12 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
 
 	// Get microservice and existing engine (creating if necessary.
 	IInstanceMicroservice microservice = getOrCreateMicroservice(placeholder);
-	IInstanceTenantEngine engine = microservice.getTenantEngines().get(updated.getTenantId());
+	IInstanceTenantEngine engine = microservice.getTenantEngines().get(updated.getTenantToken());
 	if (engine == null) {
 	    InstanceTenantEngine created = new InstanceTenantEngine();
 	    created.setLatestState(updated);
 	    created.setLastUpdated(System.currentTimeMillis());
-	    microservice.getTenantEngines().put(updated.getTenantId(), created);
+	    microservice.getTenantEngines().put(updated.getTenantToken(), created);
 	    engine = created;
 	    onTenantEngineAdded(microservice.getLatestState(), updated);
 	} else {
@@ -121,7 +121,7 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
 	    // Handle terminated tenant engine.
 	    if ((updated.getLifecycleStatus() == LifecycleStatus.Terminating)
 		    || (updated.getLifecycleStatus() == LifecycleStatus.Terminated)) {
-		microservice.getTenantEngines().remove(existing.getTenantId());
+		microservice.getTenantEngines().remove(existing.getTenantToken());
 		onTenantEngineRemoved(microservice.getLatestState(), existing);
 	    } else if (existing.getLifecycleStatus() != updated.getLifecycleStatus()) {
 		onTenantEngineUpdated(microservice.getLatestState(), existing, updated);
@@ -229,7 +229,7 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
     }
 
     /**
-     * Get printable versio of microservice/tenant engine details.
+     * Get printable version of microservice/tenant engine details.
      * 
      * @param microservice
      * @param tenantEngine
@@ -237,7 +237,7 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
      */
     protected String tenantId(IMicroserviceState microservice, ITenantEngineState tenantEngine) {
 	return microservice.getMicroservice().getIdentifier() + ":" + microservice.getMicroservice().getHostname() + ":"
-		+ tenantEngine.getTenantId();
+		+ tenantEngine.getTenantToken();
     }
 
     /**

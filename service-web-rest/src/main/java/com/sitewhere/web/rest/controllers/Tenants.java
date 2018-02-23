@@ -73,54 +73,34 @@ public class Tenants extends RestControllerBase {
     /**
      * Update an existing tenant.
      * 
-     * @param tenantId
+     * @param tenantToken
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{tenantId}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{tenantToken}", method = RequestMethod.PUT)
     @ApiOperation(value = "Update an existing tenant.")
-    public ITenant updateTenant(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
+    public ITenant updateTenant(@ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken,
 	    @RequestBody TenantCreateRequest request) throws SiteWhereException {
-	ITenant tenant = assureTenant(tenantId);
+	ITenant tenant = assureTenant(tenantToken);
 	checkForAdminOrEditSelf(tenant);
-	return getTenantManagement().updateTenant(tenantId, request);
+	return getTenantManagement().updateTenant(tenant.getId(), request);
     }
 
     /**
      * Get a tenant by unique id.
      * 
-     * @param tenantId
+     * @param tenantToken
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{tenantId}", method = RequestMethod.GET)
-    @ApiOperation(value = "Get tenant by unique id")
-    public ITenant getTenantById(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId)
+    @RequestMapping(value = "/{tenantToken}", method = RequestMethod.GET)
+    @ApiOperation(value = "Get tenant by token")
+    public ITenant getTenantByToken(@ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken)
 	    throws SiteWhereException {
-	ITenant tenant = assureTenant(tenantId);
+	ITenant tenant = assureTenant(tenantToken);
 	checkForAdminOrEditSelf(tenant);
 	return tenant;
-    }
-
-    /**
-     * Get a tenant by unique authentication token.
-     * 
-     * @param authToken
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/authtoken/{authToken}", method = RequestMethod.GET)
-    @ApiOperation(value = "Get tenant by authentication token")
-    public ITenant getTenantByAuthToken(
-	    @ApiParam(value = "Authentication token", required = true) @PathVariable String authToken)
-	    throws SiteWhereException {
-	ITenant tenant = getTenantManagement().getTenantByAuthenticationToken(authToken);
-	if (tenant != null) {
-	    checkForAdminOrEditSelf(tenant);
-	    return tenant;
-	}
-	return null;
     }
 
     /**
@@ -166,22 +146,22 @@ public class Tenants extends RestControllerBase {
     }
 
     /**
-     * Delete tenant by unique tenant id.
+     * Delete tenant by token.
      * 
-     * @param tenantId
+     * @param tenantToken
      * @param force
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{tenantId}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{tenantToken}", method = RequestMethod.DELETE)
     @ApiOperation(value = "Delete existing tenant")
-    public ITenant deleteTenantById(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
+    public ITenant deleteTenantById(@ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
 	    throws SiteWhereException {
 	checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
-	ITenant tenant = assureTenant(tenantId);
+	ITenant tenant = assureTenant(tenantToken);
 	checkForAdminOrEditSelf(tenant);
-	return getTenantManagement().deleteTenant(tenantId, force);
+	return getTenantManagement().deleteTenant(tenant.getId(), force);
     }
 
     /**
@@ -220,16 +200,16 @@ public class Tenants extends RestControllerBase {
     }
 
     /**
-     * Assure that a tenant exists for the given id.
+     * Assure that a tenant exists for the given token.
      * 
-     * @param tenantId
+     * @param tenantToken
      * @return
      * @throws SiteWhereException
      */
-    protected ITenant assureTenant(String tenantId) throws SiteWhereException {
-	ITenant tenant = getTenantManagement().getTenantById(tenantId);
+    protected ITenant assureTenant(String tenantToken) throws SiteWhereException {
+	ITenant tenant = getTenantManagement().getTenantByToken(tenantToken);
 	if (tenant == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantId, ErrorLevel.ERROR);
+	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantToken, ErrorLevel.ERROR);
 	}
 	return tenant;
     }

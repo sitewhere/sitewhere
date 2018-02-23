@@ -93,7 +93,7 @@ public class JsonDeviceRequestMarshaler extends JsonDeserializer<DecodedDeviceRe
     /**
      * Unmarshal payload based on type indicator.
      * 
-     * @param hardwareId
+     * @param deviceToken
      * @param originator
      * @param type
      * @param json
@@ -101,12 +101,12 @@ public class JsonDeviceRequestMarshaler extends JsonDeserializer<DecodedDeviceRe
      * @throws JsonProcessingException
      */
     @SuppressWarnings("deprecation")
-    protected DecodedDeviceRequest<?> unmarshal(String hardwareId, String originator, Type type, JsonNode json)
+    protected DecodedDeviceRequest<?> unmarshal(String deviceToken, String originator, Type type, JsonNode json)
 	    throws JsonProcessingException {
 	switch (type) {
 	case RegisterDevice: {
 	    DecodedDeviceRequest<IDeviceRegistrationRequest> decoded = new DecodedDeviceRequest<IDeviceRegistrationRequest>();
-	    decoded.setHardwareId(hardwareId);
+	    decoded.setDeviceToken(deviceToken);
 	    decoded.setOriginator(originator);
 	    IDeviceRegistrationRequest req = MAPPER.treeToValue(json, DeviceRegistrationRequest.class);
 	    decoded.setRequest(req);
@@ -114,7 +114,7 @@ public class JsonDeviceRequestMarshaler extends JsonDeserializer<DecodedDeviceRe
 	}
 	case DeviceLocation: {
 	    DecodedDeviceRequest<IDeviceLocationCreateRequest> decoded = new DecodedDeviceRequest<IDeviceLocationCreateRequest>();
-	    decoded.setHardwareId(hardwareId);
+	    decoded.setDeviceToken(deviceToken);
 	    decoded.setOriginator(originator);
 	    IDeviceLocationCreateRequest req = MAPPER.treeToValue(json, DeviceLocationCreateRequest.class);
 	    decoded.setRequest(req);
@@ -122,7 +122,7 @@ public class JsonDeviceRequestMarshaler extends JsonDeserializer<DecodedDeviceRe
 	}
 	case DeviceMeasurements: {
 	    DecodedDeviceRequest<IDeviceMeasurementsCreateRequest> decoded = new DecodedDeviceRequest<IDeviceMeasurementsCreateRequest>();
-	    decoded.setHardwareId(hardwareId);
+	    decoded.setDeviceToken(deviceToken);
 	    decoded.setOriginator(originator);
 	    IDeviceMeasurementsCreateRequest req = parseMeasurementsRequest(json);
 	    decoded.setRequest(req);
@@ -130,7 +130,7 @@ public class JsonDeviceRequestMarshaler extends JsonDeserializer<DecodedDeviceRe
 	}
 	case DeviceAlert: {
 	    DecodedDeviceRequest<IDeviceAlertCreateRequest> decoded = new DecodedDeviceRequest<IDeviceAlertCreateRequest>();
-	    decoded.setHardwareId(hardwareId);
+	    decoded.setDeviceToken(deviceToken);
 	    decoded.setOriginator(originator);
 	    IDeviceAlertCreateRequest req = MAPPER.treeToValue(json, DeviceAlertCreateRequest.class);
 	    decoded.setRequest(req);
@@ -138,7 +138,7 @@ public class JsonDeviceRequestMarshaler extends JsonDeserializer<DecodedDeviceRe
 	}
 	case DeviceStream: {
 	    DecodedDeviceRequest<IDeviceStreamCreateRequest> decoded = new DecodedDeviceRequest<IDeviceStreamCreateRequest>();
-	    decoded.setHardwareId(hardwareId);
+	    decoded.setDeviceToken(deviceToken);
 	    decoded.setOriginator(originator);
 	    IDeviceStreamCreateRequest req = MAPPER.treeToValue(json, DeviceStreamCreateRequest.class);
 	    decoded.setRequest(req);
@@ -146,7 +146,7 @@ public class JsonDeviceRequestMarshaler extends JsonDeserializer<DecodedDeviceRe
 	}
 	case DeviceStreamData: {
 	    DecodedDeviceRequest<IDeviceStreamDataCreateRequest> decoded = new DecodedDeviceRequest<IDeviceStreamDataCreateRequest>();
-	    decoded.setHardwareId(hardwareId);
+	    decoded.setDeviceToken(deviceToken);
 	    decoded.setOriginator(originator);
 	    IDeviceStreamDataCreateRequest req = MAPPER.treeToValue(json, DeviceStreamDataCreateRequest.class);
 	    decoded.setRequest(req);
@@ -154,7 +154,7 @@ public class JsonDeviceRequestMarshaler extends JsonDeserializer<DecodedDeviceRe
 	}
 	case Acknowledge: {
 	    DecodedDeviceRequest<IDeviceCommandResponseCreateRequest> decoded = new DecodedDeviceRequest<IDeviceCommandResponseCreateRequest>();
-	    decoded.setHardwareId(hardwareId);
+	    decoded.setDeviceToken(deviceToken);
 	    decoded.setOriginator(originator);
 	    IDeviceCommandResponseCreateRequest req = MAPPER.treeToValue(json,
 		    DeviceCommandResponseCreateRequest.class);
@@ -163,7 +163,7 @@ public class JsonDeviceRequestMarshaler extends JsonDeserializer<DecodedDeviceRe
 	}
 	case MapDevice: {
 	    DecodedDeviceRequest<IDeviceMappingCreateRequest> decoded = new DecodedDeviceRequest<IDeviceMappingCreateRequest>();
-	    decoded.setHardwareId(hardwareId);
+	    decoded.setDeviceToken(deviceToken);
 	    decoded.setOriginator(originator);
 	    IDeviceMappingCreateRequest req = MAPPER.treeToValue(json, DeviceMappingCreateRequest.class);
 	    decoded.setRequest(req);
@@ -176,9 +176,9 @@ public class JsonDeviceRequestMarshaler extends JsonDeserializer<DecodedDeviceRe
     }
 
     /**
-     * Support JSON representations of device measurements that do not
-     * necessarily conform to object model. Converts boolean values to 1.0 or
-     * 0.0. Adds String values as metadata.
+     * Support JSON representations of device measurements that do not necessarily
+     * conform to object model. Converts boolean values to 1.0 or 0.0. Adds String
+     * values as metadata.
      * 
      * @param json
      * @return

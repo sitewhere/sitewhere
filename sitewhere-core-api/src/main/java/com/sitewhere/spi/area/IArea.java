@@ -21,20 +21,6 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
 public interface IArea extends IMetadataProviderEntity, Serializable {
 
     /**
-     * Get unique area id.
-     * 
-     * @return
-     */
-    public UUID getId();
-
-    /**
-     * Get token that acts as an alias for area id.
-     * 
-     * @return
-     */
-    public String getToken();
-
-    /**
      * Get id of corresponding area type.
      * 
      * @return

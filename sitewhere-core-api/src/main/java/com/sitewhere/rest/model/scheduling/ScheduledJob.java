@@ -9,6 +9,7 @@ package com.sitewhere.rest.model.scheduling;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -27,6 +28,9 @@ public class ScheduledJob extends MetadataProviderEntity implements IScheduledJo
 
     /** Serial version UID */
     private static final long serialVersionUID = -8440919585518011992L;
+
+    /** Unique id */
+    private UUID id;
 
     /** Unique token */
     private String token;
@@ -49,10 +53,21 @@ public class ScheduledJob extends MetadataProviderEntity implements IScheduledJo
     private Map<String, Object> context;
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.scheduling.IScheduledJob#getToken()
+     * @see com.sitewhere.spi.common.ISiteWhereEntity#getId()
      */
+    @Override
+    public UUID getId() {
+	return id;
+    }
+
+    public void setId(UUID id) {
+	this.id = id;
+    }
+
+    /*
+     * @see com.sitewhere.spi.common.ISiteWhereEntity#getToken()
+     */
+    @Override
     public String getToken() {
 	return token;
     }
@@ -62,10 +77,9 @@ public class ScheduledJob extends MetadataProviderEntity implements IScheduledJo
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.scheduling.IScheduledJob#getScheduleToken()
      */
+    @Override
     public String getScheduleToken() {
 	return scheduleToken;
     }
@@ -75,10 +89,9 @@ public class ScheduledJob extends MetadataProviderEntity implements IScheduledJo
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.scheduling.IScheduledJob#getJobType()
      */
+    @Override
     public ScheduledJobType getJobType() {
 	return jobType;
     }
@@ -88,10 +101,9 @@ public class ScheduledJob extends MetadataProviderEntity implements IScheduledJo
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.scheduling.IScheduledJob#getJobConfiguration()
      */
+    @Override
     public Map<String, String> getJobConfiguration() {
 	return jobConfiguration;
     }
@@ -101,10 +113,9 @@ public class ScheduledJob extends MetadataProviderEntity implements IScheduledJo
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.scheduling.IScheduledJob#getJobState()
      */
+    @Override
     public ScheduledJobState getJobState() {
 	return jobState;
     }

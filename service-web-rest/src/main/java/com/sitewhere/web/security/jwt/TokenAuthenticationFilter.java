@@ -114,20 +114,20 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
      * so that it can be passed via GRPC channels for remote microservices.
      * 
      * @param authenticated
-     * @param tenantId
+     * @param tenantToken
      * @param tenantAuth
      * @throws SiteWhereException
      */
-    protected void addTenantAuthenticationData(Authentication authenticated, String tenantId, String tenantAuth)
+    protected void addTenantAuthenticationData(Authentication authenticated, String tenantToken, String tenantAuth)
 	    throws SiteWhereException {
-	if ((authenticated instanceof ITenantAwareAuthentication) && (tenantId != null) && (tenantAuth != null)) {
+	if ((authenticated instanceof ITenantAwareAuthentication) && (tenantToken != null) && (tenantAuth != null)) {
 	    // Load tenant using superuser credentials.
 	    Authentication previous = SecurityContextHolder.getContext().getAuthentication();
 	    try {
 		SecurityContextHolder.getContext()
 			.setAuthentication(getMicroservice().getSystemUser().getAuthentication());
 		ITenant tenant = getMicroservice().getTenantManagementApiDemux().getApiChannel()
-			.getTenantById(tenantId);
+			.getTenantByToken(tenantToken);
 		if ((tenant == null) || (!tenant.getAuthenticationToken().equals(tenantAuth))) {
 		    throw new SiteWhereException("Auth token passed for tenant id is not correct.");
 		}

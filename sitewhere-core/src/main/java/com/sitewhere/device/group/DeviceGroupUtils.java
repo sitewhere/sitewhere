@@ -86,13 +86,13 @@ public class DeviceGroupUtils {
 	    switch (element.getType()) {
 	    case Device: {
 		IDevice device = deviceManagement.getDevice(element.getElementId());
-		devices.put(device.getHardwareId(), device);
+		devices.put(device.getToken(), device);
 		break;
 	    }
 	    case Group: {
 		Collection<IDevice> subDevices = getDevicesInGroup(element.getElementId(), deviceManagement);
 		for (IDevice subDevice : subDevices) {
-		    devices.put(subDevice.getHardwareId(), subDevice);
+		    devices.put(subDevice.getToken(), subDevice);
 		}
 		break;
 	    }
@@ -118,7 +118,7 @@ public class DeviceGroupUtils {
 	for (IDeviceGroup group : groups.getResults()) {
 	    List<IDevice> groupDevices = getDevicesInGroup(group, criteria, deviceManagement);
 	    for (IDevice groupDevice : groupDevices) {
-		devices.put(groupDevice.getHardwareId(), groupDevice);
+		devices.put(groupDevice.getToken(), groupDevice);
 	    }
 	}
 	return devices.values();

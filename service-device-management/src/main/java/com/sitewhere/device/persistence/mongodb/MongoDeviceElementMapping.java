@@ -23,8 +23,8 @@ public class MongoDeviceElementMapping implements MongoConverter<IDeviceElementM
     /** Property for device element schema path */
     public static final String PROP_DEVICE_ELEMENT_SCHEMA_PATH = "scpt";
 
-    /** Property for mapped hardware id */
-    public static final String PROP_HARDWARE_ID = "hwid";
+    /** Property for mapped device token */
+    public static final String PROP_DEVICE_TOKEN = "dvtk";
 
     /*
      * (non-Javadoc)
@@ -54,7 +54,7 @@ public class MongoDeviceElementMapping implements MongoConverter<IDeviceElementM
      */
     public static void toDocument(IDeviceElementMapping source, Document target) {
 	target.append(PROP_DEVICE_ELEMENT_SCHEMA_PATH, source.getDeviceElementSchemaPath());
-	target.append(PROP_HARDWARE_ID, source.getHardwareId());
+	target.append(PROP_DEVICE_TOKEN, source.getDeviceToken());
     }
 
     /**
@@ -65,10 +65,10 @@ public class MongoDeviceElementMapping implements MongoConverter<IDeviceElementM
      */
     public static void fromDocument(Document source, DeviceElementMapping target) {
 	String path = (String) source.get(PROP_DEVICE_ELEMENT_SCHEMA_PATH);
-	String hardwareId = (String) source.get(PROP_HARDWARE_ID);
+	String deviceToken = (String) source.get(PROP_DEVICE_TOKEN);
 
 	target.setDeviceElementSchemaPath(path);
-	target.setHardwareId(hardwareId);
+	target.setDeviceToken(deviceToken);
     }
 
     /**

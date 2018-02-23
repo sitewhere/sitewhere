@@ -108,7 +108,7 @@ public class ApiTests {
 
 	// Test initial create.
 	DeviceCreateRequest request = new DeviceCreateRequest();
-	request.setHardwareId(TEST_HARDWARE_ID);
+	request.setToken(TEST_HARDWARE_ID);
 	request.setDeviceTypeToken(TEST_DEVICE_TYPE_TOKEN);
 	request.setComments("This is a test device.");
 	Map<String, String> metadata = new HashMap<String, String>();
@@ -140,7 +140,7 @@ public class ApiTests {
 	// Should not allow hardware id to be updated.
 	try {
 	    update = new DeviceCreateRequest();
-	    update.setHardwareId("xxx");
+	    update.setToken("xxx");
 	    client.updateDevice(TEST_HARDWARE_ID, update);
 	    Assert.fail("Device update allowed update of hardware id.");
 	} catch (SiteWhereSystemException e) {
@@ -152,12 +152,12 @@ public class ApiTests {
 	    device = client.createDevice(request);
 	    Assert.fail("Create device allowed duplicate.");
 	} catch (SiteWhereException e) {
-	    verifyErrorCode(e, ErrorCode.DuplicateHardwareId);
+	    verifyErrorCode(e, ErrorCode.DuplicateDeviceToken);
 	}
 
 	// Create a device assignment.
 	DeviceAssignmentCreateRequest assnRequest = new DeviceAssignmentCreateRequest();
-	assnRequest.setDeviceHardwareId(device.getHardwareId());
+	assnRequest.setDeviceToken(device.getToken());
 	metadata = new HashMap<String, String>();
 	metadata.put("name1", "value1");
 	metadata.put("name2", "value2");

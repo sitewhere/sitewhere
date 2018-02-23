@@ -20,7 +20,7 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
  * 
  * @author Derek Adams
  */
-public class MetadataProviderEntity extends MetadataProvider implements IMetadataProviderEntity, Serializable {
+public abstract class MetadataProviderEntity extends MetadataProvider implements IMetadataProviderEntity, Serializable {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = 1858151633970096161L;

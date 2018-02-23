@@ -20,13 +20,6 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
 public interface IScheduledJob extends IMetadataProviderEntity, Serializable {
 
     /**
-     * Get unique job token.
-     * 
-     * @return
-     */
-    public String getToken();
-
-    /**
      * Get unique schedule token.
      * 
      * @return

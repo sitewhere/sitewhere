@@ -7,6 +7,8 @@
  */
 package com.sitewhere.tenant.persistence.hbase;
 
+import java.util.UUID;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.regionserver.BloomType;
@@ -109,38 +111,29 @@ public class HBaseTenantManagement extends LifecycleComponent implements ITenant
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#updateTenant(java.lang.String,
+     * @see com.sitewhere.spi.tenant.ITenantManagement#updateTenant(java.util.UUID,
      * com.sitewhere.spi.tenant.request.ITenantCreateRequest)
      */
     @Override
-    public ITenant updateTenant(String id, ITenantCreateRequest request) throws SiteWhereException {
-	return HBaseTenant.updateTenant(context, id, request);
+    public ITenant updateTenant(UUID id, ITenantCreateRequest request) throws SiteWhereException {
+	return HBaseTenant.updateTenant(context, null, request);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.tenant.ITenantManagement#getTenantById(java.lang.
-     * String)
+     * @see com.sitewhere.spi.tenant.ITenantManagement#getTenant(java.util.UUID)
      */
     @Override
-    public ITenant getTenantById(String id) throws SiteWhereException {
-	return HBaseTenant.getTenantById(context, id);
+    public ITenant getTenant(UUID id) throws SiteWhereException {
+	return HBaseTenant.getTenantById(context, null);
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#getTenantByAuthenticationToken
-     * (java.lang .String)
+     * com.sitewhere.spi.tenant.ITenantManagement#getTenantByToken(java.lang.String)
      */
     @Override
-    public ITenant getTenantByAuthenticationToken(String token) throws SiteWhereException {
-	return HBaseTenant.getTenantByAuthenticationToken(context, token);
+    public ITenant getTenantByToken(String token) throws SiteWhereException {
+	return null;
     }
 
     /*
@@ -156,15 +149,12 @@ public class HBaseTenantManagement extends LifecycleComponent implements ITenant
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#deleteTenant(java.lang.String,
+     * @see com.sitewhere.spi.tenant.ITenantManagement#deleteTenant(java.util.UUID,
      * boolean)
      */
     @Override
-    public ITenant deleteTenant(String tenantId, boolean force) throws SiteWhereException {
-	return HBaseTenant.deleteTenant(context, tenantId, force);
+    public ITenant deleteTenant(UUID tenantId, boolean force) throws SiteWhereException {
+	return HBaseTenant.deleteTenant(context, null, force);
     }
 
     public ISiteWhereHBaseClient getClient() {

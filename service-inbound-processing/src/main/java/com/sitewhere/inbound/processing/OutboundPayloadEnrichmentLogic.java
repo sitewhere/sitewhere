@@ -84,11 +84,11 @@ public class OutboundPayloadEnrichmentLogic {
 	// Send enriched payload to topic.
 	GEnrichedEventPayload grpc = KafkaModelConverter.asGrpcEnrichedEventPayload(enriched);
 	byte[] message = KafkaModelMarshaler.buildEnrichedEventPayloadMessage(grpc);
-	getTenantEngine().getEnrichedEventsProducer().send(device.getHardwareId(), message);
+	getTenantEngine().getEnrichedEventsProducer().send(device.getToken(), message);
 
 	// Send enriched command invocations to topic.
 	if (event.getEventType() == DeviceEventType.CommandInvocation) {
-	    getTenantEngine().getEnrichedCommandInvocationsProducer().send(device.getHardwareId(), message);
+	    getTenantEngine().getEnrichedCommandInvocationsProducer().send(device.getToken(), message);
 	}
     }
 

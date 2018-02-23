@@ -355,13 +355,18 @@ public class DeviceManagementPersistence extends Persistence {
 	Device device = new Device();
 	device.setId(UUID.randomUUID());
 
-	// Require hardware id and verify that it is valid.
-	require("Hardware Id", request.getHardwareId());
-	Matcher matcher = HARDWARE_ID_REGEX.matcher(request.getHardwareId());
+	// Use token if provided, otherwise generate one.
+	if (request.getToken() != null) {
+	    device.setToken(request.getToken());
+	} else {
+	    device.setToken(UUID.randomUUID().toString());
+	}
+
+	Matcher matcher = HARDWARE_ID_REGEX.matcher(request.getToken());
 	if (!matcher.matches()) {
 	    throw new SiteWhereSystemException(ErrorCode.MalformedHardwareId, ErrorLevel.ERROR);
 	}
-	device.setHardwareId(request.getHardwareId());
+	device.setToken(request.getToken());
 	device.setDeviceTypeId(deviceType.getId());
 	device.setComments(request.getComments());
 	device.setStatus(request.getStatus());
@@ -421,9 +426,9 @@ public class DeviceManagementPersistence extends Persistence {
     public static IDevice deviceElementMappingCreateLogic(IDeviceManagement management, IDevice device,
 	    IDeviceElementMapping request) throws SiteWhereException {
 	if (device == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceId, ErrorLevel.ERROR);
 	}
-	IDevice mapped = management.getDeviceByHardwareId(request.getHardwareId());
+	IDevice mapped = management.getDeviceByToken(request.getDeviceToken());
 	if (mapped == null) {
 	    throw new SiteWhereException("Device referenced by mapping does not exist.");
 	}
@@ -451,7 +456,7 @@ public class DeviceManagementPersistence extends Persistence {
 
 	// Add parent backreference for nested device.
 	DeviceCreateRequest nested = new DeviceCreateRequest();
-	nested.setParentHardwareId(device.getHardwareId());
+	nested.setParentDeviceToken(device.getToken());
 	management.updateDevice(mapped.getId(), nested);
 
 	// Update device with new mapping.
@@ -473,7 +478,7 @@ public class DeviceManagementPersistence extends Persistence {
     public static IDevice deviceElementMappingDeleteLogic(IDeviceManagement management, IDevice device, String path)
 	    throws SiteWhereException {
 	if (device == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceId, ErrorLevel.ERROR);
 	}
 
 	// Verify that mapping exists and build list without deleted mapping.
@@ -492,7 +497,7 @@ public class DeviceManagementPersistence extends Persistence {
 	}
 
 	// Remove parent reference from nested device.
-	IDevice mapped = management.getDeviceByHardwareId(match.getHardwareId());
+	IDevice mapped = management.getDeviceByToken(match.getDeviceToken());
 	if (mapped != null) {
 	    DeviceCreateRequest nested = new DeviceCreateRequest();
 	    nested.setRemoveParentHardwareId(true);
@@ -520,6 +525,7 @@ public class DeviceManagementPersistence extends Persistence {
 	AreaType type = new AreaType();
 	type.setId(UUID.randomUUID());
 
+	// Use token if provided, otherwise generate one.
 	if (request.getToken() != null) {
 	    type.setToken(request.getToken());
 	} else {
@@ -583,6 +589,7 @@ public class DeviceManagementPersistence extends Persistence {
 	Area area = new Area();
 	area.setId(UUID.randomUUID());
 
+	// Use token if provided, otherwise generate one.
 	if (request.getToken() != null) {
 	    area.setToken(request.getToken());
 	} else {

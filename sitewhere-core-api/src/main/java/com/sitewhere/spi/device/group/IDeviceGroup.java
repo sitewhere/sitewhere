@@ -8,7 +8,6 @@
 package com.sitewhere.spi.device.group;
 
 import java.util.List;
-import java.util.UUID;
 
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 
@@ -18,20 +17,6 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
  * @author Derek
  */
 public interface IDeviceGroup extends IMetadataProviderEntity {
-
-    /**
-     * Get unique device group id.
-     * 
-     * @return
-     */
-    public UUID getId();
-
-    /**
-     * Get the unique group token.
-     * 
-     * @return
-     */
-    public String getToken();
 
     /**
      * Get the group name.

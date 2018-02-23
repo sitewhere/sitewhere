@@ -20,13 +20,6 @@ import com.sitewhere.spi.server.ITenantRuntimeState;
 public interface ITenant extends IMetadataProviderEntity {
 
     /**
-     * Get unique tenant id.
-     * 
-     * @return
-     */
-    public String getId();
-
-    /**
      * Get tenant name.
      * 
      * @return

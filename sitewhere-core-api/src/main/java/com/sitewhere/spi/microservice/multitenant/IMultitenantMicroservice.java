@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.microservice.multitenant;
 
+import java.util.UUID;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.tenant.ITenant;
@@ -34,7 +36,7 @@ public interface IMultitenantMicroservice<T extends IMicroserviceTenantEngine> e
      * @return
      * @throws SiteWhereException
      */
-    public T getTenantEngineByTenantId(String tenantId) throws SiteWhereException;
+    public T getTenantEngineByTenantId(UUID tenantId) throws SiteWhereException;
 
     /**
      * Shuts down and restarts the given tenant engine.
@@ -42,7 +44,7 @@ public interface IMultitenantMicroservice<T extends IMicroserviceTenantEngine> e
      * @param tenantId
      * @throws SiteWhereException
      */
-    public void restartTenantEngine(String tenantId) throws SiteWhereException;
+    public void restartTenantEngine(UUID tenantId) throws SiteWhereException;
 
     /**
      * Shuts down and removes a tenant engine.
@@ -50,7 +52,7 @@ public interface IMultitenantMicroservice<T extends IMicroserviceTenantEngine> e
      * @param tenantId
      * @throws SiteWhereException
      */
-    public void removeTenantEngine(String tenantId) throws SiteWhereException;
+    public void removeTenantEngine(UUID tenantId) throws SiteWhereException;
 
     /**
      * Get configuration for the given tenant.
@@ -59,7 +61,7 @@ public interface IMultitenantMicroservice<T extends IMicroserviceTenantEngine> e
      * @return
      * @throws SiteWhereException
      */
-    public byte[] getTenantConfiguration(String tenantId) throws SiteWhereException;
+    public byte[] getTenantConfiguration(UUID tenantId) throws SiteWhereException;
 
     /**
      * Update configuration for the given tenant.
@@ -68,5 +70,5 @@ public interface IMultitenantMicroservice<T extends IMicroserviceTenantEngine> e
      * @param content
      * @throws SiteWhereException
      */
-    public void updateTenantConfiguration(String tenantId, byte[] content) throws SiteWhereException;
+    public void updateTenantConfiguration(UUID tenantId, byte[] content) throws SiteWhereException;
 }

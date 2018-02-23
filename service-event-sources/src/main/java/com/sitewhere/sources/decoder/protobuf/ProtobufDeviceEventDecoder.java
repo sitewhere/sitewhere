@@ -88,7 +88,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		RegisterDevice register = RegisterDevice.parseDelimitedFrom(stream);
 		LOGGER.debug("Decoded registration for: " + register.getHardwareId());
 		DeviceRegistrationRequest request = new DeviceRegistrationRequest();
-		request.setHardwareId(register.getHardwareId());
+		request.setDeviceToken(register.getHardwareId());
 		request.setDeviceTypeToken(register.getDeviceTypeToken());
 		if (register.hasAreaToken()) {
 		    request.setAreaToken(register.getAreaToken());
@@ -106,7 +106,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		    decoded.setOriginator(header.getOriginator());
 		}
 		results.add(decoded);
-		decoded.setHardwareId(register.getHardwareId());
+		decoded.setDeviceToken(register.getHardwareId());
 		decoded.setRequest(request);
 		return results;
 	    }
@@ -122,7 +122,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		    decoded.setOriginator(header.getOriginator());
 		}
 		results.add(decoded);
-		decoded.setHardwareId(ack.getHardwareId());
+		decoded.setDeviceToken(ack.getHardwareId());
 		decoded.setRequest(request);
 		return results;
 	    }
@@ -157,7 +157,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		    decoded.setOriginator(header.getOriginator());
 		}
 		results.add(decoded);
-		decoded.setHardwareId(dm.getHardwareId());
+		decoded.setDeviceToken(dm.getHardwareId());
 		decoded.setRequest(request);
 		return results;
 	    }
@@ -191,7 +191,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		    decoded.setOriginator(header.getOriginator());
 		}
 		results.add(decoded);
-		decoded.setHardwareId(location.getHardwareId());
+		decoded.setDeviceToken(location.getHardwareId());
 		decoded.setRequest(request);
 		return results;
 	    }
@@ -225,7 +225,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		    decoded.setOriginator(header.getOriginator());
 		}
 		results.add(decoded);
-		decoded.setHardwareId(alert.getHardwareId());
+		decoded.setDeviceToken(alert.getHardwareId());
 		decoded.setRequest(request);
 		return results;
 	    }
@@ -248,7 +248,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		    decoded.setOriginator(header.getOriginator());
 		}
 		results.add(decoded);
-		decoded.setHardwareId(devStream.getHardwareId());
+		decoded.setDeviceToken(devStream.getHardwareId());
 		decoded.setRequest(request);
 		return results;
 	    }
@@ -278,7 +278,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		    decoded.setOriginator(header.getOriginator());
 		}
 		results.add(decoded);
-		decoded.setHardwareId(streamData.getHardwareId());
+		decoded.setDeviceToken(streamData.getHardwareId());
 		decoded.setRequest(request);
 		return results;
 	    }
@@ -294,7 +294,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		    decoded.setOriginator(header.getOriginator());
 		}
 		results.add(decoded);
-		decoded.setHardwareId(request.getHardwareId());
+		decoded.setDeviceToken(request.getHardwareId());
 		decoded.setRequest(send);
 		return results;
 	    }

@@ -245,13 +245,13 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     public IDevice getDevice(UUID deviceId) throws SiteWhereException;
 
     /**
-     * Gets a device by unique hardware id.
+     * Gets a device by reference token.
      * 
-     * @param hardwareId
+     * @param token
      * @return
      * @throws SiteWhereException
      */
-    public IDevice getDeviceByHardwareId(String hardwareId) throws SiteWhereException;
+    public IDevice getDeviceByToken(String token) throws SiteWhereException;
 
     /**
      * Update device information.

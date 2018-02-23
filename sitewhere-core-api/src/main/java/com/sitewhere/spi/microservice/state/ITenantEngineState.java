@@ -26,11 +26,11 @@ public interface ITenantEngineState {
     public IMicroserviceDetails getMicroservice();
 
     /**
-     * Get tenant id.
+     * Get tenant token.
      * 
      * @return
      */
-    public String getTenantId();
+    public String getTenantToken();
 
     /**
      * Get current lifeycle status of tenant engine.

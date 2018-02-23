@@ -13,6 +13,7 @@ import org.apache.commons.logging.LogFactory;
 import com.google.protobuf.ByteString;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.model.MicroserviceModel.GConfigurationContent;
+import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.grpc.model.converter.MicroserviceModelConverter;
 import com.sitewhere.grpc.service.GGetConfigurationModelRequest;
 import com.sitewhere.grpc.service.GGetConfigurationModelResponse;
@@ -116,7 +117,7 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 
 	    if (getMicroservice() instanceof IMultitenantMicroservice) {
 		byte[] content = ((IMultitenantMicroservice<?>) getMicroservice())
-			.getTenantConfiguration(request.getTenantId());
+			.getTenantConfiguration(CommonModelConverter.asApiUuid(request.getTenantId()));
 		configuration.setContent(ByteString.copyFrom(content));
 	    } else {
 		throw new SiteWhereException("Requesting tenant configuration from a global microservice.");
@@ -171,8 +172,8 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	    byte[] content = request.getConfiguration().getContent().toByteArray();
 
 	    if (getMicroservice() instanceof IMultitenantMicroservice) {
-		((IMultitenantMicroservice<?>) getMicroservice()).updateTenantConfiguration(request.getTenantId(),
-			content);
+		((IMultitenantMicroservice<?>) getMicroservice())
+			.updateTenantConfiguration(CommonModelConverter.asApiUuid(request.getTenantId()), content);
 	    } else {
 		throw new SiteWhereException("Requesting tenant configuration from a global microservice.");
 	    }

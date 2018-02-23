@@ -16,24 +16,23 @@ import com.sitewhere.sources.spi.ICompositeDeviceEventDecoder.IMessageMetadata;
  */
 public class BinaryMessageMetadata implements IMessageMetadata<byte[]> {
 
-    /** Device hardware id */
-    private String hardwareId;
+    /** Device token */
+    private String deviceToken;
 
     /** Message payload */
     private byte[] payload;
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.ICompositeDeviceEventDecoder.
-     * IMessageMetadata#getHardwareId()
+     * @see com.sitewhere.sources.spi.ICompositeDeviceEventDecoder.IMessageMetadata#
+     * getDeviceToken()
      */
-    public String getHardwareId() {
-	return hardwareId;
+    @Override
+    public String getDeviceToken() {
+	return deviceToken;
     }
 
-    public void setHardwareId(String hardwareId) {
-	this.hardwareId = hardwareId;
+    public void setDeviceToken(String deviceToken) {
+	this.deviceToken = deviceToken;
     }
 
     /*
@@ -42,6 +41,7 @@ public class BinaryMessageMetadata implements IMessageMetadata<byte[]> {
      * @see com.sitewhere.spi.device.communication.ICompositeDeviceEventDecoder.
      * IMessageMetadata#getPayload()
      */
+    @Override
     public byte[] getPayload() {
 	return payload;
     }

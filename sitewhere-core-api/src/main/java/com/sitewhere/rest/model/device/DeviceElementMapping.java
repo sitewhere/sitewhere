@@ -7,8 +7,6 @@
  */
 package com.sitewhere.rest.model.device;
 
-import java.io.Serializable;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.device.IDevice;
@@ -20,7 +18,7 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceElementMapping implements IDeviceElementMapping, Serializable {
+public class DeviceElementMapping implements IDeviceElementMapping {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = 2668063520841302094L;
@@ -28,8 +26,8 @@ public class DeviceElementMapping implements IDeviceElementMapping, Serializable
     /** Path in device element schema being mapped */
     private String deviceElementSchemaPath;
 
-    /** Hardware id of device being mapped */
-    private String hardwareId;
+    /** Token of device being mapped */
+    private String deviceToken;
 
     /** FIELDS BELOW DEPEND ON MARSHALING PARAMETERS */
 
@@ -43,9 +41,9 @@ public class DeviceElementMapping implements IDeviceElementMapping, Serializable
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.device.IDeviceElementMapping#getDeviceElementSchemaPath
-     * ()
+     * com.sitewhere.spi.device.IDeviceElementMapping#getDeviceElementSchemaPath ()
      */
+    @Override
     public String getDeviceElementSchemaPath() {
 	return deviceElementSchemaPath;
     }
@@ -55,16 +53,15 @@ public class DeviceElementMapping implements IDeviceElementMapping, Serializable
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceElementMapping#getHardwareId()
+     * @see com.sitewhere.spi.device.IDeviceElementMapping#getDeviceToken()
      */
-    public String getHardwareId() {
-	return hardwareId;
+    @Override
+    public String getDeviceToken() {
+	return deviceToken;
     }
 
-    public void setHardwareId(String hardwareId) {
-	this.hardwareId = hardwareId;
+    public void setDeviceToken(String deviceToken) {
+	this.deviceToken = deviceToken;
     }
 
     public IDevice getDevice() {
@@ -78,7 +75,7 @@ public class DeviceElementMapping implements IDeviceElementMapping, Serializable
     public static DeviceElementMapping copy(IDeviceElementMapping input) {
 	DeviceElementMapping result = new DeviceElementMapping();
 	result.setDeviceElementSchemaPath(input.getDeviceElementSchemaPath());
-	result.setHardwareId(input.getHardwareId());
+	result.setDeviceToken(input.getDeviceToken());
 	return result;
     }
 }

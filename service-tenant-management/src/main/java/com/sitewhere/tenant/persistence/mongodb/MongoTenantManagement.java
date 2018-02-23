@@ -7,6 +7,7 @@
  */
 package com.sitewhere.tenant.persistence.mongodb;
 
+import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -17,7 +18,7 @@ import org.bson.Document;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.mongodb.MongoTimeoutException;
+import com.mongodb.MongoClientException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.IndexOptions;
 import com.sitewhere.mongodb.IMongoConverterLookup;
@@ -86,7 +87,7 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
      * @throws SiteWhereException
      */
     protected void ensureIndexes() throws SiteWhereException {
-	getMongoClient().getTenantsCollection().createIndex(new Document(MongoTenant.PROP_ID, 1),
+	getMongoClient().getTenantsCollection().createIndex(new Document(MongoTenant.PROP_TOKEN, 1),
 		new IndexOptions().unique(true));
 	getMongoClient().getTenantsCollection().createIndex(new Document(MongoTenant.PROP_AUTH_TOKEN, 1),
 		new IndexOptions().unique(true));
@@ -112,14 +113,11 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#updateTenant(java.lang.String,
+     * @see com.sitewhere.spi.tenant.ITenantManagement#updateTenant(java.util.UUID,
      * com.sitewhere.spi.tenant.request.ITenantCreateRequest)
      */
     @Override
-    public ITenant updateTenant(String id, ITenantCreateRequest request) throws SiteWhereException {
+    public ITenant updateTenant(UUID id, ITenantCreateRequest request) throws SiteWhereException {
 	Document dbExisting = assertTenant(id);
 	Tenant existing = MongoTenant.fromDocument(dbExisting);
 
@@ -135,13 +133,10 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.tenant.ITenantManagement#getTenantById(java.lang.
-     * String)
+     * @see com.sitewhere.spi.tenant.ITenantManagement#getTenant(java.util.UUID)
      */
     @Override
-    public ITenant getTenantById(String id) throws SiteWhereException {
+    public ITenant getTenant(UUID id) throws SiteWhereException {
 	Document dbExisting = getTenantDocumentById(id);
 	if (dbExisting == null) {
 	    return null;
@@ -150,24 +145,21 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#getTenantByAuthenticationToken
-     * (java.lang .String)
+     * com.sitewhere.spi.tenant.ITenantManagement#getTenantByToken(java.lang.String)
      */
     @Override
-    public ITenant getTenantByAuthenticationToken(String token) throws SiteWhereException {
+    public ITenant getTenantByToken(String token) throws SiteWhereException {
 	try {
 	    MongoCollection<Document> tenants = getMongoClient().getTenantsCollection();
-	    Document query = new Document(MongoTenant.PROP_AUTH_TOKEN, token);
-	    Document match = tenants.find(query).first();
-	    if (match == null) {
-		return null;
+	    Document query = new Document(MongoTenant.PROP_TOKEN, token);
+	    Document dbTenant = tenants.find(query).first();
+	    if (dbTenant != null) {
+		return MongoTenant.fromDocument(dbTenant);
 	    }
-	    return MongoTenant.fromDocument(match);
-	} catch (MongoTimeoutException e) {
-	    throw new SiteWhereException("Connection to MongoDB lost.", e);
+	    return null;
+	} catch (MongoClientException e) {
+	    throw MongoPersistence.handleClientException(e);
 	}
     }
 
@@ -206,14 +198,11 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#deleteTenant(java.lang.String,
+     * @see com.sitewhere.spi.tenant.ITenantManagement#deleteTenant(java.util.UUID,
      * boolean)
      */
     @Override
-    public ITenant deleteTenant(String tenantId, boolean force) throws SiteWhereException {
+    public ITenant deleteTenant(UUID tenantId, boolean force) throws SiteWhereException {
 	Document existing = assertTenant(tenantId);
 	if (force) {
 	    MongoCollection<Document> tenants = getMongoClient().getTenantsCollection();
@@ -236,7 +225,7 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
      * @return
      * @throws SiteWhereException
      */
-    protected Document assertTenant(String id) throws SiteWhereException {
+    protected Document assertTenant(UUID id) throws SiteWhereException {
 	Document match = getTenantDocumentById(id);
 	if (match == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantId, ErrorLevel.ERROR);
@@ -251,13 +240,13 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
      * @return
      * @throws SiteWhereException
      */
-    protected Document getTenantDocumentById(String id) throws SiteWhereException {
+    protected Document getTenantDocumentById(UUID id) throws SiteWhereException {
 	try {
 	    MongoCollection<Document> tenants = getMongoClient().getTenantsCollection();
 	    Document query = new Document(MongoTenant.PROP_ID, id);
 	    return tenants.find(query).first();
-	} catch (MongoTimeoutException e) {
-	    throw new SiteWhereException("Connection to MongoDB lost.", e);
+	} catch (MongoClientException e) {
+	    throw MongoPersistence.handleClientException(e);
 	}
     }
 

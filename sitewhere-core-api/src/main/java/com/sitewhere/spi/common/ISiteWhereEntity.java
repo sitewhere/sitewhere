@@ -8,6 +8,7 @@
 package com.sitewhere.spi.common;
 
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Base interface for entites managed by SiteWhere.
@@ -15,6 +16,20 @@ import java.util.Date;
  * @author Derek Adams
  */
 public interface ISiteWhereEntity {
+
+    /**
+     * Get unique id.
+     * 
+     * @return
+     */
+    public UUID getId();
+
+    /**
+     * Get reference token.
+     * 
+     * @return
+     */
+    public String getToken();
 
     /**
      * Get date when entity was created.

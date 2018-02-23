@@ -26,8 +26,8 @@ public class TenantEngineState implements ITenantEngineState {
     /** Microservice details */
     private IMicroserviceDetails microservice;
 
-    /** Tenant id */
-    private String tenantId;
+    /** Tenant token */
+    private String tenantToken;
 
     /** Lifecycle status */
     private LifecycleStatus lifecycleStatus;
@@ -49,15 +49,15 @@ public class TenantEngineState implements ITenantEngineState {
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.state.ITenantEngineState#getTenantId()
+     * @see com.sitewhere.spi.microservice.state.ITenantEngineState#getTenantToken()
      */
     @Override
-    public String getTenantId() {
-	return tenantId;
+    public String getTenantToken() {
+	return tenantToken;
     }
 
-    public void setTenantId(String tenantId) {
-	this.tenantId = tenantId;
+    public void setTenantToken(String tenantToken) {
+	this.tenantToken = tenantToken;
     }
 
     /*

@@ -40,8 +40,8 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
     /** Indicates type of event (detected from URI) */
     private static final String META_EVENT_TYPE = "eventType";
 
-    /** Indicates device hardware id (detected from URI) */
-    private static final String META_HARDWARE_ID = "hardwareId";
+    /** Indicates device token (detected from URI) */
+    private static final String META_DEVICE_TOKEN = "token";
 
     /** Receiver that handles incoming events */
     private IInboundEventReceiver<byte[]> eventReceiver;
@@ -101,17 +101,17 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 	    }
 	    }
 	} else {
-	    String hardwareId = paths.remove(0);
+	    String deviceToken = paths.remove(0);
 	    try {
-		IDevice device = getDeviceManagement(tenant).getDeviceByHardwareId(hardwareId);
+		IDevice device = getDeviceManagement(tenant).getDeviceByToken(deviceToken);
 		if (device != null) {
 		    handlePerDeviceRequest(tenant, device, paths, exchange);
 		} else {
-		    createAndSendResponse(ResponseCode.BAD_REQUEST, "Device hardware id is invalid.", exchange);
+		    createAndSendResponse(ResponseCode.BAD_REQUEST, "Device token is invalid.", exchange);
 		}
 	    } catch (SiteWhereException e) {
-		createAndSendResponse(ResponseCode.BAD_REQUEST,
-			"Error locating device by hardware id. " + e.getMessage(), exchange);
+		createAndSendResponse(ResponseCode.BAD_REQUEST, "Error locating device by token. " + e.getMessage(),
+			exchange);
 	    }
 	}
     }
@@ -152,7 +152,7 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
     protected void handleDeviceMeasurements(ITenant tenant, IDevice device, List<String> paths, Exchange exchange) {
 	Map<String, Object> metadata = new HashMap<String, Object>();
 	metadata.put(META_EVENT_TYPE, Type.DeviceMeasurements.name());
-	metadata.put(META_HARDWARE_ID, device.getHardwareId());
+	metadata.put(META_DEVICE_TOKEN, device.getToken());
 	switch (exchange.getRequest().getCode()) {
 	case POST: {
 	    getEventReceiver().onEventPayloadReceived(exchange.getRequest().getPayload(), metadata);
@@ -176,7 +176,7 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
     protected void handleDeviceAlerts(ITenant tenant, IDevice device, List<String> paths, Exchange exchange) {
 	Map<String, Object> metadata = new HashMap<String, Object>();
 	metadata.put(META_EVENT_TYPE, Type.DeviceAlert.name());
-	metadata.put(META_HARDWARE_ID, device.getHardwareId());
+	metadata.put(META_DEVICE_TOKEN, device.getToken());
 	switch (exchange.getRequest().getCode()) {
 	case POST: {
 	    getEventReceiver().onEventPayloadReceived(exchange.getRequest().getPayload(), metadata);
@@ -200,7 +200,7 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
     protected void handleDeviceLocations(ITenant tenant, IDevice device, List<String> paths, Exchange exchange) {
 	Map<String, Object> metadata = new HashMap<String, Object>();
 	metadata.put(META_EVENT_TYPE, Type.DeviceLocation.name());
-	metadata.put(META_HARDWARE_ID, device.getHardwareId());
+	metadata.put(META_DEVICE_TOKEN, device.getToken());
 	switch (exchange.getRequest().getCode()) {
 	case POST: {
 	    getEventReceiver().onEventPayloadReceived(exchange.getRequest().getPayload(), metadata);
@@ -224,7 +224,7 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
     protected void handleDeviceAcks(ITenant tenant, IDevice device, List<String> paths, Exchange exchange) {
 	Map<String, Object> metadata = new HashMap<String, Object>();
 	metadata.put(META_EVENT_TYPE, Type.Acknowledge.name());
-	metadata.put(META_HARDWARE_ID, device.getHardwareId());
+	metadata.put(META_DEVICE_TOKEN, device.getToken());
 	switch (exchange.getRequest().getCode()) {
 	case POST: {
 	    getEventReceiver().onEventPayloadReceived(exchange.getRequest().getPayload(), metadata);

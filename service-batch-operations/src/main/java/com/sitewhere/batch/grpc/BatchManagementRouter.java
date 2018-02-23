@@ -7,6 +7,8 @@
  */
 package com.sitewhere.batch.grpc;
 
+import java.util.UUID;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -65,7 +67,8 @@ public class BatchManagementRouter extends BatchManagementGrpc.BatchManagementIm
 	    throw new RuntimeException("Tenant id not found in schedule management request.");
 	}
 	try {
-	    IBatchOperationsTenantEngine engine = getMicroservice().getTenantEngineByTenantId(tenantId);
+	    IBatchOperationsTenantEngine engine = getMicroservice()
+		    .getTenantEngineByTenantId(UUID.fromString(tenantId));
 	    if (engine != null) {
 		UserContextManager.setCurrentTenant(engine.getTenant());
 		return engine.getBatchManagementImpl();

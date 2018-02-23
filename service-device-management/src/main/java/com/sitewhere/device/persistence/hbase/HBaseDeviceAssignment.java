@@ -69,9 +69,9 @@ public class HBaseDeviceAssignment {
      */
     public static IDeviceAssignment createDeviceAssignment(IHBaseContext context,
 	    IDeviceAssignmentCreateRequest request) throws SiteWhereException {
-	Device device = HBaseDevice.getDeviceByHardwareId(context, request.getDeviceHardwareId());
+	Device device = HBaseDevice.getDeviceByToken(context, request.getDeviceToken());
 	if (device == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceId, ErrorLevel.ERROR);
 	}
 	Long areaId = context.getDeviceIdManager().getSiteKeys().getValue(request.getAreaToken());
 	if (areaId == null) {

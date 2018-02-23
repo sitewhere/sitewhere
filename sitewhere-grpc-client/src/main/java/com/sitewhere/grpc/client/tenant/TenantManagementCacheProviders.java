@@ -7,6 +7,8 @@
  */
 package com.sitewhere.grpc.client.tenant;
 
+import java.util.UUID;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -24,6 +26,9 @@ public class TenantManagementCacheProviders {
     /** Cache id for tenant cache */
     public static final String ID_TENANT_CACHE = "tent";
 
+    /** Cache id for tenant by id cache */
+    public static final String ID_TENANT_BY_ID_CACHE = "tent";
+
     /**
      * Cache for tenants.
      * 
@@ -36,6 +41,29 @@ public class TenantManagementCacheProviders {
 
 	public TenantCache(IMicroservice microservice, boolean createOnStartup) {
 	    super(microservice, ID_TENANT_CACHE, createOnStartup);
+	}
+
+	/*
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Log getLogger() {
+	    return LOGGER;
+	}
+    }
+
+    /**
+     * Cache for tenants by id.
+     * 
+     * @author Derek
+     */
+    public static class TenantByIdCache extends CacheProvider<UUID, ITenant> {
+
+	/** Static logger instance */
+	private static Log LOGGER = LogFactory.getLog(TenantByIdCache.class);
+
+	public TenantByIdCache(IMicroservice microservice, boolean createOnStartup) {
+	    super(microservice, ID_TENANT_BY_ID_CACHE, createOnStartup);
 	}
 
 	/*

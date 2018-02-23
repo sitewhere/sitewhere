@@ -30,7 +30,7 @@ public class TenantCreateRequest extends MetadataProvider implements ITenantCrea
     private static final long serialVersionUID = -5706275554835627264L;
 
     /** Unique tenant id */
-    private String id;
+    private String token;
 
     /** Tenant name */
     private String name;
@@ -48,23 +48,21 @@ public class TenantCreateRequest extends MetadataProvider implements ITenantCrea
     private String tenantTemplateId;
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.user.request.ITenantCreateRequest#getId()
+     * @see com.sitewhere.spi.tenant.request.ITenantCreateRequest#getToken()
      */
-    public String getId() {
-	return id;
+    @Override
+    public String getToken() {
+	return token;
     }
 
-    public void setId(String id) {
-	this.id = id;
+    public void setToken(String token) {
+	this.token = token;
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.user.request.ITenantCreateRequest#getName()
+     * @see com.sitewhere.spi.tenant.request.ITenantCreateRequest#getName()
      */
+    @Override
     public String getName() {
 	return name;
     }
@@ -74,11 +72,11 @@ public class TenantCreateRequest extends MetadataProvider implements ITenantCrea
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.user.request.ITenantCreateRequest#
-     * getAuthenticationToken()
+     * @see
+     * com.sitewhere.spi.tenant.request.ITenantCreateRequest#getAuthenticationToken(
+     * )
      */
+    @Override
     public String getAuthenticationToken() {
 	return authenticationToken;
     }
@@ -88,10 +86,9 @@ public class TenantCreateRequest extends MetadataProvider implements ITenantCrea
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.user.request.ITenantCreateRequest#getLogoUrl()
+     * @see com.sitewhere.spi.tenant.request.ITenantCreateRequest#getLogoUrl()
      */
+    @Override
     public String getLogoUrl() {
 	return logoUrl;
     }
@@ -101,12 +98,10 @@ public class TenantCreateRequest extends MetadataProvider implements ITenantCrea
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.user.request.ITenantCreateRequest#getAuthorizedUserIds(
-     * )
+     * com.sitewhere.spi.tenant.request.ITenantCreateRequest#getAuthorizedUserIds()
      */
+    @Override
     public List<String> getAuthorizedUserIds() {
 	return authorizedUserIds;
     }
@@ -116,12 +111,10 @@ public class TenantCreateRequest extends MetadataProvider implements ITenantCrea
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.tenant.request.ITenantCreateRequest#getTenantTemplateId
-     * ()
+     * com.sitewhere.spi.tenant.request.ITenantCreateRequest#getTenantTemplateId()
      */
+    @Override
     public String getTenantTemplateId() {
 	return tenantTemplateId;
     }
@@ -135,8 +128,8 @@ public class TenantCreateRequest extends MetadataProvider implements ITenantCrea
 	/** Request being built */
 	private TenantCreateRequest request = new TenantCreateRequest();
 
-	public Builder(String id, String name, String authenticationToken, String logoUrl, String tenantTemplateId) {
-	    request.setId(id);
+	public Builder(String token, String name, String authenticationToken, String logoUrl, String tenantTemplateId) {
+	    request.setToken(token);
 	    request.setName(name);
 	    request.setAuthenticationToken(authenticationToken);
 	    request.setLogoUrl(logoUrl);
@@ -144,7 +137,7 @@ public class TenantCreateRequest extends MetadataProvider implements ITenantCrea
 	}
 
 	public Builder(ITenant existing) {
-	    request.setId(existing.getId());
+	    request.setToken(existing.getToken());
 	    request.setName(existing.getName());
 	    request.setLogoUrl(existing.getLogoUrl());
 	    request.setAuthenticationToken(existing.getAuthenticationToken());

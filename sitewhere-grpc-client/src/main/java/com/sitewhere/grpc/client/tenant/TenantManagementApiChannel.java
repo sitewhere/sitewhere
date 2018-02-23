@@ -8,6 +8,7 @@
 package com.sitewhere.grpc.client.tenant;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,15 +18,16 @@ import com.sitewhere.grpc.client.GrpcChannel;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
+import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.grpc.model.converter.TenantModelConverter;
 import com.sitewhere.grpc.service.GCreateTenantRequest;
 import com.sitewhere.grpc.service.GCreateTenantResponse;
 import com.sitewhere.grpc.service.GDeleteTenantRequest;
 import com.sitewhere.grpc.service.GDeleteTenantResponse;
-import com.sitewhere.grpc.service.GGetTenantByAuthenticationTokenRequest;
-import com.sitewhere.grpc.service.GGetTenantByAuthenticationTokenResponse;
 import com.sitewhere.grpc.service.GGetTenantByIdRequest;
 import com.sitewhere.grpc.service.GGetTenantByIdResponse;
+import com.sitewhere.grpc.service.GGetTenantByTokenRequest;
+import com.sitewhere.grpc.service.GGetTenantByTokenResponse;
 import com.sitewhere.grpc.service.GGetTenantTemplatesRequest;
 import com.sitewhere.grpc.service.GGetTenantTemplatesResponse;
 import com.sitewhere.grpc.service.GListTenantsRequest;
@@ -92,18 +94,15 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#updateTenant(java.lang.String,
+     * @see com.sitewhere.spi.tenant.ITenantManagement#updateTenant(java.util.UUID,
      * com.sitewhere.spi.tenant.request.ITenantCreateRequest)
      */
     @Override
-    public ITenant updateTenant(String id, ITenantCreateRequest request) throws SiteWhereException {
+    public ITenant updateTenant(UUID id, ITenantCreateRequest request) throws SiteWhereException {
 	try {
 	    GrpcUtils.logClientMethodEntry(this, TenantManagementGrpc.METHOD_UPDATE_TENANT);
 	    GUpdateTenantRequest.Builder grequest = GUpdateTenantRequest.newBuilder();
-	    grequest.setId(id);
+	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setRequest(TenantModelConverter.asGrpcTenantCreateRequest(request));
 	    GUpdateTenantResponse gresponse = getGrpcChannel().getBlockingStub().updateTenant(grequest.build());
 	    ITenant response = TenantModelConverter.asApiTenant(gresponse.getTenant());
@@ -115,17 +114,14 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.tenant.ITenantManagement#getTenantById(java.lang.
-     * String)
+     * @see com.sitewhere.spi.tenant.ITenantManagement#getTenant(java.util.UUID)
      */
     @Override
-    public ITenant getTenantById(String id) throws SiteWhereException {
+    public ITenant getTenant(UUID id) throws SiteWhereException {
 	try {
 	    GrpcUtils.logClientMethodEntry(this, TenantManagementGrpc.METHOD_GET_TENANT_BY_ID);
 	    GGetTenantByIdRequest.Builder grequest = GGetTenantByIdRequest.newBuilder();
-	    grequest.setId(id);
+	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    GGetTenantByIdResponse gresponse = getGrpcChannel().getBlockingStub().getTenantById(grequest.build());
 	    ITenant response = (gresponse.hasTenant()) ? TenantModelConverter.asApiTenant(gresponse.getTenant()) : null;
 	    GrpcUtils.logClientMethodResponse(TenantManagementGrpc.METHOD_GET_TENANT_BY_ID, response);
@@ -136,27 +132,21 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#getTenantByAuthenticationToken
-     * (java.lang.String)
+     * com.sitewhere.spi.tenant.ITenantManagement#getTenantByToken(java.lang.String)
      */
     @Override
-    public ITenant getTenantByAuthenticationToken(String token) throws SiteWhereException {
+    public ITenant getTenantByToken(String token) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, TenantManagementGrpc.METHOD_GET_TENANT_BY_AUTHENTICATION_TOKEN);
-	    GGetTenantByAuthenticationTokenRequest.Builder grequest = GGetTenantByAuthenticationTokenRequest
-		    .newBuilder();
+	    GrpcUtils.logClientMethodEntry(this, TenantManagementGrpc.METHOD_GET_TENANT_BY_TOKEN);
+	    GGetTenantByTokenRequest.Builder grequest = GGetTenantByTokenRequest.newBuilder();
 	    grequest.setToken(token);
-	    GGetTenantByAuthenticationTokenResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .getTenantByAuthenticationToken(grequest.build());
+	    GGetTenantByTokenResponse gresponse = getGrpcChannel().getBlockingStub().getTenantByToken(grequest.build());
 	    ITenant response = (gresponse.hasTenant()) ? TenantModelConverter.asApiTenant(gresponse.getTenant()) : null;
-	    GrpcUtils.logClientMethodResponse(TenantManagementGrpc.METHOD_GET_TENANT_BY_AUTHENTICATION_TOKEN, response);
+	    GrpcUtils.logClientMethodResponse(TenantManagementGrpc.METHOD_GET_TENANT_BY_ID, response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(TenantManagementGrpc.METHOD_GET_TENANT_BY_AUTHENTICATION_TOKEN,
-		    t);
+	    throw GrpcUtils.handleClientMethodException(TenantManagementGrpc.METHOD_GET_TENANT_BY_ID, t);
 	}
     }
 
@@ -183,18 +173,15 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#deleteTenant(java.lang.String,
+     * @see com.sitewhere.spi.tenant.ITenantManagement#deleteTenant(java.util.UUID,
      * boolean)
      */
     @Override
-    public ITenant deleteTenant(String tenantId, boolean force) throws SiteWhereException {
+    public ITenant deleteTenant(UUID tenantId, boolean force) throws SiteWhereException {
 	try {
 	    GrpcUtils.logClientMethodEntry(this, TenantManagementGrpc.METHOD_DELETE_TENANT);
 	    GDeleteTenantRequest.Builder grequest = GDeleteTenantRequest.newBuilder();
-	    grequest.setId(tenantId);
+	    grequest.setId(CommonModelConverter.asGrpcUuid(tenantId));
 	    grequest.setForce(force);
 	    GDeleteTenantResponse gresponse = getGrpcChannel().getBlockingStub().deleteTenant(grequest.build());
 	    ITenant response = TenantModelConverter.asApiTenant(gresponse.getTenant());

@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.tenant;
 
+import java.util.UUID;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.user.ITenantSearchCriteria;
@@ -37,7 +39,7 @@ public interface ITenantManagement extends ILifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public ITenant updateTenant(String id, ITenantCreateRequest request) throws SiteWhereException;
+    public ITenant updateTenant(UUID id, ITenantCreateRequest request) throws SiteWhereException;
 
     /**
      * Get a tenant by tenant id.
@@ -46,16 +48,16 @@ public interface ITenantManagement extends ILifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public ITenant getTenantById(String id) throws SiteWhereException;
+    public ITenant getTenant(UUID id) throws SiteWhereException;
 
     /**
-     * Get a tenant by authentication token sent by devices.
+     * Get tenant by reference token.
      * 
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    public ITenant getTenantByAuthenticationToken(String token) throws SiteWhereException;
+    public ITenant getTenantByToken(String token) throws SiteWhereException;
 
     /**
      * Find all tenants that match the given criteria.
@@ -74,5 +76,5 @@ public interface ITenantManagement extends ILifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public ITenant deleteTenant(String tenantId, boolean force) throws SiteWhereException;
+    public ITenant deleteTenant(UUID tenantId, boolean force) throws SiteWhereException;
 }

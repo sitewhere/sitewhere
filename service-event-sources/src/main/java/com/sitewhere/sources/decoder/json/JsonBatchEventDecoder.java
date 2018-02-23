@@ -65,19 +65,19 @@ public class JsonBatchEventDecoder extends TenantEngineLifecycleComponent implem
 	    DeviceEventBatch batch = mapper.readValue(payload, DeviceEventBatch.class);
 	    for (IDeviceLocationCreateRequest lc : batch.getLocations()) {
 		DecodedDeviceRequest<IDeviceLocationCreateRequest> decoded = new DecodedDeviceRequest<IDeviceLocationCreateRequest>();
-		decoded.setHardwareId(batch.getHardwareId());
+		decoded.setDeviceToken(batch.getHardwareId());
 		decoded.setRequest(lc);
 		events.add(decoded);
 	    }
 	    for (IDeviceMeasurementsCreateRequest mc : batch.getMeasurements()) {
 		DecodedDeviceRequest<IDeviceMeasurementsCreateRequest> decoded = new DecodedDeviceRequest<IDeviceMeasurementsCreateRequest>();
-		decoded.setHardwareId(batch.getHardwareId());
+		decoded.setDeviceToken(batch.getHardwareId());
 		decoded.setRequest(mc);
 		events.add(decoded);
 	    }
 	    for (IDeviceAlertCreateRequest ac : batch.getAlerts()) {
 		DecodedDeviceRequest<IDeviceAlertCreateRequest> decoded = new DecodedDeviceRequest<IDeviceAlertCreateRequest>();
-		decoded.setHardwareId(batch.getHardwareId());
+		decoded.setDeviceToken(batch.getHardwareId());
 		decoded.setRequest(ac);
 		events.add(decoded);
 	    }

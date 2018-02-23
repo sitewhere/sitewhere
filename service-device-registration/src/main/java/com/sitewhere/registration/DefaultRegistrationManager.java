@@ -74,7 +74,7 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
     @Override
     public void handleDeviceRegistration(IDeviceRegistrationRequest request) throws SiteWhereException {
 	LOGGER.debug("Handling device registration request.");
-	IDevice device = getDeviceManagement().getDeviceByHardwareId(request.getHardwareId());
+	IDevice device = getDeviceManagement().getDeviceByToken(request.getDeviceToken());
 	IDeviceType deviceType = getDeviceTypeFor(request);
 
 	// Create device if it does not already exist.
@@ -85,14 +85,14 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 	    }
 	    LOGGER.debug("Creating new device as part of registration.");
 	    DeviceCreateRequest deviceCreate = new DeviceCreateRequest();
-	    deviceCreate.setHardwareId(request.getHardwareId());
+	    deviceCreate.setToken(request.getDeviceToken());
 	    deviceCreate.setDeviceTypeToken(request.getDeviceTypeToken());
 	    deviceCreate.setComments("Device created by on-demand registration.");
 	    deviceCreate.setMetadata(request.getMetadata());
 	    device = getDeviceManagement().createDevice(deviceCreate);
 	} else if (!device.getDeviceTypeId().equals(deviceType.getId())) {
 	    LOGGER.info("Found existing device registration, but device type does not match.");
-	    sendInvalidDeviceType(request.getHardwareId());
+	    sendInvalidDeviceType(request.getDeviceToken());
 	    return;
 	} else {
 	    LOGGER.info("Found existing device registration. Updating metadata.");
@@ -105,11 +105,11 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 	if (device.getDeviceAssignmentId() == null) {
 	    LOGGER.debug("Handling unassigned device for registration.");
 	    DeviceAssignmentCreateRequest assnCreate = new DeviceAssignmentCreateRequest();
-	    assnCreate.setDeviceHardwareId(device.getHardwareId());
+	    assnCreate.setDeviceToken(device.getToken());
 	    getDeviceManagement().createDeviceAssignment(assnCreate);
 	}
 	boolean isNewRegistration = (device != null);
-	sendRegistrationAck(request.getHardwareId(), isNewRegistration);
+	sendRegistrationAck(request.getDeviceToken(), isNewRegistration);
     }
 
     /*
@@ -119,7 +119,7 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
      */
     @Override
     public void handleUnregisteredDeviceEvent(IInboundEventPayload payload) throws SiteWhereException {
-	getLogger().info("Would be handling unregistered device event for " + payload.getHardwareId());
+	getLogger().info("Would be handling unregistered device event for " + payload.getDeviceToken());
     }
 
     /**
@@ -230,13 +230,13 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
      * com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest)
      */
     @Override
-    public void handleDeviceMapping(String hardwareId, IDeviceMappingCreateRequest request) throws SiteWhereException {
+    public void handleDeviceMapping(String deviceToken, IDeviceMappingCreateRequest request) throws SiteWhereException {
 	DeviceElementMapping mapping = new DeviceElementMapping();
-	mapping.setHardwareId(hardwareId);
+	mapping.setDeviceToken(deviceToken);
 	mapping.setDeviceElementSchemaPath(request.getMappingPath());
 	DeviceMappingAckCommand command = new DeviceMappingAckCommand();
 	try {
-	    IDevice existing = getDeviceManagement().getDeviceByHardwareId(hardwareId);
+	    IDevice existing = getDeviceManagement().getDeviceByToken(deviceToken);
 	    getDeviceManagement().createDeviceElementMapping(existing.getId(), mapping);
 	    command.setResult(DeviceMappingResult.MappingCreated);
 	} catch (SiteWhereException e) {

@@ -59,12 +59,12 @@ public abstract class CompositeDeviceEventDecoder<T> extends TenantEngineLifecyc
 
 	// Parse metadata from payload.
 	IMessageMetadata<T> metadata = getMetadataExtractor().extractMetadata(payload, eventSourceMetadata);
-	getLogger().info("Extracted payload metadata: HardwareId: " + metadata.getHardwareId() + " Payload: "
+	getLogger().info("Extracted payload metadata: DeviceToken: " + metadata.getDeviceToken() + " Payload: "
 		+ metadata.getPayload().toString());
 
 	try {
 	    IDeviceContext<T> context = buildContext(metadata);
-	    getLogger().debug("Built context: Device: " + context.getDevice().getHardwareId() + " Device type: "
+	    getLogger().debug("Built context: Device: " + context.getDevice().getToken() + " Device type: "
 		    + context.getDeviceType().getToken());
 
 	    // Add context metadata to event source metadata.

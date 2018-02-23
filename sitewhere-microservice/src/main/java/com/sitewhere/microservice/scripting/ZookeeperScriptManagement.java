@@ -58,29 +58,29 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.scripting.IMicroserviceScriptingManager#
-     * getScriptMetadataZkPath(java.lang.String)
+     * @see com.sitewhere.spi.microservice.scripting.IScriptManagement#
+     * getScriptMetadataZkPath(java.util.UUID)
      */
     @Override
-    public String getScriptMetadataZkPath(String tenantId) throws SiteWhereException {
+    public String getScriptMetadataZkPath(UUID tenantId) throws SiteWhereException {
 	return getMicroservice().getInstanceTenantScriptsPath(tenantId) + "/" + METADATA_FOLDER;
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.scripting.IMicroserviceScriptingManager#
-     * getScriptContentZkPath(java.lang.String)
+     * @see com.sitewhere.spi.microservice.scripting.IScriptManagement#
+     * getScriptContentZkPath(java.util.UUID)
      */
     @Override
-    public String getScriptContentZkPath(String tenantId) throws SiteWhereException {
+    public String getScriptContentZkPath(UUID tenantId) throws SiteWhereException {
 	return getMicroservice().getInstanceTenantScriptsPath(tenantId) + "/" + CONTENT_FOLDER;
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.scripting.IMicroserviceScriptingManager#
-     * getScriptMetadataList(java.lang.String)
+     * @see com.sitewhere.spi.microservice.scripting.IScriptManagement#
+     * getScriptMetadataList(java.util.UUID)
      */
     @Override
-    public List<IScriptMetadata> getScriptMetadataList(String tenantId) throws SiteWhereException {
+    public List<IScriptMetadata> getScriptMetadataList(UUID tenantId) throws SiteWhereException {
 	try {
 	    List<String> children = getZookeeperManager().getCurator().getChildren()
 		    .forPath(getScriptMetadataZkPath(tenantId));
@@ -106,11 +106,12 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.scripting.IMicroserviceScriptingManager#
-     * getScriptMetadata(java.lang.String, java.lang.String)
+     * @see
+     * com.sitewhere.spi.microservice.scripting.IScriptManagement#getScriptMetadata(
+     * java.util.UUID, java.lang.String)
      */
     @Override
-    public IScriptMetadata getScriptMetadata(String tenantId, String scriptId) throws SiteWhereException {
+    public IScriptMetadata getScriptMetadata(UUID tenantId, String scriptId) throws SiteWhereException {
 	try {
 	    String path = getScriptMetadataZkPath(tenantId) + "/" + scriptId + METADATA_SUFFIX;
 	    byte[] content = getZookeeperManager().getCurator().getData().forPath(path);
@@ -123,12 +124,12 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.scripting.IMicroserviceScriptingManager#
-     * createScript(java.lang.String,
-     * com.sitewhere.spi.microservice.scripting.IScriptCreateRequest)
+     * @see
+     * com.sitewhere.spi.microservice.scripting.IScriptManagement#createScript(java.
+     * util.UUID, com.sitewhere.spi.microservice.scripting.IScriptCreateRequest)
      */
     @Override
-    public IScriptMetadata createScript(String tenantId, IScriptCreateRequest request) throws SiteWhereException {
+    public IScriptMetadata createScript(UUID tenantId, IScriptCreateRequest request) throws SiteWhereException {
 	IScriptMetadata existing = getScriptMetadata(tenantId, request.getId());
 	if (existing != null) {
 	    throw new SiteWhereException("A script with that id already exists.");
@@ -143,11 +144,12 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.scripting.IMicroserviceScriptingManager#
-     * getScriptContent(java.lang.String, java.lang.String, java.lang.String)
+     * @see
+     * com.sitewhere.spi.microservice.scripting.IScriptManagement#getScriptContent(
+     * java.util.UUID, java.lang.String, java.lang.String)
      */
     @Override
-    public byte[] getScriptContent(String tenantId, String scriptId, String versionId) throws SiteWhereException {
+    public byte[] getScriptContent(UUID tenantId, String scriptId, String versionId) throws SiteWhereException {
 	IScriptMetadata meta = assureScriptMetadata(tenantId, scriptId);
 	IScriptVersion version = assureScriptVersion(meta, versionId);
 	String contentPath = getScriptMetadataZkPath(tenantId) + "/" + getVersionContentPath(meta, version);
@@ -159,13 +161,14 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.scripting.IMicroserviceScriptingManager#
-     * updateScript(java.lang.String, java.lang.String, java.lang.String,
+     * @see
+     * com.sitewhere.spi.microservice.scripting.IScriptManagement#updateScript(java.
+     * util.UUID, java.lang.String, java.lang.String,
      * com.sitewhere.spi.microservice.scripting.IScriptCreateRequest)
      */
     @Override
-    public IScriptMetadata updateScript(String tenantId, String scriptId, String versionId,
-	    IScriptCreateRequest request) throws SiteWhereException {
+    public IScriptMetadata updateScript(UUID tenantId, String scriptId, String versionId, IScriptCreateRequest request)
+	    throws SiteWhereException {
 	IScriptMetadata meta = assureScriptMetadata(tenantId, scriptId);
 	IScriptVersion version = assureScriptVersion(meta, versionId);
 	try {
@@ -177,12 +180,12 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.scripting.IMicroserviceScriptingManager#
-     * cloneScript(java.lang.String, java.lang.String, java.lang.String,
-     * java.lang.String)
+     * @see
+     * com.sitewhere.spi.microservice.scripting.IScriptManagement#cloneScript(java.
+     * util.UUID, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public IScriptVersion cloneScript(String tenantId, String scriptId, String versionId, String comment)
+    public IScriptVersion cloneScript(UUID tenantId, String scriptId, String versionId, String comment)
 	    throws SiteWhereException {
 	IScriptMetadata meta = assureScriptMetadata(tenantId, scriptId);
 	assureScriptVersion(meta, versionId);
@@ -217,12 +220,12 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.scripting.IMicroserviceScriptingManager#
-     * activateScript(java.lang.String, java.lang.String, java.lang.String)
+     * @see
+     * com.sitewhere.spi.microservice.scripting.IScriptManagement#activateScript(
+     * java.util.UUID, java.lang.String, java.lang.String)
      */
     @Override
-    public IScriptMetadata activateScript(String tenantId, String scriptId, String versionId)
-	    throws SiteWhereException {
+    public IScriptMetadata activateScript(UUID tenantId, String scriptId, String versionId) throws SiteWhereException {
 	IScriptMetadata meta = assureScriptMetadata(tenantId, scriptId);
 	assureScriptVersion(meta, versionId);
 
@@ -262,7 +265,7 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
      * @return
      * @throws SiteWhereException
      */
-    protected IScriptMetadata assureScriptMetadata(String tenantId, String scriptId) throws SiteWhereException {
+    protected IScriptMetadata assureScriptMetadata(UUID tenantId, String scriptId) throws SiteWhereException {
 	IScriptMetadata meta = getScriptMetadata(tenantId, scriptId);
 	if (meta == null) {
 	    throw new SiteWhereException("Script not found: " + scriptId);
@@ -295,7 +298,7 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
      * @param contentStr
      * @throws SiteWhereException
      */
-    protected void store(String tenantId, IScriptMetadata meta, IScriptVersion version, String contentStr)
+    protected void store(UUID tenantId, IScriptMetadata meta, IScriptVersion version, String contentStr)
 	    throws SiteWhereException {
 	try {
 	    // Store metadata.

@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
@@ -28,6 +29,9 @@ public class BatchOperation extends MetadataProviderEntity implements IBatchOper
 
     /** Serialization version identifier */
     private static final long serialVersionUID = -228183022121018340L;
+
+    /** Unique id */
+    private UUID id;
 
     /** Unqiue token */
     private String token;
@@ -48,9 +52,19 @@ public class BatchOperation extends MetadataProviderEntity implements IBatchOper
     private Date processingEndedDate;
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.batch.IBatchOperation#getToken()
+     * @see com.sitewhere.spi.common.ISiteWhereEntity#getId()
+     */
+    @Override
+    public UUID getId() {
+	return id;
+    }
+
+    public void setId(UUID id) {
+	this.id = id;
+    }
+
+    /*
+     * @see com.sitewhere.spi.common.ISiteWhereEntity#getToken()
      */
     @Override
     public String getToken() {

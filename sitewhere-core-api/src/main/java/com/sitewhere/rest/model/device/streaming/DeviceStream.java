@@ -26,6 +26,9 @@ public class DeviceStream extends MetadataProviderEntity implements IDeviceStrea
     /** Unique stream id */
     private UUID id;
 
+    /** Reference token */
+    private String token;
+
     /** Parent assignment id */
     private UUID assignmentId;
 
@@ -45,6 +48,18 @@ public class DeviceStream extends MetadataProviderEntity implements IDeviceStrea
 
     public void setId(UUID id) {
 	this.id = id;
+    }
+
+    /*
+     * @see com.sitewhere.spi.common.ISiteWhereEntity#getToken()
+     */
+    @Override
+    public String getToken() {
+	return token;
+    }
+
+    public void setToken(String token) {
+	this.token = token;
     }
 
     /*

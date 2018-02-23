@@ -49,9 +49,6 @@ public enum ErrorCode {
     /** No user logged in for action that requires authorization */
     NotLoggedIn(130, "You must provide credentials to perform this action."),
 
-    /** Invalid tenant reference */
-    InvalidTenantId(140, "Tenant does not exist."),
-
     /** Invalid tenant authentication token */
     InvalidTenantAuthToken(141, "Tenant not found for authentication token."),
 
@@ -64,11 +61,11 @@ public enum ErrorCode {
     /** Invalid tenant engine reference */
     InvalidTenantEngineId(144, "Tenant engine does not exist."),
 
-    /** Invalid tenant engine command */
-    InvalidTenantEngineCommand(145, "Invalid tenant engine command."),
+    /** Invalid tenant reference */
+    InvalidTenantId(150, "Tenant does not exist."),
 
-    /** Invalid tenant group reference */
-    InvalidTenantGroupId(150, "Tenant group does not exist."),
+    /** Invalid tenant reference */
+    InvalidTenantToken(151, "Tenant does not exist."),
 
     /***********
      * TENANTS *
@@ -94,11 +91,14 @@ public enum ErrorCode {
     /** Generic duplicate id error */
     DuplicateId(499, "The given id is already in use."),
 
-    /** Attempting to create a device with a duplicate hardware id */
-    DuplicateHardwareId(500, "Hardware id already in use."),
+    /** Attempting to create a device with a duplicate token */
+    DuplicateDeviceToken(500, "Device token already in use."),
 
-    /** Invalid device hardware id */
-    InvalidHardwareId(501, "Hardware id not found."),
+    /** Invalid device token */
+    InvalidDeviceToken(501, "Device token not found."),
+
+    /** Invalid device id */
+    InvalidDeviceId(502, "Device id not found."),
 
     /** Invalid device type token */
     InvalidDeviceTypeToken(503, "Device type not found."),

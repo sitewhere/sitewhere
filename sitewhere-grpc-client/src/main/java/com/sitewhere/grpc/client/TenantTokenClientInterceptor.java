@@ -61,7 +61,7 @@ public class TenantTokenClientInterceptor implements ClientInterceptor {
 		if ((authentication != null) && (authentication instanceof ITenantAwareAuthentication)) {
 		    ITenant tenant = ((ITenantAwareAuthentication) authentication).getTenant();
 		    if (tenant != null) {
-			headers.put(TENANT_ID_KEY, tenant.getId());
+			headers.put(TENANT_ID_KEY, tenant.getId().toString());
 		    }
 		}
 		super.start(responseListener, headers);

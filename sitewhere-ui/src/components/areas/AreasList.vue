@@ -1,5 +1,5 @@
 <template>
-  <navigation-page icon="fa-map" title="Root Areas">
+  <navigation-page icon="fa-map" title="Areas">
     <div slot="content">
       <v-container fluid grid-list-md v-if="areas">
         <v-layout row wrap>

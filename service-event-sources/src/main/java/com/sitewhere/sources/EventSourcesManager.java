@@ -223,12 +223,12 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 		// Build payload message.
 		InboundEventPayload payload = new InboundEventPayload();
 		payload.setSourceId(sourceId);
-		payload.setHardwareId(decoded.getHardwareId());
+		payload.setDeviceToken(decoded.getDeviceToken());
 		payload.setOriginator(decoded.getOriginator());
 		payload.setEventCreateRequest((IDeviceEventCreateRequest) decoded.getRequest());
 
 		// Send payload to Kafka topic.
-		getDecodedEventsProducer().send(decoded.getHardwareId(),
+		getDecodedEventsProducer().send(decoded.getDeviceToken(),
 			KafkaModelMarshaler.buildInboundEventPayloadMessage(payload));
 	    }
 	} else if (getLogger().isWarnEnabled()) {

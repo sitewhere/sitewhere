@@ -64,7 +64,7 @@ public class CommandInvocationJob implements Job {
 	    throw new JobExecutionException("Command token not provided.");
 	}
 	try {
-	    ITenant tenant = getTenantManagement().getTenantById(context.getScheduler().getSchedulerName());
+	    ITenant tenant = getTenantManagement().getTenantByToken(context.getScheduler().getSchedulerName());
 	    IDeviceEventManagement events = getDeviceEventManagement(tenant);
 	    DeviceCommandInvocationCreateRequest create = new DeviceCommandInvocationCreateRequest();
 	    create.setCommandToken(getCommandToken());

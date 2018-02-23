@@ -19,13 +19,6 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
 public interface IDeviceStream extends IMetadataProviderEntity {
 
     /**
-     * Get unique command id.
-     * 
-     * @return
-     */
-    public UUID getId();
-
-    /**
      * Get assignment stream belongs to.
      * 
      * @return

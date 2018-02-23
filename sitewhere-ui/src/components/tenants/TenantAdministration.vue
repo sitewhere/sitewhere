@@ -52,19 +52,19 @@ export default {
     sections: [{
       id: 'areasGroup',
       title: 'Area Management',
-      icon: 'map',
+      icon: 'fa-map',
       route: 'areas',
       longTitle: 'Manage Areas',
       subsections: [{
         id: 'areatypes',
         title: 'Area Types',
-        icon: 'description',
+        icon: 'fa-cog',
         route: 'areatypes',
         longTitle: 'Manage Area Types'
       }, {
         id: 'areas',
         title: 'Areas',
-        icon: 'map',
+        icon: 'fa-map',
         route: 'areas',
         longTitle: 'Manage Areas'
       }]
@@ -78,13 +78,13 @@ export default {
       subsections: [{
         id: 'devicetypes',
         title: 'Device Types',
-        icon: 'description',
+        icon: 'fa-cog',
         route: 'devicetypes',
         longTitle: 'Manage Device Types'
       }, {
         id: 'devices',
         title: 'Devices',
-        icon: 'developer_board',
+        icon: 'fa-microchip',
         route: 'devices',
         longTitle: 'Manage Devices'
       }, {
@@ -96,11 +96,18 @@ export default {
       }]
     },
     {
-      id: 'assets',
+      id: 'assetGroup',
       title: 'Asset Management',
-      icon: 'local_offer',
-      route: 'assets/categories',
-      longTitle: 'Manage Asset Categories'
+      icon: 'fa-car',
+      route: 'assettypes',
+      longTitle: 'Manage Assets',
+      subsections: [{
+        id: 'assettypes',
+        title: 'Asset Types',
+        icon: 'fa-cog',
+        route: 'assettypes',
+        longTitle: 'Manage Asset Types'
+      }]
     },
     {
       id: 'batch',

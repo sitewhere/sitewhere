@@ -120,35 +120,35 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
     /**
      * Get the current assignment or throw errors if it can not be resolved.
      * 
-     * @param hardwareId
+     * @param deviceToken
      * @return
      * @throws SiteWhereException
      */
-    protected IDeviceAssignment getCurrentAssignment(String hardwareId) throws SiteWhereException {
-	IDevice device = getDeviceManagement().getDeviceByHardwareId(hardwareId);
+    protected IDeviceAssignment getCurrentAssignment(String deviceToken) throws SiteWhereException {
+	IDevice device = getDeviceManagement().getDeviceByToken(deviceToken);
 	if (device == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceToken, ErrorLevel.ERROR);
 	}
 	if (device.getDeviceAssignmentId() == null) {
 	    // If no assignment exists, add an unassociated assignment.
-	    return createUnassociatedAssignmentFor(hardwareId);
+	    return createUnassociatedAssignmentFor(deviceToken);
 	}
 	return getDeviceManagement().getDeviceAssignment(device.getDeviceAssignmentId());
     }
 
     /**
-     * Create an unassociated assignment for device with the given hardware id. This
+     * Create an unassociated assignment for device with the given token. This
      * allows events to be written when a device does not have an existing
      * assignment.
      * 
-     * @param hardwareId
+     * @param deviceToken
      * @return
      * @throws SiteWhereException
      */
-    protected IDeviceAssignment createUnassociatedAssignmentFor(String hardwareId) throws SiteWhereException {
-	LOGGER.debug("Creating unassociated assignment for " + hardwareId + ".");
+    protected IDeviceAssignment createUnassociatedAssignmentFor(String deviceToken) throws SiteWhereException {
+	LOGGER.debug("Creating unassociated assignment for " + deviceToken + ".");
 	DeviceAssignmentCreateRequest assnCreate = new DeviceAssignmentCreateRequest();
-	assnCreate.setDeviceHardwareId(hardwareId);
+	assnCreate.setDeviceToken(deviceToken);
 	return getDeviceManagement().createDeviceAssignment(assnCreate);
     }
 

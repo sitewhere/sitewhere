@@ -7,6 +7,8 @@
  */
 package com.sitewhere.microservice.configuration;
 
+import java.util.UUID;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 
@@ -19,7 +21,7 @@ import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 public class TenantPathInfo {
 
     /** Tenant id */
-    private String tenantId;
+    private UUID tenantId;
 
     /** Relative path */
     private String path;
@@ -41,7 +43,7 @@ public class TenantPathInfo {
 		int firstSlash = tenantPath.indexOf('/');
 		if (firstSlash != -1) {
 		    TenantPathInfo info = new TenantPathInfo();
-		    info.setTenantId(tenantPath.substring(0, firstSlash));
+		    info.setTenantId(UUID.fromString(tenantPath.substring(0, firstSlash)));
 		    info.setPath(tenantPath.substring(firstSlash + 1));
 		    return info;
 		}
@@ -50,11 +52,11 @@ public class TenantPathInfo {
 	return null;
     }
 
-    public String getTenantId() {
+    public UUID getTenantId() {
 	return tenantId;
     }
 
-    public void setTenantId(String tenantId) {
+    public void setTenantId(UUID tenantId) {
 	this.tenantId = tenantId;
     }
 

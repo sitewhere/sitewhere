@@ -47,7 +47,7 @@ public class KafkaModelConverter {
     public static InboundEventPayload asApiInboundEventPayload(GInboundEventPayload grpc) throws SiteWhereException {
 	InboundEventPayload api = new InboundEventPayload();
 	api.setSourceId(grpc.getSourceId());
-	api.setHardwareId(grpc.getHardwareId());
+	api.setDeviceToken(grpc.getDeviceToken());
 	api.setOriginator(grpc.hasOriginator() ? grpc.getOriginator().getValue() : null);
 	api.setEventCreateRequest(EventModelConverter.asApiDeviceEventCreateRequest(grpc.getEvent()));
 	return api;
@@ -63,7 +63,7 @@ public class KafkaModelConverter {
     public static GInboundEventPayload asGrpcInboundEventPayload(IInboundEventPayload api) throws SiteWhereException {
 	GInboundEventPayload.Builder grpc = GInboundEventPayload.newBuilder();
 	grpc.setSourceId(api.getSourceId());
-	grpc.setHardwareId(api.getHardwareId());
+	grpc.setDeviceToken(api.getDeviceToken());
 	if (api.getOriginator() != null) {
 	    grpc.setOriginator(GOptionalString.newBuilder().setValue(api.getOriginator()));
 	}
@@ -240,7 +240,7 @@ public class KafkaModelConverter {
     public static TenantEngineState asApiTenantEngineState(GTenantEngineState grpc) throws SiteWhereException {
 	TenantEngineState api = new TenantEngineState();
 	api.setMicroservice(MicroserviceModelConverter.asApiMicroserviceDetails(grpc.getMicroservice()));
-	api.setTenantId(grpc.getTenantId());
+	api.setTenantToken(grpc.getTenantToken());
 	api.setLifecycleStatus(KafkaModelConverter.asApiLifecycleStatus(grpc.getStatus()));
 	if (grpc.getErrorList().size() > 0) {
 	    api.setLifecycleErrorStack(new ArrayList<String>());
@@ -261,7 +261,7 @@ public class KafkaModelConverter {
     public static GTenantEngineState asGrpcTenantEngineState(ITenantEngineState api) throws SiteWhereException {
 	GTenantEngineState.Builder grpc = GTenantEngineState.newBuilder();
 	grpc.setMicroservice(MicroserviceModelConverter.asGrpcMicroserviceDetails(api.getMicroservice()));
-	grpc.setTenantId(api.getTenantId());
+	grpc.setTenantToken(api.getTenantToken());
 	grpc.setStatus(KafkaModelConverter.asGrpcLifecycleStatus(api.getLifecycleStatus()));
 	if (api.getLifecycleErrorStack() != null) {
 	    for (String error : api.getLifecycleErrorStack()) {

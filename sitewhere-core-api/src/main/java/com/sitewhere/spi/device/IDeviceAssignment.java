@@ -21,20 +21,6 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
 public interface IDeviceAssignment extends IMetadataProviderEntity {
 
     /**
-     * Get unique device assignment id.
-     * 
-     * @return
-     */
-    public UUID getId();
-
-    /**
-     * Get token that acts as an alias for assignment id.
-     * 
-     * @return
-     */
-    public String getToken();
-
-    /**
      * Get unique id for assigned device.
      * 
      * @return

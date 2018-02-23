@@ -864,7 +864,7 @@ public class DeviceModelConverter {
      */
     public static DeviceElementMapping asApiDeviceElementMapping(GDeviceElementMapping grpc) throws SiteWhereException {
 	DeviceElementMapping api = new DeviceElementMapping();
-	api.setHardwareId(grpc.getHardwareId());
+	api.setDeviceToken(grpc.getDeviceToken());
 	api.setDeviceElementSchemaPath(grpc.getSchemaPath());
 	return api;
     }
@@ -895,7 +895,7 @@ public class DeviceModelConverter {
     public static GDeviceElementMapping asGrpcDeviceElementMapping(IDeviceElementMapping api)
 	    throws SiteWhereException {
 	GDeviceElementMapping.Builder grpc = GDeviceElementMapping.newBuilder();
-	grpc.setHardwareId(api.getHardwareId());
+	grpc.setDeviceToken(api.getDeviceToken());
 	grpc.setSchemaPath(api.getDeviceElementSchemaPath());
 	return grpc.build();
     }
@@ -943,8 +943,8 @@ public class DeviceModelConverter {
      */
     public static DeviceCreateRequest asApiDeviceCreateRequest(GDeviceCreateRequest grpc) throws SiteWhereException {
 	DeviceCreateRequest api = new DeviceCreateRequest();
-	api.setHardwareId(grpc.getHardwareId());
-	api.setParentHardwareId(grpc.hasParentHardwareId() ? grpc.getParentHardwareId().getValue() : null);
+	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
+	api.setParentDeviceToken(grpc.hasParentDeviceToken() ? grpc.getParentDeviceToken().getValue() : null);
 	api.setDeviceTypeToken(grpc.getDeviceTypeToken());
 	api.setStatus(grpc.hasStatus() ? grpc.getStatus().getValue() : null);
 	api.setComments(grpc.hasComments() ? grpc.getComments().getValue() : null);
@@ -963,9 +963,11 @@ public class DeviceModelConverter {
      */
     public static GDeviceCreateRequest asGrpcDeviceCreateRequest(IDeviceCreateRequest api) throws SiteWhereException {
 	GDeviceCreateRequest.Builder grpc = GDeviceCreateRequest.newBuilder();
-	grpc.setHardwareId(api.getHardwareId());
-	if (api.getParentHardwareId() != null) {
-	    grpc.setParentHardwareId(GOptionalString.newBuilder().setValue(api.getParentHardwareId()));
+	if (api.getToken() != null) {
+	    grpc.setToken(GOptionalString.newBuilder().setValue(api.getToken()));
+	}
+	if (api.getParentDeviceToken() != null) {
+	    grpc.setParentDeviceToken(GOptionalString.newBuilder().setValue(api.getParentDeviceToken()));
 	}
 	grpc.setDeviceTypeToken(api.getDeviceTypeToken());
 	if (api.getStatus() != null) {
@@ -992,7 +994,7 @@ public class DeviceModelConverter {
     public static Device asApiDevice(GDevice grpc) throws SiteWhereException {
 	Device api = new Device();
 	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
-	api.setHardwareId(grpc.getHardwareId());
+	api.setToken(grpc.getToken());
 	api.setDeviceTypeId(CommonModelConverter.asApiUuid(grpc.getDeviceTypeId()));
 	api.setStatus(grpc.hasStatus() ? grpc.getStatus().getValue() : null);
 	api.setDeviceAssignmentId(
@@ -1017,7 +1019,7 @@ public class DeviceModelConverter {
     public static GDevice asGrpcDevice(IDevice api) throws SiteWhereException {
 	GDevice.Builder grpc = GDevice.newBuilder();
 	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
-	grpc.setHardwareId(api.getHardwareId());
+	grpc.setToken(api.getToken());
 	if (api.getParentDeviceId() != null) {
 	    grpc.setParentDeviceId(CommonModelConverter.asGrpcUuid(api.getParentDeviceId()));
 	}
@@ -1506,7 +1508,7 @@ public class DeviceModelConverter {
 	    throws SiteWhereException {
 	DeviceAssignmentCreateRequest api = new DeviceAssignmentCreateRequest();
 	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
-	api.setDeviceHardwareId(grpc.getDeviceHardwareId());
+	api.setDeviceToken(grpc.getDeviceToken());
 	api.setAreaToken(grpc.hasAreaToken() ? grpc.getAreaToken().getValue() : null);
 	api.setAssetToken(grpc.hasAssetToken() ? grpc.getAssetToken().getValue() : null);
 	api.setMetadata(grpc.getMetadataMap());
@@ -1526,7 +1528,7 @@ public class DeviceModelConverter {
 	if (api.getToken() != null) {
 	    grpc.setToken(GOptionalString.newBuilder().setValue(api.getToken()));
 	}
-	grpc.setDeviceHardwareId(api.getDeviceHardwareId());
+	grpc.setDeviceToken(api.getDeviceToken());
 	if (api.getAreaToken() != null) {
 	    grpc.setAreaToken(GOptionalString.newBuilder().setValue(api.getAreaToken()));
 	}

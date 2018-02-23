@@ -61,7 +61,7 @@ public class BatchCommandInvocationJob implements Job {
 	    throw new JobExecutionException("Command token not provided.");
 	}
 	try {
-	    ITenant tenant = getTenantManagement().getTenantById(context.getScheduler().getSchedulerName());
+	    ITenant tenant = getTenantManagement().getTenantByToken(context.getScheduler().getSchedulerName());
 
 	    // Resolve hardware ids for devices matching criteria.
 	    List<String> hardwareIds = BatchUtils.getHardwareIds(criteria, getDeviceManagement());

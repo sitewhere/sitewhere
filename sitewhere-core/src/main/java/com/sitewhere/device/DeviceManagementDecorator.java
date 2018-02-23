@@ -270,12 +270,11 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator<IDevi
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceByHardwareId(java.lang.
-     * String)
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceByToken(java.lang.String)
      */
     @Override
-    public IDevice getDeviceByHardwareId(String hardwareId) throws SiteWhereException {
-	return getDelegate().getDeviceByHardwareId(hardwareId);
+    public IDevice getDeviceByToken(String token) throws SiteWhereException {
+	return getDelegate().getDeviceByToken(token);
     }
 
     /*

@@ -7,6 +7,8 @@
  */
 package com.sitewhere.event.grpc;
 
+import java.util.UUID;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -102,7 +104,8 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
 	    throw new RuntimeException("Tenant id not found in event management request.");
 	}
 	try {
-	    IEventManagementTenantEngine engine = getMicroservice().getTenantEngineByTenantId(tenantId);
+	    IEventManagementTenantEngine engine = getMicroservice()
+		    .getTenantEngineByTenantId(UUID.fromString(tenantId));
 	    if (engine != null) {
 		return engine.getEventManagementImpl();
 	    }

@@ -91,10 +91,10 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
      * java.lang.String, com.sitewhere.spi.device.command.ISystemCommand)
      */
     @Override
-    public void deliverSystemCommand(IDeviceCommunication communication, String hardwareId, ISystemCommand command)
+    public void deliverSystemCommand(IDeviceCommunication communication, String deviceToken, ISystemCommand command)
 	    throws SiteWhereException {
 	IDeviceManagement management = getDeviceManagement(getTenantEngine().getTenant());
-	IDevice device = management.getDeviceByHardwareId(hardwareId);
+	IDevice device = management.getDeviceByToken(deviceToken);
 	if (device == null) {
 	    throw new SiteWhereException("Targeted assignment references device that does not exist.");
 	}

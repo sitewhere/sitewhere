@@ -137,20 +137,20 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
 
     /*
      * @see
-     * com.sitewhere.device.DeviceManagementDecorator#getDeviceByHardwareId(java.
-     * lang.String)
+     * com.sitewhere.grpc.client.device.DeviceManagementApiChannel#getDeviceByToken(
+     * java.lang.String)
      */
     @Override
-    public IDevice getDeviceByHardwareId(String hardwareId) throws SiteWhereException {
+    public IDevice getDeviceByToken(String token) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	IDevice device = getDeviceCache().getCacheEntry(tenant, hardwareId);
+	IDevice device = getDeviceCache().getCacheEntry(tenant, token);
 	if (device != null) {
 	    CacheUtils.logCacheHit(device);
 	    return device;
 	} else {
-	    getLogger().trace("No cached information for device '" + hardwareId + "'.");
+	    getLogger().trace("No cached information for device '" + token + "'.");
 	}
-	return super.getDeviceByHardwareId(hardwareId);
+	return super.getDeviceByToken(token);
     }
 
     /*

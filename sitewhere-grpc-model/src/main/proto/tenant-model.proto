@@ -12,7 +12,7 @@ import "sitewhere-common.proto";
 
 // Information for creating a tenant.
 message GTenantCreateRequest {
-	string id = 1;
+	GOptionalString token = 1;
 	string name = 2;
 	string authenticationToken = 3;
 	string logoUrl = 4;
@@ -36,14 +36,15 @@ message GTenantSearchResults {
 
 // Information for a tenant.
 message GTenant {
-	string id = 1;
-	string name = 2;
-	string authenticationToken = 3;
-	string logoUrl = 4;
-	string tenantTemplateId = 5;
-	repeated string authorizedUserIds = 6;
-	map<string, string> metadata = 7;
-	GEntityInformation entityInformation = 8;
+	GUUID id = 1;
+	string token = 2;
+	string name = 3;
+	string authenticationToken = 4;
+	string logoUrl = 5;
+	string tenantTemplateId = 6;
+	repeated string authorizedUserIds = 7;
+	map<string, string> metadata = 8;
+	GEntityInformation entityInformation = 9;
 }
 
 // ########################

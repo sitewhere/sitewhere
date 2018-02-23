@@ -144,7 +144,7 @@ public class TopologyBroadcaster
      * @return
      */
     protected String getPathForTenant(ITenantEngineState state) {
-	return BASE_MICROSERVICES_PATH + state.getMicroservice().getIdentifier() + "/tenant/" + state.getTenantId();
+	return BASE_MICROSERVICES_PATH + state.getMicroservice().getIdentifier() + "/tenant/" + state.getTenantToken();
     }
 
     /**

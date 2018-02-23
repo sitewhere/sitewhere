@@ -67,11 +67,11 @@ public interface ICompositeDeviceEventDecoder<T> extends IDeviceEventDecoder<T> 
     public static interface IMessageMetadata<T> {
 
 	/**
-	 * Get parsed hardware id.
+	 * Get parsed device token.
 	 * 
 	 * @return
 	 */
-	public String getHardwareId();
+	public String getDeviceToken();
 
 	/**
 	 * Get parsed payload.

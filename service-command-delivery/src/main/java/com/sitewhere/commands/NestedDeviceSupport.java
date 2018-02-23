@@ -46,7 +46,7 @@ public class NestedDeviceSupport {
 	}
 
 	// Parent should contain a mapping entry for the target device.
-	IDeviceElementMapping mapping = DeviceUtils.findMappingFor(parent, target.getHardwareId());
+	IDeviceElementMapping mapping = DeviceUtils.findMappingFor(parent, target.getToken());
 
 	// Fall back to target as gateway if no mapping exists. This should not
 	// happen.

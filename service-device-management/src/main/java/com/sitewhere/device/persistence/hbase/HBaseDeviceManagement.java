@@ -331,12 +331,11 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceByHardwareId(java.lang.
-     * String)
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceByToken(java.lang.String)
      */
     @Override
-    public IDevice getDeviceByHardwareId(String hardwareId) throws SiteWhereException {
-	return HBaseDevice.getDeviceByHardwareId(context, hardwareId);
+    public IDevice getDeviceByToken(String deviceToken) throws SiteWhereException {
+	return HBaseDevice.getDeviceByToken(context, deviceToken);
     }
 
     /*

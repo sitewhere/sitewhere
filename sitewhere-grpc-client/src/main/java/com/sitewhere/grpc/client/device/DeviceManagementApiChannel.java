@@ -522,24 +522,21 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceByHardwareId(java.
-     * lang.String)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceByToken(java.lang.String)
      */
     @Override
-    public IDevice getDeviceByHardwareId(String hardwareId) throws SiteWhereException {
+    public IDevice getDeviceByToken(String token) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_DEVICE_BY_HARDWARE_ID);
-	    GGetDeviceByHardwareIdRequest.Builder grequest = GGetDeviceByHardwareIdRequest.newBuilder();
-	    grequest.setHardwareId(hardwareId);
-	    GGetDeviceByHardwareIdResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .getDeviceByHardwareId(grequest.build());
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_DEVICE_BY_TOKEN);
+	    GGetDeviceByTokenRequest.Builder grequest = GGetDeviceByTokenRequest.newBuilder();
+	    grequest.setToken(token);
+	    GGetDeviceByTokenResponse gresponse = getGrpcChannel().getBlockingStub().getDeviceByToken(grequest.build());
 	    IDevice response = (gresponse.hasDevice()) ? DeviceModelConverter.asApiDevice(gresponse.getDevice()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_BY_HARDWARE_ID, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_BY_TOKEN, response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_BY_HARDWARE_ID, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_BY_TOKEN, t);
 	}
     }
 

@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -31,6 +32,12 @@ public class User extends MetadataProviderEntity implements IUser {
 
     /** For {@link Serializable} */
     private static final long serialVersionUID = -3322129570954465956L;
+
+    /** Unique id */
+    private UUID id;
+
+    /** Reference token */
+    private String token;
 
     /** Unique username */
     private String username;
@@ -54,10 +61,33 @@ public class User extends MetadataProviderEntity implements IUser {
     private List<String> authorities = new ArrayList<>();
 
     /*
-     * (non-Javadoc)
-     * 
+     * @see com.sitewhere.spi.common.ISiteWhereEntity#getId()
+     */
+    @Override
+    public UUID getId() {
+	return id;
+    }
+
+    public void setId(UUID id) {
+	this.id = id;
+    }
+
+    /*
+     * @see com.sitewhere.spi.common.ISiteWhereEntity#getToken()
+     */
+    @Override
+    public String getToken() {
+	return token;
+    }
+
+    public void setToken(String token) {
+	this.token = token;
+    }
+
+    /*
      * @see com.sitewhere.spi.user.IUser#getUsername()
      */
+    @Override
     public String getUsername() {
 	return username;
     }
@@ -67,10 +97,9 @@ public class User extends MetadataProviderEntity implements IUser {
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.user.IUser#getHashedPassword()
      */
+    @Override
     public String getHashedPassword() {
 	return hashedPassword;
     }
@@ -80,10 +109,9 @@ public class User extends MetadataProviderEntity implements IUser {
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.user.IUser#getFirstName()
      */
+    @Override
     public String getFirstName() {
 	return firstName;
     }
@@ -93,10 +121,9 @@ public class User extends MetadataProviderEntity implements IUser {
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.user.IUser#getLastName()
      */
+    @Override
     public String getLastName() {
 	return lastName;
     }
@@ -106,10 +133,9 @@ public class User extends MetadataProviderEntity implements IUser {
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.user.IUser#getLastLogin()
      */
+    @Override
     @JsonSerialize(using = JsonDateSerializer.class)
     public Date getLastLogin() {
 	return lastLogin;
@@ -120,10 +146,9 @@ public class User extends MetadataProviderEntity implements IUser {
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.user.IUser#getStatus()
      */
+    @Override
     public AccountStatus getStatus() {
 	return status;
     }
@@ -133,10 +158,9 @@ public class User extends MetadataProviderEntity implements IUser {
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.user.IUser#getAuthorities()
      */
+    @Override
     public List<String> getAuthorities() {
 	return authorities;
     }

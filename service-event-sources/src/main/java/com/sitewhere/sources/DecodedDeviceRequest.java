@@ -19,8 +19,8 @@ public class DecodedDeviceRequest<T> implements IDecodedDeviceRequest<T> {
     /** Serial version UID */
     private static final long serialVersionUID = 4280270339471220181L;
 
-    /** Hardware id the request applies to */
-    private String hardwareId;
+    /** Device token the request applies to */
+    private String deviceToken;
 
     /** Originating invocation if available */
     private String originator;
@@ -31,24 +31,22 @@ public class DecodedDeviceRequest<T> implements IDecodedDeviceRequest<T> {
     public DecodedDeviceRequest() {
     }
 
-    public DecodedDeviceRequest(String hardwareId, String originator, T request) {
-	setHardwareId(hardwareId);
+    public DecodedDeviceRequest(String deviceToken, String originator, T request) {
+	setDeviceToken(deviceToken);
 	setOriginator(originator);
 	setRequest(request);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IDecodedDeviceRequest#
-     * getHardwareId()
+     * @see com.sitewhere.sources.spi.IDecodedDeviceRequest#getDeviceToken()
      */
-    public String getHardwareId() {
-	return hardwareId;
+    @Override
+    public String getDeviceToken() {
+	return deviceToken;
     }
 
-    public void setHardwareId(String hardwareId) {
-	this.hardwareId = hardwareId;
+    public void setDeviceToken(String deviceToken) {
+	this.deviceToken = deviceToken;
     }
 
     /*
@@ -57,6 +55,7 @@ public class DecodedDeviceRequest<T> implements IDecodedDeviceRequest<T> {
      * @see com.sitewhere.spi.device.communication.IDecodedDeviceRequest#
      * getOriginator()
      */
+    @Override
     public String getOriginator() {
 	return originator;
     }
@@ -71,6 +70,7 @@ public class DecodedDeviceRequest<T> implements IDecodedDeviceRequest<T> {
      * @see
      * com.sitewhere.spi.device.communication.IDecodedDeviceRequest#getRequest()
      */
+    @Override
     public T getRequest() {
 	return request;
     }

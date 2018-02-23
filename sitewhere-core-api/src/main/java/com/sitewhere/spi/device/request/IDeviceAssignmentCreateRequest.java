@@ -24,11 +24,11 @@ public interface IDeviceAssignmentCreateRequest {
     public String getToken();
 
     /**
-     * Get the unique device hardware id.
+     * Get the device token.
      * 
      * @return
      */
-    public String getDeviceHardwareId();
+    public String getDeviceToken();
 
     /**
      * Get token of assigned area.

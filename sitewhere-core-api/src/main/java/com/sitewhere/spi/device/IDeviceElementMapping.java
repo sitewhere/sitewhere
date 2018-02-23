@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.device;
 
+import java.io.Serializable;
+
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 
 /**
@@ -14,7 +16,7 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
  * 
  * @author Derek
  */
-public interface IDeviceElementMapping {
+public interface IDeviceElementMapping extends Serializable {
 
     /**
      * Get path in {@link IDeviceElementSchema} being mapped.
@@ -24,9 +26,9 @@ public interface IDeviceElementMapping {
     public String getDeviceElementSchemaPath();
 
     /**
-     * Get hardware id of {@link IDevice} being mapped.
+     * Get token of {@link IDevice} being mapped.
      * 
      * @return
      */
-    public String getHardwareId();
+    public String getDeviceToken();
 }

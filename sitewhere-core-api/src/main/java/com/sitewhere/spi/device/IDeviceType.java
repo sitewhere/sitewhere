@@ -20,20 +20,6 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
 public interface IDeviceType extends IMetadataProviderEntity {
 
     /**
-     * Get unique device specification id.
-     * 
-     * @return
-     */
-    public UUID getId();
-
-    /**
-     * Get token that acts as an alias for the specificaton id.
-     * 
-     * @return
-     */
-    public String getToken();
-
-    /**
      * Get name that describes specification.
      * 
      * @return

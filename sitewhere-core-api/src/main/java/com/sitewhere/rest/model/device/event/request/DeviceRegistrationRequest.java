@@ -31,7 +31,7 @@ public class DeviceRegistrationRequest extends DeviceStateChangeCreateRequest
     private static final long serialVersionUID = -6396459122879336428L;
 
     /** Data map identifier for hardware id */
-    public static final String DATA_HARDWARE_ID = "hardwareId";
+    public static final String DATA_DEVICE_TOKEN = "deviceToken";
 
     /** Data map identifier for device type token */
     public static final String DATA_DEVICE_TYPE_TOKEN = "deviceTypeToken";
@@ -45,18 +45,16 @@ public class DeviceRegistrationRequest extends DeviceStateChangeCreateRequest
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.event.request.IDeviceRegistrationCreateRequest#
-     * getHardwareId ()
+     * @see com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest#
+     * getDeviceToken()
      */
     @Override
-    public String getHardwareId() {
-	return getData().get(DATA_HARDWARE_ID);
+    public String getDeviceToken() {
+	return getData().get(DATA_DEVICE_TOKEN);
     }
 
-    public void setHardwareId(String hardwareId) {
-	getData().put(DATA_HARDWARE_ID, hardwareId);
+    public void setDeviceToken(String deviceToken) {
+	getData().put(DATA_DEVICE_TOKEN, deviceToken);
     }
 
     /*

@@ -7,6 +7,8 @@
  */
 package com.sitewhere.schedule.grpc;
 
+import java.util.UUID;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -69,7 +71,8 @@ public class ScheduleManagementRouter extends ScheduleManagementGrpc.ScheduleMan
 	    throw new RuntimeException("Tenant id not found in schedule management request.");
 	}
 	try {
-	    IScheduleManagementTenantEngine engine = getMicroservice().getTenantEngineByTenantId(tenantId);
+	    IScheduleManagementTenantEngine engine = getMicroservice()
+		    .getTenantEngineByTenantId(UUID.fromString(tenantId));
 	    if (engine != null) {
 		UserContextManager.setCurrentTenant(engine.getTenant());
 		return engine.getScheduleManagementImpl();

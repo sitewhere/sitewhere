@@ -7,6 +7,8 @@
  */
 package com.sitewhere.tenant;
 
+import java.util.UUID;
+
 import com.sitewhere.server.lifecycle.LifecycleComponentDecorator;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.search.ISearchResults;
@@ -41,38 +43,29 @@ public class TenantManagementDecorator extends LifecycleComponentDecorator<ITena
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#updateTenant(java.lang.String,
+     * @see com.sitewhere.spi.tenant.ITenantManagement#updateTenant(java.util.UUID,
      * com.sitewhere.spi.tenant.request.ITenantCreateRequest)
      */
     @Override
-    public ITenant updateTenant(String id, ITenantCreateRequest request) throws SiteWhereException {
+    public ITenant updateTenant(UUID id, ITenantCreateRequest request) throws SiteWhereException {
 	return getDelegate().updateTenant(id, request);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.tenant.ITenantManagement#getTenantById(java.lang.
-     * String)
+     * @see com.sitewhere.spi.tenant.ITenantManagement#getTenant(java.util.UUID)
      */
     @Override
-    public ITenant getTenantById(String id) throws SiteWhereException {
-	return getDelegate().getTenantById(id);
+    public ITenant getTenant(UUID id) throws SiteWhereException {
+	return getDelegate().getTenant(id);
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#getTenantByAuthenticationToken
-     * (java.lang .String)
+     * com.sitewhere.spi.tenant.ITenantManagement#getTenantByToken(java.lang.String)
      */
     @Override
-    public ITenant getTenantByAuthenticationToken(String token) throws SiteWhereException {
-	return getDelegate().getTenantByAuthenticationToken(token);
+    public ITenant getTenantByToken(String token) throws SiteWhereException {
+	return getDelegate().getTenantByToken(token);
     }
 
     /*
@@ -88,14 +81,11 @@ public class TenantManagementDecorator extends LifecycleComponentDecorator<ITena
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.tenant.ITenantManagement#deleteTenant(java.lang.String,
+     * @see com.sitewhere.spi.tenant.ITenantManagement#deleteTenant(java.util.UUID,
      * boolean)
      */
     @Override
-    public ITenant deleteTenant(String tenantId, boolean force) throws SiteWhereException {
+    public ITenant deleteTenant(UUID tenantId, boolean force) throws SiteWhereException {
 	return getDelegate().deleteTenant(tenantId, force);
     }
 }

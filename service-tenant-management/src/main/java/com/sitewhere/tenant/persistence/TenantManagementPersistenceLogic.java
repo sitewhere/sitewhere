@@ -8,6 +8,7 @@
 package com.sitewhere.tenant.persistence;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.sitewhere.persistence.Persistence;
 import com.sitewhere.rest.model.common.MetadataProvider;
@@ -34,10 +35,17 @@ public class TenantManagementPersistenceLogic extends Persistence {
      */
     public static Tenant tenantCreateLogic(ITenantCreateRequest request) throws SiteWhereException {
 	Tenant tenant = new Tenant();
+	tenant.setId(UUID.randomUUID());
 
-	// Id is required.
-	requireFormat("Tenant Id", request.getId(), "[\\w]*", ErrorCode.TenantIdFormat);
-	tenant.setId(request.getId());
+	// Use token if provided, otherwise generate one.
+	if (request.getToken() != null) {
+	    tenant.setToken(request.getToken());
+	} else {
+	    tenant.setToken(UUID.randomUUID().toString());
+	}
+
+	// Validate tenant token.
+	requireFormat("Token", request.getToken(), "^[\\w-]+$", ErrorCode.TenantIdFormat);
 
 	// Name is required.
 	require("Name", request.getName());
@@ -72,14 +80,14 @@ public class TenantManagementPersistenceLogic extends Persistence {
      * @throws SiteWhereException
      */
     public static Tenant tenantUpdateLogic(ITenantCreateRequest request, Tenant existing) throws SiteWhereException {
-	if ((request.getId() != null) && (!request.getId().equals(existing.getId()))) {
-	    throw new SiteWhereException("Can not change the id of an existing tenant.");
-	}
-
 	if (request.getTenantTemplateId() != null) {
 	    if (!request.getTenantTemplateId().equals(existing.getTenantTemplateId())) {
 		throw new SiteWhereException("Can not change the template of an existing tenant.");
 	    }
+	}
+
+	if (request.getToken() != null) {
+	    existing.setToken(request.getToken());
 	}
 
 	if (request.getName() != null) {

@@ -74,9 +74,9 @@ public class BatchCommandInvocationHandler extends TenantEngineLifecycleComponen
 	}
 
 	// Find information about the device to execute the command against.
-	IDevice device = getDeviceManagement().getDeviceByHardwareId(element.getHardwareId());
+	IDevice device = getDeviceManagement().getDeviceByToken(element.getHardwareId());
 	if (device == null) {
-	    throw new SiteWhereException("Invalid device hardware id in command invocation.");
+	    throw new SiteWhereException("Invalid device token in command invocation.");
 	}
 
 	// Find the current assignment information for the device.

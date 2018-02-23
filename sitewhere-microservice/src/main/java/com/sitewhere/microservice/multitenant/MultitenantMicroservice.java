@@ -8,6 +8,7 @@
 package com.sitewhere.microservice.multitenant;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
@@ -57,16 +58,16 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
     private ITenantManagementApiDemux tenantManagementApiDemux;
 
     /** Map of tenant engines that have been initialized */
-    private ConcurrentMap<String, T> initializedTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
+    private ConcurrentMap<UUID, T> initializedTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
 
     /** Map of tenant engines that failed to initialize */
-    private ConcurrentMap<String, T> failedTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
+    private ConcurrentMap<UUID, T> failedTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
 
     /** Map of tenant engines in the process of initializing */
-    private ConcurrentMap<String, ITenant> initializingTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
+    private ConcurrentMap<UUID, ITenant> initializingTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
 
     /** List of tenant ids waiting for an engine to be created */
-    private BlockingDeque<String> tenantInitializationQueue = new LinkedBlockingDeque<>();
+    private BlockingDeque<UUID> tenantInitializationQueue = new LinkedBlockingDeque<>();
 
     /** Executor for tenant operations */
     private ExecutorService tenantOperations;
@@ -190,13 +191,11 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice#
-     * getTenantEngineByTenantId(java.lang.String)
+     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
+     * getTenantEngineByTenantId(java.util.UUID)
      */
     @Override
-    public T getTenantEngineByTenantId(String id) throws SiteWhereException {
+    public T getTenantEngineByTenantId(UUID id) throws SiteWhereException {
 	T engine = getInitializedTenantEngines().get(id);
 	if (engine == null) {
 	    engine = getFailedTenantEngines().get(id);
@@ -215,7 +214,8 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 	try {
 	    if (curator.checkExists().forPath(getInstanceTenantsConfigurationPath()) != null) {
 		List<String> tenantIds = curator.getChildren().forPath(getInstanceTenantsConfigurationPath());
-		for (String tenantId : tenantIds) {
+		for (String tenantIdStr : tenantIds) {
+		    UUID tenantId = UUID.fromString(tenantIdStr);
 		    if (getTenantEngineByTenantId(tenantId) == null) {
 			if (!getTenantInitializationQueue().contains(tenantId)) {
 			    getTenantInitializationQueue().offer(tenantId);
@@ -252,10 +252,10 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * restartTenantEngine(java.lang.String)
+     * restartTenantEngine(java.util.UUID)
      */
     @Override
-    public void restartTenantEngine(String tenantId) throws SiteWhereException {
+    public void restartTenantEngine(UUID tenantId) throws SiteWhereException {
 	// Shut down and remove existing tenant engine.
 	removeTenantEngine(tenantId);
 	getLogger().info("Tenant engine shut down successfully. Queueing for restart...");
@@ -266,10 +266,10 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * removeTenantEngine(java.lang.String)
+     * removeTenantEngine(java.util.UUID)
      */
     @Override
-    public void removeTenantEngine(String tenantId) throws SiteWhereException {
+    public void removeTenantEngine(UUID tenantId) throws SiteWhereException {
 	IMicroserviceTenantEngine engine = getInitializedTenantEngines().get(tenantId);
 	if (engine != null) {
 	    // Remove initialized engine if one exists.
@@ -321,10 +321,10 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * getTenantConfiguration(java.lang.String)
+     * getTenantConfiguration(java.util.UUID)
      */
     @Override
-    public byte[] getTenantConfiguration(String tenantId) throws SiteWhereException {
+    public byte[] getTenantConfiguration(UUID tenantId) throws SiteWhereException {
 	T engine = getTenantEngineByTenantId(tenantId);
 	if (engine == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantId, ErrorLevel.ERROR);
@@ -334,10 +334,10 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * updateTenantConfiguration(java.lang.String, byte[])
+     * updateTenantConfiguration(java.util.UUID, byte[])
      */
     @Override
-    public void updateTenantConfiguration(String tenantId, byte[] content) throws SiteWhereException {
+    public void updateTenantConfiguration(UUID tenantId, byte[] content) throws SiteWhereException {
 	T engine = getTenantEngineByTenantId(tenantId);
 	if (engine == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantId, ErrorLevel.ERROR);
@@ -438,35 +438,35 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 	this.tenantManagementApiDemux = tenantManagementApiDemux;
     }
 
-    public ConcurrentMap<String, T> getInitializedTenantEngines() {
+    public ConcurrentMap<UUID, T> getInitializedTenantEngines() {
 	return initializedTenantEngines;
     }
 
-    public void setInitializedTenantEngines(ConcurrentMap<String, T> initializedTenantEngines) {
-	this.initializedTenantEngines = initializedTenantEngines;
-    }
-
-    public ConcurrentMap<String, ITenant> getInitializingTenantEngines() {
-	return initializingTenantEngines;
-    }
-
-    public void setInitializingTenantEngines(ConcurrentMap<String, ITenant> initializingTenantEngines) {
-	this.initializingTenantEngines = initializingTenantEngines;
-    }
-
-    public ConcurrentMap<String, T> getFailedTenantEngines() {
+    public ConcurrentMap<UUID, T> getFailedTenantEngines() {
 	return failedTenantEngines;
     }
 
-    public void setFailedTenantEngines(ConcurrentMap<String, T> failedTenantEngines) {
+    public void setFailedTenantEngines(ConcurrentMap<UUID, T> failedTenantEngines) {
 	this.failedTenantEngines = failedTenantEngines;
     }
 
-    public BlockingDeque<String> getTenantInitializationQueue() {
+    public ConcurrentMap<UUID, ITenant> getInitializingTenantEngines() {
+	return initializingTenantEngines;
+    }
+
+    public void setInitializingTenantEngines(ConcurrentMap<UUID, ITenant> initializingTenantEngines) {
+	this.initializingTenantEngines = initializingTenantEngines;
+    }
+
+    public void setInitializedTenantEngines(ConcurrentMap<UUID, T> initializedTenantEngines) {
+	this.initializedTenantEngines = initializedTenantEngines;
+    }
+
+    public BlockingDeque<UUID> getTenantInitializationQueue() {
 	return tenantInitializationQueue;
     }
 
-    public void setTenantInitializationQueue(BlockingDeque<String> tenantInitializationQueue) {
+    public void setTenantInitializationQueue(BlockingDeque<UUID> tenantInitializationQueue) {
 	this.tenantInitializationQueue = tenantInitializationQueue;
     }
 
@@ -500,7 +500,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 		    getTenantManagementApiDemux().waitForApiChannel().waitForApiAvailable();
 
 		    // Get next tenant id from the queue and look up the tenant.
-		    String tenantId = getTenantInitializationQueue().take();
+		    UUID tenantId = getTenantInitializationQueue().take();
 
 		    // Verify that multiple threads don't start duplicate engines.
 		    if (getInitializingTenantEngines().get(tenantId) != null) {
@@ -509,7 +509,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 		    }
 
 		    // Look up tenant and add it to initializing tenants map.
-		    ITenant tenant = getTenantManagementApiDemux().getApiChannel().getTenantById(tenantId);
+		    ITenant tenant = getTenantManagementApiDemux().getApiChannel().getTenant(tenantId);
 		    if (tenant == null) {
 			throw new SiteWhereException("Unable to locate tenant by id '" + tenantId + "'.");
 		    }

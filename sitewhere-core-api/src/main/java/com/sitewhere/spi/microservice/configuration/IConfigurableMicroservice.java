@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.microservice.configuration;
 
+import java.util.UUID;
+
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.spi.SiteWhereException;
@@ -107,7 +109,7 @@ public interface IConfigurableMicroservice extends IMicroservice {
      * @return
      * @throws SiteWhereException
      */
-    public String getInstanceTenantScriptsPath(String tenantId) throws SiteWhereException;
+    public String getInstanceTenantScriptsPath(UUID tenantId) throws SiteWhereException;
 
     /**
      * Get path for tenant configuration.
@@ -116,7 +118,7 @@ public interface IConfigurableMicroservice extends IMicroservice {
      * @return
      * @throws SiteWhereException
      */
-    public String getInstanceTenantConfigurationPath(String tenantId) throws SiteWhereException;
+    public String getInstanceTenantConfigurationPath(UUID tenantId) throws SiteWhereException;
 
     /**
      * Subpath of instance state that contains tenant state data.
@@ -133,7 +135,7 @@ public interface IConfigurableMicroservice extends IMicroservice {
      * @return
      * @throws SiteWhereException
      */
-    public String getInstanceTenantStatePath(String tenantId) throws SiteWhereException;
+    public String getInstanceTenantStatePath(UUID tenantId) throws SiteWhereException;
 
     /**
      * Get path to Zk node that indicates a tenant has been bootstrapped with
@@ -143,7 +145,7 @@ public interface IConfigurableMicroservice extends IMicroservice {
      * @return
      * @throws SiteWhereException
      */
-    public String getInstanceTenantBootstrappedIndicatorPath(String tenantId) throws SiteWhereException;
+    public String getInstanceTenantBootstrappedIndicatorPath(UUID tenantId) throws SiteWhereException;
 
     /**
      * Initialize configurable components.

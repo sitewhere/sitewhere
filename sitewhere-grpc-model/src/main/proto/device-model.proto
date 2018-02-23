@@ -152,14 +152,14 @@ message GDeviceStatus {
 // Device element mapping.
 message GDeviceElementMapping {
 	string schemaPath = 1;
-	string hardwareId = 2;
+	string deviceToken = 2;
 }
 
 // Request for creating a device.
 message GDeviceCreateRequest {
-	string hardwareId = 1;
+	GOptionalString token = 1;
 	string deviceTypeToken = 2;
-	GOptionalString parentHardwareId = 3;
+	GOptionalString parentDeviceToken = 3;
 	repeated GDeviceElementMapping deviceElementMappings = 4;
 	GOptionalString comments = 5;
 	GOptionalString status = 6;
@@ -185,7 +185,7 @@ message GDeviceSearchResults {
 // Device.
 message GDevice {
 	GUUID id = 1;
-	string hardwareId = 2;
+	string token = 2;
 	GUUID deviceTypeId = 4;
 	GUUID deviceAssignmentId = 5;
 	GUUID parentDeviceId = 6;
@@ -273,7 +273,7 @@ message GDeviceGroup {
 // Request data for creating a device assignment.
 message GDeviceAssignmentCreateRequest {
 	GOptionalString token = 1;
-	string deviceHardwareId = 2;
+	string deviceToken = 2;
 	GOptionalString areaToken = 3;
 	GOptionalString assetToken = 4;
 	map<string, string> metadata = 5;

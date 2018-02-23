@@ -239,7 +239,7 @@ public class DeviceGroups extends RestControllerBase {
 	for (DeviceGroupElementCreateRequest request : elements) {
 	    switch (request.getType()) {
 	    case Device: {
-		if (devices.getDeviceByHardwareId(request.getElementId()) == null) {
+		if (devices.getDeviceByToken(request.getElementId()) == null) {
 		    throw new SiteWhereException("Referenced device does not exist: " + request.getElementId());
 		}
 		break;

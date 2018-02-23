@@ -62,7 +62,7 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
 	try {
 	    IDeviceMeasurementsCreateRequest measurements = (IDeviceMeasurementsCreateRequest) event.getRequest();
 	    Model.DeviceMeasurements.Builder mb = Model.DeviceMeasurements.newBuilder();
-	    mb.setHardwareId(event.getHardwareId());
+	    mb.setHardwareId(event.getDeviceToken());
 	    mb.setEventDate(measurements.getEventDate().getTime());
 
 	    if (measurements.getMetadata() != null) {
@@ -108,7 +108,7 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
 	try {
 	    IDeviceAlertCreateRequest alert = (IDeviceAlertCreateRequest) event.getRequest();
 	    Model.DeviceAlert.Builder mb = Model.DeviceAlert.newBuilder();
-	    mb.setHardwareId(event.getHardwareId());
+	    mb.setHardwareId(event.getDeviceToken());
 	    mb.setEventDate(alert.getEventDate().getTime());
 	    mb.setAlertType(alert.getType());
 	    mb.setAlertMessage(alert.getMessage());
@@ -149,7 +149,7 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
 	try {
 	    IDeviceLocationCreateRequest location = (IDeviceLocationCreateRequest) event.getRequest();
 	    Model.DeviceLocation.Builder mb = Model.DeviceLocation.newBuilder();
-	    mb.setHardwareId(event.getHardwareId());
+	    mb.setHardwareId(event.getDeviceToken());
 	    mb.setEventDate(location.getEventDate().getTime());
 	    mb.setLatitude(location.getLatitude());
 	    mb.setLongitude(location.getLongitude());
@@ -191,7 +191,7 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
 	try {
 	    IDeviceRegistrationRequest request = (IDeviceRegistrationRequest) decoded.getRequest();
 	    SiteWhere.RegisterDevice.Builder register = SiteWhere.RegisterDevice.newBuilder();
-	    register.setHardwareId(request.getHardwareId());
+	    register.setHardwareId(request.getDeviceToken());
 	    register.setAreaToken(request.getAreaToken());
 	    register.setDeviceTypeToken(request.getDeviceTypeToken());
 

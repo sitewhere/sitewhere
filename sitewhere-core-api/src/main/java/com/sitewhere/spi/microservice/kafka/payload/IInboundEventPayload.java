@@ -25,11 +25,11 @@ public interface IInboundEventPayload {
     public String getSourceId();
 
     /**
-     * Get unique hardware id.
+     * Get device token.
      * 
      * @return
      */
-    public String getHardwareId();
+    public String getDeviceToken();
 
     /**
      * Get id of originating event.

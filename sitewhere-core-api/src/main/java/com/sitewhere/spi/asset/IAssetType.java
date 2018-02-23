@@ -8,7 +8,6 @@
 package com.sitewhere.spi.asset;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 
@@ -18,20 +17,6 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
  * @author Derek
  */
 public interface IAssetType extends IMetadataProviderEntity, Serializable {
-
-    /**
-     * Unique asset id.
-     * 
-     * @return
-     */
-    public UUID getId();
-
-    /**
-     * Get token used to reference asset.
-     * 
-     * @return
-     */
-    public String getToken();
 
     /**
      * Get asset name.

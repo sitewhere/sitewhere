@@ -20,8 +20,8 @@ public class InboundEventPayload implements IInboundEventPayload {
     /** Event source id */
     private String sourceId;
 
-    /** Device hardware id */
-    private String hardwareId;
+    /** Device token */
+    private String deviceToken;
 
     /** Id of event originator */
     private String originator;
@@ -44,15 +44,15 @@ public class InboundEventPayload implements IInboundEventPayload {
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.payload.IInboundEventPayload#
-     * getHardwareId()
+     * getDeviceToken()
      */
     @Override
-    public String getHardwareId() {
-	return hardwareId;
+    public String getDeviceToken() {
+	return deviceToken;
     }
 
-    public void setHardwareId(String hardwareId) {
-	this.hardwareId = hardwareId;
+    public void setDeviceToken(String deviceToken) {
+	this.deviceToken = deviceToken;
     }
 
     /*

@@ -7,6 +7,8 @@
  */
 package com.sitewhere.grpc.client.tenant;
 
+import java.util.UUID;
+
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.cache.ICacheProvider;
@@ -23,26 +25,47 @@ public class CachedTenantManagementApiChannel extends TenantManagementApiChannel
     /** Tenant cache */
     private ICacheProvider<String, ITenant> tenantCache;
 
+    /** Tenant by id cache */
+    private ICacheProvider<UUID, ITenant> tenantByIdCache;
+
     public CachedTenantManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
 	super(demux, microservice, host);
 	this.tenantCache = new TenantManagementCacheProviders.TenantCache(microservice, false);
+	this.tenantByIdCache = new TenantManagementCacheProviders.TenantByIdCache(microservice, false);
     }
 
     /*
      * @see
-     * com.sitewhere.grpc.client.tenant.TenantManagementApiChannel#getTenantById(
-     * java.lang.String)
+     * com.sitewhere.grpc.client.tenant.TenantManagementApiChannel#getTenant(java.
+     * util.UUID)
      */
     @Override
-    public ITenant getTenantById(String id) throws SiteWhereException {
-	ITenant tenant = getTenantCache().getCacheEntry(null, id);
+    public ITenant getTenant(UUID id) throws SiteWhereException {
+	ITenant tenant = getTenantByIdCache().getCacheEntry(null, id);
 	if (tenant != null) {
 	    getLogger().trace("Using cached information for tenant '" + id + "'.");
 	    return tenant;
 	} else {
 	    getLogger().trace("No cached information for tenant '" + id + "'.");
 	}
-	return super.getTenantById(id);
+	return super.getTenant(id);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.client.tenant.TenantManagementApiChannel#getTenantByToken(
+     * java.lang.String)
+     */
+    @Override
+    public ITenant getTenantByToken(String token) throws SiteWhereException {
+	ITenant tenant = getTenantCache().getCacheEntry(null, token);
+	if (tenant != null) {
+	    getLogger().trace("Using cached information for tenant '" + token + "'.");
+	    return tenant;
+	} else {
+	    getLogger().trace("No cached information for tenant '" + token + "'.");
+	}
+	return super.getTenantByToken(token);
     }
 
     public ICacheProvider<String, ITenant> getTenantCache() {
@@ -51,5 +74,13 @@ public class CachedTenantManagementApiChannel extends TenantManagementApiChannel
 
     public void setTenantCache(ICacheProvider<String, ITenant> tenantCache) {
 	this.tenantCache = tenantCache;
+    }
+
+    public ICacheProvider<UUID, ITenant> getTenantByIdCache() {
+	return tenantByIdCache;
+    }
+
+    public void setTenantByIdCache(ICacheProvider<UUID, ITenant> tenantByIdCache) {
+	this.tenantByIdCache = tenantByIdCache;
     }
 }

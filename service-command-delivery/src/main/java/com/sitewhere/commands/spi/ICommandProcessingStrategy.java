@@ -41,10 +41,10 @@ public interface ICommandProcessingStrategy extends ITenantEngineLifecycleCompon
      * implementation.
      * 
      * @param communication
-     * @param hardwareId
+     * @param deviceToken
      * @param command
      * @throws SiteWhereException
      */
-    public void deliverSystemCommand(IDeviceCommunication communication, String hardwareId, ISystemCommand command)
+    public void deliverSystemCommand(IDeviceCommunication communication, String deviceToken, ISystemCommand command)
 	    throws SiteWhereException;
 }

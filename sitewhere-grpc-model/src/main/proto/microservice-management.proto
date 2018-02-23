@@ -56,7 +56,7 @@ message GGetGlobalConfigurationResponse {
 
 // Request for getting tenant configuration data.
 message GGetTenantConfigurationRequest {
-	string tenantId = 1;
+	com.sitewhere.grpc.model.GUUID tenantId = 1;
 }
 	
 // Response for getting tenant configuration data.
@@ -75,7 +75,7 @@ message GUpdateGlobalConfigurationResponse {
 
 // Request for updating tenant configuration data.
 message GUpdateTenantConfigurationRequest {
-	string tenantId = 1;
+	com.sitewhere.grpc.model.GUUID tenantId = 1;
 	com.sitewhere.grpc.model.GConfigurationContent configuration = 2;
 }
 	

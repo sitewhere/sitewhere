@@ -21,20 +21,6 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
 public interface IZone extends IMetadataProviderEntity {
 
     /**
-     * Get unique zone id.
-     * 
-     * @return
-     */
-    public UUID getId();
-
-    /**
-     * Get token that acts as alias for zone id.
-     * 
-     * @return
-     */
-    public String getToken();
-
-    /**
      * Get id for associated area.
      * 
      * @return

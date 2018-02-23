@@ -62,10 +62,10 @@ public class HardwareIdMqttParameterExtractor extends TenantEngineLifecycleCompo
 	    IDeviceCommandExecution execution) throws SiteWhereException {
 	MqttParameters params = new MqttParameters();
 
-	String commandTopic = String.format(getCommandTopicExpr(), nesting.getGateway().getHardwareId());
+	String commandTopic = String.format(getCommandTopicExpr(), nesting.getGateway().getToken());
 	params.setCommandTopic(commandTopic);
 
-	String systemTopic = String.format(getSystemTopicExpr(), nesting.getGateway().getHardwareId());
+	String systemTopic = String.format(getSystemTopicExpr(), nesting.getGateway().getToken());
 	params.setSystemTopic(systemTopic);
 
 	return params;

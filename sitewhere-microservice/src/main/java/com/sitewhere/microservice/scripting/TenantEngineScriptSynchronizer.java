@@ -66,7 +66,7 @@ public class TenantEngineScriptSynchronizer extends ScriptSynchronizer {
     protected File computeFilesystemPathForTenant() {
 	File root = new File(getMicroservice().getInstanceSettings().getFileSystemStorageRoot());
 	File tenants = new File(root, TENANTS_SUBPATH);
-	File tenant = new File(tenants, getTenantEngine().getTenant().getId());
+	File tenant = new File(tenants, getTenantEngine().getTenant().getToken());
 	if (!tenant.getParentFile().exists()) {
 	    tenant.getParentFile().mkdirs();
 	}

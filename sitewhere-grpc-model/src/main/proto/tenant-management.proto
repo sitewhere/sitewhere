@@ -6,6 +6,7 @@ option java_multiple_files = true;
 option java_package = "com.sitewhere.grpc.service";
 option java_outer_classname = "TenantServices";
 
+import "sitewhere-common.proto";
 import "tenant-model.proto";
 
 // Tenant management APIs.
@@ -24,8 +25,8 @@ service TenantManagement {
 	// Get a tenant by unique id.
 	rpc GetTenantById (GGetTenantByIdRequest) returns (GGetTenantByIdResponse) {}
 
-	// Get a tenant by authentication token.
-	rpc GetTenantByAuthenticationToken (GGetTenantByAuthenticationTokenRequest) returns (GGetTenantByAuthenticationTokenResponse) {}
+	// Get a tenant by token.
+	rpc GetTenantByToken (GGetTenantByTokenRequest) returns (GGetTenantByTokenResponse) {}
 
 	// List tenants based on criteria.
 	rpc ListTenants (GListTenantsRequest) returns (GListTenantsResponse) {}
@@ -57,7 +58,7 @@ message GCreateTenantResponse {
 	
 // Request for updating a tenant.
 message GUpdateTenantRequest {
-	string id = 1;
+	com.sitewhere.grpc.model.GUUID id = 1;
 	com.sitewhere.grpc.model.GTenantCreateRequest request = 2;
 }
 
@@ -68,7 +69,7 @@ message GUpdateTenantResponse {
 	
 // Request for getting a tenant by id.
 message GGetTenantByIdRequest {
-	string id = 1;
+	com.sitewhere.grpc.model.GUUID id = 1;
 }
 
 // Response for getting a tenant by id.
@@ -76,13 +77,13 @@ message GGetTenantByIdResponse {
 	com.sitewhere.grpc.model.GTenant tenant = 1;
 }
 	
-// Request for getting a tenant by authentication token.
-message GGetTenantByAuthenticationTokenRequest {
+// Request for getting a tenant by token.
+message GGetTenantByTokenRequest {
 	string token = 1;
 }
 
-// Response for getting a tenant by authentication token.
-message GGetTenantByAuthenticationTokenResponse {
+// Response for getting a tenant by token.
+message GGetTenantByTokenResponse {
 	com.sitewhere.grpc.model.GTenant tenant = 1;
 }
 
@@ -98,7 +99,7 @@ message GListTenantsResponse {
 
 // Request for deleting a tenant.
 message GDeleteTenantRequest {
-	string id = 1;
+	com.sitewhere.grpc.model.GUUID id = 1;
 	bool force = 2;
 }
 

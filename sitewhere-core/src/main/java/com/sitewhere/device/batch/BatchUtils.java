@@ -70,7 +70,7 @@ public class BatchUtils {
 	}
 	List<String> hardwareIds = new ArrayList<String>();
 	for (IDevice match : matches) {
-	    hardwareIds.add(match.getHardwareId());
+	    hardwareIds.add(match.getToken());
 	}
 	return hardwareIds;
     }

@@ -7,6 +7,8 @@
  */
 package com.sitewhere.microservice.hazelcast.server;
 
+import java.util.UUID;
+
 import com.sitewhere.grpc.client.tenant.TenantManagementCacheProviders;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.cache.ICacheProvider;
@@ -39,33 +41,32 @@ public class CacheAwareTenantManagement extends TenantManagementDecorator {
     @Override
     public ITenant createTenant(ITenantCreateRequest request) throws SiteWhereException {
 	ITenant result = super.createTenant(request);
-	getTenantCache().setCacheEntry(null, result.getId(), result);
+	getTenantCache().setCacheEntry(null, result.getToken(), result);
 	getLogger().trace("Added created tenant to cache.");
 	return result;
     }
 
     /*
      * @see
-     * com.sitewhere.tenant.TenantManagementDecorator#updateTenant(java.lang.String,
+     * com.sitewhere.tenant.TenantManagementDecorator#updateTenant(java.util.UUID,
      * com.sitewhere.spi.tenant.request.ITenantCreateRequest)
      */
     @Override
-    public ITenant updateTenant(String id, ITenantCreateRequest request) throws SiteWhereException {
+    public ITenant updateTenant(UUID id, ITenantCreateRequest request) throws SiteWhereException {
 	ITenant result = super.updateTenant(id, request);
-	getTenantCache().setCacheEntry(null, result.getId(), result);
+	getTenantCache().setCacheEntry(null, result.getToken(), result);
 	getLogger().trace("Updated tenant in cache.");
 	return result;
     }
 
     /*
-     * @see com.sitewhere.tenant.TenantManagementDecorator#getTenantById(java.lang.
-     * String)
+     * @see com.sitewhere.tenant.TenantManagementDecorator#getTenant(java.util.UUID)
      */
     @Override
-    public ITenant getTenantById(String id) throws SiteWhereException {
-	ITenant result = super.getTenantById(id);
-	if ((result != null) && (getTenantCache().getCacheEntry(null, id) == null)) {
-	    getTenantCache().setCacheEntry(null, result.getId(), result);
+    public ITenant getTenant(UUID id) throws SiteWhereException {
+	ITenant result = super.getTenant(id);
+	if ((result != null) && (getTenantCache().getCacheEntry(null, result.getToken()) == null)) {
+	    getTenantCache().setCacheEntry(null, result.getToken(), result);
 	    getLogger().trace("Added tenant to cache.");
 	}
 	return result;
@@ -73,13 +74,28 @@ public class CacheAwareTenantManagement extends TenantManagementDecorator {
 
     /*
      * @see
-     * com.sitewhere.tenant.TenantManagementDecorator#deleteTenant(java.lang.String,
+     * com.sitewhere.tenant.TenantManagementDecorator#getTenantByToken(java.lang.
+     * String)
+     */
+    @Override
+    public ITenant getTenantByToken(String token) throws SiteWhereException {
+	ITenant result = super.getTenantByToken(token);
+	if ((result != null) && (getTenantCache().getCacheEntry(null, result.getToken()) == null)) {
+	    getTenantCache().setCacheEntry(null, result.getToken(), result);
+	    getLogger().trace("Added tenant to cache.");
+	}
+	return result;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.tenant.TenantManagementDecorator#deleteTenant(java.util.UUID,
      * boolean)
      */
     @Override
-    public ITenant deleteTenant(String tenantId, boolean force) throws SiteWhereException {
+    public ITenant deleteTenant(UUID tenantId, boolean force) throws SiteWhereException {
 	ITenant result = super.deleteTenant(tenantId, force);
-	getTenantCache().removeCacheEntry(null, result.getId());
+	getTenantCache().removeCacheEntry(null, result.getToken());
 	getLogger().trace("Removed tenant from cache.");
 	return result;
     }

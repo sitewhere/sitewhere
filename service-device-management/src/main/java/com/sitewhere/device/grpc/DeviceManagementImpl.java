@@ -552,24 +552,23 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getDeviceByHardwareId(com.sitewhere.grpc.service.
-     * GGetDeviceByHardwareIdRequest, io.grpc.stub.StreamObserver)
+     * getDeviceByToken(com.sitewhere.grpc.service.GGetDeviceByTokenRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void getDeviceByHardwareId(GGetDeviceByHardwareIdRequest request,
-	    StreamObserver<GGetDeviceByHardwareIdResponse> responseObserver) {
+    public void getDeviceByToken(GGetDeviceByTokenRequest request,
+	    StreamObserver<GGetDeviceByTokenResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_BY_HARDWARE_ID);
-	    IDevice apiResult = getDeviceManagement().getDeviceByHardwareId(request.getHardwareId());
-	    GGetDeviceByHardwareIdResponse.Builder response = GGetDeviceByHardwareIdResponse.newBuilder();
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_BY_TOKEN);
+	    IDevice apiResult = getDeviceManagement().getDeviceByToken(request.getToken());
+	    GGetDeviceByTokenResponse.Builder response = GGetDeviceByTokenResponse.newBuilder();
 	    if (apiResult != null) {
 		response.setDevice(DeviceModelConverter.asGrpcDevice(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_BY_HARDWARE_ID, e,
-		    responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_BY_TOKEN, e, responseObserver);
 	}
     }
 

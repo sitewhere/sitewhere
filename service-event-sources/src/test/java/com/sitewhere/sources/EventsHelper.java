@@ -26,13 +26,13 @@ public class EventsHelper {
     /**
      * Generate an encoded measurements message for the given hardware id.
      * 
-     * @param hardwareId
+     * @param deviceToken
      * @return
      * @throws SiteWhereException
      */
-    public static byte[] generateEncodedMeasurementsMessage(String hardwareId) throws SiteWhereException {
+    public static byte[] generateEncodedMeasurementsMessage(String deviceToken) throws SiteWhereException {
 	DecodedDeviceRequest<IDeviceMeasurementsCreateRequest> request = new DecodedDeviceRequest<IDeviceMeasurementsCreateRequest>();
-	request.setHardwareId(hardwareId);
+	request.setDeviceToken(deviceToken);
 
 	DeviceMeasurementsCreateRequest mx = new DeviceMeasurementsCreateRequest();
 	mx.setEventDate(new Date());
@@ -50,10 +50,10 @@ public class EventsHelper {
      */
     public static byte[] generateEncodedRegistrationMessage() throws SiteWhereException {
 	DecodedDeviceRequest<IDeviceRegistrationRequest> request = new DecodedDeviceRequest<IDeviceRegistrationRequest>();
-	request.setHardwareId("e5cd9ed7-f974-400f-bfa7-bf2df17211b2");
+	request.setDeviceToken("e5cd9ed7-f974-400f-bfa7-bf2df17211b2");
 
 	DeviceRegistrationRequest mx = new DeviceRegistrationRequest();
-	mx.setHardwareId("e5cd9ed7-f974-400f-bfa7-bf2df17211b2");
+	mx.setDeviceToken("e5cd9ed7-f974-400f-bfa7-bf2df17211b2");
 	mx.setAreaToken("bb105f8d-3150-41f5-b9d1-db04965668d3");
 	mx.setDeviceTypeToken("d2604433-e4eb-419b-97c7-88efe9b2cd41");
 	mx.setEventDate(new Date());

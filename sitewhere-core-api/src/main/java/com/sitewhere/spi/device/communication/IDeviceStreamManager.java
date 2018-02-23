@@ -26,31 +26,31 @@ public interface IDeviceStreamManager extends ITenantEngineLifecycleComponent {
     /**
      * Handle request for creating a new {@link IDeviceStream}.
      * 
-     * @param hardwareId
+     * @param deviceToken
      * @param request
      * @throws SiteWhereException
      */
-    public void handleDeviceStreamRequest(String hardwareId, IDeviceStreamCreateRequest request)
+    public void handleDeviceStreamRequest(String deviceToken, IDeviceStreamCreateRequest request)
 	    throws SiteWhereException;
 
     /**
      * Handle request for creating new {@link IDeviceStreamData}.
      * 
-     * @param hardwareId
+     * @param deviceToken
      * @param request
      * @throws SiteWhereException
      */
-    public void handleDeviceStreamDataRequest(String hardwareId, IDeviceStreamDataCreateRequest request)
+    public void handleDeviceStreamDataRequest(String deviceToken, IDeviceStreamDataCreateRequest request)
 	    throws SiteWhereException;
 
     /**
      * Handle request for sending data from an {@link IDeviceStream} to a remote
      * device.
      * 
-     * @param hardwareId
+     * @param deviceToken
      * @param request
      * @throws SiteWhereException
      */
-    public void handleSendDeviceStreamDataRequest(String hardwareId, ISendDeviceStreamDataRequest request)
+    public void handleSendDeviceStreamDataRequest(String deviceToken, ISendDeviceStreamDataRequest request)
 	    throws SiteWhereException;
 }

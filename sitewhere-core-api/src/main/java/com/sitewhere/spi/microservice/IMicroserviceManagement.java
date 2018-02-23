@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.microservice;
 
+import java.util.UUID;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 
@@ -40,7 +42,7 @@ public interface IMicroserviceManagement {
      * @return
      * @throws SiteWhereException
      */
-    public byte[] getTenantConfiguration(String tenantId) throws SiteWhereException;
+    public byte[] getTenantConfiguration(UUID tenantId) throws SiteWhereException;
 
     /**
      * Update configuration for a global microservice.
@@ -57,5 +59,5 @@ public interface IMicroserviceManagement {
      * @param config
      * @throws SiteWhereException
      */
-    public void updateTenantConfiguration(String tenantId, byte[] config) throws SiteWhereException;
+    public void updateTenantConfiguration(UUID tenantId, byte[] config) throws SiteWhereException;
 }

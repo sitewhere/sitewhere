@@ -33,8 +33,8 @@ public class Device extends MetadataProviderEntity implements IDevice, Serializa
     /** Unique device id */
     private UUID id;
 
-    /** Hardware id that acts as alias for device id */
-    private String hardwareId;
+    /** Reference token */
+    private String token;
 
     /** Device type id */
     private UUID deviceTypeId;
@@ -67,17 +67,15 @@ public class Device extends MetadataProviderEntity implements IDevice, Serializa
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDevice#getHardwareId()
+     * @see com.sitewhere.spi.common.ISiteWhereEntity#getToken()
      */
     @Override
-    public String getHardwareId() {
-	return hardwareId;
+    public String getToken() {
+	return token;
     }
 
-    public void setHardwareId(String hardwareId) {
-	this.hardwareId = hardwareId;
+    public void setToken(String token) {
+	this.token = token;
     }
 
     /*

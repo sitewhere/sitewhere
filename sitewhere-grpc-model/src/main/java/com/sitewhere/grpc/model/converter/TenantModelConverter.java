@@ -10,6 +10,7 @@ package com.sitewhere.grpc.model.converter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sitewhere.grpc.model.CommonModel.GOptionalString;
 import com.sitewhere.grpc.model.CommonModel.GPaging;
 import com.sitewhere.grpc.model.CommonModel.GSearchText;
 import com.sitewhere.grpc.model.CommonModel.GUserReference;
@@ -47,7 +48,7 @@ public class TenantModelConverter {
      */
     public static ITenantCreateRequest asApiTenantCreateRequest(GTenantCreateRequest grpc) throws SiteWhereException {
 	TenantCreateRequest api = new TenantCreateRequest();
-	api.setId(grpc.getId());
+	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
 	api.setName(grpc.getName());
 	api.setAuthenticationToken(grpc.getAuthenticationToken());
 	api.setAuthorizedUserIds(grpc.getAuthorizedUserIdsList());
@@ -66,7 +67,9 @@ public class TenantModelConverter {
      */
     public static GTenantCreateRequest asGrpcTenantCreateRequest(ITenantCreateRequest api) throws SiteWhereException {
 	GTenantCreateRequest.Builder builder = GTenantCreateRequest.newBuilder();
-	builder.setId(api.getId());
+	if (api.getToken() != null) {
+	    builder.setToken(GOptionalString.newBuilder().setValue(api.getToken()));
+	}
 	builder.setName(api.getName());
 	builder.setAuthenticationToken(api.getAuthenticationToken());
 	builder.addAllAuthorizedUserIds(api.getAuthorizedUserIds());
@@ -85,7 +88,8 @@ public class TenantModelConverter {
      */
     public static ITenant asApiTenant(GTenant grpc) throws SiteWhereException {
 	Tenant api = new Tenant();
-	api.setId(grpc.getId());
+	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
+	api.setToken(grpc.getToken());
 	api.setName(grpc.getName());
 	api.setAuthenticationToken(grpc.getAuthenticationToken());
 	api.setAuthorizedUserIds(grpc.getAuthorizedUserIdsList());
@@ -135,7 +139,8 @@ public class TenantModelConverter {
      */
     public static GTenant asGrpcTenant(ITenant api) throws SiteWhereException {
 	GTenant.Builder builder = TenantModel.GTenant.newBuilder();
-	builder.setId(api.getId());
+	builder.setId(CommonModelConverter.asGrpcUuid(api.getId()));
+	builder.setToken(api.getToken());
 	builder.setName(api.getName());
 	builder.setAuthenticationToken(api.getAuthenticationToken());
 	builder.addAllAuthorizedUserIds(api.getAuthorizedUserIds());

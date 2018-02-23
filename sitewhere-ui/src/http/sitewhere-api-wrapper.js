@@ -137,25 +137,14 @@ import {
   deleteDeviceGroup
 } from './sitewhere-device-groups-api.js'
 
-// Assets.
+// Asset types.
 import {
-  getAssetModules,
-  createAssetCategory,
-  updateAssetCategory,
-  getAssetCategory,
-  deleteAssetCategory,
-  listAssetCategories,
-  listCategoryAssets,
-  searchAssets,
-  createHardwareAsset,
-  createPersonAsset,
-  createLocationAsset,
-  getAssetById,
-  updateHardwareAsset,
-  updatePersonAsset,
-  updateLocationAsset,
-  deleteAsset
-} from './sitewhere-assets-api.js'
+  createAssetType,
+  getAssetType,
+  updateAssetType,
+  listAssetTypes,
+  deleteAssetType
+} from './sitewhere-assettypes-api.js'
 
 // Batch operations.
 import {
@@ -1116,146 +1105,47 @@ export function _deleteDeviceGroup (store, token, force) {
 }
 
 /**
- * Get asset modules.
+ * Create an asset type.
  */
-export function _getAssetModules (store, type) {
+export function _createAssetType (store, assetType) {
   let axios = createCoreApiCall(store)
-  let api = getAssetModules(axios, type)
+  let api = createAssetType(axios, assetType)
   return loaderWrapper(store, api)
 }
 
 /**
- * Create an asset category.
+ * Get an asset type by unique token.
  */
-export function _createAssetCategory (store, payload) {
+export function _getAssetType (store, assetTypeToken) {
   let axios = createCoreApiCall(store)
-  let api = createAssetCategory(axios, payload)
+  let api = getAssetType(axios, assetTypeToken)
   return loaderWrapper(store, api)
 }
 
 /**
- * Update an asset category.
+ * Update an existing asset type.
  */
-export function _updateAssetCategory (store, categoryId, payload) {
+export function _updateAssetType (store, assetTypeToken, payload) {
   let axios = createCoreApiCall(store)
-  let api = updateAssetCategory(axios, categoryId, payload)
+  let api = updateAssetType(axios, assetTypeToken, payload)
   return loaderWrapper(store, api)
 }
 
 /**
- * Get asset category by unique id.
+ * List asset types.
  */
-export function _getAssetCategory (store, id) {
+export function _listAssetTypes (store, options, paging) {
   let axios = createCoreApiCall(store)
-  let api = getAssetCategory(axios, id)
+  let api = listAssetTypes(axios, options, paging)
   return loaderWrapper(store, api)
 }
 
 /**
- * Delete an asset category.
+ * Delete an existing asset type.
  */
-export function _deleteAssetCategory (store, categoryId) {
+export function _deleteAssetType (store, assetTypeToken, force) {
   let axios = createCoreApiCall(store)
-  let api = deleteAssetCategory(axios, categoryId)
-  return loaderWrapper(store, api)
-}
-
-/**
- * List asset categories.
- */
-export function _listAssetCategories (store, paging) {
-  let axios = createCoreApiCall(store)
-  let api = listAssetCategories(axios, paging)
-  return loaderWrapper(store, api)
-}
-
-/**
- * List assets for a given category.
- */
-export function _listCategoryAssets (store, categoryId, paging) {
-  let axios = createCoreApiCall(store)
-  let api = listCategoryAssets(axios, categoryId, paging)
-  return loaderWrapper(store, api)
-}
-
-/**
- * Search asset module for assets matching criteria.
- */
-export function _searchAssets (store, moduleId, criteria) {
-  let axios = createCoreApiCall(store)
-  let api = searchAssets(axios, moduleId, criteria)
-  return loaderWrapper(store, api)
-}
-
-/**
- * Create a hardware asset.
- */
-export function _createHardwareAsset (store, categoryId, payload) {
-  let axios = createCoreApiCall(store)
-  let api = createHardwareAsset(axios, categoryId, payload)
-  return loaderWrapper(store, api)
-}
-
-/**
- * Create a person asset.
- */
-export function _createPersonAsset (store, categoryId, payload) {
-  let axios = createCoreApiCall(store)
-  let api = createPersonAsset(axios, categoryId, payload)
-  return loaderWrapper(store, api)
-}
-
-/**
- * Create a location asset.
- */
-export function _createLocationAsset (store, categoryId, payload) {
-  let axios = createCoreApiCall(store)
-  let api = createLocationAsset(axios, categoryId, payload)
-  return loaderWrapper(store, api)
-}
-
-/**
- * Get asset by unique id.
- */
-export function _getAssetById (store, moduleId, assetId) {
-  let axios = createCoreApiCall(store)
-  let api = getAssetById(axios, moduleId, assetId)
-  return loaderWrapper(store, api)
-}
-
-/**
- * Update an existing hardware asset.
- */
-export function _updateHardwareAsset (store, moduleId, assetId, payload) {
-  let axios = createCoreApiCall(store)
-  let api = updateHardwareAsset(axios, moduleId, assetId, payload)
-  return loaderWrapper(store, api)
-}
-
-/**
- * Update an existing person asset.
- */
-export function _updatePersonAsset (store, moduleId, assetId, payload) {
-  let axios = createCoreApiCall(store)
-  let api = updatePersonAsset(axios, moduleId, assetId, payload)
-  return loaderWrapper(store, api)
-}
-
-/**
- * Update an existing location asset.
- */
-export function _updateLocationAsset (store, moduleId, assetId, payload) {
-  let axios = createCoreApiCall(store)
-  let api = updateLocationAsset(axios, moduleId, assetId, payload)
-  return loaderWrapper(store, api)
-}
-
-/**
- * Delete an existing site.
- */
-export function _deleteAsset (store, categoryId, assetId) {
-  let axios = createCoreApiCall(store)
-  let api = deleteAsset(axios, categoryId, assetId)
+  let api = deleteAssetType(axios, assetTypeToken, force)
   return loaderWrapper(store, api)
 }
 

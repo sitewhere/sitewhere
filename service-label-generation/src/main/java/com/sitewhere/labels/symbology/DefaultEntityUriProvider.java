@@ -69,7 +69,7 @@ public class DefaultEntityUriProvider implements IEntityUriProvider {
      */
     @Override
     public URI getDeviceIdentifier(IDevice device) throws SiteWhereException {
-	return createUri(SITEWHERE_PROTOCOL + "device/" + device.getHardwareId());
+	return createUri(SITEWHERE_PROTOCOL + "device/" + device.getToken());
     }
 
     /*

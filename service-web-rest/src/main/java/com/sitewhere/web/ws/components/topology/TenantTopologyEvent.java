@@ -30,8 +30,8 @@ public class TenantTopologyEvent implements ITenantEngineState {
     /** Microservice information */
     private IMicroserviceDetails microservice;
 
-    /** Tenant id */
-    private String tenantId;
+    /** Tenant token */
+    private String tenantToken;
 
     /** Status of tenant */
     private LifecycleStatus lifecycleStatus;
@@ -42,7 +42,7 @@ public class TenantTopologyEvent implements ITenantEngineState {
     public TenantTopologyEvent(TopologyEventType type, ITenantEngineState state) {
 	this.type = type;
 	this.microservice = state.getMicroservice();
-	this.tenantId = state.getTenantId();
+	this.tenantToken = state.getTenantToken();
 	this.lifecycleStatus = state.getLifecycleStatus();
 	this.lifecycleErrorStack = state.getLifecycleErrorStack();
     }
@@ -69,15 +69,15 @@ public class TenantTopologyEvent implements ITenantEngineState {
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.state.ITenantEngineState#getTenantId()
+     * @see com.sitewhere.spi.microservice.state.ITenantEngineState#getTenantToken()
      */
     @Override
-    public String getTenantId() {
-	return tenantId;
+    public String getTenantToken() {
+	return tenantToken;
     }
 
-    public void setTenantId(String tenantId) {
-	this.tenantId = tenantId;
+    public void setTenantToken(String tenantToken) {
+	this.tenantToken = tenantToken;
     }
 
     /*

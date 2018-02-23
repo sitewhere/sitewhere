@@ -18,11 +18,11 @@ import java.io.Serializable;
 public interface IDecodedDeviceRequest<T> extends Serializable {
 
     /**
-     * Get hardware id the request pertains to.
+     * Get device token the request pertains to.
      * 
      * @return
      */
-    public String getHardwareId();
+    public String getDeviceToken();
 
     /**
      * Get event originator if available.

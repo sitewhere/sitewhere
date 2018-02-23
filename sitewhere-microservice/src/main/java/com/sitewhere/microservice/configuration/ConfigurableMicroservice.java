@@ -9,6 +9,7 @@ package com.sitewhere.microservice.configuration;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -154,22 +155,20 @@ public abstract class ConfigurableMicroservice extends Microservice
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
-     * getInstanceTenantConfigurationPath(java.lang.String)
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getInstanceTenantConfigurationPath(java.util.UUID)
      */
     @Override
-    public String getInstanceTenantConfigurationPath(String tenantId) throws SiteWhereException {
+    public String getInstanceTenantConfigurationPath(UUID tenantId) throws SiteWhereException {
 	return getInstanceTenantsConfigurationPath() + "/" + tenantId;
     }
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * getInstanceTenantScriptsPath(java.lang.String)
+     * getInstanceTenantScriptsPath(java.util.UUID)
      */
     @Override
-    public String getInstanceTenantScriptsPath(String tenantId) throws SiteWhereException {
+    public String getInstanceTenantScriptsPath(UUID tenantId) throws SiteWhereException {
 	return getInstanceTenantConfigurationPath(tenantId) + SCRIPTS_SUBPATH;
     }
 
@@ -184,21 +183,19 @@ public abstract class ConfigurableMicroservice extends Microservice
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * getInstanceTenantStatePath(java.lang.String)
+     * getInstanceTenantStatePath(java.util.UUID)
      */
     @Override
-    public String getInstanceTenantStatePath(String tenantId) throws SiteWhereException {
+    public String getInstanceTenantStatePath(UUID tenantId) throws SiteWhereException {
 	return getInstanceTenantsStatePath() + "/" + tenantId;
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
-     * getInstanceTenantBootstrappedIndicatorPath(java.lang.String)
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getInstanceTenantBootstrappedIndicatorPath(java.util.UUID)
      */
     @Override
-    public String getInstanceTenantBootstrappedIndicatorPath(String tenantId) throws SiteWhereException {
+    public String getInstanceTenantBootstrappedIndicatorPath(UUID tenantId) throws SiteWhereException {
 	return getInstanceTenantConfigurationPath(tenantId) + "/" + INSTANCE_TENANT_BOOTSTRAPPED_INDICATOR;
     }
 

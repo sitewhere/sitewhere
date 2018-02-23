@@ -7,6 +7,8 @@
  */
 package com.sitewhere.asset.grpc;
 
+import java.util.UUID;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -73,7 +75,8 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
 	    throw new RuntimeException("Tenant id not found in asset management request.");
 	}
 	try {
-	    IAssetManagementTenantEngine engine = getMicroservice().getTenantEngineByTenantId(tenantId);
+	    IAssetManagementTenantEngine engine = getMicroservice()
+		    .getTenantEngineByTenantId(UUID.fromString(tenantId));
 	    if (engine != null) {
 		UserContextManager.setCurrentTenant(engine.getTenant());
 		return engine.getAssetManagementImpl();

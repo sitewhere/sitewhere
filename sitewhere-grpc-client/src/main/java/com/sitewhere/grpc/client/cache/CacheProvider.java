@@ -98,7 +98,7 @@ public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
      * @throws SiteWhereException
      */
     protected IMap<K, V> getCache(ITenant tenant) throws SiteWhereException {
-	String tenantId = (tenant != null) ? tenant.getId() : GLOBAL_CACHE_INDICATOR;
+	String tenantId = (tenant != null) ? tenant.getId().toString() : GLOBAL_CACHE_INDICATOR;
 	IMap<K, V> cache = getCachesByTenantId().get(tenantId);
 	boolean hzInitialized = getMicroservice().getHazelcastManager().getHazelcastInstance() != null;
 	if ((hzInitialized) && (cache == null)) {

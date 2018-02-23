@@ -103,17 +103,17 @@ public class Devices extends RestControllerBase {
      * @param hardwareId
      * @return
      */
-    @RequestMapping(value = "/{hardwareId}", method = RequestMethod.GET)
-    @ApiOperation(value = "Get device by unique hardware id")
+    @RequestMapping(value = "/{deviceToken}", method = RequestMethod.GET)
+    @ApiOperation(value = "Get device by token")
     @Secured({ SiteWhereRoles.REST })
     public IDevice getDeviceByHardwareId(
-	    @ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
+	    @ApiParam(value = "Device token", required = true) @PathVariable String deviceToken,
 	    @ApiParam(value = "Include device type information", required = false) @RequestParam(defaultValue = "true") boolean includeDeviceType,
 	    @ApiParam(value = "Include assignment if associated", required = false) @RequestParam(defaultValue = "true") boolean includeAssignment,
 	    @ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset,
 	    @ApiParam(value = "Include detailed nested device information", required = false) @RequestParam(defaultValue = "false") boolean includeNested)
 	    throws SiteWhereException {
-	IDevice result = assertDeviceByHardwareId(hardwareId);
+	IDevice result = assertDeviceByToken(deviceToken);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeDeviceType(includeDeviceType);
 	helper.setIncludeAsset(includeAsset);
@@ -125,19 +125,19 @@ public class Devices extends RestControllerBase {
     /**
      * Update device information.
      * 
-     * @param hardwareId
-     *            unique hardware id
+     * @param deviceToken
+     *            unique token
      * @param request
      *            updated information
      * @return the updated device
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{hardwareId}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{deviceToken}", method = RequestMethod.PUT)
     @ApiOperation(value = "Update an existing device")
     @Secured({ SiteWhereRoles.REST })
-    public IDevice updateDevice(@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
+    public IDevice updateDevice(@ApiParam(value = "Device token", required = true) @PathVariable String deviceToken,
 	    @RequestBody DeviceCreateRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
-	IDevice existing = assertDeviceByHardwareId(hardwareId);
+	IDevice existing = assertDeviceByToken(deviceToken);
 	IDevice result = getDeviceManagement().updateDevice(existing.getId(), request);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
@@ -146,18 +146,18 @@ public class Devices extends RestControllerBase {
     }
 
     /**
-     * Delete device identified by hardware id.
+     * Delete device identified by token.
      * 
-     * @param hardwareId
+     * @param deviceToken
      * @return
      */
-    @RequestMapping(value = "/{hardwareId}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{deviceToken}", method = RequestMethod.DELETE)
     @ApiOperation(value = "Delete device based on unique hardware id")
     @Secured({ SiteWhereRoles.REST })
-    public IDevice deleteDevice(@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
+    public IDevice deleteDevice(@ApiParam(value = "Device token", required = true) @PathVariable String deviceToken,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDevice existing = assertDeviceByHardwareId(hardwareId);
+	IDevice existing = assertDeviceByToken(deviceToken);
 	IDevice result = getDeviceManagement().deleteDevice(existing.getId(), force);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
@@ -166,22 +166,22 @@ public class Devices extends RestControllerBase {
     }
 
     /**
-     * List device assignment history for a given device hardware id.
+     * List device assignment history for a given device.
      * 
-     * @param hardwareId
+     * @param deviceToken
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{hardwareId}/assignment", method = RequestMethod.GET)
+    @RequestMapping(value = "/{deviceToken}/assignment", method = RequestMethod.GET)
     @ApiOperation(value = "Get current assignment for device")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceAssignment getDeviceCurrentAssignment(
-	    @ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
+	    @ApiParam(value = "Device token", required = true) @PathVariable String deviceToken,
 	    @ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset,
 	    @ApiParam(value = "Include detailed device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
 	    @ApiParam(value = "Include detailed site information", required = false) @RequestParam(defaultValue = "true") boolean includeSite,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDevice existing = assertDeviceByHardwareId(hardwareId);
+	IDevice existing = assertDeviceByToken(deviceToken);
 	IDeviceAssignment assignment = assertDeviceAssignment(existing.getDeviceAssignmentId());
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(includeAsset);
@@ -190,24 +190,24 @@ public class Devices extends RestControllerBase {
     }
 
     /**
-     * List device assignment history for a given device hardware id.
+     * List device assignment history for a given device.
      * 
-     * @param hardwareId
+     * @param deviceToken
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{hardwareId}/assignments", method = RequestMethod.GET)
+    @RequestMapping(value = "/{deviceToken}/assignments", method = RequestMethod.GET)
     @ApiOperation(value = "List assignment history for device")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceAssignment> listDeviceAssignmentHistory(
-	    @ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
+	    @ApiParam(value = "Device token", required = true) @PathVariable String deviceToken,
 	    @ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "false") boolean includeAsset,
 	    @ApiParam(value = "Include detailed device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	IDevice existing = assertDeviceByHardwareId(hardwareId);
+	IDevice existing = assertDeviceByToken(deviceToken);
 	ISearchResults<IDeviceAssignment> history = getDeviceManagement().getDeviceAssignmentHistory(existing.getId(),
 		criteria);
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
@@ -226,13 +226,13 @@ public class Devices extends RestControllerBase {
      * @param request
      * @return
      */
-    @RequestMapping(value = "/{hardwareId}/mappings", method = RequestMethod.POST)
+    @RequestMapping(value = "/{deviceToken}/mappings", method = RequestMethod.POST)
     @ApiOperation(value = "Create new device element mapping")
     @Secured({ SiteWhereRoles.REST })
     public IDevice addDeviceElementMapping(
-	    @ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
+	    @ApiParam(value = "Device token", required = true) @PathVariable String deviceToken,
 	    @RequestBody DeviceElementMapping request, HttpServletRequest servletRequest) throws SiteWhereException {
-	IDevice existing = assertDeviceByHardwareId(hardwareId);
+	IDevice existing = assertDeviceByToken(deviceToken);
 	IDevice updated = getDeviceManagement().createDeviceElementMapping(existing.getId(), request);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(false);
@@ -240,14 +240,14 @@ public class Devices extends RestControllerBase {
 	return helper.convert(updated, getAssetManagement());
     }
 
-    @RequestMapping(value = "/{hardwareId}/mappings", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{deviceToken}/mappings", method = RequestMethod.DELETE)
     @ApiOperation(value = "Delete existing device element mapping")
     @Secured({ SiteWhereRoles.REST })
     public IDevice deleteDeviceElementMapping(
-	    @ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
+	    @ApiParam(value = "Device token", required = true) @PathVariable String deviceToken,
 	    @ApiParam(value = "Device element path", required = true) @RequestParam(required = true) String path,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDevice existing = assertDeviceByHardwareId(hardwareId);
+	IDevice existing = assertDeviceByToken(deviceToken);
 	IDevice updated = getDeviceManagement().deleteDeviceElementMapping(existing.getId(), path);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(false);
@@ -383,19 +383,19 @@ public class Devices extends RestControllerBase {
 
     /**
      * Add a batch of events for the current assignment of the given device. Note
-     * that the hardware id in the URL overrides the one specified in the
+     * that the token in the URL overrides the one specified in the
      * {@link DeviceEventBatch} object.
      * 
      * @param request
      * @return
      */
-    @RequestMapping(value = "/{hardwareId}/batch", method = RequestMethod.POST)
+    @RequestMapping(value = "/{deviceToken}/batch", method = RequestMethod.POST)
     @ApiOperation(value = "Add multiple events for device")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceEventBatchResponse addDeviceEventBatch(
-	    @ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
+	    @ApiParam(value = "Device token", required = true) @PathVariable String deviceToken,
 	    @RequestBody DeviceEventBatch batch) throws SiteWhereException {
-	IDevice device = assertDeviceByHardwareId(hardwareId);
+	IDevice device = assertDeviceByToken(deviceToken);
 	if (device.getDeviceAssignmentId() == null) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceNotAssigned, ErrorLevel.ERROR);
 	}
@@ -422,16 +422,16 @@ public class Devices extends RestControllerBase {
     }
 
     /**
-     * Gets a device by unique hardware id and throws an exception if not found.
+     * Gets a device by unique token and throws an exception if not found.
      * 
      * @param hardwareId
      * @return
      * @throws SiteWhereException
      */
-    protected IDevice assertDeviceByHardwareId(String hardwareId) throws SiteWhereException {
-	IDevice result = getDeviceManagement().getDeviceByHardwareId(hardwareId);
+    protected IDevice assertDeviceByToken(String token) throws SiteWhereException {
+	IDevice result = getDeviceManagement().getDeviceByToken(token);
 	if (result == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceToken, ErrorLevel.ERROR);
 	}
 	return result;
     }

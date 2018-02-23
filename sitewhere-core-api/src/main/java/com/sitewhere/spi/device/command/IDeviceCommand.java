@@ -20,20 +20,6 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
 public interface IDeviceCommand extends IMetadataProviderEntity {
 
     /**
-     * Get unique command id.
-     * 
-     * @return
-     */
-    public UUID getId();
-
-    /**
-     * Get the unique command token.
-     * 
-     * @return
-     */
-    public String getToken();
-
-    /**
      * Get unique id of parent device type.
      * 
      * @return

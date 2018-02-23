@@ -62,7 +62,7 @@ public class InboundPayloadProcessingLogic {
      */
     public void process(GInboundEventPayload payload) throws SiteWhereException {
 	// Verify that device is registered.
-	IDevice device = getDeviceManagement().getDeviceByHardwareId(payload.getHardwareId());
+	IDevice device = getDeviceManagement().getDeviceByToken(payload.getDeviceToken());
 	if (device == null) {
 	    handleUnregisteredDevice(payload);
 	    return;
@@ -76,7 +76,7 @@ public class InboundPayloadProcessingLogic {
 
 	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignment(device.getDeviceAssignmentId());
 	if (assignment == null) {
-	    getLogger().info("Assignment information for " + payload.getHardwareId() + " is invalid.");
+	    getLogger().info("Assignment information for " + payload.getDeviceToken() + " is invalid.");
 	    handleUnassignedDevice(payload);
 	    return;
 	}
@@ -136,10 +136,10 @@ public class InboundPayloadProcessingLogic {
      * @throws SiteWhereException
      */
     protected void handleUnregisteredDevice(GInboundEventPayload payload) throws SiteWhereException {
-	getLogger().info(
-		"Device " + payload.getHardwareId() + " is not registered. Forwarding to unregistered devices topic.");
+	getLogger().info("Device '" + payload.getDeviceToken()
+		+ "' is not registered. Forwarding to unregistered devices topic.");
 	byte[] marshaled = KafkaModelMarshaler.buildInboundEventPayloadMessage(payload);
-	getTenantEngine().getUnregisteredDeviceEventsProducer().send(payload.getHardwareId(), marshaled);
+	getTenantEngine().getUnregisteredDeviceEventsProducer().send(payload.getDeviceToken(), marshaled);
 	return;
     }
 
@@ -151,10 +151,10 @@ public class InboundPayloadProcessingLogic {
      * @throws SiteWhereException
      */
     protected void handleUnassignedDevice(GInboundEventPayload payload) throws SiteWhereException {
-	getLogger().info("Device " + payload.getHardwareId()
-		+ " is not currently assigned. Forwarding to unassigned devices topic.");
+	getLogger().info("Device '" + payload.getDeviceToken()
+		+ "' is not currently assigned. Forwarding to unassigned devices topic.");
 	byte[] marshaled = KafkaModelMarshaler.buildInboundEventPayloadMessage(payload);
-	getTenantEngine().getUnregisteredDeviceEventsProducer().send(payload.getHardwareId(), marshaled);
+	getTenantEngine().getUnregisteredDeviceEventsProducer().send(payload.getDeviceToken(), marshaled);
 	return;
     }
 

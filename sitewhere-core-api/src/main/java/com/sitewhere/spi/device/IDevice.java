@@ -21,20 +21,6 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
 public interface IDevice extends IMetadataProviderEntity {
 
     /**
-     * Get unique device id.
-     * 
-     * @return
-     */
-    public UUID getId();
-
-    /**
-     * Get hardware id that acts as an alias for the device id.
-     * 
-     * @return
-     */
-    public String getHardwareId();
-
-    /**
      * Get unique id for associated device type.
      * 
      * @return

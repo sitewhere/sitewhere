@@ -20,11 +20,11 @@ import com.sitewhere.spi.common.IMetadataProvider;
 public interface ITenantCreateRequest extends IMetadataProvider, Serializable {
 
     /**
-     * Get unique tenant id.
+     * Get reference token.
      * 
      * @return
      */
-    public String getId();
+    public String getToken();
 
     /**
      * Get tenant name.

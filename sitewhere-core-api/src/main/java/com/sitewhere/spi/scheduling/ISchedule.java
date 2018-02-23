@@ -21,13 +21,6 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
 public interface ISchedule extends IMetadataProviderEntity, Serializable {
 
     /**
-     * Unique token for schedule.
-     * 
-     * @return
-     */
-    public String getToken();
-
-    /**
      * Schedule name.
      * 
      * @return

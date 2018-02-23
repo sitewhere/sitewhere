@@ -15,11 +15,11 @@ package com.sitewhere.spi.device.event.request;
 public interface IDeviceRegistrationRequest extends IDeviceStateChangeCreateRequest {
 
     /**
-     * Get hardware id to be registered.
+     * Get device token to be registered.
      * 
      * @return
      */
-    public String getHardwareId();
+    public String getDeviceToken();
 
     /**
      * Get token for device type token.

@@ -20,11 +20,11 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
 public interface IDeviceCreateRequest {
 
     /**
-     * Get the unique device hardware id.
+     * Get reference token.
      * 
      * @return
      */
-    public String getHardwareId();
+    public String getToken();
 
     /**
      * Get the device type token.
@@ -34,11 +34,11 @@ public interface IDeviceCreateRequest {
     public String getDeviceTypeToken();
 
     /**
-     * Get the parent hardware id (if nested).
+     * Get parent device token (if nested).
      * 
      * @return
      */
-    public String getParentHardwareId();
+    public String getParentDeviceToken();
 
     /**
      * Indicates whether parent reference should be removed.

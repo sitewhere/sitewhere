@@ -52,7 +52,7 @@ public class ValueResolver {
 
 	Map<String, String> variables = new HashMap<String, String>();
 	if (engine != null) {
-	    variables.put(TENANT_ID, engine.getTenant().getId());
+	    variables.put(TENANT_ID, engine.getTenant().getToken());
 	}
 	StrSubstitutor sub = new StrSubstitutor(variables, PREFIX, SUFFIX);
 	return sub.replace(value);

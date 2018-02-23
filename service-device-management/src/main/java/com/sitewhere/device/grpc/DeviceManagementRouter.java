@@ -7,6 +7,8 @@
  */
 package com.sitewhere.device.grpc;
 
+import java.util.UUID;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -50,7 +52,8 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
 	    throw new RuntimeException("Tenant id not found in device management request.");
 	}
 	try {
-	    IDeviceManagementTenantEngine engine = getMicroservice().getTenantEngineByTenantId(tenantId);
+	    IDeviceManagementTenantEngine engine = getMicroservice()
+		    .getTenantEngineByTenantId(UUID.fromString(tenantId));
 	    if (engine != null) {
 		UserContextManager.setCurrentTenant(engine.getTenant());
 		return engine.getDeviceManagementImpl();
@@ -289,13 +292,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getDeviceByHardwareId(com.sitewhere.grpc.service.
-     * GGetDeviceByHardwareIdRequest, io.grpc.stub.StreamObserver)
+     * getDeviceByToken(com.sitewhere.grpc.service.GGetDeviceByTokenRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void getDeviceByHardwareId(GGetDeviceByHardwareIdRequest request,
-	    StreamObserver<GGetDeviceByHardwareIdResponse> responseObserver) {
-	getTenantImplementation().getDeviceByHardwareId(request, responseObserver);
+    public void getDeviceByToken(GGetDeviceByTokenRequest request,
+	    StreamObserver<GGetDeviceByTokenResponse> responseObserver) {
+	getTenantImplementation().getDeviceByToken(request, responseObserver);
     }
 
     /*

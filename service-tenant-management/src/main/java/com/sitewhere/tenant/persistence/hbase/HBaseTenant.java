@@ -79,12 +79,12 @@ public class HBaseTenant {
      * @throws SiteWhereException
      */
     public static Tenant createTenant(IHBaseContext context, ITenantCreateRequest request) throws SiteWhereException {
-	if (getTenantById(context, request.getId()) != null) {
+	if (getTenantById(context, request.getToken()) != null) {
 	    throw new SiteWhereSystemException(ErrorCode.DuplicateTenantId, ErrorLevel.ERROR);
 	}
 
 	// Add new key to table.
-	String id = KEY_BUILDER.getMap(context).useExistingId(request.getId());
+	String id = KEY_BUILDER.getMap(context).useExistingId(request.getToken());
 
 	// Use common logic so all backend implementations work the same.
 	Tenant tenant = TenantManagementPersistenceLogic.tenantCreateLogic(request);
@@ -170,7 +170,7 @@ public class HBaseTenant {
 
 	    public boolean isExcluded(Tenant item) {
 		if (regex != null) {
-		    if ((!regex.matcher(item.getId()).matches()) && (!regex.matcher(item.getName()).matches())) {
+		    if ((!regex.matcher(item.getToken()).matches()) && (!regex.matcher(item.getName()).matches())) {
 			return true;
 		    }
 		}

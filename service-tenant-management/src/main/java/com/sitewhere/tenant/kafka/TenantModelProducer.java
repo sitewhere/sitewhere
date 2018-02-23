@@ -43,7 +43,7 @@ public class TenantModelProducer extends MicroserviceKafkaProducer implements IT
     public void onTenantAdded(ITenant tenant) throws SiteWhereException {
 	byte[] message = KafkaModelMarshaler
 		.buildTenantModelUpdateMessage(GTenantModelUpdateType.TENANTMODEL_TENANT_ADDED, tenant);
-	send(tenant.getId(), message);
+	send(tenant.getToken(), message);
 	LOGGER.info("Sent Kafka tenant model update for added tenant.");
     }
 
@@ -57,7 +57,7 @@ public class TenantModelProducer extends MicroserviceKafkaProducer implements IT
     public void onTenantUpdated(ITenant tenant) throws SiteWhereException {
 	byte[] message = KafkaModelMarshaler
 		.buildTenantModelUpdateMessage(GTenantModelUpdateType.TENANTMODEL_TENANT_UPDATED, tenant);
-	send(tenant.getId(), message);
+	send(tenant.getToken(), message);
 	LOGGER.info("Sent Kafka tenant model update for updated tenant.");
     }
 
@@ -71,7 +71,7 @@ public class TenantModelProducer extends MicroserviceKafkaProducer implements IT
     public void onTenantDeleted(ITenant tenant) throws SiteWhereException {
 	byte[] message = KafkaModelMarshaler
 		.buildTenantModelUpdateMessage(GTenantModelUpdateType.TENANTMODEL_TENANT_DELETED, tenant);
-	send(tenant.getId(), message);
+	send(tenant.getToken(), message);
 	LOGGER.info("Sent Kafka tenant model update for deleted tenant.");
     }
 
