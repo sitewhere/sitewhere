@@ -13,8 +13,8 @@ export function createDevice (axios, payload) {
 /**
  * Update an existing device.
  */
-export function updateDevice (axios, hardwareId, payload) {
-  return restAuthPut(axios, '/devices/' + hardwareId, payload)
+export function updateDevice (axios, token, payload) {
+  return restAuthPut(axios, '/devices/' + token, payload)
 }
 
 /**
@@ -50,48 +50,44 @@ export function listFilteredDevices (axios, site, deviceType,
 }
 
 /**
- * Get device by hardware id.
+ * Get device by token.
  */
-export function getDevice (axios, hardwareId, includeSpecification,
-  includeAssignment, includeSite, includeAsset, includeNested) {
+export function getDevice (axios, token, options) {
   let query = ''
-  query += (includeSpecification)
+  query += (options.includeSpecification)
     ? '?includeSpecification=true' : '?includeSpecification=false'
-  query += (includeAssignment)
+  query += (options.includeAssignment)
     ? '&includeAssignment=true' : '&includeAssignment=false'
-  query += (includeSite)
-    ? '&includeSite=true' : '&includeSite=false'
-  query += (includeAsset)
+  query += (options.includeAsset)
     ? '&includeAsset=true' : '&includeAsset=false'
-  query += (includeNested)
+  query += (options.includeNested)
     ? '&includeNested=true' : '&includeNested=false'
-  return restAuthGet(axios, '/devices/' + hardwareId + query)
+  return restAuthGet(axios, '/devices/' + token + query)
 }
 
 /**
  * Delete device.
  */
-export function deleteDevice (axios, hardwareId, force) {
+export function deleteDevice (axios, token, force) {
   let query = ''
   query += (force)
     ? '?force=true' : '?force=false'
-  return restAuthDelete(axios, 'devices/' + hardwareId + query)
+  return restAuthDelete(axios, 'devices/' + token + query)
 }
 
 /**
  * List assignment history for a device.
  */
-export function listDeviceAssignmentHistory (axios, hardwareId, includeAsset,
-  includeDevice, includeSite, paging) {
+export function listDeviceAssignmentHistory (axios, token, options, paging) {
   let query = ''
-  query += (includeAsset)
+  query += (options.includeAsset)
     ? '?includeAsset=true' : '?includeAsset=false'
-  query += (includeDevice)
+  query += (options.includeDevice)
     ? '&includeDevice=true' : '&includeDevice=false'
-  query += (includeSite)
+  query += (options.includeSite)
     ? '&includeSite=true' : '&includeSite=false'
   if (paging) {
     query += '&' + paging
   }
-  return restAuthGet(axios, 'devices/' + hardwareId + '/assignments' + query)
+  return restAuthGet(axios, 'devices/' + token + '/assignments' + query)
 }

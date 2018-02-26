@@ -88,14 +88,20 @@
           <v-tilelayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"></v-tilelayer>
         </v-map>
       </div>
-      <v-btn small fab dark class="map-overlay-cancel grey"
-        v-tooltip:top="{ html: 'Cancel' }" @click.native.stop="onCancelMapPanel">
-        <v-icon>undo</v-icon>
-      </v-btn>
-      <v-btn small fab dark class="map-overlay-ok blue"
-        v-tooltip:top="{ html: 'Update' }" @click.native.stop="onSubmitMapPanel">
-        <v-icon>done</v-icon>
-      </v-btn>
+      <v-tooltip top class="map-overlay-cancel">
+        <v-btn icon dark color="grey" slot="activator"
+          @click.stop="onCancelMapPanel">
+          <v-icon>fa-undo</v-icon>
+        </v-btn>
+        <span>Cancel</span>
+      </v-tooltip>
+      <v-tooltip top class="map-overlay-ok">
+        <v-btn icon dark color="blue" slot="activator"
+          @click.stop="onSubmitMapPanel">
+          <v-icon>fa-check</v-icon>
+        </v-btn>
+        <span>Update</span>
+      </v-tooltip>
     </v-card>
   </div>
 </template>
@@ -139,15 +145,16 @@ export default {
     // Load panel from json payload.
     json: function (map) {
       if (map) {
+        this.$data.mapOverlayShown = false
         if (map.type) {
           this.$data.mapSelection = map.type
         } else {
           this.$data.mapSelection = 'openstreetmap'
         }
         if (map.metadata) {
-          this.$data.mapZoom = map.metadata.zoomLevel
-          this.$data.mapLatitude = map.metadata.centerLatitude
-          this.$data.mapLongitude = map.metadata.centerLongitude
+          this.$data.mapZoom = parseInt(map.metadata.zoomLevel)
+          this.$data.mapLatitude = parseFloat(map.metadata.centerLatitude)
+          this.$data.mapLongitude = parseFloat(map.metadata.centerLongitude)
           this.$data.geoBaseUrl = map.metadata.geoserverBaseUrl
           this.$data.geoLayer = map.metadata.geoserverLayerName
         } else {

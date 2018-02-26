@@ -154,17 +154,17 @@ def asset;
 // #################### //
 // Create Person Assets //
 // #################### //
-asset = assetBuilder.newAsset 'derek', 'employee', 'Derek Adams'
+asset = assetBuilder.newAsset 'derek.adams@sitewhere.com', 'employee', 'Derek Adams'
 asset.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/people/derek.jpg'
 asset.metadata 'username', 'derek' metadata 'role', 'dev' metadata 'phone', '678-555-1212'
 assetBuilder.persist asset
 
-asset = assetBuilder.newAsset 'bryan', 'employee', 'Bryan Rank'
+asset = assetBuilder.newAsset 'bryan.rank@sitewhere.com', 'employee', 'Bryan Rank'
 asset.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/people/bryan.jpg'
 asset.metadata 'username', 'bryan' metadata 'role', 'sales' metadata 'phone', '770-555-1212'
 assetBuilder.persist asset
 
-asset = assetBuilder.newAsset 'martin', 'employee', 'Martin Weber'
+asset = assetBuilder.newAsset 'martin.weber@sitewhere.com', 'employee', 'Martin Weber'
 asset.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/people/martin.jpg'
 asset.metadata 'username', 'martin' metadata 'role', 'busdev' metadata 'phone', '404-555-1212'
 assetBuilder.persist asset

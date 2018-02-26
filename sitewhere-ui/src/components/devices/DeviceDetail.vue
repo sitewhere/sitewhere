@@ -31,7 +31,7 @@ import {_getDevice} from '../../http/sitewhere-api-wrapper'
 export default {
 
   data: () => ({
-    hardwareId: null,
+    token: null,
     device: null,
     active: null,
     fab: null
@@ -44,18 +44,25 @@ export default {
   },
 
   created: function () {
-    this.$data.hardwareId = this.$route.params.hardwareId
+    this.$data.token = this.$route.params.token
     this.refresh()
   },
 
   methods: {
     // Called to refresh data.
     refresh: function () {
-      var hardwareId = this.$data.hardwareId
+      var token = this.$data.token
       var component = this
 
+      // Set search options.
+      let options = {}
+      options.includeDeviceType = true
+      options.includeAssignment = true
+      options.includeAsset = true
+      options.includeNested = true
+
       // Load information.
-      _getDevice(this.$store, hardwareId, true, true, true, true)
+      _getDevice(this.$store, token, options)
         .then(function (response) {
           component.onDeviceLoaded(response.data)
         }).catch(function (e) {
@@ -68,9 +75,9 @@ export default {
       var section = {
         id: 'devices',
         title: 'Devices',
-        icon: 'developer_board',
-        route: '/admin/devices/' + device.hardwareId,
-        longTitle: 'Manage Device: ' + device.hardwareId
+        icon: 'fa-microchip',
+        route: '/admin/devices/' + device.token,
+        longTitle: 'Manage Device: ' + device.token
       }
       this.$store.commit('currentSection', section)
     },

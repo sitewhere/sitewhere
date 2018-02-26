@@ -1,26 +1,26 @@
 <template>
-  <span>
-    <v-toolbar flat card dark color="primary">
-      <v-toolbar-title>Tenant Management</v-toolbar-title>
-    </v-toolbar>
-    <v-container fluid grid-list-md v-if="tenants">
-      <v-layout row wrap>
-         <v-flex xs12 v-for="(tenant, index) in tenants" :key="tenant.id">
-          <tenant-list-entry :tenant="tenant" class="mb-2"
-            @click="onOpenTenant(tenant)"
-            @openTenant="onOpenTenant(tenant)"
-            @configureTenant="onConfigureTenant(tenant)">
-          </tenant-list-entry>
-        </v-flex>
-      </v-layout>
-    </v-container>
-    <pager :results="results" @pagingUpdated="updatePaging"></pager>
-    <tenant-create-dialog @tenantAdded="refresh">
-    </tenant-create-dialog>
-  </span>
+  <navigation-page icon="fa-cog" title="Manage Tenants">
+    <div slot="content">
+      <v-container fluid grid-list-md v-if="tenants">
+        <v-layout row wrap>
+           <v-flex xs12 v-for="(tenant, index) in tenants" :key="tenant.token">
+            <tenant-list-entry :tenant="tenant" class="mb-2"
+              @click="onOpenTenant(tenant)"
+              @openTenant="onOpenTenant(tenant)"
+              @configureTenant="onConfigureTenant(tenant)">
+            </tenant-list-entry>
+          </v-flex>
+        </v-layout>
+      </v-container>
+      <pager :results="results" @pagingUpdated="updatePaging"></pager>
+      <tenant-create-dialog @tenantAdded="refresh">
+      </tenant-create-dialog>
+    </div>
+  </navigation-page>
 </template>
 
 <script>
+import NavigationPage from '../common/NavigationPage'
 import Pager from '../common/Pager'
 import TenantListEntry from './TenantListEntry'
 import TenantCreateDialog from './TenantCreateDialog'
@@ -35,6 +35,7 @@ export default {
   }),
 
   components: {
+    NavigationPage,
     Pager,
     TenantListEntry,
     TenantCreateDialog
@@ -63,12 +64,12 @@ export default {
     // Called to open tenant management for tenant.
     onOpenTenant: function (tenant) {
       this.$store.commit('selectedTenant', tenant)
-      this.$router.push('/tenants/' + tenant.id + '/areas')
+      this.$router.push('/tenants/' + tenant.token + '/areas')
     },
 
     // Called to open tenant detail.
     onConfigureTenant: function (tenant) {
-      this.$router.push('/system/tenants/' + tenant.id)
+      this.$router.push('/system/tenants/' + tenant.token)
     }
   }
 }

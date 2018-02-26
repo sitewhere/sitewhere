@@ -115,8 +115,8 @@ export default {
         id: 'tenants',
         title: 'Manage Tenant',
         icon: 'layers',
-        route: '/tenants/' + tenant.id,
-        longTitle: 'Manage Tenant: ' + tenant.id
+        route: '/tenants/' + tenant.token,
+        longTitle: 'Manage Tenant: ' + tenant.token
       }
       this.$store.commit('currentSection', section)
     },

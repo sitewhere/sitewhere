@@ -5,7 +5,7 @@
       </div>
       <div class="tenant-divider"></div>
       <div class="tenant-name headline ellipsis mt-2">
-        {{tenant.name}} ({{tenant.id}})
+        {{tenant.name}} ({{tenant.token}})
       </div>
       <div class="tenant-actions">
         <v-btn @click.stop="onConfigureTenant"

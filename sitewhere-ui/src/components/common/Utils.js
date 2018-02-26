@@ -87,7 +87,7 @@ export default {
   routeTo: function (component, url) {
     var tenant = component.$store.getters.selectedTenant
     if (tenant) {
-      component.$router.push('/tenants/' + tenant.id + url)
+      component.$router.push('/tenants/' + tenant.token + url)
     }
   },
 

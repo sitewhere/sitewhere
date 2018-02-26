@@ -3,16 +3,14 @@
     <div v-if="device">
       <div class="assn-device-image"
         :style="backgroundImageStyle(device.assetImageUrl)"></div>
-      <div class="assn-device-title">
-        {{ ellipsis(device.assetName, charWidth) }}
+      <div class="assn-device-title ellipsis">
+        {{ device.assetName }}
       </div>
-      <div class="assn-device-label1">Id:</div>
-      <div class="assn-device-value1">
-        {{ ellipsis(device.hardwareId, charWidth) }}
+      <div class="assn-device-value1 ellipsis">
+        {{ device.token }}
       </div>
-      <div class="assn-device-label2">Info:</div>
-      <div class="assn-device-value2">
-        {{ ellipsis(device.comments, charWidth)  }}
+      <div class="assn-device-value2 ellipsis">
+        {{ device.comments  }}
       </div>
       <div class="assn-device-tag">Device</div>
     </div>
@@ -29,7 +27,6 @@
 <script>
 export default {
   data: () => ({
-    charWidth: 27
   }),
 
   props: ['device'],
@@ -43,10 +40,6 @@ export default {
         'background-repeat': 'no-repeat',
         'background-position': '50% 50%'
       }
-    },
-    // Shortened string with ellipsis.
-    ellipsis: function (val, max) {
-      return (val.length > max) ? (val.substring(0, max) + '...') : val
     }
   }
 }
@@ -68,46 +61,22 @@ export default {
   font-size: 16px;
   color: #333;
   font-weight: 700;
-  white-space: nowrap;
-  overflow-x: hidden;
-}
-.assn-device-label1 {
-  position: absolute;
-  top: 35px;
-  left: 90px;
-  font-size: 12px;
-  color: #333;
-  font-weight: 700;
-  white-space: nowrap;
-  overflow-x: hidden;
 }
 .assn-device-value1 {
   position: absolute;
   top: 35px;
-  left: 135px;
-  font-size: 12px;
-  color: #333;
-  white-space: nowrap;
-  overflow-x: hidden;
-}
-.assn-device-label2 {
-  position: absolute;
-  top: 58px;
   left: 90px;
+  right: 10px;
   font-size: 12px;
   color: #333;
-  font-weight: 700;
-  white-space: nowrap;
-  overflow-x: hidden;
 }
 .assn-device-value2 {
   position: absolute;
   top: 58px;
-  left: 135px;
+  left: 90px;
+  right: 10px;
   font-size: 12px;
   color: #333;
-  white-space: nowrap;
-  overflow-x: hidden;
 }
 .assn-device-tag {
   position: absolute;

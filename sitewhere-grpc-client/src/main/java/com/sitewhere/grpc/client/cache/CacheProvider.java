@@ -74,7 +74,7 @@ public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
 		return result;
 	    }
 	} else {
-	    getLogger().warn("Accessing cache before Hazelcast has been initialized.");
+	    getLogger().debug("Accessing cache before Hazelcast has been initialized.");
 	}
 	return null;
     }

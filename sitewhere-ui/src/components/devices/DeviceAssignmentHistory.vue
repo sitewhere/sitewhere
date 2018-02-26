@@ -50,10 +50,16 @@ export default {
     // Refresh list of assignments.
     refresh: function () {
       var component = this
-      var hardwareId = this.device.hardwareId
+      var token = this.device.token
       var paging = this.$data.paging.query
-      _listDeviceAssignmentHistory(this.$store, hardwareId, true, true, true,
-        paging)
+
+      // Set search options.
+      let options = {}
+      options.includeAsset = true
+      options.includeDevice = true
+      options.includeSite = true
+
+      _listDeviceAssignmentHistory(this.$store, token, options, paging)
         .then(function (response) {
           component.results = response.data
           component.assignments = response.data.results

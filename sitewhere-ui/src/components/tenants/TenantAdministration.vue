@@ -72,7 +72,7 @@ export default {
     {
       id: 'deviceGroup',
       title: 'Device Management',
-      icon: 'developer_board',
+      icon: 'fa-microchip',
       route: 'devices',
       longTitle: 'Manage Devices',
       subsections: [{

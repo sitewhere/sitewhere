@@ -195,7 +195,7 @@ export function createAdminWebSocketUrl (store) {
 export function createCoreApiCall (store) {
   var baseUrl = createCoreApiUrl(store)
   var jwt = store.getters.jwt
-  var tenantId = (store.getters.selectedTenant) ? store.getters.selectedTenant.id : ''
+  var tenantId = (store.getters.selectedTenant) ? store.getters.selectedTenant.token : ''
   var tenantAuth = (store.getters.selectedTenant) ? store.getters.selectedTenant.authenticationToken : ''
   return createAxiosJwt(baseUrl, jwt, tenantId, tenantAuth)
 }
@@ -1004,31 +1004,27 @@ export function _listFilteredDevices (store, site, specification, includeDeleted
 /**
  * List assignment history for a device.
  */
-export function _listDeviceAssignmentHistory (store, hardwareId, includeAsset,
-  includeDevice, includeSite, paging) {
+export function _listDeviceAssignmentHistory (store, token, options, paging) {
   let axios = createCoreApiCall(store)
-  let api = listDeviceAssignmentHistory(axios, hardwareId, includeAsset,
-    includeDevice, includeSite, paging)
+  let api = listDeviceAssignmentHistory(axios, token, options, paging)
   return loaderWrapper(store, api)
 }
 
 /**
- * Get a device by hardware id.
+ * Get a device by token.
  */
-export function _getDevice (store, hardwareId, includeSpecification,
-  includeAssignment, includeSite, includeAsset, includeNested) {
+export function _getDevice (store, token, options) {
   let axios = createCoreApiCall(store)
-  let api = getDevice(axios, hardwareId, includeSpecification,
-    includeAssignment, includeSite, includeAsset, includeNested)
+  let api = getDevice(axios, token, options)
   return loaderWrapper(store, api)
 }
 
 /**
  * Delete an existing device.
  */
-export function _deleteDevice (store, hardwareId, force) {
+export function _deleteDevice (store, token, force) {
   let axios = createCoreApiCall(store)
-  let api = deleteDevice(axios, hardwareId, force)
+  let api = deleteDevice(axios, token, force)
   return loaderWrapper(store, api)
 }
 

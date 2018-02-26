@@ -7,10 +7,6 @@
  */
 package com.sitewhere.communication.protobuf;
 
-import java.nio.ByteBuffer;
-import java.util.UUID;
-
-import com.sitewhere.core.Base58;
 import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 
@@ -50,13 +46,7 @@ public class ProtobufNaming {
      * @return
      */
     protected static String getDeviceTypeIdentifier(IDeviceType deviceType) {
-	UUID uuid = UUID.fromString(deviceType.getToken());
-	long low = uuid.getLeastSignificantBits();
-	long high = uuid.getMostSignificantBits();
-	ByteBuffer buffer = ByteBuffer.allocate(16);
-	buffer.putLong(low);
-	buffer.putLong(high);
-	return "Spec_" + Base58.encode(buffer.array());
+	return "Spec_" + deviceType.getToken();
     }
 
     /**

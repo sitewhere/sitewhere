@@ -93,8 +93,8 @@ export default {
     },
 
     // Called to open detail page for device.
-    onOpenDevice: function (hardwareId) {
-      Utils.routeTo(this, '/devices/' + hardwareId)
+    onOpenDevice: function (device) {
+      Utils.routeTo(this, '/devices/' + device.token)
     }
   }
 }

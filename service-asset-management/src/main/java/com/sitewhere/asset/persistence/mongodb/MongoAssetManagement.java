@@ -261,10 +261,10 @@ public class MongoAssetManagement extends TenantEngineLifecycleComponent impleme
 	    MongoCollection<Document> assets = getMongoClient().getAssetsCollection();
 	    Document query = new Document(MongoAsset.PROP_TOKEN, token);
 	    Document dbAsset = assets.find(query).first();
-	    if (dbAsset == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidAssetToken, ErrorLevel.ERROR);
+	    if (dbAsset != null) {
+		return MongoAsset.fromDocument(dbAsset);
 	    }
-	    return MongoAsset.fromDocument(dbAsset);
+	    return null;
 	} catch (MongoClientException e) {
 	    throw MongoPersistence.handleClientException(e);
 	}

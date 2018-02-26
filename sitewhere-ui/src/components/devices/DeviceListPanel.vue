@@ -4,14 +4,14 @@
       class="device-root">
       <div class="device-image"
         :style="backgroundImageStyle(device.deviceType.assetType.imageUrl)"></div>
-      <div class="device-hardware-id">
-        {{ ellipsis(device.hardwareId, charWidth) }}
+      <div class="device-token ellipsis">
+        {{ device.token }}
       </div>
-      <div class="device-type">
-        {{ ellipsis(device.deviceType.name, charWidth) }}
+      <div class="device-type ellipsis">
+        {{ device.deviceType.name }}
       </div>
-      <div class="device-comments">
-        {{ ellipsis(device.comments, charWidth)  }}
+      <div class="device-comments ellipsis">
+        {{ device.comments }}
       </div>
       <div v-if="hasAssignedAsset" class="device-asset"
         :style="backgroundImageStyle(device.assignment.assetImageUrl)"></div>
@@ -39,7 +39,6 @@ export default {
 
   data: function () {
     return {
-      charWidth: 40
     }
   },
 
@@ -82,7 +81,7 @@ export default {
 
     // Called when a device is clicked.
     onOpenDevice: function () {
-      this.$emit('deviceOpened', this.device.hardwareId)
+      this.$emit('deviceOpened', this.device)
     },
 
     // Open device assignment dialog.
@@ -98,11 +97,6 @@ export default {
     // Format date.
     formatDate: function (date) {
       return Utils.formatDate(date)
-    },
-
-    // Shortened string with ellipsis.
-    ellipsis: function (val, max) {
-      return Utils.ellipsis(val, max)
     }
   }
 }
@@ -127,30 +121,27 @@ export default {
   position: absolute;
   top: 6px;
   left: 110px;
+  right: 10px;
   font-size: 18px;
   color: #333;
   font-weight: 700;
-  white-space: nowrap;
-  overflow-x: hidden;
 }
-.device-hardware-id {
+.device-token {
   position: absolute;
   top: 40px;
   left: 110px;
+  right: 10px;
   font-size: 14px;
   color: #333;
   font-weight: 700;
-  white-space: nowrap;
-  overflow-x: hidden;
 }
 .device-comments {
   position: absolute;
   top: 68px;
   left: 110px;
+  right: 10px;
   font-size: 12px;
   color: #333;
-  white-space: nowrap;
-  overflow-x: hidden;
 }
 .device-asset {
   position: absolute;

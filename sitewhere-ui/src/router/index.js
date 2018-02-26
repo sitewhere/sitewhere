@@ -142,7 +142,7 @@ export default new Router({
           path: 'devices',
           component: DevicesList
         }, {
-          path: 'devices/:hardwareId',
+          path: 'devices/:token',
           component: DeviceDetail
         }, {
           path: 'groups',
