@@ -1,24 +1,35 @@
 <template>
-  <div>
-    <device-list-filter-bar @filter="onFilterUpdated">
-    </device-list-filter-bar>
-    <v-container fluid grid-list-md  v-if="devices">
-      <v-layout row wrap>
-         <v-flex xs6 v-for="(device, index) in devices" :key="device.hardwareId">
-          <device-list-panel :device="device" @assigned="refresh"
-            @deviceOpened="onOpenDevice">
-          </device-list-panel>
-        </v-flex>
-      </v-layout>
-    </v-container>
-    <pager :results="results" :pageSizes="pageSizes"
-      @pagingUpdated="updatePaging">
-    </pager>
-    <device-create-dialog @deviceAdded="onDeviceAdded"/>
-  </div>
+  <navigation-page icon="fa-microchip" title="Manage Devices">
+    <div slot="actions">
+      <v-tooltip left>
+        <v-btn icon slot="activator" @click="onShowFilterCriteria">
+          <v-icon>fa-filter</v-icon>
+        </v-btn>
+        <span>Filter Device List</span>
+      </v-tooltip>
+    </div>
+    <div slot="content">
+      <device-list-filter-bar ref="filters" @filter="onFilterUpdated">
+      </device-list-filter-bar>
+      <v-container fluid grid-list-md  v-if="devices">
+        <v-layout row wrap>
+           <v-flex xs6 v-for="(device, index) in devices" :key="device.hardwareId">
+            <device-list-panel :device="device" @assigned="refresh"
+              @deviceOpened="onOpenDevice">
+            </device-list-panel>
+          </v-flex>
+        </v-layout>
+      </v-container>
+      <pager :results="results" :pageSizes="pageSizes"
+        @pagingUpdated="updatePaging">
+      </pager>
+      <device-create-dialog @deviceAdded="onDeviceAdded"/>
+    </div>
+  </navigation-page>
 </template>
 
 <script>
+import NavigationPage from '../common/NavigationPage'
 import Utils from '../common/Utils'
 import Pager from '../common/Pager'
 import DeviceListPanel from './DeviceListPanel'
@@ -49,6 +60,7 @@ export default {
   }),
 
   components: {
+    NavigationPage,
     Pager,
     DeviceListPanel,
     DeviceListFilterBar,
@@ -75,6 +87,11 @@ export default {
           component.devices = response.data.results
         }).catch(function (e) {
         })
+    },
+
+    // Called to show filter criteria dialog.
+    onShowFilterCriteria: function () {
+      this.$refs['filters'].showFilterCriteriaDialog()
     },
 
     // Called when filter criteria are updated.

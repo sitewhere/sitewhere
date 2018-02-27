@@ -89,16 +89,16 @@ export default {
 
   methods: {
     // Called whenan area is chosen.
-    onAreaChosen: function (site, emit) {
-      this.$data.site = site
+    onAreaChosen: function (area, emit) {
+      this.$data.area = area
       if (emit) {
-        this.$emit('areaUpdated', site)
+        this.$emit('areaUpdated', area)
       }
     },
 
     // Allow another area to be chosen.
     onAreaRemoved: function (emit) {
-      this.$data.site = null
+      this.$data.area = null
       if (emit) {
         this.$emit('areaUpdated', null)
       }

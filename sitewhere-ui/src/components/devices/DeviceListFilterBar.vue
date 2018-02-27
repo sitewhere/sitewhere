@@ -1,35 +1,22 @@
 <template>
   <v-card dark color="primary" class="elevation-1">
-    <v-toolbar flat dark dense card class="primary">
-      <v-toolbar-title class="white--text">
-        Device Filter Criteria
-        <span v-if="emptyFilter">(No filter applied)</span>
-      </v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-tooltip left>
-        <v-btn icon slot="activator" @click="onShowFilterCriteria">
-          <v-icon>fa-filter</v-icon>
-        </v-btn>
-        <span>Filter Device List</span>
-      </v-tooltip>
-    </v-toolbar>
     <v-card color="primary" v-if="!emptyFilter">
       <v-card-text class="pt-0 mt-0">
         <v-tooltip bottom>
-          <v-chip close v-if="siteFilter" @input="onSiteFilterClosed"
+          <v-chip close v-if="areaFilter" @input="onAreaFilterClosed"
             slot="activator">
             <v-avatar>
-              <img :src="siteFilter.imageUrl" alt="siteFilter.name">
+              <img :src="areaFilter.imageUrl" alt="areaFilter.name">
             </v-avatar>
-            {{ siteFilter.name }}
+            {{ areaFilter.name }}
           </v-chip>
-          <span>Only include devices from this site</span>
+          <span>Only include devices from this area</span>
         </v-tooltip>
         <v-tooltip bottom>
           <v-chip close v-if="deviceTypeFilter"
             @input="onDeviceTypeFilterClosed" slot="activator">
             <v-avatar>
-              <img :src="deviceTypeFilter.assetImageUrl" alt="deviceTypeFilter.name">
+              <img :src="deviceTypeFilter.assetTypeImageUrl" alt="deviceTypeFilter.name">
             </v-avatar>
             {{ deviceTypeFilter.name }}
           </v-chip>
@@ -59,7 +46,7 @@ import DeviceListFilterDialog from './DeviceListFilterDialog'
 export default {
 
   data: () => ({
-    siteFilter: null,
+    areaFilter: null,
     deviceTypeFilter: null,
     deviceGroupFilter: null
   }),
@@ -70,12 +57,12 @@ export default {
 
   computed: {
     emptyFilter: function () {
-      return (!this.siteFilter && !this.deviceTypeFilter &&
+      return (!this.areaFilter && !this.deviceTypeFilter &&
         !this.deviceGroupFilter)
     },
     filter: function () {
       var result = {}
-      result.siteFilter = this.$data.siteFilter
+      result.areaFilter = this.$data.areaFilter
       result.deviceTypeFilter = this.$data.deviceTypeFilter
       result.deviceGroupFilter = this.$data.deviceGroupFilter
       return result
@@ -84,18 +71,18 @@ export default {
 
   methods: {
     // Called to show filter criteria dialog.
-    onShowFilterCriteria: function () {
+    showFilterCriteriaDialog: function () {
       this.$refs['criteria'].openDialog()
     },
     // Called when filter criteria are updated.
     onFilterUpdated: function (filter) {
       if (filter) {
-        this.$data.siteFilter = filter.siteFilter
+        this.$data.areaFilter = filter.areaFilter
         this.$data.deviceTypeFilter = filter.deviceTypeFilter
         this.$data.deviceGroupFilter = filter.deviceGroupFilter
 
         let criteria = {}
-        criteria.site = (filter.siteFilter) ? filter.siteFilter.token : null
+        criteria.area = (filter.areaFilter) ? filter.areaFilter.token : null
         criteria.deviceType = (filter.deviceTypeFilter)
           ? filter.deviceTypeFilter.token : null
         criteria.group = (filter.deviceGroupFilter)
@@ -103,9 +90,9 @@ export default {
         this.$emit('filter', criteria)
       }
     },
-    // Remove site filter on close.
-    onSiteFilterClosed: function () {
-      this.$data.siteFilter = null
+    // Remove area filter on close.
+    onAreaFilterClosed: function () {
+      this.$data.areaFilter = null
       this.onFilterUpdated(this.filter)
     },
     // Remove deviceType filter on close.

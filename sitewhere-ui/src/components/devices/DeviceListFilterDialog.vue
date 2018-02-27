@@ -6,8 +6,8 @@
     <v-tabs v-model="active">
       <v-tabs-bar dark color="primary">
         <v-tabs-slider></v-tabs-slider>
-        <v-tabs-item key="site" href="#site">
-          Site
+        <v-tabs-item key="area" href="#area">
+          Area
         </v-tabs-item>
         <v-tabs-item key="deviceType" href="#deviceType">
           Device Type
@@ -21,8 +21,7 @@
         <slot name="tabitem"></slot>
       </v-tabs-bar>
       <v-tabs-items>
-        <slot name="tabcontent"></slot>
-        <v-tabs-content key="site" id="site">
+        <v-tabs-content key="area" id="area">
           <v-card flat>
             <v-card-text>
               <area-chooser :chosenText="areaChosenText"
@@ -186,7 +185,7 @@ export default {
     // Generate payload from UI.
     generatePayload: function () {
       var payload = {}
-      payload.siteFilter = this.$data.siteFilter
+      payload.areaFilter = this.$data.areaFilter
       payload.deviceTypeFilter = this.$data.deviceTypeFilter
       payload.deviceGroupFilter = this.$data.deviceGroupFilter
       return payload
@@ -194,14 +193,14 @@ export default {
 
     // Reset dialog contents.
     reset: function (e) {
-      this.$data.active = 'site'
+      this.$data.active = 'area'
     },
 
     // Load dialog from a given payload.
     load: function (payload) {
       this.reset()
       if (payload) {
-        this.$data.siteFilter = payload.siteFilter
+        this.$data.areaFilter = payload.areaFilter
         this.$data.deviceTypeFilter = payload.deviceTypeFilter
         this.$data.deviceGroupFilter = payload.deviceGroupFilter
       }
