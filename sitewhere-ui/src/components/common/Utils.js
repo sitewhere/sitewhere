@@ -96,5 +96,10 @@ export default {
    */
   routeToDevice: function (component, hardwareId) {
     this.routeTo(component, '/devices/' + hardwareId)
+  },
+
+  // Returns paging value for all results.
+  pagingForAllResults: function () {
+    return 'pageNumber=1&pageSize=0'
   }
 }

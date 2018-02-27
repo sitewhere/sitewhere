@@ -18,6 +18,7 @@ import com.sitewhere.grpc.service.*;
 import com.sitewhere.microservice.grpc.TenantTokenServerInterceptor;
 import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.grpc.IGrpcRouter;
 import com.sitewhere.spi.microservice.RuntimeServiceNotAvailableException;
 
 import io.grpc.stub.StreamObserver;
@@ -27,7 +28,8 @@ import io.grpc.stub.StreamObserver;
  * 
  * @author Derek
  */
-public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagementImplBase {
+public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagementImplBase
+	implements IGrpcRouter<DeviceManagementGrpc.DeviceManagementImplBase> {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -40,13 +42,11 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
 	this.microservice = microservice;
     }
 
-    /**
-     * Based on token passed via GRPC header, look up service implementation running
-     * in tenant engine.
-     * 
-     * @return
+    /*
+     * @see com.sitewhere.spi.grpc.IGrpcRouter#getTenantImplementation()
      */
-    protected DeviceManagementGrpc.DeviceManagementImplBase getTenantImplementation() {
+    @Override
+    public DeviceManagementGrpc.DeviceManagementImplBase getTenantImplementation() {
 	String tenantId = TenantTokenServerInterceptor.TENANT_ID_KEY.get();
 	if (tenantId == null) {
 	    throw new RuntimeException("Tenant id not found in device management request.");

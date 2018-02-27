@@ -2,7 +2,7 @@
   <div>
     <assignment-dialog ref="dialog" title="Create Device Assignment" width="700"
       createLabel="Create" cancelLabel="Cancel" @payload="onCommit"
-      :hardwareId="hardwareId">
+      :deviceToken="deviceToken">
     </assignment-dialog>
   </div>
 </template>
@@ -20,7 +20,7 @@ export default {
     AssignmentDialog
   },
 
-  props: ['hardwareId'],
+  props: ['deviceToken'],
 
   methods: {
     // Get handle to nested dialog component.

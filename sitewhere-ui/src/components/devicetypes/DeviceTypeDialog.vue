@@ -7,7 +7,7 @@
       <v-stepper-header>
         <v-stepper-step step="1" :complete="step > 1">Device Type</v-stepper-step>
         <v-divider></v-divider>
-        <v-stepper-step step="2" :complete="step > 2">Asset</v-stepper-step>
+        <v-stepper-step step="2" :complete="step > 2">Asset Type</v-stepper-step>
         <v-divider></v-divider>
         <v-stepper-step step="3">Metadata<small>Optional</small></v-stepper-step>
       </v-stepper-header>
@@ -24,11 +24,6 @@
                   <v-select required :items="containerPolicies" v-model="typeContainerPolicy"
                     label="Container policy" prepend-icon="developer_board"></v-select>
                 </v-flex>
-                <v-flex xs12>
-                  <v-select required :items="assetModules" v-model="typeAssetModule"
-                    item-text="name" item-value="id" label="Asset module"
-                    prepend-icon="local_offer"></v-select>
-                </v-flex>
               </v-layout>
             </v-container>
           </v-card-text>
@@ -37,14 +32,17 @@
           <v-spacer></v-spacer>
           <v-btn flat @click.native="onCancelClicked">{{ cancelLabel }}</v-btn>
           <v-btn color="primary" :disabled="!firstPageComplete" flat
-            @click="step = 2">Choose Asset
+            @click="step = 2">Choose Asset Type
             <v-icon light>keyboard_arrow_right</v-icon>
           </v-btn>
         </v-card-actions>
       </v-stepper-content>
       <v-stepper-content step="2">
-        <asset-chooser :assetModuleId="typeAssetModule" :assetId="typeAssetId"
-          @assetUpdated="onAssetUpdated"></asset-chooser>
+        <asset-type-chooser :selectedToken="typeAssetTypeToken"
+          chosenText="Device type is based on the asset type below:"
+          notChosenText="Choose an asset type from the list below:"
+          @assetTypeUpdated="onAssetTypeUpdated">
+        </asset-type-chooser>
         <v-card-actions>
           <v-btn color="primary" flat @click.native="step = 1">
             <v-icon light>keyboard_arrow_left</v-icon>
@@ -82,8 +80,7 @@
 import Utils from '../common/Utils'
 import BaseDialog from '../common/BaseDialog'
 import MetadataPanel from '../common/MetadataPanel'
-import AssetChooser from '../common/AssetChooser'
-import {_getAssetModules} from '../../http/sitewhere-api-wrapper'
+import AssetTypeChooser from '../assettypes/AssetTypeChooser'
 
 export default {
 
@@ -92,10 +89,8 @@ export default {
     dialogVisible: false,
     typeName: null,
     typeContainerPolicy: null,
-    typeAssetModule: null,
-    typeAssetId: null,
+    typeAssetTypeToken: null,
     metadata: [],
-    assetModules: [],
     containerPolicies: [
       {
         'text': 'Standalone Device',
@@ -111,7 +106,7 @@ export default {
   components: {
     BaseDialog,
     MetadataPanel,
-    AssetChooser
+    AssetTypeChooser
   },
 
   props: ['title', 'width', 'createLabel', 'cancelLabel'],
@@ -120,13 +115,12 @@ export default {
     // Indicates if first page fields are filled in.
     firstPageComplete: function () {
       return (!this.isBlank(this.$data.typeName) &&
-        this.$data.typeContainerPolicy &&
-        this.$data.typeAssetModule)
+        this.$data.typeContainerPolicy)
     },
 
     // Indicates if second page fields are filled in.
     secondPageComplete: function () {
-      return this.firstPageComplete && (this.$data.typeAssetId != null)
+      return this.firstPageComplete && (this.$data.typeAssetTypeToken != null)
     }
   },
 
@@ -136,12 +130,7 @@ export default {
       var payload = {}
       payload.name = this.$data.typeName
       payload.containerPolicy = this.$data.typeContainerPolicy
-
-      var assetReference = {}
-      assetReference.module = this.$data.typeAssetModule
-      assetReference.id = this.$data.typeAssetId
-      payload.assetReference = assetReference
-
+      payload.assetTypeToken = this.$data.typeAssetTypeToken
       payload.metadata = Utils.arrayToMetadata(this.$data.metadata)
       return payload
     },
@@ -150,18 +139,9 @@ export default {
     reset: function () {
       this.$data.typeName = null
       this.$data.typeContainerPolicy = null
-      this.$data.typeAssetModule = null
-      this.$data.typeAssetId = null
+      this.$data.typeAssetTypeToken = null
       this.$data.metadata = []
       this.$data.step = 1
-
-      var component = this
-      _getAssetModules(this.$store, 'Device')
-        .then(function (response) {
-          component.assetModules = response.data
-          this.onAssetModulesLoaded()
-        }).catch(function (e) {
-        })
     },
 
     // Load dialog from a given payload.
@@ -171,8 +151,7 @@ export default {
       if (payload) {
         this.$data.typeName = payload.name
         this.$data.typeContainerPolicy = payload.containerPolicy
-        this.$data.typeAssetModule = payload.assetReference.module
-        this.$data.typeAssetId = payload.assetReference.id
+        this.$data.typeAssetTypeToken = payload.assetTypeToken
         this.$data.metadata = Utils.metadataToArray(payload.metadata)
       }
     },
@@ -203,12 +182,12 @@ export default {
       this.$data.dialogVisible = false
     },
 
-    // Called when an asset is chosen or removed.
-    onAssetUpdated: function (asset) {
-      if (asset) {
-        this.$data.typeAssetId = asset.id
+    // Called when an asset type is chosen or removed.
+    onAssetTypeUpdated: function (assetType) {
+      if (assetType) {
+        this.$data.typeAssetTypeToken = assetType.token
       } else {
-        this.$data.typeAssetId = null
+        this.$data.typeAssetTypeToken = null
       }
     },
 

@@ -15,20 +15,14 @@
             <v-card-text>
               <v-container fluid>
                 <v-layout row wrap>
-                  <v-flex xs6>
+                  <v-flex xs12>
                     <v-checkbox label="Associate device with an asset?"
                       v-model="assnAssociateAsset" light>
                     </v-checkbox>
                   </v-flex>
-                  <v-flex xs6 v-if="assnAssociateAsset">
-                    <v-select required :items="assetModules"
-                      v-model="assnAssetModule"
-                      item-text="name" item-value="id" label="Asset module"
-                      prepend-icon="local_offer"></v-select>
-                  </v-flex>
                   <v-flex xs12>
-                    <asset-chooser :assetModuleId="assnAssetModule"
-                      :assetId="assnAssetId" @assetUpdated="onAssetUpdated">
+                    <asset-chooser :assetToken="assnAssetToken"
+                      @assetUpdated="onAssetUpdated">
                     </asset-chooser>
                   </v-flex>
                 </v-layout>
@@ -70,8 +64,7 @@
 import Utils from '../common/Utils'
 import BaseDialog from '../common/BaseDialog'
 import MetadataPanel from '../common/MetadataPanel'
-import AssetChooser from '../common/AssetChooser'
-import {_getAssetModules} from '../../http/sitewhere-api-wrapper'
+import AssetChooser from '../assets/AssetChooser'
 
 export default {
 
@@ -79,8 +72,7 @@ export default {
     step: null,
     dialogVisible: false,
     assnAssociateAsset: false,
-    assnAssetModule: null,
-    assnAssetId: null,
+    assnAssetToken: null,
     metadata: [],
     assetModules: [],
     error: null
@@ -92,21 +84,20 @@ export default {
     AssetChooser
   },
 
-  props: ['hardwareId', 'title', 'width', 'createLabel', 'cancelLabel'],
+  props: ['deviceToken', 'title', 'width', 'createLabel', 'cancelLabel'],
 
   computed: {
     // Indicates if first page fields are filled in.
     firstPageComplete: function () {
       return this.$data.assnAssociateAsset
-        ? (this.$data.assnAssetModule && this.$data.assnAssetId) : true
+        ? (this.$data.assnAssetToken) : true
     }
   },
 
   watch: {
     assnAssociateAsset: function (value) {
       if (!value) {
-        this.$data.assnAssetModule = null
-        this.$data.assnAssetId = null
+        this.$data.assnAssetToken = null
       }
     }
   },
@@ -114,17 +105,9 @@ export default {
   methods: {
     // Generate payload from UI.
     generatePayload: function () {
-      console.log(this.hardwareId)
       var payload = {}
-      payload.deviceHardwareId = this.hardwareId
-      payload.assignmentType = this.$data.assnAssociateAsset
-        ? 'Associated' : 'Unassociated'
-
-      var assetReference = {}
-      assetReference.module = this.$data.assnAssetModule
-      assetReference.id = this.$data.assnAssetId
-      payload.assetReference = assetReference
-
+      payload.deviceToken = this.token
+      payload.assetToken = this.$data.assnAssetToken
       payload.metadata = Utils.arrayToMetadata(this.$data.metadata)
       return payload
     },
@@ -132,18 +115,10 @@ export default {
     // Reset dialog contents.
     reset: function () {
       this.$data.assnAssociateAsset = false
-      this.$data.assnAssetModule = null
-      this.$data.assnAssetId = null
+      this.$data.assetToken = null
       this.$data.metadata = []
       this.$data.step = 1
       this.$data.error = null
-
-      var component = this
-      _getAssetModules(this.$store)
-        .then(function (response) {
-          component.assetModules = response.data
-        }).catch(function (e) {
-        })
     },
 
     // Called to open the dialog.
@@ -175,9 +150,9 @@ export default {
     // Called when asset is updated.
     onAssetUpdated: function (asset) {
       if (asset) {
-        this.$data.assnAssetId = asset.id
+        this.$data.assnAssetToken = asset.token
       } else {
-        this.$data.assnAssetId = null
+        this.$data.assnAssetToken = null
       }
     },
 

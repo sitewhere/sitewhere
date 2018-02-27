@@ -15,10 +15,14 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.client.JwtClientInterceptor;
 import com.sitewhere.microservice.security.annotations.GrpcSecured;
+import com.sitewhere.rest.model.user.User;
+import com.sitewhere.security.SitewhereAuthentication;
+import com.sitewhere.security.SitewhereUserDetails;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.user.IGrantedAuthority;
@@ -80,6 +84,8 @@ public class JwtServerInterceptor implements ServerInterceptor {
 		List<IGrantedAuthority> gauths = getMicroservice().getTokenManagement()
 			.getGrantedAuthoritiesFromClaims(claims);
 		List<String> auths = gauths.stream().map(g -> g.getAuthority()).collect(Collectors.toList());
+		establishSecurityContext(jwt, username, gauths, auths);
+
 		Method implMethod = locateMethod(call.getMethodDescriptor());
 		return processAuthAnnotations(call, headers, next, username, auths, implMethod);
 	    } catch (SiteWhereException e) {
@@ -95,6 +101,24 @@ public class JwtServerInterceptor implements ServerInterceptor {
 	    return new ServerCall.Listener<ReqT>() {
 	    };
 	}
+    }
+
+    /**
+     * Establish mock Spring Security context based on information included in JWT.
+     * 
+     * @param jwt
+     * @param username
+     * @param gauths
+     * @param auths
+     */
+    protected void establishSecurityContext(String jwt, String username, List<IGrantedAuthority> gauths,
+	    List<String> auths) {
+	User mockUser = new User();
+	mockUser.setUsername(username);
+	mockUser.setAuthorities(auths);
+	SitewhereUserDetails details = new SitewhereUserDetails(mockUser, gauths);
+	SitewhereAuthentication mockAuth = new SitewhereAuthentication(details, jwt);
+	SecurityContextHolder.getContext().setAuthentication(mockAuth);
     }
 
     /**

@@ -137,6 +137,15 @@ import {
   deleteDeviceGroup
 } from './sitewhere-device-groups-api.js'
 
+// Assets.
+import {
+  createAsset,
+  getAsset,
+  updateAsset,
+  listAssets,
+  deleteAsset
+} from './sitewhere-assets-api.js'
+
 // Asset types.
 import {
   createAssetType,
@@ -1142,6 +1151,51 @@ export function _listAssetTypes (store, options, paging) {
 export function _deleteAssetType (store, assetTypeToken, force) {
   let axios = createCoreApiCall(store)
   let api = deleteAssetType(axios, assetTypeToken, force)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Create an asset.
+ */
+export function _createAsset (store, payload) {
+  let axios = createCoreApiCall(store)
+  let api = createAsset(axios, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Get an asset by unique token.
+ */
+export function _getAsset (store, token) {
+  let axios = createCoreApiCall(store)
+  let api = getAsset(axios, token)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Update an existing asset.
+ */
+export function _updateAsset (store, token, payload) {
+  let axios = createCoreApiCall(store)
+  let api = updateAsset(axios, token, payload)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * List assets.
+ */
+export function _listAssets (store, options, paging) {
+  let axios = createCoreApiCall(store)
+  let api = listAssets(axios, options, paging)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * Delete an existing asset.
+ */
+export function _deleteAsset (store, token, force) {
+  let axios = createCoreApiCall(store)
+  let api = deleteAsset(axios, token, force)
   return loaderWrapper(store, api)
 }
 
