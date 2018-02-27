@@ -54,8 +54,8 @@ export function listFilteredDevices (axios, site, deviceType,
  */
 export function getDevice (axios, token, options) {
   let query = ''
-  query += (options.includeSpecification)
-    ? '?includeSpecification=true' : '?includeSpecification=false'
+  query += (options.includeDeviceType)
+    ? '?includeDeviceType=true' : '?includeDeviceType=false'
   query += (options.includeAssignment)
     ? '&includeAssignment=true' : '&includeAssignment=false'
   query += (options.includeAsset)

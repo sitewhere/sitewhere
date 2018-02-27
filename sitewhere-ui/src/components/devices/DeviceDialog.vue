@@ -18,8 +18,8 @@
               <v-container fluid>
                 <v-layout row wrap>
                   <v-flex xs12>
-                    <v-text-field required class="mt-1" label="Hardware id"
-                      v-model="devHardwareId" prepend-icon="info"></v-text-field>
+                    <v-text-field required class="mt-1" label="Token"
+                      v-model="devToken" prepend-icon="info"></v-text-field>
                   </v-flex>
                   <v-flex xs12>
                     <v-text-field class="mt-1" multi-line label="Comments"
@@ -91,7 +91,7 @@ export default {
   data: () => ({
     step: null,
     dialogVisible: false,
-    devHardwareId: null,
+    devToken: null,
     devComments: null,
     devDeviceTypeToken: null,
     metadata: [],
@@ -110,7 +110,7 @@ export default {
   computed: {
     // Indicates if first page fields are filled in.
     firstPageComplete: function () {
-      return !Utils.isBlank(this.$data.devHardwareId)
+      return !Utils.isBlank(this.$data.devToken)
     },
 
     // Indicates if second page is complete.
@@ -123,7 +123,7 @@ export default {
     // Generate payload from UI.
     generatePayload: function () {
       var payload = {}
-      payload.hardwareId = this.$data.devHardwareId
+      payload.token = this.$data.devToken
       payload.comments = this.$data.devComments
       payload.deviceTypeToken = this.$data.devDeviceTypeToken
       payload.metadata = Utils.arrayToMetadata(this.$data.metadata)
@@ -132,7 +132,7 @@ export default {
 
     // Reset dialog contents.
     reset: function () {
-      this.$data.devHardwareId = null
+      this.$data.devToken = null
       this.$data.devComments = null
       this.$data.devDeviceTypeToken = null
       this.$data.metadata = []
@@ -145,7 +145,7 @@ export default {
       this.reset()
 
       if (payload) {
-        this.$data.devHardwareId = payload.hardwareId
+        this.$data.devToken = payload.token
         this.$data.devComments = payload.comments
         this.$data.devDeviceTypeToken = payload.deviceTypeToken
         this.$data.metadata = Utils.metadataToArray(payload.metadata)
