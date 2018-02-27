@@ -34,24 +34,24 @@ public class AssetManagementPersistence extends Persistence {
      * @throws SiteWhereException
      */
     public static AssetType assetTypeCreateLogic(IAssetTypeCreateRequest request) throws SiteWhereException {
-	AssetType asset = new AssetType();
-	asset.setId(UUID.randomUUID());
-	asset.setDescription(request.getDescription());
+	AssetType type = new AssetType();
+	type.setId(UUID.randomUUID());
+	type.setDescription(request.getDescription());
 
 	// Unique token is required.
 	require("Token", request.getToken());
-	asset.setToken(request.getToken());
+	type.setToken(request.getToken());
 
 	require("Name", request.getName());
-	asset.setName(request.getName());
+	type.setName(request.getName());
 
 	require("Image URL", request.getImageUrl());
-	asset.setImageUrl(request.getImageUrl());
+	type.setImageUrl(request.getImageUrl());
 
-	MetadataProvider.copy(request.getMetadata(), asset);
-	AssetManagementPersistence.initializeEntityMetadata(asset);
+	MetadataProvider.copy(request.getMetadata(), type);
+	AssetManagementPersistence.initializeEntityMetadata(type);
 
-	return asset;
+	return type;
     }
 
     /**

@@ -140,7 +140,7 @@ export default {
     onAreaDeleted: function () {
       var tenant = this.$store.getters.selectedTenant
       if (tenant) {
-        this.$router.push('/tenants/' + tenant.id + '/areas')
+        this.$router.push('/tenants/' + tenant.token + '/areas')
       }
     },
     // Called after area is updated.

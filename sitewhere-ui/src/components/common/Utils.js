@@ -100,6 +100,6 @@ export default {
 
   // Returns paging value for all results.
   pagingForAllResults: function () {
-    return 'pageNumber=1&pageSize=0'
+    return 'page=1&pageSize=0'
   }
 }

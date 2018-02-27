@@ -30,6 +30,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
@@ -118,12 +119,22 @@ public class Assets extends RestControllerBase {
     @ApiOperation(value = "List assets matching criteria")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IAsset> listAssets(
+	    @ApiParam(value = "Limit by asset type", required = false) @RequestParam(required = false) String assetTypeToken,
 	    @ApiParam(value = "Include asset type", required = false) @RequestParam(defaultValue = "false") boolean includeAssetType,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize)
 	    throws SiteWhereException {
 	// Build criteria.
 	AssetSearchCriteria criteria = new AssetSearchCriteria(page, pageSize);
+
+	// If limiting by asset type, look up asset type.
+	if (assetTypeToken != null) {
+	    IAssetType assetType = getAssetManagement().getAssetTypeByToken(assetTypeToken);
+	    if (assetType == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidAssetTypeToken, ErrorLevel.ERROR);
+	    }
+	    criteria.setAssetTypeId(assetType.getId());
+	}
 
 	// Perform search.
 	ISearchResults<IAsset> matches = getAssetManagement().listAssets(criteria);

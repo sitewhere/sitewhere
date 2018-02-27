@@ -99,7 +99,7 @@ export default {
       id: 'assetGroup',
       title: 'Asset Management',
       icon: 'fa-car',
-      route: 'assettypes',
+      route: 'assets',
       longTitle: 'Manage Assets',
       subsections: [{
         id: 'assettypes',
@@ -107,6 +107,12 @@ export default {
         icon: 'fa-cog',
         route: 'assettypes',
         longTitle: 'Manage Asset Types'
+      }, {
+        id: 'assets',
+        title: 'Assets',
+        icon: 'fa-car',
+        route: 'assets',
+        longTitle: 'Manage Assets'
       }]
     },
     {

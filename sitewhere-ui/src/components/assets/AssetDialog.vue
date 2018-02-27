@@ -6,7 +6,7 @@
       <v-tabs v-model="active">
         <v-tabs-bar dark color="primary">
           <v-tabs-item key="details" href="#details">
-            Asset Type Details
+            Asset Details
           </v-tabs-item>
           <v-tabs-item key="metadata" href="#metadata">
             Metadata
@@ -20,24 +20,21 @@
                 <v-container fluid>
                   <v-layout row wrap>
                     <v-flex xs12>
-                      <v-text-field class="mt-1" label="Name" v-model="typeName"
-                        prepend-icon="info"></v-text-field>
-                    </v-flex>
-                    <v-flex xs12>
-                      <v-text-field class="mt-1" multi-line label="Description"
-                        v-model="typeDescription" prepend-icon="subject">
+                      <v-text-field class="mt-1" label="Name"
+                        v-model="assetName" prepend-icon="info">
                       </v-text-field>
-                    </v-flex>
-                    <v-flex xs12>
-                      <v-select :items="categories" v-model="typeAssetCategory"
-                        label="Select Category" light single-line auto
-                        prepend-icon="subject" hide-details>
-                      </v-select>
                     </v-flex>
                     <v-flex xs12>
                       <v-text-field class="mt-1" label="Image URL"
-                        v-model="typeImageUrl" prepend-icon="image">
+                        v-model="assetImageUrl" prepend-icon="image">
                       </v-text-field>
+                    </v-flex>
+                    <v-flex xs12>
+                      <asset-type-chooser :selectedToken="assetTypeToken"
+                        chosenText="Asset is based on the type below:"
+                        notChosenText="Choose an asset type from the list below:"
+                        @assetTypeUpdated="onAssetTypeUpdated">
+                      </asset-type-chooser>
                     </v-flex>
                   </v-layout>
                 </v-container>
@@ -59,102 +56,82 @@ import Utils from '../common/Utils'
 import BaseDialog from '../common/BaseDialog'
 import IconSelector from '../common/IconSelector'
 import MetadataPanel from '../common/MetadataPanel'
+import AssetTypeChooser from '../assettypes/AssetTypeChooser'
 
 export default {
 
   data: () => ({
     active: null,
     dialogVisible: false,
-    typeName: null,
-    typeDescription: null,
-    typeImageUrl: null,
-    typeAssetCategory: null,
+    assetName: null,
+    assetImageUrl: null,
+    assetTypeToken: null,
     metadata: [],
-    error: null,
-    categories: [
-      {
-        'text': 'Device Asset',
-        'value': 'Device'
-      },
-      {
-        'text': 'Person Asset',
-        'value': 'Person'
-      },
-      {
-        'text': 'Hardware Asset',
-        'value': 'Hardware'
-      }
-    ]
+    error: null
   }),
 
   components: {
     BaseDialog,
     IconSelector,
-    MetadataPanel
+    MetadataPanel,
+    AssetTypeChooser
   },
 
   props: ['title', 'width', 'createLabel', 'cancelLabel'],
 
   methods: {
+    // Called when asset type is updated.
+    onAssetTypeUpdated: function (assetType) {
+      this.$data.assetTypeToken = assetType.token
+    },
     // Generate payload from UI.
     generatePayload: function () {
       var payload = {}
-      payload.name = this.$data.typeName
-      payload.description = this.$data.typeDescription
-      payload.assetCategory = this.$data.typeAssetCategory
-      payload.imageUrl = this.$data.typeImageUrl
+      payload.name = this.$data.assetName
+      payload.imageUrl = this.$data.assetImageUrl
+      payload.assetTypeToken = this.$data.assetTypeToken
       payload.metadata = Utils.arrayToMetadata(this.$data.metadata)
       return payload
     },
-
     // Reset dialog contents.
     reset: function (e) {
-      this.$data.typeName = null
-      this.$data.typeDescription = null
-      this.$data.typeAssetCategory = null
-      this.$data.typeImageUrl = null
+      this.$data.assetName = null
+      this.$data.assetImageUrl = null
+      this.$data.assetTypeToken = null
       this.$data.metadata = []
       this.$data.active = 'details'
     },
-
     // Load dialog from a given payload.
     load: function (payload) {
       this.reset()
       if (payload) {
-        this.$data.typeName = payload.name
-        this.$data.typeDescription = payload.description
-        this.$data.typeAssetCategory = payload.assetCategory
-        this.$data.typeImageUrl = payload.imageUrl
+        this.$data.assetName = payload.name
+        this.$data.assetImageUrl = payload.imageUrl
+        this.$data.assetTypeToken = payload.assetTypeToken
         this.$data.metadata = Utils.metadataToArray(payload.metadata)
       }
     },
-
     // Called to open the dialog.
     openDialog: function () {
       this.$data.dialogVisible = true
     },
-
     // Called to open the dialog.
     closeDialog: function () {
       this.$data.dialogVisible = false
     },
-
     // Called to show an error message.
     showError: function (error) {
       this.$data.error = error
     },
-
     // Called after create button is clicked.
     onCreateClicked: function (e) {
       var payload = this.generatePayload()
       this.$emit('payload', payload)
     },
-
     // Called after cancel button is clicked.
     onCancelClicked: function (e) {
       this.$data.dialogVisible = false
     },
-
     // Called when a metadata entry has been deleted.
     onMetadataDeleted: function (name) {
       var metadata = this.$data.metadata
@@ -164,7 +141,6 @@ export default {
         }
       }
     },
-
     // Called when a metadata entry has been added.
     onMetadataAdded: function (entry) {
       var metadata = this.$data.metadata

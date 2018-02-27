@@ -137,10 +137,10 @@ public class MongoAssetManagement extends TenantEngineLifecycleComponent impleme
     @Override
     public IAssetType getAssetType(UUID assetTypeId) throws SiteWhereException {
 	Document dbAssetType = getAssetTypeDocument(assetTypeId);
-	if (dbAssetType == null) {
-	    return null;
+	if (dbAssetType != null) {
+	    return MongoAssetType.fromDocument(dbAssetType);
 	}
-	return MongoAssetType.fromDocument(dbAssetType);
+	return null;
     }
 
     /*
@@ -153,10 +153,10 @@ public class MongoAssetManagement extends TenantEngineLifecycleComponent impleme
 	    MongoCollection<Document> types = getMongoClient().getAssetTypesCollection();
 	    Document query = new Document(MongoAssetType.PROP_TOKEN, token);
 	    Document dbAssetType = types.find(query).first();
-	    if (dbAssetType == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidAssetTypeToken, ErrorLevel.ERROR);
+	    if (dbAssetType != null) {
+		return MongoAssetType.fromDocument(dbAssetType);
 	    }
-	    return MongoAssetType.fromDocument(dbAssetType);
+	    return null;
 	} catch (MongoClientException e) {
 	    throw MongoPersistence.handleClientException(e);
 	}
@@ -245,10 +245,10 @@ public class MongoAssetManagement extends TenantEngineLifecycleComponent impleme
     @Override
     public IAsset getAsset(UUID assetId) throws SiteWhereException {
 	Document dbAsset = getAssetDocument(assetId);
-	if (dbAsset == null) {
-	    return null;
+	if (dbAsset != null) {
+	    return MongoAsset.fromDocument(dbAsset);
 	}
-	return MongoAsset.fromDocument(dbAsset);
+	return null;
     }
 
     /*
@@ -298,6 +298,12 @@ public class MongoAssetManagement extends TenantEngineLifecycleComponent impleme
     public ISearchResults<IAsset> listAssets(IAssetSearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> assets = getMongoClient().getAssetsCollection();
 	Document query = new Document();
+
+	// Add filter if asset type id specified.
+	if (criteria.getAssetTypeId() != null) {
+	    query.append(MongoAsset.PROP_ASSET_TYPE_ID, criteria.getAssetTypeId());
+	}
+
 	Document sort = new Document(MongoAsset.PROP_NAME, 1);
 	return MongoPersistence.search(IAsset.class, assets, query, sort, criteria, LOOKUP);
     }

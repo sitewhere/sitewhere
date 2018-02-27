@@ -95,7 +95,6 @@ export default {
         'border': '1px solid #eee'
       }
     },
-
     // Compute style for QR code URL.
     qrCodeStyle: function () {
       var tenant = this.$store.getters.selectedTenant

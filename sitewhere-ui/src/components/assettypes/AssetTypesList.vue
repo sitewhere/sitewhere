@@ -63,7 +63,7 @@ export default {
     onOpenAssetType: function (token) {
       var tenant = this.$store.getters.selectedTenant
       if (tenant) {
-        this.$router.push('/tenants/' + tenant.id + '/assettypes/' + token)
+        this.$router.push('/tenants/' + tenant.token + '/assettypes/' + token)
       }
     },
 

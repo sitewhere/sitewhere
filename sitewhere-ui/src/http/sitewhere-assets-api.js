@@ -32,6 +32,8 @@ export function listAssets (axios, options, paging) {
   let query = ''
   query += (options.includeAssetType)
     ? '?includeAssetType=true' : '?includeAssetType=false'
+  query += (options.assetTypeToken)
+    ? '&assetTypeToken=' + options.assetTypeToken : ''
   if (paging) {
     query += '&' + paging
   }
