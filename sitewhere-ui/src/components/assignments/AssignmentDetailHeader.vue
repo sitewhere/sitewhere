@@ -18,9 +18,10 @@
         <header-field label="Assigned asset">
           <span>{{ assignment.assetName }}</span>
         </header-field>
-        <header-field label="Assigned device">
-          <span>{{ assignment.device.deviceType.assetName }}</span>
-        </header-field>
+        <linked-header-field label="Assigned device"
+          :text="assignment.device.deviceType.assetTypeName"
+          :url="'/devices/' + assignment.device.token">
+        </linked-header-field>
         <header-field label="Created date">
           <span>{{ formatDate(assignment.createdDate) }}</span>
         </header-field>
@@ -61,6 +62,7 @@ import Utils from '../common/Utils'
 import Style from '../common/Style'
 import {createCoreApiUrl} from '../../http/sitewhere-api-wrapper'
 import HeaderField from '../common/HeaderField'
+import LinkedHeaderField from '../common/LinkedHeaderField'
 import ClipboardCopyField from '../common/ClipboardCopyField'
 import OptionsMenu from '../common/OptionsMenu'
 import AssignmentDeleteDialog from './AssignmentDeleteDialog'
@@ -76,6 +78,7 @@ export default {
 
   components: {
     HeaderField,
+    LinkedHeaderField,
     ClipboardCopyField,
     OptionsMenu,
     AssignmentDeleteDialog

@@ -1,20 +1,23 @@
 <template>
-  <div>
-    <device-group-detail-header :group="group" class="mb-3"
-      @deviceGroupUpdated="refresh" @deviceGroupDeleted="onDeviceGroupDeleted">
-    </device-group-detail-header>
-    <device-group-element-list-panel ref="list" :token="token">
-    </device-group-element-list-panel>
-    <floating-action-button label="Add Group Element" icon="fa-plus"
-      @action="onAddElement">
-    </floating-action-button>
-    <device-group-element-create-dialog ref="create" :token="token"
-      @elementAdded="onElementAdded">
-    </device-group-element-create-dialog>
-  </div>
+  <navigation-page icon="view_module" title="Manage Device Group">
+    <div slot="content">
+      <device-group-detail-header :group="group" class="mb-3"
+        @deviceGroupUpdated="refresh" @deviceGroupDeleted="onDeviceGroupDeleted">
+      </device-group-detail-header>
+      <device-group-element-list-panel ref="list" :token="token">
+      </device-group-element-list-panel>
+      <floating-action-button label="Add Group Element" icon="fa-plus"
+        @action="onAddElement">
+      </floating-action-button>
+      <device-group-element-create-dialog ref="create" :token="token"
+        @elementAdded="onElementAdded">
+      </device-group-element-create-dialog>
+    </div>
+  </navigation-page>
 </template>
 
 <script>
+import NavigationPage from '../common/NavigationPage'
 import Utils from '../common/Utils'
 import Pager from '../common/Pager'
 import FloatingActionButton from '../common/FloatingActionButton'
@@ -47,6 +50,7 @@ export default {
   }),
 
   components: {
+    NavigationPage,
     Pager,
     FloatingActionButton,
     DeviceGroupDetailHeader,

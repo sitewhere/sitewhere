@@ -1,23 +1,27 @@
 <template>
-  <div>
-    <v-container fluid grid-list-md  v-if="groups">
-      <v-layout row wrap>
-         <v-flex xs6 v-for="(group, index) in groups" :key="group.token">
-          <device-group-list-panel :group="group" class="mb-1"
-            @click.native="onOpenGroup(group)">
-          </device-group-list-panel>
-        </v-flex>
-      </v-layout>
-    </v-container>
-    <pager :results="results" :pageSizes="pageSizes"
-      @pagingUpdated="updatePaging">
-    </pager>
-    <device-group-create-dialog @groupAdded="refresh">
-    </device-group-create-dialog>
-  </div>
+  <navigation-page icon="view_module"
+    title="Manage Device Groups">
+    <div slot="content">
+      <v-container fluid grid-list-md  v-if="groups">
+        <v-layout row wrap>
+           <v-flex xs6 v-for="(group, index) in groups" :key="group.token">
+            <device-group-list-panel :group="group" class="mb-1"
+              @click.native="onOpenGroup(group)">
+            </device-group-list-panel>
+          </v-flex>
+        </v-layout>
+      </v-container>
+      <pager :results="results" :pageSizes="pageSizes"
+        @pagingUpdated="updatePaging">
+      </pager>
+      <device-group-create-dialog @groupAdded="refresh">
+      </device-group-create-dialog>
+    </div>
+  </navigation-page>
 </template>
 
 <script>
+import NavigationPage from '../common/NavigationPage'
 import Utils from '../common/Utils'
 import Pager from '../common/Pager'
 import DeviceGroupListPanel from './DeviceGroupListPanel'
@@ -46,6 +50,7 @@ export default {
   }),
 
   components: {
+    NavigationPage,
     Pager,
     DeviceGroupListPanel,
     DeviceGroupCreateDialog

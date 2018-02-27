@@ -1,5 +1,5 @@
 <template>
-  <navigation-page v-if="deviceType" icon="fa-file"
+  <navigation-page v-if="deviceType" icon="fa-cog"
     :title="deviceType.name">
     <div slot="content">
       <device-type-detail-header :deviceType="deviceType"

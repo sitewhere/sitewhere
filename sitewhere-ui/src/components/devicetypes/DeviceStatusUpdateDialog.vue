@@ -1,16 +1,8 @@
 <template>
-  <span>
-    <device-status-dialog ref="dialog" title="Edit Device Status" width="600"
-      :deviceType="deviceType"
-      createLabel="Update" cancelLabel="Cancel" @payload="onCommit">
-    </device-status-dialog>
-    <v-tooltip top>
-      <v-btn icon slot="activator" @click.stop="onOpenDialog">
-        <v-icon class="grey--text">fa-edit</v-icon>
-      </v-btn>
-      <span>Edit Device Status</span>
-    </v-tooltip>
-  </span>
+  <device-status-dialog ref="dialog" title="Edit Device Status" width="600"
+    :deviceType="deviceType"
+    createLabel="Update" cancelLabel="Cancel" @payload="onCommit">
+  </device-status-dialog>
 </template>
 
 <script>

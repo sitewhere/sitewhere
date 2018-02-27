@@ -1,18 +1,10 @@
 <template>
-  <span>
-    <delete-dialog title="Delete Device Status" width="400" :error="error"
-      @delete="onDeleteConfirmed">
-      <v-card-text>
-        Are you sure you want to delete this device status?
-      </v-card-text>
-    </delete-dialog>
-    <v-tooltip top>
-      <v-btn icon @click.stop="showDeleteDialog" slot="activator">
-        <v-icon class="grey--text">fa-times</v-icon>
-      </v-btn>
-      <span>Delete Status</span>
-    </v-tooltip>
-  </span>
+  <delete-dialog title="Delete Device Status" width="400" :error="error"
+    @delete="onDeleteConfirmed">
+    <v-card-text>
+      Are you sure you want to delete this device status?
+    </v-card-text>
+  </delete-dialog>
 </template>
 
 <script>

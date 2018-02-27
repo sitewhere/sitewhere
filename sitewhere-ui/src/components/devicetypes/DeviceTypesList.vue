@@ -1,5 +1,5 @@
 <template>
-  <navigation-page icon="fa-file" title="Manage Device Types">
+  <navigation-page icon="fa-cog" title="Manage Device Types">
     <div slot="content">
       <v-container fluid grid-list-md  v-if="deviceTypes">
         <v-layout row wrap>

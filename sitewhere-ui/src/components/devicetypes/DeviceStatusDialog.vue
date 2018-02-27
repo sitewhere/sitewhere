@@ -27,8 +27,7 @@
                     v-model="statusName" prepend-icon="info"></v-text-field>
                 </v-flex>
                 <v-flex xs12>
-                  <v-text-field required label="Icon"
-                    v-model="statusIcon" prepend-icon="info"></v-text-field>
+                  <icon-selector v-model="statusIcon"></icon-selector>
                 </v-flex>
                 <v-flex xs12 class="mb-4">
                   <v-icon>info</v-icon>
@@ -65,6 +64,7 @@
 import Utils from '../common/Utils'
 import BaseDialog from '../common/BaseDialog'
 import MetadataPanel from '../common/MetadataPanel'
+import IconSelector from '../common/IconSelector'
 import ColorPicker from '../common/ColorPicker'
 
 export default {
@@ -85,6 +85,7 @@ export default {
   components: {
     BaseDialog,
     MetadataPanel,
+    IconSelector,
     ColorPicker
   },
 

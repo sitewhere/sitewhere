@@ -5,17 +5,21 @@
       <span class="device-logo" :style="logoStyle"></span>
       <span class="device-qrcode" :style="qrCodeStyle"></span>
       <div class="device-headers">
-        <header-field label="Hardware Id">
-          <clipboard-copy-field :field="device.hardwareId"
-            message="Hardware id copied to clipboard">
+        <header-field label="Token">
+          <clipboard-copy-field :field="device.token"
+            message="Token copied to clipboard">
           </clipboard-copy-field>
         </header-field>
-        <header-field label="Device Type">
-          <span>{{ device.deviceType.assetType.name }}</span>
-        </header-field>
-        <header-field label="Assignment">
-          <span v-if="device.assignment">{{ device.assignment.assetName }}</span>
-          <span v-else>Device is not assigned</span>
+        <linked-header-field label="Device Type"
+          :text="device.deviceType.name"
+          :url="'/devicetypes/' + device.deviceType.token">
+        </linked-header-field>
+        <linked-header-field v-if="device.assignment" label="Assignment"
+          :text="device.assignment.assetName"
+          :url="'/assignments/' + device.assignment.token">
+        </linked-header-field>
+        <header-field v-else label="Assignment">
+          <span>Device is not assigned</span>
         </header-field>
         <header-field label="Created">
           <span>{{ formatDate(device.createdDate) }}</span>
@@ -55,6 +59,7 @@
 import Utils from '../common/Utils'
 import Style from '../common/Style'
 import HeaderField from '../common/HeaderField'
+import LinkedHeaderField from '../common/LinkedHeaderField'
 import ClipboardCopyField from '../common/ClipboardCopyField'
 import OptionsMenu from '../common/OptionsMenu'
 import DeviceUpdateDialog from './DeviceUpdateDialog'
@@ -72,6 +77,7 @@ export default {
 
   components: {
     HeaderField,
+    LinkedHeaderField,
     ClipboardCopyField,
     OptionsMenu,
     DeviceUpdateDialog,
@@ -144,7 +150,7 @@ export default {
 
 <style scoped>
 .device {
-  min-height: 170px;
+  min-height: 200px;
   min-width: 920px;
   overflow-y: hidden;
 }

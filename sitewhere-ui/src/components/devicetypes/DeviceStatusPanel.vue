@@ -1,23 +1,36 @@
 <template>
-  <v-card hover>
-    <v-card-text class="pa-1">
-      <div :style="boxStyle()" class="pa-2">
-        <v-icon class="fa-lg" :style="{'color': status.foregroundColor}" v-if="status.icon" fa>{{ status.icon }}</v-icon>
-        <span class="status-text">{{ status.name }}</span>
-      </div>
-    </v-card-text>
-    <v-card-actions>
-      <v-spacer></v-spacer>
-      <device-status-update-dialog class="ma-0" ref="update"
-        :deviceType="deviceType" :code="status.code"
-        @statusUpdated="onStatusUpdated">
-      </device-status-update-dialog>
-      <device-status-delete-dialog class="ma-0" ref="update"
-        :deviceType="deviceType" :code="status.code"
-        @statusDeleted="onStatusDeleted">
-      </device-status-delete-dialog>
-    </v-card-actions>
-  </v-card>
+  <span>
+    <v-card hover>
+      <v-toolbar flat dark dense card @click="onShowEditDialog"
+        :style="{'background-color': status.backgroundColor, 'border': '1px solid ' + status.borderColor}">
+        <v-icon>{{ status.icon }}</v-icon>
+        <v-toolbar-title :style="{'color': status.foregroundColor}">
+          {{ status.name }}
+        </v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-tooltip class="ma-0 pa-0" top>
+          <v-btn class="ma-0 pa-0" icon slot="activator" @click.stop="onShowEditDialog">
+            <v-icon class="white--text">fa-edit</v-icon>
+          </v-btn>
+          <span>Edit Device Status</span>
+        </v-tooltip>
+        <v-tooltip class="ma-0 pa-0" top>
+          <v-btn class="ml-0 pl-0" icon slot="activator" @click.stop="onShowDeleteDialog">
+            <v-icon class="white--text">fa-times</v-icon>
+          </v-btn>
+          <span>Delete Device Status</span>
+        </v-tooltip>
+      </v-toolbar>
+    </v-card>
+    <device-status-update-dialog ref="update"
+      :deviceType="deviceType" :code="status.code"
+      @statusUpdated="onStatusUpdated">
+    </device-status-update-dialog>
+    <device-status-delete-dialog ref="delete"
+      :deviceType="deviceType" :code="status.code"
+      @statusDeleted="onStatusDeleted">
+    </device-status-delete-dialog>
+  </span>
 </template>
 
 <script>
@@ -37,21 +50,18 @@ export default {
   props: ['status', 'deviceType'],
 
   methods: {
-    boxStyle: function () {
-      let style = {}
-      style['background-color'] = this.status.backgroundColor || '#fff'
-      if (this.status.borderColor) {
-        style['border'] = '2px solid ' + this.status.borderColor
-      }
-      style['color'] = this.status.foregroundColor || '#333'
-      return style
+    // Show edit dialog.
+    onShowEditDialog: function () {
+      this.$refs['update'].onOpenDialog()
     },
-
+    // Show delete dialog.
+    onShowDeleteDialog: function () {
+      this.$refs['delete'].showDeleteDialog()
+    },
     // Called after status has been deleted.
     onStatusDeleted: function () {
       this.$emit('statusDeleted')
     },
-
     // Called after status has been updated.
     onStatusUpdated: function () {
       this.$emit('statusUpdated')
