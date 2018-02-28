@@ -61,8 +61,8 @@ public class MongoPersistence {
 		throw new ResourceExistsException(ifDuplicate);
 	    }
 	    throw new SiteWhereException("Error during MongoDB insert.", e);
-	} catch (MongoTimeoutException e) {
-	    throw new SiteWhereException("Connection to MongoDB lost.", e);
+	} catch (MongoClientException e) {
+	    throw handleClientException(e);
 	}
     }
 
@@ -127,8 +127,8 @@ public class MongoPersistence {
 		return converter.convert(found.first());
 	    }
 	    return null;
-	} catch (MongoTimeoutException e) {
-	    throw new SiteWhereException("Connection to MongoDB lost.", e);
+	} catch (MongoClientException e) {
+	    throw handleClientException(e);
 	}
     }
 
@@ -174,8 +174,8 @@ public class MongoPersistence {
 		cursor.close();
 	    }
 	    return results;
-	} catch (MongoTimeoutException e) {
-	    throw new SiteWhereException("Connection to MongoDB lost.", e);
+	} catch (MongoClientException e) {
+	    throw handleClientException(e);
 	}
     }
 
@@ -246,8 +246,8 @@ public class MongoPersistence {
 		cursor.close();
 	    }
 	    return matches;
-	} catch (MongoTimeoutException e) {
-	    throw new SiteWhereException("Connection to MongoDB lost.", e);
+	} catch (MongoClientException e) {
+	    throw handleClientException(e);
 	}
     }
 

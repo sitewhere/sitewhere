@@ -141,9 +141,10 @@ enum GDeviceGroupElementType {
 
 // Device assignment status.
 enum GDeviceAssignmentStatus {
-	ASSN_STATUS_ACTIVE = 0;
-	ASSN_STATUS_MISSING = 1;
-	ASSN_STATUS_RELEASED = 2;
+	ASSN_STATUS_UNSPECIFIED = 0;
+	ASSN_STATUS_ACTIVE = 1;
+	ASSN_STATUS_MISSING = 2;
+	ASSN_STATUS_RELEASED = 3;
 }
 
 // Device command initiator.

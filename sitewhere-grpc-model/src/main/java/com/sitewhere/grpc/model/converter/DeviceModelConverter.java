@@ -1391,37 +1391,37 @@ public class DeviceModelConverter {
     /**
      * Convert device assignment search criteria from API to GRPC.
      * 
-     * @param code
+     * @param grpc
      * @return
      * @throws SiteWhereException
      */
-    public static GDeviceAssignmentSearchCriteria asApiDeviceAssignmentSearchCriteria(
-	    IAssignmentSearchCriteria criteria) throws SiteWhereException {
+    public static GDeviceAssignmentSearchCriteria asApiDeviceAssignmentSearchCriteria(IAssignmentSearchCriteria grpc)
+	    throws SiteWhereException {
 	GDeviceAssignmentSearchCriteria.Builder gcriteria = GDeviceAssignmentSearchCriteria.newBuilder();
-	if (criteria.getStatus() != null) {
-	    gcriteria.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(criteria.getStatus()));
+	if (grpc.getStatus() != null) {
+	    gcriteria.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(grpc.getStatus()));
 	}
-	gcriteria.setPaging(CommonModelConverter.asGrpcPaging(criteria));
+	gcriteria.setPaging(CommonModelConverter.asGrpcPaging(grpc));
 	return gcriteria.build();
     }
 
     /**
      * Convert device assignments for asset search criteria from API to GRPC.
      * 
-     * @param code
+     * @param api
      * @return
      * @throws SiteWhereException
      */
     public static GAssetsForAssignmentSearchCriteria asApiDeviceAssignmentSearchCriteria(
-	    IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException {
+	    IAssignmentsForAssetSearchCriteria api) throws SiteWhereException {
 	GAssetsForAssignmentSearchCriteria.Builder gcriteria = GAssetsForAssignmentSearchCriteria.newBuilder();
-	if (criteria.getAreaToken() != null) {
-	    gcriteria.setArea(GAreaReference.newBuilder().setToken(criteria.getAreaToken()).build());
+	if (api.getAreaToken() != null) {
+	    gcriteria.setArea(GAreaReference.newBuilder().setToken(api.getAreaToken()).build());
 	}
-	if (criteria.getStatus() != null) {
-	    gcriteria.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(criteria.getStatus()));
+	if (api.getStatus() != null) {
+	    gcriteria.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(api.getStatus()));
 	}
-	gcriteria.setPaging(CommonModelConverter.asGrpcPaging(criteria));
+	gcriteria.setPaging(CommonModelConverter.asGrpcPaging(api));
 	return gcriteria.build();
     }
 
@@ -1441,6 +1441,8 @@ public class DeviceModelConverter {
 	    return DeviceAssignmentStatus.Missing;
 	case ASSN_STATUS_RELEASED:
 	    return DeviceAssignmentStatus.Released;
+	case ASSN_STATUS_UNSPECIFIED:
+	    return null;
 	case UNRECOGNIZED:
 	    throw new SiteWhereException("Unknown device assignment status: " + grpc.name());
 	}
@@ -1456,6 +1458,9 @@ public class DeviceModelConverter {
      */
     public static GDeviceAssignmentStatus asGrpcDeviceAssignmentStatus(DeviceAssignmentStatus api)
 	    throws SiteWhereException {
+	if (api == null) {
+	    return GDeviceAssignmentStatus.ASSN_STATUS_UNSPECIFIED;
+	}
 	switch (api) {
 	case Active:
 	    return GDeviceAssignmentStatus.ASSN_STATUS_ACTIVE;
