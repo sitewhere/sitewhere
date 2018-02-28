@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import Utils from '../common/Utils'
 import NavigationPage from '../common/NavigationPage'
 import Pager from '../common/Pager'
 import AssetListEntry from './AssetListEntry'
@@ -73,10 +74,7 @@ export default {
 
     // Called on open.
     onOpenAsset: function (asset) {
-      var tenant = this.$store.getters.selectedTenant
-      if (tenant) {
-        this.$router.push('/tenants/' + tenant.token + '/assets/' + asset.token)
-      }
+      Utils.routeTo(this, '/assets/' + encodeURIComponent(asset.token))
     },
 
     // Called on add.

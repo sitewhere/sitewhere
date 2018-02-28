@@ -78,8 +78,7 @@ import com.sitewhere.spi.error.ResourceExistsException;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
-import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
-import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
+import com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
@@ -991,6 +990,31 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceAssignments(com.
+     * sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria)
+     */
+    @Override
+    public ISearchResults<IDeviceAssignment> listDeviceAssignments(IDeviceAssignmentSearchCriteria criteria)
+	    throws SiteWhereException {
+	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
+	Document query = new Document();
+	if (criteria.getStatus() != null) {
+	    query.append(MongoDeviceAssignment.PROP_STATUS, criteria.getStatus().name());
+	}
+	if (criteria.getDeviceId() != null) {
+	    query.append(MongoDeviceAssignment.PROP_DEVICE_ID, criteria.getDeviceId());
+	}
+	if (criteria.getAssetId() != null) {
+	    query.append(MongoDeviceAssignment.PROP_ASSET_ID, criteria.getAssetId());
+	}
+	if ((criteria.getAreaIds() != null) && (criteria.getAreaIds().size() > 0)) {
+	    query.append(MongoDeviceAssignment.PROP_AREA_ID, createAreasInClause(criteria.getAreaIds()));
+	}
+	Document sort = new Document(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);
+	return MongoPersistence.search(IDeviceAssignment.class, assignments, query, sort, criteria, LOOKUP);
+    }
+
+    /*
      * @see
      * com.sitewhere.spi.device.IDeviceManagement#endDeviceAssignment(java.util.
      * UUID)
@@ -1014,59 +1038,6 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 
 	DeviceAssignment assignment = MongoDeviceAssignment.fromDocument(match);
 	return assignment;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentHistory(java.
-     * util.UUID, com.sitewhere.spi.search.ISearchCriteria)
-     */
-    @Override
-    public SearchResults<IDeviceAssignment> getDeviceAssignmentHistory(UUID deviceId, ISearchCriteria criteria)
-	    throws SiteWhereException {
-	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
-	Document query = new Document(MongoDeviceAssignment.PROP_DEVICE_ID, deviceId);
-	Document sort = new Document(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);
-	return MongoPersistence.search(IDeviceAssignment.class, assignments, query, sort, criteria, LOOKUP);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAreas(java.
-     * util.List, com.sitewhere.spi.search.device.IAssignmentSearchCriteria)
-     */
-    @Override
-    public SearchResults<IDeviceAssignment> getDeviceAssignmentsForAreas(List<UUID> areaIds,
-	    IAssignmentSearchCriteria criteria) throws SiteWhereException {
-	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
-	Document query = new Document(MongoDeviceAssignment.PROP_AREA_ID, createAreasInClause(areaIds));
-	if (criteria.getStatus() != null) {
-	    query.append(MongoDeviceAssignment.PROP_STATUS, criteria.getStatus().name());
-	}
-	Document sort = new Document(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);
-	return MongoPersistence.search(IDeviceAssignment.class, assignments, query, sort, criteria, LOOKUP);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAsset(java.
-     * util.UUID,
-     * com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria)
-     */
-    @Override
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(UUID assetId,
-	    IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException {
-	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
-	Document query = new Document(MongoDeviceAssignment.PROP_ASSET_ID, assetId);
-	if (criteria.getAreaToken() != null) {
-	    IArea area = getAreaByToken(criteria.getAreaToken());
-	    query.append(MongoDeviceAssignment.PROP_AREA_ID, area.getId());
-	}
-	if (criteria.getStatus() != null) {
-	    query.append(MongoDeviceAssignment.PROP_STATUS, criteria.getStatus().name());
-	}
-	Document sort = new Document(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);
-	return MongoPersistence.search(IDeviceAssignment.class, assignments, query, sort, criteria, LOOKUP);
     }
 
     /**

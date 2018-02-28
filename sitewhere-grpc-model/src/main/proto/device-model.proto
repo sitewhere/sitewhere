@@ -283,25 +283,16 @@ message GDeviceAssignmentCreateRequest {
 // Criteria for searching device assignments.
 message GDeviceAssignmentSearchCriteria {
 	GDeviceAssignmentStatus status = 1;
-	GPaging paging = 2;
-}
-
-// Criteria for searching assets linked to assignent.
-message GAssetsForAssignmentSearchCriteria {
-	GAreaReference area = 1;
-	GDeviceAssignmentStatus status = 2;
-	GPaging paging = 3;
+	GUUID deviceId = 2;
+	repeated GUUID areaIds = 3;
+	GUUID assetId = 4;
+	GPaging paging = 5;
 }
 
 // Results for device assignment search.
 message GDeviceAssignmentSearchResults {
 	int64 count = 1;
 	repeated GDeviceAssignment assignments = 2;
-}
-
-// Criteria for device assignment history.
-message GDeviceAssignmentHistoryCriteria {
-	GPaging paging = 1;
 }
 
 // Device assignment.

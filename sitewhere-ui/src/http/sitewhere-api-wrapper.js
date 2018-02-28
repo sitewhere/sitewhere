@@ -110,6 +110,7 @@ import {
 import {
   createDeviceAssignment,
   getDeviceAssignment,
+  listDeviceAssignments,
   releaseAssignment,
   missingAssignment,
   deleteDeviceAssignment,
@@ -696,6 +697,15 @@ export function _createDeviceAssignment (store, payload) {
 export function _getDeviceAssignment (store, token) {
   let axios = createCoreApiCall(store)
   let api = getDeviceAssignment(axios, token)
+  return loaderWrapper(store, api)
+}
+
+/**
+ * List device assignments that match criteria.
+ */
+export function _listDeviceAssignments (store, options, paging) {
+  let axios = createCoreApiCall(store)
+  let api = listDeviceAssignments(axios, options, paging)
   return loaderWrapper(store, api)
 }
 

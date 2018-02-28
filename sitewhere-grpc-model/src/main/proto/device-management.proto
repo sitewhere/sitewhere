@@ -158,18 +158,12 @@ service DeviceManagement {
 	
 	// Update an existing device assignment.
 	rpc UpdateDeviceAssignment (GUpdateDeviceAssignmentRequest) returns (GUpdateDeviceAssignmentResponse) {}
+		
+	// List device assignments that match criteria.
+	rpc ListDeviceAssignments (GListDeviceAssignmentsRequest) returns (GListDeviceAssignmentsResponse) {}
 	
 	// End a device assignment.
 	rpc EndDeviceAssignment (GEndDeviceAssignmentRequest) returns (GEndDeviceAssignmentResponse) {}
-	
-	// Get device assignment history.
-	rpc GetDeviceAssignmentHistory (GGetDeviceAssignmentHistoryRequest) returns (GGetDeviceAssignmentHistoryResponse) {}
-	
-	// Get device assignments for one or more areas.
-	rpc GetDeviceAssignmentsForAreas (GGetDeviceAssignmentsForAreasRequest) returns (GGetDeviceAssignmentsForAreasResponse) {}
-	
-	// Get device assignments linked to an asset.
-	rpc GetDeviceAssignmentsForAsset (GGetDeviceAssignmentsForAssetRequest) returns (GGetDeviceAssignmentsForAssetResponse) {}
 
 	// ######################
 	// ### DEVICE STREAMS ###
@@ -600,6 +594,16 @@ message GUpdateDeviceAssignmentResponse {
 	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
 }
 	
+// Request for listing device assignments that match criteria.
+message GListDeviceAssignmentsRequest {
+	com.sitewhere.grpc.model.GDeviceAssignmentSearchCriteria criteria = 1;
+}
+	
+// Response for listing device assignments that match criteria.
+message GListDeviceAssignmentsResponse {
+	com.sitewhere.grpc.model.GDeviceAssignmentSearchResults results = 1;
+}
+	
 // Request for ending a device assignment.
 message GEndDeviceAssignmentRequest {
 	com.sitewhere.grpc.model.GUUID id = 1;
@@ -608,39 +612,6 @@ message GEndDeviceAssignmentRequest {
 // Response for ending a device assignment.
 message GEndDeviceAssignmentResponse {
 	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
-}
-	
-// Request for getting device assignment history.
-message GGetDeviceAssignmentHistoryRequest {
-	com.sitewhere.grpc.model.GUUID deviceId = 1;
-	com.sitewhere.grpc.model.GDeviceAssignmentHistoryCriteria criteria = 2;
-}
-	
-// Response for getting device assignment history.
-message GGetDeviceAssignmentHistoryResponse {
-	com.sitewhere.grpc.model.GDeviceAssignmentSearchResults results = 1;
-}
-	
-// Request for getting device assignments for one or more areas.
-message GGetDeviceAssignmentsForAreasRequest {
-	repeated com.sitewhere.grpc.model.GUUID areaIds = 1;
-	com.sitewhere.grpc.model.GDeviceAssignmentSearchCriteria criteria = 2;
-}
-	
-// Response for getting device assignments for one or more areas.
-message GGetDeviceAssignmentsForAreasResponse {
-	com.sitewhere.grpc.model.GDeviceAssignmentSearchResults results = 1;
-}
-	
-// Request for getting device assignments linked to an asset.
-message GGetDeviceAssignmentsForAssetRequest {
-	com.sitewhere.grpc.model.GUUID assetId = 1;
-	com.sitewhere.grpc.model.GAssetsForAssignmentSearchCriteria criteria = 3;
-}
-	
-// Response for getting device assignments linked to an asset.
-message GGetDeviceAssignmentsForAssetResponse {
-	com.sitewhere.grpc.model.GDeviceAssignmentSearchResults results = 1;
 }
 
 // ######################

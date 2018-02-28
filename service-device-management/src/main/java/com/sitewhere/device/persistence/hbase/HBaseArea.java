@@ -47,7 +47,7 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
-import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
+import com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria;
 
 /**
  * HBase specifics for dealing with SiteWhere areas.
@@ -211,7 +211,7 @@ public class HBaseArea {
      * @throws SiteWhereException
      */
     public static SearchResults<IDeviceAssignment> listDeviceAssignmentsForArea(IHBaseContext context, IArea IArea,
-	    IAssignmentSearchCriteria criteria) throws SiteWhereException {
+	    IDeviceAssignmentSearchCriteria criteria) throws SiteWhereException {
 	Table sites = null;
 	ResultScanner scanner = null;
 	try {

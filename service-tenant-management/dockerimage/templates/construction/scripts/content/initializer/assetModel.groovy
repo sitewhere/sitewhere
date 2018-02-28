@@ -5,7 +5,7 @@ def assetType;
 // ######################### //
 
 assetType = assetBuilder.newAssetType 'employee', 'SiteWhere Employee'
-assetType.asPerson() withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/people/derek.jpg'
+assetType.asPerson() withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/sitewhere-symbol.png'
 assetType.withDescription 'An employee of SiteWhere'
 assetBuilder.persist assetType
 

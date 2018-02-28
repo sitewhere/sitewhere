@@ -565,37 +565,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getDeviceAssignmentHistory(com.sitewhere.grpc.service.
-     * GGetDeviceAssignmentHistoryRequest, io.grpc.stub.StreamObserver)
+     * listDeviceAssignments(com.sitewhere.grpc.service.
+     * GListDeviceAssignmentsRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void getDeviceAssignmentHistory(GGetDeviceAssignmentHistoryRequest request,
-	    StreamObserver<GGetDeviceAssignmentHistoryResponse> responseObserver) {
-	getTenantImplementation().getDeviceAssignmentHistory(request, responseObserver);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getDeviceAssignmentsForAreas(com.sitewhere.grpc.service.
-     * GGetDeviceAssignmentsForAreasRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getDeviceAssignmentsForAreas(GGetDeviceAssignmentsForAreasRequest request,
-	    StreamObserver<GGetDeviceAssignmentsForAreasResponse> responseObserver) {
-	getTenantImplementation().getDeviceAssignmentsForAreas(request, responseObserver);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getDeviceAssignmentsForAsset(com.sitewhere.grpc.service.
-     * GGetDeviceAssignmentsForAssetRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getDeviceAssignmentsForAsset(GGetDeviceAssignmentsForAssetRequest request,
-	    StreamObserver<GGetDeviceAssignmentsForAssetResponse> responseObserver) {
-	getTenantImplementation().getDeviceAssignmentsForAsset(request, responseObserver);
+    public void listDeviceAssignments(GListDeviceAssignmentsRequest request,
+	    StreamObserver<GListDeviceAssignmentsResponse> responseObserver) {
+	getTenantImplementation().listDeviceAssignments(request, responseObserver);
     }
 
     /*

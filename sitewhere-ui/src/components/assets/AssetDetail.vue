@@ -14,7 +14,21 @@
         </v-tabs-bar>
         <v-tabs-items>
           <v-tabs-content key="assignments" id="assignments">
-            <v-card></v-card>
+            <v-layout row wrap v-if="assignments">
+              <v-flex xs12>
+                <assignment-list-panel :assignment="assignment"
+                  v-for="(assignment, index) in assignments"
+                  :key="assignment.token"
+                  @assignmentOpened="onOpenAssignment"
+                  class="ma-2">
+                </assignment-list-panel>
+              </v-flex>
+            </v-layout>
+            <pager :results="results" @pagingUpdated="updatePaging">
+              <no-results-panel slot="noresults"
+                text="No Assignments Found for Asset">
+              </no-results-panel>
+            </pager>
           </v-tabs-content>
         </v-tabs-items>
       </v-tabs>
@@ -23,11 +37,15 @@
 </template>
 
 <script>
+import Utils from '../common/Utils'
 import NavigationPage from '../common/NavigationPage'
 import Pager from '../common/Pager'
+import NoResultsPanel from '../common/NoResultsPanel'
 import AssetDetailHeader from './AssetDetailHeader'
+import AssignmentListPanel from '../assignments/AssignmentListPanel'
 import {
-  _getAsset
+  _getAsset,
+  _listDeviceAssignments
 } from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -35,13 +53,18 @@ export default {
   data: () => ({
     token: null,
     asset: null,
+    assignments: null,
+    paging: null,
+    results: null,
     active: null
   }),
 
   components: {
     NavigationPage,
     Pager,
-    AssetDetailHeader
+    NoResultsPanel,
+    AssetDetailHeader,
+    AssignmentListPanel
   },
 
   // Called on initial create.
@@ -56,6 +79,11 @@ export default {
   },
 
   methods: {
+    // Update paging values and run query.
+    updatePaging: function (paging) {
+      this.$data.paging = paging
+      this.refreshAssignments()
+    },
     // Display asset with the given token.
     display: function (token) {
       this.$data.token = token
@@ -70,6 +98,24 @@ export default {
       _getAsset(this.$store, token)
         .then(function (response) {
           component.onDataLoaded(response.data)
+        }).catch(function (e) {
+        })
+    },
+    // Refresh list of assignments for asset.
+    refreshAssignments: function () {
+      var component = this
+      var paging = this.$data.paging.query
+
+      // Query for assets with this asset type.
+      let options = {}
+      options.assetToken = this.$data.token
+      options.includeDevice = true
+      options.includeAsset = true
+
+      _listDeviceAssignments(this.$store, options, paging)
+        .then(function (response) {
+          component.results = response.data
+          component.$data.assignments = response.data.results
         }).catch(function (e) {
         })
     },
@@ -95,6 +141,12 @@ export default {
     // Called after asset is updated.
     onAssetUpdated: function () {
       this.refresh()
+    },
+
+    // Called to open detail page for assignment.
+    onOpenAssignment: function (assignment) {
+      Utils.routeTo(this, '/assignments/' +
+        encodeURIComponent(assignment.token))
     }
   }
 }

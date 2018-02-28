@@ -52,8 +52,7 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
-import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
-import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
+import com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
@@ -461,6 +460,16 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceAssignments(com.
+     * sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria)
+     */
+    @Override
+    public ISearchResults<IDeviceAssignment> listDeviceAssignments(IDeviceAssignmentSearchCriteria criteria)
+	    throws SiteWhereException {
+	return null;
+    }
+
+    /*
      * @see
      * com.sitewhere.spi.device.IDeviceManagement#endDeviceAssignment(java.util.
      * UUID)
@@ -469,36 +478,6 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
     public IDeviceAssignment endDeviceAssignment(UUID id) throws SiteWhereException {
 	IDeviceAssignment assn = getDeviceAssignment(id);
 	return HBaseDeviceAssignment.endDeviceAssignment(context, assn);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentHistory(java.
-     * util.UUID, com.sitewhere.spi.search.ISearchCriteria)
-     */
-    @Override
-    public SearchResults<IDeviceAssignment> getDeviceAssignmentHistory(UUID deviceId, ISearchCriteria criteria)
-	    throws SiteWhereException {
-	IDevice device = getDevice(deviceId);
-	return HBaseDevice.getDeviceAssignmentHistory(context, device, criteria);
-    }
-
-    @Override
-    public SearchResults<IDeviceAssignment> getDeviceAssignmentsForAreas(List<UUID> areaIds,
-	    IAssignmentSearchCriteria criteria) throws SiteWhereException {
-	return HBaseArea.listDeviceAssignmentsForArea(context, null, criteria);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAsset(java.
-     * util.UUID,
-     * com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria)
-     */
-    @Override
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(UUID assetId,
-	    IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException {
-	throw new SiteWhereException("Not implemented yet for HBase device managment.");
     }
 
     /*

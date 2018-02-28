@@ -18,6 +18,49 @@ export function getDeviceAssignment (axios, token) {
 }
 
 /**
+ * List assignments that match criteria.
+ */
+export function listDeviceAssignments (axios, options, paging) {
+  let query = ''
+  query += (options.includeDevice)
+    ? '?includeDevice=true' : '?includeDevice=false'
+  query += (options.includeArea) ? '&includeArea=true' : ''
+  query += (options.includeAsset) ? '&includeAsset=true' : ''
+  query += (options.deviceToken) ? '&deviceToken=' + options.deviceToken : ''
+  query += (options.areaToken) ? '&areaToken=' + options.areaToken : ''
+  query += (options.assetToken) ? '&assetToken=' + options.assetToken : ''
+  if (paging) {
+    query += '&' + paging
+  }
+  return restAuthGet(axios, 'assignments' + query)
+}
+
+/**
+ * Release an active assignment.
+ */
+export function releaseAssignment (axios, token) {
+  return restAuthPost(axios, '/assignments/' + token + '/end', null)
+}
+
+/**
+ * Mark an assignment as missing.
+ */
+export function missingAssignment (axios, token) {
+  return restAuthPost(axios, '/assignments/' + token + '/missing', null)
+}
+
+/**
+ * Delete a device assignment.
+ */
+export function deleteDeviceAssignment (axios, token, force) {
+  let query = ''
+  if (force) {
+    query += '?force=true'
+  }
+  return restAuthDelete(axios, 'assignments/' + token + query)
+}
+
+/**
  * Create measurements event for an assignment.
  */
 export function createMeasurementsForAssignment (axios, token, payload) {
@@ -106,29 +149,4 @@ export function listCommandResponsesForAssignment (axios, token, paging) {
     query += '?' + paging
   }
   return restAuthGet(axios, 'assignments/' + token + '/responses' + query)
-}
-
-/**
- * Release an active assignment.
- */
-export function releaseAssignment (axios, token) {
-  return restAuthPost(axios, '/assignments/' + token + '/end', null)
-}
-
-/**
- * Mark an assignment as missing.
- */
-export function missingAssignment (axios, token) {
-  return restAuthPost(axios, '/assignments/' + token + '/missing', null)
-}
-
-/**
- * Delete a device assignment.
- */
-export function deleteDeviceAssignment (axios, token, force) {
-  let query = ''
-  if (force) {
-    query += '?force=true'
-  }
-  return restAuthDelete(axios, 'assignments/' + token + query)
 }

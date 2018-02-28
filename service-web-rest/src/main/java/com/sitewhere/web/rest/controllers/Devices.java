@@ -38,8 +38,8 @@ import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
-import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
+import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -103,7 +103,7 @@ public class Devices extends RestControllerBase {
      * @param hardwareId
      * @return
      */
-    @RequestMapping(value = "/{deviceToken}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{deviceToken:.+}", method = RequestMethod.GET)
     @ApiOperation(value = "Get device by token")
     @Secured({ SiteWhereRoles.REST })
     public IDevice getDeviceByHardwareId(
@@ -132,7 +132,7 @@ public class Devices extends RestControllerBase {
      * @return the updated device
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{deviceToken}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{deviceToken:.+}", method = RequestMethod.PUT)
     @ApiOperation(value = "Update an existing device")
     @Secured({ SiteWhereRoles.REST })
     public IDevice updateDevice(@ApiParam(value = "Device token", required = true) @PathVariable String deviceToken,
@@ -151,7 +151,7 @@ public class Devices extends RestControllerBase {
      * @param deviceToken
      * @return
      */
-    @RequestMapping(value = "/{deviceToken}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{deviceToken:.+}", method = RequestMethod.DELETE)
     @ApiOperation(value = "Delete device based on unique hardware id")
     @Secured({ SiteWhereRoles.REST })
     public IDevice deleteDevice(@ApiParam(value = "Device token", required = true) @PathVariable String deviceToken,
@@ -206,10 +206,15 @@ public class Devices extends RestControllerBase {
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	IDevice existing = assertDeviceByToken(deviceToken);
-	ISearchResults<IDeviceAssignment> history = getDeviceManagement().getDeviceAssignmentHistory(existing.getId(),
-		criteria);
+	// Create search criteria.
+	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(page, pageSize);
+	IDevice device = getDeviceManagement().getDeviceByToken(deviceToken);
+	if (device == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceToken, ErrorLevel.ERROR);
+	}
+	criteria.setDeviceId(device.getId());
+
+	ISearchResults<IDeviceAssignment> history = getDeviceManagement().listDeviceAssignments(criteria);
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(includeAsset);
 	helper.setIncludeDevice(includeDevice);

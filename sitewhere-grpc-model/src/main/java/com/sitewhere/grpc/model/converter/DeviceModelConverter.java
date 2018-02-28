@@ -13,13 +13,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import com.sitewhere.grpc.model.CommonModel.GAreaReference;
 import com.sitewhere.grpc.model.CommonModel.GDeviceAssignmentStatus;
 import com.sitewhere.grpc.model.CommonModel.GDeviceContainerPolicy;
 import com.sitewhere.grpc.model.CommonModel.GDeviceGroupElementType;
 import com.sitewhere.grpc.model.CommonModel.GOptionalBoolean;
 import com.sitewhere.grpc.model.CommonModel.GOptionalString;
-import com.sitewhere.grpc.model.CommonModel.GPaging;
 import com.sitewhere.grpc.model.CommonModel.GParameterType;
 import com.sitewhere.grpc.model.DeviceModel.GArea;
 import com.sitewhere.grpc.model.DeviceModel.GAreaCreateRequest;
@@ -30,12 +28,10 @@ import com.sitewhere.grpc.model.DeviceModel.GAreaType;
 import com.sitewhere.grpc.model.DeviceModel.GAreaTypeCreateRequest;
 import com.sitewhere.grpc.model.DeviceModel.GAreaTypeSearchCriteria;
 import com.sitewhere.grpc.model.DeviceModel.GAreaTypeSearchResults;
-import com.sitewhere.grpc.model.DeviceModel.GAssetsForAssignmentSearchCriteria;
 import com.sitewhere.grpc.model.DeviceModel.GCommandParameter;
 import com.sitewhere.grpc.model.DeviceModel.GDevice;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceAssignment;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceAssignmentCreateRequest;
-import com.sitewhere.grpc.model.DeviceModel.GDeviceAssignmentHistoryCriteria;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceAssignmentSearchCriteria;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceAssignmentSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceCommand;
@@ -103,8 +99,7 @@ import com.sitewhere.rest.model.device.request.DeviceTypeCreateRequest;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.area.AreaSearchCriteria;
-import com.sitewhere.rest.model.search.device.AssignmentSearchCriteria;
-import com.sitewhere.rest.model.search.device.AssignmentsForAssetSearchCriteria;
+import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
@@ -142,8 +137,7 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
-import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
-import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
+import com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 
 /**
@@ -1389,43 +1383,6 @@ public class DeviceModelConverter {
     }
 
     /**
-     * Convert device assignment search criteria from API to GRPC.
-     * 
-     * @param grpc
-     * @return
-     * @throws SiteWhereException
-     */
-    public static GDeviceAssignmentSearchCriteria asApiDeviceAssignmentSearchCriteria(IAssignmentSearchCriteria grpc)
-	    throws SiteWhereException {
-	GDeviceAssignmentSearchCriteria.Builder gcriteria = GDeviceAssignmentSearchCriteria.newBuilder();
-	if (grpc.getStatus() != null) {
-	    gcriteria.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(grpc.getStatus()));
-	}
-	gcriteria.setPaging(CommonModelConverter.asGrpcPaging(grpc));
-	return gcriteria.build();
-    }
-
-    /**
-     * Convert device assignments for asset search criteria from API to GRPC.
-     * 
-     * @param api
-     * @return
-     * @throws SiteWhereException
-     */
-    public static GAssetsForAssignmentSearchCriteria asApiDeviceAssignmentSearchCriteria(
-	    IAssignmentsForAssetSearchCriteria api) throws SiteWhereException {
-	GAssetsForAssignmentSearchCriteria.Builder gcriteria = GAssetsForAssignmentSearchCriteria.newBuilder();
-	if (api.getAreaToken() != null) {
-	    gcriteria.setArea(GAreaReference.newBuilder().setToken(api.getAreaToken()).build());
-	}
-	if (api.getStatus() != null) {
-	    gcriteria.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(api.getStatus()));
-	}
-	gcriteria.setPaging(CommonModelConverter.asGrpcPaging(api));
-	return gcriteria.build();
-    }
-
-    /**
      * Convert device assignment status from GRPC to API.
      * 
      * @param grpc
@@ -1473,17 +1430,44 @@ public class DeviceModelConverter {
     }
 
     /**
-     * Convert device history search criteria from API to GRPC.
+     * Convert device assignment search criteria from GRPC to API.
      * 
-     * @param criteria
+     * @param grpc
      * @return
      * @throws SiteWhereException
      */
-    public static GDeviceAssignmentHistoryCriteria asGrpcDeviceAssignmentHistoryCriteria(ISearchCriteria criteria)
-	    throws SiteWhereException {
-	GDeviceAssignmentHistoryCriteria.Builder gcriteria = GDeviceAssignmentHistoryCriteria.newBuilder();
-	gcriteria.setPaging(CommonModelConverter.asGrpcPaging(criteria));
-	return gcriteria.build();
+    public static DeviceAssignmentSearchCriteria asApiDeviceAssignmentSearchCriteria(
+	    GDeviceAssignmentSearchCriteria grpc) throws SiteWhereException {
+	DeviceAssignmentSearchCriteria api = new DeviceAssignmentSearchCriteria(grpc.getPaging().getPageNumber(),
+		grpc.getPaging().getPageSize());
+	api.setStatus(DeviceModelConverter.asApiDeviceAssignmentStatus(grpc.getStatus()));
+	api.setDeviceId(grpc.hasDeviceId() ? CommonModelConverter.asApiUuid(grpc.getDeviceId()) : null);
+	api.setAssetId(grpc.hasAssetId() ? CommonModelConverter.asApiUuid(grpc.getAssetId()) : null);
+	api.setAreaIds(CommonModelConverter.asApiUuids(grpc.getAreaIdsList()));
+	return api;
+    }
+
+    /**
+     * Convert device assignment search criteria from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceAssignmentSearchCriteria asGrpcDeviceAssignmentSearchCriteria(
+	    IDeviceAssignmentSearchCriteria api) throws SiteWhereException {
+	GDeviceAssignmentSearchCriteria.Builder grpc = GDeviceAssignmentSearchCriteria.newBuilder();
+	grpc.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(api.getStatus()));
+	if (api.getDeviceId() != null) {
+	    grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
+	}
+	if (api.getAssetId() != null) {
+	    grpc.setAssetId(CommonModelConverter.asGrpcUuid(api.getAssetId()));
+	}
+	if (api.getAreaIds() != null) {
+	    grpc.addAllAreaIds(CommonModelConverter.asGrpcUuids(api.getAreaIds()));
+	}
+	return grpc.build();
     }
 
     /**
@@ -1607,72 +1591,6 @@ public class DeviceModelConverter {
 	    grpc.putAllMetadata(api.getMetadata());
 	}
 	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
-	return grpc.build();
-    }
-
-    /**
-     * Convert device assignment search criteria from GRPC to API.
-     * 
-     * @param grpc
-     * @return
-     * @throws SiteWhereException
-     */
-    public static AssignmentSearchCriteria asApiAssignmentSearchCriteria(GDeviceAssignmentSearchCriteria grpc)
-	    throws SiteWhereException {
-	int pageNumber = grpc.hasPaging() ? grpc.getPaging().getPageNumber() : 1;
-	int pageSize = grpc.hasPaging() ? grpc.getPaging().getPageSize() : 0;
-	AssignmentSearchCriteria api = new AssignmentSearchCriteria(pageNumber, pageSize);
-	api.setStatus(DeviceModelConverter.asApiDeviceAssignmentStatus(grpc.getStatus()));
-	return api;
-    }
-
-    /**
-     * Convert device assignment search criteria from API to GRPC.
-     * 
-     * @param api
-     * @return
-     * @throws SiteWhereException
-     */
-    public static GDeviceAssignmentSearchCriteria asGrpcAssignmentSearchCriteria(IAssignmentSearchCriteria api)
-	    throws SiteWhereException {
-	GDeviceAssignmentSearchCriteria.Builder grpc = GDeviceAssignmentSearchCriteria.newBuilder();
-	grpc.setPaging(GPaging.newBuilder().setPageNumber(api.getPageNumber()).setPageSize(api.getPageSize()).build());
-	grpc.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(api.getStatus()));
-	return grpc.build();
-    }
-
-    /**
-     * Convert assignments for asset search criteria from GRPC to API.
-     * 
-     * @param grpc
-     * @return
-     * @throws SiteWhereException
-     */
-    public static AssignmentsForAssetSearchCriteria asApiAssignmentsForAssetSearchCriteria(
-	    GAssetsForAssignmentSearchCriteria grpc) throws SiteWhereException {
-	int pageNumber = grpc.hasPaging() ? grpc.getPaging().getPageNumber() : 1;
-	int pageSize = grpc.hasPaging() ? grpc.getPaging().getPageSize() : 0;
-	AssignmentsForAssetSearchCriteria api = new AssignmentsForAssetSearchCriteria(pageNumber, pageSize);
-	api.setAreaToken(grpc.hasArea() ? grpc.getArea().getToken() : null);
-	api.setStatus(DeviceModelConverter.asApiDeviceAssignmentStatus(grpc.getStatus()));
-	return api;
-    }
-
-    /**
-     * Convert assignments for asset search criteria from API to GRPC.
-     * 
-     * @param api
-     * @return
-     * @throws SiteWhereException
-     */
-    public static GAssetsForAssignmentSearchCriteria asGrpcAssignmentsForAssetSearchCriteria(
-	    IAssignmentsForAssetSearchCriteria api) throws SiteWhereException {
-	GAssetsForAssignmentSearchCriteria.Builder grpc = GAssetsForAssignmentSearchCriteria.newBuilder();
-	grpc.setPaging(GPaging.newBuilder().setPageNumber(api.getPageNumber()).setPageSize(api.getPageSize()).build());
-	grpc.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(api.getStatus()));
-	if (api.getAreaToken() != null) {
-	    grpc.setArea(GAreaReference.newBuilder().setToken(api.getAreaToken()).build());
-	}
 	return grpc.build();
     }
 

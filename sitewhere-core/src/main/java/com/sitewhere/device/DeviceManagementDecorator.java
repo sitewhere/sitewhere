@@ -40,8 +40,7 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
-import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
-import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
+import com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 
 /**
@@ -364,16 +363,6 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator<IDevi
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceAssignment(java.util.
-     * UUID, boolean)
-     */
-    @Override
-    public IDeviceAssignment deleteDeviceAssignment(UUID id, boolean force) throws SiteWhereException {
-	return getDelegate().deleteDeviceAssignment(id, force);
-    }
-
-    /*
-     * @see
      * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignment(java.util.
      * UUID, com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest)
      */
@@ -381,6 +370,16 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator<IDevi
     public IDeviceAssignment updateDeviceAssignment(UUID id, IDeviceAssignmentCreateRequest request)
 	    throws SiteWhereException {
 	return getDelegate().updateDeviceAssignment(id, request);
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceAssignments(com.
+     * sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria)
+     */
+    @Override
+    public ISearchResults<IDeviceAssignment> listDeviceAssignments(IDeviceAssignmentSearchCriteria criteria)
+	    throws SiteWhereException {
+	return getDelegate().listDeviceAssignments(criteria);
     }
 
     /*
@@ -395,36 +394,12 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator<IDevi
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentHistory(java.
-     * util.UUID, com.sitewhere.spi.search.ISearchCriteria)
+     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceAssignment(java.util.
+     * UUID, boolean)
      */
     @Override
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentHistory(UUID id, ISearchCriteria criteria)
-	    throws SiteWhereException {
-	return getDelegate().getDeviceAssignmentHistory(id, criteria);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAreas(java.
-     * util.List, com.sitewhere.spi.search.device.IAssignmentSearchCriteria)
-     */
-    @Override
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAreas(List<UUID> areaIds,
-	    IAssignmentSearchCriteria criteria) throws SiteWhereException {
-	return getDelegate().getDeviceAssignmentsForAreas(areaIds, criteria);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAsset(java.
-     * util.UUID,
-     * com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria)
-     */
-    @Override
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(UUID assetId,
-	    IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException {
-	return getDelegate().getDeviceAssignmentsForAsset(assetId, criteria);
+    public IDeviceAssignment deleteDeviceAssignment(UUID id, boolean force) throws SiteWhereException {
+	return getDelegate().deleteDeviceAssignment(id, force);
     }
 
     /*

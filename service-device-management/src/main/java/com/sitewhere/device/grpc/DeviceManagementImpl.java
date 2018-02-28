@@ -1164,22 +1164,19 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getDeviceAssignmentHistory(com.sitewhere.grpc.service.
-     * GGetDeviceAssignmentHistoryRequest, io.grpc.stub.StreamObserver)
+     * listDeviceAssignments(com.sitewhere.grpc.service.
+     * GListDeviceAssignmentsRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void getDeviceAssignmentHistory(GGetDeviceAssignmentHistoryRequest request,
-	    StreamObserver<GGetDeviceAssignmentHistoryResponse> responseObserver) {
+    public void listDeviceAssignments(GListDeviceAssignmentsRequest request,
+	    StreamObserver<GListDeviceAssignmentsResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT_HISTORY);
-	    ISearchResults<IDeviceAssignment> apiResult = getDeviceManagement().getDeviceAssignmentHistory(
-		    CommonModelConverter.asApiUuid(request.getDeviceId()),
-		    CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
-	    GGetDeviceAssignmentHistoryResponse.Builder response = GGetDeviceAssignmentHistoryResponse.newBuilder();
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_DEVICE_ASSIGNMENTS);
+	    ISearchResults<IDeviceAssignment> apiResult = getDeviceManagement().listDeviceAssignments(
+		    DeviceModelConverter.asApiDeviceAssignmentSearchCriteria(request.getCriteria()));
+	    GListDeviceAssignmentsResponse.Builder response = GListDeviceAssignmentsResponse.newBuilder();
 	    GDeviceAssignmentSearchResults.Builder results = GDeviceAssignmentSearchResults.newBuilder();
 	    for (IDeviceAssignment api : apiResult.getResults()) {
 		results.addAssignments(DeviceModelConverter.asGrpcDeviceAssignment(api));
@@ -1189,67 +1186,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT_HISTORY, e,
-		    responseObserver);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getDeviceAssignmentsForAreas(com.sitewhere.grpc.service.
-     * GGetDeviceAssignmentsForAreasRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getDeviceAssignmentsForAreas(GGetDeviceAssignmentsForAreasRequest request,
-	    StreamObserver<GGetDeviceAssignmentsForAreasResponse> responseObserver) {
-	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_AREAS);
-	    ISearchResults<IDeviceAssignment> apiResult = getDeviceManagement().getDeviceAssignmentsForAreas(
-		    CommonModelConverter.asApiUuids(request.getAreaIdsList()),
-		    DeviceModelConverter.asApiAssignmentSearchCriteria(request.getCriteria()));
-	    GGetDeviceAssignmentsForAreasResponse.Builder response = GGetDeviceAssignmentsForAreasResponse.newBuilder();
-	    GDeviceAssignmentSearchResults.Builder results = GDeviceAssignmentSearchResults.newBuilder();
-	    for (IDeviceAssignment api : apiResult.getResults()) {
-		results.addAssignments(DeviceModelConverter.asGrpcDeviceAssignment(api));
-	    }
-	    results.setCount(apiResult.getNumResults());
-	    response.setResults(results.build());
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_AREAS, e,
-		    responseObserver);
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getDeviceAssignmentsForAsset(com.sitewhere.grpc.service.
-     * GGetDeviceAssignmentsForAssetRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getDeviceAssignmentsForAsset(GGetDeviceAssignmentsForAssetRequest request,
-	    StreamObserver<GGetDeviceAssignmentsForAssetResponse> responseObserver) {
-	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_ASSET);
-	    ISearchResults<IDeviceAssignment> apiResult = getDeviceManagement().getDeviceAssignmentsForAsset(
-		    CommonModelConverter.asApiUuid(request.getAssetId()),
-		    DeviceModelConverter.asApiAssignmentsForAssetSearchCriteria(request.getCriteria()));
-	    GGetDeviceAssignmentsForAssetResponse.Builder response = GGetDeviceAssignmentsForAssetResponse.newBuilder();
-	    GDeviceAssignmentSearchResults.Builder results = GDeviceAssignmentSearchResults.newBuilder();
-	    for (IDeviceAssignment api : apiResult.getResults()) {
-		results.addAssignments(DeviceModelConverter.asGrpcDeviceAssignment(api));
-	    }
-	    results.setCount(apiResult.getNumResults());
-	    response.setResults(results.build());
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_ASSET, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_ASSIGNMENTS, e,
 		    responseObserver);
 	}
     }

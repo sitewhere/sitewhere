@@ -38,6 +38,7 @@
 import Utils from '../common/Utils'
 import NavigationPage from '../common/NavigationPage'
 import Pager from '../common/Pager'
+import NoResultsPanel from '../common/NoResultsPanel'
 import AssetTypeDetailHeader from './AssetTypeDetailHeader'
 import AssetListEntry from '../assets/AssetListEntry'
 import {
@@ -59,6 +60,7 @@ export default {
   components: {
     NavigationPage,
     Pager,
+    NoResultsPanel,
     AssetTypeDetailHeader,
     AssetListEntry
   },

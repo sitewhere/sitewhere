@@ -15,9 +15,10 @@
             message="Assignment token copied to clipboard">
           </clipboard-copy-field>
         </header-field>
-        <header-field label="Assigned asset">
-          <span>{{ assignment.assetName }}</span>
-        </header-field>
+        <linked-header-field label="Assigned asset"
+          :text="assignment.assetName"
+          :url="'/assets/' + assignment.asset.token">
+        </linked-header-field>
         <linked-header-field label="Assigned device"
           :text="assignment.device.deviceType.assetTypeName"
           :url="'/devices/' + assignment.device.token">

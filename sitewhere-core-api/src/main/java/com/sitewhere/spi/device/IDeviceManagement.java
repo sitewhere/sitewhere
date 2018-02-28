@@ -32,8 +32,7 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
-import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
-import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
+import com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
@@ -340,17 +339,6 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     public IDeviceAssignment getCurrentDeviceAssignment(UUID deviceId) throws SiteWhereException;
 
     /**
-     * Delete a device assignment. Depending on 'force' flag the assignment will be
-     * marked for delete or actually be deleted.
-     * 
-     * @param id
-     * @param force
-     * @return
-     * @throws SiteWhereException
-     */
-    public IDeviceAssignment deleteDeviceAssignment(UUID id, boolean force) throws SiteWhereException;
-
-    /**
      * Update an existing device assignment.
      * 
      * @param id
@@ -359,6 +347,16 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
      * @throws SiteWhereException
      */
     public IDeviceAssignment updateDeviceAssignment(UUID id, IDeviceAssignmentCreateRequest request)
+	    throws SiteWhereException;
+
+    /**
+     * List device assignments that match the given criteria.
+     * 
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    public ISearchResults<IDeviceAssignment> listDeviceAssignments(IDeviceAssignmentSearchCriteria criteria)
 	    throws SiteWhereException;
 
     /**
@@ -371,37 +369,15 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     public IDeviceAssignment endDeviceAssignment(UUID id) throws SiteWhereException;
 
     /**
-     * Get the device assignment history for a given device.
+     * Delete a device assignment. Depending on 'force' flag the assignment will be
+     * marked for delete or actually be deleted.
      * 
-     * @param deviceId
-     * @param criteria
+     * @param id
+     * @param force
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentHistory(UUID deviceId, ISearchCriteria criteria)
-	    throws SiteWhereException;
-
-    /**
-     * Get a list of device assignments for one or more areas.
-     * 
-     * @param areaIds
-     * @param criteria
-     * @return
-     * @throws SiteWhereException
-     */
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAreas(List<UUID> areaIds,
-	    IAssignmentSearchCriteria criteria) throws SiteWhereException;
-
-    /**
-     * Get a list of device assignments associated with a given asset.
-     * 
-     * @param assetId
-     * @param criteria
-     * @return
-     * @throws SiteWhereException
-     */
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(UUID assetId,
-	    IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException;
+    public IDeviceAssignment deleteDeviceAssignment(UUID id, boolean force) throws SiteWhereException;
 
     /**
      * Create a new {@link IDeviceStream} associated with an assignment.

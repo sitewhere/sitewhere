@@ -71,7 +71,7 @@ public class AreaTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{areaTypeToken}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{areaTypeToken:.+}", method = RequestMethod.GET)
     @ApiOperation(value = "Get area type by token")
     @Secured({ SiteWhereRoles.REST })
     public IAreaType getAreaTypeByToken(
@@ -88,7 +88,7 @@ public class AreaTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{areaTypeToken}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{areaTypeToken:.+}", method = RequestMethod.PUT)
     @ApiOperation(value = "Update existing area type")
     @Secured({ SiteWhereRoles.REST })
     public IAreaType updateAreaType(
@@ -133,7 +133,7 @@ public class AreaTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{areaTypeToken}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{areaTypeToken:.+}", method = RequestMethod.DELETE)
     @ApiOperation(value = "Delete area type by token")
     @Secured({ SiteWhereRoles.REST })
     public IAreaType deleteAreaType(

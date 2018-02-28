@@ -1,6 +1,6 @@
 <template>
   <v-card :hover="!headerMode" class="white">
-    <v-card-text :style="styleForStatus" class="assn-root">
+    <v-card-text @click="onOpenAssignment" :style="styleForStatus" class="assn-root">
       <asset-mini-panel class="assn-asset" :assignment="assignment">
       </asset-mini-panel>
       <div class="assn-separator1"></div>
@@ -68,6 +68,10 @@ export default {
     // Fire event to have parent refresh content.
     refresh: function () {
       this.$emit('refresh')
+    },
+    // Called when assignment is clicked.
+    onOpenAssignment: function () {
+      this.$emit('assignmentOpened', this.assignment)
     },
     // Format date.
     formatDate: function (date) {

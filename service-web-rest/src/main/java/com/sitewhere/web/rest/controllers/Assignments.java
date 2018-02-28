@@ -55,11 +55,14 @@ import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
+import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.schedule.ScheduledJobHelper;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
+import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.charting.IChartSeries;
@@ -129,7 +132,7 @@ public class Assignments extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{token:.+}", method = RequestMethod.GET)
     @ApiOperation(value = "Get device assignment by token")
     @Secured({ SiteWhereRoles.REST })
     public DeviceAssignment getDeviceAssignment(
@@ -151,7 +154,7 @@ public class Assignments extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{token:.+}", method = RequestMethod.DELETE)
     @ApiOperation(value = "Delete an existing device assignment")
     @Secured({ SiteWhereRoles.REST })
     public DeviceAssignment deleteDeviceAssignment(
@@ -175,10 +178,10 @@ public class Assignments extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{token:.+}", method = RequestMethod.PUT)
     @ApiOperation(value = "Update an existing device assignment")
     @Secured({ SiteWhereRoles.REST })
-    public DeviceAssignment updateDeviceAssignmentMetadata(
+    public DeviceAssignment updateDeviceAssignment(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @RequestBody DeviceAssignmentCreateRequest request) throws SiteWhereException {
 	IDeviceAssignment existing = assertDeviceAssignment(token);
@@ -188,6 +191,72 @@ public class Assignments extends RestControllerBase {
 	helper.setIncludeDevice(true);
 	helper.setIncludeArea(true);
 	return helper.convert(result, getAssetManagement());
+    }
+
+    /**
+     * List assignments matching criteria.
+     * 
+     * @param deviceToken
+     * @param areaToken
+     * @param assetToken
+     * @param includeDevice
+     * @param includeArea
+     * @param includeAsset
+     * @param page
+     * @param pageSize
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(method = RequestMethod.GET)
+    @ApiOperation(value = "List assignments matching criteria")
+    @Secured({ SiteWhereRoles.REST })
+    public ISearchResults<IDeviceAssignment> listAssignments(
+	    @ApiParam(value = "Limit by device token", required = false) @RequestParam(required = false) String deviceToken,
+	    @ApiParam(value = "Limit by area token", required = false) @RequestParam(required = false) String areaToken,
+	    @ApiParam(value = "Limit by asset token", required = false) @RequestParam(required = false) String assetToken,
+	    @ApiParam(value = "Include device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
+	    @ApiParam(value = "Include area information", required = false) @RequestParam(defaultValue = "false") boolean includeArea,
+	    @ApiParam(value = "Include asset information", required = false) @RequestParam(defaultValue = "false") boolean includeAsset,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize)
+	    throws SiteWhereException {
+	// Build criteria.
+	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(page, pageSize);
+	if (deviceToken != null) {
+	    IDevice device = getDeviceManagement().getDeviceByToken(deviceToken);
+	    if (device == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidDeviceToken, ErrorLevel.ERROR);
+	    }
+	    criteria.setDeviceId(device.getId());
+	}
+
+	// If limiting by asset, look up asset.
+	if (assetToken != null) {
+	    IAsset asset = getAssetManagement().getAssetByToken(assetToken);
+	    if (asset == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidAssetToken, ErrorLevel.ERROR);
+	    }
+	    criteria.setAssetId(asset.getId());
+	}
+
+	// If limiting by area, look up area and subareas.
+	if (areaToken != null) {
+	    List<UUID> areaIds = Areas.resolveAreaIds(areaToken, true, getDeviceManagement());
+	    criteria.setAreaIds(areaIds);
+	}
+
+	// Perform search.
+	ISearchResults<IDeviceAssignment> matches = getDeviceManagement().listDeviceAssignments(criteria);
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
+	helper.setIncludeDevice(includeDevice);
+	helper.setIncludeArea(includeArea);
+	helper.setIncludeAsset(includeAsset);
+
+	List<IDeviceAssignment> results = new ArrayList<>();
+	for (IDeviceAssignment assn : matches.getResults()) {
+	    results.add(helper.convert(assn, getAssetManagement()));
+	}
+	return new SearchResults<IDeviceAssignment>(results, matches.getNumResults());
     }
 
     /**

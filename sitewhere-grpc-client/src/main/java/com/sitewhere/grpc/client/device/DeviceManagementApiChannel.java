@@ -49,8 +49,7 @@ import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
-import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
-import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
+import com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.tracing.ITracerProvider;
 
@@ -812,77 +811,24 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentHistory(java.
-     * util.UUID, com.sitewhere.spi.search.ISearchCriteria)
+     * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceAssignments(com.
+     * sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentHistory(UUID deviceId, ISearchCriteria criteria)
+    public ISearchResults<IDeviceAssignment> listDeviceAssignments(IDeviceAssignmentSearchCriteria criteria)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT_HISTORY);
-	    GGetDeviceAssignmentHistoryRequest.Builder grequest = GGetDeviceAssignmentHistoryRequest.newBuilder();
-	    grequest.setDeviceId(CommonModelConverter.asGrpcUuid(deviceId));
-	    grequest.setCriteria(DeviceModelConverter.asGrpcDeviceAssignmentHistoryCriteria(criteria));
-	    GGetDeviceAssignmentHistoryResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .getDeviceAssignmentHistory(grequest.build());
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_DEVICE_ASSIGNMENTS);
+	    GListDeviceAssignmentsRequest.Builder grequest = GListDeviceAssignmentsRequest.newBuilder();
+	    grequest.setCriteria(DeviceModelConverter.asGrpcDeviceAssignmentSearchCriteria(criteria));
+	    GListDeviceAssignmentsResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .listDeviceAssignments(grequest.build());
 	    ISearchResults<IDeviceAssignment> response = DeviceModelConverter
 		    .asApiDeviceAssignmentSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT_HISTORY, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_DEVICE_ASSIGNMENTS, response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT_HISTORY, t);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAreas(java.
-     * util.List, com.sitewhere.spi.search.device.IAssignmentSearchCriteria)
-     */
-    @Override
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAreas(List<UUID> areaIds,
-	    IAssignmentSearchCriteria criteria) throws SiteWhereException {
-	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_AREAS);
-	    GGetDeviceAssignmentsForAreasRequest.Builder grequest = GGetDeviceAssignmentsForAreasRequest.newBuilder();
-	    grequest.addAllAreaIds(CommonModelConverter.asGrpcUuids(areaIds));
-	    grequest.setCriteria(DeviceModelConverter.asApiDeviceAssignmentSearchCriteria(criteria));
-	    GGetDeviceAssignmentsForAreasResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .getDeviceAssignmentsForAreas(grequest.build());
-	    ISearchResults<IDeviceAssignment> results = DeviceModelConverter
-		    .asApiDeviceAssignmentSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_AREAS, results);
-	    return results;
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_AREAS,
-		    t);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAsset(java.
-     * util.UUID,
-     * com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria)
-     */
-    @Override
-    public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(UUID assetId,
-	    IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException {
-	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_ASSET);
-	    GGetDeviceAssignmentsForAssetRequest.Builder grequest = GGetDeviceAssignmentsForAssetRequest.newBuilder();
-	    grequest.setAssetId(CommonModelConverter.asGrpcUuid(assetId));
-	    grequest.setCriteria(DeviceModelConverter.asApiDeviceAssignmentSearchCriteria(criteria));
-	    GGetDeviceAssignmentsForAssetResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .getDeviceAssignmentsForAsset(grequest.build());
-	    ISearchResults<IDeviceAssignment> results = DeviceModelConverter
-		    .asApiDeviceAssignmentSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_ASSET, results);
-	    return results;
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENTS_FOR_ASSET,
-		    t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_ASSIGNMENTS, t);
 	}
     }
 

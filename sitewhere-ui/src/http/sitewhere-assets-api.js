@@ -15,7 +15,7 @@ export function createAsset (axios, payload) {
  * Get an asset by token.
  */
 export function getAsset (axios, token) {
-  return restAuthGet(axios, 'assets/' + token)
+  return restAuthGet(axios, 'assets/' + encodeURIComponent(token))
 }
 
 /**

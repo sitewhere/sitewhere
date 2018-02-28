@@ -77,7 +77,7 @@ public class Assets extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{assetToken}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{assetToken:.+}", method = RequestMethod.GET)
     @ApiOperation(value = "Get asset by token")
     @Secured({ SiteWhereRoles.REST })
     public IAsset getAssetByToken(@ApiParam(value = "Asset token", required = true) @PathVariable String assetToken)
@@ -96,7 +96,7 @@ public class Assets extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{assetToken}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{assetToken:.+}", method = RequestMethod.PUT)
     @ResponseBody
     @ApiOperation(value = "Update an existing hardware asset in category")
     @Secured({ SiteWhereRoles.REST })
@@ -156,7 +156,7 @@ public class Assets extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{assetToken}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{assetToken:.+}", method = RequestMethod.DELETE)
     @ApiOperation(value = "Delete asset by token")
     @Secured({ SiteWhereRoles.REST })
     public IAsset deleteAsset(@ApiParam(value = "Asset token", required = true) @PathVariable String assetToken,

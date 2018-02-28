@@ -23,7 +23,7 @@ import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.marshaling.MarshaledArea;
 import com.sitewhere.rest.model.search.SearchCriteria;
-import com.sitewhere.rest.model.search.device.AssignmentSearchCriteria;
+import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.IZone;
@@ -107,12 +107,12 @@ public class AreaMarshalHelper {
 	    }
 	}
 	if (isIncludeAssignments()) {
-	    AssignmentSearchCriteria criteria = new AssignmentSearchCriteria(1, 0);
-	    criteria.setStatus(DeviceAssignmentStatus.Active);
 	    List<UUID> areaIds = new ArrayList<>();
 	    areaIds.add(area.getId());
-	    ISearchResults<IDeviceAssignment> matches = getDeviceManagement().getDeviceAssignmentsForAreas(areaIds,
-		    criteria);
+	    DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(1, 0);
+	    criteria.setStatus(DeviceAssignmentStatus.Active);
+	    criteria.setAreaIds(areaIds);
+	    ISearchResults<IDeviceAssignment> matches = getDeviceManagement().listDeviceAssignments(criteria);
 	    List<DeviceAssignment> assignments = new ArrayList<DeviceAssignment>();
 	    for (IDeviceAssignment match : matches.getResults()) {
 		assignments.add(assignmentHelper.convert(match, getAssetManagement()));
