@@ -4,8 +4,7 @@
       <v-container fluid grid-list-md>
         <v-layout row wrap>
            <v-flex xs6 v-for="(asset, index) in assets" :key="asset.token">
-            <asset-list-entry :asset="asset"
-              @assetOpened="onOpenAsset" @assetDeleted="refresh">
+            <asset-list-entry :asset="asset" @assetOpened="onOpenAsset">
             </asset-list-entry>
           </v-flex>
         </v-layout>
@@ -73,10 +72,10 @@ export default {
     },
 
     // Called on open.
-    onOpenAsset: function (token) {
+    onOpenAsset: function (asset) {
       var tenant = this.$store.getters.selectedTenant
       if (tenant) {
-        this.$router.push('/tenants/' + tenant.token + '/assets/' + token)
+        this.$router.push('/tenants/' + tenant.token + '/assets/' + asset.token)
       }
     },
 

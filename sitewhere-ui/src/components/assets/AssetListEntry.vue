@@ -45,7 +45,7 @@ export default {
   methods: {
     // Handle asset clicked.
     onAssetClicked: function () {
-      this.$emit('openAsset', this.asset)
+      this.$emit('assetOpened', this.asset)
     }
   }
 }

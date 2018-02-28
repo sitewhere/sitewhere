@@ -86,9 +86,9 @@ export default {
       }
     },
     selectedToken: function (value) {
-      let asset = Lodash.find(this.assetTypes, { 'token': value })
-      if (asset) {
-        this.onAssetTypeChosen(asset, false)
+      let assetType = Lodash.find(this.assetTypes, { 'token': value })
+      if (assetType) {
+        this.onAssetTypeChosen(assetType, false)
       } else {
         this.onAssetTypeRemoved(false)
       }
@@ -106,7 +106,7 @@ export default {
 
     // Allow another asset type to be chosen.
     onAssetTypeRemoved: function (emit) {
-      this.$data.asset = null
+      this.$data.assetType = null
       if (emit) {
         this.$emit('assetTypeUpdated', null)
       }

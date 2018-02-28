@@ -34,6 +34,7 @@ import DeviceGroupDetail from '@/components/groups/DeviceGroupDetail'
 import AssetTypesList from '@/components/assettypes/AssetTypesList'
 import AssetTypeDetail from '@/components/assettypes/AssetTypeDetail'
 import AssetsList from '@/components/assets/AssetsList'
+import AssetDetail from '@/components/assets/AssetDetail'
 import BatchOperationsList from '@/components/batch/BatchOperationsList'
 import BatchOperationDetail from '@/components/batch/BatchOperationDetail'
 import SchedulesList from '@/components/schedules/SchedulesList'
@@ -161,6 +162,9 @@ export default new Router({
         }, {
           path: 'assets',
           component: AssetsList
+        }, {
+          path: 'assets/:token',
+          component: AssetDetail
         }, {
           path: 'batch',
           component: BatchOperationsList

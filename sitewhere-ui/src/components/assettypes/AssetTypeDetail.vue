@@ -17,7 +17,7 @@
             <v-container fluid grid-list-md v-if="assets">
               <v-layout row wrap>
                 <v-flex xs6 v-for="(asset, index) in assets" :key="asset.token">
-                  <asset-list-entry :asset="asset" @openAsset="onOpenAsset">
+                  <asset-list-entry :asset="asset" @assetOpened="onOpenAsset">
                   </asset-list-entry>
                </v-flex>
               </v-layout>
@@ -35,6 +35,7 @@
 </template>
 
 <script>
+import Utils from '../common/Utils'
 import NavigationPage from '../common/NavigationPage'
 import Pager from '../common/Pager'
 import AssetTypeDetailHeader from './AssetTypeDetailHeader'
@@ -79,12 +80,12 @@ export default {
       this.$data.paging = paging
       this.refreshAssets()
     },
-    // Display area with the given token.
+    // Display asset type with the given token.
     display: function (token) {
       this.$data.token = token
       this.refresh()
     },
-    // Called to refresh area data.
+    // Called to refresh asset type data.
     refresh: function () {
       var token = this.$data.token
       var component = this
@@ -136,8 +137,8 @@ export default {
       this.refresh()
     },
     // Open clicked asset.
-    onOpenAsset: function () {
-
+    onOpenAsset: function (asset) {
+      Utils.routeTo(this, '/assets/' + asset.token)
     }
   }
 }

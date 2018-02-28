@@ -82,7 +82,7 @@ export default {
   methods: {
     // Called when asset type is updated.
     onAssetTypeUpdated: function (assetType) {
-      this.$data.assetTypeToken = assetType.token
+      this.$data.assetTypeToken = assetType ? assetType.token : null
     },
     // Generate payload from UI.
     generatePayload: function () {
@@ -107,7 +107,7 @@ export default {
       if (payload) {
         this.$data.assetName = payload.name
         this.$data.assetImageUrl = payload.imageUrl
-        this.$data.assetTypeToken = payload.assetTypeToken
+        this.$data.assetTypeToken = payload.assetType.token
         this.$data.metadata = Utils.metadataToArray(payload.metadata)
       }
     },
