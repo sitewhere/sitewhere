@@ -11,6 +11,8 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.asset.grpc.AssetManagementImpl;
 import com.sitewhere.asset.initializer.GroovyAssetModelInitializer;
@@ -88,7 +90,7 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
 	IAssetManagement implementation = (IAssetManagement) getModuleContext()
 		.getBean(AssetManagementBeans.BEAN_ASSET_MANAGEMENT);
 
-	this.assetManagement = new CacheAwareAssetManagement(implementation);
+	this.assetManagement = new CacheAwareAssetManagement(implementation, getMicroservice());
 	this.assetManagementImpl = new AssetManagementImpl(getAssetManagement());
     }
 
@@ -127,12 +129,20 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
 	    getTenantScriptSynchronizer().add(script);
 	}
 
-	GroovyConfiguration groovy = new GroovyConfiguration(getTenantScriptSynchronizer());
-	groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize asset model."),
-		getMicroservice()));
-	for (String script : scripts) {
-	    GroovyAssetModelInitializer initializer = new GroovyAssetModelInitializer(groovy, script);
-	    initializer.initialize(getAssetManagement());
+	// Execute remote calls as superuser.
+	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
+	try {
+	    SecurityContextHolder.getContext()
+		    .setAuthentication(getMicroservice().getSystemUser().getAuthenticationForTenant(getTenant()));
+	    GroovyConfiguration groovy = new GroovyConfiguration(getTenantScriptSynchronizer());
+	    groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize asset model."),
+		    getMicroservice()));
+	    for (String script : scripts) {
+		GroovyAssetModelInitializer initializer = new GroovyAssetModelInitializer(groovy, script);
+		initializer.initialize(getAssetManagement());
+	    }
+	} finally {
+	    SecurityContextHolder.getContext().setAuthentication(previous);
 	}
     }
 

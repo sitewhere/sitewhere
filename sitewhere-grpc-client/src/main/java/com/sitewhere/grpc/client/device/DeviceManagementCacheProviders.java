@@ -27,28 +27,28 @@ import com.sitewhere.spi.microservice.IMicroservice;
 public class DeviceManagementCacheProviders {
 
     /** Cache id for area cache */
-    public static final String ID_AREA_CACHE = "area";
+    public static final String ID_AREA_CACHE = "area_by_token";
 
     /** Cache id for area by id cache */
-    public static final String ID_AREA_ID_CACHE = "arid";
+    public static final String ID_AREA_ID_CACHE = "area_by_id";
 
     /** Cache id for device type cache */
-    public static final String ID_DEVICE_TYPE_CACHE = "dtyp";
+    public static final String ID_DEVICE_TYPE_CACHE = "device_type_by_token";
 
     /** Cache id for device type by id cache */
-    public static final String ID_DEVICE_TYPE_ID_CACHE = "dtid";
+    public static final String ID_DEVICE_TYPE_ID_CACHE = "device_type_by_id";
 
     /** Cache id for device cache */
-    public static final String ID_DEVICE_CACHE = "devc";
+    public static final String ID_DEVICE_CACHE = "device_by_token";
 
     /** Cache id for device by id cache */
-    public static final String ID_DEVICE_ID_CACHE = "dvid";
+    public static final String ID_DEVICE_ID_CACHE = "device_by_id";
 
     /** Cache id for device assignment cache */
-    public static final String ID_ASSIGNMENT_CACHE = "assn";
+    public static final String ID_ASSIGNMENT_CACHE = "assignment_by_token";
 
     /** Cache id for device assignment by id cache */
-    public static final String ID_ASSIGNMENT_ID_CACHE = "anid";
+    public static final String ID_ASSIGNMENT_ID_CACHE = "assignment_by_id";
 
     /**
      * Cache for areas.

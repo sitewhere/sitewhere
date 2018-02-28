@@ -308,6 +308,21 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 
     /*
      * @see
+     * com.sitewhere.device.DeviceManagementDecorator#endDeviceAssignment(java.util.
+     * UUID)
+     */
+    @Override
+    public IDeviceAssignment endDeviceAssignment(UUID id) throws SiteWhereException {
+	ITenant tenant = UserContextManager.getCurrentTenant(true);
+	IDeviceAssignment result = super.endDeviceAssignment(id);
+	getDeviceAssignmentCache().removeCacheEntry(tenant, result.getToken());
+	getDeviceAssignmentByIdCache().removeCacheEntry(tenant, result.getId());
+	CacheUtils.logCacheRemoved(result.getToken());
+	return result;
+    }
+
+    /*
+     * @see
      * com.sitewhere.device.DeviceManagementDecorator#createDeviceType(com.sitewhere
      * .spi.device.request.IDeviceTypeCreateRequest)
      */
