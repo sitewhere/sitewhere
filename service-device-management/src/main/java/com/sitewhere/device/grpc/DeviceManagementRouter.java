@@ -541,25 +541,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * updateDeviceAssignmentMetadata(com.sitewhere.grpc.service.
-     * GUpdateDeviceAssignmentMetadataRequest, io.grpc.stub.StreamObserver)
+     * updateDeviceAssignment(com.sitewhere.grpc.service.
+     * GUpdateDeviceAssignmentRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void updateDeviceAssignmentMetadata(GUpdateDeviceAssignmentMetadataRequest request,
-	    StreamObserver<GUpdateDeviceAssignmentMetadataResponse> responseObserver) {
-	getTenantImplementation().updateDeviceAssignmentMetadata(request, responseObserver);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * updateDeviceAssignmentStatus(com.sitewhere.grpc.service.
-     * GUpdateDeviceAssignmentStatusRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void updateDeviceAssignmentStatus(GUpdateDeviceAssignmentStatusRequest request,
-	    StreamObserver<GUpdateDeviceAssignmentStatusResponse> responseObserver) {
-	getTenantImplementation().updateDeviceAssignmentStatus(request, responseObserver);
+    public void updateDeviceAssignment(GUpdateDeviceAssignmentRequest request,
+	    StreamObserver<GUpdateDeviceAssignmentResponse> responseObserver) {
+	getTenantImplementation().updateDeviceAssignment(request, responseObserver);
     }
 
     /*

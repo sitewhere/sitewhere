@@ -7,7 +7,6 @@
  */
 package com.sitewhere.device;
 
-import java.util.Map;
 import java.util.UUID;
 
 import com.sitewhere.rest.model.device.event.request.DeviceStateChangeCreateRequest;
@@ -52,13 +51,13 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
 
     /*
      * @see
-     * com.sitewhere.device.DeviceManagementDecorator#updateDeviceAssignmentMetadata
-     * (java.util.UUID, java.util.Map)
+     * com.sitewhere.device.DeviceManagementDecorator#updateDeviceAssignment(java.
+     * util.UUID, com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest)
      */
     @Override
-    public IDeviceAssignment updateDeviceAssignmentMetadata(UUID id, Map<String, String> metadata)
+    public IDeviceAssignment updateDeviceAssignment(UUID id, IDeviceAssignmentCreateRequest request)
 	    throws SiteWhereException {
-	IDeviceAssignment updated = super.updateDeviceAssignmentMetadata(id, metadata);
+	IDeviceAssignment updated = super.updateDeviceAssignment(id, request);
 	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest(StateChangeCategory.Assignment,
 		StateChangeType.Assignment_Updated, null, null);
 	getDeviceEventManangement().addDeviceStateChange(updated, state);

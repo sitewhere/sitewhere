@@ -13,6 +13,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 
 /**
@@ -37,6 +38,9 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
 
     /** Asset token */
     private String assetToken;
+
+    /** Status */
+    private DeviceAssignmentStatus status;
 
     /** Metadata values */
     private Map<String, String> metadata;
@@ -95,6 +99,19 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
 
     public void setAssetToken(String assetToken) {
 	this.assetToken = assetToken;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#getStatus()
+     */
+    @Override
+    public DeviceAssignmentStatus getStatus() {
+	return status;
+    }
+
+    public void setStatus(DeviceAssignmentStatus status) {
+	this.status = status;
     }
 
     /*

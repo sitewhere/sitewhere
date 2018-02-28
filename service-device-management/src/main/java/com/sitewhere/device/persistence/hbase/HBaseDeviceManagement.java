@@ -8,7 +8,6 @@
 package com.sitewhere.device.persistence.hbase;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.logging.Log;
@@ -32,7 +31,6 @@ import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.area.request.IAreaCreateRequest;
 import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
-import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
@@ -452,26 +450,14 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignmentMetadata(
-     * java.util.UUID, java.util.Map)
+     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignment(java.util.
+     * UUID, com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest)
      */
     @Override
-    public IDeviceAssignment updateDeviceAssignmentMetadata(UUID id, Map<String, String> metadata)
+    public IDeviceAssignment updateDeviceAssignment(UUID id, IDeviceAssignmentCreateRequest request)
 	    throws SiteWhereException {
 	IDeviceAssignment assn = getDeviceAssignment(id);
-	return HBaseDeviceAssignment.updateDeviceAssignmentMetadata(context, assn, metadata);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignmentStatus(java.
-     * util.UUID, com.sitewhere.spi.device.DeviceAssignmentStatus)
-     */
-    @Override
-    public IDeviceAssignment updateDeviceAssignmentStatus(UUID id, DeviceAssignmentStatus status)
-	    throws SiteWhereException {
-	IDeviceAssignment assn = getDeviceAssignment(id);
-	return HBaseDeviceAssignment.updateDeviceAssignmentStatus(context, assn, status);
+	return HBaseDeviceAssignment.updateDeviceAssignmentMetadata(context, assn, null);
     }
 
     /*

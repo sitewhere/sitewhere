@@ -39,7 +39,6 @@ import com.sitewhere.core.DataUtils;
 import com.sitewhere.device.charting.ChartBuilder;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
-import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
@@ -123,9 +122,10 @@ public class Assignments extends RestControllerBase {
     }
 
     /**
-     * Get an assignment by its unique token.
+     * Get device assignment by token.
      * 
      * @param token
+     * @param servletRequest
      * @return
      * @throws SiteWhereException
      */
@@ -156,8 +156,8 @@ public class Assignments extends RestControllerBase {
     @Secured({ SiteWhereRoles.REST })
     public DeviceAssignment deleteDeviceAssignment(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
+	    throws SiteWhereException {
 	IDeviceAssignment existing = assertDeviceAssignment(token);
 	IDeviceAssignment assignment = getDeviceManagement().deleteDeviceAssignment(existing.getId(), force);
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
@@ -168,20 +168,21 @@ public class Assignments extends RestControllerBase {
     }
 
     /**
-     * Update metadata associated with an assignment.
+     * Update an existing device assignment.
      * 
+     * @param token
      * @param request
      * @return
+     * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}/metadata", method = RequestMethod.PUT)
-    @ApiOperation(value = "Update device assignment metadata")
+    @RequestMapping(value = "/{token}", method = RequestMethod.PUT)
+    @ApiOperation(value = "Update an existing device assignment")
     @Secured({ SiteWhereRoles.REST })
     public DeviceAssignment updateDeviceAssignmentMetadata(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    @RequestBody MetadataProvider metadata, HttpServletRequest servletRequest) throws SiteWhereException {
+	    @RequestBody DeviceAssignmentCreateRequest request) throws SiteWhereException {
 	IDeviceAssignment existing = assertDeviceAssignment(token);
-	IDeviceAssignment result = getDeviceManagement().updateDeviceAssignmentMetadata(existing.getId(),
-		metadata.getMetadata());
+	IDeviceAssignment result = getDeviceManagement().updateDeviceAssignment(existing.getId(), request);
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
@@ -209,7 +210,7 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
-	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
+	    HttpServletResponse response) throws SiteWhereException {
 	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
 	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
@@ -237,31 +238,6 @@ public class Assignments extends RestControllerBase {
 	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
 	return getDeviceEventManagement().listDeviceMeasurements(assertDeviceAssignment(token), criteria);
-    }
-
-    /**
-     * Parse a date argument from a string and send a "bad request" code if date can
-     * not be parsed.
-     * 
-     * @param dateString
-     * @param response
-     * @return
-     */
-    protected static Date parseDateOrSendBadResponse(String dateString, HttpServletResponse response) {
-	try {
-	    if (StringUtils.isBlank(dateString)) {
-		return null;
-	    }
-	    ZonedDateTime zdt = DataUtils.parseDateInMutipleFormats(dateString);
-	    return Date.from(zdt.toInstant());
-	} catch (DateTimeParseException e) {
-	    try {
-		response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-	    } catch (IOException e1) {
-		LOGGER.error(e);
-	    }
-	}
-	return null;
     }
 
     /**
@@ -332,37 +308,6 @@ public class Assignments extends RestControllerBase {
 	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
 	return getDeviceEventManagement().listDeviceLocations(assertDeviceAssignment(token), criteria);
-    }
-
-    /**
-     * Push latest location value as current location state for assignment.
-     * 
-     * @param token
-     * @param servletRequest
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/{token}/locations/latest/push", method = RequestMethod.PUT)
-    @ApiOperation(value = "Push most recent location to current state")
-    @Secured({ SiteWhereRoles.REST })
-    public void pushLatestLocationToState(
-	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
-	// IDeviceAssignment assignment = getDeviceAssignment(token,
-	// servletRequest);
-	// DeviceAssignmentState state = (DeviceAssignmentState)
-	// assignment.getState();
-	// ISearchResults<IDeviceLocation> locations = listLocations(token, 1,
-	// 1, null, null, servletRequest, response);
-	// if (locations.getNumResults() > 0) {
-	// DeviceLocation location = (DeviceLocation)
-	// locations.getResults().get(0);
-	// if (state == null) {
-	// state = new DeviceAssignmentState();
-	// }
-	// state.setLastLocation(location);
-	// SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateDeviceAssignmentState(token,
-	// state);
-	// }
     }
 
     /**
@@ -829,8 +774,12 @@ public class Assignments extends RestControllerBase {
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceManagement management = getDeviceManagement();
 	IDeviceAssignment existing = assertDeviceAssignment(token);
-	IDeviceAssignment updated = management.updateDeviceAssignmentStatus(existing.getId(),
-		DeviceAssignmentStatus.Missing);
+
+	// Update status field.
+	DeviceAssignmentCreateRequest request = new DeviceAssignmentCreateRequest();
+	request.setStatus(DeviceAssignmentStatus.Missing);
+
+	IDeviceAssignment updated = management.updateDeviceAssignment(existing.getId(), request);
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
@@ -920,6 +869,31 @@ public class Assignments extends RestControllerBase {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidStreamId, ErrorLevel.ERROR);
 	}
 	return stream;
+    }
+
+    /**
+     * Parse a date argument from a string and send a "bad request" code if date can
+     * not be parsed.
+     * 
+     * @param dateString
+     * @param response
+     * @return
+     */
+    protected static Date parseDateOrSendBadResponse(String dateString, HttpServletResponse response) {
+	try {
+	    if (StringUtils.isBlank(dateString)) {
+		return null;
+	    }
+	    ZonedDateTime zdt = DataUtils.parseDateInMutipleFormats(dateString);
+	    return Date.from(zdt.toInstant());
+	} catch (DateTimeParseException e) {
+	    try {
+		response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+	    } catch (IOException e1) {
+		LOGGER.error(e);
+	    }
+	}
+	return null;
     }
 
     private IDeviceManagement getDeviceManagement() {

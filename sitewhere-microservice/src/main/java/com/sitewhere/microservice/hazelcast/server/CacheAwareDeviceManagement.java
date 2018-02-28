@@ -7,7 +7,6 @@
  */
 package com.sitewhere.microservice.hazelcast.server;
 
-import java.util.Map;
 import java.util.UUID;
 
 import com.sitewhere.device.DeviceManagementDecorator;
@@ -18,7 +17,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.request.IAreaCreateRequest;
 import com.sitewhere.spi.cache.ICacheProvider;
-import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -279,30 +277,14 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
 
     /*
      * @see
-     * com.sitewhere.device.DeviceManagementDecorator#updateDeviceAssignmentMetadata
-     * (java.util.UUID, java.util.Map)
+     * com.sitewhere.device.DeviceManagementDecorator#updateDeviceAssignment(java.
+     * util.UUID, com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest)
      */
     @Override
-    public IDeviceAssignment updateDeviceAssignmentMetadata(UUID id, Map<String, String> metadata)
+    public IDeviceAssignment updateDeviceAssignment(UUID id, IDeviceAssignmentCreateRequest request)
 	    throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	IDeviceAssignment result = super.updateDeviceAssignmentMetadata(id, metadata);
-	getDeviceAssignmentCache().setCacheEntry(tenant, result.getToken(), result);
-	getDeviceAssignmentByIdCache().setCacheEntry(tenant, result.getId(), result);
-	CacheUtils.logCacheUpdated(result);
-	return result;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.device.DeviceManagementDecorator#updateDeviceAssignmentStatus(
-     * java.util.UUID, com.sitewhere.spi.device.DeviceAssignmentStatus)
-     */
-    @Override
-    public IDeviceAssignment updateDeviceAssignmentStatus(UUID id, DeviceAssignmentStatus status)
-	    throws SiteWhereException {
-	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	IDeviceAssignment result = super.updateDeviceAssignmentStatus(id, status);
+	IDeviceAssignment result = super.updateDeviceAssignment(id, request);
 	getDeviceAssignmentCache().setCacheEntry(tenant, result.getToken(), result);
 	getDeviceAssignmentByIdCache().setCacheEntry(tenant, result.getId(), result);
 	CacheUtils.logCacheUpdated(result);

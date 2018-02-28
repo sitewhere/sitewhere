@@ -54,13 +54,13 @@ export function deleteArea (axios, areaToken, force) {
 /**
  * List assignments for an area.
  */
-export function listAssignmentsForArea (axios, areaToken,
-  includeDevice, includeAsset, paging) {
+export function listAssignmentsForArea (axios, areaToken, options, paging) {
   let query = ''
-  query += (includeDevice)
+  query += (options.includeDevice)
     ? '?includeDevice=true' : '?includeDevice=false'
-  query += (includeAsset)
+  query += (options.includeAsset)
     ? '&includeAsset=true' : '&includeAsset=false'
+  query += (options.status) ? '&status=' + options.status : ''
   if (paging) {
     query += '&' + paging
   }

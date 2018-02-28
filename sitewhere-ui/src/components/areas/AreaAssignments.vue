@@ -60,7 +60,12 @@ export default {
       var component = this
       var areaToken = this.area.token
       var paging = this.$data.paging.query
-      _listAssignmentsForArea(this.$store, areaToken, true, true, paging)
+
+      let options = {}
+      options.includeDevice = true
+      options.includeAsset = true
+
+      _listAssignmentsForArea(this.$store, areaToken, options, paging)
         .then(function (response) {
           component.results = response.data
           component.assignments = response.data.results

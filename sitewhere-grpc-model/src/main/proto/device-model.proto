@@ -273,10 +273,11 @@ message GDeviceGroup {
 // Request data for creating a device assignment.
 message GDeviceAssignmentCreateRequest {
 	GOptionalString token = 1;
-	string deviceToken = 2;
+	GOptionalString deviceToken = 2;
 	GOptionalString areaToken = 3;
 	GOptionalString assetToken = 4;
-	map<string, string> metadata = 5;
+	GDeviceAssignmentStatus status = 5;
+	map<string, string> metadata = 6;
 }
 
 // Criteria for searching device assignments.

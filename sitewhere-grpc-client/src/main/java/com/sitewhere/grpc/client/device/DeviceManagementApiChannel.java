@@ -8,7 +8,6 @@
 package com.sitewhere.grpc.client.device;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.logging.Log;
@@ -29,7 +28,6 @@ import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.area.request.IAreaCreateRequest;
 import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
-import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
@@ -767,53 +765,26 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignmentMetadata(
-     * java.util.UUID, java.util.Map)
+     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignment(java.util.
+     * UUID, com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest)
      */
     @Override
-    public IDeviceAssignment updateDeviceAssignmentMetadata(UUID id, Map<String, String> metadata)
+    public IDeviceAssignment updateDeviceAssignment(UUID id, IDeviceAssignmentCreateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT_METADATA);
-	    GUpdateDeviceAssignmentMetadataRequest.Builder grequest = GUpdateDeviceAssignmentMetadataRequest
-		    .newBuilder();
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT);
+	    GUpdateDeviceAssignmentRequest.Builder grequest = GUpdateDeviceAssignmentRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
-	    grequest.putAllMetadata(metadata);
-	    GUpdateDeviceAssignmentMetadataResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .updateDeviceAssignmentMetadata(grequest.build());
+	    grequest.setRequest(DeviceModelConverter.asGrpcDeviceAssignmentCreateRequest(request));
+	    GUpdateDeviceAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .updateDeviceAssignment(grequest.build());
 	    IDeviceAssignment response = (gresponse.hasAssignment())
 		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT_METADATA, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT, response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT_METADATA,
-		    t);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignmentStatus(java.
-     * util.UUID, com.sitewhere.spi.device.DeviceAssignmentStatus)
-     */
-    @Override
-    public IDeviceAssignment updateDeviceAssignmentStatus(UUID id, DeviceAssignmentStatus status)
-	    throws SiteWhereException {
-	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT_STATUS);
-	    GUpdateDeviceAssignmentStatusRequest.Builder grequest = GUpdateDeviceAssignmentStatusRequest.newBuilder();
-	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
-	    grequest.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(status));
-	    GUpdateDeviceAssignmentStatusResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .updateDeviceAssignmentStatus(grequest.build());
-	    IDeviceAssignment response = (gresponse.hasAssignment())
-		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment())
-		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT_STATUS, response);
-	    return response;
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT_STATUS, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT, t);
 	}
     }
 

@@ -8,7 +8,6 @@
 package com.sitewhere.device;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import com.sitewhere.server.lifecycle.LifecycleComponentDecorator;
@@ -19,7 +18,6 @@ import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.area.request.IAreaCreateRequest;
 import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
-import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
@@ -376,24 +374,13 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator<IDevi
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignmentMetadata(
-     * java.util.UUID, java.util.Map)
+     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignment(java.util.
+     * UUID, com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest)
      */
     @Override
-    public IDeviceAssignment updateDeviceAssignmentMetadata(UUID id, Map<String, String> metadata)
+    public IDeviceAssignment updateDeviceAssignment(UUID id, IDeviceAssignmentCreateRequest request)
 	    throws SiteWhereException {
-	return getDelegate().updateDeviceAssignmentMetadata(id, metadata);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignmentStatus(java.
-     * util.UUID, com.sitewhere.spi.device.DeviceAssignmentStatus)
-     */
-    @Override
-    public IDeviceAssignment updateDeviceAssignmentStatus(UUID id, DeviceAssignmentStatus status)
-	    throws SiteWhereException {
-	return getDelegate().updateDeviceAssignmentStatus(id, status);
+	return getDelegate().updateDeviceAssignment(id, request);
     }
 
     /*

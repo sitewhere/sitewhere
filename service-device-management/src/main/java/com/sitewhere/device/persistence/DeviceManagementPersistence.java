@@ -656,12 +656,43 @@ public class DeviceManagementPersistence extends Persistence {
 	assignment.setAssetId(asset != null ? asset.getId() : null);
 	assignment.setDeviceId(device.getId());
 	assignment.setActiveDate(new Date());
-	assignment.setStatus(DeviceAssignmentStatus.Active);
+	assignment.setStatus(source.getStatus() != null ? source.getStatus() : DeviceAssignmentStatus.Active);
 
 	DeviceManagementPersistence.initializeEntityMetadata(assignment);
 	MetadataProvider.copy(source.getMetadata(), assignment);
 
 	return assignment;
+    }
+
+    /**
+     * Common logic for updating an existing device assignment.
+     * 
+     * @param request
+     * @param target
+     * @throws SiteWhereException
+     */
+    public static void deviceAssignmentUpdateLogic(IDevice device, IArea area, IAsset asset,
+	    IDeviceAssignmentCreateRequest request, DeviceAssignment target) throws SiteWhereException {
+	if (request.getToken() != null) {
+	    target.setToken(request.getToken());
+	}
+	if (device != null) {
+	    target.setDeviceId(device.getId());
+	}
+	if (area != null) {
+	    target.setAreaId(area.getId());
+	}
+	if (asset != null) {
+	    target.setAssetId(asset.getId());
+	}
+	if (request.getStatus() != null) {
+	    target.setStatus(request.getStatus());
+	}
+	if (request.getMetadata() != null) {
+	    target.getMetadata().clear();
+	    MetadataProvider.copy(request.getMetadata(), target);
+	}
+	DeviceManagementPersistence.setUpdatedEntityMetadata(target);
     }
 
     /**

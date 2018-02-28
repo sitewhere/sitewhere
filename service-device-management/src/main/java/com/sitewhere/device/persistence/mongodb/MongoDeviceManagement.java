@@ -10,7 +10,6 @@ package com.sitewhere.device.persistence.mongodb;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
@@ -945,39 +944,50 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignmentMetadata(
-     * java.util.UUID, java.util.Map)
+     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignment(java.util.
+     * UUID, com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest)
      */
     @Override
-    public IDeviceAssignment updateDeviceAssignmentMetadata(UUID id, Map<String, String> metadata)
+    public IDeviceAssignment updateDeviceAssignment(UUID id, IDeviceAssignmentCreateRequest request)
 	    throws SiteWhereException {
 	Document match = assertDeviceAssignment(id);
 	DeviceAssignment assignment = MongoDeviceAssignment.fromDocument(match);
-	for (String key : metadata.keySet()) {
-	    assignment.addOrReplaceMetadata(key, metadata.get(key));
+
+	// Verify updated device token exists.
+	IDevice device = null;
+	if (request.getDeviceToken() != null) {
+	    device = getDeviceByToken(request.getDeviceToken());
+	    if (device == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidDeviceToken, ErrorLevel.ERROR);
+	    }
 	}
+
+	// Verify updated area token exists.
+	IArea area = null;
+	if (request.getAreaToken() != null) {
+	    area = getAreaByToken(request.getAreaToken());
+	    if (area == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
+	    }
+	}
+
+	// Verify updated asset token exists.
+	IAsset asset = null;
+	if (request.getAssetToken() != null) {
+	    asset = getAssetManagement().getAssetByToken(request.getAssetToken());
+	    if (asset == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidAssetToken, ErrorLevel.ERROR);
+	    }
+	}
+
+	DeviceManagementPersistence.deviceAssignmentUpdateLogic(device, area, asset, request, assignment);
+
 	DeviceManagementPersistence.setUpdatedEntityMetadata(assignment);
 	Document query = new Document(MongoDeviceAssignment.PROP_ID, id);
 	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
 	MongoPersistence.update(assignments, query, MongoDeviceAssignment.toDocument(assignment));
 
-	return MongoDeviceAssignment.fromDocument(match);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignmentStatus(java.
-     * util.UUID, com.sitewhere.spi.device.DeviceAssignmentStatus)
-     */
-    @Override
-    public IDeviceAssignment updateDeviceAssignmentStatus(UUID id, DeviceAssignmentStatus status)
-	    throws SiteWhereException {
-	Document match = assertDeviceAssignment(id);
-	match.put(MongoDeviceAssignment.PROP_STATUS, status.name());
-	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
-	Document query = new Document(MongoDeviceAssignment.PROP_ID, id);
-	MongoPersistence.update(assignments, query, match);
-	return MongoDeviceAssignment.fromDocument(match);
+	return assignment;
     }
 
     /*

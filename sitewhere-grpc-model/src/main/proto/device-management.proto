@@ -156,11 +156,8 @@ service DeviceManagement {
 	// Delete an existing device assignment.
 	rpc DeleteDeviceAssignment (GDeleteDeviceAssignmentRequest) returns (GDeleteDeviceAssignmentResponse) {}
 	
-	// Update metadata for a device assignment.
-	rpc UpdateDeviceAssignmentMetadata (GUpdateDeviceAssignmentMetadataRequest) returns (GUpdateDeviceAssignmentMetadataResponse) {}
-	
-	// Update status for a device assignment.
-	rpc UpdateDeviceAssignmentStatus (GUpdateDeviceAssignmentStatusRequest) returns (GUpdateDeviceAssignmentStatusResponse) {}
+	// Update an existing device assignment.
+	rpc UpdateDeviceAssignment (GUpdateDeviceAssignmentRequest) returns (GUpdateDeviceAssignmentResponse) {}
 	
 	// End a device assignment.
 	rpc EndDeviceAssignment (GEndDeviceAssignmentRequest) returns (GEndDeviceAssignmentResponse) {}
@@ -592,25 +589,14 @@ message GDeleteDeviceAssignmentResponse {
 	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
 }
 	
-// Request for updating metadata for a device assignment.
-message GUpdateDeviceAssignmentMetadataRequest {
+// Request for updating an existing device assignment.
+message GUpdateDeviceAssignmentRequest {
 	com.sitewhere.grpc.model.GUUID id = 1;
-	map<string, string> metadata = 2;
+	com.sitewhere.grpc.model.GDeviceAssignmentCreateRequest request = 2;
 }
 	
-// Response for updating metadata for a device assignment.
-message GUpdateDeviceAssignmentMetadataResponse {
-	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
-}
-	
-// Request for updating status for a device assignment.
-message GUpdateDeviceAssignmentStatusRequest {
-	com.sitewhere.grpc.model.GUUID id = 1;
-	com.sitewhere.grpc.model.GDeviceAssignmentStatus status = 2;
-}
-	
-// Response for updating status for a device assignment.
-message GUpdateDeviceAssignmentStatusResponse {
+// Response for updating an existing device assignment.
+message GUpdateDeviceAssignmentResponse {
 	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
 }
 	

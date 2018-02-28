@@ -603,10 +603,9 @@ export function _deleteArea (store, areaToken, force) {
 /**
  * List assignments for a given area.
  */
-export function _listAssignmentsForArea (store, areaToken, includeDevice,
-  includeAsset, paging) {
+export function _listAssignmentsForArea (store, areaToken, options, paging) {
   let axios = createCoreApiCall(store)
-  let api = listAssignmentsForArea(axios, areaToken, includeDevice, includeAsset, paging)
+  let api = listAssignmentsForArea(axios, areaToken, options, paging)
   return loaderWrapper(store, api)
 }
 

@@ -1508,9 +1508,10 @@ public class DeviceModelConverter {
 	    throws SiteWhereException {
 	DeviceAssignmentCreateRequest api = new DeviceAssignmentCreateRequest();
 	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
-	api.setDeviceToken(grpc.getDeviceToken());
+	api.setDeviceToken(grpc.hasDeviceToken() ? grpc.getDeviceToken().getValue() : null);
 	api.setAreaToken(grpc.hasAreaToken() ? grpc.getAreaToken().getValue() : null);
 	api.setAssetToken(grpc.hasAssetToken() ? grpc.getAssetToken().getValue() : null);
+	api.setStatus(DeviceModelConverter.asApiDeviceAssignmentStatus(grpc.getStatus()));
 	api.setMetadata(grpc.getMetadataMap());
 	return api;
     }
@@ -1528,12 +1529,17 @@ public class DeviceModelConverter {
 	if (api.getToken() != null) {
 	    grpc.setToken(GOptionalString.newBuilder().setValue(api.getToken()));
 	}
-	grpc.setDeviceToken(api.getDeviceToken());
+	if (api.getDeviceToken() != null) {
+	    grpc.setDeviceToken(GOptionalString.newBuilder().setValue(api.getDeviceToken()));
+	}
 	if (api.getAreaToken() != null) {
 	    grpc.setAreaToken(GOptionalString.newBuilder().setValue(api.getAreaToken()));
 	}
 	if (api.getAssetToken() != null) {
 	    grpc.setAssetToken(GOptionalString.newBuilder().setValue(api.getAssetToken()));
+	}
+	if (api.getStatus() != null) {
+	    grpc.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(api.getStatus()));
 	}
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());

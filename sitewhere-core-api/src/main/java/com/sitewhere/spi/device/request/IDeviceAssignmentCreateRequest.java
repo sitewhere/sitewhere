@@ -9,6 +9,8 @@ package com.sitewhere.spi.device.request;
 
 import java.util.Map;
 
+import com.sitewhere.spi.device.DeviceAssignmentStatus;
+
 /**
  * Interface for arguments needed to create a device assignment.
  * 
@@ -43,6 +45,13 @@ public interface IDeviceAssignmentCreateRequest {
      * @return
      */
     public String getAssetToken();
+
+    /**
+     * Get the device assignment status.
+     * 
+     * @return
+     */
+    public DeviceAssignmentStatus getStatus();
 
     /**
      * Get metadata values.

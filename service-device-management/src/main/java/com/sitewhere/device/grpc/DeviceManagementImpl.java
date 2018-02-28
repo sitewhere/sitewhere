@@ -1111,57 +1111,27 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * updateDeviceAssignmentMetadata(com.sitewhere.grpc.service.
-     * GUpdateDeviceAssignmentMetadataRequest, io.grpc.stub.StreamObserver)
+     * updateDeviceAssignment(com.sitewhere.grpc.service.
+     * GUpdateDeviceAssignmentRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void updateDeviceAssignmentMetadata(GUpdateDeviceAssignmentMetadataRequest request,
-	    StreamObserver<GUpdateDeviceAssignmentMetadataResponse> responseObserver) {
+    public void updateDeviceAssignment(GUpdateDeviceAssignmentRequest request,
+	    StreamObserver<GUpdateDeviceAssignmentResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT_METADATA);
-	    IDeviceAssignment apiResult = getDeviceManagement().updateDeviceAssignmentMetadata(
-		    CommonModelConverter.asApiUuid(request.getId()), request.getMetadataMap());
-	    GUpdateDeviceAssignmentMetadataResponse.Builder response = GUpdateDeviceAssignmentMetadataResponse
-		    .newBuilder();
-	    if (apiResult != null) {
-		response.setAssignment(DeviceModelConverter.asGrpcDeviceAssignment(apiResult));
-	    }
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT_METADATA, e,
-		    responseObserver);
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * updateDeviceAssignmentStatus(com.sitewhere.grpc.service.
-     * GUpdateDeviceAssignmentStatusRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void updateDeviceAssignmentStatus(GUpdateDeviceAssignmentStatusRequest request,
-	    StreamObserver<GUpdateDeviceAssignmentStatusResponse> responseObserver) {
-	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT_STATUS);
-	    IDeviceAssignment apiResult = getDeviceManagement().updateDeviceAssignmentStatus(
+	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT);
+	    IDeviceAssignment apiResult = getDeviceManagement().updateDeviceAssignment(
 		    CommonModelConverter.asApiUuid(request.getId()),
-		    DeviceModelConverter.asApiDeviceAssignmentStatus(request.getStatus()));
-	    GUpdateDeviceAssignmentStatusResponse.Builder response = GUpdateDeviceAssignmentStatusResponse.newBuilder();
+		    DeviceModelConverter.asApiDeviceAssignmentCreateRequest(request.getRequest()));
+	    GUpdateDeviceAssignmentResponse.Builder response = GUpdateDeviceAssignmentResponse.newBuilder();
 	    if (apiResult != null) {
 		response.setAssignment(DeviceModelConverter.asGrpcDeviceAssignment(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT_STATUS, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT, e,
 		    responseObserver);
 	}
     }

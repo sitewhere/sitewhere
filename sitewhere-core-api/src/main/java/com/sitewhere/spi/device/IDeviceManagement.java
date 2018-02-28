@@ -8,7 +8,6 @@
 package com.sitewhere.spi.device;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import com.sitewhere.spi.SiteWhereException;
@@ -352,25 +351,14 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     public IDeviceAssignment deleteDeviceAssignment(UUID id, boolean force) throws SiteWhereException;
 
     /**
-     * Update metadata associated with a device assignment.
+     * Update an existing device assignment.
      * 
      * @param id
-     * @param metadata
+     * @param request
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceAssignment updateDeviceAssignmentMetadata(UUID id, Map<String, String> metadata)
-	    throws SiteWhereException;
-
-    /**
-     * Update the status of an existing device assignment.
-     * 
-     * @param id
-     * @param status
-     * @return
-     * @throws SiteWhereException
-     */
-    public IDeviceAssignment updateDeviceAssignmentStatus(UUID id, DeviceAssignmentStatus status)
+    public IDeviceAssignment updateDeviceAssignment(UUID id, IDeviceAssignmentCreateRequest request)
 	    throws SiteWhereException;
 
     /**
