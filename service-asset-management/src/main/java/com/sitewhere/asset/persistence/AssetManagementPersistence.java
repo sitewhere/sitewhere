@@ -38,9 +38,12 @@ public class AssetManagementPersistence extends Persistence {
 	type.setId(UUID.randomUUID());
 	type.setDescription(request.getDescription());
 
-	// Unique token is required.
-	require("Token", request.getToken());
-	type.setToken(request.getToken());
+	// Use token if provided, otherwise generate one.
+	if (request.getToken() != null) {
+	    type.setToken(request.getToken());
+	} else {
+	    type.setToken(UUID.randomUUID().toString());
+	}
 
 	require("Name", request.getName());
 	type.setName(request.getName());
@@ -95,9 +98,12 @@ public class AssetManagementPersistence extends Persistence {
 	asset.setId(UUID.randomUUID());
 	asset.setAssetTypeId(assetType.getId());
 
-	// Unique token is required.
-	require("Token", request.getToken());
-	asset.setToken(request.getToken());
+	// Use token if provided, otherwise generate one.
+	if (request.getToken() != null) {
+	    asset.setToken(request.getToken());
+	} else {
+	    asset.setToken(UUID.randomUUID().toString());
+	}
 
 	require("Name", request.getName());
 	asset.setName(request.getName());

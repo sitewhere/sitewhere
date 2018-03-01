@@ -335,7 +335,7 @@ public class MongoAssetManagement extends TenantEngineLifecycleComponent impleme
      * @throws SiteWhereException
      */
     protected Document assertAssetTypeDocument(UUID assetId) throws SiteWhereException {
-	Document match = getAssetDocument(assetId);
+	Document match = getAssetTypeDocument(assetId);
 	if (match == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidAssetTypeId, ErrorLevel.ERROR);
 	}

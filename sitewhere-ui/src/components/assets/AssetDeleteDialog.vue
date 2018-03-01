@@ -30,12 +30,10 @@ export default {
     getDialogComponent: function () {
       return this.$refs['dialog']
     },
-
     // Show delete dialog.
     showDeleteDialog: function () {
       this.getDialogComponent().openDialog()
     },
-
     // Perform delete.
     onDeleteConfirmed: function () {
       var component = this
@@ -45,7 +43,6 @@ export default {
         }).catch(function (e) {
         })
     },
-
     // Handle successful delete.
     onDeleted: function (result) {
       this.getDialogComponent().closeDialog()

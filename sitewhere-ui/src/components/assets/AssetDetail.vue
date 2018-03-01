@@ -1,48 +1,67 @@
 <template>
-  <navigation-page v-if="asset" icon="fa-car" :title="asset.name">
-    <div slot="content">
-      <asset-detail-header v-if="asset" :asset="asset"
-        @assetDeleted="onAssetDeleted"
-        @assetUpdated="onAssetUpdated">
-      </asset-detail-header>
-      <v-tabs v-model="active">
-        <v-tabs-bar dark color="primary">
-          <v-tabs-item key="assignments" href="#assignments">
-            Assignments
-          </v-tabs-item>
-          <v-tabs-slider></v-tabs-slider>
-        </v-tabs-bar>
-        <v-tabs-items>
-          <v-tabs-content key="assignments" id="assignments">
-            <v-layout row wrap v-if="assignments">
-              <v-flex xs12>
-                <assignment-list-panel :assignment="assignment"
-                  v-for="(assignment, index) in assignments"
-                  :key="assignment.token"
-                  @assignmentOpened="onOpenAssignment"
-                  class="ma-2">
-                </assignment-list-panel>
-              </v-flex>
-            </v-layout>
-            <pager :results="results" @pagingUpdated="updatePaging">
-              <no-results-panel slot="noresults"
-                text="No Assignments Found for Asset">
-              </no-results-panel>
-            </pager>
-          </v-tabs-content>
-        </v-tabs-items>
-      </v-tabs>
-    </div>
-  </navigation-page>
+  <div>
+    <navigation-page v-if="asset" icon="fa-car" :title="asset.name">
+      <div slot="content">
+        <asset-detail-header v-if="asset" :asset="asset"
+          @assetDeleted="onAssetDeleted"
+          @assetUpdated="onAssetUpdated">
+        </asset-detail-header>
+        <v-tabs v-model="active">
+          <v-tabs-bar dark color="primary">
+            <v-tabs-item key="assignments" href="#assignments">
+              Assignments
+            </v-tabs-item>
+            <v-tabs-slider></v-tabs-slider>
+          </v-tabs-bar>
+          <v-tabs-items>
+            <v-tabs-content key="assignments" id="assignments">
+              <v-layout row wrap v-if="assignments">
+                <v-flex xs12>
+                  <assignment-list-panel :assignment="assignment"
+                    v-for="(assignment, index) in assignments"
+                    :key="assignment.token"
+                    @assignmentOpened="onOpenAssignment"
+                    class="ma-2">
+                  </assignment-list-panel>
+                </v-flex>
+              </v-layout>
+              <pager :results="results" @pagingUpdated="updatePaging">
+                <no-results-panel slot="noresults"
+                  text="No Assignments Found for Asset">
+                </no-results-panel>
+              </pager>
+            </v-tabs-content>
+          </v-tabs-items>
+        </v-tabs>
+      </div>
+      <div slot="actions">
+        <navigation-action-button icon="fa-edit" tooltip="Edit Device"
+          @action="onEdit">
+        </navigation-action-button>
+        <navigation-action-button icon="fa-times" tooltip="Delete Device"
+          @action="onDelete">
+        </navigation-action-button>
+      </div>
+    </navigation-page>
+    <asset-update-dialog ref="edit"
+      :token="asset.token" @asseUpdated="onAssetUpdated">
+    </asset-update-dialog>
+    <asset-delete-dialog ref="delete"
+      :token="asset.token" @assetDeleted="onAssetDeleted">
+    </asset-delete-dialog>
+  </div>
 </template>
 
 <script>
 import Utils from '../common/Utils'
 import NavigationPage from '../common/NavigationPage'
+import NavigationActionButton from '../common/NavigationActionButton'
 import Pager from '../common/Pager'
 import NoResultsPanel from '../common/NoResultsPanel'
 import AssetDetailHeader from './AssetDetailHeader'
 import AssignmentListPanel from '../assignments/AssignmentListPanel'
+import AssetDeleteDialog from './AssetDeleteDialog'
+import AssetUpdateDialog from './AssetUpdateDialog'
 import {
   _getAsset,
   _listDeviceAssignments
@@ -61,10 +80,13 @@ export default {
 
   components: {
     NavigationPage,
+    NavigationActionButton,
     Pager,
     NoResultsPanel,
     AssetDetailHeader,
-    AssignmentListPanel
+    AssignmentListPanel,
+    AssetDeleteDialog,
+    AssetUpdateDialog
   },
 
   // Called on initial create.
@@ -131,18 +153,21 @@ export default {
       }
       this.$store.commit('currentSection', section)
     },
-    // Called after asset is deleted.
-    onAssetDeleted: function () {
-      var tenant = this.$store.getters.selectedTenant
-      if (tenant) {
-        this.$router.push('/tenants/' + tenant.token + '/assets')
-      }
+    // Called to open edit dialog.
+    onEdit: function () {
+      this.$refs['edit'].onOpenDialog()
     },
-    // Called after asset is updated.
+    // Called when asset is updated.
     onAssetUpdated: function () {
       this.refresh()
     },
-
+    onDelete: function () {
+      this.$refs['delete'].showDeleteDialog()
+    },
+    // Called when asset is deleted.
+    onAssetDeleted: function () {
+      Utils.routeTo(this, '/assets')
+    },
     // Called to open detail page for assignment.
     onOpenAssignment: function (assignment) {
       Utils.routeTo(this, '/assignments/' +

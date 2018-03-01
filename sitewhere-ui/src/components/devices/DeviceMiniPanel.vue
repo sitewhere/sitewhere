@@ -30,7 +30,7 @@ export default {
 
   props: ['device'],
 
-  methods: {
+  computed: {
     // Create background image style.
     imageStyle: function () {
       return {
@@ -52,8 +52,7 @@ export default {
   top: 8px;
   left: 10px;
   width: 70px;
-	height: 70px;
-  border: 1px solid #eee;
+	bottom: 10px;
 }
 .assn-device-title {
   position: absolute;

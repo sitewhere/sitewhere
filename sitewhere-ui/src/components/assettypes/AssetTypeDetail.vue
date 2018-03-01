@@ -1,45 +1,64 @@
 <template>
-  <navigation-page v-if="assetType" icon="fa-cog" :title="assetType.name">
-    <div slot="content">
-      <asset-type-detail-header v-if="assetType" :assetType="assetType"
-        @assetTypeDeleted="onAssetTypeDeleted"
-        @assetTypeUpdated="onAssetTypeUpdated">
-      </asset-type-detail-header>
-      <v-tabs v-model="active">
-        <v-tabs-bar dark color="primary">
-          <v-tabs-item key="assets" href="#assets">
-            Assets
-          </v-tabs-item>
-          <v-tabs-slider></v-tabs-slider>
-        </v-tabs-bar>
-        <v-tabs-items>
-          <v-tabs-content key="assets" id="assets">
-            <v-container fluid grid-list-md v-if="assets">
-              <v-layout row wrap>
-                <v-flex xs6 v-for="(asset, index) in assets" :key="asset.token">
-                  <asset-list-entry :asset="asset" @assetOpened="onOpenAsset">
-                  </asset-list-entry>
-               </v-flex>
-              </v-layout>
-            </v-container>
-            <pager :results="results" @pagingUpdated="updatePaging">
-              <no-results-panel slot="noresults"
-                text="No Assets of This Type Found">
-              </no-results-panel>
-            </pager>
-          </v-tabs-content>
-        </v-tabs-items>
-      </v-tabs>
-    </div>
-  </navigation-page>
+  <div>
+    <navigation-page v-if="assetType" icon="fa-cog" :title="assetType.name">
+      <div slot="content">
+        <asset-type-detail-header v-if="assetType" :assetType="assetType"
+          @assetTypeDeleted="onAssetTypeDeleted"
+          @assetTypeUpdated="onAssetTypeUpdated">
+        </asset-type-detail-header>
+        <v-tabs v-model="active">
+          <v-tabs-bar dark color="primary">
+            <v-tabs-item key="assets" href="#assets">
+              Assets
+            </v-tabs-item>
+            <v-tabs-slider></v-tabs-slider>
+          </v-tabs-bar>
+          <v-tabs-items>
+            <v-tabs-content key="assets" id="assets">
+              <v-container fluid grid-list-md v-if="assets">
+                <v-layout row wrap>
+                  <v-flex xs6 v-for="(asset, index) in assets" :key="asset.token">
+                    <asset-list-entry :asset="asset" @assetOpened="onOpenAsset">
+                    </asset-list-entry>
+                 </v-flex>
+                </v-layout>
+              </v-container>
+              <pager :results="results" @pagingUpdated="updatePaging">
+                <no-results-panel slot="noresults"
+                  text="No Assets of This Type Found">
+                </no-results-panel>
+              </pager>
+            </v-tabs-content>
+          </v-tabs-items>
+        </v-tabs>
+      </div>
+      <div slot="actions">
+        <navigation-action-button icon="fa-edit" tooltip="Edit Asset Type"
+          @action="onEdit">
+        </navigation-action-button>
+        <navigation-action-button icon="fa-times" tooltip="Delete Asset Type"
+          @action="onDelete">
+        </navigation-action-button>
+      </div>
+    </navigation-page>
+    <asset-type-update-dialog ref="update"
+      :token="assetType.token" @assetTypeUpdated="onAssetTypeUpdated">
+    </asset-type-update-dialog>
+    <asset-type-delete-dialog ref="delete"
+      :token="assetType.token" @assetTypeDeleted="onAssetTypeDeleted">
+    </asset-type-delete-dialog>
+  </div>
 </template>
 
 <script>
 import Utils from '../common/Utils'
 import NavigationPage from '../common/NavigationPage'
+import NavigationActionButton from '../common/NavigationActionButton'
 import Pager from '../common/Pager'
 import NoResultsPanel from '../common/NoResultsPanel'
 import AssetTypeDetailHeader from './AssetTypeDetailHeader'
+import AssetTypeDeleteDialog from './AssetTypeDeleteDialog'
+import AssetTypeUpdateDialog from './AssetTypeUpdateDialog'
 import AssetListEntry from '../assets/AssetListEntry'
 import {
   _getAssetType,
@@ -59,10 +78,13 @@ export default {
 
   components: {
     NavigationPage,
+    NavigationActionButton,
     Pager,
     NoResultsPanel,
     AssetTypeDetailHeader,
-    AssetListEntry
+    AssetListEntry,
+    AssetTypeDeleteDialog,
+    AssetTypeUpdateDialog
   },
 
   // Called on initial create.
@@ -127,16 +149,20 @@ export default {
       }
       this.$store.commit('currentSection', section)
     },
-    // Called after asset type is deleted.
-    onAssetTypeDeleted: function () {
-      var tenant = this.$store.getters.selectedTenant
-      if (tenant) {
-        this.$router.push('/tenants/' + tenant.token + '/assettypes')
-      }
+    // Called to open edit dialog.
+    onEdit: function () {
+      this.$refs['update'].onOpenDialog()
     },
-    // Called after asset type is updated.
+    // Called when asset type is updated.
     onAssetTypeUpdated: function () {
       this.refresh()
+    },
+    onDelete: function () {
+      this.$refs['delete'].showDeleteDialog()
+    },
+    // Called when asset type is deleted.
+    onAssetTypeDeleted: function () {
+      Utils.routeTo(this, '/assettypes')
     },
     // Open clicked asset.
     onOpenAsset: function (asset) {
