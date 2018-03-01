@@ -65,7 +65,6 @@ import {createCoreApiUrl} from '../../http/sitewhere-api-wrapper'
 import HeaderField from '../common/HeaderField'
 import LinkedHeaderField from '../common/LinkedHeaderField'
 import ClipboardCopyField from '../common/ClipboardCopyField'
-import OptionsMenu from '../common/OptionsMenu'
 import AssignmentDeleteDialog from './AssignmentDeleteDialog'
 
 export default {
@@ -81,7 +80,6 @@ export default {
     HeaderField,
     LinkedHeaderField,
     ClipboardCopyField,
-    OptionsMenu,
     AssignmentDeleteDialog
   },
 

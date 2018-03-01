@@ -147,7 +147,7 @@ export default {
       if (payload) {
         this.$data.devToken = payload.token
         this.$data.devComments = payload.comments
-        this.$data.devDeviceTypeToken = payload.deviceTypeToken
+        this.$data.devDeviceTypeToken = payload.deviceType.token
         this.$data.metadata = Utils.metadataToArray(payload.metadata)
       }
     },

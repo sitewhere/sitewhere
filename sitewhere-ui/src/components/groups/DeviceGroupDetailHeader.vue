@@ -1,52 +1,31 @@
 <template>
-  <v-card v-if="group" class="white">
-    <v-card-text class="group">
-      <v-icon class="group-icon grey--text">view_module</v-icon>
-      <div class="group-name ellipsis title">
-        {{ group.name }}
-      </div>
-      <div class="group-token ellipsis subheading">
-        {{ group.token }}
-      </div>
-      <div class="group-description ellipsis">
-        {{ group.description }}
-      </div>
-      <div class="group-roles ellipsis">
-        Roles: <strong>{{ rolesView  }}</strong>
-      </div>
-      <options-menu class="options-menu">
-        <v-list slot="options">
-          <v-list-tile>
-            <v-btn block class="blue white--text" @click="onUpdateDeviceGroup">
-              Edit Device Group
-              <v-spacer></v-spacer>
-              <v-icon class="white--text pl-2">fa-edit</v-icon>
-            </v-btn>
-          </v-list-tile>
-          <v-list-tile>
-            <v-btn block class="red darken-2 white--text" @click="onDeleteDeviceGroup">
-              Delete Device Group
-              <v-spacer></v-spacer>
-              <v-icon class="white--text pl-2">fa-times</v-icon>
-            </v-btn>
-          </v-list-tile>
-        </v-list>
-      </options-menu>
-    </v-card-text>
-    <device-group-update-dialog ref="update" :token="group.token"
-      @groupUpdated="onDeviceGroupUpdated">
-    </device-group-update-dialog>
-    <device-group-delete-dialog ref="delete" :token="group.token"
-      @groupDeleted="onDeviceGroupDeleted">
-    </device-group-delete-dialog>
-  </v-card>
+  <navigation-header-panel v-if="group" icon="fa-microchip"
+    :qrCodeUrl="qrCodeUrl" height="170px">
+    <span slot="content">
+      <header-field label="Token">
+        <clipboard-copy-field :field="group.token"
+          message="Token copied to clipboard">
+        </clipboard-copy-field>
+      </header-field>
+      <header-field label="Name">
+        <span>{{ group.name }}</span>
+      </header-field>
+      <header-field label="Description">
+        <span>{{ group.description }}</span>
+      </header-field>
+      <header-field label="Roles">
+        <span>{{ rolesView }}</span>
+      </header-field>
+    </span>
+  </navigation-header-panel>
 </template>
 
 <script>
 import Utils from '../common/Utils'
-import OptionsMenu from '../common/OptionsMenu'
-import DeviceGroupUpdateDialog from './DeviceGroupUpdateDialog'
-import DeviceGroupDeleteDialog from './DeviceGroupDeleteDialog'
+import NavigationHeaderPanel from '../common/NavigationHeaderPanel'
+import ClipboardCopyField from '../common/ClipboardCopyField'
+import HeaderField from '../common/HeaderField'
+import {createCoreApiUrl} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -56,9 +35,9 @@ export default {
   },
 
   components: {
-    OptionsMenu,
-    DeviceGroupUpdateDialog,
-    DeviceGroupDeleteDialog
+    NavigationHeaderPanel,
+    ClipboardCopyField,
+    HeaderField
   },
 
   props: ['group'],
@@ -66,30 +45,17 @@ export default {
   computed: {
     rolesView: function () {
       return this.group.roles.join(', ')
+    },
+    // Compute QR code URL.
+    qrCodeUrl: function () {
+      var tenant = this.$store.getters.selectedTenant
+      return createCoreApiUrl(this.$store) +
+        'groups/' + this.group.token +
+        '/symbol?tenantAuthToken=' + tenant.authenticationToken
     }
   },
 
   methods: {
-    // Fire event to have parent refresh content.
-    refresh: function () {
-      this.$emit('refresh')
-    },
-    // Show dialog on update requested.
-    onUpdateDeviceGroup: function () {
-      this.$refs['update'].onOpenDialog()
-    },
-    // Called after device group is updated.
-    onDeviceGroupUpdated: function () {
-      this.$emit('deviceGroupUpdated')
-    },
-    // Show dialog on delete requested.
-    onDeleteDeviceGroup: function () {
-      this.$refs['delete'].showDeleteDialog()
-    },
-    // Called after device group is deleted.
-    onDeviceGroupDeleted: function () {
-      this.$emit('deviceGroupDeleted')
-    },
     // Format date.
     formatDate: function (date) {
       return Utils.formatDate(date)
@@ -99,53 +65,4 @@ export default {
 </script>
 
 <style scoped>
-.group {
-  position: relative;
-  min-height: 120px;
-  overflow-x: hidden;
-}
-.group-icon {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  width: 90px;
-  font-size: 70px;
-  background-color: #eee;
-  border-right: 1px solid #ddd;
-}
-.group-name {
-  position: absolute;
-  top: 8px;
-  left: 100px;
-  right: 10px;
-}
-.group-token {
-  position: absolute;
-  top: 35px;
-  left: 100px;
-  right: 10px;
-}
-.group-description {
-  position: absolute;
-  top: 63px;
-  left: 100px;
-  right: 10px;
-}
-.group-roles {
-  position: absolute;
-  top: 90px;
-  left: 100px;
-  right: 10px;
-}
-.ellipsis {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.options-menu {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-}
 </style>

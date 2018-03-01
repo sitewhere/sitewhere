@@ -19,40 +19,40 @@ export default {
     DeviceDialog
   },
 
-  props: ['hardwareId'],
+  props: ['token'],
 
   methods: {
     // Get handle to nested dialog component.
     getDialogComponent: function () {
       return this.$refs['dialog']
     },
-
     // Send event to open dialog.
     onOpenDialog: function () {
       var component = this
-      _getDevice(this.$store, this.hardwareId)
+
+      let options = {}
+      options.includeDeviceType = true
+
+      _getDevice(this.$store, this.token, options)
         .then(function (response) {
           component.onLoaded(response)
         }).catch(function (e) {
         })
     },
-
     // Called after data is loaded.
     onLoaded: function (response) {
       this.getDialogComponent().load(response.data)
       this.getDialogComponent().openDialog()
     },
-
     // Handle payload commit.
     onCommit: function (payload) {
       var component = this
-      _updateDevice(this.$store, this.hardwareId, payload)
+      _updateDevice(this.$store, this.token, payload)
         .then(function (response) {
           component.onCommitted(response)
         }).catch(function (e) {
         })
     },
-
     // Handle successful commit.
     onCommitted: function (result) {
       this.getDialogComponent().closeDialog()

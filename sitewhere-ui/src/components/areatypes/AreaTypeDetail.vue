@@ -1,37 +1,53 @@
 <template>
-  <navigation-page v-if="areaType" icon="fa-map" :title="areaType.name">
-    <div v-if="areaType" slot="content">
-      <area-type-detail-header :areaType="areaType" :areaTypes="areaTypes"
-        @areaTypeDeleted="onAreaTypeDeleted"
-        @areaTypeUpdated="onAreaTypeUpdated">
-      </area-type-detail-header>
-      <v-tabs v-model="active">
-        <v-tabs-bar dark color="primary">
-          <v-tabs-item key="areas" href="#areas">
-            Areas
-          </v-tabs-item>
-          <v-tabs-slider></v-tabs-slider>
-        </v-tabs-bar>
-        <v-tabs-items>
-          <v-tabs-content key="areas" id="areas">
-            <v-container fluid grid-list-md v-if="areas">
-              <v-layout row wrap>
-                <v-flex xs6 v-for="(area, index) in areas" :key="area.token">
-                  <area-list-entry :area="area" @openArea="onOpenArea">
-                  </area-list-entry>
-               </v-flex>
-              </v-layout>
-            </v-container>
-            <pager :results="results" @pagingUpdated="updatePaging">
-              <no-results-panel slot="noresults"
-                text="No Areas of This Type Found">
-              </no-results-panel>
-            </pager>
-          </v-tabs-content>
-        </v-tabs-items>
-      </v-tabs>
-    </div>
-  </navigation-page>
+  <div>
+    <navigation-page v-if="areaType" icon="fa-map" :title="areaType.name">
+      <div v-if="areaType" slot="content">
+        <area-type-detail-header :areaType="areaType" :areaTypes="areaTypes"
+          @areaTypeDeleted="onAreaTypeDeleted"
+          @areaTypeUpdated="onAreaTypeUpdated">
+        </area-type-detail-header>
+        <v-tabs v-model="active">
+          <v-tabs-bar dark color="primary">
+            <v-tabs-item key="areas" href="#areas">
+              Areas
+            </v-tabs-item>
+            <v-tabs-slider></v-tabs-slider>
+          </v-tabs-bar>
+          <v-tabs-items>
+            <v-tabs-content key="areas" id="areas">
+              <v-container fluid grid-list-md v-if="areas">
+                <v-layout row wrap>
+                  <v-flex xs6 v-for="(area, index) in areas" :key="area.token">
+                    <area-list-entry :area="area" @openArea="onOpenArea">
+                    </area-list-entry>
+                 </v-flex>
+                </v-layout>
+              </v-container>
+              <pager :results="results" @pagingUpdated="updatePaging">
+                <no-results-panel slot="noresults"
+                  text="No Areas of This Type Found">
+                </no-results-panel>
+              </pager>
+            </v-tabs-content>
+          </v-tabs-items>
+        </v-tabs>
+      </div>
+      <div slot="actions">
+        <navigation-action-button icon="fa-edit" tooltip="Edit Area Type"
+          @action="onEdit">
+        </navigation-action-button>
+        <navigation-action-button icon="fa-times" tooltip="Delete Area Type"
+          @action="onDelete">
+        </navigation-action-button>
+      </div>
+    </navigation-page>
+    <area-type-update-dialog ref="edit" :token="areaType.token"
+      :areaTypes="areaTypes" @areaTypeUpdated="onAreaTypeUpdated">
+    </area-type-update-dialog>
+    <area-type-delete-dialog ref="delete" :token="areaType.token"
+      @areaTypeDeleted="onAreaTypeDeleted">
+    </area-type-delete-dialog>
+  </div>
 </template>
 
 <script>
@@ -39,7 +55,10 @@ import Utils from '../common/Utils'
 import Pager from '../common/Pager'
 import NoResultsPanel from '../common/NoResultsPanel'
 import NavigationPage from '../common/NavigationPage'
+import NavigationActionButton from '../common/NavigationActionButton'
 import AreaTypeDetailHeader from './AreaTypeDetailHeader'
+import AreaTypeDeleteDialog from './AreaTypeDeleteDialog'
+import AreaTypeUpdateDialog from './AreaTypeUpdateDialog'
 import AreaListEntry from '../areas/AreaListEntry'
 import {
   _getAreaType,
@@ -63,8 +82,11 @@ export default {
     Pager,
     NoResultsPanel,
     NavigationPage,
+    NavigationActionButton,
     AreaTypeDetailHeader,
-    AreaListEntry
+    AreaListEntry,
+    AreaTypeDeleteDialog,
+    AreaTypeUpdateDialog
   },
 
   // Called on initial create.
@@ -138,16 +160,20 @@ export default {
       }
       this.$store.commit('currentSection', section)
     },
-    // Called after area type is deleted.
-    onAreaTypeDeleted: function () {
-      var tenant = this.$store.getters.selectedTenant
-      if (tenant) {
-        this.$router.push('/tenants/' + tenant.id + '/areatypes')
-      }
+    // Called to open area type edit dialog.
+    onEdit: function () {
+      this.$refs['edit'].onOpenDialog()
     },
-    // Called after area type is updated.
+    // Called when area type is updated.
     onAreaTypeUpdated: function () {
       this.refresh()
+    },
+    onDelete: function () {
+      this.$refs['delete'].showDeleteDialog()
+    },
+    // Called when area type is deleted.
+    onAreaTypeDeleted: function () {
+      Utils.routeTo(this, '/areatypes')
     },
     // Called to open an area.
     onOpenArea: function (area) {

@@ -17,7 +17,7 @@ export default {
     error: null
   }),
 
-  props: ['hardwareId'],
+  props: ['token'],
 
   components: {
     DeleteDialog
@@ -37,7 +37,7 @@ export default {
     // Perform delete.
     onDeleteConfirmed: function () {
       var component = this
-      _deleteDevice(this.$store, this.hardwareId, true)
+      _deleteDevice(this.$store, this.token, true)
         .then(function (response) {
           component.onDeleted(response)
         }).catch(function (e) {

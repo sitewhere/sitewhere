@@ -56,7 +56,6 @@
 import Utils from '../common/Utils'
 import HeaderField from '../common/HeaderField'
 import ClipboardCopyField from '../common/ClipboardCopyField'
-import OptionsMenu from '../common/OptionsMenu'
 import AssetTypeDeleteDialog from './AssetTypeDeleteDialog'
 import AssetTypeUpdateDialog from './AssetTypeUpdateDialog'
 import {createCoreApiUrl} from '../../http/sitewhere-api-wrapper'
@@ -71,7 +70,6 @@ export default {
   components: {
     HeaderField,
     ClipboardCopyField,
-    OptionsMenu,
     AssetTypeDeleteDialog,
     AssetTypeUpdateDialog
   },

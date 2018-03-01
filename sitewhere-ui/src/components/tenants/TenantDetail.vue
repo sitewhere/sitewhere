@@ -1,52 +1,70 @@
 <template>
-  <div v-if="tenant">
-    <v-app>
-      <tenant-detail-header :tenant="tenant" @tenantEdited="onTenantEdited"
-        @tenantDeleted="onTenantDeleted">
-        <span slot="buttons">
-          <v-menu open-on-hover offset-y>
-    				<v-btn color="blue darken-2" dark slot="activator">
-    					<v-icon left dark>fa-bolt</v-icon>
-    					Tenant Actions
-    				</v-btn>
-    				<v-card>
-              <v-btn row class="red darken-2 white--text" @click="onDeleteTenant">
-                Delete Tenant<v-icon class="white--text pl-2">fa-times</v-icon>
-              </v-btn>
-              <v-btn row class="blue white--text" @click="onEditTenant">
-                Edit Tenant<v-icon class="white--text pl-2">fa-edit</v-icon>
-              </v-btn>
-    				</v-card>
-    			</v-menu>
-        </span>
-      </tenant-detail-header>
-      <v-tabs v-model="active">
-        <v-tabs-bar dark color="primary">
-          <v-tabs-item key="microservices" href="#microservices">
-            Microservices
-          </v-tabs-item>
-          <v-tabs-item key="scripts" href="#scripts">
-            Scripts
-          </v-tabs-item>
-          <v-tabs-slider></v-tabs-slider>
-        </v-tabs-bar>
-        <v-tabs-items>
-          <v-tabs-content key="microservices" id="microservices">
-            <microservice-list :topology="tenantTopology"
-              @microserviceClicked="onMicroserviceClicked">
-            </microservice-list>
-          </v-tabs-content>
-          <v-tabs-content key="scripts" id="scripts">
-            <scripts-manager :tenantId="tenantId">
-            </scripts-manager>
-          </v-tabs-content>
-        </v-tabs-items>
-      </v-tabs>
-    </v-app>
+  <div>
+    <navigation-page v-if="tenant" icon="fa-map" :title="tenant.name">
+      <div slot="content">
+        <tenant-detail-header :tenant="tenant" @tenantEdited="onTenantEdited"
+          @tenantDeleted="onTenantDeleted">
+          <span slot="buttons">
+            <v-menu open-on-hover offset-y>
+      				<v-btn color="blue darken-2" dark slot="activator">
+      					<v-icon left dark>fa-bolt</v-icon>
+      					Tenant Actions
+      				</v-btn>
+      				<v-card>
+                <v-btn row class="red darken-2 white--text" @click="onDeleteTenant">
+                  Delete Tenant<v-icon class="white--text pl-2">fa-times</v-icon>
+                </v-btn>
+                <v-btn row class="blue white--text" @click="onEditTenant">
+                  Edit Tenant<v-icon class="white--text pl-2">fa-edit</v-icon>
+                </v-btn>
+      				</v-card>
+      			</v-menu>
+          </span>
+        </tenant-detail-header>
+        <v-tabs v-model="active">
+          <v-tabs-bar dark color="primary">
+            <v-tabs-item key="microservices" href="#microservices">
+              Microservices
+            </v-tabs-item>
+            <v-tabs-item key="scripts" href="#scripts">
+              Scripts
+            </v-tabs-item>
+            <v-tabs-slider></v-tabs-slider>
+          </v-tabs-bar>
+          <v-tabs-items>
+            <v-tabs-content key="microservices" id="microservices">
+              <microservice-list :topology="tenantTopology"
+                @microserviceClicked="onMicroserviceClicked">
+              </microservice-list>
+            </v-tabs-content>
+            <v-tabs-content key="scripts" id="scripts">
+              <scripts-manager :tenantId="tenantId">
+              </scripts-manager>
+            </v-tabs-content>
+          </v-tabs-items>
+        </v-tabs>
+      </div>
+      <div slot="actions">
+        <navigation-action-button icon="fa-edit" tooltip="Edit Tenant"
+          @action="onEdit">
+        </navigation-action-button>
+        <navigation-action-button icon="fa-times" tooltip="Delete Tenant"
+          @action="onDelete">
+        </navigation-action-button>
+      </div>
+    </navigation-page>
+    <tenant-update-dialog ref="edit" :tenantId="tenant.id"
+      @tenantUpdated="onTenantEdited">
+    </tenant-update-dialog>
+    <tenant-delete-dialog ref="delete" :tenantId="tenant.id"
+      @tenantDeleted="onTenantDeleted">
+    </tenant-delete-dialog>
   </div>
 </template>
 
 <script>
+import NavigationPage from '../common/NavigationPage'
+import NavigationActionButton from '../common/NavigationActionButton'
 import FloatingActionButton from '../common/FloatingActionButton'
 import TenantDetailHeader from './TenantDetailHeader'
 import MicroserviceList from '../microservice/MicroserviceList'
@@ -66,6 +84,8 @@ export default {
   }),
 
   components: {
+    NavigationPage,
+    NavigationActionButton,
     FloatingActionButton,
     TenantDetailHeader,
     MicroserviceList,
@@ -120,12 +140,18 @@ export default {
       }
       this.$store.commit('currentSection', section)
     },
-
+    // Called to edit tenant.
+    onEdit: function () {
+      this.$refs['update'].onOpenDialog()
+    },
     // Called after tenant is edited.
     onTenantEdited: function () {
       this.$emit('refresh')
     },
-
+    // Called to delete tenant.
+    onDelete: function () {
+      this.$refs['delete'].showDeleteDialog()
+    },
     // Called after tenant is deleted.
     onTenantDeleted: function () {
       this.$router.push('/system/tenants')
