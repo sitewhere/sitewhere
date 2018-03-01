@@ -27,18 +27,25 @@ public interface IDeviceTypeCreateRequest {
     public String getToken();
 
     /**
-     * Get token of device asset type.
-     * 
-     * @return
-     */
-    public String getAssetTypeToken();
-
-    /**
-     * Get name that describes specification.
+     * Get name.
      * 
      * @return
      */
     public String getName();
+
+    /**
+     * Get description.
+     * 
+     * @return
+     */
+    public String getDescription();
+
+    /**
+     * Get URL for image.
+     * 
+     * @return
+     */
+    public String getImageUrl();
 
     /**
      * Get container policy.

@@ -13,10 +13,7 @@ import org.apache.commons.logging.LogFactory;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.DeviceType;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
-import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceType;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceType;
 
@@ -29,15 +26,11 @@ import com.sitewhere.spi.device.IDeviceType;
 public class DeviceTypeMarshalHelper {
 
     /** Static logger instance */
+    @SuppressWarnings("unused")
     private static Log LOGGER = LogFactory.getLog(DeviceTypeMarshalHelper.class);
 
     /** Device Management */
     private IDeviceManagement deviceManagement;
-
-    /**
-     * Indicates whether device type asset information is to be included
-     */
-    private boolean includeAsset = true;
 
     public DeviceTypeMarshalHelper(IDeviceManagement deviceManagement) {
 	this.deviceManagement = deviceManagement;
@@ -47,42 +40,20 @@ public class DeviceTypeMarshalHelper {
      * Convert a device type for marshaling.
      * 
      * @param source
-     * @param manager
      * @return
      * @throws SiteWhereException
      */
-    public MarshaledDeviceType convert(IDeviceType source, IAssetManagement assetManagement) throws SiteWhereException {
-	MarshaledDeviceType deviceType = new MarshaledDeviceType();
+    public DeviceType convert(IDeviceType source) throws SiteWhereException {
+	DeviceType deviceType = new DeviceType();
 	MetadataProviderEntity.copy(source, deviceType);
 	deviceType.setId(source.getId());
 	deviceType.setToken(source.getToken());
 	deviceType.setName(source.getName());
-	deviceType.setAssetTypeId(source.getAssetTypeId());
-
-	// Look up asset type reference and handle asset not found.
-	IAssetType assetType = assetManagement.getAssetType(source.getAssetTypeId());
-	if (assetType == null) {
-	    LOGGER.warn("Device type has reference to non-existent asset type.");
-	    assetType = new InvalidAssetType();
-	}
-
-	deviceType.setAssetTypeName(assetType.getName());
-	deviceType.setAssetTypeImageUrl(assetType.getImageUrl());
-	if (isIncludeAsset()) {
-	    deviceType.setAssetType(assetType);
-	}
+	deviceType.setDescription(source.getDescription());
+	deviceType.setImageUrl(source.getImageUrl());
 	deviceType.setContainerPolicy(source.getContainerPolicy());
 	deviceType.setDeviceElementSchema((DeviceElementSchema) source.getDeviceElementSchema());
 	return deviceType;
-    }
-
-    public boolean isIncludeAsset() {
-	return includeAsset;
-    }
-
-    public DeviceTypeMarshalHelper setIncludeAsset(boolean includeAsset) {
-	this.includeAsset = includeAsset;
-	return this;
     }
 
     public IDeviceManagement getDeviceManagement() {

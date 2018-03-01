@@ -20,7 +20,7 @@
           :url="'/assets/' + assignment.asset.token">
         </linked-header-field>
         <linked-header-field label="Assigned device"
-          :text="assignment.device.deviceType.assetTypeName"
+          :text="assignment.device.deviceType.name"
           :url="'/devices/' + assignment.device.token">
         </linked-header-field>
         <header-field label="Created date">

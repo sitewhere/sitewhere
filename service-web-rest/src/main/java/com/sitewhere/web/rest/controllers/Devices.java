@@ -92,7 +92,6 @@ public class Devices extends RestControllerBase {
 	    throws SiteWhereException {
 	IDevice result = getDeviceManagement().createDevice(request);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
-	helper.setIncludeAsset(false);
 	helper.setIncludeAssignment(false);
 	return helper.convert(result, getAssetManagement());
     }
@@ -110,13 +109,11 @@ public class Devices extends RestControllerBase {
 	    @ApiParam(value = "Device token", required = true) @PathVariable String deviceToken,
 	    @ApiParam(value = "Include device type information", required = false) @RequestParam(defaultValue = "true") boolean includeDeviceType,
 	    @ApiParam(value = "Include assignment if associated", required = false) @RequestParam(defaultValue = "true") boolean includeAssignment,
-	    @ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset,
 	    @ApiParam(value = "Include detailed nested device information", required = false) @RequestParam(defaultValue = "false") boolean includeNested)
 	    throws SiteWhereException {
 	IDevice result = assertDeviceByToken(deviceToken);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeDeviceType(includeDeviceType);
-	helper.setIncludeAsset(includeAsset);
 	helper.setIncludeAssignment(includeAssignment);
 	helper.setIncludeNested(includeNested);
 	return helper.convert(result, getAssetManagement());
@@ -140,7 +137,6 @@ public class Devices extends RestControllerBase {
 	IDevice existing = assertDeviceByToken(deviceToken);
 	IDevice result = getDeviceManagement().updateDevice(existing.getId(), request);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
-	helper.setIncludeAsset(true);
 	helper.setIncludeAssignment(true);
 	return helper.convert(result, getAssetManagement());
     }
@@ -160,7 +156,6 @@ public class Devices extends RestControllerBase {
 	IDevice existing = assertDeviceByToken(deviceToken);
 	IDevice result = getDeviceManagement().deleteDevice(existing.getId(), force);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
-	helper.setIncludeAsset(true);
 	helper.setIncludeAssignment(true);
 	return helper.convert(result, getAssetManagement());
     }
@@ -240,7 +235,6 @@ public class Devices extends RestControllerBase {
 	IDevice existing = assertDeviceByToken(deviceToken);
 	IDevice updated = getDeviceManagement().createDeviceElementMapping(existing.getId(), request);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
-	helper.setIncludeAsset(false);
 	helper.setIncludeAssignment(false);
 	return helper.convert(updated, getAssetManagement());
     }
@@ -255,7 +249,6 @@ public class Devices extends RestControllerBase {
 	IDevice existing = assertDeviceByToken(deviceToken);
 	IDevice updated = getDeviceManagement().deleteDeviceElementMapping(existing.getId(), path);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
-	helper.setIncludeAsset(false);
 	helper.setIncludeAssignment(false);
 	return helper.convert(updated, getAssetManagement());
     }
@@ -316,7 +309,6 @@ public class Devices extends RestControllerBase {
 		startDate, endDate);
 	ISearchResults<IDevice> results = getDeviceManagement().listDevices(includeDeleted, criteria);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
-	helper.setIncludeAsset(true);
 	helper.setIncludeDeviceType(includeDeviceType);
 	helper.setIncludeAssignment(includeAssignment);
 	List<IDevice> devicesConv = new ArrayList<IDevice>();
@@ -346,7 +338,6 @@ public class Devices extends RestControllerBase {
 	IDeviceGroup group = assertDeviceGroup(groupToken);
 	List<IDevice> matches = DeviceGroupUtils.getDevicesInGroup(group, criteria, getDeviceManagement());
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
-	helper.setIncludeAsset(true);
 	helper.setIncludeDeviceType(includeDeviceType);
 	helper.setIncludeAssignment(includeAssignment);
 	List<IDevice> devicesConv = new ArrayList<IDevice>();
@@ -376,7 +367,6 @@ public class Devices extends RestControllerBase {
 	Collection<IDevice> matches = DeviceGroupUtils.getDevicesInGroupsWithRole(role, criteria,
 		getDeviceManagement());
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
-	helper.setIncludeAsset(true);
 	helper.setIncludeDeviceType(includeDeviceType);
 	helper.setIncludeAssignment(includeAssignment);
 	List<IDevice> devicesConv = new ArrayList<IDevice>();

@@ -6,27 +6,19 @@
       hideButtons="true">
       <v-stepper v-model="step">
         <v-stepper-header>
-          <v-stepper-step step="1" :complete="step > 1">Asset Association</v-stepper-step>
+          <v-stepper-step step="1" :complete="step > 1">Asset Assignment</v-stepper-step>
           <v-divider></v-divider>
           <v-stepper-step step="2">Metadata<small>Optional</small></v-stepper-step>
         </v-stepper-header>
         <v-stepper-content step="1">
           <v-card flat>
             <v-card-text>
-              <v-container fluid>
-                <v-layout row wrap>
-                  <v-flex xs12>
-                    <v-checkbox label="Associate device with an asset?"
-                      v-model="assnAssociateAsset" light>
-                    </v-checkbox>
-                  </v-flex>
-                  <v-flex xs12>
-                    <asset-chooser :assetToken="assnAssetToken"
-                      @assetUpdated="onAssetUpdated">
-                    </asset-chooser>
-                  </v-flex>
-                </v-layout>
-              </v-container>
+              <v-checkbox label="Assign device to an asset?"
+                v-model="assnAssociateAsset" light>
+              </v-checkbox>
+              <asset-chooser v-if="assnAssociateAsset" :assetToken="assnAssetToken"
+                @assetUpdated="onAssetUpdated">
+              </asset-chooser>
             </v-card-text>
           </v-card>
           <v-card-actions>
@@ -74,7 +66,6 @@ export default {
     assnAssociateAsset: false,
     assnAssetToken: null,
     metadata: [],
-    assetModules: [],
     error: null
   }),
 

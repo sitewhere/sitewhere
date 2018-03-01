@@ -13,8 +13,8 @@
       </device-list-filter-bar>
       <v-container fluid grid-list-md  v-if="devices">
         <v-layout row wrap>
-           <v-flex xs6 v-for="(device, index) in devices" :key="device.hardwareId">
-            <device-list-panel :device="device" @assigned="refresh"
+           <v-flex xs6 v-for="(device, index) in devices" :key="device.token">
+            <device-list-panel :device="device" @assignDevice="onAssignDevice"
               @deviceOpened="onOpenDevice">
             </device-list-panel>
           </v-flex>
@@ -24,6 +24,7 @@
         @pagingUpdated="updatePaging">
       </pager>
       <device-create-dialog @deviceAdded="onDeviceAdded"/>
+      <assignment-create-dialog ref="assign"/>
     </div>
   </navigation-page>
 </template>
@@ -35,6 +36,7 @@ import Pager from '../common/Pager'
 import DeviceListPanel from './DeviceListPanel'
 import DeviceListFilterBar from './DeviceListFilterBar'
 import DeviceCreateDialog from './DeviceCreateDialog'
+import AssignmentCreateDialog from '../assignments/AssignmentCreateDialog'
 import {_listFilteredDevices} from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -64,7 +66,8 @@ export default {
     Pager,
     DeviceListPanel,
     DeviceListFilterBar,
-    DeviceCreateDialog
+    DeviceCreateDialog,
+    AssignmentCreateDialog
   },
 
   methods: {
@@ -98,6 +101,13 @@ export default {
     onFilterUpdated: function (filter) {
       this.$data.filter = filter
       this.refresh()
+    },
+
+    // Open device assignment dialog.
+    onAssignDevice: function (device) {
+      let assignDialog = this.$refs['assign']
+      assignDialog.token = device.token
+      assignDialog.onOpenDialog()
     },
 
     // Called when a new device is added.

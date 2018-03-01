@@ -1,5 +1,5 @@
 <template>
-  <navigation-page v-if="device" icon="developer_board" title="Manage Device">
+  <navigation-page v-if="device" icon="fa-microchip" title="Manage Device">
     <div slot="content">
       <device-detail-header :device="device" @deviceDeleted="onDeviceDeleted">
       </device-detail-header>

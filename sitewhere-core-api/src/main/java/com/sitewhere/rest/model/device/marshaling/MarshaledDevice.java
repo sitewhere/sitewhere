@@ -27,15 +27,6 @@ public class MarshaledDevice extends Device {
     /** Current device assignment */
     private DeviceAssignment assignment;
 
-    /** Asset token from device specification (only for marshaling) */
-    private String assetToken;
-
-    /** Asset name from device specification (only for marshaling) */
-    private String assetName;
-
-    /** Asset image url from device specification (only for marshaling) */
-    private String assetImageUrl;
-
     public DeviceType getDeviceType() {
 	return deviceType;
     }
@@ -50,29 +41,5 @@ public class MarshaledDevice extends Device {
 
     public void setAssignment(DeviceAssignment assignment) {
 	this.assignment = assignment;
-    }
-
-    public String getAssetToken() {
-	return assetToken;
-    }
-
-    public void setAssetToken(String assetToken) {
-	this.assetToken = assetToken;
-    }
-
-    public String getAssetName() {
-	return assetName;
-    }
-
-    public void setAssetName(String assetName) {
-	this.assetName = assetName;
-    }
-
-    public String getAssetImageUrl() {
-	return assetImageUrl;
-    }
-
-    public void setAssetImageUrl(String assetImageUrl) {
-	this.assetImageUrl = assetImageUrl;
     }
 }

@@ -85,7 +85,7 @@ export default {
       return {
         'background-color': '#fff',
         'background-image': 'url(' + this.area.imageUrl + ')',
-        'background-size': 'cover',
+        'background-size': 'contain',
         'background-repeat': 'no-repeat',
         'background-position': '50% 50%',
         'border': '1px solid #eee'

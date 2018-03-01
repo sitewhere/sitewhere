@@ -13,54 +13,6 @@ assetBuilder.persist assetType
 // Create Device Asset Types //
 // ######################### //
 
-assetType = assetBuilder.newAssetType 'galaxytab3', 'Galaxy Tab 3'
-assetType.asDevice() withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/misc/android-logo.png'
-assetType.withDescription 'This thin, lightweight Android tablet features a 7-inch touch display along with the same familiar interface as other Samsung Galaxy devices, making it easy to use. Use it to quickly browse the web, watch movies, read e-books, or download apps from Google Play.'
-assetType.metadata 'manufacturer', 'Samsung' metadata 'cpu', '1.2ghz' metadata 'memory', '1gb'
-assetBuilder.persist assetType
-
-assetType = assetBuilder.newAssetType 'raspberrypi', 'Raspberry Pi'
-assetType.asDevice() withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/misc/raspberry-pi.jpg'
-assetType.withDescription 'The Raspberry Pi is a credit-card-sized single-board computer developed in the UK by the Raspberry Pi Foundation with the intention of promoting the teaching of basic computer science in schools.'
-assetType.metadata 'manufacturer', 'Raspberry Pi Foundation' metadata 'weight', '1.000' metadata 'memory', '2kb'
-assetBuilder.persist assetType
-
-assetType = assetBuilder.newAssetType 'mt90', 'MeiTrack MT90'
-assetType.asDevice() withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/meitrack/mt90.jpg'
-assetType.withDescription 'MT90 is a waterproof GPS personal tracker suitable for lone workers, kids, aged, pet, assets, vehicle and fleet management.'
-assetType.metadata 'manufacturer', 'MeiTrack' metadata 'weight', '1.000' metadata 'memory', '8kb'
-assetBuilder.persist assetType
-
-assetType = assetBuilder.newAssetType 'gw1', 'Gateway Device'
-assetType.asDevice() withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/misc/gateway.gif'
-assetType.withDescription 'Sample gateway for testing nested device configurations.'
-assetType.metadata 'manufacturer', 'Advantech'
-assetBuilder.persist assetType
-
-assetType = assetBuilder.newAssetType 'uno', 'Arduino Uno'
-assetType.asDevice() withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/arduino/uno.jpg'
-assetType.withDescription 'The Arduino Uno is a microcontroller board based on the ATmega328.'
-assetType.metadata 'manufacturer', 'Arduino'
-assetBuilder.persist assetType
-
-assetType = assetBuilder.newAssetType 'mega2560', 'Arduino Mega 2560'
-assetType.asDevice() withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/arduino/mega2560.jpg'
-assetType.withDescription 'The Arduino Mega 2560 is a microcontroller board based on the ATmega2560.'
-assetType.metadata 'manufacturer', 'Arduino'
-assetBuilder.persist assetType
-
-assetType = assetBuilder.newAssetType 'openhab', 'openHAB Virtual Device'
-assetType.asDevice() withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/gateway/openhab.png'
-assetType.withDescription 'This is a virual device type for testing openHAB functionality.'
-assetType.metadata 'manufacturer', 'openHAB'
-assetBuilder.persist assetType
-
-assetType = assetBuilder.newAssetType 'nodered', 'Node-RED Virtual Device'
-assetType.asDevice() withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/gateway/node-red.png'
-assetType.withDescription 'This is a virual device type for testing Node-RED functionality.'
-assetType.metadata 'manufacturer', 'Node-RED'
-assetBuilder.persist assetType
-
 assetType = assetBuilder.newAssetType 'ekahau-a4', 'Ekahau A4 Tag'
 assetType.asDevice() withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/ekahau/ekahau-a4-tag.jpg'
 assetType.withDescription 'A4 Wi-Fi tags act as small computers that transmit data to the Ekahau Vision server which determines asset location and status, displayed in the Vision software interface.'
@@ -94,24 +46,6 @@ assetType = assetBuilder.newAssetType 'ekahau-HS1', 'Ekahau HS1 Humidity Sensor'
 assetType.asDevice() withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/ekahau/ekahau-humidity-sensor.jpg'
 assetType.withDescription 'The Ekahau HS1 humidity tags provide an automated way to measure and monitor the relative humidity and surrouding temperature.'
 assetType.metadata 'manufacturer', 'Ekahau'
-assetBuilder.persist assetType
-
-assetType = assetBuilder.newAssetType 'laipac-S911', 'S911 Bracelet Locator HC'
-assetType.asDevice() withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/laipac/laipac-s-911bl.png'
-assetType.withDescription 'S911 Bracelet Locator HC (Healthcare) can be used to provide location of the patients, physicians, nurses, and police on duty and assist patients unable to communicate due to issues of injury, health or age.'
-assetType.metadata 'manufacturer', 'Ekahau'
-assetBuilder.persist assetType
-
-assetType = assetBuilder.newAssetType 'iphone6s', 'Apple iPhone 6S'
-assetType.asDevice() withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/misc/iphone6.jpg'
-assetType.withDescription "The only thing that's changed is everything. The moment you use iPhone 6s, you know you've never felt anything like it. With just a single press, 3D Touch lets you do more than ever. Live Photos brings your memories to life in a powerfully vivid way. And that's just the beginning. Take a deeper look at iPhone 6s, and you'll find innovation on every level."
-assetType.metadata 'manufacturer', 'Apple'
-assetBuilder.persist assetType
-
-assetType = assetBuilder.newAssetType 'ipad', 'Apple iPad'
-assetType.asDevice() withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/misc/ipad.jpg'
-assetType.withDescription "Even with its 12.9-inch Retina display, the largest and most capable iPad ever is only 6.9mm thin and weighs just 1.57 lbs. It has a powerful A9X chip with 64-bit desktop-class architecture, four speaker audio, advanced iSight and FaceTime HD cameras, Wi-Fi and LTE connectivity, iCloud, the breakthrough Touch ID fingerprint sensor, and up to 10 hours of battery life."
-assetType.metadata 'manufacturer', 'Apple'
 assetBuilder.persist assetType
 
 // ########################### //
@@ -172,38 +106,6 @@ assetBuilder.persist asset
 // #################### //
 // Create Device Assets //
 // #################### //
-
-asset = assetBuilder.newAsset '120381238-SERIAL-NUMBER-GALAXYTAB3', 'galaxytab3', 'Galaxy Phone 1'
-asset.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/misc/android-logo.png'
-assetBuilder.persist asset
-
-asset = assetBuilder.newAsset '234209937-SERIAL-NUMBER-RASPI', 'raspberrypi', 'Raspberry Pi 1'
-asset.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/misc/raspberry-pi.jpg'
-assetBuilder.persist asset
- 
-asset = assetBuilder.newAsset '234057124-SERIAL-NUMBER-MT90', 'mt90', 'MT90 Tracker 1'
-asset.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/meitrack/mt90.jpg'
-assetBuilder.persist asset
- 
-asset = assetBuilder.newAsset '548022735-SERIAL-NUMBER-GW1', 'gw1', 'Gateway Test 1'
-asset.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/misc/gateway.gif'
-assetBuilder.persist asset
- 
-asset = assetBuilder.newAsset '345820348-SERIAL-NUMBER-UNO', 'uno', 'Arduino Uno 1'
-asset.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/arduino/uno.jpg'
-assetBuilder.persist asset
- 
-asset = assetBuilder.newAsset '523483499-SERIAL-NUMBER-MEGA', 'mega2560', 'Arduino Mega2560 1'
-asset.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/arduino/mega2560.jpg'
-assetBuilder.persist asset
- 
-asset = assetBuilder.newAsset '872349273-SERIAL-NUMBER-OHAB', 'openhab', 'openHAB Test Device 1'
-asset.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/gateway/openhab.png'
-assetBuilder.persist asset
- 
-asset = assetBuilder.newAsset '193743433-SERIAL-NUMBER-NRED', 'nodered', 'Node-RED Test Device 1'
-asset.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/gateway/node-red.png'
-assetBuilder.persist asset
  
 asset = assetBuilder.newAsset '342349343-SERIAL-NUMBER-EKA4', 'ekahau-a4', 'Ekakau A4 1'
 asset.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/ekahau/ekahau-a4-tag.jpg'
@@ -227,18 +129,6 @@ assetBuilder.persist asset
  
 asset = assetBuilder.newAsset '398434398-SERIAL-NUMBER-HS1', 'ekahau-HS1', 'Ekakau HS1 1'
 asset.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/ekahau/ekahau-humidity-sensor.jpg'
-assetBuilder.persist asset
- 
-asset = assetBuilder.newAsset '239437373-SERIAL-NUMBER-S911', 'laipac-S911', 'Laipac S911 1'
-asset.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/laipac/laipac-s-911bl.png'
-assetBuilder.persist asset
- 
-asset = assetBuilder.newAsset '823473454-SERIAL-NUMBER-IP6S', 'iphone6s', 'iPhone 6S 1'
-asset.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/misc/iphone6.jpg'
-assetBuilder.persist asset
- 
-asset = assetBuilder.newAsset '682374234-SERIAL-NUMBER-IPAD', 'ipad', 'iPad 1'
-asset.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/misc/ipad.jpg'
 assetBuilder.persist asset
 
 // ###################### //

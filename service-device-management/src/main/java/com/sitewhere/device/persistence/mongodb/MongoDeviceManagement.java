@@ -52,7 +52,6 @@ import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -181,16 +180,8 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    uuid = UUID.randomUUID().toString();
 	}
 
-	IAssetType assetType = null;
-	if (request.getAssetTypeToken() != null) {
-	    assetType = getAssetManagement().getAssetTypeByToken(request.getAssetTypeToken());
-	    if (assetType == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidAssetTypeToken, ErrorLevel.ERROR);
-	    }
-	}
-
 	// Use common logic so all backend implementations work the same.
-	DeviceType deviceType = DeviceManagementPersistence.deviceTypeCreateLogic(assetType, request, uuid);
+	DeviceType deviceType = DeviceManagementPersistence.deviceTypeCreateLogic(request, uuid);
 
 	MongoCollection<Document> types = getMongoClient().getDeviceTypesCollection();
 	Document created = MongoDeviceType.toDocument(deviceType);
@@ -235,14 +226,8 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	Document match = assertDeviceType(id);
 	DeviceType deviceType = MongoDeviceType.fromDocument(match);
 
-	// Look up asset type if provided.
-	IAssetType assetType = null;
-	if (request.getAssetTypeToken() != null) {
-	    assetType = getAssetManagement().getAssetTypeByToken(request.getAssetTypeToken());
-	}
-
 	// Use common update logic.
-	DeviceManagementPersistence.deviceTypeUpdateLogic(assetType, request, deviceType);
+	DeviceManagementPersistence.deviceTypeUpdateLogic(request, deviceType);
 	Document updated = MongoDeviceType.toDocument(deviceType);
 
 	Document query = new Document(MongoDeviceType.PROP_ID, id);
@@ -1033,7 +1018,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	UUID deviceId = (UUID) match.get(MongoDeviceAssignment.PROP_DEVICE_ID);
 	Document deviceMatch = getDeviceDocumentById(deviceId);
 	deviceMatch.put(MongoDevice.PROP_ASSIGNMENT_ID, null);
-	query = new Document(MongoDeviceAssignment.PROP_ID, id);
+	query = new Document(MongoDevice.PROP_ID, deviceId);
 	MongoPersistence.update(devices, query, deviceMatch);
 
 	DeviceAssignment assignment = MongoDeviceAssignment.fromDocument(match);

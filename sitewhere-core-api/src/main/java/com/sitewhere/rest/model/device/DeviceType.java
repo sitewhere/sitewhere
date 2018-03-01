@@ -35,11 +35,14 @@ public class DeviceType extends MetadataProviderEntity implements IDeviceType, S
     /** Unique token */
     private String token;
 
-    /** Specification name */
+    /** Name */
     private String name;
 
-    /** Asset type id */
-    private UUID assetTypeId;
+    /** Decription */
+    private String description;
+
+    /** Image URL */
+    private String imageUrl;
 
     /** Device container policy */
     private DeviceContainerPolicy containerPolicy = DeviceContainerPolicy.Standalone;
@@ -84,15 +87,27 @@ public class DeviceType extends MetadataProviderEntity implements IDeviceType, S
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceType#getAssetTypeId()
+     * @see com.sitewhere.spi.device.IDeviceType#getDescription()
      */
     @Override
-    public UUID getAssetTypeId() {
-	return assetTypeId;
+    public String getDescription() {
+	return description;
     }
 
-    public void setAssetTypeId(UUID assetTypeId) {
-	this.assetTypeId = assetTypeId;
+    public void setDescription(String description) {
+	this.description = description;
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceType#getImageUrl()
+     */
+    @Override
+    public String getImageUrl() {
+	return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+	this.imageUrl = imageUrl;
     }
 
     /*

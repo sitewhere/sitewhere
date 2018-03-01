@@ -76,7 +76,7 @@ public class ScheduledJobMarshalHelper {
 	this.includeContextInfo = includeContextInfo;
 	this.assignmentHelper = new DeviceAssignmentMarshalHelper(deviceManagement).setIncludeDevice(true)
 		.setIncludeAsset(false);
-	this.deviceTypeHelper = new DeviceTypeMarshalHelper(deviceManagement).setIncludeAsset(false);
+	this.deviceTypeHelper = new DeviceTypeMarshalHelper(deviceManagement);
     }
 
     /**
@@ -170,7 +170,7 @@ public class ScheduledJobMarshalHelper {
 	if (deviceTypeToken != null) {
 	    IDeviceType deviceType = getDeviceManagement().getDeviceTypeByToken(deviceTypeToken);
 	    if (deviceType != null) {
-		job.getContext().put("deviceType", getDeviceTypeHelper().convert(deviceType, getAssetManagement()));
+		job.getContext().put("deviceType", getDeviceTypeHelper().convert(deviceType));
 	    }
 	    BatchCommandForCriteriaRequest criteria = BatchCommandInvocationJobParser.parse(job.getJobConfiguration());
 	    String html = CommandHtmlHelper.getHtml(criteria, getDeviceManagement(), "..");

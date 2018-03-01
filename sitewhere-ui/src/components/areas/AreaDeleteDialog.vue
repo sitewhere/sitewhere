@@ -6,13 +6,6 @@
         Are you sure you want to delete this area?
       </v-card-text>
     </delete-dialog>
-    <v-tooltip top>
-      <v-btn dark icon small
-        @click.stop="showDeleteDialog" slot="activator">
-        <v-icon class="grey--text">fa-times</v-icon>
-      </v-btn>
-      <span>Delete Area</span>
-    </v-tooltip>
   </span>
 </template>
 

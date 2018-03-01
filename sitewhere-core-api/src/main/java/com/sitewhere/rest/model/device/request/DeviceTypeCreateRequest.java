@@ -31,14 +31,17 @@ public class DeviceTypeCreateRequest implements IDeviceTypeCreateRequest, Serial
     /** Serialization version identifier */
     private static final long serialVersionUID = 1L;
 
-    /** Specification token (Optional) */
+    /** Reference token (Optional) */
     private String token;
 
-    /** Specification name */
+    /** Name */
     private String name;
 
-    /** Asset type token */
-    private String assetTypeToken;
+    /** Decription */
+    private String description;
+
+    /** Image URL */
+    private String imageUrl;
 
     /** Indicates if device instances can contain nested devices */
     private DeviceContainerPolicy containerPolicy;
@@ -63,15 +66,27 @@ public class DeviceTypeCreateRequest implements IDeviceTypeCreateRequest, Serial
 
     /*
      * @see
-     * com.sitewhere.spi.device.request.IDeviceTypeCreateRequest#getAssetTypeToken()
+     * com.sitewhere.spi.device.request.IDeviceTypeCreateRequest#getDescription()
      */
     @Override
-    public String getAssetTypeToken() {
-	return assetTypeToken;
+    public String getDescription() {
+	return description;
     }
 
-    public void setAssetTypeToken(String assetTypeToken) {
-	this.assetTypeToken = assetTypeToken;
+    public void setDescription(String description) {
+	this.description = description;
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.request.IDeviceTypeCreateRequest#getImageUrl()
+     */
+    @Override
+    public String getImageUrl() {
+	return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+	this.imageUrl = imageUrl;
     }
 
     /*
@@ -130,11 +145,20 @@ public class DeviceTypeCreateRequest implements IDeviceTypeCreateRequest, Serial
 	/** Request being built */
 	private DeviceTypeCreateRequest request = new DeviceTypeCreateRequest();
 
-	public Builder(String token, String assetTypeToken, String name) {
+	public Builder(String token, String name) {
 	    request.setToken(token);
-	    request.setAssetTypeToken(assetTypeToken);
 	    request.setName(name);
 	    request.setContainerPolicy(DeviceContainerPolicy.Standalone);
+	}
+
+	public Builder withDescription(String description) {
+	    request.setDescription(description);
+	    return this;
+	}
+
+	public Builder withImageUrl(String imageUrl) {
+	    request.setImageUrl(imageUrl);
+	    return this;
 	}
 
 	public Builder makeComposite() {

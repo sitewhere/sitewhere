@@ -119,12 +119,10 @@ public class DeviceManagementRequestBuilder {
      * 
      * @param token
      * @param name
-     * @param assetModuleId
-     * @param assetId
      * @return
      */
-    public DeviceTypeCreateRequest.Builder newDeviceType(String token, String assetTypeToken, String name) {
-	return new DeviceTypeCreateRequest.Builder(token, assetTypeToken, name);
+    public DeviceTypeCreateRequest.Builder newDeviceType(String token, String name) {
+	return new DeviceTypeCreateRequest.Builder(token, name);
     }
 
     /**

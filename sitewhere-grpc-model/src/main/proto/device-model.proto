@@ -35,11 +35,12 @@ message GDeviceElementSchema {
 // Request for creating a device type.
 message GDeviceTypeCreateRequest {
 	GOptionalString token = 1;
-	string assetTypeToken = 2;
-	string name = 3;
-	GDeviceContainerPolicy containerPolicy = 4;
-	GDeviceElementSchema deviceElementSchema = 5;
-	map<string, string> metadata = 6;
+	GOptionalString name = 2;
+	GOptionalString description = 3;
+	GOptionalString imageUrl = 4;
+	GDeviceContainerPolicy containerPolicy = 5;
+	GDeviceElementSchema deviceElementSchema = 6;
+	map<string, string> metadata = 7;
 }
 
 // Criteria for searching device types.
@@ -64,11 +65,12 @@ message GDeviceType {
 	GUUID id = 1;
 	string token = 2;
 	string name = 3;
-	GUUID assetTypeId = 4;
-	GDeviceContainerPolicy containerPolicy = 5;
-	GDeviceElementSchema deviceElementSchema = 6;
-	map<string, string> metadata = 7;
-	GEntityInformation entityInformation = 8;
+	string description = 4;
+	string imageUrl = 5;
+	GDeviceContainerPolicy containerPolicy = 6;
+	GDeviceElementSchema deviceElementSchema = 7;
+	map<string, string> metadata = 8;
+	GEntityInformation entityInformation = 9;
 }
 
 // #######################

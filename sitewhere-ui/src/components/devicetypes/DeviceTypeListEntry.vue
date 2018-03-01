@@ -3,7 +3,7 @@
     <v-card-text class="deviceType" @click="onOpenDeviceType">
       <div class="type-logo" :style="logoStyle"></div>
       <div class="type-name">{{deviceType.name}}</div>
-      <div class="type-desc">{{deviceType.assetType.description}}</div>
+      <div class="type-desc">{{deviceType.description}}</div>
     </v-card-text>
   </v-card>
 </template>
@@ -21,7 +21,7 @@ export default {
     logoStyle: function () {
       return {
         'background-color': '#fff',
-        'background-image': 'url(' + this.deviceType.assetType.imageUrl + ')',
+        'background-image': 'url(' + this.deviceType.imageUrl + ')',
         'background-size': 'contain',
         'background-repeat': 'no-repeat',
         'background-position': '50% 50%',
@@ -45,7 +45,7 @@ export default {
 
 <style scoped>
 .deviceType {
-  min-height: 140px;
+  min-height: 122px;
   overflow-y: hidden;
 }
 

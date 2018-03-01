@@ -7,8 +7,6 @@
  */
 package com.sitewhere.spi.device;
 
-import java.util.UUID;
-
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 
@@ -20,18 +18,25 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
 public interface IDeviceType extends IMetadataProviderEntity {
 
     /**
-     * Get name that describes specification.
+     * Get name.
      * 
      * @return
      */
     public String getName();
 
     /**
-     * Get id of device asset type.
+     * Get description.
      * 
      * @return
      */
-    public UUID getAssetTypeId();
+    public String getDescription();
+
+    /**
+     * Get URL for image.
+     * 
+     * @return
+     */
+    public String getImageUrl();
 
     /**
      * Indicates whether this device contains other devices.

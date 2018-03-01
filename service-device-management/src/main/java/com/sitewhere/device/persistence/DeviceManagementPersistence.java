@@ -40,7 +40,6 @@ import com.sitewhere.spi.area.request.IAreaCreateRequest;
 import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
 import com.sitewhere.spi.asset.IAsset;
-import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.common.ILocation;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
@@ -84,10 +83,11 @@ public class DeviceManagementPersistence extends Persistence {
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceType deviceTypeCreateLogic(IAssetType assetType, IDeviceTypeCreateRequest request, String token)
+    public static DeviceType deviceTypeCreateLogic(IDeviceTypeCreateRequest request, String token)
 	    throws SiteWhereException {
 	DeviceType type = new DeviceType();
 	type.setId(UUID.randomUUID());
+	type.setDescription(request.getDescription() != null ? request.getDescription() : "");
 
 	// Unique token is required.
 	require("Token", token);
@@ -97,9 +97,9 @@ public class DeviceManagementPersistence extends Persistence {
 	require("Name", request.getName());
 	type.setName(request.getName());
 
-	// Asset type is required.
-	requireNotNull("Asset Type", assetType);
-	type.setAssetTypeId(assetType.getId());
+	// Image URL is required.
+	require("Image URL", request.getImageUrl());
+	type.setImageUrl(request.getImageUrl());
 
 	// Container policy is required.
 	requireNotNull("Container Policy", request.getContainerPolicy());
@@ -123,15 +123,23 @@ public class DeviceManagementPersistence extends Persistence {
     /**
      * Common logic for updating a device type from request.
      * 
-     * @param assetType
      * @param request
      * @param target
      * @throws SiteWhereException
      */
-    public static void deviceTypeUpdateLogic(IAssetType assetType, IDeviceTypeCreateRequest request, DeviceType target)
+    public static void deviceTypeUpdateLogic(IDeviceTypeCreateRequest request, DeviceType target)
 	    throws SiteWhereException {
+	if (request.getToken() != null) {
+	    target.setToken(request.getToken());
+	}
 	if (request.getName() != null) {
 	    target.setName(request.getName());
+	}
+	if (request.getDescription() != null) {
+	    target.setDescription(request.getDescription());
+	}
+	if (request.getImageUrl() != null) {
+	    target.setImageUrl(request.getImageUrl());
 	}
 	if (request.getContainerPolicy() != null) {
 	    target.setContainerPolicy(request.getContainerPolicy());
@@ -148,9 +156,6 @@ public class DeviceManagementPersistence extends Persistence {
 		}
 		target.setDeviceElementSchema((DeviceElementSchema) schema);
 	    }
-	}
-	if (assetType != null) {
-	    target.setAssetTypeId(assetType.getId());
 	}
 	if (request.getMetadata() != null) {
 	    target.getMetadata().clear();

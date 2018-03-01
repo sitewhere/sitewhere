@@ -15,6 +15,9 @@ Integer criticalTemp = 190
 Integer maxTemp = 200
 
 def randomId = { java.util.UUID.randomUUID().toString() }
+def randomDeviceToken = { type ->
+	'' + ((int)(Math.random() * 100000)) + '-' + type.token.toUpperCase() + '-' + ((int)(Math.random() * 10000000))
+}
 def randomItem = { items ->
 	items.get((int)(Math.random() * items.size()))
 }
@@ -39,7 +42,7 @@ logger.info "[Create Area Type] ${regionType.name}"
 // Southeast region.
 def seRegion = deviceBuilder.newArea regionType.token, null, 'southeast', 'Southeast Region'
 seRegion.withDescription 'Region including the southeastern portion of the United States.'
-seRegion.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/construction.jpg'
+seRegion.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/areas/region-se.jpg'
 seRegion.openStreetMap 34.10469794977326, -84.23966646194458, 15
 seRegion = deviceBuilder.persist seRegion
 logger.info "[Create Area] ${seRegion.name}"
@@ -101,7 +104,6 @@ sensorsItems << assnChoice('Sensor', 'peachtree', '392455494-SERIAL-NUMBER-T301W
 sensorsItems << assnChoice('Sensor', 'peachtree', '734539339-SERIAL-NUMBER-TS1')
 sensorsItems << assnChoice('Sensor', 'peachtree', '193835744-SERIAL-NUMBER-TS1')
 sensorsItems << assnChoice('Sensor', 'peachtree', '398434398-SERIAL-NUMBER-HS1')
-sensorsItems << assnChoice('Sensor', 'peachtree', '239437373-SERIAL-NUMBER-S911')
 
 def addDeviceType = { type -> 
 	type = deviceBuilder.persist type
@@ -116,33 +118,56 @@ def addCommand = { type, command ->
 }
 
 // Android device type.
-def android = deviceBuilder.newDeviceType 'android', 'galaxytab3', 'Android Device'
+def android = deviceBuilder.newDeviceType 'galaxytab3', 'Galaxy Tab 3'
+android.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/misc/android-logo.png'
+android.withDescription 'This thin, lightweight Android tablet features a 7-inch touch display along with the same familiar interface as other Samsung Galaxy devices, making it easy to use. Use it to quickly browse the web, watch movies, read e-books, or download apps from Google Play.'
+android.metadata 'manufacturer', 'Samsung' metadata 'cpu', '1.2ghz' metadata 'memory', '1gb'
 android = addDeviceType android
 def android_bgcolor = deviceBuilder.newCommand randomId(), 'http://android/example', 'changeBackground' withDescription 'Change background color of application.' withStringParameter('color', true)
 addCommand android, android_bgcolor
 personnel << android
 
+// Arduino UNO.
+def uno = deviceBuilder.newDeviceType 'uno', 'Arduino UNO'
+uno.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/arduino/uno.jpg'
+uno.withDescription 'The Arduino Uno is a microcontroller board based on the ATmega328.'
+uno.metadata 'manufacturer', 'Arduino'
+uno = addDeviceType uno
+sensors << uno
+
 // Arduino high memory device type.
-def arduino = deviceBuilder.newDeviceType 'arduino', 'mega2560', 'Arduino High Memory'
+def arduino = deviceBuilder.newDeviceType 'mega2560', 'Arduino Mega 2560'
+arduino.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/arduino/mega2560.jpg'
+arduino.withDescription 'The Arduino Mega 2560 is a microcontroller board based on the ATmega2560.'
+arduino.metadata 'manufacturer', 'Arduino'
 arduino = addDeviceType arduino
 def arduinohm_serial = deviceBuilder.newCommand randomId(), 'http://arduino/example', 'serialPrintln' withDescription 'Print a message to the serial output.' withStringParameter('message', true)
 addCommand arduino, arduinohm_serial
 sensors << arduino
 
 // Raspberry Pi device type.
-def rpi = deviceBuilder.newDeviceType 'rpi', 'raspberrypi', 'Raspberry Pi'
+def rpi = deviceBuilder.newDeviceType 'raspberrypi', 'Raspberry Pi'
+rpi.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/misc/raspberry-pi.jpg'
+rpi.withDescription 'The Raspberry Pi is a credit-card-sized single-board computer developed in the UK by the Raspberry Pi Foundation with the intention of promoting the teaching of basic computer science in schools.'
+rpi.metadata 'manufacturer', 'Raspberry Pi Foundation' metadata 'weight', '1.000' metadata 'memory', '2kb'
 rpi = addDeviceType rpi
 def rpi_hello = deviceBuilder.newCommand randomId(), 'http://raspberrypi/example', 'helloWorld' withDescription 'Request a hello world response from device.' withStringParameter('greeting', true) withBooleanParameter('loud', true)
 addCommand rpi, rpi_hello
 sensors << rpi
 
 // Meitrack device type.
-def meitrack = deviceBuilder.newDeviceType 'meitrack', 'mt90', 'MeiTrack GPS'
+def meitrack = deviceBuilder.newDeviceType 'mt90', 'MeiTrack MT90'
+meitrack.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/meitrack/mt90.jpg'
+meitrack.withDescription 'MT90 is a waterproof GPS personal tracker suitable for lone workers, kids, aged, pet, assets, vehicle and fleet management.'
+meitrack.metadata 'manufacturer', 'MeiTrack' metadata 'weight', '1.000' metadata 'memory', '8kb'
 meitrack = addDeviceType meitrack
 heavyEquipment << meitrack
 
 // Gateway default device type.
-def gateway = deviceBuilder.newDeviceType 'gateway', 'gw1', 'Gateway Default'
+def gateway = deviceBuilder.newDeviceType 'gateway', 'Gateway Default'
+gateway.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/misc/gateway.gif'
+gateway.withDescription 'Sample gateway for testing nested device configurations.'
+gateway.metadata 'manufacturer', 'Advantech'
 def schema = gateway.makeComposite() newSchema() addSlot 'Gateway Port 1', 'gw1'
 def dbus = schema.addUnit 'Default Bus', 'default'
 dbus.addUnit 'PCI Bus', 'pci' addSlot 'PCI Device 1', 'pci1' addSlot 'PCI Device 2', 'pci2'
@@ -152,7 +177,10 @@ gateway = addDeviceType gateway
 sensors << gateway
 
 // OpenHAB device type.
-def openhab = deviceBuilder.newDeviceType 'openhab', 'openhab', 'openHAB'
+def openhab = deviceBuilder.newDeviceType 'openhab', 'openHAB'
+openhab.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/gateway/openhab.png'
+openhab.withDescription 'This is a virual device type for testing openHAB functionality.'
+openhab.metadata 'manufacturer', 'openHAB'
 openhab = addDeviceType openhab
 def openhab_onoff = deviceBuilder.newCommand randomId(), ns, 'sendOnOffCommand' withDescription 'Send on/off command to an openHAB item.' withStringParameter('itemName', true) withStringParameter('command', true)
 addCommand openhab, openhab_onoff
@@ -161,22 +189,34 @@ addCommand openhab, openhab_openclose
 sensors << openhab
 
 // Node-RED device type.
-def nodered = deviceBuilder.newDeviceType 'nodered', 'nodered', 'Node-RED'
+def nodered = deviceBuilder.newDeviceType 'nodered', 'Node-RED'
+nodered.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/gateway/node-red.png'
+nodered.withDescription 'This is a virual device type for testing Node-RED functionality.'
+nodered.metadata 'manufacturer', 'Node-RED'
 nodered = addDeviceType nodered
-sensors << meitrack
+sensors << nodered
 
 // Laipac device type.
-def laipac = deviceBuilder.newDeviceType 'laipac', 'laipac-S911', 'Laipac Health Bracelet'
+def laipac = deviceBuilder.newDeviceType 'laipac-S911', 'S911 Bracelet Locator HC'
+laipac.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/laipac/laipac-s-911bl.png'
+laipac.withDescription 'S911 Bracelet Locator HC (Healthcare) can be used to provide location of the patients, physicians, nurses, and police on duty and assist patients unable to communicate due to issues of injury, health or age.'
+laipac.metadata 'manufacturer', 'Laipac'
 laipac = addDeviceType laipac
-personnel << meitrack
+personnel << laipac
 
 // iPhone device type.
-def iphone = deviceBuilder.newDeviceType 'iphone', 'iphone6s', 'Apple iPhone'
+def iphone = deviceBuilder.newDeviceType 'iphone6s', 'Apple iPhone 6S'
+iphone.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/misc/iphone6.jpg'
+iphone.withDescription "The only thing that's changed is everything. The moment you use iPhone 6s, you know you've never felt anything like it. With just a single press, 3D Touch lets you do more than ever. Live Photos brings your memories to life in a powerfully vivid way. And that's just the beginning. Take a deeper look at iPhone 6s, and you'll find innovation on every level."
+iphone.metadata 'manufacturer', 'Apple'
 iphone = addDeviceType iphone
 personnel << iphone
 
 // iPad device type.
-def ipad = deviceBuilder.newDeviceType 'ipad', 'ipad', 'Apple iPad'
+def ipad = deviceBuilder.newDeviceType 'ipad', 'Apple iPad'
+ipad.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/misc/ipad.jpg'
+ipad.withDescription "Even with its 12.9-inch Retina display, the largest and most capable iPad ever is only 6.9mm thin and weighs just 1.57 lbs. It has a powerful A9X chip with 64-bit desktop-class architecture, four speaker audio, advanced iSight and FaceTime HD cameras, Wi-Fi and LTE connectivity, iCloud, the breakthrough Touch ID fingerprint sensor, and up to 10 hours of battery life."
+ipad.metadata 'manufacturer', 'Apple'
 ipad = addDeviceType ipad
 personnel << ipad
 
@@ -330,9 +370,6 @@ def personElements = []
 def sensorElements = []
 devicesPerSite.times {
 	def type = randomItem(allDeviceTypes);
-	if (Math.random() > 0.75) {
-		type = meitrack
-	}
 	
 	def assnInfo
 	if (type in sensors) {
@@ -344,7 +381,7 @@ devicesPerSite.times {
 	}
 	
 	// Create a device.
-	def device = deviceBuilder.newDevice type.token, randomId() withComment "${assnInfo.title}. Device generated by model initializer."
+	def device = deviceBuilder.newDevice type.token, randomDeviceToken(type) withComment "${assnInfo.title} based on ${type.name}."
 	device = deviceBuilder.persist device
 	logger.info "[Create Device] ${device.token}"
 	

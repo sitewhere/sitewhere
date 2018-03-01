@@ -41,7 +41,7 @@ public class DeviceAssignmentMarshalHelper {
     private boolean includeArea = false;
 
     /** Indicates whether to include device type */
-    private boolean includeDeviceType = false;
+    private boolean includeDeviceType = true;
 
     /** Device management */
     private IDeviceManagement deviceManagement;
@@ -114,7 +114,6 @@ public class DeviceAssignmentMarshalHelper {
     protected DeviceMarshalHelper getDeviceHelper() {
 	if (deviceHelper == null) {
 	    deviceHelper = new DeviceMarshalHelper(getDeviceManagement());
-	    deviceHelper.setIncludeAsset(false);
 	    deviceHelper.setIncludeAssignment(false);
 	    deviceHelper.setIncludeDeviceType(isIncludeDeviceType());
 	}

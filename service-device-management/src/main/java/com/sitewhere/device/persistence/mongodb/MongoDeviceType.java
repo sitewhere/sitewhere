@@ -40,11 +40,14 @@ public class MongoDeviceType implements MongoConverter<IDeviceType> {
     /** Property for unique token */
     public static final String PROP_TOKEN = "tokn";
 
-    /** Property for specification name */
+    /** Property for name */
     public static final String PROP_NAME = "name";
 
-    /** Property for asset type id */
-    public static final String PROP_ASSET_TYPE_ID = "astd";
+    /** Property for description */
+    public static final String PROP_DESCRIPTION = "desc";
+
+    /** Property for image URL */
+    public static final String PROP_IMAGE_URL = "imgu";
 
     /** Property for container policy */
     public static final String PROP_CONTAINER_POLICY = "cpol";
@@ -82,7 +85,8 @@ public class MongoDeviceType implements MongoConverter<IDeviceType> {
 	target.append(PROP_ID, source.getId());
 	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_NAME, source.getName());
-	target.append(PROP_ASSET_TYPE_ID, source.getAssetTypeId());
+	target.append(PROP_DESCRIPTION, source.getDescription());
+	target.append(PROP_IMAGE_URL, source.getImageUrl());
 	target.append(PROP_CONTAINER_POLICY, source.getContainerPolicy().name());
 	MongoSiteWhereEntity.toDocument(source, target);
 	MongoMetadataProvider.toDocument(source, target);
@@ -109,14 +113,16 @@ public class MongoDeviceType implements MongoConverter<IDeviceType> {
 	UUID id = (UUID) source.get(PROP_ID);
 	String token = (String) source.get(PROP_TOKEN);
 	String name = (String) source.get(PROP_NAME);
-	UUID assetTypeId = (UUID) source.get(PROP_ASSET_TYPE_ID);
+	String description = (String) source.get(PROP_DESCRIPTION);
+	String imageUrl = (String) source.get(PROP_IMAGE_URL);
 	String containerPolicy = (String) source.get(PROP_CONTAINER_POLICY);
 	Binary schemaBytes = (Binary) source.get(PROP_DEVICE_ELEMENT_SCHEMA);
 
 	target.setId(id);
 	target.setToken(token);
-	target.setAssetTypeId(assetTypeId);
 	target.setName(name);
+	target.setDescription(description);
+	target.setImageUrl(imageUrl);
 
 	if (containerPolicy != null) {
 	    target.setContainerPolicy(DeviceContainerPolicy.valueOf(containerPolicy));

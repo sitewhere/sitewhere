@@ -4,13 +4,6 @@
       createLabel="Update" cancelLabel="Cancel" @payload="onCommit"
       :parentArea="parentArea">
     </area-dialog>
-    <v-tooltip top>
-      <v-btn dark icon small
-        @click.stop="onOpenDialog" slot="activator">
-        <v-icon class="grey--text">fa-edit</v-icon>
-      </v-btn>
-      <span>Edit Area</span>
-    </v-tooltip>
   </div>
 </template>
 

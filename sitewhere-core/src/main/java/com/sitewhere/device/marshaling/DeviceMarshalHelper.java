@@ -16,7 +16,6 @@ import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.marshaling.MarshaledDevice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
@@ -36,9 +35,6 @@ public class DeviceMarshalHelper {
 
     /** Tenant */
     private IDeviceManagement deviceManagement;
-
-    /** Indicates whether device type asset information is to be included */
-    private boolean includeAsset = true;
 
     /** Indicates whether device type information is to be included */
     private boolean includeDeviceType = true;
@@ -93,22 +89,13 @@ public class DeviceMarshalHelper {
 	}
 
 	// Look up device type information.
-	if (source.getDeviceTypeId() != null) {
+	if ((source.getDeviceTypeId() != null) && (isIncludeDeviceType())) {
 	    IDeviceType deviceType = getDeviceManagement().getDeviceType(source.getDeviceTypeId());
 	    if (deviceType == null) {
 		throw new SiteWhereException("Device references non-existent device type.");
 	    }
 	    if (isIncludeDeviceType()) {
-		result.setDeviceType(getDeviceTypeHelper().convert(deviceType, assetManagement));
-	    } else {
-		IAssetType assetType = assetManagement.getAssetType(deviceType.getAssetTypeId());
-		if (assetType != null) {
-		    result.setAssetToken(assetType.getToken());
-		    result.setAssetName(assetType.getName());
-		    result.setAssetImageUrl(assetType.getImageUrl());
-		} else {
-		    throw new SiteWhereException("Device type references non-existent asset.");
-		}
+		result.setDeviceType(getDeviceTypeHelper().convert(deviceType));
 	    }
 	}
 	if ((source.getDeviceAssignmentId() != null) && (isIncludeAssignment())) {
@@ -134,7 +121,6 @@ public class DeviceMarshalHelper {
     protected DeviceTypeMarshalHelper getDeviceTypeHelper() {
 	if (deviceTypeHelper == null) {
 	    deviceTypeHelper = new DeviceTypeMarshalHelper(getDeviceManagement());
-	    deviceTypeHelper.setIncludeAsset(isIncludeAsset());
 	}
 	return deviceTypeHelper;
     }
@@ -164,15 +150,6 @@ public class DeviceMarshalHelper {
 	    nestedHelper = new DeviceMarshalHelper(getDeviceManagement());
 	}
 	return nestedHelper;
-    }
-
-    public boolean isIncludeAsset() {
-	return includeAsset;
-    }
-
-    public DeviceMarshalHelper setIncludeAsset(boolean includeAsset) {
-	this.includeAsset = includeAsset;
-	return this;
     }
 
     public boolean isIncludeDeviceType() {

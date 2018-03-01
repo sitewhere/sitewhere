@@ -16,7 +16,7 @@
           <v-chip close v-if="deviceTypeFilter"
             @input="onDeviceTypeFilterClosed" slot="activator">
             <v-avatar>
-              <img :src="deviceTypeFilter.assetTypeImageUrl" alt="deviceTypeFilter.name">
+              <img :src="deviceTypeFilter.imageUrl" alt="deviceTypeFilter.name">
             </v-avatar>
             {{ deviceTypeFilter.name }}
           </v-chip>

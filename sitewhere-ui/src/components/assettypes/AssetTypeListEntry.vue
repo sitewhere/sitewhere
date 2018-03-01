@@ -9,7 +9,7 @@
         </v-flex>
         <v-flex xs9>
           <div>
-            <div class="headline">{{ assetType.name }}</div>
+            <div class="headline ellipsis">{{ assetType.name }}</div>
             <div class="atdesc">{{ assetType.description }}</div>
           </div>
         </v-flex>

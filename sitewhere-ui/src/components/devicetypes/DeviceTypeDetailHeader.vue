@@ -12,8 +12,11 @@
         <header-field label="Name">
           <span>{{ deviceType.name }}</span>
         </header-field>
-        <header-field label="Asset">
-          <span>{{ deviceType.assetType.name }}</span>
+        <header-field label="Description">
+          <span>{{ deviceType.description }}</span>
+        </header-field>
+        <header-field label="Image URL">
+          <span>{{ deviceType.imageUrl }}</span>
         </header-field>
         <header-field label="Container Policy">
           <span>{{ deviceType.containerPolicy }}</span>
@@ -88,7 +91,7 @@ export default {
     // Compute style of logo.
     logoStyle: function () {
       return {
-        'background-image': 'url(' + this.deviceType.assetType.imageUrl + ')',
+        'background-image': 'url(' + this.deviceType.imageUrl + ')',
         'background-size': 'contain',
         'background-repeat': 'no-repeat',
         'background-position': '50% 50%',
@@ -146,7 +149,7 @@ export default {
 
 <style scoped>
 .deviceType {
-  min-height: 210px;
+  min-height: 225px;
   min-width: 920px;
   overflow-y: hidden;
 }

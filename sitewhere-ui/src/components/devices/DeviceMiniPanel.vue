@@ -1,10 +1,9 @@
 <template>
   <div>
     <div v-if="device">
-      <div class="assn-device-image"
-        :style="backgroundImageStyle(device.assetImageUrl)"></div>
+      <span class="assn-device-image" :style="imageStyle"></span>
       <div class="assn-device-title ellipsis">
-        {{ device.assetName }}
+        {{ device.deviceType.name }}
       </div>
       <div class="assn-device-value1 ellipsis">
         {{ device.token }}
@@ -33,12 +32,14 @@ export default {
 
   methods: {
     // Create background image style.
-    backgroundImageStyle: function (image) {
+    imageStyle: function () {
       return {
-        'background-image': 'url(' + image + ')',
+        'background-color': '#fff',
+        'background-image': 'url(' + this.device.deviceType.imageUrl + ')',
         'background-size': 'contain',
         'background-repeat': 'no-repeat',
-        'background-position': '50% 50%'
+        'background-position': '50% 50%',
+        'border': '1px solid #eee'
       }
     }
   }

@@ -47,9 +47,9 @@
         </v-list>
       </options-menu>
     </v-card-text>
-    <device-update-dialog ref="update" :hardwareId="device.hardwareId">
+    <device-update-dialog ref="update" :token="device.token">
     </device-update-dialog>
-    <device-delete-dialog ref="delete" :hardwareId="device.hardwareId"
+    <device-delete-dialog ref="delete" :token="device.token"
       @deviceDeleted="onDeviceDeleted">
     </device-delete-dialog>
   </v-card>
@@ -100,7 +100,7 @@ export default {
     logoStyle: function () {
       return {
         'background-color': '#fff',
-        'background-image': 'url(' + this.device.deviceType.assetType.imageUrl + ')',
+        'background-image': 'url(' + this.device.deviceType.imageUrl + ')',
         'background-size': 'contain',
         'background-repeat': 'no-repeat',
         'background-position': '50% 50%',
@@ -114,7 +114,7 @@ export default {
       return {
         'background-color': '#fff',
         'background-image': 'url(' + createCoreApiUrl(this.$store) + 'devices/' +
-          this.device.hardwareId + '/symbol?tenantAuthToken=' +
+          this.device.token + '/symbol?tenantAuthToken=' +
           tenant.authenticationToken + ')',
         'background-size': 'contain',
         'background-repeat': 'no-repeat',
@@ -150,7 +150,7 @@ export default {
 
 <style scoped>
 .device {
-  min-height: 200px;
+  min-height: 170px;
   min-width: 920px;
   overflow-y: hidden;
 }

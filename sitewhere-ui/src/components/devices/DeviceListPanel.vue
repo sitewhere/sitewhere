@@ -3,7 +3,7 @@
     <v-card-text @click="onOpenDevice" :style="styleForDevice()"
       class="device-root">
       <div class="device-image"
-        :style="backgroundImageStyle(device.deviceType.assetType.imageUrl)"></div>
+        :style="backgroundImageStyle(device.deviceType.imageUrl)"></div>
       <div class="device-token ellipsis">
         {{ device.token }}
       </div>
@@ -24,8 +24,6 @@
           <span>Assign Device</span>
         </v-tooltip>
       </div>
-      <assignment-create-dialog ref="assign" :hardwareId="device.hardwareId"
-        @created="onDeviceAssigned"/>
     </v-card-text>
   </v-card>
 </template>
@@ -33,7 +31,6 @@
 <script>
 import Utils from '../common/Utils'
 import Style from '../common/Style'
-import AssignmentCreateDialog from '../assignments/AssignmentCreateDialog'
 
 export default {
 
@@ -43,7 +40,6 @@ export default {
   },
 
   components: {
-    AssignmentCreateDialog
   },
 
   props: ['device'],
@@ -74,11 +70,6 @@ export default {
       }
     },
 
-    // Fire event to have parent refresh content.
-    refresh: function () {
-      this.$emit('refresh')
-    },
-
     // Called when a device is clicked.
     onOpenDevice: function () {
       this.$emit('deviceOpened', this.device)
@@ -86,12 +77,7 @@ export default {
 
     // Open device assignment dialog.
     onAssignDevice: function () {
-      this.$refs['assign'].onOpenDialog()
-    },
-
-    // Fire event to indicate device should be assigned.
-    onDeviceAssigned: function () {
-      this.$emit('assigned', this.device)
+      this.$emit('assignDevice', this.device)
     },
 
     // Format date.
