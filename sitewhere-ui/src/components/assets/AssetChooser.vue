@@ -1,11 +1,35 @@
 <template>
-  <div>
-    <div v-if="asset">
-      <v-card-text>
-        {{ chosenText }}
-      </v-card-text>
-      <v-list two-line>
-        <v-list-tile avatar :key="asset.token">
+  <div v-if="asset">
+    <v-card-text class="subheading">
+      {{ chosenText }}
+    </v-card-text>
+    <v-list two-line>
+      <v-list-tile avatar :key="asset.token">
+        <v-list-tile-avatar>
+          <img :src="asset.imageUrl"></v-list-tile-avatar>
+        </v-list-tile-avatar>
+        <v-list-tile-content>
+          <v-list-tile-title v-html="asset.name"></v-list-tile-title>
+          <v-list-tile-sub-title v-html="asset.token">
+          </v-list-tile-sub-title>
+        </v-list-tile-content>
+        <v-list-tile-action>
+          <v-btn icon ripple
+            @click.native.stop="onAssetRemoved(true)">
+            <v-icon class="grey--text">remove_circle</v-icon>
+          </v-btn>
+        </v-list-tile-action>
+      </v-list-tile>
+    </v-list>
+  </div>
+  <div v-else>
+    <v-card-text class="subheading">
+      {{ notChosenText }}
+    </v-card-text>
+    <v-list v-if="assets" class="asset-list" two-line>
+      <template v-for="asset in assets">
+        <v-list-tile avatar :key="asset.token"
+          @click.native.stop="onAssetChosen(asset, true)">
           <v-list-tile-avatar>
             <img :src="asset.imageUrl"></v-list-tile-avatar>
           </v-list-tile-avatar>
@@ -14,35 +38,9 @@
             <v-list-tile-sub-title v-html="asset.token">
             </v-list-tile-sub-title>
           </v-list-tile-content>
-          <v-list-tile-action>
-            <v-btn icon ripple
-              @click.native.stop="onAssetRemoved(true)">
-              <v-icon class="grey--text">remove_circle</v-icon>
-            </v-btn>
-          </v-list-tile-action>
         </v-list-tile>
-      </v-list>
-    </div>
-    <div v-else>
-      <v-card-text>
-        {{ notChosenText }}
-      </v-card-text>
-      <v-list v-if="assets" class="asset-list" two-line>
-        <template v-for="asset in assets">
-          <v-list-tile avatar :key="asset.token"
-            @click.native.stop="onAssetChosen(asset, true)">
-            <v-list-tile-avatar>
-              <img :src="asset.imageUrl"></v-list-tile-avatar>
-            </v-list-tile-avatar>
-            <v-list-tile-content>
-              <v-list-tile-title v-html="asset.name"></v-list-tile-title>
-              <v-list-tile-sub-title v-html="asset.token">
-              </v-list-tile-sub-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </template>
-      </v-list>
-    </div>
+      </template>
+    </v-list>
   </div>
 </template>
 
@@ -119,6 +117,7 @@ export default {
 
 <style scoped>
 .asset-list {
+  border: 1px solid #eee;
   max-height: 300px;
   overflow-y: auto;
 }

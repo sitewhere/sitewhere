@@ -16,7 +16,10 @@
               <v-checkbox label="Assign device to an asset?"
                 v-model="assnAssociateAsset" light>
               </v-checkbox>
-              <asset-chooser v-if="assnAssociateAsset" :assetToken="assnAssetToken"
+              <asset-chooser v-if="assnAssociateAsset"
+                notChosenText="Choose an asset below for assignment:"
+                chosenText="The asset below will be assigned:"
+                :assetToken="assnAssetToken"
                 @assetUpdated="onAssetUpdated">
               </asset-chooser>
             </v-card-text>
@@ -97,7 +100,7 @@ export default {
     // Generate payload from UI.
     generatePayload: function () {
       var payload = {}
-      payload.deviceToken = this.token
+      payload.deviceToken = this.deviceToken
       payload.assetToken = this.$data.assnAssetToken
       payload.metadata = Utils.arrayToMetadata(this.$data.metadata)
       return payload

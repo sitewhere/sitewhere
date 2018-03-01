@@ -24,7 +24,9 @@
         @pagingUpdated="updatePaging">
       </pager>
       <device-create-dialog @deviceAdded="onDeviceAdded"/>
-      <assignment-create-dialog ref="assign"/>
+      <assignment-create-dialog ref="assign"
+         @assignmentCreated="onAssignmentCreated">
+      </assignment-create-dialog>
     </div>
   </navigation-page>
 </template>
@@ -76,7 +78,6 @@ export default {
       this.$data.paging = paging
       this.refresh()
     },
-
     // Refresh list of sites.
     refresh: function () {
       let paging = this.$data.paging.query
@@ -91,34 +92,32 @@ export default {
         }).catch(function (e) {
         })
     },
-
     // Called to show filter criteria dialog.
     onShowFilterCriteria: function () {
       this.$refs['filters'].showFilterCriteriaDialog()
     },
-
     // Called when filter criteria are updated.
     onFilterUpdated: function (filter) {
       this.$data.filter = filter
       this.refresh()
     },
-
     // Open device assignment dialog.
     onAssignDevice: function (device) {
       let assignDialog = this.$refs['assign']
-      assignDialog.token = device.token
+      assignDialog.deviceToken = device.token
       assignDialog.onOpenDialog()
     },
-
+    // Called after new assignment is created.
+    onAssignmentCreated: function () {
+      this.refresh()
+    },
     // Called when a new device is added.
     onDeviceAdded: function () {
       this.refresh()
     },
-
     onDateUpdated: function (value) {
       console.log('date emitted ' + value)
     },
-
     // Called to open detail page for device.
     onOpenDevice: function (device) {
       Utils.routeTo(this, '/devices/' + device.token)

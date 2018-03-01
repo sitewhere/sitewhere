@@ -57,7 +57,7 @@ export default {
     styleForDevice: function () {
       let style = {}
       style['background-color'] = (this.device.assignment ? '#fff' : '#cff')
-      style['border'] = '1px solid' + (this.device.assignment ? 'none' : '#6cc')
+      style['border'] = '1px solid ' + (this.device.assignment ? '#fff' : '#6cc')
       return style
     },
     // Create background image style.

@@ -88,7 +88,7 @@ public class DeviceAssignmentMarshalHelper {
 
 	// If area is assigned, look it up.
 	result.setAreaId(source.getAreaId());
-	if (isIncludeArea()) {
+	if ((isIncludeArea()) && (source.getAreaId() != null)) {
 	    IArea area = getDeviceManagement().getArea(source.getAreaId());
 	    result.setArea(area);
 	}

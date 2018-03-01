@@ -27,13 +27,11 @@ export default {
     getDialogComponent: function () {
       return this.$refs['dialog']
     },
-
     // Send event to open dialog.
     onOpenDialog: function () {
       this.getDialogComponent().reset()
       this.getDialogComponent().openDialog()
     },
-
     // Handle payload commit.
     onCommit: function (payload) {
       console.log(payload)
@@ -44,11 +42,10 @@ export default {
         }).catch(function (e) {
         })
     },
-
     // Handle successful commit.
     onCommitted: function (result) {
       this.getDialogComponent().closeDialog()
-      this.$emit('created')
+      this.$emit('assignmentCreated')
     }
   }
 }
