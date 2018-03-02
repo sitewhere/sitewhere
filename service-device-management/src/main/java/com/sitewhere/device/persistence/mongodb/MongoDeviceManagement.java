@@ -1451,8 +1451,8 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     @Override
     public IDeviceGroup createDeviceGroup(IDeviceGroupCreateRequest request) throws SiteWhereException {
-	String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
-	DeviceGroup group = DeviceManagementPersistence.deviceGroupCreateLogic(request, uuid);
+	// Use common logic so all backend implementations work the same.
+	DeviceGroup group = DeviceManagementPersistence.deviceGroupCreateLogic(request);
 
 	MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection();
 	Document created = MongoDeviceGroup.toDocument(group);

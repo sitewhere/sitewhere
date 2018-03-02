@@ -11,13 +11,14 @@ import java.io.Serializable;
 import java.util.Map;
 
 import com.sitewhere.spi.asset.AssetCategory;
+import com.sitewhere.spi.common.IAccessible;
 
 /**
  * Information needed to create a new asset type.
  * 
  * @author Derek
  */
-public interface IAssetTypeCreateRequest extends Serializable {
+public interface IAssetTypeCreateRequest extends IAccessible, Serializable {
 
     /**
      * Get token used to reference asset type.
@@ -25,27 +26,6 @@ public interface IAssetTypeCreateRequest extends Serializable {
      * @return
      */
     public String getToken();
-
-    /**
-     * Get asset type name.
-     * 
-     * @return
-     */
-    public String getName();
-
-    /**
-     * Get asset type description.
-     * 
-     * @return
-     */
-    public String getDescription();
-
-    /**
-     * Get URL for asset type image.
-     * 
-     * @return
-     */
-    public String getImageUrl();
 
     /**
      * Get category of asset type.

@@ -7,8 +7,10 @@
  */
 package com.sitewhere.spi.device.request;
 
+import java.io.Serializable;
 import java.util.Map;
 
+import com.sitewhere.spi.common.IAccessible;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 
@@ -17,7 +19,7 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
  * 
  * @author Derek
  */
-public interface IDeviceTypeCreateRequest {
+public interface IDeviceTypeCreateRequest extends IAccessible, Serializable {
 
     /**
      * Allows the type token to be specified. (Optional)
@@ -25,27 +27,6 @@ public interface IDeviceTypeCreateRequest {
      * @return
      */
     public String getToken();
-
-    /**
-     * Get name.
-     * 
-     * @return
-     */
-    public String getName();
-
-    /**
-     * Get description.
-     * 
-     * @return
-     */
-    public String getDescription();
-
-    /**
-     * Get URL for image.
-     * 
-     * @return
-     */
-    public String getImageUrl();
 
     /**
      * Get container policy.

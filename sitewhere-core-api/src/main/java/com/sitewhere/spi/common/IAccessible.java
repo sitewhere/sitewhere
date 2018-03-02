@@ -5,26 +5,33 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.device.group;
+package com.sitewhere.spi.common;
 
 /**
- * Provides a stateful cursor for processing entries in an {@link IDeviceGroup}.
+ * Interface for entities that describe themselves in a human-friendly way.
  * 
  * @author Derek
  */
-public interface IDeviceGroupCursor {
+public interface IAccessible {
 
     /**
-     * Get unique network token.
+     * Get the group name.
      * 
      * @return
      */
-    public String getGroupToken();
+    public String getName();
 
     /**
-     * Get index of current device in list.
+     * Get the group description.
      * 
      * @return
      */
-    public long getDeviceIndex();
+    public String getDescription();
+
+    /**
+     * Get URL for image.
+     * 
+     * @return
+     */
+    public String getImageUrl();
 }

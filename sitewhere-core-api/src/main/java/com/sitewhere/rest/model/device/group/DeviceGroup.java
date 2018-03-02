@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.group.IDeviceGroup;
@@ -21,6 +23,7 @@ import com.sitewhere.spi.device.group.IDeviceGroup;
  * 
  * @author Derek
  */
+@JsonInclude(Include.NON_NULL)
 public class DeviceGroup extends MetadataProviderEntity implements IDeviceGroup, Serializable {
 
     /** Serialization version identifier */
@@ -37,6 +40,9 @@ public class DeviceGroup extends MetadataProviderEntity implements IDeviceGroup,
 
     /** Group description */
     private String description;
+
+    /** Image URL */
+    private String imageUrl;
 
     /** List of roles */
     private List<String> roles = new ArrayList<String>();
@@ -96,6 +102,18 @@ public class DeviceGroup extends MetadataProviderEntity implements IDeviceGroup,
     }
 
     /*
+     * @see com.sitewhere.spi.common.IAccessible#getImageUrl()
+     */
+    @Override
+    public String getImageUrl() {
+	return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+	this.imageUrl = imageUrl;
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.group.IDeviceGroup#getRoles()
@@ -114,6 +132,7 @@ public class DeviceGroup extends MetadataProviderEntity implements IDeviceGroup,
 	result.setToken(input.getToken());
 	result.setName(input.getName());
 	result.setDescription(input.getDescription());
+	result.setImageUrl(input.getImageUrl());
 	result.getRoles().addAll(input.getRoles());
 	MetadataProviderEntity.copy(input, result);
 	return result;

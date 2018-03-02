@@ -28,6 +28,11 @@
                     </v-text-field>
                   </v-flex>
                   <v-flex xs12>
+                    <v-text-field class="mt-1" label="Image URL"
+                      v-model="groupImageUrl" prepend-icon="image">
+                    </v-text-field>
+                  </v-flex>
+                  <v-flex xs12>
                     <roles-field :roles="groupRoles"
                       @onRolesUpdated="onRolesUpdated">
                     </roles-field>
@@ -60,6 +65,7 @@ export default {
     dialogVisible: false,
     groupName: null,
     groupDescription: null,
+    groupImageUrl: null,
     groupRoles: [],
     metadata: [],
     error: null
@@ -79,6 +85,7 @@ export default {
       var payload = {}
       payload.name = this.$data.groupName
       payload.description = this.$data.groupDescription
+      payload.imageUrl = this.$data.groupImageUrl
       payload.roles = this.$data.groupRoles
       payload.metadata = Utils.arrayToMetadata(this.$data.metadata)
       return payload
@@ -88,6 +95,7 @@ export default {
     reset: function (e) {
       this.$data.groupName = null
       this.$data.groupDescription = null
+      this.$data.groupImageUrl = null
       this.$data.groupRoles = []
       this.$data.metadata = []
       this.$data.active = 'details'
@@ -100,6 +108,7 @@ export default {
       if (payload) {
         this.$data.groupName = payload.name
         this.$data.groupDescription = payload.description
+        this.$data.groupImageUrl = payload.imageUrl
         this.$data.groupRoles = payload.roles
         this.$data.metadata = Utils.metadataToArray(payload.metadata)
       }

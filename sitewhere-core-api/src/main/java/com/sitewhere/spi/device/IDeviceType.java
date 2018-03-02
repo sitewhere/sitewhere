@@ -7,6 +7,9 @@
  */
 package com.sitewhere.spi.device;
 
+import java.io.Serializable;
+
+import com.sitewhere.spi.common.IAccessible;
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 
@@ -15,28 +18,7 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
  * 
  * @author Derek
  */
-public interface IDeviceType extends IMetadataProviderEntity {
-
-    /**
-     * Get name.
-     * 
-     * @return
-     */
-    public String getName();
-
-    /**
-     * Get description.
-     * 
-     * @return
-     */
-    public String getDescription();
-
-    /**
-     * Get URL for image.
-     * 
-     * @return
-     */
-    public String getImageUrl();
+public interface IDeviceType extends IMetadataProviderEntity, IAccessible, Serializable {
 
     /**
      * Indicates whether this device contains other devices.

@@ -38,6 +38,9 @@ public class DeviceGroupCreateRequest implements IDeviceGroupCreateRequest, Seri
     /** Group description */
     private String description;
 
+    /** Image URL */
+    private String imageUrl;
+
     /** List of roles */
     private List<String> roles;
 
@@ -47,9 +50,9 @@ public class DeviceGroupCreateRequest implements IDeviceGroupCreateRequest, Seri
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.request.IDeviceGroupCreateRequest#getToken()
+     * @see com.sitewhere.spi.device.request.IDeviceGroupCreateRequest#getToken()
      */
+    @Override
     public String getToken() {
 	return token;
     }
@@ -63,6 +66,7 @@ public class DeviceGroupCreateRequest implements IDeviceGroupCreateRequest, Seri
      * 
      * @see com.sitewhere.spi.device.request.IDeviceGroupCreateRequest#getName()
      */
+    @Override
     public String getName() {
 	return name;
     }
@@ -75,9 +79,9 @@ public class DeviceGroupCreateRequest implements IDeviceGroupCreateRequest, Seri
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.device.request.IDeviceGroupCreateRequest#getDescription
-     * ()
+     * com.sitewhere.spi.device.request.IDeviceGroupCreateRequest#getDescription ()
      */
+    @Override
     public String getDescription() {
 	return description;
     }
@@ -87,11 +91,23 @@ public class DeviceGroupCreateRequest implements IDeviceGroupCreateRequest, Seri
     }
 
     /*
+     * @see com.sitewhere.spi.common.IAccessible#getImageUrl()
+     */
+    @Override
+    public String getImageUrl() {
+	return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+	this.imageUrl = imageUrl;
+    }
+
+    /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.request.IDeviceGroupCreateRequest#getRoles()
+     * @see com.sitewhere.spi.device.request.IDeviceGroupCreateRequest#getRoles()
      */
+    @Override
     public List<String> getRoles() {
 	return roles;
     }
@@ -103,9 +119,9 @@ public class DeviceGroupCreateRequest implements IDeviceGroupCreateRequest, Seri
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.request.IDeviceGroupCreateRequest#getMetadata()
+     * @see com.sitewhere.spi.device.request.IDeviceGroupCreateRequest#getMetadata()
      */
+    @Override
     public Map<String, String> getMetadata() {
 	return metadata;
     }
@@ -140,6 +156,11 @@ public class DeviceGroupCreateRequest implements IDeviceGroupCreateRequest, Seri
 
 	public Builder withDescription(String description) {
 	    request.setDescription(description);
+	    return this;
+	}
+
+	public Builder withImageUrl(String imageUrl) {
+	    request.setImageUrl(imageUrl);
 	    return this;
 	}
 

@@ -39,6 +39,9 @@ public class MongoDeviceGroup implements MongoConverter<IDeviceGroup> {
     /** Property for description */
     public static final String PROP_DESCRIPTION = "desc";
 
+    /** Property for image URL */
+    public static final String PROP_IMAGE_URL = "imgu";
+
     /** Property for list of roles */
     public static final String PROP_ROLES = "role";
 
@@ -76,6 +79,7 @@ public class MongoDeviceGroup implements MongoConverter<IDeviceGroup> {
 	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_DESCRIPTION, source.getDescription());
+	target.append(PROP_IMAGE_URL, source.getImageUrl());
 	target.append(PROP_ROLES, source.getRoles());
 	MongoSiteWhereEntity.toDocument(source, target);
 	MongoMetadataProvider.toDocument(source, target);
@@ -93,12 +97,14 @@ public class MongoDeviceGroup implements MongoConverter<IDeviceGroup> {
 	String token = (String) source.get(PROP_TOKEN);
 	String name = (String) source.get(PROP_NAME);
 	String desc = (String) source.get(PROP_DESCRIPTION);
+	String imageUrl = (String) source.get(PROP_IMAGE_URL);
 	List<String> roles = (List<String>) source.get(PROP_ROLES);
 
 	target.setId(id);
 	target.setToken(token);
 	target.setName(name);
 	target.setDescription(desc);
+	target.setImageUrl(imageUrl);
 	target.setRoles(roles);
 	MongoSiteWhereEntity.fromDocument(source, target);
 	MongoMetadataProvider.fromDocument(source, target);

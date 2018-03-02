@@ -9,6 +9,7 @@ package com.sitewhere.spi.asset;
 
 import java.io.Serializable;
 
+import com.sitewhere.spi.common.IAccessible;
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 
 /**
@@ -16,28 +17,7 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
  * 
  * @author Derek
  */
-public interface IAssetType extends IMetadataProviderEntity, Serializable {
-
-    /**
-     * Get asset name.
-     * 
-     * @return
-     */
-    public String getName();
-
-    /**
-     * Get asset type description.
-     * 
-     * @return
-     */
-    public String getDescription();
-
-    /**
-     * Get URL for asset image.
-     * 
-     * @return
-     */
-    public String getImageUrl();
+public interface IAssetType extends IMetadataProviderEntity, IAccessible, Serializable {
 
     /**
      * Get category of asset type.

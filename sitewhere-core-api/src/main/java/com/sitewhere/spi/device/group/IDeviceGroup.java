@@ -7,8 +7,10 @@
  */
 package com.sitewhere.spi.device.group;
 
+import java.io.Serializable;
 import java.util.List;
 
+import com.sitewhere.spi.common.IAccessible;
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 
 /**
@@ -16,21 +18,7 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
  * 
  * @author Derek
  */
-public interface IDeviceGroup extends IMetadataProviderEntity {
-
-    /**
-     * Get the group name.
-     * 
-     * @return
-     */
-    public String getName();
-
-    /**
-     * Get the group description.
-     * 
-     * @return
-     */
-    public String getDescription();
+public interface IDeviceGroup extends IMetadataProviderEntity, IAccessible, Serializable {
 
     /**
      * Get list of roles associated with element.

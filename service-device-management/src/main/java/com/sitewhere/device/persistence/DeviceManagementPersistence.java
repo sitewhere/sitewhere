@@ -872,19 +872,30 @@ public class DeviceManagementPersistence extends Persistence {
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceGroup deviceGroupCreateLogic(IDeviceGroupCreateRequest source, String uuid)
-	    throws SiteWhereException {
+    public static DeviceGroup deviceGroupCreateLogic(IDeviceGroupCreateRequest request) throws SiteWhereException {
 	DeviceGroup group = new DeviceGroup();
 	group.setId(UUID.randomUUID());
-	group.setToken(uuid);
-	group.setName(source.getName());
-	group.setDescription(source.getDescription());
-	if (source.getRoles() != null) {
-	    group.getRoles().addAll(source.getRoles());
+	group.setDescription(request.getDescription());
+
+	// Use token if provided, otherwise generate one.
+	if (request.getToken() != null) {
+	    group.setToken(request.getToken());
+	} else {
+	    group.setToken(UUID.randomUUID().toString());
+	}
+
+	require("Name", request.getName());
+	group.setName(request.getName());
+
+	require("Image URL", request.getImageUrl());
+	group.setImageUrl(request.getImageUrl());
+
+	if (request.getRoles() != null) {
+	    group.getRoles().addAll(request.getRoles());
 	}
 
 	DeviceManagementPersistence.initializeEntityMetadata(group);
-	MetadataProvider.copy(source.getMetadata(), group);
+	MetadataProvider.copy(request.getMetadata(), group);
 	return group;
     }
 
@@ -897,14 +908,19 @@ public class DeviceManagementPersistence extends Persistence {
      */
     public static void deviceGroupUpdateLogic(IDeviceGroupCreateRequest request, DeviceGroup target)
 	    throws SiteWhereException {
-	target.setName(request.getName());
-	target.setDescription(request.getDescription());
-
+	if (request.getName() != null) {
+	    target.setName(request.getName());
+	}
+	if (request.getDescription() != null) {
+	    target.setDescription(request.getDescription());
+	}
+	if (request.getImageUrl() != null) {
+	    target.setImageUrl(request.getImageUrl());
+	}
 	if (request.getRoles() != null) {
 	    target.getRoles().clear();
 	    target.getRoles().addAll(request.getRoles());
 	}
-
 	if (request.getMetadata() != null) {
 	    target.getMetadata().clear();
 	    MetadataProvider.copy(request.getMetadata(), target);

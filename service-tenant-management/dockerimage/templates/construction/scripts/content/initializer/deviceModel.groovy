@@ -350,14 +350,17 @@ def addGroup = { group ->
 
 def heavyGroup = deviceBuilder.newGroup randomId(), 'Heavy Equipment Tracking' withRole('heavy-equipment-tracking') withRole('tracking')
 heavyGroup.withDescription 'Device group that contains devices for tracking location of heavy equipment.'
+heavyGroup.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/cat/cat-416f.jpg'
 heavyGroup = addGroup heavyGroup
 
 def personGroup = deviceBuilder.newGroup randomId(), 'Personnel Tracking' withRole('personnel-tracking') withRole('tracking')
 personGroup.withDescription 'Device group that contains devices for tracking location of people.'
+personGroup.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/sitewhere-symbol.png'
 personGroup = addGroup personGroup
 
 def sensorGroup = deviceBuilder.newGroup randomId(), 'Sensors' withRole('monitoring') withRole('data-gathering')
 sensorGroup.withDescription 'Device group that contains sensors for tracking environmental conditions.'
+sensorGroup.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/ekahau/ekahau-a4-tag.jpg'
 sensorGroup = addGroup sensorGroup
 
 // ############################## //

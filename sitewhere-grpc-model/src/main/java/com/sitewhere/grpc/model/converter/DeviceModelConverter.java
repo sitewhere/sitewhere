@@ -1101,8 +1101,9 @@ public class DeviceModelConverter {
 	    throws SiteWhereException {
 	DeviceGroupCreateRequest api = new DeviceGroupCreateRequest();
 	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
-	api.setName(grpc.getName());
-	api.setDescription(grpc.getDescription());
+	api.setName(grpc.hasName() ? grpc.getName().getValue() : null);
+	api.setDescription(grpc.hasDescription() ? grpc.getDescription().getValue() : null);
+	api.setImageUrl(grpc.hasImageUrl() ? grpc.getImageUrl().getValue() : null);
 	api.setRoles(grpc.getRolesList());
 	api.setMetadata(grpc.getMetadataMap());
 	return api;
@@ -1121,8 +1122,15 @@ public class DeviceModelConverter {
 	if (api.getToken() != null) {
 	    grpc.setToken(GOptionalString.newBuilder().setValue(api.getToken()));
 	}
-	grpc.setName(api.getName());
-	grpc.setDescription(api.getDescription());
+	if (api.getName() != null) {
+	    grpc.setName(GOptionalString.newBuilder().setValue(api.getName()));
+	}
+	if (api.getDescription() != null) {
+	    grpc.setDescription(GOptionalString.newBuilder().setValue(api.getDescription()));
+	}
+	if (api.getImageUrl() != null) {
+	    grpc.setImageUrl(GOptionalString.newBuilder().setValue(api.getImageUrl()));
+	}
 	grpc.addAllRoles(api.getRoles());
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
@@ -1189,6 +1197,7 @@ public class DeviceModelConverter {
 	api.setToken(grpc.getToken());
 	api.setName(grpc.getName());
 	api.setDescription(grpc.getDescription());
+	api.setImageUrl(grpc.getImageUrl());
 	api.setRoles(grpc.getRolesList());
 	api.setMetadata(grpc.getMetadataMap());
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
@@ -1208,6 +1217,7 @@ public class DeviceModelConverter {
 	grpc.setToken(api.getToken());
 	grpc.setName(api.getName());
 	grpc.setDescription(api.getDescription());
+	grpc.setImageUrl(api.getImageUrl());
 	grpc.addAllRoles(api.getRoles());
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());

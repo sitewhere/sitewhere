@@ -87,21 +87,14 @@ public class HBaseDeviceGroup {
      */
     public static IDeviceGroup createDeviceGroup(IHBaseContext context, IDeviceGroupCreateRequest request)
 	    throws SiteWhereException {
-	String uuid = null;
-	if (request.getToken() != null) {
-	    uuid = KEY_BUILDER.getMap(context).useExistingId(request.getToken());
-	} else {
-	    uuid = KEY_BUILDER.getMap(context).createUniqueId();
-	}
-
 	// Use common logic so all backend implementations work the same.
-	DeviceGroup group = DeviceManagementPersistence.deviceGroupCreateLogic(request, uuid);
+	DeviceGroup group = DeviceManagementPersistence.deviceGroupCreateLogic(request);
 
 	Map<byte[], byte[]> qualifiers = new HashMap<byte[], byte[]>();
 	byte[] zero = Bytes.toBytes((long) 0);
 	qualifiers.put(ENTRY_COUNTER, zero);
 	return HBaseUtils.createOrUpdate(context, context.getPayloadMarshaler(), ISiteWhereHBase.DEVICES_TABLE_NAME,
-		group, uuid, KEY_BUILDER, qualifiers);
+		group, null, KEY_BUILDER, qualifiers);
     }
 
     /**

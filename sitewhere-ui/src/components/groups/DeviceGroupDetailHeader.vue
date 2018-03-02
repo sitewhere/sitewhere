@@ -1,5 +1,5 @@
 <template>
-  <navigation-header-panel v-if="group" icon="fa-microchip"
+  <navigation-header-panel v-if="group" :imageUrl="group.imageUrl"
     :qrCodeUrl="qrCodeUrl" height="170px">
     <span slot="content">
       <header-field label="Token">
@@ -12,6 +12,9 @@
       </header-field>
       <header-field label="Description">
         <span>{{ group.description }}</span>
+      </header-field>
+      <header-field label="Image URL">
+        <span>{{ group.imageUrl }}</span>
       </header-field>
       <header-field label="Roles">
         <span>{{ rolesView }}</span>

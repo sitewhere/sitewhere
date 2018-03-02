@@ -2,7 +2,7 @@
   <div>
     <navigation-page icon="view_module" title="Manage Device Group">
       <div slot="content">
-        <device-group-detail-header :group="group" class="mb-3"
+        <device-group-detail-header :group="group"
           @deviceGroupUpdated="refresh" @deviceGroupDeleted="onDeviceGroupDeleted">
         </device-group-detail-header>
         <device-group-element-list-panel ref="list" :token="token">
