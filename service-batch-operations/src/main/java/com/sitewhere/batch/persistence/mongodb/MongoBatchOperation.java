@@ -8,6 +8,7 @@
 package com.sitewhere.batch.persistence.mongodb;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.bson.Document;
 
@@ -25,8 +26,11 @@ import com.sitewhere.spi.batch.IBatchOperation;
  */
 public class MongoBatchOperation implements MongoConverter<IBatchOperation> {
 
+    /** Property for id */
+    public static final String PROP_ID = "_id";
+
     /** Property for token */
-    public static final String PROP_TOKEN = "token";
+    public static final String PROP_TOKEN = "tokn";
 
     /** Property for operation type */
     public static final String PROP_OPERATION_TYPE = "type";
@@ -70,6 +74,7 @@ public class MongoBatchOperation implements MongoConverter<IBatchOperation> {
      * @param target
      */
     public static void toDocument(IBatchOperation source, Document target) {
+	target.append(PROP_ID, source.getId());
 	target.append(PROP_TOKEN, source.getToken());
 	if (source.getOperationType() != null) {
 	    target.append(PROP_OPERATION_TYPE, source.getOperationType());
@@ -102,12 +107,14 @@ public class MongoBatchOperation implements MongoConverter<IBatchOperation> {
      * @param target
      */
     public static void fromDocument(Document source, BatchOperation target) {
+	UUID id = (UUID) source.get(PROP_ID);
 	String token = (String) source.get(PROP_TOKEN);
 	String operationType = (String) source.get(PROP_OPERATION_TYPE);
 	String procStatus = (String) source.get(PROP_PROC_STATUS);
 	Date procStart = (Date) source.get(PROP_PROC_START_DATE);
 	Date procEnd = (Date) source.get(PROP_PROC_END_DATE);
 
+	target.setId(id);
 	target.setToken(token);
 	if (operationType != null) {
 	    target.setOperationType(operationType);

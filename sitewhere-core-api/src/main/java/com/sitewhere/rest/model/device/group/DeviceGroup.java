@@ -15,7 +15,6 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
-import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 
 /**
@@ -124,17 +123,5 @@ public class DeviceGroup extends MetadataProviderEntity implements IDeviceGroup,
 
     public void setRoles(List<String> roles) {
 	this.roles = roles;
-    }
-
-    public static DeviceGroup copy(IDeviceGroup input) throws SiteWhereException {
-	DeviceGroup result = new DeviceGroup();
-	result.setId(input.getId());
-	result.setToken(input.getToken());
-	result.setName(input.getName());
-	result.setDescription(input.getDescription());
-	result.setImageUrl(input.getImageUrl());
-	result.getRoles().addAll(input.getRoles());
-	MetadataProviderEntity.copy(input, result);
-	return result;
     }
 }

@@ -19,8 +19,8 @@ import com.sitewhere.spi.batch.IBatchOperation;
  */
 public interface IBatchOperationCreateRequest {
 
-    /** Metadata property on events that holds batch id that generated event */
-    public static final String META_BATCH_OPERATION_ID = "batch";
+    /** Metadata property with token for batch operation that generated event */
+    public static final String META_BATCH_OPERATION_TOKEN = "batch";
 
     /**
      * Get the unique token.
@@ -44,11 +44,11 @@ public interface IBatchOperationCreateRequest {
     public Map<String, String> getParameters();
 
     /**
-     * Get list of hardware ids for devices to be operated on.
+     * Get list of device tokens for operation.
      * 
      * @return
      */
-    public List<String> getHardwareIds();
+    public List<String> getDeviceTokens();
 
     /**
      * Get metadata entries.

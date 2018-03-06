@@ -66,26 +66,33 @@ public class HBaseBatchManagement extends TenantEngineLifecycleComponent impleme
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.batch.IBatchManagement#updateBatchOperation(java.lang.
-     * String, com.sitewhere.spi.device.request.IBatchOperationUpdateRequest)
+     * @see
+     * com.sitewhere.spi.batch.IBatchManagement#updateBatchOperation(java.util.UUID,
+     * com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest)
      */
     @Override
-    public IBatchOperation updateBatchOperation(String token, IBatchOperationUpdateRequest request)
+    public IBatchOperation updateBatchOperation(UUID batchOperationId, IBatchOperationUpdateRequest request)
 	    throws SiteWhereException {
-	return HBaseBatchOperation.updateBatchOperation(context, token, request);
+	return null;
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.batch.IBatchManagement#getBatchOperation(java.lang.
+     * @see
+     * com.sitewhere.spi.batch.IBatchManagement#getBatchOperation(java.util.UUID)
+     */
+    @Override
+    public IBatchOperation getBatchOperation(UUID batchOperationId) throws SiteWhereException {
+	return null;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.batch.IBatchManagement#getBatchOperationByToken(java.lang.
      * String)
      */
     @Override
-    public IBatchOperation getBatchOperation(String token) throws SiteWhereException {
-	return HBaseBatchOperation.getBatchOperationByToken(context, token);
+    public IBatchOperation getBatchOperationByToken(String token) throws SiteWhereException {
+	return null;
     }
 
     /*
@@ -100,38 +107,35 @@ public class HBaseBatchManagement extends TenantEngineLifecycleComponent impleme
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.batch.IBatchManagement#deleteBatchOperation(java.lang.
-     * String, boolean)
+     * @see
+     * com.sitewhere.spi.batch.IBatchManagement#deleteBatchOperation(java.util.UUID,
+     * boolean)
      */
     @Override
-    public IBatchOperation deleteBatchOperation(String token, boolean force) throws SiteWhereException {
-	return HBaseBatchOperation.deleteBatchOperation(context, token, force);
+    public IBatchOperation deleteBatchOperation(UUID batchOperationId, boolean force) throws SiteWhereException {
+	return null;
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.batch.IBatchManagement#listBatchElements(java.lang.
-     * String, com.sitewhere.spi.search.device.IBatchElementSearchCriteria)
+     * @see
+     * com.sitewhere.spi.batch.IBatchManagement#listBatchElements(java.util.UUID,
+     * com.sitewhere.spi.search.device.IBatchElementSearchCriteria)
      */
     @Override
-    public SearchResults<IBatchElement> listBatchElements(String batchToken, IBatchElementSearchCriteria criteria)
+    public SearchResults<IBatchElement> listBatchElements(UUID batchOperationId, IBatchElementSearchCriteria criteria)
 	    throws SiteWhereException {
-	return HBaseBatchElement.listBatchElements(context, batchToken, criteria);
+	return null;
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.batch.IBatchManagement#updateBatchElement(java.lang.
-     * String, long, com.sitewhere.spi.device.request.IBatchElementUpdateRequest)
+     * @see
+     * com.sitewhere.spi.batch.IBatchManagement#updateBatchElement(java.util.UUID,
+     * com.sitewhere.spi.batch.request.IBatchElementUpdateRequest)
      */
     @Override
-    public IBatchElement updateBatchElement(String operationToken, long index, IBatchElementUpdateRequest request)
+    public IBatchElement updateBatchElement(UUID batchOperationId, IBatchElementUpdateRequest request)
 	    throws SiteWhereException {
-	return HBaseBatchElement.updateBatchElement(context, operationToken, index, request);
+	return null;
     }
 
     /*

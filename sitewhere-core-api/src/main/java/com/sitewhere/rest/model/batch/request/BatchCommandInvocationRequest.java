@@ -34,8 +34,8 @@ public class BatchCommandInvocationRequest implements IBatchCommandInvocationReq
     /** Values for command parameters */
     private Map<String, String> parameterValues = new HashMap<String, String>();
 
-    /** List of targeted device hardware ids */
-    private List<String> hardwareIds;
+    /** List of targeted device tokens */
+    private List<String> deviceTokens;
 
     /*
      * @see
@@ -77,16 +77,15 @@ public class BatchCommandInvocationRequest implements IBatchCommandInvocationReq
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest#getHardwareIds
-     * ()
+     * @see com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest#
+     * getDeviceTokens()
      */
     @Override
-    public List<String> getHardwareIds() {
-	return hardwareIds;
+    public List<String> getDeviceTokens() {
+	return deviceTokens;
     }
 
-    public void setHardwareIds(List<String> hardwareIds) {
-	this.hardwareIds = hardwareIds;
+    public void setDeviceTokens(List<String> deviceTokens) {
+	this.deviceTokens = deviceTokens;
     }
 }

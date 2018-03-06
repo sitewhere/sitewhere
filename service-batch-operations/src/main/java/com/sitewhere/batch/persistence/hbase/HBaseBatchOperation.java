@@ -22,7 +22,6 @@ import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.uid.UniqueIdCounterMap;
 import com.sitewhere.hbase.uid.UniqueIdCounterMapRowKeyBuilder;
-import com.sitewhere.rest.model.batch.BatchElement;
 import com.sitewhere.rest.model.batch.BatchOperation;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
@@ -96,7 +95,7 @@ public class HBaseBatchOperation {
 	}
 
 	// Use common logic so all backend implementations work the same.
-	BatchOperation batch = BatchManagementPersistence.batchOperationCreateLogic(request, uuid);
+	BatchOperation batch = BatchManagementPersistence.batchOperationCreateLogic(request);
 
 	Map<byte[], byte[]> qualifiers = new HashMap<byte[], byte[]>();
 	qualifiers.put(PROCESSING_STATUS, Bytes.toBytes(String.valueOf(BatchOperationStatus.Unprocessed.getCode())));
@@ -104,15 +103,9 @@ public class HBaseBatchOperation {
 		ISiteWhereHBase.DEVICES_TABLE_NAME, batch, uuid, KEY_BUILDER, qualifiers);
 
 	// Create elements for each device in the operation.
-	long index = 0;
 	Table devices = null;
 	try {
 	    devices = getDeviceTableInterface(context);
-	    for (String hardwareId : request.getHardwareIds()) {
-		BatchElement element = BatchManagementPersistence.batchElementCreateLogic(batch.getToken(), hardwareId,
-			++index);
-		HBaseBatchElement.createBatchElement(context, devices, element);
-	    }
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to create device group element.", e);
 	} finally {

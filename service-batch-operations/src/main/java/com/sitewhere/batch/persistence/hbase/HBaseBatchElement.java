@@ -67,12 +67,11 @@ public class HBaseBatchElement {
      */
     public static IBatchElement createBatchElement(IHBaseContext context, Table devices, IBatchElement request)
 	    throws SiteWhereException {
-	byte[] elementKey = getElementRowKey(context, request.getBatchOperationToken(), request.getIndex());
+	byte[] elementKey = getElementRowKey(context, null, 0L);
 
 	// Use common processing logic so all backend implementations work the
 	// same.
-	BatchElement element = BatchManagementPersistence.batchElementCreateLogic(request.getBatchOperationToken(),
-		request.getHardwareId(), request.getIndex());
+	BatchElement element = new BatchElement();
 
 	// Encode batch element.
 	byte[] payload = context.getPayloadMarshaler().encodeBatchElement(element);
@@ -80,7 +79,6 @@ public class HBaseBatchElement {
 	try {
 	    Put put = new Put(elementKey);
 	    HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
-	    put.addColumn(ISiteWhereHBase.FAMILY_ID, HARDWARE_ID, Bytes.toBytes(element.getHardwareId()));
 	    put.addColumn(ISiteWhereHBase.FAMILY_ID, PROCESSING_STATUS,
 		    Bytes.toBytes(String.valueOf(request.getProcessingStatus().getCode())));
 	    devices.put(put);
@@ -114,7 +112,6 @@ public class HBaseBatchElement {
 
 	    Put put = new Put(elementKey);
 	    HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
-	    put.addColumn(ISiteWhereHBase.FAMILY_ID, HARDWARE_ID, Bytes.toBytes(element.getHardwareId()));
 	    put.addColumn(ISiteWhereHBase.FAMILY_ID, PROCESSING_STATUS,
 		    Bytes.toBytes(String.valueOf(request.getProcessingStatus().getCode())));
 	    devices.put(put);

@@ -34,8 +34,8 @@ public class BatchOperationCreateRequest implements IBatchOperationCreateRequest
     /** Operation parameters */
     private Map<String, String> parameters = new HashMap<String, String>();
 
-    /** List of hardware ids of affected devices */
-    private List<String> hardwareIds = new ArrayList<String>();
+    /** List of tokens for affected devices */
+    private List<String> deviceTokens = new ArrayList<>();
 
     /** Metadata values */
     private Map<String, String> metadata;
@@ -81,15 +81,16 @@ public class BatchOperationCreateRequest implements IBatchOperationCreateRequest
 
     /*
      * @see
-     * com.sitewhere.spi.batch.request.IBatchOperationCreateRequest#getHardwareIds()
+     * com.sitewhere.spi.batch.request.IBatchOperationCreateRequest#getDeviceTokens(
+     * )
      */
     @Override
-    public List<String> getHardwareIds() {
-	return hardwareIds;
+    public List<String> getDeviceTokens() {
+	return deviceTokens;
     }
 
-    public void setHardwareIds(List<String> hardwareIds) {
-	this.hardwareIds = hardwareIds;
+    public void setDeviceTokens(List<String> deviceTokens) {
+	this.deviceTokens = deviceTokens;
     }
 
     /*

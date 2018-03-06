@@ -393,7 +393,7 @@ devicesPerSite.times {
 	assn = deviceBuilder.persist assn
 	logger.info "[Create Assignment] ${assn.token}"
 	
-	def element = deviceBuilder.newGroupElement device.token;
+	def element = deviceBuilder.newGroupElement device.id;
 	if (type in sensors) {
 		sensorElements << element
 	} else if (type in personnel) {

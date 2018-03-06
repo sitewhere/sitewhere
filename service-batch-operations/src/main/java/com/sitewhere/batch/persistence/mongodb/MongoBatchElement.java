@@ -8,6 +8,7 @@
 package com.sitewhere.batch.persistence.mongodb;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.bson.Document;
 
@@ -24,20 +25,20 @@ import com.sitewhere.spi.batch.IBatchElement;
  */
 public class MongoBatchElement implements MongoConverter<IBatchElement> {
 
-    /** Property for parent batch operation token */
-    public static final String PROP_BATCH_OPERATION_TOKEN = "parent";
+    /** Property for id */
+    public static final String PROP_ID = "_id";
 
-    /** Property for hardware id */
-    public static final String PROP_HARDWARE_ID = "hardwareId";
+    /** Property for parent batch operation id */
+    public static final String PROP_BATCH_OPERATION_ID = "boid";
 
-    /** Property for index */
-    public static final String PROP_INDEX = "index";
+    /** Property for device id */
+    public static final String PROP_DEVICE_ID = "dvid";
 
     /** Property for processing status */
-    public static final String PROP_PROCESSING_STATUS = "status";
+    public static final String PROP_PROCESSING_STATUS = "stat";
 
     /** Property for date element was processed */
-    public static final String PROP_PROCESSED_DATE = "processedDate";
+    public static final String PROP_PROCESSED_DATE = "prdt";
 
     /*
      * (non-Javadoc)
@@ -66,9 +67,9 @@ public class MongoBatchElement implements MongoConverter<IBatchElement> {
      * @param target
      */
     public static void toDocument(IBatchElement source, Document target) {
-	target.append(PROP_BATCH_OPERATION_TOKEN, source.getBatchOperationToken());
-	target.append(PROP_HARDWARE_ID, source.getHardwareId());
-	target.append(PROP_INDEX, source.getIndex());
+	target.append(PROP_ID, source.getId());
+	target.append(PROP_BATCH_OPERATION_ID, source.getBatchOperationId());
+	target.append(PROP_DEVICE_ID, source.getDeviceId());
 	if (source.getProcessingStatus() != null) {
 	    target.append(PROP_PROCESSING_STATUS, source.getProcessingStatus().name());
 	}
@@ -85,15 +86,15 @@ public class MongoBatchElement implements MongoConverter<IBatchElement> {
      * @param target
      */
     public static void fromDocument(Document source, BatchElement target) {
-	String parent = (String) source.get(PROP_BATCH_OPERATION_TOKEN);
-	String hardwareId = (String) source.get(PROP_HARDWARE_ID);
-	Long index = (Long) source.get(PROP_INDEX);
+	UUID id = (UUID) source.get(PROP_ID);
+	UUID batchOperationId = (UUID) source.get(PROP_BATCH_OPERATION_ID);
+	UUID deviceId = (UUID) source.get(PROP_DEVICE_ID);
 	String status = (String) source.get(PROP_PROCESSING_STATUS);
 	Date procDate = (Date) source.get(PROP_PROCESSED_DATE);
 
-	target.setBatchOperationToken(parent);
-	target.setHardwareId(hardwareId);
-	target.setIndex(index);
+	target.setId(id);
+	target.setBatchOperationId(batchOperationId);
+	target.setDeviceId(deviceId);
 	if (status != null) {
 	    target.setProcessingStatus(ElementProcessingStatus.valueOf(status));
 	}

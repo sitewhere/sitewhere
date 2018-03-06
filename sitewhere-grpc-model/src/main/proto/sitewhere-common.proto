@@ -133,12 +133,6 @@ enum GParameterType {
     PARAMETER_BYTES = 14;
 }
 
-// Device group element type.
-enum GDeviceGroupElementType {
-	ELEMENT_TYPE_DEVICE = 0;
-	ELEMENT_TYPE_GROUP = 1;
-}
-
 // Device assignment status.
 enum GDeviceAssignmentStatus {
 	ASSN_STATUS_UNSPECIFIED = 0;

@@ -24,6 +24,7 @@ import com.sitewhere.rest.model.batch.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.rest.model.batch.request.BatchCommandInvocationRequest;
 import com.sitewhere.schedule.BatchCommandInvocationJobParser;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.tenant.ITenant;
@@ -63,14 +64,15 @@ public class BatchCommandInvocationJob implements Job {
 	try {
 	    ITenant tenant = getTenantManagement().getTenantByToken(context.getScheduler().getSchedulerName());
 
-	    // Resolve hardware ids for devices matching criteria.
-	    List<String> hardwareIds = BatchUtils.getHardwareIds(criteria, getDeviceManagement());
+	    // Resolve tokens for devices matching criteria.
+	    List<String> deviceTokens = BatchUtils.getDeviceTokens(criteria, getDeviceManagement(),
+		    getAssetManagement());
 
 	    // Create batch command invocation.
 	    BatchCommandInvocationRequest invoke = new BatchCommandInvocationRequest();
 	    invoke.setCommandToken(criteria.getCommandToken());
 	    invoke.setParameterValues(criteria.getParameterValues());
-	    invoke.setHardwareIds(hardwareIds);
+	    invoke.setDeviceTokens(deviceTokens);
 
 	    getBatchManagement(tenant).createBatchCommandInvocation(invoke);
 
@@ -83,6 +85,10 @@ public class BatchCommandInvocationJob implements Job {
     }
 
     private IDeviceManagement getDeviceManagement() {
+	return null;
+    }
+
+    private IAssetManagement getAssetManagement() {
 	return null;
     }
 

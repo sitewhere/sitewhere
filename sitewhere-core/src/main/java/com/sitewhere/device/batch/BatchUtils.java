@@ -15,6 +15,7 @@ import com.sitewhere.device.group.DeviceGroupUtils;
 import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.batch.request.IBatchCommandForCriteriaRequest;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -37,8 +38,8 @@ public class BatchUtils {
      * @return
      * @throws SiteWhereException
      */
-    public static List<String> getHardwareIds(IBatchCommandForCriteriaRequest criteria,
-	    IDeviceManagement deviceManagement) throws SiteWhereException {
+    public static List<String> getDeviceTokens(IBatchCommandForCriteriaRequest criteria,
+	    IDeviceManagement deviceManagement, IAssetManagement assetManagement) throws SiteWhereException {
 	if (criteria.getDeviceTypeToken() == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceTypeToken, ErrorLevel.ERROR);
 	}
@@ -61,17 +62,17 @@ public class BatchUtils {
 	Collection<IDevice> matches;
 	if (hasGroup) {
 	    IDeviceGroup group = deviceManagement.getDeviceGroupByToken(criteria.getGroupToken());
-	    matches = DeviceGroupUtils.getDevicesInGroup(group, deviceSearch, deviceManagement);
+	    matches = DeviceGroupUtils.getDevicesInGroup(group, deviceSearch, deviceManagement, assetManagement);
 	} else if (hasGroupsWithRole) {
 	    matches = DeviceGroupUtils.getDevicesInGroupsWithRole(criteria.getGroupsWithRole(), deviceSearch,
-		    deviceManagement);
+		    deviceManagement, assetManagement);
 	} else {
 	    matches = deviceManagement.listDevices(false, deviceSearch).getResults();
 	}
-	List<String> hardwareIds = new ArrayList<String>();
+	List<String> deviceTokens = new ArrayList<String>();
 	for (IDevice match : matches) {
-	    hardwareIds.add(match.getToken());
+	    deviceTokens.add(match.getToken());
 	}
-	return hardwareIds;
+	return deviceTokens;
     }
 }

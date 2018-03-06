@@ -9,6 +9,7 @@ package com.sitewhere.web.rest.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -32,6 +33,7 @@ import com.sitewhere.rest.model.search.batch.BatchOperationSearchCriteria;
 import com.sitewhere.rest.model.search.device.BatchElementSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.batch.IBatchElement;
 import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.batch.IBatchOperation;
@@ -69,7 +71,7 @@ public class BatchOperations extends RestControllerBase {
     public IBatchOperation getBatchOperationByToken(
 	    @ApiParam(value = "Unique token that identifies batch operation", required = true) @PathVariable String batchToken,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IBatchOperation batch = getBatchManagement().getBatchOperation(batchToken);
+	IBatchOperation batch = getBatchManagement().getBatchOperationByToken(batchToken);
 	if (batch == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidBatchOperationToken, ErrorLevel.ERROR);
 	}
@@ -102,8 +104,10 @@ public class BatchOperations extends RestControllerBase {
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
+	IBatchOperation batchOperation = assureBatchOperation(operationToken);
 	BatchElementSearchCriteria criteria = new BatchElementSearchCriteria(page, pageSize);
-	ISearchResults<IBatchElement> results = getBatchManagement().listBatchElements(operationToken, criteria);
+	ISearchResults<IBatchElement> results = getBatchManagement().listBatchElements(batchOperation.getId(),
+		criteria);
 	return results;
     }
 
@@ -121,24 +125,23 @@ public class BatchOperations extends RestControllerBase {
      * the given criteria.
      * 
      * @param request
-     * @param servletRequest
      * @return
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/command/criteria", method = RequestMethod.POST)
     @ApiOperation(value = "Create batch command operation based on criteria")
     @Secured({ SiteWhereRoles.REST })
-    public IBatchOperation createBatchCommandByCriteria(@RequestBody BatchCommandForCriteriaRequest request,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	// Resolve hardware ids for devices matching criteria.
-	List<String> hardwareIds = BatchUtils.getHardwareIds(request, getDeviceManagement());
+    public IBatchOperation createBatchCommandByCriteria(@RequestBody BatchCommandForCriteriaRequest request)
+	    throws SiteWhereException {
+	// Resolve tokens for devices matching criteria.
+	List<String> deviceTokens = BatchUtils.getDeviceTokens(request, getDeviceManagement(), getAssetManagement());
 
 	// Create batch command invocation.
 	BatchCommandInvocationRequest invoke = new BatchCommandInvocationRequest();
 	invoke.setToken(request.getToken());
 	invoke.setCommandToken(request.getCommandToken());
 	invoke.setParameterValues(request.getParameterValues());
-	invoke.setHardwareIds(hardwareIds);
+	invoke.setDeviceTokens(deviceTokens);
 
 	IBatchOperation result = getBatchManagement().createBatchCommandInvocation(invoke);
 	return BatchOperation.copy(result);
@@ -158,9 +161,8 @@ public class BatchOperations extends RestControllerBase {
     @ApiOperation(value = "Schedule batch command operation based on criteria")
     @Secured({ SiteWhereRoles.REST })
     public IScheduledJob scheduleBatchCommandByCriteria(@RequestBody BatchCommandForCriteriaRequest request,
-	    @ApiParam(value = "Schedule token", required = true) @PathVariable String scheduleToken,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	assureDeviceCommand(request.getCommandToken(), servletRequest);
+	    @ApiParam(value = "Schedule token", required = true) @PathVariable String scheduleToken)
+	    throws SiteWhereException {
 	// IScheduledJobCreateRequest job = ScheduledJobHelper
 	// .createBatchCommandInvocationJobByCriteria(UUID.randomUUID().toString(),
 	// request, scheduleToken);
@@ -170,24 +172,41 @@ public class BatchOperations extends RestControllerBase {
     }
 
     /**
-     * Get a device command by unique token. Throw an exception if not found.
+     * Get a device command by unique id. Throw an exception if not found.
      * 
-     * @param token
-     * @param servletRequest
+     * @param deviceCommandId
      * @return
      * @throws SiteWhereException
      */
-    protected IDeviceCommand assureDeviceCommand(String token, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(token);
+    protected IDeviceCommand assureDeviceCommand(UUID deviceCommandId) throws SiteWhereException {
+	IDeviceCommand command = getDeviceManagement().getDeviceCommand(deviceCommandId);
 	if (command == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandToken, ErrorLevel.ERROR);
 	}
 	return command;
     }
 
+    /**
+     * Verify that the batch operation associated with the given token exists.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IBatchOperation assureBatchOperation(String token) throws SiteWhereException {
+	IBatchOperation batchOperation = getBatchManagement().getBatchOperationByToken(token);
+	if (batchOperation == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidBatchOperationToken, ErrorLevel.ERROR);
+	}
+	return batchOperation;
+    }
+
     private IDeviceManagement getDeviceManagement() {
 	return getMicroservice().getDeviceManagementApiDemux().getApiChannel();
+    }
+
+    private IAssetManagement getAssetManagement() {
+	return getMicroservice().getAssetManagementApiDemux().getApiChannel();
     }
 
     protected IBatchManagement getBatchManagement() {

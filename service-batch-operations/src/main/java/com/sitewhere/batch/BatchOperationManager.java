@@ -169,11 +169,11 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 		BatchOperationUpdateRequest request = new BatchOperationUpdateRequest();
 		request.setProcessingStatus(BatchOperationStatus.Processing);
 		request.setProcessingStartedDate(new Date());
-		getBatchManagement().updateBatchOperation(operation.getToken(), request);
+		getBatchManagement().updateBatchOperation(operation.getId(), request);
 
 		// Process all batch elements.
 		IBatchElementSearchCriteria criteria = new BatchElementSearchCriteria(1, 0);
-		ISearchResults<IBatchElement> matches = getBatchManagement().listBatchElements(operation.getToken(),
+		ISearchResults<IBatchElement> matches = getBatchManagement().listBatchElements(operation.getId(),
 			criteria);
 		BatchProcessingResults result = processBatchElements(operation, matches.getResults());
 
@@ -184,7 +184,7 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 		if (result.getErrorCount() > 0) {
 		    request.setProcessingStatus(BatchOperationStatus.FinishedWithErrors);
 		}
-		getBatchManagement().updateBatchOperation(operation.getToken(), request);
+		getBatchManagement().updateBatchOperation(operation.getId(), request);
 	    } catch (SiteWhereException e) {
 		LOGGER.error("Error processing batch operation.", e);
 	    }
@@ -232,7 +232,7 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 		// Indicate element is being processed.
 		BatchElementUpdateRequest request = new BatchElementUpdateRequest();
 		request.setProcessingStatus(ElementProcessingStatus.Processing);
-		getBatchManagement().updateBatchElement(element.getBatchOperationToken(), element.getIndex(), request);
+		getBatchManagement().updateBatchElement(element.getBatchOperationId(), request);
 
 		request = new BatchElementUpdateRequest();
 		ElementProcessingStatus status = ElementProcessingStatus.Succeeded;
@@ -252,8 +252,8 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 		    LOGGER.error("Error processing batch invocation element.", t);
 		    request.setProcessingStatus(ElementProcessingStatus.Failed);
 		} finally {
-		    IBatchElement updated = getBatchManagement().updateBatchElement(element.getBatchOperationToken(),
-			    element.getIndex(), request);
+		    IBatchElement updated = getBatchManagement().updateBatchElement(element.getBatchOperationId(),
+			    request);
 		    results.process(updated);
 		}
 	    }

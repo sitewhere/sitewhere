@@ -61,22 +61,22 @@ public class BatchCommandInvocationHandler extends TenantEngineLifecycleComponen
     @Override
     public ElementProcessingStatus process(IBatchOperation operation, IBatchElement element,
 	    IBatchElementUpdateRequest updated) throws SiteWhereException {
-	getLogger().info("Processing command invocation: " + element.getHardwareId());
+	getLogger().info("Processing command invocation: " + element.getDeviceId());
 
 	// Find information about the command to be executed.
-	String commandToken = operation.getParameters().get(IBatchCommandInvocationRequest.PARAM_COMMAND_TOKEN);
-	if (commandToken == null) {
+	String deviceCommandToken = operation.getParameters().get(IBatchCommandInvocationRequest.PARAM_COMMAND_TOKEN);
+	if (deviceCommandToken == null) {
 	    throw new SiteWhereException("Command token not found in batch command invocation request.");
 	}
-	IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(commandToken);
+	IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(deviceCommandToken);
 	if (command == null) {
 	    throw new SiteWhereException("Invalid command token referenced by batch command invocation.");
 	}
 
 	// Find information about the device to execute the command against.
-	IDevice device = getDeviceManagement().getDeviceByToken(element.getHardwareId());
+	IDevice device = getDeviceManagement().getDevice(element.getDeviceId());
 	if (device == null) {
-	    throw new SiteWhereException("Invalid device token in command invocation.");
+	    throw new SiteWhereException("Invalid device id in command invocation.");
 	}
 
 	// Find the current assignment information for the device.
@@ -88,14 +88,14 @@ public class BatchCommandInvocationHandler extends TenantEngineLifecycleComponen
 
 	// Create the request.
 	DeviceCommandInvocationCreateRequest request = new DeviceCommandInvocationCreateRequest();
-	request.setCommandToken(commandToken);
+	request.setCommandToken(command.getToken());
 	request.setInitiator(CommandInitiator.BatchOperation);
 	request.setInitiatorId(null);
 	request.setTarget(CommandTarget.Assignment);
 	request.setTargetId(assignment.getToken());
 	request.setParameterValues(operation.getMetadata());
 	Map<String, String> metadata = new HashMap<String, String>();
-	metadata.put(IBatchOperationCreateRequest.META_BATCH_OPERATION_ID, operation.getToken());
+	metadata.put(IBatchOperationCreateRequest.META_BATCH_OPERATION_TOKEN, operation.getToken());
 	request.setMetadata(metadata);
 
 	// Invoke the command.

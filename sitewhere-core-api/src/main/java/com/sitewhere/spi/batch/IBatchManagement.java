@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.batch;
 
+import java.util.UUID;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.batch.request.IBatchElementUpdateRequest;
@@ -37,22 +39,31 @@ public interface IBatchManagement extends ITenantEngineLifecycleComponent {
     /**
      * Update an existing {@link IBatchOperation}.
      * 
-     * @param token
+     * @param batchOperationId
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public IBatchOperation updateBatchOperation(String token, IBatchOperationUpdateRequest request)
+    public IBatchOperation updateBatchOperation(UUID batchOperationId, IBatchOperationUpdateRequest request)
 	    throws SiteWhereException;
 
     /**
      * Get an {@link IBatchOperation} by unique token.
      * 
+     * @param batchOperationId
+     * @return
+     * @throws SiteWhereException
+     */
+    public IBatchOperation getBatchOperation(UUID batchOperationId) throws SiteWhereException;
+
+    /**
+     * Get a batch operation by token.
+     * 
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    public IBatchOperation getBatchOperation(String token) throws SiteWhereException;
+    public IBatchOperation getBatchOperationByToken(String token) throws SiteWhereException;
 
     /**
      * List batch operations based on the given criteria.
@@ -67,34 +78,33 @@ public interface IBatchManagement extends ITenantEngineLifecycleComponent {
     /**
      * Deletes a batch operation and its elements.
      * 
-     * @param token
+     * @param batchOperationId
      * @param force
      * @return
      * @throws SiteWhereException
      */
-    public IBatchOperation deleteBatchOperation(String token, boolean force) throws SiteWhereException;
+    public IBatchOperation deleteBatchOperation(UUID batchOperationId, boolean force) throws SiteWhereException;
 
     /**
      * Lists elements for an {@link IBatchOperation} that meet the given criteria.
      * 
-     * @param batchToken
+     * @param batchOperationId
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IBatchElement> listBatchElements(String batchToken, IBatchElementSearchCriteria criteria)
+    public ISearchResults<IBatchElement> listBatchElements(UUID batchOperationId, IBatchElementSearchCriteria criteria)
 	    throws SiteWhereException;
 
     /**
      * Updates an existing batch operation element.
      * 
-     * @param operationToken
-     * @param index
+     * @param elementId
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public IBatchElement updateBatchElement(String operationToken, long index, IBatchElementUpdateRequest request)
+    public IBatchElement updateBatchElement(UUID elementId, IBatchElementUpdateRequest request)
 	    throws SiteWhereException;
 
     /**

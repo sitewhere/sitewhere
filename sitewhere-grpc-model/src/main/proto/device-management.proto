@@ -953,8 +953,7 @@ message GAddDeviceGroupElementsResponse {
 	
 // Request for removing device group elements.
 message GRemoveDeviceGroupElementsRequest {
-	com.sitewhere.grpc.model.GUUID groupId = 1;
-	repeated com.sitewhere.grpc.model.GDeviceGroupElementCreateRequest requests = 2;
+	repeated com.sitewhere.grpc.model.GUUID elementIds = 1;
 }
 	
 // Response for removing device group elements.

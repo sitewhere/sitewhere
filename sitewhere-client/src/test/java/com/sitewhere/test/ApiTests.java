@@ -56,7 +56,6 @@ import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
 import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandTarget;
-import com.sitewhere.spi.device.group.GroupElementType;
 import com.sitewhere.spi.error.ErrorCode;
 
 /**
@@ -330,8 +329,8 @@ public class ApiTests {
 	Assert.assertNotNull(match);
 	Assert.assertEquals(group.getName(), match.getName());
 	DeviceGroupElementCreateRequest elm1 = new DeviceGroupElementCreateRequest();
-	elm1.setType(GroupElementType.Device);
-	elm1.setElementId("07ecf9f0-2786-48c8-ba1e-ec48a87fa104");
+	elm1.setDeviceId(UUID.randomUUID());
+	elm1.setRoles(roles);
 	List<DeviceGroupElementCreateRequest> elms = new ArrayList<DeviceGroupElementCreateRequest>();
 	elms.add(elm1);
 	client.addDeviceGroupElements(group.getToken(), elms);

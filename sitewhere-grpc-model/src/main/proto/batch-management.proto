@@ -7,6 +7,7 @@ option java_package = "com.sitewhere.grpc.service";
 option java_outer_classname = "BatchServices";
 
 import "batch-model.proto";
+import "sitewhere-common.proto";
 
 // Batch management APIs.
 service BatchManagement {
@@ -24,7 +25,10 @@ service BatchManagement {
 	// Update a batch operation.
 	rpc UpdateBatchOperation (GUpdateBatchOperationRequest) returns (GUpdateBatchOperationResponse) {}
 
-	// Update a batch operation.
+	// Get a batch operation by id.
+	rpc GetBatchOperation (GGetBatchOperationRequest) returns (GGetBatchOperationResponse) {}
+
+	// Get a batch operation by token.
 	rpc GetBatchOperationByToken (GGetBatchOperationByTokenRequest) returns (GGetBatchOperationByTokenResponse) {}
 
 	// List batch operations that meet criteria.
@@ -70,12 +74,22 @@ message GCreateBatchCommandInvocationResponse {
 	
 // Request for updating a batch operation.
 message GUpdateBatchOperationRequest {
-	string token = 1;
+	com.sitewhere.grpc.model.GUUID batchOperationId = 1;
 	com.sitewhere.grpc.model.GBatchOperationUpdateRequest request = 2;
 }
 	
 // Response for updating a batch operation.
 message GUpdateBatchOperationResponse {
+	com.sitewhere.grpc.model.GBatchOperation batchOperation = 1;
+}
+	
+// Request for getting a batch operation by id.
+message GGetBatchOperationRequest {
+	com.sitewhere.grpc.model.GUUID batchOperationId = 1;
+}
+	
+// Response for getting a batch operation by id.
+message GGetBatchOperationResponse {
 	com.sitewhere.grpc.model.GBatchOperation batchOperation = 1;
 }
 	
@@ -101,7 +115,7 @@ message GListBatchOperationsResponse {
 	
 // Request for deleting a batch operation.
 message GDeleteBatchOperationRequest {
-	string token = 1;
+	com.sitewhere.grpc.model.GUUID batchOperationId = 1;
 	bool force = 2;
 }
 	
@@ -116,7 +130,7 @@ message GDeleteBatchOperationResponse {
 	
 // Request for listing batch operation elements that meet criteria.
 message GListBatchOperationElementsRequest {
-	string token = 1;
+	com.sitewhere.grpc.model.GUUID batchOperationId = 1;
 	com.sitewhere.grpc.model.GBatchOperationElementSearchCriteria criteria = 2;
 }
 	
@@ -127,8 +141,7 @@ message GListBatchOperationElementsResponse {
 	
 // Request for updating a batch operation element.
 message GUpdateBatchOperationElementRequest {
-	string token = 1;
-	int64 index = 2;
+	com.sitewhere.grpc.model.GUUID elementId = 1;
 	com.sitewhere.grpc.model.GBatchOperationElementUpdateRequest request = 3;
 }
 	

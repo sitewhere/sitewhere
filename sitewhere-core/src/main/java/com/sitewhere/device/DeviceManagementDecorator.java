@@ -682,12 +682,11 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator<IDevi
     /*
      * @see
      * com.sitewhere.spi.device.IDeviceManagement#removeDeviceGroupElements(java.
-     * util.UUID, java.util.List)
+     * util.List)
      */
     @Override
-    public List<IDeviceGroupElement> removeDeviceGroupElements(UUID groupId,
-	    List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException {
-	return getDelegate().removeDeviceGroupElements(groupId, elements);
+    public List<IDeviceGroupElement> removeDeviceGroupElements(List<UUID> elements) throws SiteWhereException {
+	return getDelegate().removeDeviceGroupElements(elements);
     }
 
     /*

@@ -204,8 +204,8 @@ message GDevice {
 
 // Request data for creating a device group element.
 message GDeviceGroupElementCreateRequest {
-	GDeviceGroupElementType type = 1;
-	string elementId = 2;
+	GUUID deviceId = 1;
+	GUUID nestedGroupId = 2;
 	repeated string roles = 3;
 }
 
@@ -251,10 +251,10 @@ message GDeviceGroupSearchResults {
 
 // Device group element.
 message GDeviceGroupElement {
-	GUUID groupId = 1;
-	uint64 index = 2; 
-	GDeviceGroupElementType type = 3;
-	GUUID elementId = 4;
+	GUUID id = 1;
+	GUUID groupId = 2;
+	GUUID deviceId = 3;
+	GUUID nestedGroupId = 4;
 	repeated string roles = 5;
 }
 

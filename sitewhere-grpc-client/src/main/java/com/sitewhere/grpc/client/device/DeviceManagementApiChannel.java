@@ -1471,16 +1471,14 @@ public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcC
     /*
      * @see
      * com.sitewhere.spi.device.IDeviceManagement#removeDeviceGroupElements(java.
-     * util.UUID, java.util.List)
+     * util.List)
      */
     @Override
-    public List<IDeviceGroupElement> removeDeviceGroupElements(UUID groupId,
-	    List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException {
+    public List<IDeviceGroupElement> removeDeviceGroupElements(List<UUID> elements) throws SiteWhereException {
 	try {
 	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_REMOVE_DEVICE_GROUP_ELEMENTS);
 	    GRemoveDeviceGroupElementsRequest.Builder grequest = GRemoveDeviceGroupElementsRequest.newBuilder();
-	    grequest.setGroupId(CommonModelConverter.asGrpcUuid(groupId));
-	    grequest.addAllRequests(DeviceModelConverter.asGrpcDeviceGroupElementCreateRequests(elements));
+	    grequest.addAllElementIds(CommonModelConverter.asGrpcUuids(elements));
 	    GRemoveDeviceGroupElementsResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .removeDeviceGroupElements(grequest.build());
 	    List<IDeviceGroupElement> results = DeviceModelConverter

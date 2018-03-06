@@ -160,8 +160,10 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	getMongoClient().getDeviceGroupsCollection().createIndex(new Document(MongoDeviceGroup.PROP_TOKEN, 1),
 		new IndexOptions().unique(true));
 	getMongoClient().getDeviceGroupsCollection().createIndex(new Document(MongoDeviceGroup.PROP_ROLES, 1));
+
+	// Device group element indexes.
 	getMongoClient().getGroupElementsCollection().createIndex(new Document(MongoDeviceGroupElement.PROP_GROUP_ID, 1)
-		.append(MongoDeviceGroupElement.PROP_TYPE, 1).append(MongoDeviceGroupElement.PROP_ELEMENT_ID, 1));
+		.append(MongoDeviceGroupElement.PROP_DEVICE_ID, 1), new IndexOptions().unique(true));
 	getMongoClient().getGroupElementsCollection().createIndex(
 		new Document(MongoDeviceGroupElement.PROP_GROUP_ID, 1).append(MongoDeviceGroupElement.PROP_ROLES, 1));
     }
@@ -1588,35 +1590,14 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	IDeviceGroup group = MongoDeviceGroup.fromDocument(existing);
 	List<IDeviceGroupElement> results = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElementCreateRequest request : elements) {
-	    long index = MongoDeviceGroup.getNextGroupIndex(getMongoClient(), getTenantEngine().getTenant(), groupId);
-	    UUID elementId;
-	    switch (request.getType()) {
-	    case Device: {
-		IDevice elementDevice = getDeviceByToken(request.getElementId());
-		elementId = elementDevice.getId();
-		break;
-	    }
-	    case Group: {
-		IDeviceGroup elementGroup = getDeviceGroupByToken(request.getElementId());
-		elementId = elementGroup.getId();
-		break;
-	    }
-	    default: {
-		elementId = null;
-	    }
-	    }
-	    if (elementId != null) {
-		DeviceGroupElement element = DeviceManagementPersistence.deviceGroupElementCreateLogic(request, group,
-			index, elementId);
-		Document created = MongoDeviceGroupElement.toDocument(element);
-		try {
-		    MongoPersistence.insert(getMongoClient().getGroupElementsCollection(), created,
-			    ErrorCode.DuplicateId);
-		    results.add(MongoDeviceGroupElement.fromDocument(created));
-		} catch (ResourceExistsException e) {
-		    if (!ignoreDuplicates) {
-			throw e;
-		    }
+	    DeviceGroupElement element = DeviceManagementPersistence.deviceGroupElementCreateLogic(request, group);
+	    Document created = MongoDeviceGroupElement.toDocument(element);
+	    try {
+		MongoPersistence.insert(getMongoClient().getGroupElementsCollection(), created, ErrorCode.DuplicateId);
+		results.add(MongoDeviceGroupElement.fromDocument(created));
+	    } catch (ResourceExistsException e) {
+		if (!ignoreDuplicates) {
+		    throw e;
 		}
 	    }
 	}
@@ -1626,16 +1607,13 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     /*
      * @see
      * com.sitewhere.spi.device.IDeviceManagement#removeDeviceGroupElements(java.
-     * util.UUID, java.util.List)
+     * util.List)
      */
     @Override
-    public List<IDeviceGroupElement> removeDeviceGroupElements(UUID groupId,
-	    List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException {
+    public List<IDeviceGroupElement> removeDeviceGroupElements(List<UUID> elementIds) throws SiteWhereException {
 	List<IDeviceGroupElement> deleted = new ArrayList<IDeviceGroupElement>();
-	for (IDeviceGroupElementCreateRequest request : elements) {
-	    Document match = new Document(MongoDeviceGroupElement.PROP_GROUP_ID, groupId)
-		    .append(MongoDeviceGroupElement.PROP_TYPE, request.getType().name())
-		    .append(MongoDeviceGroupElement.PROP_ELEMENT_ID, request.getElementId());
+	for (UUID elementId : elementIds) {
+	    Document match = new Document(MongoDeviceGroupElement.PROP_ID, elementId);
 	    FindIterable<Document> found = getMongoClient().getGroupElementsCollection().find(match);
 	    MongoCursor<Document> cursor = found.iterator();
 
@@ -1659,7 +1637,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     public SearchResults<IDeviceGroupElement> listDeviceGroupElements(UUID groupId, ISearchCriteria criteria)
 	    throws SiteWhereException {
 	Document match = new Document(MongoDeviceGroupElement.PROP_GROUP_ID, groupId);
-	Document sort = new Document(MongoDeviceGroupElement.PROP_INDEX, 1);
+	Document sort = new Document();
 	return MongoPersistence.search(IDeviceGroupElement.class, getMongoClient().getGroupElementsCollection(), match,
 		sort, criteria, LOOKUP);
     }

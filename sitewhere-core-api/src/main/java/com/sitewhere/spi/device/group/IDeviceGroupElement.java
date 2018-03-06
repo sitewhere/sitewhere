@@ -18,6 +18,13 @@ import java.util.UUID;
 public interface IDeviceGroupElement {
 
     /**
+     * Get unique element id.
+     * 
+     * @return
+     */
+    public UUID getId();
+
+    /**
      * Get id for parent group.
      * 
      * @return
@@ -25,25 +32,20 @@ public interface IDeviceGroupElement {
     public UUID getGroupId();
 
     /**
-     * Get index that corresponds to this entry.
+     * Get id of device (only one of device id or nested group id should be
+     * specified).
      * 
      * @return
      */
-    public Long getIndex();
+    public UUID getDeviceId();
 
     /**
-     * Get group element type.
+     * Get id of nested group (only one of device id or nested group id should be
+     * specified).
      * 
      * @return
      */
-    public GroupElementType getType();
-
-    /**
-     * Get element id (relative to element type).
-     * 
-     * @return
-     */
-    public UUID getElementId();
+    public UUID getNestedGroupId();
 
     /**
      * Get list of roles associated with element.

@@ -28,10 +28,6 @@ public class MarshaledDeviceGroupElement extends DeviceGroupElement {
     /** Referenced device group */
     private DeviceGroup deviceGroup;
 
-    public MarshaledDeviceGroupElement() {
-	// TODO Auto-generated constructor stub
-    }
-
     public Device getDevice() {
 	return device;
     }

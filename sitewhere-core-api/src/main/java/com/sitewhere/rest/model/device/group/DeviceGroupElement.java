@@ -14,7 +14,6 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.spi.device.group.GroupElementType;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 
@@ -29,20 +28,32 @@ public class DeviceGroupElement implements IDeviceGroupElement, Serializable {
     /** Serialization version identifier */
     private static final long serialVersionUID = -5565956152579362877L;
 
+    /** Unqiue id */
+    private UUID id;
+
     /** Parent group id */
     private UUID groupId;
 
-    /** Element index */
-    private Long index;
+    /** Device id (null if nested group id specified) */
+    private UUID deviceId;
 
-    /** Element type */
-    private GroupElementType type;
-
-    /** Element type */
-    private UUID elementId;
+    /** Nested group id (null if device id specified) */
+    private UUID nestedGroupId;
 
     /** List of roles for the element */
     private List<String> roles = new ArrayList<String>();
+
+    /*
+     * @see com.sitewhere.spi.device.group.IDeviceGroupElement#getId()
+     */
+    @Override
+    public UUID getId() {
+	return id;
+    }
+
+    public void setId(UUID id) {
+	this.id = id;
+    }
 
     /*
      * @see com.sitewhere.spi.device.group.IDeviceGroupElement#getGroupId()
@@ -57,41 +68,27 @@ public class DeviceGroupElement implements IDeviceGroupElement, Serializable {
     }
 
     /*
-     * @see com.sitewhere.spi.device.group.IDeviceGroupElement#getIndex()
+     * @see com.sitewhere.spi.device.group.IDeviceGroupElement#getDeviceId()
      */
     @Override
-    public Long getIndex() {
-	return index;
+    public UUID getDeviceId() {
+	return deviceId;
     }
 
-    public void setIndex(Long index) {
-	this.index = index;
+    public void setDeviceId(UUID deviceId) {
+	this.deviceId = deviceId;
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.group.IDeviceGroupElement#getType()
+     * @see com.sitewhere.spi.device.group.IDeviceGroupElement#getNestedGroupId()
      */
     @Override
-    public GroupElementType getType() {
-	return type;
+    public UUID getNestedGroupId() {
+	return nestedGroupId;
     }
 
-    public void setType(GroupElementType type) {
-	this.type = type;
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.group.IDeviceGroupElement#getElementId()
-     */
-    @Override
-    public UUID getElementId() {
-	return elementId;
-    }
-
-    public void setElementId(UUID elementId) {
-	this.elementId = elementId;
+    public void setNestedGroupId(UUID nestedGroupId) {
+	this.nestedGroupId = nestedGroupId;
     }
 
     /*

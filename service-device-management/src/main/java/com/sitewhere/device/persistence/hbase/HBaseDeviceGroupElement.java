@@ -90,8 +90,7 @@ public class HBaseDeviceGroupElement {
 
 	// Use common processing logic so all backend implementations work the
 	// same.
-	DeviceGroupElement element = DeviceManagementPersistence.deviceGroupElementCreateLogic(request, group, index,
-		null);
+	DeviceGroupElement element = DeviceManagementPersistence.deviceGroupElementCreateLogic(request, group);
 
 	byte[] payload = context.getPayloadMarshaler().encodeDeviceGroupElement(element);
 
@@ -331,22 +330,7 @@ public class HBaseDeviceGroupElement {
      * @return
      */
     public static byte[] getCombinedIdentifier(IDeviceGroupElementCreateRequest request) {
-	byte[] id = Bytes.toBytes(request.getElementId());
-	ByteBuffer buffer = ByteBuffer.allocate(1 + id.length);
-	switch (request.getType()) {
-	case Device: {
-	    buffer.put((byte) 0x00);
-	    break;
-	}
-	case Group: {
-	    buffer.put((byte) 0x01);
-	    break;
-	}
-	default: {
-	    throw new RuntimeException("Unknown device group element type: " + request.getType().name());
-	}
-	}
-	buffer.put(id);
+	ByteBuffer buffer = ByteBuffer.allocate(1);
 	return buffer.array();
     }
 

@@ -23,6 +23,7 @@ import com.sitewhere.grpc.model.BatchModel.GBatchOperationStatus;
 import com.sitewhere.grpc.model.BatchModel.GBatchOperationUpdateRequest;
 import com.sitewhere.grpc.model.BatchModel.GElementProcessingStatus;
 import com.sitewhere.grpc.model.CommonModel.GOptionalBoolean;
+import com.sitewhere.grpc.model.CommonModel.GOptionalString;
 import com.sitewhere.rest.model.batch.BatchElement;
 import com.sitewhere.rest.model.batch.BatchOperation;
 import com.sitewhere.rest.model.batch.request.BatchCommandInvocationRequest;
@@ -106,10 +107,10 @@ public class BatchModelConverter {
     public static BatchOperationCreateRequest asApiBatchOperationCreateRequest(GBatchOperationCreateRequest grpc)
 	    throws SiteWhereException {
 	BatchOperationCreateRequest api = new BatchOperationCreateRequest();
-	api.setToken(grpc.getToken());
+	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
 	api.setOperationType(grpc.getOperationType());
 	api.setParameters(grpc.getParametersMap());
-	api.setHardwareIds(grpc.getHardwareIdsList());
+	api.setDeviceTokens(grpc.getDeviceTokensList());
 	api.setMetadata(grpc.getMetadataMap());
 	return api;
     }
@@ -124,10 +125,12 @@ public class BatchModelConverter {
     public static GBatchOperationCreateRequest asGrpcBatchOperationCreateRequest(IBatchOperationCreateRequest api)
 	    throws SiteWhereException {
 	GBatchOperationCreateRequest.Builder grpc = GBatchOperationCreateRequest.newBuilder();
-	grpc.setToken(api.getToken());
+	if (api.getToken() != null) {
+	    grpc.setToken(GOptionalString.newBuilder().setValue(api.getToken()));
+	}
 	grpc.setOperationType(api.getOperationType());
 	grpc.putAllParameters(api.getParameters());
-	grpc.addAllHardwareIds(api.getHardwareIds());
+	grpc.addAllDeviceTokens(api.getDeviceTokens());
 	grpc.putAllMetadata(api.getMetadata());
 	return grpc.build();
     }
@@ -142,9 +145,9 @@ public class BatchModelConverter {
     public static BatchCommandInvocationRequest asApiBatchCommandInvocationRequest(
 	    GBatchCommandInvocationCreateRequest grpc) throws SiteWhereException {
 	BatchCommandInvocationRequest api = new BatchCommandInvocationRequest();
-	api.setToken(grpc.getToken());
+	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
 	api.setCommandToken(grpc.getCommandToken());
-	api.setHardwareIds(grpc.getHardwareIdsList());
+	api.setDeviceTokens(grpc.getDeviceTokensList());
 	api.setParameterValues(grpc.getParametersMap());
 	return api;
     }
@@ -159,9 +162,11 @@ public class BatchModelConverter {
     public static GBatchCommandInvocationCreateRequest asGrpcBatchCommandInvocationRequest(
 	    IBatchCommandInvocationRequest api) throws SiteWhereException {
 	GBatchCommandInvocationCreateRequest.Builder grpc = GBatchCommandInvocationCreateRequest.newBuilder();
-	grpc.setToken(api.getToken());
+	if (api.getToken() != null) {
+	    grpc.setToken(GOptionalString.newBuilder().setValue(api.getToken()));
+	}
 	grpc.setCommandToken(api.getCommandToken());
-	grpc.addAllHardwareIds(api.getHardwareIds());
+	grpc.addAllDeviceTokens(api.getDeviceTokens());
 	grpc.putAllParameters(api.getParameterValues());
 	return grpc.build();
     }
@@ -263,7 +268,7 @@ public class BatchModelConverter {
      */
     public static BatchOperation asApiBatchOperation(GBatchOperation grpc) throws SiteWhereException {
 	BatchOperation api = new BatchOperation();
-	api.setToken(grpc.getToken());
+	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
 	api.setOperationType(grpc.getOperationType());
 	api.setParameters(grpc.getParametersMap());
 	api.setMetadata(grpc.getMetadataMap());
@@ -285,7 +290,7 @@ public class BatchModelConverter {
      */
     public static GBatchOperation asGrpcBatchOperation(IBatchOperation api) throws SiteWhereException {
 	GBatchOperation.Builder grpc = GBatchOperation.newBuilder();
-	grpc.setToken(api.getToken());
+	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
 	grpc.setOperationType(api.getOperationType());
 	grpc.putAllParameters(api.getParameters());
 	grpc.putAllMetadata(api.getMetadata());
@@ -435,9 +440,9 @@ public class BatchModelConverter {
      */
     public static BatchElement asApiBatchElement(GBatchOperationElement grpc) throws SiteWhereException {
 	BatchElement api = new BatchElement();
-	api.setBatchOperationToken(grpc.getBatchOperationToken());
-	api.setHardwareId(grpc.getHardwareId());
-	api.setIndex(grpc.getIndex());
+	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
+	api.setBatchOperationId(CommonModelConverter.asApiUuid(grpc.getBatchOperationId()));
+	api.setDeviceId(CommonModelConverter.asApiUuid(grpc.getDeviceId()));
 	api.setMetadata(grpc.getMetadataMap());
 	return api;
     }
@@ -451,9 +456,9 @@ public class BatchModelConverter {
      */
     public static GBatchOperationElement asGrpcBatchElement(IBatchElement api) throws SiteWhereException {
 	GBatchOperationElement.Builder grpc = GBatchOperationElement.newBuilder();
-	grpc.setBatchOperationToken(api.getBatchOperationToken());
-	grpc.setHardwareId(api.getHardwareId());
-	grpc.setIndex(api.getIndex());
+	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
+	grpc.setBatchOperationId(CommonModelConverter.asGrpcUuid(api.getBatchOperationId()));
+	grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
 	grpc.putAllMetadata(api.getMetadata());
 	return grpc.build();
     }

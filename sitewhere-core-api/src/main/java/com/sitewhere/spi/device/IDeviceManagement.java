@@ -678,13 +678,11 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     /**
      * Remove selected elements from a device group.
      * 
-     * @param groupId
      * @param elements
      * @return
      * @throws SiteWhereException
      */
-    public List<IDeviceGroupElement> removeDeviceGroupElements(UUID groupId,
-	    List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException;
+    public List<IDeviceGroupElement> removeDeviceGroupElements(List<UUID> elements) throws SiteWhereException;
 
     /**
      * List device group elements that meet the given criteria.

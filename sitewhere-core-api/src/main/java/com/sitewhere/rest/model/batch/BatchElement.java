@@ -7,8 +7,8 @@
  */
 package com.sitewhere.rest.model.batch;
 
-import java.io.Serializable;
 import java.util.Date;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -24,19 +24,19 @@ import com.sitewhere.spi.batch.IBatchElement;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class BatchElement extends MetadataProvider implements IBatchElement, Serializable {
+public class BatchElement extends MetadataProvider implements IBatchElement {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = 7080873473253195755L;
 
-    /** Token for parent batch operation */
-    private String batchOperationToken;
+    /** Unqiue id */
+    private UUID id;
 
-    /** Hardware id */
-    private String hardwareId;
+    /** Id for parent batch operation */
+    private UUID batchOperationId;
 
-    /** Element index */
-    private long index;
+    /** Id for device */
+    private UUID deviceId;
 
     /** Processing status */
     private ElementProcessingStatus processingStatus;
@@ -45,43 +45,39 @@ public class BatchElement extends MetadataProvider implements IBatchElement, Ser
     private Date processedDate;
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.device.batch.IBatchElement#getBatchOperationToken()
+     * @see com.sitewhere.spi.batch.IBatchElement#getId()
      */
-    public String getBatchOperationToken() {
-	return batchOperationToken;
+    @Override
+    public UUID getId() {
+	return id;
     }
 
-    public void setBatchOperationToken(String batchOperationToken) {
-	this.batchOperationToken = batchOperationToken;
+    public void setId(UUID id) {
+	this.id = id;
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.batch.IBatchElement#getHardwareId()
+     * @see com.sitewhere.spi.batch.IBatchElement#getBatchOperationId()
      */
-    public String getHardwareId() {
-	return hardwareId;
+    @Override
+    public UUID getBatchOperationId() {
+	return batchOperationId;
     }
 
-    public void setHardwareId(String hardwareId) {
-	this.hardwareId = hardwareId;
+    public void setBatchOperationId(UUID batchOperationId) {
+	this.batchOperationId = batchOperationId;
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.batch.IBatchElement#getIndex()
+     * @see com.sitewhere.spi.batch.IBatchElement#getDeviceId()
      */
-    public long getIndex() {
-	return index;
+    @Override
+    public UUID getDeviceId() {
+	return deviceId;
     }
 
-    public void setIndex(long index) {
-	this.index = index;
+    public void setDeviceId(UUID deviceId) {
+	this.deviceId = deviceId;
     }
 
     /*
@@ -89,6 +85,7 @@ public class BatchElement extends MetadataProvider implements IBatchElement, Ser
      * 
      * @see com.sitewhere.spi.device.batch.IBatchElement#getProcessingStatus()
      */
+    @Override
     public ElementProcessingStatus getProcessingStatus() {
 	return processingStatus;
     }
@@ -102,6 +99,7 @@ public class BatchElement extends MetadataProvider implements IBatchElement, Ser
      * 
      * @see com.sitewhere.spi.device.batch.IBatchElement#getProcessedDate()
      */
+    @Override
     @JsonSerialize(using = JsonDateSerializer.class)
     public Date getProcessedDate() {
 	return processedDate;

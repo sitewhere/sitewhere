@@ -796,12 +796,12 @@ public class SiteWhereClient implements ISiteWhereClient {
      */
     @Override
     public BatchOperation createBatchCommandInvocation(String batchToken, String commandToken,
-	    Map<String, String> parameters, List<String> hardwareIds) throws SiteWhereException {
+	    Map<String, String> parameters, List<String> deviceTokens) throws SiteWhereException {
 	BatchCommandInvocationRequest request = new BatchCommandInvocationRequest();
 	request.setToken(batchToken);
 	request.setCommandToken(commandToken);
 	request.setParameterValues(parameters);
-	request.setHardwareIds(hardwareIds);
+	request.setDeviceTokens(deviceTokens);
 	Map<String, String> vars = new HashMap<String, String>();
 	return sendRest(getBaseUrl() + "batch/command", HttpMethod.POST, request, BatchOperation.class, vars);
     }

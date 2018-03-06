@@ -25,7 +25,7 @@ public interface IBatchCommandInvocationRequest {
     public static final String META_INVOCATION_EVENT_ID = "invocation";
 
     /**
-     * Get unique token for batch request.
+     * Get unique token for request.
      * 
      * @return
      */
@@ -46,9 +46,9 @@ public interface IBatchCommandInvocationRequest {
     public Map<String, String> getParameterValues();
 
     /**
-     * Get the list of targeted device hardware ids.
+     * Get the list of targeted device tokens.
      * 
      * @return
      */
-    public List<String> getHardwareIds();
+    public List<String> getDeviceTokens();
 }

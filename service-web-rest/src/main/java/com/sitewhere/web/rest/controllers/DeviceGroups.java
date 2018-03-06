@@ -9,6 +9,7 @@ package com.sitewhere.web.rest.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -24,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.device.marshaling.DeviceGroupElementMarshalHelper;
-import com.sitewhere.rest.model.device.group.DeviceGroup;
+import com.sitewhere.device.marshaling.DeviceGroupMarshalHelper;
 import com.sitewhere.rest.model.device.request.DeviceGroupCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceGroupElementCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
@@ -32,8 +33,8 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.group.GroupElementType;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
@@ -156,9 +157,10 @@ public class DeviceGroups extends RestControllerBase {
 	} else {
 	    results = getDeviceManagement().listDeviceGroupsWithRole(role, includeDeleted, criteria);
 	}
+	DeviceGroupMarshalHelper helper = new DeviceGroupMarshalHelper();
 	List<IDeviceGroup> groupsConv = new ArrayList<IDeviceGroup>();
 	for (IDeviceGroup group : results.getResults()) {
-	    groupsConv.add(DeviceGroup.copy(group));
+	    groupsConv.add(helper.convert(group));
 	}
 	return new SearchResults<IDeviceGroup>(groupsConv, results.getNumResults());
     }
@@ -231,25 +233,23 @@ public class DeviceGroups extends RestControllerBase {
      * Validate new elements to assure they reference real objects.
      * 
      * @param elements
-     * @param devices
+     * @param deviceManagement
      * @throws SiteWhereException
      */
     protected void validateDeviceGroupElements(List<DeviceGroupElementCreateRequest> elements,
-	    IDeviceManagement devices) throws SiteWhereException {
+	    IDeviceManagement deviceManagement) throws SiteWhereException {
 	for (DeviceGroupElementCreateRequest request : elements) {
-	    switch (request.getType()) {
-	    case Device: {
-		if (devices.getDeviceByToken(request.getElementId()) == null) {
-		    throw new SiteWhereException("Referenced device does not exist: " + request.getElementId());
+	    if (request.getDeviceId() != null) {
+		IDevice device = deviceManagement.getDevice(request.getDeviceId());
+		if (device == null) {
+		    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceId, ErrorLevel.ERROR);
 		}
-		break;
 	    }
-	    case Group: {
-		if (devices.getDeviceGroupByToken(request.getElementId()) == null) {
-		    throw new SiteWhereException("Referenced device group does not exist: " + request.getElementId());
+	    if (request.getNestedGroupId() != null) {
+		IDeviceGroup group = deviceManagement.getDeviceGroup(request.getNestedGroupId());
+		if (group == null) {
+		    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceGroupId, ErrorLevel.ERROR);
 		}
-		break;
-	    }
 	    }
 	}
     }
@@ -260,48 +260,39 @@ public class DeviceGroups extends RestControllerBase {
      * @param groupToken
      * @param type
      * @param elementId
-     * @param servletRequest
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{groupToken}/elements/{type}/{elementId}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{groupToken}/elements/{elementId}", method = RequestMethod.DELETE)
     @ApiOperation(value = "Delete elements from device group")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceGroupElement> deleteDeviceGroupElement(
 	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
 	    @ApiParam(value = "Element type", required = true) @PathVariable String type,
-	    @ApiParam(value = "Element id", required = true) @PathVariable String elementId,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	DeviceGroupElementCreateRequest request = new DeviceGroupElementCreateRequest();
-	request.setType("device".equalsIgnoreCase(type) ? GroupElementType.Device : GroupElementType.Group);
-	request.setElementId(elementId);
-	ArrayList<DeviceGroupElementCreateRequest> elements = new ArrayList<DeviceGroupElementCreateRequest>();
-	elements.add(request);
-	return deleteDeviceGroupElements(groupToken, elements, servletRequest);
+	    @ApiParam(value = "Element id", required = true) @PathVariable UUID elementId) throws SiteWhereException {
+	List<UUID> elements = new ArrayList<>();
+	elements.add(elementId);
+	return deleteDeviceGroupElements(groupToken, elements);
     }
 
     /**
      * Delete a list of elements from an existing device group.
      * 
      * @param groupToken
-     * @param request
+     * @param elementIds
      * @return
      * @throws SiteWhereException
      */
-    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/{groupToken}/elements", method = RequestMethod.DELETE)
     @ApiOperation(value = "Delete elements from device group")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceGroupElement> deleteDeviceGroupElements(
 	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
-	    @RequestBody List<DeviceGroupElementCreateRequest> request, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
+	    @RequestBody List<UUID> elementIds) throws SiteWhereException {
 	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getDeviceManagement())
 		.setIncludeDetails(false);
-	List<IDeviceGroupElementCreateRequest> elements = (List<IDeviceGroupElementCreateRequest>) (List<? extends IDeviceGroupElementCreateRequest>) request;
 
-	IDeviceGroup group = assureDeviceGroup(groupToken);
-	List<IDeviceGroupElement> results = getDeviceManagement().removeDeviceGroupElements(group.getId(), elements);
+	List<IDeviceGroupElement> results = getDeviceManagement().removeDeviceGroupElements(elementIds);
 	List<IDeviceGroupElement> converted = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElement elm : results) {
 	    converted.add(helper.convert(elm, getAssetManagement()));

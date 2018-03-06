@@ -931,21 +931,20 @@ public class DeviceManagementPersistence extends Persistence {
     /**
      * Common logic for creating a new device group element.
      * 
-     * @param source
+     * @param request
      * @param group
-     * @param index
-     * @param elementId
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceGroupElement deviceGroupElementCreateLogic(IDeviceGroupElementCreateRequest source,
-	    IDeviceGroup group, long index, UUID elementId) throws SiteWhereException {
+    public static DeviceGroupElement deviceGroupElementCreateLogic(IDeviceGroupElementCreateRequest request,
+	    IDeviceGroup group) throws SiteWhereException {
 	DeviceGroupElement element = new DeviceGroupElement();
+	element.setId(UUID.randomUUID());
+
 	element.setGroupId(group.getId());
-	element.setIndex(index);
-	element.setType(source.getType());
-	element.setElementId(elementId);
-	element.setRoles(source.getRoles());
+	element.setDeviceId(request.getDeviceId());
+	element.setNestedGroupId(request.getNestedGroupId());
+	element.setRoles(request.getRoles());
 	return element;
     }
 }

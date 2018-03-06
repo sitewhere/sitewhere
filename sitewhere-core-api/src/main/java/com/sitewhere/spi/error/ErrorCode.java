@@ -109,6 +109,9 @@ public enum ErrorCode {
     /** Invalid device command token */
     InvalidDeviceCommandToken(505, "Device command not found."),
 
+    /** Invalid device command id */
+    InvalidDeviceCommandId(506, "Device command not found."),
+
     /** Invalid device status code */
     InvalidDeviceStatusCode(507, "Device status not found."),
 
@@ -138,18 +141,6 @@ public enum ErrorCode {
 
     /** Invalid device event id */
     InvalidDeviceEventId(523, "Device event not found for id."),
-
-    /** Duplicate device group token */
-    DuplicateDeviceGroupToken(524, "Device group token already in use."),
-
-    /** Invalid device group token */
-    InvalidDeviceGroupToken(525, "Device group not found."),
-
-    /** Invalid batch operation token */
-    InvalidBatchOperationToken(526, "Batch operation not found."),
-
-    /** Invalid batch element */
-    InvalidBatchElement(527, "Batch element not found."),
 
     /** Invalid search provider id */
     InvalidSearchProviderId(528, "Search provider not found."),
@@ -205,6 +196,24 @@ public enum ErrorCode {
     /** Duplicate batch element */
     DuplicateBatchElement(565, "Batch element already in use."),
 
+    /** Duplicate device group token */
+    DuplicateDeviceGroupToken(567, "Device group token already in use."),
+
+    /** Invalid device group token */
+    InvalidDeviceGroupToken(568, "Device group not found."),
+
+    /** Invalid device group id */
+    InvalidDeviceGroupId(568, "Device group not found."),
+
+    /** Invalid batch operation id */
+    InvalidBatchOperationId(569, "Batch operation not found."),
+
+    /** Invalid batch operation token */
+    InvalidBatchOperationToken(570, "Batch operation not found."),
+
+    /** Invalid batch element id */
+    InvalidBatchElementId(572, "Batch element not found."),
+
     /******************
      * DEVICE COMMAND *
      ******************/
@@ -212,7 +221,7 @@ public enum ErrorCode {
     /**
      * Attempting to create a new command that duplicates an existing command
      */
-    DeviceCommandExists(550, "Device command with same namespace and name already exists for specification."),
+    DeviceCommandExists(575, "Device command with same namespace and name already exists for specification."),
 
     /*****************
      * DEVICE STATUS *

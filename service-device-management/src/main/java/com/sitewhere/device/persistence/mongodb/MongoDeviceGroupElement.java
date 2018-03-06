@@ -14,7 +14,6 @@ import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
-import com.sitewhere.spi.device.group.GroupElementType;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 
 /**
@@ -24,20 +23,20 @@ import com.sitewhere.spi.device.group.IDeviceGroupElement;
  */
 public class MongoDeviceGroupElement implements MongoConverter<IDeviceGroupElement> {
 
+    /** Property for id */
+    public static final String PROP_ID = "_id";
+
     /** Property for element group id */
     public static final String PROP_GROUP_ID = "grid";
 
-    /** Property for element type */
-    public static final String PROP_TYPE = "type";
+    /** Property for element device id */
+    public static final String PROP_DEVICE_ID = "dvid";
 
-    /** Property for element id */
-    public static final String PROP_ELEMENT_ID = "elid";
+    /** Property for element nested group id */
+    public static final String PROP_NESTED_GROUP_ID = "ngid";
 
     /** Property for list of roles */
     public static final String PROP_ROLES = "role";
-
-    /** Property for element index */
-    public static final String PROP_INDEX = "indx";
 
     /*
      * (non-Javadoc)
@@ -66,10 +65,10 @@ public class MongoDeviceGroupElement implements MongoConverter<IDeviceGroupEleme
      * @param target
      */
     public static void toDocument(IDeviceGroupElement source, Document target) {
+	target.append(PROP_ID, source.getId());
 	target.append(PROP_GROUP_ID, source.getGroupId());
-	target.append(PROP_INDEX, source.getIndex());
-	target.append(PROP_TYPE, source.getType().name());
-	target.append(PROP_ELEMENT_ID, source.getElementId());
+	target.append(PROP_DEVICE_ID, source.getDeviceId());
+	target.append(PROP_NESTED_GROUP_ID, source.getNestedGroupId());
 	target.append(PROP_ROLES, source.getRoles());
     }
 
@@ -81,20 +80,17 @@ public class MongoDeviceGroupElement implements MongoConverter<IDeviceGroupEleme
      */
     @SuppressWarnings("unchecked")
     public static void fromDocument(Document source, DeviceGroupElement target) {
+	UUID id = (UUID) source.get(PROP_ID);
 	UUID groupId = (UUID) source.get(PROP_GROUP_ID);
-	Long index = (Long) source.get(PROP_INDEX);
-	String type = (String) source.get(PROP_TYPE);
-	UUID elementId = (UUID) source.get(PROP_ELEMENT_ID);
+	UUID deviceId = (UUID) source.get(PROP_DEVICE_ID);
+	UUID nestedGroupId = (UUID) source.get(PROP_NESTED_GROUP_ID);
 	List<String> roles = (List<String>) source.get(PROP_ROLES);
 
-	if (type == null) {
-	    throw new RuntimeException("Group element type not stored.");
-	}
+	target.setId(id);
 	target.setGroupId(groupId);
-	target.setType(GroupElementType.valueOf(type));
-	target.setElementId(elementId);
+	target.setDeviceId(deviceId);
+	target.setNestedGroupId(nestedGroupId);
 	target.setRoles(roles);
-	target.setIndex(index);
     }
 
     /**

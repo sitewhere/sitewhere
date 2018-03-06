@@ -933,10 +933,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GRemoveDeviceGroupElementsResponse> responseObserver) {
 	try {
 	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_REMOVE_DEVICE_GROUP_ELEMENTS);
-	    List<IDeviceGroupElementCreateRequest> apiRequest = DeviceModelConverter
-		    .asApiDeviceGroupElementCreateRequests(request.getRequestsList());
 	    List<IDeviceGroupElement> apiResult = getDeviceManagement()
-		    .removeDeviceGroupElements(CommonModelConverter.asApiUuid(request.getGroupId()), apiRequest);
+		    .removeDeviceGroupElements(CommonModelConverter.asApiUuids(request.getElementIdsList()));
 	    GRemoveDeviceGroupElementsResponse.Builder response = GRemoveDeviceGroupElementsResponse.newBuilder();
 	    for (IDeviceGroupElement apiElement : apiResult) {
 		response.addElements(DeviceModelConverter.asGrpcDeviceGroupElement(apiElement));

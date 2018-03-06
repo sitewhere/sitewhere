@@ -787,13 +787,11 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
     /*
      * @see
      * com.sitewhere.spi.device.IDeviceManagement#removeDeviceGroupElements(java.
-     * util.UUID, java.util.List)
+     * util.List)
      */
     @Override
-    public List<IDeviceGroupElement> removeDeviceGroupElements(UUID groupId,
-	    List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException {
-	IDeviceGroup group = getDeviceGroup(groupId);
-	return HBaseDeviceGroupElement.removeDeviceGroupElements(context, group, elements);
+    public List<IDeviceGroupElement> removeDeviceGroupElements(List<UUID> elements) throws SiteWhereException {
+	return HBaseDeviceGroupElement.removeDeviceGroupElements(context, null, null);
     }
 
     /*

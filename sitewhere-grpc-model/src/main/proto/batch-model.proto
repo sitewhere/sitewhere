@@ -21,19 +21,19 @@ enum GBatchOperationStatus {
 
 // Batch operation create request.
 message GBatchOperationCreateRequest {
-	string token = 1;
+	GOptionalString token = 1;
 	string operationType = 2;
 	map<string, string> parameters = 3;
-	repeated string hardwareIds = 4;
+	repeated string deviceTokens = 4;
 	map<string, string> metadata = 5;
 }
 
 // Batch command invocation create request.
 message GBatchCommandInvocationCreateRequest {
-	string token = 1;
+	GOptionalString token = 1;
 	string commandToken = 2;
 	map<string, string> parameters = 3;
-	repeated string hardwareIds = 4;
+	repeated string deviceTokens = 4;
 }
 
 // Batch operation update request.
@@ -58,7 +58,7 @@ message GBatchOperationSearchResults {
 
 // Batch operation.
 message GBatchOperation {
-	string token = 1;
+	GUUID id = 1;
 	string operationType = 2;
 	map<string, string> parameters = 3;
 	GBatchOperationStatus processingStatus = 4;
@@ -101,9 +101,9 @@ message GBatchOperationElementSearchResults {
 
 // Batch element.
 message GBatchOperationElement {
-	string batchOperationToken = 1;
-	string hardwareId = 2;
-	int64 index = 3;
+	GUUID id = 1;
+	GUUID batchOperationId = 2;
+	GUUID deviceId = 3;
 	GElementProcessingStatus processingStatus = 4;
 	google.protobuf.Timestamp processedDate = 5;
 	map<string, string> metadata = 6;

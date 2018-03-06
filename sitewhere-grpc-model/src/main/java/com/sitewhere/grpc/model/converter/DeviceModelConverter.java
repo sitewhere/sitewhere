@@ -15,7 +15,6 @@ import java.util.UUID;
 
 import com.sitewhere.grpc.model.CommonModel.GDeviceAssignmentStatus;
 import com.sitewhere.grpc.model.CommonModel.GDeviceContainerPolicy;
-import com.sitewhere.grpc.model.CommonModel.GDeviceGroupElementType;
 import com.sitewhere.grpc.model.CommonModel.GOptionalBoolean;
 import com.sitewhere.grpc.model.CommonModel.GOptionalString;
 import com.sitewhere.grpc.model.CommonModel.GParameterType;
@@ -123,7 +122,6 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
 import com.sitewhere.spi.device.element.IDeviceSlot;
 import com.sitewhere.spi.device.element.IDeviceUnit;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
-import com.sitewhere.spi.device.group.GroupElementType;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
@@ -1227,42 +1225,6 @@ public class DeviceModelConverter {
     }
 
     /**
-     * Convert a device group element type from GRPC to API.
-     * 
-     * @param grpc
-     * @return
-     * @throws SiteWhereException
-     */
-    public static GroupElementType asApiDeviceGroupElementType(GDeviceGroupElementType grpc) throws SiteWhereException {
-	switch (grpc) {
-	case ELEMENT_TYPE_DEVICE:
-	    return GroupElementType.Device;
-	case ELEMENT_TYPE_GROUP:
-	    return GroupElementType.Group;
-	case UNRECOGNIZED:
-	    throw new SiteWhereException("Unknown device group element type: " + grpc.name());
-	}
-	return null;
-    }
-
-    /**
-     * Convert a device group element type from API to GRPC.
-     * 
-     * @param api
-     * @return
-     * @throws SiteWhereException
-     */
-    public static GDeviceGroupElementType asGrpcDeviceGroupElementType(GroupElementType api) throws SiteWhereException {
-	switch (api) {
-	case Device:
-	    return GDeviceGroupElementType.ELEMENT_TYPE_DEVICE;
-	case Group:
-	    return GDeviceGroupElementType.ELEMENT_TYPE_GROUP;
-	}
-	throw new SiteWhereException("Unknown device group element type: " + api.name());
-    }
-
-    /**
      * Convert a device group element create request from GRPC to API.
      * 
      * @param grpc
@@ -1272,8 +1234,8 @@ public class DeviceModelConverter {
     public static DeviceGroupElementCreateRequest asApiDeviceGroupElementCreateRequest(
 	    GDeviceGroupElementCreateRequest grpc) throws SiteWhereException {
 	DeviceGroupElementCreateRequest api = new DeviceGroupElementCreateRequest();
-	api.setType(DeviceModelConverter.asApiDeviceGroupElementType(grpc.getType()));
-	api.setElementId(grpc.getElementId());
+	api.setDeviceId(CommonModelConverter.asApiUuid(grpc.getDeviceId()));
+	api.setNestedGroupId(CommonModelConverter.asApiUuid(grpc.getNestedGroupId()));
 	api.setRoles(grpc.getRolesList());
 	return api;
     }
@@ -1304,8 +1266,8 @@ public class DeviceModelConverter {
     public static GDeviceGroupElementCreateRequest asGrpcDeviceGroupElementCreateRequest(
 	    IDeviceGroupElementCreateRequest api) throws SiteWhereException {
 	GDeviceGroupElementCreateRequest.Builder grpc = GDeviceGroupElementCreateRequest.newBuilder();
-	grpc.setType(DeviceModelConverter.asGrpcDeviceGroupElementType(api.getType()));
-	grpc.setElementId(api.getElementId());
+	grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
+	grpc.setNestedGroupId(CommonModelConverter.asGrpcUuid(api.getNestedGroupId()));
 	grpc.addAllRoles(api.getRoles());
 	return grpc.build();
     }
@@ -1365,8 +1327,10 @@ public class DeviceModelConverter {
      */
     public static DeviceGroupElement asApiDeviceGroupElement(GDeviceGroupElement grpc) throws SiteWhereException {
 	DeviceGroupElement api = new DeviceGroupElement();
-	api.setType(DeviceModelConverter.asApiDeviceGroupElementType(grpc.getType()));
-	api.setElementId(CommonModelConverter.asApiUuid(grpc.getElementId()));
+	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
+	api.setGroupId(CommonModelConverter.asApiUuid(grpc.getGroupId()));
+	api.setDeviceId(grpc.hasDeviceId() ? CommonModelConverter.asApiUuid(grpc.getDeviceId()) : null);
+	api.setNestedGroupId(grpc.hasNestedGroupId() ? CommonModelConverter.asApiUuid(grpc.getNestedGroupId()) : null);
 	api.setRoles(grpc.getRolesList());
 	return api;
     }
@@ -1396,8 +1360,14 @@ public class DeviceModelConverter {
      */
     public static GDeviceGroupElement asGrpcDeviceGroupElement(IDeviceGroupElement api) throws SiteWhereException {
 	GDeviceGroupElement.Builder grpc = GDeviceGroupElement.newBuilder();
-	grpc.setType(DeviceModelConverter.asGrpcDeviceGroupElementType(api.getType()));
-	grpc.setElementId(CommonModelConverter.asGrpcUuid(api.getElementId()));
+	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
+	grpc.setGroupId(CommonModelConverter.asGrpcUuid(api.getGroupId()));
+	if (api.getDeviceId() != null) {
+	    grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
+	}
+	if (api.getNestedGroupId() != null) {
+	    grpc.setNestedGroupId(CommonModelConverter.asGrpcUuid(api.getNestedGroupId()));
+	}
 	grpc.addAllRoles(api.getRoles());
 	return grpc.build();
     }

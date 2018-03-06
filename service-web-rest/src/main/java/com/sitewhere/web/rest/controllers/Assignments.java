@@ -649,9 +649,9 @@ public class Assignments extends RestControllerBase {
     @Secured({ SiteWhereRoles.REST })
     public IScheduledJob scheduleCommandInvocation(@RequestBody DeviceCommandInvocationCreateRequest request,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Schedule token", required = true) @PathVariable String scheduleToken,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	assureDeviceCommand(request.getCommandToken(), servletRequest);
+	    @ApiParam(value = "Schedule token", required = true) @PathVariable String scheduleToken)
+	    throws SiteWhereException {
+	assureDeviceCommand(request.getCommandToken());
 	IScheduledJobCreateRequest job = ScheduledJobHelper.createCommandInvocationJob(UUID.randomUUID().toString(),
 		token, request.getCommandToken(), request.getParameterValues(), scheduleToken);
 	return getScheduleManagement().createScheduledJob(job);
@@ -893,18 +893,16 @@ public class Assignments extends RestControllerBase {
     }
 
     /**
-     * Get a device command by unique token. Throw an exception if not found.
+     * Get a device command by token. Throw an exception if not found.
      * 
-     * @param token
-     * @param servletRequest
+     * @param commandToken
      * @return
      * @throws SiteWhereException
      */
-    protected IDeviceCommand assureDeviceCommand(String token, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(token);
+    protected IDeviceCommand assureDeviceCommand(String commandToken) throws SiteWhereException {
+	IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(commandToken);
 	if (command == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandToken, ErrorLevel.ERROR);
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandId, ErrorLevel.ERROR);
 	}
 	return command;
     }

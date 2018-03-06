@@ -11,6 +11,7 @@ import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.model.BatchModel.GBatchOperationElementSearchResults;
 import com.sitewhere.grpc.model.BatchModel.GBatchOperationSearchResults;
 import com.sitewhere.grpc.model.converter.BatchModelConverter;
+import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.grpc.service.BatchManagementGrpc;
 import com.sitewhere.grpc.service.GCreateBatchCommandInvocationRequest;
 import com.sitewhere.grpc.service.GCreateBatchCommandInvocationResponse;
@@ -111,7 +112,8 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 	    GrpcUtils.logServerMethodEntry(BatchManagementGrpc.METHOD_UPDATE_BATCH_OPERATION);
 	    IBatchOperationUpdateRequest apiRequest = BatchModelConverter
 		    .asApiBatchOperationUpdateRequest(request.getRequest());
-	    IBatchOperation apiResult = getBatchManagement().updateBatchOperation(request.getToken(), apiRequest);
+	    IBatchOperation apiResult = getBatchManagement()
+		    .updateBatchOperation(CommonModelConverter.asApiUuid(request.getBatchOperationId()), apiRequest);
 	    GUpdateBatchOperationResponse.Builder response = GUpdateBatchOperationResponse.newBuilder();
 	    response.setBatchOperation(BatchModelConverter.asGrpcBatchOperation(apiResult));
 	    responseObserver.onNext(response.build());
@@ -132,7 +134,7 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 	    StreamObserver<GGetBatchOperationByTokenResponse> responseObserver) {
 	try {
 	    GrpcUtils.logServerMethodEntry(BatchManagementGrpc.METHOD_GET_BATCH_OPERATION_BY_TOKEN);
-	    IBatchOperation apiResult = getBatchManagement().getBatchOperation(request.getToken());
+	    IBatchOperation apiResult = getBatchManagement().getBatchOperationByToken(request.getToken());
 	    GGetBatchOperationByTokenResponse.Builder response = GGetBatchOperationByTokenResponse.newBuilder();
 	    if (apiResult != null) {
 		response.setBatchOperation(BatchModelConverter.asGrpcBatchOperation(apiResult));
@@ -182,8 +184,8 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 	    StreamObserver<GDeleteBatchOperationResponse> responseObserver) {
 	try {
 	    GrpcUtils.logServerMethodEntry(BatchManagementGrpc.METHOD_DELETE_BATCH_OPERATION);
-	    IBatchOperation apiResult = getBatchManagement().deleteBatchOperation(request.getToken(),
-		    request.getForce());
+	    IBatchOperation apiResult = getBatchManagement().deleteBatchOperation(
+		    CommonModelConverter.asApiUuid(request.getBatchOperationId()), request.getForce());
 	    GDeleteBatchOperationResponse.Builder response = GDeleteBatchOperationResponse.newBuilder();
 	    response.setBatchOperation(BatchModelConverter.asGrpcBatchOperation(apiResult));
 	    responseObserver.onNext(response.build());
@@ -204,7 +206,8 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 	    StreamObserver<GListBatchOperationElementsResponse> responseObserver) {
 	try {
 	    GrpcUtils.logServerMethodEntry(BatchManagementGrpc.METHOD_LIST_BATCH_OPERATION_ELEMENTS);
-	    ISearchResults<IBatchElement> apiResult = getBatchManagement().listBatchElements(request.getToken(),
+	    ISearchResults<IBatchElement> apiResult = getBatchManagement().listBatchElements(
+		    CommonModelConverter.asApiUuid(request.getBatchOperationId()),
 		    BatchModelConverter.asApiBatchElementSearchCriteria(request.getCriteria()));
 	    GListBatchOperationElementsResponse.Builder response = GListBatchOperationElementsResponse.newBuilder();
 	    GBatchOperationElementSearchResults.Builder results = GBatchOperationElementSearchResults.newBuilder();
@@ -233,8 +236,8 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 	    GrpcUtils.logServerMethodEntry(BatchManagementGrpc.METHOD_UPDATE_BATCH_OPERATION_ELEMENT);
 	    IBatchElementUpdateRequest apiRequest = BatchModelConverter
 		    .asApiBatchElementUpdateRequest(request.getRequest());
-	    IBatchElement apiResult = getBatchManagement().updateBatchElement(request.getToken(), request.getIndex(),
-		    apiRequest);
+	    IBatchElement apiResult = getBatchManagement()
+		    .updateBatchElement(CommonModelConverter.asApiUuid(request.getElementId()), apiRequest);
 	    GUpdateBatchOperationElementResponse.Builder response = GUpdateBatchOperationElementResponse.newBuilder();
 	    response.setElement(BatchModelConverter.asGrpcBatchElement(apiResult));
 	    responseObserver.onNext(response.build());

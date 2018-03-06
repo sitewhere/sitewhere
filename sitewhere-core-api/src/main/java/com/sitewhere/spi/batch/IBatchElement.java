@@ -7,38 +7,39 @@
  */
 package com.sitewhere.spi.batch;
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.UUID;
 
 import com.sitewhere.spi.common.IMetadataProvider;
 
 /**
- * Holds information about a single device operation within an
- * {@link IBatchOperation}.
+ * Holds information about a single element within an {@link IBatchOperation}.
  * 
  * @author Derek
  */
-public interface IBatchElement extends IMetadataProvider {
+public interface IBatchElement extends IMetadataProvider, Serializable {
 
     /**
-     * Get token for parent {@link IBatchOperation}.
+     * Get Unique id.
      * 
      * @return
      */
-    public String getBatchOperationToken();
+    public UUID getId();
 
     /**
-     * Get hardware id of device.
+     * Get id for parent batch operation.
      * 
      * @return
      */
-    public String getHardwareId();
+    public UUID getBatchOperationId();
 
     /**
-     * Get index that corresponds to this entry.
+     * Get id for associated device.
      * 
      * @return
      */
-    public long getIndex();
+    public UUID getDeviceId();
 
     /**
      * Get processing status indicator.
