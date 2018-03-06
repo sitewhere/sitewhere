@@ -204,8 +204,8 @@ message GDevice {
 
 // Request data for creating a device group element.
 message GDeviceGroupElementCreateRequest {
-	GUUID deviceId = 1;
-	GUUID nestedGroupId = 2;
+	GOptionalString deviceToken = 1;
+	GOptionalString nestedGroupToken = 2;
 	repeated string roles = 3;
 }
 

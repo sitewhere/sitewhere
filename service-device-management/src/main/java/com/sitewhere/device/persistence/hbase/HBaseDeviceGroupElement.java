@@ -90,7 +90,8 @@ public class HBaseDeviceGroupElement {
 
 	// Use common processing logic so all backend implementations work the
 	// same.
-	DeviceGroupElement element = DeviceManagementPersistence.deviceGroupElementCreateLogic(request, group);
+	DeviceGroupElement element = DeviceManagementPersistence.deviceGroupElementCreateLogic(request, group, null,
+		null);
 
 	byte[] payload = context.getPayloadMarshaler().encodeDeviceGroupElement(element);
 

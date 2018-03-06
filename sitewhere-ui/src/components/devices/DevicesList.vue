@@ -39,7 +39,7 @@ import DeviceListPanel from './DeviceListPanel'
 import DeviceListFilterBar from './DeviceListFilterBar'
 import DeviceCreateDialog from './DeviceCreateDialog'
 import AssignmentCreateDialog from '../assignments/AssignmentCreateDialog'
-import {_listFilteredDevices} from '../../http/sitewhere-api-wrapper'
+import {_listDevices} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -83,9 +83,17 @@ export default {
       let paging = this.$data.paging.query
       let filter = this.$data.filter
       let component = this
+
       let criteria = filter || {}
-      _listFilteredDevices(this.$store, criteria.site, criteria.deviceType,
-        false, false, true, true, paging)
+      let options = {}
+      options.area = criteria.area
+      options.deviceType = criteria.deviceType
+      options.includeDeviceType = true
+      options.includeAssignment = true
+      options.includeDeleted = false
+      options.excludeAssigned = false
+
+      _listDevices(this.$store, options, paging)
         .then(function (response) {
           component.results = response.data
           component.devices = response.data.results

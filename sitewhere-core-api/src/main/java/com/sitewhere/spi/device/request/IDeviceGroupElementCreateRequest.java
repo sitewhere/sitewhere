@@ -8,7 +8,6 @@
 package com.sitewhere.spi.device.request;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Interface for arguments needed to create a device group element.
@@ -18,18 +17,18 @@ import java.util.UUID;
 public interface IDeviceGroupElementCreateRequest {
 
     /**
-     * Get device id (null if nested group supplied).
+     * Get device token (null if nested group supplied).
      * 
      * @return
      */
-    public UUID getDeviceId();
+    public String getDeviceToken();
 
     /**
-     * Get nested group id (null if device supplied).
+     * Get nested group token (null if device supplied).
      * 
      * @return
      */
-    public UUID getNestedGroupId();
+    public String getNestedGroupToken();
 
     /**
      * Get list of roles associated with element.

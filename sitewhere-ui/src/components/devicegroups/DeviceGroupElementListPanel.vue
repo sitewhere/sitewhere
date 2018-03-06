@@ -27,21 +27,28 @@
               {{ props.item.device.deviceType.name }}
             </td>
             <td v-else width="40%">
-              {{ props.item.groupId }}
+              {{ props.item.deviceGroup.name }}
             </td>
             <td width="10%" :title="props.item.roles">
               {{ props.item.roles.join(', ') }}
             </td>
             <td width="10%" title="">
-              <device-group-element-delete-dialog :token="token"
-                :element="props.item" @elementDeleted="refresh">
-              </device-group-element-delete-dialog>
+              <v-tooltip left>
+                <v-btn class="ma-0" icon slot="activator"
+                  @click.stop="showDeleteDialog(props.item)">
+                  <v-icon class="grey--text">delete</v-icon>
+                </v-btn>
+                <span>Delete</span>
+              </v-tooltip>
             </td>
           </template>
         </v-data-table>
       </v-flex>
     </v-layout>
     <pager :pageSizes="pageSizes" :results="results" @pagingUpdated="updatePaging"></pager>
+    <device-group-element-delete-dialog ref="delete"
+      :groupToken="token" @elementDeleted="refresh">
+    </device-group-element-delete-dialog>
   </div>
 </template>
 
@@ -114,13 +121,11 @@ export default {
     elementClassFor: function (element) {
       return (element.device) ? '' : 'group-element'
     },
-
     // Update paging values and run query.
     updatePaging: function (paging) {
       this.$data.paging = paging
       this.refresh()
     },
-
     // Refresh list of assignments.
     refresh: function () {
       var component = this
@@ -132,11 +137,16 @@ export default {
         }).catch(function (e) {
         })
     },
-
     // Called when page number is updated.
     onPageUpdated: function (pageNumber) {
       this.$data.pager.page = pageNumber
       this.refresh()
+    },
+    // Show dialog for deleting element.
+    showDeleteDialog: function (element) {
+      console.log(element)
+      this.$refs['delete'].elementId = element.id
+      this.$refs['delete'].showDeleteDialog()
     }
   }
 }

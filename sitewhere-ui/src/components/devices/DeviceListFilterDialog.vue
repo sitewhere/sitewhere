@@ -104,7 +104,7 @@
 import BaseDialog from '../common/BaseDialog'
 import AreaChooser from '../areas/AreaChooser'
 import DeviceTypeChooser from '../devicetypes/DeviceTypeChooser'
-import DeviceGroupChooser from '../groups/DeviceGroupChooser'
+import DeviceGroupChooser from '../devicegroups/DeviceGroupChooser'
 import DateTimePicker from '../common/DateTimePicker'
 
 export default {

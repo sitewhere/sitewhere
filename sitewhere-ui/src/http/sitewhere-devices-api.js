@@ -20,29 +20,15 @@ export function updateDevice (axios, token, payload) {
 /**
  * List devices.
  */
-export function listDevices (axios, includeDeviceType, includeAssignment,
-  paging) {
-  return listFilteredDevices(axios, null, null, false, false,
-    includeDeviceType, includeAssignment, paging)
-}
-
-/**
- * List devices (with extra filter criteria).
- */
-export function listFilteredDevices (axios, site, deviceType,
-  includeDeleted, excludeAssigned, includeDeviceType, includeAssignment,
-  paging) {
+export function listDevices (axios, options, paging) {
   let query = ''
-  query += (includeDeleted)
+  query += (options.includeDeleted)
     ? '?includeDeleted=true' : '?includeDeleted=false'
-  query += (excludeAssigned)
-    ? '&excludeAssigned=true' : '&excludeAssigned=false'
-  query += (includeDeviceType)
-    ? '&includeDeviceType=true' : '&includeDeviceType=false'
-  query += (includeAssignment)
-    ? '&includeAssignment=true' : '&includeAssignment=false'
-  query += (site) ? '&site=' + site : ''
-  query += (deviceType) ? '&deviceType=' + deviceType : ''
+  query += (options.excludeAssigned) ? '&excludeAssigned=true' : ''
+  query += (options.includeDeviceType) ? '&includeDeviceType=true' : ''
+  query += (options.includeAssignment) ? '&includeAssignment=true' : ' '
+  query += (options.area) ? '&area=' + options.area : ''
+  query += (options.deviceType) ? '&deviceType=' + options.deviceType : ''
   if (paging) {
     query += '&' + paging
   }
@@ -56,12 +42,9 @@ export function getDevice (axios, token, options) {
   let query = ''
   query += (options.includeDeviceType)
     ? '?includeDeviceType=true' : '?includeDeviceType=false'
-  query += (options.includeAssignment)
-    ? '&includeAssignment=true' : '&includeAssignment=false'
-  query += (options.includeAsset)
-    ? '&includeAsset=true' : '&includeAsset=false'
-  query += (options.includeNested)
-    ? '&includeNested=true' : '&includeNested=false'
+  query += (options.includeAssignment) ? '&includeAssignment=true' : ''
+  query += (options.includeAsset) ? '&includeAsset=true' : ''
+  query += (options.includeNested) ? '&includeNested=true' : ''
   return restAuthGet(axios, '/devices/' + token + query)
 }
 

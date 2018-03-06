@@ -63,9 +63,9 @@ export function addDeviceGroupElement (axios, token, payload) {
 /**
  * Delete a device group element.
  */
-export function deleteDeviceGroupElement (axios, token, type, elementId) {
+export function deleteDeviceGroupElement (axios, token, elementId) {
   return restAuthDelete(axios, 'devicegroups/' + token + '/elements/' +
-    type + '/' + elementId)
+    elementId)
 }
 
 /**

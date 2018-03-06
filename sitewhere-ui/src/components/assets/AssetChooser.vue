@@ -14,8 +14,7 @@
           </v-list-tile-sub-title>
         </v-list-tile-content>
         <v-list-tile-action>
-          <v-btn icon ripple
-            @click.native.stop="onAssetRemoved(true)">
+          <v-btn icon ripple @click.stop="onAssetRemoved(true)">
             <v-icon class="grey--text">remove_circle</v-icon>
           </v-btn>
         </v-list-tile-action>
@@ -29,7 +28,7 @@
     <v-list v-if="assets" class="asset-list" two-line>
       <template v-for="asset in assets">
         <v-list-tile avatar :key="asset.token"
-          @click.native.stop="onAssetChosen(asset, true)">
+          @click.stop="onAssetChosen(asset, true)">
           <v-list-tile-avatar>
             <img :src="asset.imageUrl"></v-list-tile-avatar>
           </v-list-tile-avatar>
@@ -58,7 +57,7 @@ export default {
 
   props: ['selected', 'selectedToken', 'chosenText', 'notChosenText'],
 
-  // Initially load list of all sites.
+  // Initially load list of all assets.
   created: function () {
     var component = this
 

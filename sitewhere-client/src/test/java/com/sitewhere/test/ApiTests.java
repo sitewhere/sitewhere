@@ -329,7 +329,7 @@ public class ApiTests {
 	Assert.assertNotNull(match);
 	Assert.assertEquals(group.getName(), match.getName());
 	DeviceGroupElementCreateRequest elm1 = new DeviceGroupElementCreateRequest();
-	elm1.setDeviceId(UUID.randomUUID());
+	elm1.setDeviceToken(TEST_HARDWARE_ID);
 	elm1.setRoles(roles);
 	List<DeviceGroupElementCreateRequest> elms = new ArrayList<DeviceGroupElementCreateRequest>();
 	elms.add(elm1);

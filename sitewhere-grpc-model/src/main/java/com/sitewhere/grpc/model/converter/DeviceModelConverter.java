@@ -1234,8 +1234,8 @@ public class DeviceModelConverter {
     public static DeviceGroupElementCreateRequest asApiDeviceGroupElementCreateRequest(
 	    GDeviceGroupElementCreateRequest grpc) throws SiteWhereException {
 	DeviceGroupElementCreateRequest api = new DeviceGroupElementCreateRequest();
-	api.setDeviceId(CommonModelConverter.asApiUuid(grpc.getDeviceId()));
-	api.setNestedGroupId(CommonModelConverter.asApiUuid(grpc.getNestedGroupId()));
+	api.setDeviceToken(grpc.hasDeviceToken() ? grpc.getDeviceToken().getValue() : null);
+	api.setNestedGroupToken(grpc.hasNestedGroupToken() ? grpc.getNestedGroupToken().getValue() : null);
 	api.setRoles(grpc.getRolesList());
 	return api;
     }
@@ -1266,8 +1266,12 @@ public class DeviceModelConverter {
     public static GDeviceGroupElementCreateRequest asGrpcDeviceGroupElementCreateRequest(
 	    IDeviceGroupElementCreateRequest api) throws SiteWhereException {
 	GDeviceGroupElementCreateRequest.Builder grpc = GDeviceGroupElementCreateRequest.newBuilder();
-	grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
-	grpc.setNestedGroupId(CommonModelConverter.asGrpcUuid(api.getNestedGroupId()));
+	if (api.getDeviceToken() != null) {
+	    grpc.setDeviceToken(GOptionalString.newBuilder().setValue(api.getDeviceToken()));
+	}
+	if (api.getNestedGroupToken() != null) {
+	    grpc.setNestedGroupToken(GOptionalString.newBuilder().setValue(api.getNestedGroupToken()));
+	}
 	grpc.addAllRoles(api.getRoles());
 	return grpc.build();
     }

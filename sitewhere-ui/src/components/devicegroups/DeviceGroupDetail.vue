@@ -5,11 +5,23 @@
         <device-group-detail-header :group="group"
           @deviceGroupUpdated="refresh" @deviceGroupDeleted="onDeviceGroupDeleted">
         </device-group-detail-header>
-        <device-group-element-list-panel ref="list" :token="token">
-        </device-group-element-list-panel>
-        <floating-action-button label="Add Group Element" icon="fa-plus"
-          @action="onAddElement">
-        </floating-action-button>
+        <v-tabs v-model="active">
+          <v-tabs-bar dark color="primary">
+            <v-tabs-slider class="blue lighten-3"></v-tabs-slider>
+            <v-tabs-item key="elements" href="#elements">
+              Group Elements
+            </v-tabs-item>
+          </v-tabs-bar>
+          <v-tabs-items>
+            <v-tabs-content key="elements" id="elements">
+              <device-group-element-list-panel ref="list" :token="token">
+              </device-group-element-list-panel>
+              <floating-action-button label="Add Group Element" icon="fa-plus"
+                @action="onAddElement">
+              </floating-action-button>
+            </v-tabs-content>
+          </v-tabs-items>
+        </v-tabs>
         <device-group-element-create-dialog ref="create" :token="token"
           @elementAdded="onElementAdded">
         </device-group-element-create-dialog>
@@ -23,10 +35,10 @@
         </navigation-action-button>
       </div>
     </navigation-page>
-    <device-group-update-dialog ref="edit" :token="group.token"
+    <device-group-update-dialog ref="edit" :token="token"
       @groupUpdated="onDeviceGroupUpdated">
     </device-group-update-dialog>
-    <device-group-delete-dialog ref="delete" :token="group.token"
+    <device-group-delete-dialog ref="delete" :token="token"
       @groupDeleted="onDeviceGroupDeleted">
     </device-group-delete-dialog>
   </div>
@@ -48,6 +60,7 @@ import {_getDeviceGroup} from '../../http/sitewhere-api-wrapper'
 export default {
 
   data: () => ({
+    active: null,
     results: null,
     paging: null,
     token: null,

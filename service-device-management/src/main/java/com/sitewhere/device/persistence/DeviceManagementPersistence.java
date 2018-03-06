@@ -933,17 +933,19 @@ public class DeviceManagementPersistence extends Persistence {
      * 
      * @param request
      * @param group
+     * @param device
+     * @param nested
      * @return
      * @throws SiteWhereException
      */
     public static DeviceGroupElement deviceGroupElementCreateLogic(IDeviceGroupElementCreateRequest request,
-	    IDeviceGroup group) throws SiteWhereException {
+	    IDeviceGroup group, IDevice device, IDeviceGroup nested) throws SiteWhereException {
 	DeviceGroupElement element = new DeviceGroupElement();
 	element.setId(UUID.randomUUID());
 
 	element.setGroupId(group.getId());
-	element.setDeviceId(request.getDeviceId());
-	element.setNestedGroupId(request.getNestedGroupId());
+	element.setDeviceId(device != null ? device.getId() : null);
+	element.setNestedGroupId(nested != null ? nested.getId() : null);
 	element.setRoles(request.getRoles());
 	return element;
     }

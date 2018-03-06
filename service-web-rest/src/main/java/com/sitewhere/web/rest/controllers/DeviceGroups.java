@@ -239,16 +239,16 @@ public class DeviceGroups extends RestControllerBase {
     protected void validateDeviceGroupElements(List<DeviceGroupElementCreateRequest> elements,
 	    IDeviceManagement deviceManagement) throws SiteWhereException {
 	for (DeviceGroupElementCreateRequest request : elements) {
-	    if (request.getDeviceId() != null) {
-		IDevice device = deviceManagement.getDevice(request.getDeviceId());
+	    if (request.getDeviceToken() != null) {
+		IDevice device = deviceManagement.getDeviceByToken(request.getDeviceToken());
 		if (device == null) {
-		    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceId, ErrorLevel.ERROR);
+		    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceToken, ErrorLevel.ERROR);
 		}
 	    }
-	    if (request.getNestedGroupId() != null) {
-		IDeviceGroup group = deviceManagement.getDeviceGroup(request.getNestedGroupId());
+	    if (request.getNestedGroupToken() != null) {
+		IDeviceGroup group = deviceManagement.getDeviceGroupByToken(request.getNestedGroupToken());
 		if (group == null) {
-		    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceGroupId, ErrorLevel.ERROR);
+		    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceGroupToken, ErrorLevel.ERROR);
 		}
 	    }
 	}
@@ -268,7 +268,6 @@ public class DeviceGroups extends RestControllerBase {
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceGroupElement> deleteDeviceGroupElement(
 	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
-	    @ApiParam(value = "Element type", required = true) @PathVariable String type,
 	    @ApiParam(value = "Element id", required = true) @PathVariable UUID elementId) throws SiteWhereException {
 	List<UUID> elements = new ArrayList<>();
 	elements.add(elementId);

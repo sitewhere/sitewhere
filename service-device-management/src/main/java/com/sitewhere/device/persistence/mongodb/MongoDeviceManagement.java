@@ -1590,7 +1590,25 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	IDeviceGroup group = MongoDeviceGroup.fromDocument(existing);
 	List<IDeviceGroupElement> results = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElementCreateRequest request : elements) {
-	    DeviceGroupElement element = DeviceManagementPersistence.deviceGroupElementCreateLogic(request, group);
+	    // Look up referenced device if provided.
+	    IDevice device = null;
+	    if (request.getDeviceToken() != null) {
+		device = getDeviceByToken(request.getDeviceToken());
+		if (device == null) {
+		    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceToken, ErrorLevel.ERROR);
+		}
+	    }
+	    // Look up referenced nested group if provided.
+	    IDeviceGroup nested = null;
+	    if (request.getNestedGroupToken() != null) {
+		nested = getDeviceGroupByToken(request.getNestedGroupToken());
+		if (nested == null) {
+		    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceGroupToken, ErrorLevel.ERROR);
+		}
+	    }
+
+	    DeviceGroupElement element = DeviceManagementPersistence.deviceGroupElementCreateLogic(request, group,
+		    device, nested);
 	    Document created = MongoDeviceGroupElement.toDocument(element);
 	    try {
 		MongoPersistence.insert(getMongoClient().getGroupElementsCollection(), created, ErrorCode.DuplicateId);

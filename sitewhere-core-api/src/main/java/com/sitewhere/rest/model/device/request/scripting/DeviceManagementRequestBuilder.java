@@ -9,7 +9,6 @@ package com.sitewhere.rest.model.device.request.scripting;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import com.sitewhere.rest.model.area.request.AreaCreateRequest;
 import com.sitewhere.rest.model.area.request.AreaTypeCreateRequest;
@@ -248,11 +247,11 @@ public class DeviceManagementRequestBuilder {
     /**
      * Create a new device group element.
      * 
-     * @param id
+     * @param token
      * @return
      */
-    public DeviceGroupElementCreateRequest.Builder newGroupElement(UUID id) {
-	return new DeviceGroupElementCreateRequest.Builder(id);
+    public DeviceGroupElementCreateRequest.Builder newGroupElement(String token) {
+	return new DeviceGroupElementCreateRequest.Builder(token);
     }
 
     /**

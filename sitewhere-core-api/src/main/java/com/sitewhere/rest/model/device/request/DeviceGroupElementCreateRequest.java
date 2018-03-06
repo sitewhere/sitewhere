@@ -10,7 +10,6 @@ package com.sitewhere.rest.model.device.request;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -27,40 +26,39 @@ public class DeviceGroupElementCreateRequest implements IDeviceGroupElementCreat
     /** Serialization version identifier */
     private static final long serialVersionUID = 652319724175005277L;
 
-    /** Device id (null if nested group supplied) */
-    private UUID deviceId;
+    /** Device token (null if nested group supplied) */
+    private String deviceToken;
 
-    /** Nested group id (null if device supplied) */
-    private UUID nestedGroupId;
+    /** Nested group token (null if device supplied) */
+    private String nestedGroupToken;
 
     /** List of roles for element */
     private List<String> roles = new ArrayList<String>();
 
     /*
-     * @see
-     * com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest#getDeviceId
-     * ()
+     * @see com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest#
+     * getDeviceToken()
      */
     @Override
-    public UUID getDeviceId() {
-	return deviceId;
+    public String getDeviceToken() {
+	return deviceToken;
     }
 
-    public void setDeviceId(UUID deviceId) {
-	this.deviceId = deviceId;
+    public void setDeviceToken(String deviceToken) {
+	this.deviceToken = deviceToken;
     }
 
     /*
      * @see com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest#
-     * getNestedGroupId()
+     * getNestedGroupToken()
      */
     @Override
-    public UUID getNestedGroupId() {
-	return nestedGroupId;
+    public String getNestedGroupToken() {
+	return nestedGroupToken;
     }
 
-    public void setNestedGroupId(UUID nestedGroupId) {
-	this.nestedGroupId = nestedGroupId;
+    public void setNestedGroupToken(String nestedGroupToken) {
+	this.nestedGroupToken = nestedGroupToken;
     }
 
     /*
@@ -81,13 +79,13 @@ public class DeviceGroupElementCreateRequest implements IDeviceGroupElementCreat
 	/** Request being built */
 	private DeviceGroupElementCreateRequest request = new DeviceGroupElementCreateRequest();
 
-	public Builder(UUID deviceId) {
-	    request.setDeviceId(deviceId);
+	public Builder(String deviceToken) {
+	    request.setDeviceToken(deviceToken);
 	}
 
 	public Builder asGroup() {
-	    request.setNestedGroupId(request.getDeviceId());
-	    request.setDeviceId(null);
+	    request.setNestedGroupToken(request.getDeviceToken());
+	    request.setDeviceToken(null);
 	    return this;
 	}
 

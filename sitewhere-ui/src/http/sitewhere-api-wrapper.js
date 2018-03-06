@@ -99,7 +99,6 @@ import {
 import {
   createDevice,
   listDevices,
-  listFilteredDevices,
   getDevice,
   updateDevice,
   deleteDevice,
@@ -1000,22 +999,9 @@ export function _updateDevice (store, hardwareId, payload) {
 /**
  * List devices.
  */
-export function _listDevices (store, includeSpecification, includeAssignment,
-  paging) {
+export function _listDevices (store, options, paging) {
   let axios = createCoreApiCall(store)
-  let api = listDevices(axios, includeSpecification, includeAssignment,
-    paging)
-  return loaderWrapper(store, api)
-}
-
-/**
- * List devices.
- */
-export function _listFilteredDevices (store, site, specification, includeDeleted,
-  excludeAssigned, includeSpecification, includeAssignment, paging) {
-  let axios = createCoreApiCall(store)
-  let api = listFilteredDevices(axios, site, specification, includeDeleted,
-    excludeAssigned, includeSpecification, includeAssignment, paging)
+  let api = listDevices(axios, options, paging)
   return loaderWrapper(store, api)
 }
 
@@ -1103,9 +1089,9 @@ export function _addDeviceGroupElement (store, token, payload) {
 /**
  * Delete a device group element.
  */
-export function _deleteDeviceGroupElement (store, token, type, elementId) {
+export function _deleteDeviceGroupElement (store, token, elementId) {
   let axios = createCoreApiCall(store)
-  let api = deleteDeviceGroupElement(axios, token, type, elementId)
+  let api = deleteDeviceGroupElement(axios, token, elementId)
   return loaderWrapper(store, api)
 }
 
