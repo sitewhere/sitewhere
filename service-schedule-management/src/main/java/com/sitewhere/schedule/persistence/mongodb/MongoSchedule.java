@@ -8,6 +8,7 @@
 package com.sitewhere.schedule.persistence.mongodb;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.bson.Document;
 
@@ -25,8 +26,11 @@ import com.sitewhere.spi.scheduling.TriggerType;
  */
 public class MongoSchedule implements MongoConverter<ISchedule> {
 
+    /** Property for id */
+    public static final String PROP_ID = "_id";
+
     /** Property for unique token */
-    public static final String PROP_TOKEN = "token";
+    public static final String PROP_TOKEN = "tokn";
 
     /** Property for name */
     public static final String PROP_NAME = "name";
@@ -35,13 +39,13 @@ public class MongoSchedule implements MongoConverter<ISchedule> {
     public static final String PROP_TRIGGER_TYPE = "type";
 
     /** Property for trigger configuration */
-    public static final String PROP_TRIGGER_CONFIGURATION = "config";
+    public static final String PROP_TRIGGER_CONFIGURATION = "conf";
 
     /** Property for start date */
-    public static final String PROP_START_DATE = "start";
+    public static final String PROP_START_DATE = "stdt";
 
     /** Property for end date */
-    public static final String PROP_END_DATE = "end";
+    public static final String PROP_END_DATE = "endt";
 
     /*
      * (non-Javadoc)
@@ -70,6 +74,7 @@ public class MongoSchedule implements MongoConverter<ISchedule> {
      * @param target
      */
     public static void toDocument(ISchedule source, Document target) {
+	target.append(PROP_ID, source.getId());
 	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_START_DATE, source.getStartDate());
@@ -93,12 +98,14 @@ public class MongoSchedule implements MongoConverter<ISchedule> {
      * @param target
      */
     public static void fromDocument(Document source, Schedule target) {
+	UUID id = (UUID) source.get(PROP_ID);
 	String token = (String) source.get(PROP_TOKEN);
 	String name = (String) source.get(PROP_NAME);
 	String type = (String) source.get(PROP_TRIGGER_TYPE);
 	Date startDate = (Date) source.get(PROP_START_DATE);
 	Date endDate = (Date) source.get(PROP_END_DATE);
 
+	target.setId(id);
 	target.setToken(token);
 	target.setName(name);
 	target.setStartDate(startDate);

@@ -69,7 +69,6 @@ public class ScheduledJobHelper {
     public static IScheduledJobCreateRequest createBatchCommandInvocationJobByCriteria(String token,
 	    BatchCommandForCriteriaRequest request, String scheduleToken) {
 	ScheduledJobCreateRequest job = new ScheduledJobCreateRequest();
-
 	job.setToken(token);
 	job.setJobType(ScheduledJobType.BatchCommandInvocation);
 

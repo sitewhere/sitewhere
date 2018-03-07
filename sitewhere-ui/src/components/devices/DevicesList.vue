@@ -1,34 +1,47 @@
 <template>
-  <navigation-page icon="fa-microchip" title="Manage Devices">
-    <div slot="actions">
-      <v-tooltip left>
-        <v-btn icon slot="activator" @click="onShowFilterCriteria">
-          <v-icon>fa-filter</v-icon>
-        </v-btn>
-        <span>Filter Device List</span>
-      </v-tooltip>
-    </div>
-    <div slot="content">
-      <device-list-filter-bar ref="filters" @filter="onFilterUpdated">
-      </device-list-filter-bar>
-      <v-container fluid grid-list-md  v-if="devices">
-        <v-layout row wrap>
-           <v-flex xs6 v-for="(device, index) in devices" :key="device.token">
-            <device-list-panel :device="device" @assignDevice="onAssignDevice"
-              @deviceOpened="onOpenDevice">
-            </device-list-panel>
-          </v-flex>
-        </v-layout>
-      </v-container>
-      <pager :results="results" :pageSizes="pageSizes"
-        @pagingUpdated="updatePaging">
-      </pager>
-      <device-create-dialog @deviceAdded="onDeviceAdded"/>
-      <assignment-create-dialog ref="assign"
-         @assignmentCreated="onAssignmentCreated">
-      </assignment-create-dialog>
-    </div>
-  </navigation-page>
+  <div>
+    <navigation-page icon="fa-microchip" title="Manage Devices">
+      <div slot="actions">
+        <v-tooltip left v-if="filteredDeviceType">
+          <v-btn slot="activator" color="green darken-2 white--text"
+            @click="onBatchCommandInvocation">
+            <v-icon left>fa-bolt</v-icon>
+            Execute Batch Command
+          </v-btn>
+          <span>Execute Batch Command</span>
+        </v-tooltip>
+        <v-tooltip left>
+          <v-btn icon slot="activator" @click="onShowFilterCriteria">
+            <v-icon>fa-filter</v-icon>
+          </v-btn>
+          <span>Filter Device List</span>
+        </v-tooltip>
+      </div>
+      <div slot="content">
+        <device-list-filter-bar ref="filters" @filter="onFilterUpdated">
+        </device-list-filter-bar>
+        <v-container fluid grid-list-md  v-if="devices">
+          <v-layout row wrap>
+             <v-flex xs6 v-for="(device, index) in devices" :key="device.token">
+              <device-list-panel :device="device" @assignDevice="onAssignDevice"
+                @deviceOpened="onOpenDevice">
+              </device-list-panel>
+            </v-flex>
+          </v-layout>
+        </v-container>
+        <pager :results="results" :pageSizes="pageSizes"
+          @pagingUpdated="updatePaging">
+        </pager>
+        <device-create-dialog @deviceAdded="onDeviceAdded"/>
+      </div>
+    </navigation-page>
+    <assignment-create-dialog ref="assign"
+       @assignmentCreated="onAssignmentCreated">
+    </assignment-create-dialog>
+    <batch-command-create-dialog ref="batch"
+      :deviceTypeToken="filteredDeviceType">
+    </batch-command-create-dialog>
+  </div>
 </template>
 
 <script>
@@ -39,6 +52,7 @@ import DeviceListPanel from './DeviceListPanel'
 import DeviceListFilterBar from './DeviceListFilterBar'
 import DeviceCreateDialog from './DeviceCreateDialog'
 import AssignmentCreateDialog from '../assignments/AssignmentCreateDialog'
+import BatchCommandCreateDialog from '../batch/BatchCommandCreateDialog'
 import {_listDevices} from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -69,7 +83,18 @@ export default {
     DeviceListPanel,
     DeviceListFilterBar,
     DeviceCreateDialog,
-    AssignmentCreateDialog
+    AssignmentCreateDialog,
+    BatchCommandCreateDialog
+  },
+
+  computed: {
+    filteredDeviceType: function () {
+      let filter = this.$data.filter
+      if (!filter || !filter.deviceType) {
+        return null
+      }
+      return filter.deviceType
+    }
   },
 
   methods: {
@@ -129,6 +154,10 @@ export default {
     // Called to open detail page for device.
     onOpenDevice: function (device) {
       Utils.routeTo(this, '/devices/' + device.token)
+    },
+    // Called to invoke a batch command.
+    onBatchCommandInvocation: function () {
+      this.$refs['batch'].onOpenDialog()
     }
   }
 }

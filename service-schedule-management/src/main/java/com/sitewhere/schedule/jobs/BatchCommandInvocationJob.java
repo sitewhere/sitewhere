@@ -65,7 +65,7 @@ public class BatchCommandInvocationJob implements Job {
 	    ITenant tenant = getTenantManagement().getTenantByToken(context.getScheduler().getSchedulerName());
 
 	    // Resolve tokens for devices matching criteria.
-	    List<String> deviceTokens = BatchUtils.getDeviceTokens(criteria, getDeviceManagement(),
+	    List<String> deviceTokens = BatchUtils.resolveDeviceTokensForCriteria(criteria, getDeviceManagement(),
 		    getAssetManagement());
 
 	    // Create batch command invocation.

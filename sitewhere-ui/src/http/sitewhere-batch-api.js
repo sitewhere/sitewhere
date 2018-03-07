@@ -13,8 +13,7 @@ export function getBatchOperation (axios, token) {
 /**
  * List batch operations.
  */
-export function listBatchOperations (axios, token, includeDeleted,
-  paging) {
+export function listBatchOperations (axios, token, includeDeleted, paging) {
   let query = ''
   query += (includeDeleted)
     ? '?includeDeleted=true' : '?includeDeleted=false'
@@ -45,8 +44,11 @@ export function createBatchCommandInvocation (axios, payload) {
 /**
  * Create a batch command invocation baesd on criteria.
  */
-export function createBatchCommandByCriteria (axios, payload) {
-  return restAuthPost(axios, '/batch/command/criteria', payload)
+export function createBatchCommandByCriteria (axios, options, payload) {
+  let query = ''
+  query += (options.scheduleToken)
+    ? '?scheduleToken=' + options.scheduleToken : ''
+  return restAuthPost(axios, '/batch/command/criteria' + query, payload)
 }
 
 /**

@@ -32,13 +32,13 @@ import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 public class BatchUtils {
 
     /**
-     * Get hardware ids based on the given criteria.
+     * Get device tokens based on the given criteria.
      * 
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public static List<String> getDeviceTokens(IBatchCommandForCriteriaRequest criteria,
+    public static List<String> resolveDeviceTokensForCriteria(IBatchCommandForCriteriaRequest criteria,
 	    IDeviceManagement deviceManagement, IAssetManagement assetManagement) throws SiteWhereException {
 	if (criteria.getDeviceTypeToken() == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceTypeToken, ErrorLevel.ERROR);

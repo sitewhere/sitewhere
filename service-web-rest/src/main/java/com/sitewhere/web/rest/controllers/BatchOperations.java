@@ -31,6 +31,7 @@ import com.sitewhere.rest.model.batch.request.BatchCommandInvocationRequest;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.batch.BatchOperationSearchCriteria;
 import com.sitewhere.rest.model.search.device.BatchElementSearchCriteria;
+import com.sitewhere.schedule.ScheduledJobHelper;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAssetManagement;
@@ -41,7 +42,8 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.scheduling.IScheduledJob;
+import com.sitewhere.spi.scheduling.IScheduleManagement;
+import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestControllerBase;
@@ -131,44 +133,28 @@ public class BatchOperations extends RestControllerBase {
     @RequestMapping(value = "/command/criteria", method = RequestMethod.POST)
     @ApiOperation(value = "Create batch command operation based on criteria")
     @Secured({ SiteWhereRoles.REST })
-    public IBatchOperation createBatchCommandByCriteria(@RequestBody BatchCommandForCriteriaRequest request)
+    public Object createBatchCommandByCriteria(@RequestBody BatchCommandForCriteriaRequest request,
+	    @ApiParam(value = "Schedule token", required = false) @RequestParam(defaultValue = "false") String scheduleToken)
 	    throws SiteWhereException {
-	// Resolve tokens for devices matching criteria.
-	List<String> deviceTokens = BatchUtils.getDeviceTokens(request, getDeviceManagement(), getAssetManagement());
+	if (scheduleToken != null) {
+	    IScheduledJobCreateRequest job = ScheduledJobHelper
+		    .createBatchCommandInvocationJobByCriteria(UUID.randomUUID().toString(), request, scheduleToken);
+	    return getScheduleManagement().createScheduledJob(job);
+	} else {
+	    // Resolve tokens for devices matching criteria.
+	    List<String> deviceTokens = BatchUtils.resolveDeviceTokensForCriteria(request, getDeviceManagement(),
+		    getAssetManagement());
 
-	// Create batch command invocation.
-	BatchCommandInvocationRequest invoke = new BatchCommandInvocationRequest();
-	invoke.setToken(request.getToken());
-	invoke.setCommandToken(request.getCommandToken());
-	invoke.setParameterValues(request.getParameterValues());
-	invoke.setDeviceTokens(deviceTokens);
+	    // Create batch command invocation.
+	    BatchCommandInvocationRequest invoke = new BatchCommandInvocationRequest();
+	    invoke.setToken(request.getToken());
+	    invoke.setCommandToken(request.getCommandToken());
+	    invoke.setParameterValues(request.getParameterValues());
+	    invoke.setDeviceTokens(deviceTokens);
 
-	IBatchOperation result = getBatchManagement().createBatchCommandInvocation(invoke);
-	return BatchOperation.copy(result);
-    }
-
-    /**
-     * Schedule job that will create a new batch command invocation based on the
-     * given criteria.
-     * 
-     * @param request
-     * @param scheduleToken
-     * @param servletRequest
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/command/criteria/schedules/{scheduleToken}", method = RequestMethod.POST)
-    @ApiOperation(value = "Schedule batch command operation based on criteria")
-    @Secured({ SiteWhereRoles.REST })
-    public IScheduledJob scheduleBatchCommandByCriteria(@RequestBody BatchCommandForCriteriaRequest request,
-	    @ApiParam(value = "Schedule token", required = true) @PathVariable String scheduleToken)
-	    throws SiteWhereException {
-	// IScheduledJobCreateRequest job = ScheduledJobHelper
-	// .createBatchCommandInvocationJobByCriteria(UUID.randomUUID().toString(),
-	// request, scheduleToken);
-	// return
-	// SiteWhere.getServer().getScheduleManagement(getTenant(servletRequest)).createScheduledJob(job);
-	return null;
+	    IBatchOperation result = getBatchManagement().createBatchCommandInvocation(invoke);
+	    return BatchOperation.copy(result);
+	}
     }
 
     /**
@@ -211,5 +197,9 @@ public class BatchOperations extends RestControllerBase {
 
     protected IBatchManagement getBatchManagement() {
 	return getMicroservice().getBatchManagementApiDemux().getApiChannel();
+    }
+
+    protected IScheduleManagement getScheduleManagement() {
+	return getMicroservice().getScheduleManagementApiDemux().getApiChannel();
     }
 }

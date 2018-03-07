@@ -128,7 +128,11 @@ export default {
     refresh: function () {
       var component = this
       var paging = this.$data.paging.query
-      _listSchedules(this.$store, paging)
+
+      // Schedule filter options.
+      let options = {}
+
+      _listSchedules(this.$store, options, paging)
         .then(function (response) {
           component.results = response.data
           component.schedules = response.data.results

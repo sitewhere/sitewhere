@@ -34,6 +34,7 @@
         </v-tooltip>
       </v-card-text>
     </v-card>
+    <v-spacer></v-spacer>
     <device-list-filter-dialog ref="criteria"
       :filter="filter" @filter="onFilterUpdated">
     </device-list-filter-dialog>

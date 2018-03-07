@@ -80,9 +80,9 @@ export function updateDeviceCommand (axios, token, payload) {
 /**
  * List all device commands for a specification.
  */
-export function listDeviceCommands (axios, token, includeDeleted) {
+export function listDeviceCommands (axios, token, options) {
   let query = ''
-  query += (includeDeleted)
+  query += (options.includeDeleted)
     ? '?includeDeleted=true' : '?includeDeleted=false'
   return restAuthGet(axios, '/devicetypes/' + token + '/commands' + query)
 }

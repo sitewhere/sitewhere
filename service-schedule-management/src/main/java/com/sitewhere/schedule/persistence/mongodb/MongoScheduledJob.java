@@ -7,6 +7,8 @@
  */
 package com.sitewhere.schedule.persistence.mongodb;
 
+import java.util.UUID;
+
 import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
@@ -24,20 +26,23 @@ import com.sitewhere.spi.scheduling.ScheduledJobType;
  */
 public class MongoScheduledJob implements MongoConverter<IScheduledJob> {
 
+    /** Property for id */
+    public static final String PROP_ID = "_id";
+
     /** Property for unique token */
-    public static final String PROP_TOKEN = "token";
+    public static final String PROP_TOKEN = "tokn";
 
     /** Property for schedule token */
-    public static final String PROP_SCHEDULE_TOKEN = "schedule";
+    public static final String PROP_SCHEDULE_TOKEN = "sctk";
 
     /** Property for job type */
     public static final String PROP_JOB_TYPE = "type";
 
     /** Property for job configuration */
-    public static final String PROP_JOB_CONFIGURATION = "config";
+    public static final String PROP_JOB_CONFIGURATION = "conf";
 
     /** Property for job state */
-    public static final String PROP_JOB_STATE = "state";
+    public static final String PROP_JOB_STATE = "jbst";
 
     /*
      * (non-Javadoc)
@@ -66,6 +71,7 @@ public class MongoScheduledJob implements MongoConverter<IScheduledJob> {
      * @param target
      */
     public static void toDocument(IScheduledJob source, Document target) {
+	target.append(PROP_ID, source.getId());
 	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_SCHEDULE_TOKEN, source.getScheduleToken());
 	target.append(PROP_JOB_TYPE, source.getJobType().name());
@@ -88,11 +94,13 @@ public class MongoScheduledJob implements MongoConverter<IScheduledJob> {
      * @param target
      */
     public static void fromDocument(Document source, ScheduledJob target) {
+	UUID id = (UUID) source.get(PROP_ID);
 	String token = (String) source.get(PROP_TOKEN);
 	String scheduleToken = (String) source.get(PROP_SCHEDULE_TOKEN);
 	String type = (String) source.get(PROP_JOB_TYPE);
 	String state = (String) source.get(PROP_JOB_STATE);
 
+	target.setId(id);
 	target.setToken(token);
 	target.setScheduleToken(scheduleToken);
 	target.setJobType(ScheduledJobType.valueOf(type));

@@ -38,7 +38,7 @@ export function deleteSchedule (axios, token, force) {
 /**
  * List schedules.
  */
-export function listSchedules (axios, paging) {
+export function listSchedules (axios, options, paging) {
   let query = ''
   if (paging) {
     query += '?' + paging

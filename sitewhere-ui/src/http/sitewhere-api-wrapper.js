@@ -907,11 +907,11 @@ export function _updateDeviceCommand (store, token, payload) {
 }
 
 /**
- * List commands for a device specification.
+ * List commands for a device type.
  */
-export function _listDeviceCommands (store, token, includeDeleted) {
+export function _listDeviceCommands (store, token, options) {
   let axios = createCoreApiCall(store)
-  let api = listDeviceCommands(axios, token, includeDeleted)
+  let api = listDeviceCommands(axios, token, options)
   return loaderWrapper(store, api)
 }
 
@@ -1234,9 +1234,9 @@ export function _createBatchCommandInvocation (store, payload) {
 /**
  * Create a batch command invocation based on criteria.
  */
-export function _createBatchCommandByCriteria (store, payload) {
+export function _createBatchCommandByCriteria (store, options, payload) {
   let axios = createCoreApiCall(store)
-  let api = createBatchCommandByCriteria(axios, payload)
+  let api = createBatchCommandByCriteria(axios, options, payload)
   return loaderWrapper(store, api)
 }
 
@@ -1288,8 +1288,8 @@ export function _deleteSchedule (store, token, force) {
 /**
  * List schedules.
  */
-export function _listSchedules (store, paging) {
+export function _listSchedules (store, options, paging) {
   let axios = createCoreApiCall(store)
-  let api = listSchedules(axios, paging)
+  let api = listSchedules(axios, options, paging)
   return loaderWrapper(store, api)
 }
