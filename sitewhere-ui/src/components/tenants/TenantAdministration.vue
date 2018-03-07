@@ -118,14 +118,14 @@ export default {
     {
       id: 'batch',
       title: 'Batch Operations',
-      icon: 'group_work',
+      icon: 'fa-list-alt',
       route: 'batch',
       longTitle: 'Manage Batch Operations'
     },
     {
       id: 'schedules',
       title: 'Schedules',
-      icon: 'event',
+      icon: 'fa-calendar',
       route: 'schedules',
       longTitle: 'Manage Schedules'
     }],

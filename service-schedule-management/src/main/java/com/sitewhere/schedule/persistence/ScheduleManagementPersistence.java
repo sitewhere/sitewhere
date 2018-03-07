@@ -7,6 +7,8 @@
  */
 package com.sitewhere.schedule.persistence;
 
+import java.util.UUID;
+
 import com.sitewhere.persistence.Persistence;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.scheduling.Schedule;
@@ -36,12 +38,14 @@ public class ScheduleManagementPersistence extends Persistence {
      */
     public static Schedule scheduleCreateLogic(IScheduleCreateRequest request, String token) throws SiteWhereException {
 	Schedule schedule = new Schedule();
+	schedule.setId(UUID.randomUUID());
 
-	// Unique token is required.
-	if (token == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+	// Use token if provided, otherwise generate one.
+	if (request.getToken() != null) {
+	    schedule.setToken(request.getToken());
+	} else {
+	    schedule.setToken(UUID.randomUUID().toString());
 	}
-	schedule.setToken(token);
 
 	// Name is required.
 	if (request.getName() == null) {
@@ -74,6 +78,9 @@ public class ScheduleManagementPersistence extends Persistence {
      */
     public static void scheduleUpdateLogic(Schedule schedule, IScheduleCreateRequest request)
 	    throws SiteWhereException {
+	if (request.getToken() != null) {
+	    schedule.setToken(request.getToken());
+	}
 	if (request.getName() != null) {
 	    schedule.setName(request.getName());
 	}
@@ -102,12 +109,14 @@ public class ScheduleManagementPersistence extends Persistence {
     public static ScheduledJob scheduledJobCreateLogic(IScheduledJobCreateRequest request, String token)
 	    throws SiteWhereException {
 	ScheduledJob job = new ScheduledJob();
+	job.setId(UUID.randomUUID());
 
-	// Unique token is required.
-	if (token == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+	// Use token if provided, otherwise generate one.
+	if (request.getToken() != null) {
+	    job.setToken(request.getToken());
+	} else {
+	    job.setToken(UUID.randomUUID().toString());
 	}
-	job.setToken(token);
 
 	// Schedule token is required.
 	if (request.getScheduleToken() == null) {
@@ -139,6 +148,9 @@ public class ScheduleManagementPersistence extends Persistence {
      */
     public static void scheduledJobUpdateLogic(ScheduledJob job, IScheduledJobCreateRequest request)
 	    throws SiteWhereException {
+	if (request.getToken() != null) {
+	    job.setToken(request.getToken());
+	}
 	if (request.getScheduleToken() != null) {
 	    job.setScheduleToken(request.getScheduleToken());
 	}

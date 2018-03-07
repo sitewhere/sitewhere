@@ -1,49 +1,56 @@
 <template>
   <div>
-    <v-layout row wrap v-if="operations">
-      <v-flex xs12>
-        <no-results-panel v-if="operations.length === 0"
-          text="No Batch Operations Found">
-        </no-results-panel>
-        <v-data-table v-if="operations.length > 0" class="elevation-2 pa-0"
-          :headers="headers" :items="operations"
-          :hide-actions="true" no-data-text="No Batch Operations Found">
-          <template slot="items" slot-scope="props">
-            <td width="15%" :title="props.item.operationType">
-              {{ props.item.operationType }}
-            </td>
-            <td width="15%" :title="props.item.processingStatus">
-              {{ props.item.processingStatus }}
-            </td>
-            <td width="15%" style="white-space: nowrap"
-              :title="utils.formatDate(props.item.createdDate)">
-              {{ utils.formatDate(props.item.createdDate) }}
-            </td>
-            <td width="20%" style="white-space: nowrap"
-              :title="utils.formatDate(props.item.processingStartedDate)">
-              {{ utils.formatDate(props.item.processingStartedDate) }}
-            </td>
-            <td width="20%" style="white-space: nowrap"
-              :title="utils.formatDate(props.item.processingEndedDate)">
-              {{ utils.formatDate(props.item.processingEndedDate) }}
-            </td>
-            <td width="10%" title="View Batch Operation">
-              <v-btn dark icon small class="green darken-2"
-                v-tooltip:top="{ html: 'Open' }"
-                @click.native.stop="openBatchOperation(props.item.token)">
-                <v-icon fa>arrow-right</v-icon>
-              </v-btn>
-            </td>
-          </template>
-        </v-data-table>
-      </v-flex>
-    </v-layout>
-    <pager :pageSizes="pageSizes" :results="results" @pagingUpdated="updatePaging"></pager>
+    <navigation-page icon="fa-list-alt" title="Manage Batch Operations">
+      <div slot="content">
+        <v-layout row wrap v-if="operations">
+          <v-flex xs12>
+            <no-results-panel v-if="operations.length === 0"
+              text="No Batch Operations Found">
+            </no-results-panel>
+            <v-data-table v-if="operations.length > 0" class="elevation-2 pa-0"
+              :headers="headers" :items="operations"
+              :hide-actions="true" no-data-text="No Batch Operations Found">
+              <template slot="items" slot-scope="props">
+                <td width="15%" :title="props.item.operationType">
+                  {{ props.item.operationType }}
+                </td>
+                <td width="15%" :title="props.item.processingStatus">
+                  {{ props.item.processingStatus }}
+                </td>
+                <td width="15%" style="white-space: nowrap"
+                  :title="utils.formatDate(props.item.createdDate)">
+                  {{ utils.formatDate(props.item.createdDate) }}
+                </td>
+                <td width="20%" style="white-space: nowrap"
+                  :title="utils.formatDate(props.item.processingStartedDate)">
+                  {{ utils.formatDate(props.item.processingStartedDate) }}
+                </td>
+                <td width="20%" style="white-space: nowrap"
+                  :title="utils.formatDate(props.item.processingEndedDate)">
+                  {{ utils.formatDate(props.item.processingEndedDate) }}
+                </td>
+                <td width="10%" title="View Batch Operation">
+                  <v-btn dark icon small class="green darken-2"
+                    v-tooltip:top="{ html: 'Open' }"
+                    @click.native.stop="openBatchOperation(props.item.token)">
+                    <v-icon fa>arrow-right</v-icon>
+                  </v-btn>
+                </td>
+              </template>
+            </v-data-table>
+          </v-flex>
+        </v-layout>
+        <pager :pageSizes="pageSizes" :results="results"
+          @pagingUpdated="updatePaging">
+        </pager>
+      </div>
+    </navigation-page>
   </div>
 </template>
 
 <script>
 import Utils from '../common/Utils'
+import NavigationPage from '../common/NavigationPage'
 import Pager from '../common/Pager'
 import NoResultsPanel from '../common/NoResultsPanel'
 import {_listBatchOperations} from '../../http/sitewhere-api-wrapper'
@@ -102,6 +109,7 @@ export default {
   }),
 
   components: {
+    NavigationPage,
     Pager,
     NoResultsPanel
   },

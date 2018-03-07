@@ -89,9 +89,12 @@ public class DeviceManagementPersistence extends Persistence {
 	type.setId(UUID.randomUUID());
 	type.setDescription(request.getDescription() != null ? request.getDescription() : "");
 
-	// Unique token is required.
-	require("Token", token);
-	type.setToken(token);
+	// Use token if provided, otherwise generate one.
+	if (request.getToken() != null) {
+	    type.setToken(request.getToken());
+	} else {
+	    type.setToken(UUID.randomUUID().toString());
+	}
 
 	// Name is required.
 	require("Name", request.getName());
@@ -179,9 +182,12 @@ public class DeviceManagementPersistence extends Persistence {
 	DeviceCommand command = new DeviceCommand();
 	command.setId(UUID.randomUUID());
 
-	// Token is required.
-	require("Token", token);
-	command.setToken(token);
+	// Use token if provided, otherwise generate one.
+	if (request.getToken() != null) {
+	    command.setToken(request.getToken());
+	} else {
+	    command.setToken(UUID.randomUUID().toString());
+	}
 
 	// Name is required.
 	require("Name", request.getName());
