@@ -19,8 +19,8 @@ enum GTriggerType {
 
 // Schedule create request.
 message GScheduleCreateRequest {
-	string token = 1;
-	string name = 2;
+	GOptionalString token = 1;
+	GOptionalString name = 2;
 	GTriggerType triggerType = 3;
 	map<string, string> triggerConfiguration = 4;
 	google.protobuf.Timestamp startDate = 5;
@@ -41,14 +41,15 @@ message GScheduleSearchResults {
 
 // Schedule.
 message GSchedule {
-	string token = 1;
-	string name = 2;
-	GTriggerType triggerType = 3;
-	map<string, string> triggerConfiguration = 4;
-	google.protobuf.Timestamp startDate = 5;
-	google.protobuf.Timestamp endDate = 6;
-	map<string, string> metadata = 7;
-	GEntityInformation entityInformation = 8;
+	GUUID id = 1;
+	string token = 2;
+	string name = 3;
+	GTriggerType triggerType = 4;
+	map<string, string> triggerConfiguration = 5;
+	google.protobuf.Timestamp startDate = 6;
+	google.protobuf.Timestamp endDate = 7;
+	map<string, string> metadata = 8;
+	GEntityInformation entityInformation = 9;
 }
 
 // ######################
@@ -70,7 +71,7 @@ enum GScheduledJobState {
 
 // Scheduled job create request.
 message GScheduledJobCreateRequest {
-	string token = 1;
+	GOptionalString token = 1;
 	string scheduleToken = 2;
 	GScheduledJobType jobType = 3;
 	map<string, string> jobConfiguration = 4;
@@ -91,11 +92,12 @@ message GScheduledJobSearchResults {
 
 // Scheduled job.
 message GScheduledJob {
-	string token = 1;
-	string scheduleToken = 2;
-	GScheduledJobType jobType = 3;
-	map<string, string> jobConfiguration = 4;
-	GScheduledJobState jobState = 5;
-	map<string, string> metadata = 6;
-	GEntityInformation entityInformation = 7;
+	GUUID id = 1;
+	string token = 2;
+	string scheduleToken = 3;
+	GScheduledJobType jobType = 4;
+	map<string, string> jobConfiguration = 5;
+	GScheduledJobState jobState = 6;
+	map<string, string> metadata = 7;
+	GEntityInformation entityInformation = 8;
 }

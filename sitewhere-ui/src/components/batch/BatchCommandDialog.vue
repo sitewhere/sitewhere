@@ -22,7 +22,7 @@
               <v-container fluid>
                 <v-layout row wrap>
                   <v-flex xs12>
-                    <v-select :items="commands" v-model="commandSelection"
+                    <v-select :items="commands" v-model="commandToken"
                       label="Command" item-text="name" item-value="token"
                       light single-line auto prepend-icon="flash_on"
                       hide-details></v-select>
@@ -71,8 +71,7 @@ import BaseDialog from '../common/BaseDialog'
 import MetadataPanel from '../common/MetadataPanel'
 import ScheduleChooser from '../schedules/ScheduleChooser'
 import {
-  _listDeviceCommands,
-  _listSchedules
+  _listDeviceCommands
 } from '../../http/sitewhere-api-wrapper'
 
 export default {
@@ -82,10 +81,10 @@ export default {
     dialogVisible: false,
     command: null,
     commands: [],
-    commandSelection: null,
+    commandToken: null,
     parameters: {},
     useSchedule: false,
-    scheduleSelection: null,
+    scheduleToken: null,
     metadata: [],
     error: null
   }),
@@ -96,7 +95,7 @@ export default {
     ScheduleChooser
   },
 
-  props: ['title', 'width', 'createLabel', 'cancelLabel', 'deviceTypeToken'],
+  props: ['title', 'width', 'createLabel', 'cancelLabel', 'filter'],
 
   computed: {
     // Message shown next to schedule switch.
@@ -110,15 +109,14 @@ export default {
     // Clear schedule selection if not using schedule.
     useSchedule: function (value) {
       if (!value) {
-        this.$data.scheduleSelection = null
+        this.$data.scheduleToken = null
       }
     },
     // Indicate that command was updated.
-    commandSelection: function (value) {
+    commandToken: function (value) {
       let commands = this.$data.commands
-      let selection = this.$data.commandSelection
       if (commands) {
-        let command = Lodash.find(commands, {'token': selection})
+        let command = Lodash.find(commands, {'token': value})
         if (command) {
           this.$data.command = command
         } else {
@@ -131,21 +129,20 @@ export default {
   methods: {
     // Generate payload from UI.
     generatePayload: function () {
-      var user = this.$store.getters.user
       var payload = {}
-      payload.initiator = 'REST'
-      payload.initiatorId = user.username
-      payload.target = 'Assignment'
-      payload.commandToken = this.$data.commandSelection
+      payload.commandToken = this.$data.commandToken
       payload.parameterValues = this.$data.parameters
+      payload.deviceTypeToken = this.filter.deviceType
+      payload.areaToken = this.filter.area
       payload.metadata = Utils.arrayToMetadata(this.$data.metadata)
       return payload
     },
     // Reset dialog contents.
     reset: function (e) {
-      this.$data.commandSelection = null
+      this.$data.commandToken = null
+      this.$data.parameters = {}
       this.$data.useSchedule = false
-      this.$data.scheduleSelection = null
+      this.$data.scheduleToken = null
       this.$data.metadata = []
       this.$data.active = 'details'
 
@@ -153,17 +150,16 @@ export default {
       let options = {}
       options.includeDeleted = false
 
+      if (!this.filter.deviceType) {
+        console.log('Device type not set for batch command.')
+        return
+      }
+
       var component = this
-      _listDeviceCommands(this.$store, this.deviceTypeToken, options)
+      _listDeviceCommands(this.$store, this.filter.deviceType, options)
         .then(function (response) {
           let commands = response.data.results
           component.$data.commands = commands
-        }).catch(function (e) {
-          component.showError(e)
-        })
-      _listSchedules(this.$store, null)
-        .then(function (response) {
-          component.$data.schedules = response.data.results
         }).catch(function (e) {
           component.showError(e)
         })
@@ -190,7 +186,8 @@ export default {
     },
     // Called when schedule is updated.
     onScheduleUpdated: function (scheduleToken) {
-      this.$data.scheduleSelection = scheduleToken
+      this.$data.scheduleToken = scheduleToken
+      this.$emit('scheduleUpdated', scheduleToken)
     },
     // Called after create button is clicked.
     onCreateClicked: function (e) {

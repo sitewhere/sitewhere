@@ -50,10 +50,3 @@ export function createBatchCommandByCriteria (axios, options, payload) {
     ? '?scheduleToken=' + options.scheduleToken : ''
   return restAuthPost(axios, '/batch/command/criteria' + query, payload)
 }
-
-/**
- * Schedule a batch command invocation based on criteria.
- */
-export function scheduleBatchCommandByCriteria (axios, schedule, payload) {
-  return restAuthPost(axios, '/command/criteria/schedules/' + schedule, payload)
-}

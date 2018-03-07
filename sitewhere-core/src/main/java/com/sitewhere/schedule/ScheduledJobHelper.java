@@ -16,6 +16,7 @@ import com.sitewhere.rest.model.batch.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.rest.model.scheduling.request.ScheduledJobCreateRequest;
 import com.sitewhere.spi.scheduling.JobConstants;
+import com.sitewhere.spi.scheduling.ScheduledJobState;
 import com.sitewhere.spi.scheduling.ScheduledJobType;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 
@@ -71,6 +72,7 @@ public class ScheduledJobHelper {
 	ScheduledJobCreateRequest job = new ScheduledJobCreateRequest();
 	job.setToken(token);
 	job.setJobType(ScheduledJobType.BatchCommandInvocation);
+	job.setJobState(ScheduledJobState.Unsubmitted);
 
 	Map<String, String> config = new HashMap<String, String>();
 

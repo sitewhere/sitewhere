@@ -134,7 +134,7 @@ public class BatchOperations extends RestControllerBase {
     @ApiOperation(value = "Create batch command operation based on criteria")
     @Secured({ SiteWhereRoles.REST })
     public Object createBatchCommandByCriteria(@RequestBody BatchCommandForCriteriaRequest request,
-	    @ApiParam(value = "Schedule token", required = false) @RequestParam(defaultValue = "false") String scheduleToken)
+	    @ApiParam(value = "Schedule token", required = false) @RequestParam(required = false) String scheduleToken)
 	    throws SiteWhereException {
 	if (scheduleToken != null) {
 	    IScheduledJobCreateRequest job = ScheduledJobHelper

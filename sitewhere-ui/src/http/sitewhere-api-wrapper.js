@@ -161,8 +161,7 @@ import {
   listBatchOperations,
   listBatchOperationElements,
   createBatchCommandInvocation,
-  createBatchCommandByCriteria,
-  scheduleBatchCommandByCriteria
+  createBatchCommandByCriteria
 } from './sitewhere-batch-api.js'
 
 // Schedules.
@@ -1237,15 +1236,6 @@ export function _createBatchCommandInvocation (store, payload) {
 export function _createBatchCommandByCriteria (store, options, payload) {
   let axios = createCoreApiCall(store)
   let api = createBatchCommandByCriteria(axios, options, payload)
-  return loaderWrapper(store, api)
-}
-
-/**
- * Schedule a batch command invocation based on criteria.
- */
-export function _scheduleBatchCommandByCriteria (store, schedule, payload) {
-  let axios = createCoreApiCall(store)
-  let api = scheduleBatchCommandByCriteria(axios, schedule, payload)
   return loaderWrapper(store, api)
 }
 

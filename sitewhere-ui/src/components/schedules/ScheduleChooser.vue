@@ -1,6 +1,6 @@
 <template>
-  <v-card>
-    <v-select :disabled="!enabled"
+  <v-card flat>
+    <v-select v-if="schedules" :disabled="!enabled"
       :style="{'opacity': enabled ? 1 : 0.3 }"
       :items="schedules" v-model="scheduleToken"
       label="Schedule" item-text="name" item-value="token"

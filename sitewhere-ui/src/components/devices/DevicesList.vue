@@ -2,7 +2,7 @@
   <div>
     <navigation-page icon="fa-microchip" title="Manage Devices">
       <div slot="actions">
-        <v-tooltip left v-if="filteredDeviceType">
+        <v-tooltip left v-if="filter.deviceType">
           <v-btn slot="activator" color="green darken-2 white--text"
             @click="onBatchCommandInvocation">
             <v-icon left>fa-bolt</v-icon>
@@ -38,8 +38,7 @@
     <assignment-create-dialog ref="assign"
        @assignmentCreated="onAssignmentCreated">
     </assignment-create-dialog>
-    <batch-command-create-dialog ref="batch"
-      :deviceTypeToken="filteredDeviceType">
+    <batch-command-create-dialog ref="batch" :filter="filter">
     </batch-command-create-dialog>
   </div>
 </template>
@@ -61,7 +60,7 @@ export default {
     results: null,
     paging: null,
     devices: null,
-    filter: null,
+    filter: {},
     pageSizes: [
       {
         text: '20',
@@ -87,16 +86,6 @@ export default {
     BatchCommandCreateDialog
   },
 
-  computed: {
-    filteredDeviceType: function () {
-      let filter = this.$data.filter
-      if (!filter || !filter.deviceType) {
-        return null
-      }
-      return filter.deviceType
-    }
-  },
-
   methods: {
     // Update paging values and run query.
     updatePaging: function (paging) {
@@ -109,10 +98,9 @@ export default {
       let filter = this.$data.filter
       let component = this
 
-      let criteria = filter || {}
       let options = {}
-      options.area = criteria.area
-      options.deviceType = criteria.deviceType
+      options.area = filter.area
+      options.deviceType = filter.deviceType
       options.includeDeviceType = true
       options.includeAssignment = true
       options.includeDeleted = false
