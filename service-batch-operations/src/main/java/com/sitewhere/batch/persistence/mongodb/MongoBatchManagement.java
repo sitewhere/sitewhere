@@ -205,7 +205,7 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
 	MongoCollection<Document> elements = getMongoClient().getBatchOperationElementsCollection();
 	Document dbCriteria = new Document(MongoBatchElement.PROP_BATCH_OPERATION_ID, batchOperationId);
 	if (criteria.getProcessingStatus() != null) {
-	    dbCriteria.put(MongoBatchElement.PROP_PROCESSING_STATUS, criteria.getProcessingStatus());
+	    dbCriteria.put(MongoBatchElement.PROP_PROCESSING_STATUS, criteria.getProcessingStatus().name());
 	}
 	Document sort = new Document();
 	return MongoPersistence.search(IBatchElement.class, elements, dbCriteria, sort, criteria, LOOKUP);

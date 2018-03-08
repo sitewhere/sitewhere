@@ -59,13 +59,14 @@ message GBatchOperationSearchResults {
 // Batch operation.
 message GBatchOperation {
 	GUUID id = 1;
-	string operationType = 2;
-	map<string, string> parameters = 3;
-	GBatchOperationStatus processingStatus = 4;
-	google.protobuf.Timestamp processingStartedDate = 5;
-	google.protobuf.Timestamp processingEndedDate = 6;
-	map<string, string> metadata = 7;
-	GEntityInformation entityInformation = 8;
+	string token = 2;
+	string operationType = 3;
+	map<string, string> parameters = 4;
+	GBatchOperationStatus processingStatus = 5;
+	google.protobuf.Timestamp processingStartedDate = 6;
+	google.protobuf.Timestamp processingEndedDate = 7;
+	map<string, string> metadata = 8;
+	GEntityInformation entityInformation = 9;
 }
 
 // ################################

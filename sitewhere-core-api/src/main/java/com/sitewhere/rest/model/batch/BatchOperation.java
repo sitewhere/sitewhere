@@ -13,10 +13,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
-import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.BatchOperationStatus;
 import com.sitewhere.spi.batch.IBatchOperation;
 
@@ -25,6 +26,7 @@ import com.sitewhere.spi.batch.IBatchOperation;
  * 
  * @author Derek
  */
+@JsonInclude(Include.NON_NULL)
 public class BatchOperation extends MetadataProviderEntity implements IBatchOperation, Serializable {
 
     /** Serialization version identifier */
@@ -144,17 +146,5 @@ public class BatchOperation extends MetadataProviderEntity implements IBatchOper
 
     public void setProcessingEndedDate(Date processingEndedDate) {
 	this.processingEndedDate = processingEndedDate;
-    }
-
-    public static BatchOperation copy(IBatchOperation input) throws SiteWhereException {
-	BatchOperation result = new BatchOperation();
-	result.setToken(input.getToken());
-	result.setOperationType(input.getOperationType());
-	result.getParameters().putAll(input.getParameters());
-	result.setProcessingStatus(input.getProcessingStatus());
-	result.setProcessingStartedDate(input.getProcessingStartedDate());
-	result.setProcessingEndedDate(input.getProcessingEndedDate());
-	MetadataProviderEntity.copy(input, result);
-	return result;
     }
 }

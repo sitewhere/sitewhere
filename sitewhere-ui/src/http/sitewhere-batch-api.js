@@ -26,10 +26,12 @@ export function listBatchOperations (axios, token, includeDeleted, paging) {
 /**
  * List batch operation elements.
  */
-export function listBatchOperationElements (axios, token, paging) {
+export function listBatchOperationElements (axios, token, options, paging) {
   let query = ''
+  query += (options.includeDevice)
+    ? '?includeDevice=true' : '?includeDevice=false'
   if (paging) {
-    query += '?' + paging
+    query += '&' + paging
   }
   return restAuthGet(axios, 'batch/' + token + '/elements' + query)
 }

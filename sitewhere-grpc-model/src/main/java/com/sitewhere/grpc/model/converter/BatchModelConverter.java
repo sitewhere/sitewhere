@@ -269,6 +269,7 @@ public class BatchModelConverter {
     public static BatchOperation asApiBatchOperation(GBatchOperation grpc) throws SiteWhereException {
 	BatchOperation api = new BatchOperation();
 	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
+	api.setToken(grpc.getToken());
 	api.setOperationType(grpc.getOperationType());
 	api.setParameters(grpc.getParametersMap());
 	api.setMetadata(grpc.getMetadataMap());
@@ -291,6 +292,7 @@ public class BatchModelConverter {
     public static GBatchOperation asGrpcBatchOperation(IBatchOperation api) throws SiteWhereException {
 	GBatchOperation.Builder grpc = GBatchOperation.newBuilder();
 	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
+	grpc.setToken(api.getToken());
 	grpc.setOperationType(api.getOperationType());
 	grpc.putAllParameters(api.getParameters());
 	grpc.putAllMetadata(api.getMetadata());
@@ -314,6 +316,9 @@ public class BatchModelConverter {
      */
     public static ElementProcessingStatus asApiElementProcessingStatus(GElementProcessingStatus grpc)
 	    throws SiteWhereException {
+	if (grpc == null) {
+	    return null;
+	}
 	switch (grpc) {
 	case BATCH_ELEMENT_STATUS_UNPROCESSED:
 	    return ElementProcessingStatus.Unprocessed;
@@ -338,6 +343,9 @@ public class BatchModelConverter {
      */
     public static GElementProcessingStatus asGrpcElementProcessingStatus(ElementProcessingStatus api)
 	    throws SiteWhereException {
+	if (api == null) {
+	    return null;
+	}
 	switch (api) {
 	case Unprocessed:
 	    return GElementProcessingStatus.BATCH_ELEMENT_STATUS_UNPROCESSED;
@@ -411,7 +419,9 @@ public class BatchModelConverter {
 	    throws SiteWhereException {
 	GBatchOperationElementSearchCriteria.Builder grpc = GBatchOperationElementSearchCriteria.newBuilder();
 	grpc.setPaging(CommonModelConverter.asGrpcPaging(api));
-	grpc.setProcessingStatus(BatchModelConverter.asGrpcElementProcessingStatus(api.getProcessingStatus()));
+	if (api.getProcessingStatus() != null) {
+	    grpc.setProcessingStatus(BatchModelConverter.asGrpcElementProcessingStatus(api.getProcessingStatus()));
+	}
 	return grpc.build();
     }
 
@@ -443,6 +453,7 @@ public class BatchModelConverter {
 	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
 	api.setBatchOperationId(CommonModelConverter.asApiUuid(grpc.getBatchOperationId()));
 	api.setDeviceId(CommonModelConverter.asApiUuid(grpc.getDeviceId()));
+	api.setProcessingStatus(BatchModelConverter.asApiElementProcessingStatus(grpc.getProcessingStatus()));
 	api.setMetadata(grpc.getMetadataMap());
 	return api;
     }
@@ -459,6 +470,9 @@ public class BatchModelConverter {
 	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
 	grpc.setBatchOperationId(CommonModelConverter.asGrpcUuid(api.getBatchOperationId()));
 	grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
+	if (api.getProcessingStatus() != null) {
+	    grpc.setProcessingStatus(BatchModelConverter.asGrpcElementProcessingStatus(api.getProcessingStatus()));
+	}
 	grpc.putAllMetadata(api.getMetadata());
 	return grpc.build();
     }

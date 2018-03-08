@@ -1215,9 +1215,9 @@ export function _listBatchOperations (store, token, includeDeleted,
 /**
  * List batch operation elements.
  */
-export function _listBatchOperationElements (store, token, paging) {
+export function _listBatchOperationElements (store, token, options, paging) {
   let axios = createCoreApiCall(store)
-  let api = listBatchOperationElements(axios, token, paging)
+  let api = listBatchOperationElements(axios, token, options, paging)
   return loaderWrapper(store, api)
 }
 

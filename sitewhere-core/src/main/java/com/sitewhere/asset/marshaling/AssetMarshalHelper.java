@@ -5,14 +5,14 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.device.marshaling;
+package com.sitewhere.asset.marshaling;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.rest.model.asset.Asset;
+import com.sitewhere.rest.model.asset.marshaling.MarshaledAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
-import com.sitewhere.rest.model.device.marshaling.MarshaledAsset;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetManagement;

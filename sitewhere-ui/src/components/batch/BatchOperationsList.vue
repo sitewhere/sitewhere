@@ -30,11 +30,13 @@
                   {{ utils.formatDate(props.item.processingEndedDate) }}
                 </td>
                 <td width="10%" title="View Batch Operation">
-                  <v-btn dark icon small class="green darken-2"
-                    v-tooltip:top="{ html: 'Open' }"
-                    @click.native.stop="openBatchOperation(props.item.token)">
-                    <v-icon fa>arrow-right</v-icon>
-                  </v-btn>
+                  <v-tooltip left>
+                    <v-btn dark icon class="green darken-2" slot="activator"
+                      @click.stop="openBatchOperation(props.item.token)">
+                      <v-icon small>fa-arrow-right</v-icon>
+                    </v-btn>
+                    <span>Batch Operation Detail</span>
+                  </v-tooltip>
                 </td>
               </template>
             </v-data-table>

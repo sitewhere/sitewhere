@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.rest.model.device.marshaling;
+package com.sitewhere.rest.model.asset.marshaling;
 
 import com.sitewhere.rest.model.asset.Asset;
 import com.sitewhere.spi.asset.IAssetType;

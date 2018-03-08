@@ -24,8 +24,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sitewhere.device.batch.BatchUtils;
-import com.sitewhere.rest.model.batch.BatchOperation;
+import com.sitewhere.batch.BatchUtils;
+import com.sitewhere.batch.marshaling.BatchElementMarshalHelper;
+import com.sitewhere.batch.marshaling.BatchOperationMarshalHelper;
 import com.sitewhere.rest.model.batch.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.rest.model.batch.request.BatchCommandInvocationRequest;
 import com.sitewhere.rest.model.search.SearchResults;
@@ -77,7 +78,8 @@ public class BatchOperations extends RestControllerBase {
 	if (batch == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidBatchOperationToken, ErrorLevel.ERROR);
 	}
-	return BatchOperation.copy(batch);
+	BatchOperationMarshalHelper helper = new BatchOperationMarshalHelper();
+	return helper.convert(batch);
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -90,19 +92,22 @@ public class BatchOperations extends RestControllerBase {
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	BatchOperationSearchCriteria criteria = new BatchOperationSearchCriteria(page, pageSize);
 	criteria.setIncludeDeleted(includeDeleted);
+
 	ISearchResults<IBatchOperation> results = getBatchManagement().listBatchOperations(criteria);
-	List<IBatchOperation> opsConv = new ArrayList<IBatchOperation>();
+	BatchOperationMarshalHelper helper = new BatchOperationMarshalHelper();
+	List<IBatchOperation> converted = new ArrayList<IBatchOperation>();
 	for (IBatchOperation op : results.getResults()) {
-	    opsConv.add(BatchOperation.copy(op));
+	    converted.add(helper.convert(op));
 	}
-	return new SearchResults<IBatchOperation>(opsConv, results.getNumResults());
+	return new SearchResults<IBatchOperation>(converted, results.getNumResults());
     }
 
     @RequestMapping(value = "/{operationToken}/elements", method = RequestMethod.GET)
     @ApiOperation(value = "List batch operation elements")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IBatchElement> listBatchOperationElements(
-	    @ApiParam(value = "Unique token that identifies batch operation", required = true) @PathVariable String operationToken,
+	    @ApiParam(value = "Unique batch operation token", required = true) @PathVariable String operationToken,
+	    @ApiParam(value = "Include device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
@@ -110,7 +115,14 @@ public class BatchOperations extends RestControllerBase {
 	BatchElementSearchCriteria criteria = new BatchElementSearchCriteria(page, pageSize);
 	ISearchResults<IBatchElement> results = getBatchManagement().listBatchElements(batchOperation.getId(),
 		criteria);
-	return results;
+
+	BatchElementMarshalHelper helper = new BatchElementMarshalHelper();
+	helper.setIncludeDevice(includeDevice);
+	List<IBatchElement> converted = new ArrayList<IBatchElement>();
+	for (IBatchElement element : results.getResults()) {
+	    converted.add(helper.convert(element, getDeviceManagement()));
+	}
+	return new SearchResults<IBatchElement>(converted, results.getNumResults());
     }
 
     @RequestMapping(value = "/command", method = RequestMethod.POST)
@@ -119,7 +131,8 @@ public class BatchOperations extends RestControllerBase {
     public IBatchOperation createBatchCommandInvocation(@RequestBody BatchCommandInvocationRequest request,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IBatchOperation result = getBatchManagement().createBatchCommandInvocation(request);
-	return BatchOperation.copy(result);
+	BatchOperationMarshalHelper helper = new BatchOperationMarshalHelper();
+	return helper.convert(result);
     }
 
     /**
@@ -153,7 +166,8 @@ public class BatchOperations extends RestControllerBase {
 	    invoke.setDeviceTokens(deviceTokens);
 
 	    IBatchOperation result = getBatchManagement().createBatchCommandInvocation(invoke);
-	    return BatchOperation.copy(result);
+	    BatchOperationMarshalHelper helper = new BatchOperationMarshalHelper();
+	    return helper.convert(result);
 	}
     }
 
