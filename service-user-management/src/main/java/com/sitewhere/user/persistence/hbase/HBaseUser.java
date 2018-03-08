@@ -250,8 +250,7 @@ public class HBaseUser {
 	if (existing == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR);
 	}
-	String inPassword = UserManagementPersistence.encodePassword(password);
-	if (!existing.getHashedPassword().equals(inPassword)) {
+	if (!UserManagementPersistence.passwordMatches(password, existing.getHashedPassword())) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidPassword, ErrorLevel.ERROR);
 	}
 

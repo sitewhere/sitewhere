@@ -9,8 +9,8 @@ package com.sitewhere.user.persistence;
 
 import java.util.List;
 
-import org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder;
-import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.sitewhere.persistence.Persistence;
 import com.sitewhere.rest.model.common.MetadataProvider;
@@ -33,7 +33,7 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
 public class UserManagementPersistence extends Persistence {
 
     /** Password encoder */
-    private static MessageDigestPasswordEncoder passwordEncoder = new ShaPasswordEncoder();
+    private static PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     /**
      * Common logic for creating a user based on an incoming request.
@@ -44,8 +44,7 @@ public class UserManagementPersistence extends Persistence {
      * @throws SiteWhereException
      */
     public static User userCreateLogic(IUserCreateRequest source, boolean encodePassword) throws SiteWhereException {
-	String password = (encodePassword) ? passwordEncoder.encodePassword(source.getPassword(), null)
-		: source.getPassword();
+	String password = (encodePassword) ? passwordEncoder.encode(source.getPassword()) : source.getPassword();
 
 	User user = new User();
 
@@ -79,8 +78,7 @@ public class UserManagementPersistence extends Persistence {
 	    target.setUsername(source.getUsername());
 	}
 	if (source.getPassword() != null) {
-	    String password = (encodePassword) ? passwordEncoder.encodePassword(source.getPassword(), null)
-		    : source.getPassword();
+	    String password = (encodePassword) ? passwordEncoder.encode(source.getPassword()) : source.getPassword();
 	    target.setHashedPassword(password);
 	}
 	if (source.getFirstName() != null) {
@@ -149,8 +147,8 @@ public class UserManagementPersistence extends Persistence {
      * @param plaintext
      * @return
      */
-    public static String encodePassword(String plaintext) {
-	return passwordEncoder.encodePassword(plaintext, null);
+    public static boolean passwordMatches(String plaintext, String encoded) {
+	return passwordEncoder.matches(plaintext, encoded);
     }
 
     private static ITenantManagement getTenantManagement() {

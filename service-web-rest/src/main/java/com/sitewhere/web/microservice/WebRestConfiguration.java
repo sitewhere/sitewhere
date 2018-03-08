@@ -13,11 +13,11 @@ import org.apache.catalina.Context;
 import org.apache.catalina.webresources.StandardRoot;
 import org.apache.tomcat.websocket.server.WsSci;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -59,8 +59,8 @@ public class WebRestConfiguration {
     }
 
     @Bean
-    public EmbeddedServletContainerFactory servletContainer() {
-	TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory() {
+    public ServletWebServerFactory servletContainer() {
+	TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory() {
 	    protected void postProcessContext(Context context) {
 		final int cacheSize = 100 * 1024 * 1024;
 		StandardRoot standardRoot = new StandardRoot(context);
@@ -86,12 +86,12 @@ public class WebRestConfiguration {
     }
 
     @Bean
-    public ServletRegistrationBean sitewhereAuthInterface() {
+    public ServletRegistrationBean<DispatcherServlet> sitewhereAuthInterface() {
 	DispatcherServlet dispatcherServlet = new DispatcherServlet();
 	AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
 	applicationContext.register(RestAuthConfiguration.class);
 	dispatcherServlet.setApplicationContext(applicationContext);
-	ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet,
+	ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<>(dispatcherServlet,
 		RestAuthConfiguration.REST_AUTH_MATCHER);
 	registration.setName("sitewhereAuthInterface");
 	registration.setLoadOnStartup(1);
@@ -99,25 +99,25 @@ public class WebRestConfiguration {
     }
 
     @Bean
-    public ServletRegistrationBean sitewhereAuthSwagger() {
+    public ServletRegistrationBean<DispatcherServlet> sitewhereAuthSwagger() {
 	DispatcherServlet dispatcherServlet = new DispatcherServlet();
 	AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
 	applicationContext.register(RestAuthSwaggerConfiguration.class);
 	dispatcherServlet.setApplicationContext(applicationContext);
-	ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet,
-		RestAuthSwaggerConfiguration.SWAGGER_MATCHER);
+	ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<DispatcherServlet>(
+		dispatcherServlet, RestAuthSwaggerConfiguration.SWAGGER_MATCHER);
 	registration.setName("sitewhereAuthSwagger");
 	registration.setLoadOnStartup(3);
 	return registration;
     }
 
     @Bean
-    public ServletRegistrationBean sitewhereRestInterface() {
+    public ServletRegistrationBean<DispatcherServlet> sitewhereRestInterface() {
 	DispatcherServlet dispatcherServlet = new DispatcherServlet();
 	AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
 	applicationContext.register(RestApiConfiguration.class);
 	dispatcherServlet.setApplicationContext(applicationContext);
-	ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet,
+	ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<>(dispatcherServlet,
 		RestApiConfiguration.REST_API_MATCHER);
 	registration.setName("sitewhereRestInterface");
 	registration.setLoadOnStartup(1);
@@ -125,25 +125,25 @@ public class WebRestConfiguration {
     }
 
     @Bean
-    public ServletRegistrationBean sitewhereRestSwagger() {
+    public ServletRegistrationBean<DispatcherServlet> sitewhereRestSwagger() {
 	DispatcherServlet dispatcherServlet = new DispatcherServlet();
 	AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
 	applicationContext.register(RestApiSwaggerConfiguration.class);
 	dispatcherServlet.setApplicationContext(applicationContext);
-	ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet,
-		RestApiSwaggerConfiguration.SWAGGER_MATCHER);
+	ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<DispatcherServlet>(
+		dispatcherServlet, RestApiSwaggerConfiguration.SWAGGER_MATCHER);
 	registration.setName("sitewhereRestSwagger");
 	registration.setLoadOnStartup(3);
 	return registration;
     }
 
     @Bean
-    public ServletRegistrationBean sitewhereWebSocketAdminInterface() {
+    public ServletRegistrationBean<DispatcherServlet> sitewhereWebSocketAdminInterface() {
 	DispatcherServlet dispatcherServlet = new DispatcherServlet();
 	AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
 	applicationContext.register(WebSocketApiConfiguration.class);
 	dispatcherServlet.setApplicationContext(applicationContext);
-	ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet,
+	ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<>(dispatcherServlet,
 		WebSocketApiConfiguration.WEB_SOCKET_MATCHER);
 	registration.setName("sitewhereWebSocketInterface");
 	registration.setLoadOnStartup(1);
@@ -151,12 +151,12 @@ public class WebRestConfiguration {
     }
 
     @Bean
-    public ServletRegistrationBean sitewhereVueAdminInterface() {
+    public ServletRegistrationBean<DispatcherServlet> sitewhereVueAdminInterface() {
 	DispatcherServlet dispatcherServlet = new DispatcherServlet();
 	AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
 	applicationContext.register(VueConfiguration.class);
 	dispatcherServlet.setApplicationContext(applicationContext);
-	ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet,
+	ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<>(dispatcherServlet,
 		VueConfiguration.VUE_ADMIN_MATCHER);
 	registration.setName("vueAdminInterface");
 	registration.setLoadOnStartup(2);
@@ -164,54 +164,54 @@ public class WebRestConfiguration {
     }
 
     @Bean
-    public ServletRegistrationBean redirectServlet() {
+    public ServletRegistrationBean<RedirectServlet> redirectServlet() {
 	RedirectServlet redirect = new RedirectServlet();
-	ServletRegistrationBean registration = new ServletRegistrationBean(redirect, "/admin");
+	ServletRegistrationBean<RedirectServlet> registration = new ServletRegistrationBean<>(redirect, "/admin");
 	registration.setName("sitewhereRedirect");
 	registration.setLoadOnStartup(3);
 	return registration;
     }
 
     @Bean
-    public FilterRegistrationBean tracingFilter() {
+    public FilterRegistrationBean<TracingFilter> tracingFilter() {
 	TracingFilter tracingFilter = new TracingFilter(getMicroservice().getTracer());
-	FilterRegistrationBean registration = new FilterRegistrationBean(tracingFilter);
+	FilterRegistrationBean<TracingFilter> registration = new FilterRegistrationBean<>(tracingFilter);
 	registration.addUrlPatterns(RestApiConfiguration.REST_API_MATCHER);
 	registration.setOrder(Integer.MIN_VALUE);
 	return registration;
     }
 
     @Bean
-    public FilterRegistrationBean methodOverrideFilter() {
+    public FilterRegistrationBean<MethodOverrideFilter> methodOverrideFilter() {
 	MethodOverrideFilter filter = new MethodOverrideFilter();
-	FilterRegistrationBean registration = new FilterRegistrationBean();
+	FilterRegistrationBean<MethodOverrideFilter> registration = new FilterRegistrationBean<>();
 	registration.setFilter(filter);
 	registration.addUrlPatterns(RestApiConfiguration.REST_API_MATCHER);
 	return registration;
     }
 
     @Bean
-    public FilterRegistrationBean responseTimerFilter() {
+    public FilterRegistrationBean<ResponseTimerFilter> responseTimerFilter() {
 	ResponseTimerFilter filter = new ResponseTimerFilter();
-	FilterRegistrationBean registration = new FilterRegistrationBean();
+	FilterRegistrationBean<ResponseTimerFilter> registration = new FilterRegistrationBean<>();
 	registration.setFilter(filter);
 	registration.addUrlPatterns(RestApiConfiguration.REST_API_MATCHER);
 	return registration;
     }
 
     @Bean
-    public FilterRegistrationBean noCacheFilter() {
+    public FilterRegistrationBean<NoCacheFilter> noCacheFilter() {
 	NoCacheFilter filter = new NoCacheFilter();
-	FilterRegistrationBean registration = new FilterRegistrationBean();
+	FilterRegistrationBean<NoCacheFilter> registration = new FilterRegistrationBean<>();
 	registration.setFilter(filter);
 	registration.addUrlPatterns(RestApiConfiguration.REST_API_MATCHER);
 	return registration;
     }
 
     @Bean
-    public FilterRegistrationBean jsonpFilter() {
+    public FilterRegistrationBean<JsonpFilter> jsonpFilter() {
 	JsonpFilter filter = new JsonpFilter();
-	FilterRegistrationBean registration = new FilterRegistrationBean();
+	FilterRegistrationBean<JsonpFilter> registration = new FilterRegistrationBean<>();
 	registration.setFilter(filter);
 	registration.addUrlPatterns(RestApiConfiguration.REST_API_MATCHER);
 	return registration;

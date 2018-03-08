@@ -149,9 +149,8 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	    throw new SiteWhereSystemException(ErrorCode.InvalidPassword, ErrorLevel.ERROR);
 	}
 	Document userObj = assertUser(username);
-	String inPassword = UserManagementPersistence.encodePassword(password);
 	User match = MongoUser.fromDocument(userObj);
-	if (!match.getHashedPassword().equals(inPassword)) {
+	if (!UserManagementPersistence.passwordMatches(password, match.getHashedPassword())) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidPassword, ErrorLevel.ERROR);
 	}
 

@@ -165,7 +165,7 @@ public class HBaseDevice {
 
 		    // Filter by device type.
 		    if (criteria.getDeviceTypeToken() != null) {
-			if (!criteria.getDeviceTypeToken().equals(device.getDeviceTypeId())) {
+			if (!criteria.getDeviceTypeToken().equals(device.getToken())) {
 			    continue;
 			}
 		    }

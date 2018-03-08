@@ -2,7 +2,7 @@ description = 'SiteWhere Web/REST Microservice'
 
 apply plugin: 'org.springframework.boot'
 springBoot {
-    mainClass = 'com.sitewhere.web.WebRestApplication'
+    mainClassName = 'com.sitewhere.web.WebRestApplication'
 }
 
 apply plugin: 'com.moowork.node'
@@ -44,8 +44,9 @@ task buildUserInterface(type: NpmTask, dependsOn: npm_install) {
 	args = ['run', 'build']
 }
 
+// Before building the Spring Boot WAR, generate user interface.
 apply plugin: 'war'
-war {
+bootWar {
 	dependsOn buildUserInterface
 	with {
 		from( "${rootProject.projectDir}/sitewhere-ui/dist" )
@@ -53,7 +54,7 @@ war {
 }
 
 // Create a Dockerfile.
-task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, dependsOn: bootRepackage) {
+task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, dependsOn: bootWar) {
     destFile = project.file('build/docker/Dockerfile')
     from "${rootProject.ext['docker.base.image']}"
     maintainer "${rootProject.ext['docker.maintainer']}"

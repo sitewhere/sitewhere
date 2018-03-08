@@ -30,7 +30,6 @@ import com.sitewhere.spi.device.IDeviceManagement;
 public class AreaTypeMarshalHelper {
 
     /** Static logger instance */
-    @SuppressWarnings("unused")
     private static Log LOGGER = LogFactory.getLog(AreaTypeMarshalHelper.class);
 
     /** Device management */

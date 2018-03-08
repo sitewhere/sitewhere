@@ -13,9 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.sitewhere.web.rest.controllers.Assets;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
@@ -37,7 +39,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 @EnableWebMvc
 @ComponentScan(basePackageClasses = { Assets.class })
-public class RestApiConfiguration extends WebMvcConfigurerAdapter {
+public class RestApiConfiguration implements WebMvcConfigurer {
 
     /** URL prefix for matching REST API calls */
     public static final String REST_API_MATCHER = "/api/*";
@@ -98,6 +100,26 @@ public class RestApiConfiguration extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
 	registry.addInterceptor(new TracingHandlerInterceptor(getMicroservice().getTracer()));
+    }
+
+    /*
+     * @see org.springframework.web.servlet.config.annotation.WebMvcConfigurer#
+     * configurePathMatch(org.springframework.web.servlet.config.annotation.
+     * PathMatchConfigurer)
+     */
+    @Override
+    public void configurePathMatch(PathMatchConfigurer configurer) {
+	configurer.setUseSuffixPatternMatch(false);
+    }
+
+    /*
+     * @see org.springframework.web.servlet.config.annotation.WebMvcConfigurer#
+     * configureContentNegotiation(org.springframework.web.servlet.config.annotation
+     * .ContentNegotiationConfigurer)
+     */
+    @Override
+    public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+	configurer.favorPathExtension(false);
     }
 
     public IWebRestMicroservice getMicroservice() {

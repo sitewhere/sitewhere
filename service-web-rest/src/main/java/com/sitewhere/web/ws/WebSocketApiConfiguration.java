@@ -10,9 +10,9 @@ package com.sitewhere.web.ws;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.server.standard.TomcatRequestUpgradeStrategy;
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
@@ -26,7 +26,7 @@ import com.sitewhere.web.ws.components.TopologyBroadcaster;
 @Configuration
 @EnableWebSocketMessageBroker
 @ComponentScan(basePackageClasses = { TopologyBroadcaster.class })
-public class WebSocketApiConfiguration extends AbstractWebSocketMessageBrokerConfigurer {
+public class WebSocketApiConfiguration implements WebSocketMessageBrokerConfigurer {
 
     /** URL prefix for matching WebSocket calls */
     public static final String WEB_SOCKET_MATCHER = "/ws/*";

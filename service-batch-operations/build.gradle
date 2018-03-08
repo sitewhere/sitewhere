@@ -14,11 +14,11 @@ license {
 
 apply plugin: 'org.springframework.boot'
 springBoot {
-    mainClass = 'com.sitewhere.batch.BatchOperationsApplication'
+    mainClassName = 'com.sitewhere.batch.BatchOperationsApplication'
 }
 
 // Create a Dockerfile.
-task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, dependsOn: bootRepackage) {
+task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, dependsOn: bootJar) {
     destFile = project.file('build/docker/Dockerfile')
     from "${rootProject.ext['docker.base.image']}"
     maintainer "${rootProject.ext['docker.maintainer']}"

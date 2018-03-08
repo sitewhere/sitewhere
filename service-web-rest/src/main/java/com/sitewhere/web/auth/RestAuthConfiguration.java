@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.sitewhere.web.auth.controllers.JwtService;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
@@ -35,7 +35,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 @EnableWebMvc
 @ComponentScan(basePackageClasses = { JwtService.class })
-public class RestAuthConfiguration extends WebMvcConfigurerAdapter {
+public class RestAuthConfiguration implements WebMvcConfigurer {
 
     /** URL prefix for matching REST authentication calls */
     public static final String REST_AUTH_MATCHER = "/authapi/*";

@@ -32,7 +32,7 @@ public class DeviceTypeFilter extends DeviceEventFilter {
      */
     @Override
     public boolean isFiltered(IDeviceEventContext context, IDeviceEvent event) throws SiteWhereException {
-	if (getDeviceTypeToken().equals(context.getDeviceTypeId())) {
+	if (getDeviceTypeToken().equals(context.getDeviceTypeId().toString())) {
 	    return (getOperation() != FilterOperation.Include);
 	}
 	return (getOperation() == FilterOperation.Include);

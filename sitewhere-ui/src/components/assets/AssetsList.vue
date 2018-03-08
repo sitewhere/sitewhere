@@ -74,7 +74,7 @@ export default {
 
     // Called on open.
     onOpenAsset: function (asset) {
-      Utils.routeTo(this, '/assets/' + encodeURIComponent(asset.token))
+      Utils.routeTo(this, '/assets/' + asset.token)
     },
 
     // Called on add.
