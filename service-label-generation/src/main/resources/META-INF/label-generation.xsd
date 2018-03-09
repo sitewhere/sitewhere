@@ -21,6 +21,96 @@
 	<!-- Contains information about label generation -->
 	<xsd:complexType name="labelGenerationType">
 		<xsd:sequence>
+			<xsd:element name="label-generator-manager" type="labelGeneratorManagerType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+						Configures the label generator manager.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for label generator elements to allow substitutionGroups -->
+	<xsd:element name="abstract-label-generator" abstract="true"
+		type="abstractLabelGeneratorType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for label generator elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Common label generator element information -->
+	<xsd:complexType name="abstractLabelGeneratorType" />
+
+	<!-- Configures the label generator manager -->
+	<xsd:complexType name="labelGeneratorManagerType">
+		<xsd:sequence>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element ref="abstract-label-generator" />
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- QR code label generator -->
+	<xsd:element name="qr-code-label-generator" type="qrCodeLabelGeneratorType"
+		substitutionGroup="abstract-label-generator">
+		<xsd:annotation>
+			<xsd:documentation>
+				Generates QR-Code labels for SiteWhere entities.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="qrCodeLabelGeneratorType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractLabelGeneratorType">
+				<xsd:attribute name="id" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Unique id for generator.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="name" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Name for generator.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="width" type="xsd:int" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Width of QR code image.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="height" type="xsd:int" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Height of QR code image.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="backgroundColor" type="xsd:string"
+					use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Background color for QR code image.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="foregroundColor" type="xsd:string"
+					use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Foreground color for QR code image.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 </xsd:schema>

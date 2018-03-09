@@ -16,4 +16,74 @@ public interface ILabelGenerationParser {
 
     // Root element name.
     public static final String ROOT = "label-generation";
+
+    /**
+     * Expected child elements.
+     * 
+     * @author Derek
+     */
+    public static enum Elements {
+
+	/** Label generator manager */
+	LabelGeneratorManager("label-generator-manager");
+
+	/** Event code */
+	private String localName;
+
+	private Elements(String localName) {
+	    this.localName = localName;
+	}
+
+	public static Elements getByLocalName(String localName) {
+	    for (Elements value : Elements.values()) {
+		if (value.getLocalName().equals(localName)) {
+		    return value;
+		}
+	    }
+	    return null;
+	}
+
+	public String getLocalName() {
+	    return localName;
+	}
+
+	public void setLocalName(String localName) {
+	    this.localName = localName;
+	}
+    }
+
+    /**
+     * Elements for label generators.
+     * 
+     * @author Derek
+     */
+    public static enum LabelGeneratorElements {
+
+	/** QR code label generator */
+	QrCodeLabelGenerator("qr-code-label-generator");
+
+	/** Event code */
+	private String localName;
+
+	private LabelGeneratorElements(String localName) {
+	    this.localName = localName;
+	}
+
+	public static LabelGeneratorElements getByLocalName(String localName) {
+	    for (LabelGeneratorElements value : LabelGeneratorElements.values()) {
+		if (value.getLocalName().equals(localName)) {
+		    return value;
+		}
+	    }
+	    return null;
+	}
+
+	public String getLocalName() {
+	    return localName;
+	}
+
+	public void setLocalName(String localName) {
+	    this.localName = localName;
+	}
+    }
 }

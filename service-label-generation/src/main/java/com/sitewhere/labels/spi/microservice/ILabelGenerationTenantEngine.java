@@ -7,6 +7,8 @@
  */
 package com.sitewhere.labels.spi.microservice;
 
+import com.sitewhere.grpc.service.LabelGenerationGrpc;
+import com.sitewhere.spi.label.ILabelGeneratorManager;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
@@ -16,4 +18,19 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
  * @author Derek
  */
 public interface ILabelGenerationTenantEngine extends IMicroserviceTenantEngine {
+
+    /**
+     * Get label generator manager implementation.
+     * 
+     * @return
+     */
+    public ILabelGeneratorManager getLabelGeneratorManager();
+
+    /**
+     * Get implementation class that wraps label generation with GRPC conversions.
+     * 
+     * @return
+     */
+    public LabelGenerationGrpc.LabelGenerationImplBase getLabelGenerationImpl();
+
 }

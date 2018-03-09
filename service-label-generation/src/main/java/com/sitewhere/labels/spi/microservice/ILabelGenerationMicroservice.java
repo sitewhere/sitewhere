@@ -7,6 +7,8 @@
  */
 package com.sitewhere.labels.spi.microservice;
 
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
+import com.sitewhere.labels.spi.grpc.ILabelGenerationGrpcServer;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
@@ -15,4 +17,18 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
  * @author Derek
  */
 public interface ILabelGenerationMicroservice extends IMultitenantMicroservice<ILabelGenerationTenantEngine> {
+
+    /**
+     * Get label generation GRPC server.
+     * 
+     * @return
+     */
+    public ILabelGenerationGrpcServer getLabelGenerationGrpcServer();
+
+    /**
+     * Get device management API access via GRPC channel.
+     * 
+     * @return
+     */
+    public IDeviceManagementApiDemux getDeviceManagementApiDemux();
 }

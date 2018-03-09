@@ -19,7 +19,7 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.group.IDeviceGroup;
-import com.sitewhere.spi.device.symbology.IEntityUriProvider;
+import com.sitewhere.spi.label.IEntityUriProvider;
 
 /**
  * Default implementation of {@link IEntityUriProvider}.

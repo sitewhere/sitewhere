@@ -14,12 +14,14 @@ import com.sitewhere.grpc.client.asset.AssetManagementApiDemux;
 import com.sitewhere.grpc.client.batch.BatchManagementApiDemux;
 import com.sitewhere.grpc.client.device.DeviceManagementApiDemux;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiDemux;
+import com.sitewhere.grpc.client.label.LabelGenerationApiDemux;
 import com.sitewhere.grpc.client.schedule.ScheduleManagementApiDemux;
 import com.sitewhere.grpc.client.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IBatchManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiDemux;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IUserManagementApiDemux;
@@ -73,6 +75,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
     /** Schedule management API demux */
     private IScheduleManagementApiDemux scheduleManagementApiDemux;
+
+    /** Label generation API demux */
+    private ILabelGenerationApiDemux labelGenerationApiDemux;
 
     /** Microservice management coordinator */
     private IMicroserviceManagementCoordinator microserviceManagementCoordinator;
@@ -219,6 +224,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Schedule management.
 	this.scheduleManagementApiDemux = new ScheduleManagementApiDemux(this);
 
+	// Label generation.
+	this.labelGenerationApiDemux = new LabelGenerationApiDemux(this);
+
 	// Microservice management coordinator.
 	this.microserviceManagementCoordinator = new MicroserviceManagementCoordinator(this);
     }
@@ -255,6 +263,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
 	// Start schedule mangement API demux.
 	start.addStartStep(this, getScheduleManagementApiDemux(), true);
+
+	// Start label generation API demux.
+	start.addStartStep(this, getLabelGenerationApiDemux(), true);
 
 	// Start microservice management coordinator.
 	start.addStartStep(this, getMicroserviceManagementCoordinator(), true);
@@ -294,6 +305,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
 	// Stop schedule mangement API demux.
 	stop.addStopStep(this, getScheduleManagementApiDemux());
+
+	// Stop label generation API demux.
+	stop.addStopStep(this, getLabelGenerationApiDemux());
 
 	// Stop microservice management coordinator.
 	stop.addStopStep(this, getMicroserviceManagementCoordinator());
@@ -391,6 +405,19 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 
     public void setScheduleManagementApiDemux(IScheduleManagementApiDemux scheduleManagementApiDemux) {
 	this.scheduleManagementApiDemux = scheduleManagementApiDemux;
+    }
+
+    /*
+     * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
+     * getLabelGenerationApiDemux()
+     */
+    @Override
+    public ILabelGenerationApiDemux getLabelGenerationApiDemux() {
+	return labelGenerationApiDemux;
+    }
+
+    public void setLabelGenerationApiDemux(ILabelGenerationApiDemux labelGenerationApiDemux) {
+	this.labelGenerationApiDemux = labelGenerationApiDemux;
     }
 
     /*

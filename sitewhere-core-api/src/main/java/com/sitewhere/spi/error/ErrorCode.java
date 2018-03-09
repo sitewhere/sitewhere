@@ -306,6 +306,13 @@ public enum ErrorCode {
     /** Attempting to create a new asset that conflicts with an existing one */
     AssetTokenInUse(801, "Asset token is already in use."),
 
+    /********************
+     * LABEL GENERATION *
+     ********************/
+
+    /** Request for label generator that does not exist */
+    LabelGeneratorNotFound(850, "The requested label generator was not found."),
+
     /***********
      * GENERIC *
      ***********/

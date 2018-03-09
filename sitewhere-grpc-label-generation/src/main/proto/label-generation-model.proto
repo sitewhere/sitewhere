@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.model;
+
+option java_outer_classname = "LabelGenerationModel";
+
+import "sitewhere-common.proto";
+
+// Label.
+message GLabel {
+	bytes content = 1;
+}

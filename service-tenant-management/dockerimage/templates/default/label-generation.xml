@@ -13,6 +13,17 @@
 	<!-- Allow property placeholder substitution -->
 	<context:property-placeholder />
 
-	<lg:label-generation></lg:label-generation>
+	<lg:label-generation>
+
+		<!-- Create label generator manager -->
+		<lg:label-generator-manager>
+
+			<!-- Add QR code generator -->
+			<lg:qr-code-label-generator name="QR Code Generator"
+				id="qrcode" />
+
+		</lg:label-generator-manager>
+
+	</lg:label-generation>
 
 </beans>

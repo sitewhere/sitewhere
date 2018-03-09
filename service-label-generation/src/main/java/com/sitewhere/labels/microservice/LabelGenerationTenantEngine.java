@@ -10,12 +10,18 @@ package com.sitewhere.labels.microservice;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sitewhere.grpc.service.LabelGenerationGrpc;
+import com.sitewhere.labels.grpc.LabelGenerationImpl;
 import com.sitewhere.labels.spi.microservice.ILabelGenerationTenantEngine;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
+import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.label.ILabelGeneratorManager;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
+import com.sitewhere.spi.microservice.spring.LabelGenerationBeans;
+import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -30,6 +36,12 @@ public class LabelGenerationTenantEngine extends MicroserviceTenantEngine implem
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(LabelGenerationTenantEngine.class);
 
+    /** Label generation implementation */
+    private ILabelGeneratorManager labelGeneratorManager;
+
+    /** Responds to label generation GRPC requests */
+    private LabelGenerationGrpc.LabelGenerationImplBase labelGenerationImpl;
+
     public LabelGenerationTenantEngine(IMultitenantMicroservice<?> microservice, ITenant tenant) {
 	super(microservice, tenant);
     }
@@ -41,6 +53,23 @@ public class LabelGenerationTenantEngine extends MicroserviceTenantEngine implem
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create management interfaces.
+	labelGeneratorManager = (ILabelGeneratorManager) getModuleContext()
+		.getBean(LabelGenerationBeans.BEAN_LABEL_GENERATOR_MANAGER);
+
+	this.labelGenerationImpl = new LabelGenerationImpl(this);
+
+	// Create step that will initialize components.
+	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
+
+	// Initialize discoverable lifecycle components.
+	init.addStep(initializeDiscoverableBeans(getModuleContext()));
+
+	// Initialize label generator manager.
+	init.addInitializeStep(this, getLabelGeneratorManager(), true);
+
+	// Execute initialization steps.
+	init.execute(monitor);
     }
 
     /*
@@ -49,6 +78,17 @@ public class LabelGenerationTenantEngine extends MicroserviceTenantEngine implem
      */
     @Override
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create step that will start components.
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
+
+	// Start discoverable lifecycle components.
+	start.addStep(startDiscoverableBeans(getModuleContext()));
+
+	// Start label generator manager.
+	start.addStartStep(this, getLabelGeneratorManager(), true);
+
+	// Execute startup steps.
+	start.execute(monitor);
     }
 
     /*
@@ -66,6 +106,43 @@ public class LabelGenerationTenantEngine extends MicroserviceTenantEngine implem
      */
     @Override
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create step that will stop components.
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
+
+	// Stop label generator manager.
+	stop.addStopStep(this, getLabelGeneratorManager());
+
+	// Stop discoverable lifecycle components.
+	stop.addStep(stopDiscoverableBeans(getModuleContext()));
+
+	// Execute shutdown steps.
+	stop.execute(monitor);
+    }
+
+    /*
+     * @see com.sitewhere.labels.spi.microservice.ILabelGenerationTenantEngine#
+     * getLabelGeneratorManager()
+     */
+    @Override
+    public ILabelGeneratorManager getLabelGeneratorManager() {
+	return labelGeneratorManager;
+    }
+
+    public void setLabelGeneratorManager(ILabelGeneratorManager labelGeneratorManager) {
+	this.labelGeneratorManager = labelGeneratorManager;
+    }
+
+    /*
+     * @see com.sitewhere.labels.spi.microservice.ILabelGenerationTenantEngine#
+     * getLabelGenerationImpl()
+     */
+    @Override
+    public LabelGenerationGrpc.LabelGenerationImplBase getLabelGenerationImpl() {
+	return labelGenerationImpl;
+    }
+
+    public void setLabelGenerationImpl(LabelGenerationGrpc.LabelGenerationImplBase labelGenerationImpl) {
+	this.labelGenerationImpl = labelGenerationImpl;
     }
 
     /*

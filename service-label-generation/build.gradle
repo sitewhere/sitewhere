@@ -2,6 +2,10 @@ description = 'SiteWhere Label Generation Microservice'
 
 dependencies {
 	compile project(':sitewhere-microservice')
+	compile project(':sitewhere-grpc-label-generation')
+	
+	// Connectivity to other microservices.
+	compile project(':sitewhere-grpc-device-management')
 	
     compile group: 'com.github.kenglxn.qrgen', name: 'javase', version:'2.1.0'
 }

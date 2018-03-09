@@ -83,11 +83,11 @@ public enum LifecycleComponentType {
     /** Registration manager */
     RegistrationManager,
 
-    /** Symbol generator manager */
-    SymbolGeneratorManager,
+    /** Label generator manager */
+    LabelGeneratorManager,
 
-    /** Symbol generator */
-    SymbolGenerator,
+    /** Label generator */
+    LabelGenerator,
 
     /** Batch operation manager */
     BatchOperationManager,

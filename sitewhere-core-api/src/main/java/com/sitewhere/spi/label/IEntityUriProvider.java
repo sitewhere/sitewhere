@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.device.symbology;
+package com.sitewhere.spi.label;
 
 import java.net.URI;
 
@@ -20,7 +20,7 @@ import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 
 /**
- * Translates a SiteWhere entity into a unique URL that identifies it.
+ * Translates a SiteWhere entity into a unique URI that identifies it.
  * 
  * @author Derek
  */

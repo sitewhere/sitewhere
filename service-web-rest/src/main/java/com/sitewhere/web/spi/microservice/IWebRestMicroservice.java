@@ -11,6 +11,7 @@ import com.sitewhere.grpc.client.spi.client.IAssetManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IBatchManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiDemux;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IUserManagementApiDemux;
@@ -72,6 +73,13 @@ public interface IWebRestMicroservice extends IGlobalMicroservice {
      * @return
      */
     public IScheduleManagementApiDemux getScheduleManagementApiDemux();
+
+    /**
+     * Label generation API access via GRPC channel.
+     * 
+     * @return
+     */
+    public ILabelGenerationApiDemux getLabelGenerationApiDemux();
 
     /**
      * Get microservice management coordinator.

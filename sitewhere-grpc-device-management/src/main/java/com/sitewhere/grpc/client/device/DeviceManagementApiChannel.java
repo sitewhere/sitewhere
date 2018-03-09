@@ -59,10 +59,6 @@ import com.sitewhere.spi.tracing.ITracerProvider;
  * 
  * @author Derek
  */
-/**
- * @author Derek
- *
- */
 public class DeviceManagementApiChannel extends ApiChannel<DeviceManagementGrpcChannel>
 	implements IDeviceManagementApiChannel {
 
