@@ -4,6 +4,10 @@ dependencies {
 	compile project(':sitewhere-communication')
 	compile project(':sitewhere-microservice')
 	
+	// Connectivity to other microservices.
+	compile project(':sitewhere-grpc-device-management')
+	compile project(':sitewhere-grpc-event-management')
+	
     compile group: 'org.springframework', name: 'spring-web'
 	
 	// ActiveMQ dependencies.

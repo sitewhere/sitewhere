@@ -4,7 +4,6 @@ package com.sitewhere.grpc.model;
 
 option java_outer_classname = "DeviceModel";
 
-import "asset-model.proto";
 import "sitewhere-common.proto";
 import "google/protobuf/timestamp.proto";
 

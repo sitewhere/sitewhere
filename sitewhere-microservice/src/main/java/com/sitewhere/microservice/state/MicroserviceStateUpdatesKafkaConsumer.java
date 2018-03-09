@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.sitewhere.grpc.kafka.model.KafkaModel.GStateUpdate;
 import com.sitewhere.grpc.model.converter.KafkaModelConverter;
-import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
+import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;

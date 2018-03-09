@@ -26,6 +26,10 @@ include ':sitewhere-core'
 include ':sitewhere-core-api'
 include ':sitewhere-core-lifecycle'
 include ':sitewhere-grpc-client'
+include ':sitewhere-grpc-asset-management'
+include ':sitewhere-grpc-batch-management'
+include ':sitewhere-grpc-device-management'
+include ':sitewhere-grpc-event-management'
 include ':sitewhere-grpc-model'
 include ':sitewhere-hbase'
 include ':sitewhere-influxdb'
@@ -60,6 +64,10 @@ project(':sitewhere-core').projectDir = "$rootDir/sitewhere-core" as File
 project(':sitewhere-core-api').projectDir = "$rootDir/sitewhere-core-api" as File
 project(':sitewhere-core-lifecycle').projectDir = "$rootDir/sitewhere-core-lifecycle" as File
 project(':sitewhere-grpc-client').projectDir = "$rootDir/sitewhere-grpc-client" as File
+project(':sitewhere-grpc-asset-management').projectDir = "$rootDir/sitewhere-grpc-asset-management" as File
+project(':sitewhere-grpc-batch-management').projectDir = "$rootDir/sitewhere-grpc-batch-management" as File
+project(':sitewhere-grpc-device-management').projectDir = "$rootDir/sitewhere-grpc-device-management" as File
+project(':sitewhere-grpc-event-management').projectDir = "$rootDir/sitewhere-grpc-event-management" as File
 project(':sitewhere-grpc-model').projectDir = "$rootDir/sitewhere-grpc-model" as File
 project(':sitewhere-hbase').projectDir = "$rootDir/sitewhere-hbase" as File
 project(':sitewhere-influxdb').projectDir = "$rootDir/sitewhere-influxdb" as File

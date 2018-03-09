@@ -10,7 +10,7 @@ package com.sitewhere.batch.grpc;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.model.BatchModel.GBatchOperationElementSearchResults;
 import com.sitewhere.grpc.model.BatchModel.GBatchOperationSearchResults;
-import com.sitewhere.grpc.model.converter.BatchModelConverter;
+import com.sitewhere.grpc.model.batch.BatchModelConverter;
 import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.grpc.service.BatchManagementGrpc;
 import com.sitewhere.grpc.service.GCreateBatchCommandInvocationRequest;

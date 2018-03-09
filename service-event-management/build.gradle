@@ -5,6 +5,10 @@ dependencies {
 	compile project(':sitewhere-mongodb')
 	compile project(':sitewhere-influxdb')
 	compile project(':sitewhere-microservice')
+	compile project(':sitewhere-grpc-event-management')
+	
+	// Connectivity to other microservices.
+	compile project(':sitewhere-grpc-device-management')
 	
 	// HBase not currently supported.
 	compileOnly project(':sitewhere-hbase')

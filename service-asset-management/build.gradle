@@ -4,6 +4,7 @@ dependencies {
 	compile project(':sitewhere-core')
 	compile project(':sitewhere-mongodb')
 	compile project(':sitewhere-microservice')
+	compile project(':sitewhere-grpc-asset-management')
 	
 	// HBase not currently supported.
 	compileOnly project(':sitewhere-hbase')

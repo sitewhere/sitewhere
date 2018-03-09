@@ -19,7 +19,7 @@ import com.sitewhere.asset.initializer.GroovyAssetModelInitializer;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
-import com.sitewhere.microservice.hazelcast.server.CacheAwareAssetManagement;
+import com.sitewhere.microservice.hazelcast.cache.CacheAwareAssetManagement;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;

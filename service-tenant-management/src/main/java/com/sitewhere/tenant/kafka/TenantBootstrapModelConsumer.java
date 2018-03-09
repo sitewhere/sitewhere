@@ -23,7 +23,7 @@ import org.apache.zookeeper.data.Stat;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdate;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdateType;
 import com.sitewhere.grpc.model.converter.TenantModelConverter;
-import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
+import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;

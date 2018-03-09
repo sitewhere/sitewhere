@@ -22,7 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
 import com.sitewhere.grpc.model.converter.KafkaModelConverter;
-import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
+import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
 import com.sitewhere.inbound.processing.InboundPayloadProcessingLogic;
 import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;

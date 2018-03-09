@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.microservice.GlobalMicroservice;
-import com.sitewhere.microservice.hazelcast.server.CacheAwareTenantManagement;
+import com.sitewhere.microservice.hazelcast.cache.CacheAwareTenantManagement;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;

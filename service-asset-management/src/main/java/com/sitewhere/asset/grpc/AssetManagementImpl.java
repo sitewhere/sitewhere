@@ -10,7 +10,7 @@ package com.sitewhere.asset.grpc;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.model.AssetModel.GAssetSearchResults;
 import com.sitewhere.grpc.model.AssetModel.GAssetTypeSearchResults;
-import com.sitewhere.grpc.model.converter.AssetModelConverter;
+import com.sitewhere.grpc.model.asset.AssetModelConverter;
 import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
 import com.sitewhere.grpc.service.GCreateAssetRequest;

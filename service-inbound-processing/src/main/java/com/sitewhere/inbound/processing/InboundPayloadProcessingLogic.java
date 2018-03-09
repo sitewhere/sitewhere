@@ -13,7 +13,7 @@ import org.apache.commons.logging.LogFactory;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
 import com.sitewhere.grpc.model.DeviceEventModel.GAnyDeviceEventCreateRequest;
 import com.sitewhere.grpc.model.converter.EventModelConverter;
-import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
+import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.spi.SiteWhereException;

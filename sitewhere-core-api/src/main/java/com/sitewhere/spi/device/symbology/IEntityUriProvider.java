@@ -11,9 +11,13 @@ import java.net.URI;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
+import com.sitewhere.spi.area.IAreaType;
+import com.sitewhere.spi.asset.IAsset;
+import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
+import com.sitewhere.spi.device.group.IDeviceGroup;
 
 /**
  * Translates a SiteWhere entity into a unique URL that identifies it.
@@ -21,6 +25,15 @@ import com.sitewhere.spi.device.IDeviceType;
  * @author Derek
  */
 public interface IEntityUriProvider {
+
+    /**
+     * Get unique identifier for an area type.
+     * 
+     * @param areaType
+     * @return
+     * @throws SiteWhereException
+     */
+    public URI getAreaTypeIdentifier(IAreaType areaType) throws SiteWhereException;
 
     /**
      * Get unique identifier for an area.
@@ -50,6 +63,15 @@ public interface IEntityUriProvider {
     public URI getDeviceIdentifier(IDevice device) throws SiteWhereException;
 
     /**
+     * Get unique identifier for a device group.
+     * 
+     * @param group
+     * @return
+     * @throws SiteWhereException
+     */
+    public URI getDeviceGroupIdentifier(IDeviceGroup group) throws SiteWhereException;
+
+    /**
      * Get unique identifier for a device assignment.
      * 
      * @param assignment
@@ -57,4 +79,22 @@ public interface IEntityUriProvider {
      * @throws SiteWhereException
      */
     public URI getDeviceAssignmentIdentifier(IDeviceAssignment assignment) throws SiteWhereException;
+
+    /**
+     * Get unique identifier for an asset type.
+     * 
+     * @param assetType
+     * @return
+     * @throws SiteWhereException
+     */
+    public URI getAssetTypeIdentifier(IAssetType assetType) throws SiteWhereException;
+
+    /**
+     * Get unique identifier for an asset.
+     * 
+     * @param asset
+     * @return
+     * @throws SiteWhereException
+     */
+    public URI getAssetIdentifier(IAsset asset) throws SiteWhereException;
 }

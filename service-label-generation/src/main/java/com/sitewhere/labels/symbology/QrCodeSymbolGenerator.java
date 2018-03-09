@@ -15,9 +15,13 @@ import org.apache.commons.logging.LogFactory;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
+import com.sitewhere.spi.area.IAreaType;
+import com.sitewhere.spi.asset.IAsset;
+import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
+import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.symbology.IEntityUriProvider;
 import com.sitewhere.spi.device.symbology.ISymbolGenerator;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
@@ -56,6 +60,19 @@ public class QrCodeSymbolGenerator extends TenantEngineLifecycleComponent implem
 
     public QrCodeSymbolGenerator() {
 	super(LifecycleComponentType.SymbolGenerator);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.symbology.ISymbolGenerator#getAreaTypeSymbol(com.
+     * sitewhere.spi.area.IAreaType,
+     * com.sitewhere.spi.device.symbology.IEntityUriProvider)
+     */
+    @Override
+    public byte[] getAreaTypeSymbol(IAreaType areaType, IEntityUriProvider provider) throws SiteWhereException {
+	URI uri = provider.getAreaTypeIdentifier(areaType);
+	return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())
+		.withColor(getForegroundColor(), getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
     }
 
     /*
@@ -98,6 +115,19 @@ public class QrCodeSymbolGenerator extends TenantEngineLifecycleComponent implem
     }
 
     /*
+     * @see
+     * com.sitewhere.spi.device.symbology.ISymbolGenerator#getDeviceGroupSymbol(com.
+     * sitewhere.spi.device.group.IDeviceGroup,
+     * com.sitewhere.spi.device.symbology.IEntityUriProvider)
+     */
+    @Override
+    public byte[] getDeviceGroupSymbol(IDeviceGroup group, IEntityUriProvider provider) throws SiteWhereException {
+	URI uri = provider.getDeviceGroupIdentifier(group);
+	return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())
+		.withColor(getForegroundColor(), getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.symbology.ISymbolGenerator#
@@ -108,6 +138,31 @@ public class QrCodeSymbolGenerator extends TenantEngineLifecycleComponent implem
     public byte[] getDeviceAssigmentSymbol(IDeviceAssignment assignment, IEntityUriProvider provider)
 	    throws SiteWhereException {
 	URI uri = provider.getDeviceAssignmentIdentifier(assignment);
+	return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())
+		.withColor(getForegroundColor(), getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.symbology.ISymbolGenerator#getAssetTypeSymbol(com.
+     * sitewhere.spi.asset.IAssetType,
+     * com.sitewhere.spi.device.symbology.IEntityUriProvider)
+     */
+    @Override
+    public byte[] getAssetTypeSymbol(IAssetType assetType, IEntityUriProvider provider) throws SiteWhereException {
+	URI uri = provider.getAssetTypeIdentifier(assetType);
+	return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())
+		.withColor(getForegroundColor(), getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.symbology.ISymbolGenerator#getAssetSymbol(com.
+     * sitewhere.spi.asset.IAsset,
+     * com.sitewhere.spi.device.symbology.IEntityUriProvider)
+     */
+    @Override
+    public byte[] getAssetSymbol(IAsset asset, IEntityUriProvider provider) throws SiteWhereException {
+	URI uri = provider.getAssetIdentifier(asset);
 	return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())
 		.withColor(getForegroundColor(), getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
     }

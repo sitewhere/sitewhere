@@ -23,7 +23,7 @@ import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.service.DeviceManagementGrpc;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
-import com.sitewhere.microservice.hazelcast.server.CacheAwareDeviceManagement;
+import com.sitewhere.microservice.hazelcast.cache.CacheAwareDeviceManagement;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;

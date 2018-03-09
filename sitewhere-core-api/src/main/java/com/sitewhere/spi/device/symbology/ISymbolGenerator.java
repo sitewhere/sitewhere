@@ -9,9 +9,13 @@ package com.sitewhere.spi.device.symbology;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
+import com.sitewhere.spi.area.IAreaType;
+import com.sitewhere.spi.asset.IAsset;
+import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
+import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
@@ -36,6 +40,16 @@ public interface ISymbolGenerator extends ITenantEngineLifecycleComponent {
      * @throws SiteWhereException
      */
     public String getName() throws SiteWhereException;
+
+    /**
+     * Get symbol for an area type.
+     * 
+     * @param areaType
+     * @param provider
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] getAreaTypeSymbol(IAreaType areaType, IEntityUriProvider provider) throws SiteWhereException;
 
     /**
      * Get symbol for an area.
@@ -68,6 +82,16 @@ public interface ISymbolGenerator extends ITenantEngineLifecycleComponent {
     public byte[] getDeviceSymbol(IDevice device, IEntityUriProvider provider) throws SiteWhereException;
 
     /**
+     * Get symbol for a device group.
+     * 
+     * @param group
+     * @param provider
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] getDeviceGroupSymbol(IDeviceGroup group, IEntityUriProvider provider) throws SiteWhereException;
+
+    /**
      * Get symbol for a device assignment.
      * 
      * @param assignment
@@ -77,4 +101,24 @@ public interface ISymbolGenerator extends ITenantEngineLifecycleComponent {
      */
     public byte[] getDeviceAssigmentSymbol(IDeviceAssignment assignment, IEntityUriProvider provider)
 	    throws SiteWhereException;
+
+    /**
+     * Get symbol for an asset type.
+     * 
+     * @param assetType
+     * @param provider
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] getAssetTypeSymbol(IAssetType assetType, IEntityUriProvider provider) throws SiteWhereException;
+
+    /**
+     * Get symbol for an asset.
+     * 
+     * @param asset
+     * @param provider
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] getAssetSymbol(IAsset asset, IEntityUriProvider provider) throws SiteWhereException;
 }

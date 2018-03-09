@@ -2,6 +2,9 @@ description = 'SiteWhere Device Registration Microservice'
 
 dependencies {
 	compile project(':sitewhere-microservice')
+	
+	// Connectivity to other microservices.
+	compile project(':sitewhere-grpc-device-management')
 }
 
 apply plugin: 'org.springframework.boot'

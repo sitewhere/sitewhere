@@ -12,9 +12,13 @@ import java.net.URISyntaxException;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
+import com.sitewhere.spi.area.IAreaType;
+import com.sitewhere.spi.asset.IAsset;
+import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
+import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.symbology.IEntityUriProvider;
 
 /**
@@ -38,6 +42,16 @@ public class DefaultEntityUriProvider implements IEntityUriProvider {
 	    INSTANCE = new DefaultEntityUriProvider();
 	}
 	return INSTANCE;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.symbology.IEntityUriProvider#getAreaTypeIdentifier(
+     * com.sitewhere.spi.area.IAreaType)
+     */
+    @Override
+    public URI getAreaTypeIdentifier(IAreaType areaType) throws SiteWhereException {
+	return createUri(SITEWHERE_PROTOCOL + "areatype/" + areaType.getToken());
     }
 
     /*
@@ -73,6 +87,15 @@ public class DefaultEntityUriProvider implements IEntityUriProvider {
     }
 
     /*
+     * @see com.sitewhere.spi.device.symbology.IEntityUriProvider#
+     * getDeviceGroupIdentifier(com.sitewhere.spi.device.group.IDeviceGroup)
+     */
+    @Override
+    public URI getDeviceGroupIdentifier(IDeviceGroup group) throws SiteWhereException {
+	return createUri(SITEWHERE_PROTOCOL + "devicegroup/" + group.getToken());
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.symbology.IEntityUriProvider#
@@ -81,6 +104,26 @@ public class DefaultEntityUriProvider implements IEntityUriProvider {
     @Override
     public URI getDeviceAssignmentIdentifier(IDeviceAssignment assignment) throws SiteWhereException {
 	return createUri(SITEWHERE_PROTOCOL + "assignment/" + assignment.getToken());
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.symbology.IEntityUriProvider#getAssetTypeIdentifier(
+     * com.sitewhere.spi.asset.IAssetType)
+     */
+    @Override
+    public URI getAssetTypeIdentifier(IAssetType assetType) throws SiteWhereException {
+	return createUri(SITEWHERE_PROTOCOL + "assettype/" + assetType.getToken());
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.symbology.IEntityUriProvider#getAssetIdentifier(com.
+     * sitewhere.spi.asset.IAsset)
+     */
+    @Override
+    public URI getAssetIdentifier(IAsset asset) throws SiteWhereException {
+	return createUri(SITEWHERE_PROTOCOL + "asset/" + asset.getToken());
     }
 
     /**

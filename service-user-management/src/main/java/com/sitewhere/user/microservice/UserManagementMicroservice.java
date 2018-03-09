@@ -13,7 +13,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.microservice.GlobalMicroservice;
-import com.sitewhere.microservice.hazelcast.server.CacheAwareUserManagement;
+import com.sitewhere.microservice.hazelcast.cache.CacheAwareUserManagement;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;

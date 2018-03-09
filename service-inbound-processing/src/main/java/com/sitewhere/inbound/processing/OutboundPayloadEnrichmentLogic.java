@@ -14,7 +14,7 @@ import com.sitewhere.grpc.kafka.model.KafkaModel.GEnrichedEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GPersistedEventPayload;
 import com.sitewhere.grpc.model.converter.EventModelConverter;
 import com.sitewhere.grpc.model.converter.KafkaModelConverter;
-import com.sitewhere.grpc.model.marshaling.KafkaModelMarshaler;
+import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.rest.model.device.event.DeviceEventContext;
