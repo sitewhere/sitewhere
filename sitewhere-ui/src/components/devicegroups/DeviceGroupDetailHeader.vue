@@ -1,6 +1,6 @@
 <template>
   <navigation-header-panel v-if="group" :imageUrl="group.imageUrl"
-    :qrCodeUrl="qrCodeUrl" height="170px">
+    :qrCodeUrl="qrCodeUrl" height="200px">
     <span slot="content">
       <header-field label="Token">
         <clipboard-copy-field :field="group.token"
@@ -28,7 +28,6 @@ import Utils from '../common/Utils'
 import NavigationHeaderPanel from '../common/NavigationHeaderPanel'
 import ClipboardCopyField from '../common/ClipboardCopyField'
 import HeaderField from '../common/HeaderField'
-import {createCoreApiUrl} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -51,10 +50,7 @@ export default {
     },
     // Compute QR code URL.
     qrCodeUrl: function () {
-      var tenant = this.$store.getters.selectedTenant
-      return createCoreApiUrl(this.$store) +
-        'groups/' + this.group.token +
-        '/symbol?tenantAuthToken=' + tenant.authenticationToken
+      return 'devicegroups/' + this.group.token + '/label/qrcode'
     }
   },
 

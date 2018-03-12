@@ -49,6 +49,8 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.command.IDeviceCommandNamespace;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.label.ILabel;
+import com.sitewhere.spi.label.ILabelGeneration;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestControllerBase;
@@ -164,6 +166,32 @@ public class DeviceTypes extends RestControllerBase {
 	IDeviceType result = getDeviceManagement().updateDeviceType(deviceType.getId(), request);
 	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getDeviceManagement());
 	return helper.convert(result);
+    }
+
+    /**
+     * Get label for device type based on a specific generator.
+     * 
+     * @param token
+     * @param generatorId
+     * @param servletRequest
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{token}/label/{generatorId}", method = RequestMethod.GET)
+    @ApiOperation(value = "Get label for device type")
+    public ResponseEntity<byte[]> getDeviceTypeLabel(
+	    @ApiParam(value = "Token", required = true) @PathVariable String token,
+	    @ApiParam(value = "Generator id", required = true) @PathVariable String generatorId,
+	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
+	IDeviceType deviceType = assertDeviceTypeByToken(token);
+	ILabel label = getLabelGeneration().getDeviceTypeLabel(generatorId, deviceType.getId());
+	if (label == null) {
+	    return ResponseEntity.notFound().build();
+	}
+	final HttpHeaders headers = new HttpHeaders();
+	headers.setContentType(MediaType.IMAGE_PNG);
+	return new ResponseEntity<byte[]>(label.getContent(), headers, HttpStatus.OK);
     }
 
     /**
@@ -433,5 +461,9 @@ public class DeviceTypes extends RestControllerBase {
 
     private IDeviceManagement getDeviceManagement() {
 	return getMicroservice().getDeviceManagementApiDemux().getApiChannel();
+    }
+
+    private ILabelGeneration getLabelGeneration() {
+	return getMicroservice().getLabelGenerationApiDemux().getApiChannel();
     }
 }

@@ -37,7 +37,6 @@ import NavigationHeaderPanel from '../common/NavigationHeaderPanel'
 import ClipboardCopyField from '../common/ClipboardCopyField'
 import HeaderField from '../common/HeaderField'
 import LinkedHeaderField from '../common/LinkedHeaderField'
-import {createCoreApiUrl} from '../../http/sitewhere-api-wrapper'
 
 export default {
 
@@ -56,10 +55,7 @@ export default {
   computed: {
     // Compute QR code URL.
     qrCodeUrl: function () {
-      var tenant = this.$store.getters.selectedTenant
-      return createCoreApiUrl(this.$store) +
-        'devices/' + this.device.token +
-        '/symbol?tenantAuthToken=' + tenant.authenticationToken
+      return 'devices/' + this.device.token + '/label/qrcode'
     }
   },
 

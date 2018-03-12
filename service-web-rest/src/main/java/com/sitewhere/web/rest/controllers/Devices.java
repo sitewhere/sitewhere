@@ -19,6 +19,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -55,6 +58,8 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.label.ILabel;
+import com.sitewhere.spi.label.ILabelGeneration;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.user.SiteWhereRoles;
@@ -139,6 +144,32 @@ public class Devices extends RestControllerBase {
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAssignment(true);
 	return helper.convert(result, getAssetManagement());
+    }
+
+    /**
+     * Get label for device based on a specific generator.
+     * 
+     * @param deviceToken
+     * @param generatorId
+     * @param servletRequest
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{deviceToken}/label/{generatorId}", method = RequestMethod.GET)
+    @ApiOperation(value = "Get label for device")
+    public ResponseEntity<byte[]> getDeviceLabel(
+	    @ApiParam(value = "Device token", required = true) @PathVariable String deviceToken,
+	    @ApiParam(value = "Generator id", required = true) @PathVariable String generatorId,
+	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
+	IDevice existing = assertDeviceByToken(deviceToken);
+	ILabel label = getLabelGeneration().getDeviceLabel(generatorId, existing.getId());
+	if (label == null) {
+	    return ResponseEntity.notFound().build();
+	}
+	final HttpHeaders headers = new HttpHeaders();
+	headers.setContentType(MediaType.IMAGE_PNG);
+	return new ResponseEntity<byte[]>(label.getContent(), headers, HttpStatus.OK);
     }
 
     /**
@@ -472,5 +503,9 @@ public class Devices extends RestControllerBase {
 
     private IAssetManagement getAssetManagement() {
 	return getMicroservice().getAssetManagementApiDemux().getApiChannel();
+    }
+
+    private ILabelGeneration getLabelGeneration() {
+	return getMicroservice().getLabelGenerationApiDemux().getApiChannel();
     }
 }

@@ -6,6 +6,7 @@ dependencies {
 	
 	// Connectivity to other microservices.
 	compile project(':sitewhere-grpc-device-management')
+	compile project(':sitewhere-grpc-asset-management')
 	
     compile group: 'com.github.kenglxn.qrgen', name: 'javase', version:'2.1.0'
 }

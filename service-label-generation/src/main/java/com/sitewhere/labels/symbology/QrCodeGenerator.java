@@ -123,12 +123,12 @@ public class QrCodeGenerator extends TenantEngineLifecycleComponent implements I
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.label.ILabelGenerator#getDeviceAssigmentLabel(com.sitewhere
-     * .spi.device.IDeviceAssignment, com.sitewhere.spi.label.IEntityUriProvider)
+     * @see com.sitewhere.spi.label.ILabelGenerator#getDeviceAssignmentLabel(com.
+     * sitewhere.spi.device.IDeviceAssignment,
+     * com.sitewhere.spi.label.IEntityUriProvider)
      */
     @Override
-    public byte[] getDeviceAssigmentLabel(IDeviceAssignment assignment, IEntityUriProvider provider)
+    public byte[] getDeviceAssignmentLabel(IDeviceAssignment assignment, IEntityUriProvider provider)
 	    throws SiteWhereException {
 	URI uri = provider.getDeviceAssignmentIdentifier(assignment);
 	return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())

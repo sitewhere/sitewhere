@@ -7,6 +7,7 @@
  */
 package com.sitewhere.labels.spi.microservice;
 
+import com.sitewhere.grpc.client.spi.client.IAssetManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
 import com.sitewhere.labels.spi.grpc.ILabelGenerationGrpcServer;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
@@ -31,4 +32,11 @@ public interface ILabelGenerationMicroservice extends IMultitenantMicroservice<I
      * @return
      */
     public IDeviceManagementApiDemux getDeviceManagementApiDemux();
+
+    /**
+     * Get asset management API access via GRPC channel.
+     * 
+     * @return
+     */
+    public IAssetManagementApiDemux getAssetManagementApiDemux();
 }

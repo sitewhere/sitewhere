@@ -12,9 +12,14 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,6 +45,8 @@ import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.label.ILabel;
+import com.sitewhere.spi.label.ILabelGeneration;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestControllerBase;
@@ -105,11 +112,37 @@ public class DeviceGroups extends RestControllerBase {
     @ApiOperation(value = "Update an existing device group")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceGroup updateDeviceGroup(
-	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
+	    @ApiParam(value = "Device group token", required = true) @PathVariable String groupToken,
 	    @RequestBody DeviceGroupCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
 	IDeviceGroup group = assureDeviceGroup(groupToken);
 	return getDeviceManagement().updateDeviceGroup(group.getId(), request);
+    }
+
+    /**
+     * Get label for device group based on a specific generator.
+     * 
+     * @param groupToken
+     * @param generatorId
+     * @param servletRequest
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{groupToken}/label/{generatorId}", method = RequestMethod.GET)
+    @ApiOperation(value = "Get label for area")
+    public ResponseEntity<byte[]> getDeviceGroupLabel(
+	    @ApiParam(value = "Device group token", required = true) @PathVariable String groupToken,
+	    @ApiParam(value = "Generator id", required = true) @PathVariable String generatorId,
+	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
+	IDeviceGroup group = assureDeviceGroup(groupToken);
+	ILabel label = getLabelGeneration().getDeviceGroupLabel(generatorId, group.getId());
+	if (label == null) {
+	    return ResponseEntity.notFound().build();
+	}
+	final HttpHeaders headers = new HttpHeaders();
+	headers.setContentType(MediaType.IMAGE_PNG);
+	return new ResponseEntity<byte[]>(label.getContent(), headers, HttpStatus.OK);
     }
 
     /**
@@ -320,5 +353,9 @@ public class DeviceGroups extends RestControllerBase {
 
     private IAssetManagement getAssetManagement() {
 	return getMicroservice().getAssetManagementApiDemux().getApiChannel();
+    }
+
+    private ILabelGeneration getLabelGeneration() {
+	return getMicroservice().getLabelGenerationApiDemux().getApiChannel();
     }
 }

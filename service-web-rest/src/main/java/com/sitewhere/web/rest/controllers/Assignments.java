@@ -25,6 +25,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -79,6 +82,8 @@ import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.label.ILabel;
+import com.sitewhere.spi.label.ILabelGeneration;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
@@ -191,6 +196,32 @@ public class Assignments extends RestControllerBase {
 	helper.setIncludeDevice(true);
 	helper.setIncludeArea(true);
 	return helper.convert(result, getAssetManagement());
+    }
+
+    /**
+     * Get label for assignment based on a specific generator.
+     * 
+     * @param token
+     * @param generatorId
+     * @param servletRequest
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{token}/label/{generatorId}", method = RequestMethod.GET)
+    @ApiOperation(value = "Get label for area")
+    public ResponseEntity<byte[]> getAssignmentLabel(
+	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+	    @ApiParam(value = "Generator id", required = true) @PathVariable String generatorId,
+	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
+	IDeviceAssignment existing = assertDeviceAssignment(token);
+	ILabel label = getLabelGeneration().getDeviceAssignmentLabel(generatorId, existing.getId());
+	if (label == null) {
+	    return ResponseEntity.notFound().build();
+	}
+	final HttpHeaders headers = new HttpHeaders();
+	headers.setContentType(MediaType.IMAGE_PNG);
+	return new ResponseEntity<byte[]>(label.getContent(), headers, HttpStatus.OK);
     }
 
     /**
@@ -977,5 +1008,9 @@ public class Assignments extends RestControllerBase {
 
     private IScheduleManagement getScheduleManagement() {
 	return null;
+    }
+
+    private ILabelGeneration getLabelGeneration() {
+	return getMicroservice().getLabelGenerationApiDemux().getApiChannel();
     }
 }

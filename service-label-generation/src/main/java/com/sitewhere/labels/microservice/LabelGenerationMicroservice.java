@@ -10,8 +10,10 @@ package com.sitewhere.labels.microservice;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sitewhere.grpc.client.asset.AssetManagementApiDemux;
 import com.sitewhere.grpc.client.device.DeviceManagementApiDemux;
 import com.sitewhere.grpc.client.spi.ApiNotAvailableException;
+import com.sitewhere.grpc.client.spi.client.IAssetManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
 import com.sitewhere.labels.configuration.LabelGenerationModelProvider;
 import com.sitewhere.labels.grpc.LabelGenerationGrpcServer;
@@ -43,6 +45,9 @@ public class LabelGenerationMicroservice extends MultitenantMicroservice<ILabelG
 
     /** Device management API channel */
     private IDeviceManagementApiDemux deviceManagementApiDemux;
+
+    /** Asset management API channel */
+    private IAssetManagementApiDemux assetManagementApiDemux;
 
     /** Provides server for label generation GRPC requests */
     private ILabelGenerationGrpcServer labelGenerationGrpcServer;
@@ -111,6 +116,8 @@ public class LabelGenerationMicroservice extends MultitenantMicroservice<ILabelG
     protected void waitForApisAvailable() throws ApiNotAvailableException {
 	getDeviceManagementApiDemux().waitForApiChannel().waitForApiAvailable();
 	getLogger().info("Device management API detected as available.");
+	getAssetManagementApiDemux().waitForApiChannel().waitForApiAvailable();
+	getLogger().info("Asset management API detected as available.");
     }
 
     /*
@@ -135,6 +142,9 @@ public class LabelGenerationMicroservice extends MultitenantMicroservice<ILabelG
 	// Initialize device management API demux.
 	init.addInitializeStep(this, getDeviceManagementApiDemux(), true);
 
+	// Initialize asset management API demux.
+	init.addInitializeStep(this, getAssetManagementApiDemux(), true);
+
 	// Execute initialization steps.
 	init.execute(monitor);
     }
@@ -154,6 +164,9 @@ public class LabelGenerationMicroservice extends MultitenantMicroservice<ILabelG
 
 	// Start device mangement API demux.
 	start.addStartStep(this, getDeviceManagementApiDemux(), true);
+
+	// Start asset mangement API demux.
+	start.addStartStep(this, getAssetManagementApiDemux(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -175,6 +188,9 @@ public class LabelGenerationMicroservice extends MultitenantMicroservice<ILabelG
 	// Stop device mangement API demux.
 	stop.addStopStep(this, getDeviceManagementApiDemux());
 
+	// Stop asset mangement API demux.
+	stop.addStopStep(this, getAssetManagementApiDemux());
+
 	// Execute shutdown steps.
 	stop.execute(monitor);
     }
@@ -185,6 +201,9 @@ public class LabelGenerationMicroservice extends MultitenantMicroservice<ILabelG
     private void createGrpcComponents() {
 	// Device management.
 	this.deviceManagementApiDemux = new DeviceManagementApiDemux(this);
+
+	// Asset management.
+	this.assetManagementApiDemux = new AssetManagementApiDemux(this);
     }
 
     /*
@@ -211,6 +230,19 @@ public class LabelGenerationMicroservice extends MultitenantMicroservice<ILabelG
 
     public void setDeviceManagementApiDemux(IDeviceManagementApiDemux deviceManagementApiDemux) {
 	this.deviceManagementApiDemux = deviceManagementApiDemux;
+    }
+
+    /*
+     * @see com.sitewhere.labels.spi.microservice.ILabelGenerationMicroservice#
+     * getAssetManagementApiDemux()
+     */
+    @Override
+    public IAssetManagementApiDemux getAssetManagementApiDemux() {
+	return assetManagementApiDemux;
+    }
+
+    public void setAssetManagementApiDemux(IAssetManagementApiDemux assetManagementApiDemux) {
+	this.assetManagementApiDemux = assetManagementApiDemux;
     }
 
     /*

@@ -14,9 +14,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -61,6 +68,8 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.label.ILabel;
+import com.sitewhere.spi.label.ILabelGeneration;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestControllerBase;
@@ -135,6 +144,32 @@ public class Areas extends RestControllerBase {
 	    @RequestBody AreaCreateRequest request) throws SiteWhereException {
 	IArea existing = assertArea(areaToken);
 	return getDeviceManagement().updateArea(existing.getId(), request);
+    }
+
+    /**
+     * Get label for area based on a specific generator.
+     * 
+     * @param areaToken
+     * @param generatorId
+     * @param servletRequest
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{areaToken}/label/{generatorId}", method = RequestMethod.GET)
+    @ApiOperation(value = "Get label for area")
+    public ResponseEntity<byte[]> getAreaLabel(
+	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
+	    @ApiParam(value = "Generator id", required = true) @PathVariable String generatorId,
+	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
+	IArea existing = assertArea(areaToken);
+	ILabel label = getLabelGeneration().getAreaLabel(generatorId, existing.getId());
+	if (label == null) {
+	    return ResponseEntity.notFound().build();
+	}
+	final HttpHeaders headers = new HttpHeaders();
+	headers.setContentType(MediaType.IMAGE_PNG);
+	return new ResponseEntity<byte[]>(label.getContent(), headers, HttpStatus.OK);
     }
 
     /**
@@ -655,5 +690,9 @@ public class Areas extends RestControllerBase {
 
     private IAssetManagement getAssetManagement() {
 	return getMicroservice().getAssetManagementApiDemux().getApiChannel();
+    }
+
+    private ILabelGeneration getLabelGeneration() {
+	return getMicroservice().getLabelGenerationApiDemux().getApiChannel();
     }
 }

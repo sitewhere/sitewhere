@@ -99,7 +99,7 @@ public interface ILabelGenerator extends ITenantEngineLifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public byte[] getDeviceAssigmentLabel(IDeviceAssignment assignment, IEntityUriProvider provider)
+    public byte[] getDeviceAssignmentLabel(IDeviceAssignment assignment, IEntityUriProvider provider)
 	    throws SiteWhereException;
 
     /**

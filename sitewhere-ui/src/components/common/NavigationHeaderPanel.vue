@@ -8,7 +8,9 @@
       <span class="header-content">
         <slot name="content"></slot>
       </span>
-      <span class="header-qrcode" :style="qrCodeStyle"></span>
+      <authenticated-image class="header-qrcode" :style="qrCodeStyle"
+        :url="qrCodeUrl">
+      </authenticated-image>
       <span class="options-menu">
         <slot name="options"></slot>
       </span>
@@ -17,6 +19,8 @@
 </template>
 
 <script>
+import AuthenticatedImage from '../common/AuthenticatedImage'
+
 export default {
 
   data: () => ({
@@ -45,6 +49,8 @@ export default {
     // Compute style for icon.
     iconStyle: function () {
       return {
+        'height': '180px',
+        'width': '180px',
         'font-size': '80px',
         'padding': '35px',
         'border': '1px solid #eee'
@@ -64,6 +70,7 @@ export default {
   },
 
   components: {
+    AuthenticatedImage
   },
 
   methods: {
@@ -91,6 +98,7 @@ export default {
   right: 7px;
   bottom: 7px;
   width: 180px;
+  height: 180px;
 }
 
 .header-content {

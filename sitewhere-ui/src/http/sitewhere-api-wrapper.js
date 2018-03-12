@@ -236,6 +236,15 @@ function loaderWrapper (store, apiCall) {
 }
 
 /**
+ * Perform and authenticated get for an image.
+ */
+export function _imageAuthGet (store, imageUrl) {
+  let axios = createCoreApiCall(store)
+  let api = axios.get(imageUrl, { responseType: 'blob' })
+  return loaderWrapper(store, api)
+}
+
+/**
  * Get JWT based on credentials.
  */
 export function _getJwt (store) {
