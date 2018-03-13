@@ -4,7 +4,7 @@
 
 ---
 
-## NOTE: SiteWhere 2.0 EA1 is an early access release of the new architecture and is considered an "alpha" quality preview. This release is not intended for production use! Some of the core functionality will change significantly before the 2.0 GA release
+## NOTE: SiteWhere 2.0 EA3 is an early access release of the new architecture and is considered an "alpha" quality preview. This release is not intended for production use! Some of the core functionality will change significantly before the 2.0 GA release
 
 SiteWhere is an industrial-strength open source IoT Application Enablement Platform 
 that facilitates the ingestion, storage, processing, and integration of device data 
@@ -146,7 +146,7 @@ Since new events can be allowed to stack up in Kafka, the tenant engine can be s
 and restarted, then resume where it left off with no data loss.
 
 ## Release Documentation
-More documentation for this "early access" release can be found [here](http://sitewhere.io/docs/en/2.0.EA1/index.html).
+More documentation for this "early access" release can be found [here](http://sitewhere.io/docs/en/2.0.EA3/index.html).
 
 * * * *
 
