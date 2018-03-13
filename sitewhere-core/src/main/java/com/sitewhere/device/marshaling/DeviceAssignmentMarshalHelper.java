@@ -39,7 +39,7 @@ public class DeviceAssignmentMarshalHelper {
     private boolean includeDevice = false;
 
     /** Indicates whether to include area information */
-    private boolean includeArea = false;
+    private boolean includeArea = true;
 
     /** Indicates whether to include device type */
     private boolean includeDeviceType = true;

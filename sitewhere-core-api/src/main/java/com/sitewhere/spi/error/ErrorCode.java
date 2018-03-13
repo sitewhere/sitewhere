@@ -14,6 +14,13 @@ package com.sitewhere.spi.error;
  */
 public enum ErrorCode {
 
+    /***********
+     * GENERIC *
+     ***********/
+
+    /** Used to indicate a custom application error */
+    Error(1, "Generic application error."),
+
     /**********
      * COMMON *
      **********/
@@ -29,217 +36,218 @@ public enum ErrorCode {
      *********/
 
     /** Bad username */
-    InvalidUsername(100, "Username does not exist."),
+    InvalidUsername(1000, "Username does not exist."),
 
     /** Bad password */
-    InvalidPassword(101, "Password did not match."),
+    InvalidPassword(1010, "Password did not match."),
 
     /** Username already used */
-    DuplicateUser(102, "Username already in use."),
+    DuplicateUser(1020, "Username already in use."),
 
     /** One or more required user fields are missing */
-    InvalidUserInformation(103, "Missing required fields for user."),
+    InvalidUserInformation(1030, "Missing required fields for user."),
 
     /** Invalid authority reference */
-    InvalidAuthority(120, "Authority does not exist"),
+    InvalidAuthority(1040, "Authority does not exist"),
 
     /** Authority name already used */
-    DuplicateAuthority(121, "Authority name already in use."),
+    DuplicateAuthority(1050, "Authority name already in use."),
 
     /** No user logged in for action that requires authorization */
-    NotLoggedIn(130, "You must provide credentials to perform this action."),
+    NotLoggedIn(1060, "You must provide credentials to perform this action."),
 
     /** Invalid tenant authentication token */
-    InvalidTenantAuthToken(141, "Tenant not found for authentication token."),
+    InvalidTenantAuthToken(1070, "Tenant not found for authentication token."),
 
     /** Tenant authentication token not passed */
-    MissingTenantAuthToken(142, "Tenant authentication token required for request."),
+    MissingTenantAuthToken(1080, "Tenant authentication token required for request."),
 
     /** Tenant authentication token passed but tenant not authorized for user */
-    NotAuthorizedForTenant(143, "Not authorized to view information for tenant."),
+    NotAuthorizedForTenant(1090, "Not authorized to view information for tenant."),
 
     /** Invalid tenant engine reference */
-    InvalidTenantEngineId(144, "Tenant engine does not exist."),
+    InvalidTenantEngineId(1100, "Tenant engine does not exist."),
 
     /** Invalid tenant reference */
-    InvalidTenantId(150, "Tenant does not exist."),
+    InvalidTenantId(1110, "Tenant does not exist."),
 
     /** Invalid tenant reference */
-    InvalidTenantToken(151, "Tenant does not exist."),
+    InvalidTenantToken(1120, "Tenant does not exist."),
 
     /***********
      * TENANTS *
      ***********/
 
     /** Indicates 'start' command issued to tenant that was already started */
-    TenantAlreadyStarted(300, "Tenant was already started."),
+    TenantAlreadyStarted(3000, "Tenant was already started."),
 
     /** Indicates 'stop' command issued to tenant that was already stopped */
-    TenantAlreadyStopped(301, "Tenant was already stopped."),
+    TenantAlreadyStopped(3010, "Tenant was already stopped."),
 
     /** Indicates a tenant id was passed with the wrong format */
-    TenantIdFormat(305, "Tenant id should be an alphanumeric value with no spaces."),
+    TenantIdFormat(3020, "Tenant id should be an alphanumeric value with no spaces."),
 
     /***************************
      * INVALID OR DUPLICATE ID *
      ***************************/
 
     /** Malformed device hardware id */
-    MalformedHardwareId(480,
+    MalformedHardwareId(4010,
 	    "Hardware id must consist of alphanumeric values with dashes, underscores, and no spaces."),
 
     /** Generic duplicate id error */
-    DuplicateId(499, "The given id is already in use."),
+    DuplicateId(4020, "The given id is already in use."),
 
     /** Attempting to create a device with a duplicate token */
-    DuplicateDeviceToken(500, "Device token already in use."),
+    DuplicateDeviceToken(4030, "Device token already in use."),
 
     /** Invalid device token */
-    InvalidDeviceToken(501, "Device token not found."),
+    InvalidDeviceToken(4040, "Device token not found."),
 
     /** Invalid device id */
-    InvalidDeviceId(502, "Device id not found."),
+    InvalidDeviceId(4050, "Device id not found."),
 
     /** Invalid device type token */
-    InvalidDeviceTypeToken(503, "Device type not found."),
+    InvalidDeviceTypeToken(4060, "Device type not found."),
 
     /** Invalid device type token */
-    DuplicateDeviceTypeToken(504, "Device type token already in use."),
+    DuplicateDeviceTypeToken(4070, "Device type token already in use."),
 
     /** Invalid device command token */
-    InvalidDeviceCommandToken(505, "Device command not found."),
+    InvalidDeviceCommandToken(4080, "Device command not found."),
 
     /** Invalid device command id */
-    InvalidDeviceCommandId(506, "Device command not found."),
+    InvalidDeviceCommandId(4090, "Device command not found."),
 
     /** Invalid device status code */
-    InvalidDeviceStatusCode(507, "Device status not found."),
+    InvalidDeviceStatusCode(4100, "Device status not found."),
 
     /** Duplicate area type token */
-    DuplicateAreaTypeToken(508, "Area type token already in use."),
+    DuplicateAreaTypeToken(4110, "Area type token already in use."),
 
     /** Duplicate area token */
-    DuplicateAreaToken(509, "Area token already in use."),
+    DuplicateAreaToken(4120, "Area token already in use."),
 
     /** Invalid area token */
-    InvalidAreaToken(510, "Area not found."),
+    InvalidAreaToken(4130, "Area not found."),
 
     /** Invalid area type token */
-    InvalidAreaTypeToken(511, "Area type not found."),
+    InvalidAreaTypeToken(4140, "Area type not found."),
 
     /** Duplicate device assignment token */
-    DuplicateDeviceAssignment(519, "Device assignment token already in use."),
+    DuplicateDeviceAssignment(4150, "Device assignment token already in use."),
 
     /** Invalid site assignment id */
-    InvalidDeviceAssignmentId(520, "Device assignment not found."),
+    InvalidDeviceAssignmentId(4160, "Device assignment not found."),
 
     /** Invalid device assignment token */
-    InvalidDeviceAssignmentToken(521, "Device assignment token not found."),
+    InvalidDeviceAssignmentToken(4170, "Device assignment token not found."),
 
     /** Invalid zone token */
-    InvalidZoneToken(522, "Zone not found."),
+    InvalidZoneToken(4180, "Zone not found."),
 
     /** Invalid device event id */
-    InvalidDeviceEventId(523, "Device event not found for id."),
+    InvalidDeviceEventId(4190, "Device event not found for id."),
 
     /** Invalid search provider id */
-    InvalidSearchProviderId(528, "Search provider not found."),
+    InvalidSearchProviderId(4200, "Search provider not found."),
 
     /** Attempting to create a device stream with a stream id already in use */
-    DuplicateStreamId(529, "Device assignment has an existing stream with the given id."),
+    DuplicateStreamId(4210, "Device assignment has an existing stream with the given id."),
 
     /** Attempting to access a device stream that does not exist */
-    InvalidStreamId(530, "Device assignment does not have an existing stream with the given id."),
+    InvalidStreamId(4220, "Device assignment does not have an existing stream with the given id."),
 
     /** Attempting to create a stream id that contains invalid characters */
-    InvalidCharsInStreamId(531, "Stream id contains invalid characters."),
+    InvalidCharsInStreamId(4230, "Stream id contains invalid characters."),
 
     /** Invalid asset type token */
-    InvalidAssetTypeToken(534, "Asset type token not found."),
+    InvalidAssetTypeToken(4240, "Asset type token not found."),
 
     /** Invalid asset type id */
-    InvalidAssetTypeId(535, "Asset type not found."),
+    InvalidAssetTypeId(4250, "Asset type not found."),
 
     /** Invalid asset token */
-    InvalidAssetToken(537, "Asset token not found."),
+    InvalidAssetToken(4260, "Asset token not found."),
 
     /** Invalid asset id */
-    InvalidAssetId(538, "Asset not found."),
+    InvalidAssetId(4270, "Asset not found."),
 
     /** Attempting to create a tenant with an id already in use */
-    DuplicateTenantId(540, "Tenant id already in use."),
+    DuplicateTenantId(4280, "Tenant id already in use."),
 
     /** Attempting to create a tenant group with an id already in use */
-    DuplicateTenantGroupId(543, "Tenant group id already in use."),
+    DuplicateTenantGroupId(4290, "Tenant group id already in use."),
 
     /** Invalid schedule token */
-    InvalidScheduleToken(545, "Schedule not found."),
+    InvalidScheduleToken(4300, "Schedule not found."),
 
     /** Invalid scheduled job token */
-    InvalidScheduledJobToken(546, "Scheduled job not found."),
+    InvalidScheduledJobToken(4310, "Scheduled job not found."),
 
     /** Invalid schedule token */
-    DuplicateScheduleToken(547, "Schedule token already in use."),
+    DuplicateScheduleToken(4320, "Schedule token already in use."),
 
     /** Invalid scheduled job token */
-    DuplicateScheduledJobToken(548, "Scheduled job token already in use."),
+    DuplicateScheduledJobToken(4330, "Scheduled job token already in use."),
 
     /** Invalid tenant template id */
-    InvalidTenantTemplateId(549, "Tenant template not found"),
+    InvalidTenantTemplateId(4340, "Tenant template not found"),
 
     /** Duplicate zone token */
-    DuplicateZoneToken(555, "Zone token already in use."),
+    DuplicateZoneToken(4350, "Zone token already in use."),
 
     /** Duplicate batch operation token */
-    DuplicateBatchOperationToken(560, "Batch operation token already in use."),
+    DuplicateBatchOperationToken(4360, "Batch operation token already in use."),
 
     /** Duplicate batch element */
-    DuplicateBatchElement(565, "Batch element already in use."),
+    DuplicateBatchElement(4370, "Batch element already in use."),
 
     /** Duplicate device group token */
-    DuplicateDeviceGroupToken(567, "Device group token already in use."),
+    DuplicateDeviceGroupToken(4380, "Device group token already in use."),
 
     /** Invalid device group token */
-    InvalidDeviceGroupToken(568, "Device group not found."),
+    InvalidDeviceGroupToken(4390, "Device group not found."),
 
     /** Invalid device group id */
-    InvalidDeviceGroupId(568, "Device group not found."),
+    InvalidDeviceGroupId(4400, "Device group not found."),
 
     /** Invalid batch operation id */
-    InvalidBatchOperationId(569, "Batch operation not found."),
+    InvalidBatchOperationId(4410, "Batch operation not found."),
 
     /** Invalid batch operation token */
-    InvalidBatchOperationToken(570, "Batch operation not found."),
+    InvalidBatchOperationToken(4420, "Batch operation not found."),
 
     /** Invalid batch element id */
-    InvalidBatchElementId(572, "Batch element not found."),
+    InvalidBatchElementId(4430, "Batch element not found."),
 
     /******************
      * DEVICE COMMAND *
      ******************/
 
-    /**
-     * Attempting to create a new command that duplicates an existing command
-     */
-    DeviceCommandExists(575, "Device command with same namespace and name already exists for specification."),
+    /** Attempting to create a new command that duplicates an existing command */
+    DeviceCommandExists(5000, "Device command with same namespace and name already exists for specification."),
 
     /*****************
      * DEVICE STATUS *
      *****************/
 
-    /**
-     * Attempting to create a new status that duplicates an existing status
-     */
-    DeviceStatusExists(580, "Device status with same code already exists for specification."),
+    /** Attempting to create a new status that duplicates an existing status */
+    DeviceStatusExists(6000, "Device status with same code already exists for specification."),
 
     /*********************
      * DEVICE ASSIGNMENT *
      *********************/
 
-    /**
-     * Attempting to delete an active assignment.
-     */
-    CanNotDeleteActiveAssignment(590, "Can not delete an active device assignment."),
+    /** Attempting to delete an active assignment. */
+    CanNotDeleteActiveAssignment(7000, "Can not delete an active device assignment."),
+
+    /**************
+     * DEVICE TYPE*
+     **************/
+
+    DeviceTypeInUseByDevices(7500,
+	    "Device type can not be deleted. One or more devices are currently using this device type."),
 
     /**********
      * DEVICE *
@@ -248,87 +256,101 @@ public enum ErrorCode {
     /**
      * Attempting to create a new assignment for a device with an active assignment
      */
-    DeviceAlreadyAssigned(600, "Device already has an active assignment."),
+    DeviceAlreadyAssigned(8000, "Device already has an active assignment."),
 
     /** Operation assumes device is assigned but no assignment exists */
-    DeviceNotAssigned(601, "Device is not currently assigned."),
+    DeviceNotAssigned(8010, "Device is not currently assigned."),
 
     /** Attempting to change the hardware id of an existing device */
-    DeviceHardwareIdCanNotBeChanged(602, "Device hardware id can not be updated."),
+    DeviceHardwareIdCanNotBeChanged(8020, "Device hardware id can not be updated."),
 
     /** Attempting to delete a device that is currently assigned */
-    DeviceCanNotBeDeletedIfAssigned(603, "Device can not be deleted if it is currently assigned."),
+    DeviceCanNotBeDeletedIfAssigned(8030, "Device can not be deleted if it is currently assigned."),
 
     /** Attempting to change site for device that is currently assigned */
-    DeviceSiteCanNotBeChangedIfAssigned(604, "Device site can not be changed if it is currently assigned."),
+    DeviceSiteCanNotBeChangedIfAssigned(8040, "Device site can not be changed if it is currently assigned."),
 
     /**
      * Attempting to create a device element mapping for a path that is already
      * mapped
      */
-    DeviceElementMappingExists(610, "Device has an existing mapping for the given device element schema path."),
+    DeviceElementMappingExists(8050, "Device has an existing mapping for the given device element schema path."),
 
     /** Attempting to refrence a device element mapping that does not exist */
-    DeviceElementMappingDoesNotExist(611, "Device element mapping does not exist."),
+    DeviceElementMappingDoesNotExist(8060, "Device element mapping does not exist."),
 
     /** Path references a non-existent slot or a device unit */
-    InvalidDeviceSlotPath(612, "Path does not correspond to a valid device slot."),
+    InvalidDeviceSlotPath(8070, "Path does not correspond to a valid device slot."),
 
     /**
      * Attempting to create a device element mapping for a device that is already
      * mapped
      */
-    DeviceParentMappingExists(613, "Target device is already in use by an existing mapping."),
+    DeviceParentMappingExists(8080, "Target device is already in use by an existing mapping."),
+
+    /** Unable to delete. Device referenced by assignments */
+    DeviceDeleteHasAssignments(8090, "Unable to delete device. One or more device assignments reference this device."),
 
     /***********
      * COMMAND *
      ***********/
 
     /** Operation assumes device is assigned but no assignment exists */
-    RequiredCommandParameterMissing(650, "Invocation does not specify a parameter marked as required."),
+    RequiredCommandParameterMissing(9000, "Invocation does not specify a parameter marked as required."),
 
     /*** Required Parameter does not have a value assigned to it */
-    RequiredCommandParameterValueMissing(651, "Invocation does not assign a value to a required parameter."),
+    RequiredCommandParameterValueMissing(9010, "Invocation does not assign a value to a required parameter."),
+
     /********
      * ZONE *
      ********/
 
     /** Zone delete failure message */
-    ZoneDeleteFailed(700, "Unable to delete zoned."),
+    ZoneDeleteFailed(10000, "Unable to delete zoned."),
+
+    /***************
+     * ASSET TYPES *
+     ***************/
+
+    /** Attempting to create a new asset type that conflicts with an existing one */
+    AssetTypeTokenInUse(11000, "Asset type token is already in use."),
+
+    /** Attempting to create a new asset that conflicts with an existing one */
+    AssetTokenInUse(11010, "Asset token is already in use."),
+
+    /** Attempting to delete asset type used by assets */
+    AssetTypeNoDeleteHasAssets(11020, "Unable to delete asset type. One or more assets reference this asset type."),
 
     /**********
      * ASSETS *
      **********/
 
-    /** Attempting to create a new asset type that conflicts with an existing one */
-    AssetTypeTokenInUse(800, "Asset type token is already in use."),
-
-    /** Attempting to create a new asset that conflicts with an existing one */
-    AssetTokenInUse(801, "Asset token is already in use."),
+    /** Attempting to delete asset used by device assignments */
+    AssetNoDeleteHasAssignments(11500, "Unable to delete asset. One or more device assignments reference this asset."),
 
     /********************
      * LABEL GENERATION *
      ********************/
 
     /** Request for label generator that does not exist */
-    LabelGeneratorNotFound(850, "The requested label generator was not found."),
+    LabelGeneratorNotFound(12000, "The requested label generator was not found."),
 
     /***********
      * GENERIC *
      ***********/
 
     /** Generic delete failure message */
-    GenericDeleteFailed(1000, "Delete unsuccessful."),
+    GenericDeleteFailed(13000, "Delete unsuccessful."),
 
     /** Some required data was missing */
-    IncompleteData(1010, "Not all required data was provided."),
+    IncompleteData(13010, "Not all required data was provided."),
 
     /*********
      * OTHER *
      *********/
 
     /** Error with no explanation */
-    Unknown(9999, "Unknown error.");
+    Unknown(99999, "Unknown error.");
 
     /** Numeric code */
     private long code;

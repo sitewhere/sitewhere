@@ -26,7 +26,7 @@ public class DeviceSearchCriteria extends DateRangeSearchCriteria implements IDe
     private String deviceTypeToken;
 
     /** Indicates if assigned devices should be excluded */
-    private boolean excludeAssigned = true;
+    private boolean excludeAssigned = false;
 
     public DeviceSearchCriteria(int pageNumber, int pageSize, Date startDate, Date endDate) {
 	super(pageNumber, pageSize, startDate, endDate);

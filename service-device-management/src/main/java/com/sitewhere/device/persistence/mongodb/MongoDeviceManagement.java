@@ -263,6 +263,11 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     @Override
     public IDeviceType deleteDeviceType(UUID id, boolean force) throws SiteWhereException {
 	Document existing = assertDeviceType(id);
+
+	// Verify that device type can be deleted.
+	IDeviceType deviceType = MongoDeviceType.fromDocument(existing);
+	DeviceManagementPersistence.deviceTypeDeleteLogic(deviceType, this);
+
 	MongoCollection<Document> types = getMongoClient().getDeviceTypesCollection();
 	if (force) {
 	    MongoPersistence.delete(types, existing);
@@ -764,9 +769,8 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     public IDevice deleteDevice(UUID id, boolean force) throws SiteWhereException {
 	Document existing = assertDevice(id);
 	Device device = MongoDevice.fromDocument(existing);
-	if (device.getDeviceAssignmentId() != null) {
-	    throw new SiteWhereSystemException(ErrorCode.DeviceCanNotBeDeletedIfAssigned, ErrorLevel.ERROR);
-	}
+	DeviceManagementPersistence.deviceDeleteLogic(device, this);
+
 	if (force) {
 	    MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
 	    MongoPersistence.delete(devices, existing);

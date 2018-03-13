@@ -18,6 +18,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import com.sitewhere.asset.persistence.AssetManagementPersistence;
+import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
@@ -31,6 +32,7 @@ import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.asset.request.IAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IAssetTypeCreateRequest;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
@@ -169,6 +171,10 @@ public class MongoAssetManagement extends TenantEngineLifecycleComponent impleme
     @Override
     public IAssetType deleteAssetType(UUID assetTypeId, boolean force) throws SiteWhereException {
 	Document existing = assertAssetTypeDocument(assetTypeId);
+
+	AssetType assetType = MongoAssetType.fromDocument(existing);
+	AssetManagementPersistence.assetTypeDeleteLogic(assetType, this);
+
 	MongoCollection<Document> types = getMongoClient().getAssetTypesCollection();
 	if (force) {
 	    MongoPersistence.delete(types, existing);
@@ -277,6 +283,12 @@ public class MongoAssetManagement extends TenantEngineLifecycleComponent impleme
     @Override
     public IAsset deleteAsset(UUID assetId, boolean force) throws SiteWhereException {
 	Document existing = assertAssetDocument(assetId);
+
+	Asset asset = MongoAsset.fromDocument(existing);
+	IDeviceManagement deviceManagement = ((IAssetManagementMicroservice) getTenantEngine().getMicroservice())
+		.getDeviceManagementApiDemux().getApiChannel();
+	AssetManagementPersistence.assetDeleteLogic(asset, this, deviceManagement);
+
 	MongoCollection<Document> assets = getMongoClient().getAssetsCollection();
 	if (force) {
 	    MongoPersistence.delete(assets, existing);

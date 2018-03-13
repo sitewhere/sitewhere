@@ -15,6 +15,9 @@ import com.sitewhere.asset.grpc.AssetManagementGrpcServer;
 import com.sitewhere.asset.spi.grpc.IAssetManagementGrpcServer;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
+import com.sitewhere.grpc.client.device.DeviceManagementApiDemux;
+import com.sitewhere.grpc.client.spi.ApiNotAvailableException;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
@@ -40,6 +43,9 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
 
     /** Provides server for asset management GRPC requests */
     private IAssetManagementGrpcServer assetManagementGrpcServer;
+
+    /** Device management API demux */
+    private IDeviceManagementApiDemux deviceManagementApiDemux;
 
     /*
      * (non-Javadoc)
@@ -91,20 +97,48 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
     /*
      * (non-Javadoc)
      * 
+     * @see com.sitewhere.microservice.Microservice#afterMicroserviceStarted()
+     */
+    @Override
+    public void afterMicroserviceStarted() {
+	try {
+	    waitForApisAvailable();
+	    getLogger().info("All required APIs detected as available.");
+	} catch (ApiNotAvailableException e) {
+	    getLogger().error("Required APIs not available.", e);
+	}
+    }
+
+    /**
+     * Wait for required APIs to become available.
+     * 
+     * @throws ApiNotAvailableException
+     */
+    protected void waitForApisAvailable() throws ApiNotAvailableException {
+	getDeviceManagementApiDemux().waitForApiChannel().waitForApiAvailable();
+	getLogger().info("Device management API detected as available.");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
      * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
      * ILifecycleProgressMonitor)
      */
     @Override
     public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Create asset management GRPC server.
-	this.assetManagementGrpcServer = new AssetManagementGrpcServer(this);
+	// Create GRPC components.
+	createGrpcComponents();
 
 	// Create step that will start components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
 	// Initialize device management GRPC server.
 	init.addInitializeStep(this, getAssetManagementGrpcServer(), true);
+
+	// Initialize device management API demux.
+	init.addInitializeStep(this, getDeviceManagementApiDemux(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -125,6 +159,9 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
 	// Start asset management GRPC server.
 	start.addStartStep(this, getAssetManagementGrpcServer(), true);
 
+	// Start device mangement API demux.
+	start.addStartStep(this, getDeviceManagementApiDemux(), true);
+
 	// Execute startup steps.
 	start.execute(monitor);
     }
@@ -144,8 +181,35 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
 	// Stop asset management GRPC server.
 	stop.addStopStep(this, getAssetManagementGrpcServer());
 
+	// Stop device mangement API demux.
+	stop.addStopStep(this, getDeviceManagementApiDemux());
+
 	// Execute shutdown steps.
 	stop.execute(monitor);
+    }
+
+    /**
+     * Create GRPC components required by the microservice.
+     */
+    private void createGrpcComponents() {
+	// Create asset management GRPC server.
+	this.assetManagementGrpcServer = new AssetManagementGrpcServer(this);
+
+	// Device management.
+	this.deviceManagementApiDemux = new DeviceManagementApiDemux(this);
+    }
+
+    /*
+     * @see com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice#
+     * getDeviceManagementApiDemux()
+     */
+    @Override
+    public IDeviceManagementApiDemux getDeviceManagementApiDemux() {
+	return deviceManagementApiDemux;
+    }
+
+    public void setDeviceManagementApiDemux(IDeviceManagementApiDemux deviceManagementApiDemux) {
+	this.deviceManagementApiDemux = deviceManagementApiDemux;
     }
 
     /*

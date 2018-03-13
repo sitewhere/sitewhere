@@ -119,7 +119,11 @@ public class GrpcUtils {
 		String delimited = sre.getStatus().getDescription();
 		String[] parts = delimited.split(":");
 		ErrorCode code = ErrorCode.fromCode(Long.parseLong(parts[0]));
-		return new SiteWhereSystemException(code, ErrorLevel.ERROR);
+		if (ErrorCode.Error == code) {
+		    return new SiteWhereException(parts[1]);
+		} else {
+		    return new SiteWhereSystemException(code, ErrorLevel.ERROR);
+		}
 	    }
 	    default: {
 	    }
@@ -145,6 +149,11 @@ public class GrpcUtils {
 	    SiteWhereSystemException sysex = (SiteWhereSystemException) t;
 	    Status status = Status.fromCode(Code.FAILED_PRECONDITION)
 		    .withDescription(sysex.getCode().getCode() + ":" + sysex.getCode().getMessage());
+	    thrown = status.asException();
+	} else if (t instanceof SiteWhereException) {
+	    SiteWhereException sw = (SiteWhereException) t;
+	    Status status = Status.fromCode(Code.FAILED_PRECONDITION)
+		    .withDescription(ErrorCode.Error.getCode() + ":" + sw.getMessage());
 	    thrown = status.asException();
 	}
 

@@ -38,10 +38,8 @@ import com.sitewhere.rest.model.device.request.DeviceStatusCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceTypeCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.IDeviceType;
@@ -237,21 +235,8 @@ public class DeviceTypes extends RestControllerBase {
     public IDeviceType deleteDeviceType(@ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDeviceManagement devices = getDeviceManagement();
-
-	// Do not allow delete if specification is being used
-	// (SITEWHERE-267)
-	DeviceSearchCriteria criteria = new DeviceSearchCriteria(1, 0, null, null);
-	criteria.setDeviceTypeToken(token);
-	criteria.setExcludeAssigned(false);
-	ISearchResults<IDevice> matches = devices.listDevices(false, criteria);
-	if (matches.getNumResults() > 0) {
-	    throw new SiteWhereException("Unable to delete device type. Device type is being used by "
-		    + matches.getNumResults() + " devices.");
-	}
-
 	IDeviceType existing = assertDeviceTypeByToken(token);
-	IDeviceType result = devices.deleteDeviceType(existing.getId(), force);
+	IDeviceType result = getDeviceManagement().deleteDeviceType(existing.getId(), force);
 	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getDeviceManagement());
 	return helper.convert(result);
     }

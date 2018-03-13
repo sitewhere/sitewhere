@@ -1544,8 +1544,8 @@ public class DeviceModelConverter {
 	api.setToken(grpc.getToken());
 	api.setStatus(DeviceModelConverter.asApiDeviceAssignmentStatus(grpc.getStatus()));
 	api.setDeviceId(CommonModelConverter.asApiUuid(grpc.getDeviceId()));
-	api.setAreaId(CommonModelConverter.asApiUuid(grpc.getAreaId()));
-	api.setAssetId(CommonModelConverter.asApiUuid(grpc.getAssetId()));
+	api.setAreaId(grpc.hasAreaId() ? CommonModelConverter.asApiUuid(grpc.getAreaId()) : null);
+	api.setAssetId(grpc.hasAssetId() ? CommonModelConverter.asApiUuid(grpc.getAssetId()) : null);
 	if (grpc.hasActiveDate()) {
 	    api.setActiveDate(CommonModelConverter.asDate(grpc.getActiveDate()));
 	}

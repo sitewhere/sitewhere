@@ -6,6 +6,9 @@ dependencies {
 	compile project(':sitewhere-microservice')
 	compile project(':sitewhere-grpc-asset-management')
 	
+	// Connectivity to other microservices.
+	compile project(':sitewhere-grpc-device-management')
+	
 	// HBase not currently supported.
 	compileOnly project(':sitewhere-hbase')
 	

@@ -13,10 +13,20 @@ import com.sitewhere.persistence.Persistence;
 import com.sitewhere.rest.model.asset.Asset;
 import com.sitewhere.rest.model.asset.AssetType;
 import com.sitewhere.rest.model.common.MetadataProvider;
+import com.sitewhere.rest.model.search.asset.AssetSearchCriteria;
+import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.asset.IAsset;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.asset.request.IAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IAssetTypeCreateRequest;
+import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.search.ISearchResults;
 
 /**
  * Persistence logic for asset management components.
@@ -86,6 +96,23 @@ public class AssetManagementPersistence extends Persistence {
     }
 
     /**
+     * Common logic for deleting an asset type.
+     * 
+     * @param assetType
+     * @param assetManagement
+     * @throws SiteWhereException
+     */
+    public static void assetTypeDeleteLogic(IAssetType assetType, IAssetManagement assetManagement)
+	    throws SiteWhereException {
+	AssetSearchCriteria criteria = new AssetSearchCriteria(1, 1);
+	criteria.setAssetTypeId(assetType.getId());
+	ISearchResults<IAsset> assets = assetManagement.listAssets(criteria);
+	if (assets.getNumResults() > 0) {
+	    throw new SiteWhereSystemException(ErrorCode.AssetTypeNoDeleteHasAssets, ErrorLevel.ERROR);
+	}
+    }
+
+    /**
      * Handle base logic for creating an asset.
      * 
      * @param assetType
@@ -144,5 +171,23 @@ public class AssetManagementPersistence extends Persistence {
 	    MetadataProvider.copy(request.getMetadata(), target);
 	}
 	AssetManagementPersistence.setUpdatedEntityMetadata(target);
+    }
+
+    /**
+     * Common logic for deleting an asset.
+     * 
+     * @param asset
+     * @param assetManagement
+     * @param deviceManagement
+     * @throws SiteWhereException
+     */
+    public static void assetDeleteLogic(IAsset asset, IAssetManagement assetManagement,
+	    IDeviceManagement deviceManagement) throws SiteWhereException {
+	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(1, 1);
+	criteria.setAssetId(asset.getId());
+	ISearchResults<IDeviceAssignment> assignments = deviceManagement.listDeviceAssignments(criteria);
+	if (assignments.getNumResults() > 0) {
+	    throw new SiteWhereSystemException(ErrorCode.AssetNoDeleteHasAssignments, ErrorLevel.ERROR);
+	}
     }
 }

@@ -32,6 +32,8 @@ import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
+import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
+import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.area.IArea;
@@ -64,6 +66,7 @@ import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
 import com.sitewhere.spi.device.util.DeviceTypeUtils;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.search.ISearchResults;
 
 /**
  * Common methods needed by device service provider implementations.
@@ -165,6 +168,23 @@ public class DeviceManagementPersistence extends Persistence {
 	    MetadataProvider.copy(request.getMetadata(), target);
 	}
 	DeviceManagementPersistence.setUpdatedEntityMetadata(target);
+    }
+
+    /**
+     * Common logic executed before deleting a device type.
+     * 
+     * @param deviceType
+     * @param deviceManagement
+     * @throws SiteWhereException
+     */
+    public static void deviceTypeDeleteLogic(IDeviceType deviceType, IDeviceManagement deviceManagement)
+	    throws SiteWhereException {
+	DeviceSearchCriteria criteria = new DeviceSearchCriteria(1, 1, null, null);
+	criteria.setDeviceTypeToken(deviceType.getToken());
+	ISearchResults<IDevice> devices = deviceManagement.listDevices(false, criteria);
+	if (devices.getNumResults() > 0) {
+	    throw new SiteWhereSystemException(ErrorCode.DeviceTypeInUseByDevices, ErrorLevel.ERROR);
+	}
     }
 
     /**
@@ -423,6 +443,26 @@ public class DeviceManagementPersistence extends Persistence {
 	    MetadataProvider.copy(request.getMetadata(), target);
 	}
 	DeviceManagementPersistence.setUpdatedEntityMetadata(target);
+    }
+
+    /**
+     * Common logic executed before a device is deleted.
+     * 
+     * @param device
+     * @param deviceManagement
+     * @throws SiteWhereException
+     */
+    public static void deviceDeleteLogic(IDevice device, IDeviceManagement deviceManagement) throws SiteWhereException {
+	if (device.getDeviceAssignmentId() != null) {
+	    throw new SiteWhereSystemException(ErrorCode.DeviceCanNotBeDeletedIfAssigned, ErrorLevel.ERROR);
+	}
+	
+	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(1, 1);
+	criteria.setDeviceId(device.getId());
+	ISearchResults<IDeviceAssignment> assignments = deviceManagement.listDeviceAssignments(criteria);
+	if (assignments.getNumResults() > 0) {
+	    throw new SiteWhereSystemException(ErrorCode.DeviceDeleteHasAssignments, ErrorLevel.ERROR);
+	}
     }
 
     /**

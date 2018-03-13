@@ -2,13 +2,21 @@
   <div>
     <div v-if="assignment.asset" class="assn-asset-image"
       :style="backgroundImageStyle(assignment.asset.imageUrl)"></div>
+    <div v-else-if="assignment.area" class="assn-asset-image"
+      :style="backgroundImageStyle(assignment.area.imageUrl)"></div>
     <div v-else class="assn-asset-image"
       :style="backgroundImageStyle(assignment.device.imageUrl)"></div>
     <div v-if="assignment.asset" class="assn-asset-title">
       {{ assignment.asset.name }}
     </div>
+    <div v-else-if="assignment.area" class="assn-asset-title">
+      {{ assignment.area.name }}
+    </div>
     <div v-if="assignment.asset" class="assn-asset-value1">
       {{ assignment.asset.token }}
+    </div>
+    <div v-else-if="assignment.area" class="assn-asset-value1">
+      {{ assignment.area.token }}
     </div>
 
     <div v-if="(assignment.assignmentType == 'Unassociated') && (assignment.device)" class="assn-asset-image"
@@ -16,8 +24,8 @@
       <div v-if="assignment.assignmentType == 'Unassociated'" class="assn-asset-title">
         Unassociated Device
       </div>
-    <div v-if="assignment.assignmentType == 'Unassociated'" class="assn-asset-tag">Unassociated</div>
-    <div v-else class="assn-asset-tag">Asset</div>
+    <div v-if="assignment.asset" class="assn-asset-tag">Asset</div>
+    <div v-else-if="assignment.area" class="assn-asset-tag">Area</div>
   </div>
 </template>
 
