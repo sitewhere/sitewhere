@@ -2,8 +2,12 @@ description = 'SiteWhere Device Event Management Microservice'
 
 dependencies {
 	compile project(':sitewhere-core')
+	
+	// Supported databases.
+	compile project(':sitewhere-cassandra')
 	compile project(':sitewhere-mongodb')
 	compile project(':sitewhere-influxdb')
+	
 	compile project(':sitewhere-microservice')
 	compile project(':sitewhere-grpc-event-management')
 	

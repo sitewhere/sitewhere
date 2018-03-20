@@ -15,6 +15,7 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import com.sitewhere.configuration.instance.cassandra.CassandraConfiguration;
 import com.sitewhere.configuration.instance.influxdb.InfluxConfiguration;
 import com.sitewhere.configuration.instance.mongodb.MongoConfiguration;
 import com.sitewhere.configuration.parser.IDatastoreCommonParser.DeviceManagementDatastoreElements;
@@ -84,6 +85,12 @@ public class DatastoreConfigurationParser {
 	    }
 	    case InfluxDBReference: {
 		return parseInfluxDbReference(child, context);
+	    }
+	    case CassandraDatastore: {
+		return parseCassandraDatastore(child, context);
+	    }
+	    case CassandraReference: {
+		return parseCassandraReference(child, context);
 	    }
 	    }
 	}
@@ -248,6 +255,53 @@ public class DatastoreConfigurationParser {
 	Attr logLevel = element.getAttributeNode("logLevel");
 	if (logLevel != null) {
 	    configuration.addPropertyValue("logLevel", logLevel.getValue());
+	}
+    }
+
+    /**
+     * Parse configuration for an Apache Cassandra datastore.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected static DatastoreConfiguration parseCassandraDatastore(Element element, ParserContext context) {
+	BeanDefinitionBuilder configuration = BeanDefinitionBuilder.rootBeanDefinition(CassandraConfiguration.class);
+	parseCassandraAttributes(element, context, configuration);
+	return new DatastoreConfiguration(DatastoreConfigurationType.Cassandra, configuration.getBeanDefinition());
+    }
+
+    /**
+     * Parse configuration reference for an Apache Cassandra datastore.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected static DatastoreConfiguration parseCassandraReference(Element element, ParserContext context) {
+	Attr id = element.getAttributeNode("id");
+	if (id == null) {
+	    throw new RuntimeException("No id specified for Cassandra configuration.");
+	}
+	String reference = InstanceManagementBeans.BEAN_CASSANDRA_CONFIGURATION_BASE + id.getValue();
+	return new DatastoreConfiguration(DatastoreConfigurationType.CassandraReference, reference);
+    }
+
+    /**
+     * Parse common Apache Cassandra configuration attributes.
+     * 
+     * @param element
+     * @param context
+     */
+    public static void parseCassandraAttributes(Element element, ParserContext context,
+	    BeanDefinitionBuilder configuration) {
+	Attr contactPoints = element.getAttributeNode("contactPoints");
+	if (contactPoints != null) {
+	    configuration.addPropertyValue("contactPoints", contactPoints.getValue());
+	}
+	Attr keyspace = element.getAttributeNode("keyspace");
+	if (keyspace != null) {
+	    configuration.addPropertyValue("keyspace", keyspace.getValue());
 	}
     }
 }

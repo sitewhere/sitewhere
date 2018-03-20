@@ -56,7 +56,10 @@ public interface IInstanceManagementParser {
 	MongoConfigurations("mongodb-configurations"),
 
 	/** InfluxDB configuration elements */
-	InfluxConfigurations("influxdb-configurations");
+	InfluxConfigurations("influxdb-configurations"),
+
+	/** InfluxDB configuration elements */
+	CassandraConfigurations("cassandra-configurations");
 
 	/** Event code */
 	private String localName;
@@ -127,6 +130,36 @@ public interface IInstanceManagementParser {
 
 	public static InfluxDbElements getByLocalName(String localName) {
 	    for (InfluxDbElements value : InfluxDbElements.values()) {
+		if (value.getLocalName().equals(localName)) {
+		    return value;
+		}
+	    }
+	    return null;
+	}
+
+	public String getLocalName() {
+	    return localName;
+	}
+
+	public void setLocalName(String localName) {
+	    this.localName = localName;
+	}
+    }
+
+    public static enum CassandraElements {
+
+	/** InfluxDB configuration */
+	CassandraConfiguration("cassandra-configuration");
+
+	/** Event code */
+	private String localName;
+
+	private CassandraElements(String localName) {
+	    this.localName = localName;
+	}
+
+	public static CassandraElements getByLocalName(String localName) {
+	    for (CassandraElements value : CassandraElements.values()) {
 		if (value.getLocalName().equals(localName)) {
 		    return value;
 		}

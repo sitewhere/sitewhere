@@ -28,7 +28,6 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -65,9 +64,6 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
 
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(InfluxDbDeviceEventManagement.class);
-
-    /** Device management implementation */
-    private IDeviceManagement deviceManagement;
 
     /** Client */
     private InfluxDbClient client;
@@ -549,27 +545,6 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public IDeviceEvent updateDeviceEvent(String eventId, IDeviceEventCreateRequest request) throws SiteWhereException {
 	throw new SiteWhereException("Not supported yet for InfluxDB device event management.");
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceManagement ()
-     */
-    public IDeviceManagement getDeviceManagement() {
-	return deviceManagement;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#setDeviceManagement
-     * (com. sitewhere .spi.device.IDeviceManagement)
-     */
-    public void setDeviceManagement(IDeviceManagement deviceManagement) {
-	this.deviceManagement = deviceManagement;
     }
 
     /*

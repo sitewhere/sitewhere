@@ -92,7 +92,13 @@ public interface IDatastoreCommonParser {
 	InfluxDBDatastore("influxdb-datastore"),
 
 	/** InfluxDB datastore reference */
-	InfluxDBReference("influxdb-datastore-reference");
+	InfluxDBReference("influxdb-datastore-reference"),
+
+	/** Cassandra datastore */
+	CassandraDatastore("cassandra-datastore"),
+
+	/** Cassandra datastore reference */
+	CassandraReference("cassandra-datastore-reference");
 
 	/** Event code */
 	private String localName;

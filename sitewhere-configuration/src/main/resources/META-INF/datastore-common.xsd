@@ -35,15 +35,75 @@
 	<xsd:element name="event-management-datastore">
 		<xsd:complexType>
 			<xsd:choice>
-				<xsd:element ref="mongodb-datastore" />
-				<xsd:element ref="mongodb-datastore-reference" />
+				<xsd:element ref="cassandra-datastore" />
+				<xsd:element ref="cassandra-datastore-reference" />
 				<xsd:element ref="influxdb-datastore" />
 				<xsd:element ref="influxdb-datastore-reference" />
+				<xsd:element ref="mongodb-datastore" />
+				<xsd:element ref="mongodb-datastore-reference" />
 			</xsd:choice>
 		</xsd:complexType>
 	</xsd:element>
 
-	<!-- Alternate MongoDB datastore reference -->
+	<!-- Cassandra datastore reference -->
+	<xsd:element name="cassandra-datastore-reference" type="cassandraDatastoreReferenceType"
+		substitutionGroup="abstract-datastore">
+		<xsd:annotation>
+			<xsd:documentation>
+				Connects to Apache Cassandra using a globally
+				defined configuration.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="cassandraDatastoreReferenceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDatastoreType">
+				<xsd:attribute name="id" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Unique id for global datastore configuration.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Custom Apache Cassandra datastore definition -->
+	<xsd:element name="cassandra-datastore" type="cassandraDatastoreType"
+		substitutionGroup="abstract-datastore">
+		<xsd:annotation>
+			<xsd:documentation>
+				Creates a custom Apache Cassandra datastore that
+				does not reference a global configuration.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="cassandraDatastoreType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDatastoreType">
+				<xsd:attributeGroup ref="cassandra-attributes" />
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Apache Cassandra datastore attributes -->
+	<xsd:attributeGroup name="cassandra-attributes">
+		<xsd:attribute name="contactPoints" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Comma-delimited list of cluster contact points.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="keyspace" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Keyspace used for interacting with data.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
+
+	<!-- MongoDB datastore reference -->
 	<xsd:element name="mongodb-datastore-reference" type="mongoDatastoreReferenceType"
 		substitutionGroup="abstract-datastore">
 		<xsd:annotation>

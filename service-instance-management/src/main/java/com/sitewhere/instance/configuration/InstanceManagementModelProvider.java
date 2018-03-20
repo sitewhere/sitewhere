@@ -57,8 +57,12 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
 	addElement(createMongoConfigurationElement());
 
 	// InfluxDB persistence configurations.
-	addElement(createInfluDBPersistenceConfigurationsElement());
-	addElement(createInfluxConfigurationElement());
+	addElement(createInfluxDBPersistenceConfigurationsElement());
+	addElement(createInfluxDBConfigurationElement());
+
+	// Apache Cassandra persistence configurations.
+	addElement(createCassandraPersistenceConfigurationsElement());
+	addElement(createCassandraConfigurationElement());
 
 	// Connector configurations.
 	addElement(createConnectorConfigurationsElement());
@@ -150,7 +154,7 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
      * 
      * @return
      */
-    protected ElementNode createInfluDBPersistenceConfigurationsElement() {
+    protected ElementNode createInfluxDBPersistenceConfigurationsElement() {
 	ElementNode.Builder builder = new ElementNode.Builder(
 		InstanceManagementRoles.InfluxDBConfigurations.getRole().getName(),
 		IInstanceManagementParser.PersistenceConfigurationsElements.InfluxConfigurations.getLocalName(),
@@ -166,7 +170,7 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
      * 
      * @return
      */
-    protected ElementNode createInfluxConfigurationElement() {
+    protected ElementNode createInfluxDBConfigurationElement() {
 	ElementNode.Builder builder = new ElementNode.Builder(
 		InstanceManagementRoles.InfluxDBConfiguration.getRole().getName(),
 		IInstanceManagementParser.InfluxDbElements.InfluxConfiguration.getLocalName(), "database",
@@ -177,6 +181,43 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
 	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String)
 		.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
 	CommonDatastoreProvider.addInfluxDbAttributes(builder);
+
+	return builder.build();
+    }
+
+    /**
+     * Create Apache Cassandra persistence configurations element.
+     * 
+     * @return
+     */
+    protected ElementNode createCassandraPersistenceConfigurationsElement() {
+	ElementNode.Builder builder = new ElementNode.Builder(
+		InstanceManagementRoles.CassandraConfigurations.getRole().getName(),
+		IInstanceManagementParser.PersistenceConfigurationsElements.CassandraConfigurations.getLocalName(),
+		"database", InstanceManagementRoleKeys.CassandraConfigurations, this);
+
+	builder.description(
+		"Provides global Apache Cassandra persistence configurations that can be reused in tenants.");
+
+	return builder.build();
+    }
+
+    /**
+     * Create element configuration for Apache Cassandra settings.
+     * 
+     * @return
+     */
+    protected ElementNode createCassandraConfigurationElement() {
+	ElementNode.Builder builder = new ElementNode.Builder(
+		InstanceManagementRoles.CassandraConfiguration.getRole().getName(),
+		IInstanceManagementParser.CassandraElements.CassandraConfiguration.getLocalName(), "database",
+		InstanceManagementRoleKeys.CassandraConfiguration, this);
+
+	builder.description("Global configuration for Apache Cassandra data persistence.");
+
+	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String)
+		.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
+	CommonDatastoreProvider.addCassandraAttributes(builder);
 
 	return builder.build();
     }

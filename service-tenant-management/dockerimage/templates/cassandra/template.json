@@ -1,0 +1,15 @@
+{
+	"id": "cassandra",
+	"name": "Construction Site Example (Cassandra)",
+	"initializers": {
+		"deviceManagement": [
+			"initializer/deviceModel.groovy"
+		],
+		"assetManagement": [
+			"initializer/assetModel.groovy"
+		],
+		"scheduleManagement": [
+			"initializer/scheduleModel.groovy"
+		]
+	}
+}

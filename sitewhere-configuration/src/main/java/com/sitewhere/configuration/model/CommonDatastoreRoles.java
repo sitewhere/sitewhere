@@ -44,7 +44,8 @@ public enum CommonDatastoreRoles implements IConfigurationRoleProvider {
     EventManagementDatastoreElement(ConfigurationRole.build(CommonDatastoreRoleKeys.EventManagementDatastoreElement,
 	    "Datastore", false, false, false, new IRoleKey[0],
 	    new IRoleKey[] { CommonDatastoreRoleKeys.MongoDBDatastore, CommonDatastoreRoleKeys.MongoDBReference,
-		    CommonDatastoreRoleKeys.InfluxDBDatastore, CommonDatastoreRoleKeys.InfluxDBReference })),
+		    CommonDatastoreRoleKeys.InfluxDBDatastore, CommonDatastoreRoleKeys.InfluxDBReference,
+		    CommonDatastoreRoleKeys.CassandraDatastore, CommonDatastoreRoleKeys.CassandraReference })),
 
     /** MongoDB datastore */
     MongoDBDatastore(ConfigurationRole.build(CommonDatastoreRoleKeys.MongoDBDatastore, "MongoDB Datastore", false,
@@ -60,6 +61,14 @@ public enum CommonDatastoreRoles implements IConfigurationRoleProvider {
 
     /** InfluxDB global reference */
     InfluxDBReference(ConfigurationRole.build(CommonDatastoreRoleKeys.InfluxDBReference, "InfluxDB Global Reference",
+	    false, false, false)),
+
+    /** Cassandra datastore */
+    CassandraDatastore(ConfigurationRole.build(CommonDatastoreRoleKeys.CassandraDatastore, "Cassandra Datastore", false,
+	    false, false)),
+
+    /** Cassandra global reference */
+    CassandraReference(ConfigurationRole.build(CommonDatastoreRoleKeys.CassandraReference, "Cassandra Global Reference",
 	    false, false, false));
 
     private ConfigurationRole role;

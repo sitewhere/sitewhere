@@ -50,6 +50,8 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 	addElement(createMongoDbReferenceElement());
 	addElement(createInfluxDbDatastoreElement());
 	addElement(createInfluxDbReferenceElement());
+	addElement(createCassandraDatastoreElement());
+	addElement(createCassandraReferenceElement());
     }
 
     /**
@@ -154,6 +156,42 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 	return builder.build();
     }
 
+    /**
+     * Create Cassandra datastore element.
+     * 
+     * @return
+     */
+    protected ElementNode createCassandraDatastoreElement() {
+	ElementNode.Builder builder = new ElementNode.Builder(
+		CommonDatastoreRoles.CassandraDatastore.getRole().getName(),
+		IDatastoreCommonParser.EventManagementDatastoreElements.CassandraDatastore.getLocalName(), "database",
+		CommonDatastoreRoleKeys.CassandraDatastore, this);
+
+	builder.description("Use a locally-defined Apache Cassandra datastore.");
+	addCassandraAttributes(builder);
+
+	return builder.build();
+    }
+
+    /**
+     * Create Cassandra datastore reference element.
+     * 
+     * @return
+     */
+    protected ElementNode createCassandraReferenceElement() {
+	ElementNode.Builder builder = new ElementNode.Builder(
+		CommonDatastoreRoles.CassandraReference.getRole().getName(),
+		IDatastoreCommonParser.EventManagementDatastoreElements.CassandraReference.getLocalName(), "database",
+		CommonDatastoreRoleKeys.CassandraReference, this);
+
+	builder.description("Use a globally-defined Cassandra datastore.");
+
+	builder.attribute((new AttributeNode.Builder("Configuration Id", "id", AttributeType.String)
+		.description("Unique id for global configuration").makeRequired().build()));
+
+	return builder.build();
+    }
+
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.
      * IConfigurationModelProvider#initializeRoles()
@@ -229,5 +267,20 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 		(new AttributeNode.Builder("Max batch send interval (ms)", "batchIntervalMs", AttributeType.Integer)
 			.description("Maximum amount of time (in ms) to wait before sending a batch.").group("batch")
 			.defaultValue("100").build()));
+    }
+
+    /**
+     * Adds Apache Cassandra configuration attributes.
+     * 
+     * @param builder
+     */
+    public static void addCassandraAttributes(ElementNode.Builder builder) {
+	builder.attributeGroup("conn", "Apache Cassandra Connectivity");
+	builder.attribute((new AttributeNode.Builder("Contact Points", "contactPoints", AttributeType.String)
+		.description("Comma-delimited list of contact points for Cassandra cluster.").group("conn")
+		.defaultValue("${cassandra.contact.points:cassandra}").build()));
+	builder.attribute((new AttributeNode.Builder("Keyspace", "keyspace", AttributeType.String)
+		.description("Keyspace used for accessing data.").group("conn")
+		.defaultValue("${cassandra.keyspace:sitewhere}").build()));
     }
 }

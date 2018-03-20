@@ -14,15 +14,21 @@ package com.sitewhere.configuration.datastore;
  */
 public enum DatastoreConfigurationType {
 
-    // Local MongoDB configuration.
+    // Custom MongoDB configuration.
     MongoDB,
 
     // Reference to global MongoDB configuration.
     MongoDBReference,
 
-    // Local InfluxDB configuration.
+    // Custom InfluxDB configuration.
     InfluxDB,
 
     // Reference to global InfluxDB configuration.
-    InfluxDBReference;
+    InfluxDBReference,
+
+    // Custom Cassandra configuration.
+    Cassandra,
+
+    // Reference to global Cassandra configuration.
+    CassandraReference;
 }

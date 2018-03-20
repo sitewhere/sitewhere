@@ -26,10 +26,11 @@ public enum InstanceManagementRoles implements IConfigurationRoleProvider {
 	    new IRoleKey[0], true)),
 
     /** Persistence configurations. */
-    PersistenceConfigurations(
-	    ConfigurationRole.build(InstanceManagementRoleKeys.PersistenceConfigurations, "Persistence Configurations",
-		    false, false, false, new IRoleKey[] { InstanceManagementRoleKeys.MongoDBConfigurations,
-			    InstanceManagementRoleKeys.InfluxDBConfigurations })),
+    PersistenceConfigurations(ConfigurationRole.build(InstanceManagementRoleKeys.PersistenceConfigurations,
+	    "Persistence Configurations", false, false, false,
+	    new IRoleKey[] { InstanceManagementRoleKeys.MongoDBConfigurations,
+		    InstanceManagementRoleKeys.InfluxDBConfigurations,
+		    InstanceManagementRoleKeys.CassandraConfigurations })),
 
     /** MongoDB persistence configurations. */
     MongoDBConfigurations(ConfigurationRole.build(InstanceManagementRoleKeys.MongoDBConfigurations,
@@ -48,6 +49,15 @@ public enum InstanceManagementRoles implements IConfigurationRoleProvider {
     /** InfluxDB datastore configuration. */
     InfluxDBConfiguration(ConfigurationRole.build(InstanceManagementRoleKeys.InfluxDBConfiguration,
 	    "InfluxDB Configuration", true, true, true)),
+
+    /** Apache Cassandra persistence configurations. */
+    CassandraConfigurations(ConfigurationRole.build(InstanceManagementRoleKeys.CassandraConfigurations,
+	    "Apache Cassandra Persistence Configurations", true, false, false,
+	    new IRoleKey[] { InstanceManagementRoleKeys.CassandraConfiguration })),
+
+    /** Apache Cassandra datastore configuration. */
+    CassandraConfiguration(ConfigurationRole.build(InstanceManagementRoleKeys.CassandraConfiguration,
+	    "Apache Cassandra Configuration", true, true, true)),
 
     /** Connector configurations. */
     ConnectorConfigurations(

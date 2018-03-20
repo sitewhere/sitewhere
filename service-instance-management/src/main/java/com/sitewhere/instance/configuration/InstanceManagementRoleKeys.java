@@ -32,6 +32,12 @@ public enum InstanceManagementRoleKeys implements IRoleKey {
     /** InfluxDB configuration element */
     InfluxDBConfiguration("influx_conf"),
 
+    /** Apache Cassandra persistence configurations */
+    CassandraConfigurations("cassandra_confs"),
+
+    /** Apache Cassandra configuration element */
+    CassandraConfiguration("cassandra_conf"),
+
     /** Connector configurations */
     ConnectorConfigurations("connector_confs"),
 
