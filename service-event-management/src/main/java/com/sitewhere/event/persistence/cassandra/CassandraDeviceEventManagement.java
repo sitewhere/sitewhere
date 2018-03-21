@@ -32,7 +32,6 @@ import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
@@ -89,19 +88,19 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     /*
      * @see
      * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceEventById(java
-     * .lang.String)
+     * .util.UUID, java.util.UUID)
      */
     @Override
-    public IDeviceEvent getDeviceEventById(String id) throws SiteWhereException {
+    public IDeviceEvent getDeviceEventById(UUID deviceId, UUID eventId) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented.");
     }
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * getDeviceEventByAlternateId(java.lang.String)
+     * getDeviceEventByAlternateId(java.util.UUID, java.lang.String)
      */
     @Override
-    public IDeviceEvent getDeviceEventByAlternateId(String alternateId) throws SiteWhereException {
+    public IDeviceEvent getDeviceEventByAlternateId(UUID deviceId, String alternateId) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented.");
     }
 
@@ -130,13 +129,12 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceMeasurements(
-     * com.sitewhere.spi.device.IDeviceAssignment,
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+     * listDeviceMeasurementsForAssignment(java.util.UUID,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceMeasurements> listDeviceMeasurements(IDeviceAssignment assignment,
+    public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForAssignment(UUID assignmentId,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented.");
     }
@@ -165,13 +163,12 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceLocations(com
-     * .sitewhere.spi.device.IDeviceAssignment,
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+     * listDeviceLocationsForAssignment(java.util.UUID,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceLocation> listDeviceLocations(IDeviceAssignment assignment,
+    public ISearchResults<IDeviceLocation> listDeviceLocationsForAssignment(UUID assignmentId,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented.");
     }
@@ -200,13 +197,12 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceAlerts(com.
-     * sitewhere.spi.device.IDeviceAssignment,
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+     * listDeviceAlertsForAssignment(java.util.UUID,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceAlert> listDeviceAlerts(IDeviceAssignment assignment,
+    public ISearchResults<IDeviceAlert> listDeviceAlertsForAssignment(UUID assignmentId,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented.");
     }
@@ -247,13 +243,12 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceStreamData(
-     * com.sitewhere.spi.device.IDeviceAssignment, java.lang.String,
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+     * listDeviceStreamDataForAssignment(java.util.UUID, java.lang.String,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceStreamData> listDeviceStreamData(IDeviceAssignment assignment, String streamId,
+    public ISearchResults<IDeviceStreamData> listDeviceStreamDataForAssignment(UUID assignmentId, String streamId,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented.");
     }
@@ -271,11 +266,11 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandInvocations(com.sitewhere.spi.device.IDeviceAssignment,
+     * listDeviceCommandInvocationsForAssignment(java.util.UUID,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocations(IDeviceAssignment assignment,
+    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForAssignment(UUID assignmentId,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented.");
     }
@@ -293,10 +288,10 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandInvocationResponses(java.lang.String)
+     * listDeviceCommandInvocationResponses(java.util.UUID, java.util.UUID)
      */
     @Override
-    public ISearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(String invocationId)
+    public ISearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(UUID deviceId, UUID invocationId)
 	    throws SiteWhereException {
 	throw new SiteWhereException("Not implemented.");
     }
@@ -314,11 +309,11 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandResponses(com.sitewhere.spi.device.IDeviceAssignment,
+     * listDeviceCommandResponsesForAssignment(java.util.UUID,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponses(IDeviceAssignment assignment,
+    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForAssignment(UUID assignmentId,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented.");
     }
@@ -347,13 +342,12 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceStateChanges(
-     * com.sitewhere.spi.device.IDeviceAssignment,
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+     * listDeviceStateChangesForAssignment(java.util.UUID,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceStateChange> listDeviceStateChanges(IDeviceAssignment assignment,
+    public ISearchResults<IDeviceStateChange> listDeviceStateChangesForAssignment(UUID assignmentId,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented.");
     }
@@ -366,17 +360,6 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     @Override
     public ISearchResults<IDeviceStateChange> listDeviceStateChangesForAreas(List<UUID> areaIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	throw new SiteWhereException("Not implemented.");
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#updateDeviceEvent(java.
-     * lang.String,
-     * com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest)
-     */
-    @Override
-    public IDeviceEvent updateDeviceEvent(String eventId, IDeviceEventCreateRequest request) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented.");
     }
 

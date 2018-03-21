@@ -9,6 +9,7 @@ package com.sitewhere.event.persistence;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 import com.sitewhere.persistence.Persistence;
 import com.sitewhere.rest.model.common.MetadataProvider;
@@ -82,6 +83,7 @@ public class DeviceEventManagementPersistence extends Persistence {
      */
     public static void deviceEventCreateLogic(IDeviceEventCreateRequest request, IDeviceAssignment assignment,
 	    DeviceEvent target) throws SiteWhereException {
+	target.setId(UUID.randomUUID());
 	target.setAlternateId(request.getAlternateId());
 	target.setDeviceId(assignment.getDeviceId());
 	target.setDeviceAssignmentId(assignment.getId());

@@ -114,22 +114,10 @@ public class DeviceEventWithAsset implements IDeviceEventWithAsset {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     * @see com.sitewhere.spi.device.event.IDeviceEvent#getId()
      */
     @Override
-    public int compareTo(IDeviceEvent o) {
-	return getWrapped().compareTo(o);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceEvent#getId()
-     */
-    @Override
-    public String getId() {
+    public UUID getId() {
 	return getWrapped().getId();
     }
 

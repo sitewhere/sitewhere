@@ -118,8 +118,6 @@ public class HBaseDeviceEvent {
 	// Create measurements object and marshal to JSON.
 	DeviceMeasurements measurements = DeviceEventManagementPersistence.deviceMeasurementsCreateLogic(request,
 		assignment);
-	String id = getEncodedEventId(rowkey, qualifier);
-	measurements.setId(id);
 	byte[] payload = context.getPayloadMarshaler().encodeDeviceMeasurements(measurements);
 
 	Put put = new Put(rowkey);
@@ -176,8 +174,6 @@ public class HBaseDeviceEvent {
 	byte[] qualifier = getQualifier(EventRecordType.Location, time, context.getPayloadMarshaler().getEncoding());
 
 	DeviceLocation location = DeviceEventManagementPersistence.deviceLocationCreateLogic(assignment, request);
-	String id = getEncodedEventId(rowkey, qualifier);
-	location.setId(id);
 	byte[] payload = context.getPayloadMarshaler().encodeDeviceLocation(location);
 
 	Put put = new Put(rowkey);
@@ -234,8 +230,6 @@ public class HBaseDeviceEvent {
 
 	// Create alert and marshal to JSON.
 	DeviceAlert alert = DeviceEventManagementPersistence.deviceAlertCreateLogic(assignment, request);
-	String id = getEncodedEventId(rowkey, qualifier);
-	alert.setId(id);
 	byte[] payload = context.getPayloadMarshaler().encodeDeviceAlert(alert);
 
 	Put put = new Put(rowkey);
@@ -375,8 +369,6 @@ public class HBaseDeviceEvent {
 	// Create a command invocation and marshal to JSON.
 	DeviceCommandInvocation ci = DeviceEventManagementPersistence.deviceCommandInvocationCreateLogic(assignment,
 		request);
-	String id = getEncodedEventId(rowkey, qualifier);
-	ci.setId(id);
 	byte[] payload = context.getPayloadMarshaler().encodeDeviceCommandInvocation(ci);
 
 	Put put = new Put(rowkey);
@@ -447,8 +439,6 @@ public class HBaseDeviceEvent {
 
 	// Create a state change and marshal to JSON.
 	DeviceStateChange state = DeviceEventManagementPersistence.deviceStateChangeCreateLogic(assignment, request);
-	String id = getEncodedEventId(rowkey, qualifier);
-	state.setId(id);
 	byte[] payload = context.getPayloadMarshaler().encodeDeviceStateChange(state);
 
 	Put put = new Put(rowkey);
@@ -508,8 +498,6 @@ public class HBaseDeviceEvent {
 	// Create a state change and marshal to JSON.
 	DeviceCommandResponse cr = DeviceEventManagementPersistence.deviceCommandResponseCreateLogic(assignment,
 		request);
-	String id = getEncodedEventId(rowkey, qualifier);
-	cr.setId(id);
 	byte[] payload = context.getPayloadMarshaler().encodeDeviceCommandResponse(cr);
 
 	Put put = new Put(rowkey);
@@ -533,7 +521,7 @@ public class HBaseDeviceEvent {
      */
     protected static void linkDeviceCommandResponseToInvocation(IHBaseContext context, IDeviceCommandResponse response)
 	    throws SiteWhereException {
-	String originator = response.getOriginatingEventId();
+	String originator = response.getOriginatingEventId().toString();
 	if (originator == null) {
 	    return;
 	}
@@ -557,7 +545,7 @@ public class HBaseDeviceEvent {
 	    seqkey.put(counterBytes);
 
 	    Put put = new Put(row);
-	    put.addColumn(ISiteWhereHBase.FAMILY_ID, seqkey.array(), response.getId().getBytes());
+	    put.addColumn(ISiteWhereHBase.FAMILY_ID, seqkey.array(), response.getId().toString().getBytes());
 	    events.put(put);
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to link command response.", e);

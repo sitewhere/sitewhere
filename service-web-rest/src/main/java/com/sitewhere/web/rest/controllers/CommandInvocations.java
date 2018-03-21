@@ -7,6 +7,8 @@
  */
 package com.sitewhere.web.rest.controllers;
 
+import java.util.UUID;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
@@ -22,11 +24,15 @@ import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.view.DeviceCommandInvocationSummary;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestControllerBase;
@@ -54,17 +60,19 @@ public class CommandInvocations extends RestControllerBase {
     /**
      * Get a command invocation by unique id.
      * 
-     * @param criteria
+     * @param deviceToken
+     * @param id
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{deviceToken}/{id}", method = RequestMethod.GET)
     @ApiOperation(value = "Get command invocation by unique id.")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceCommandInvocation getDeviceCommandInvocation(
-	    @ApiParam(value = "Unique id", required = true) @PathVariable String id, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	IDeviceEvent found = getDeviceEventManagement().getDeviceEventById(id);
+	    @ApiParam(value = "Device token", required = true) @PathVariable String deviceToken,
+	    @ApiParam(value = "Unique id", required = true) @PathVariable UUID id) throws SiteWhereException {
+	IDevice device = assureDevice(deviceToken);
+	IDeviceEvent found = getDeviceEventManagement().getDeviceEventById(device.getId(), id);
 	if (!(found instanceof IDeviceCommandInvocation)) {
 	    throw new SiteWhereException("Event with the corresponding id is not a command invocation.");
 	}
@@ -75,17 +83,19 @@ public class CommandInvocations extends RestControllerBase {
     /**
      * Get a summarized version of the given device command invocation.
      * 
-     * @param criteria
+     * @param deviceToken
+     * @param id
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{id}/summary", method = RequestMethod.GET)
+    @RequestMapping(value = "/{deviceToken}/{id}/summary", method = RequestMethod.GET)
     @ApiOperation(value = "Get command invocation summary")
     @Secured({ SiteWhereRoles.REST })
     public DeviceCommandInvocationSummary getDeviceCommandInvocationSummary(
-	    @ApiParam(value = "Unique id", required = true) @PathVariable String id, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	IDeviceEvent found = getDeviceEventManagement().getDeviceEventById(id);
+	    @ApiParam(value = "Device token", required = true) @PathVariable String deviceToken,
+	    @ApiParam(value = "Unique id", required = true) @PathVariable UUID id) throws SiteWhereException {
+	IDevice device = assureDevice(deviceToken);
+	IDeviceEvent found = getDeviceEventManagement().getDeviceEventById(device.getId(), id);
 	if (!(found instanceof IDeviceCommandInvocation)) {
 	    throw new SiteWhereException("Event with the corresponding id is not a command invocation.");
 	}
@@ -94,8 +104,9 @@ public class CommandInvocations extends RestControllerBase {
 	helper.setIncludeCommand(true);
 	DeviceCommandInvocation converted = helper.convert(invocation);
 	ISearchResults<IDeviceCommandResponse> responses = getDeviceEventManagement()
-		.listDeviceCommandInvocationResponses(found.getId());
-	return DeviceInvocationSummaryBuilder.build(converted, responses.getResults(), getDeviceEventManagement());
+		.listDeviceCommandInvocationResponses(device.getId(), found.getId());
+	return DeviceInvocationSummaryBuilder.build(converted, responses.getResults(), getDeviceManagement(),
+		getDeviceEventManagement());
     }
 
     /**
@@ -105,13 +116,30 @@ public class CommandInvocations extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{id}/responses", method = RequestMethod.GET)
+    @RequestMapping(value = "/{deviceToken}/{invocationId}/responses", method = RequestMethod.GET)
     @ApiOperation(value = "List responses for command invocation")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceCommandResponse> listCommandInvocationResponses(
-	    @ApiParam(value = "Invocation id", required = true) @PathVariable String id,
+	    @ApiParam(value = "Device token", required = true) @PathVariable String deviceToken,
+	    @ApiParam(value = "Invocation id", required = true) @PathVariable UUID invocationId,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getDeviceEventManagement().listDeviceCommandInvocationResponses(id);
+	IDevice device = assureDevice(deviceToken);
+	return getDeviceEventManagement().listDeviceCommandInvocationResponses(device.getId(), invocationId);
+    }
+
+    /**
+     * Assure that a device exists for the given token.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    private IDevice assureDevice(String token) throws SiteWhereException {
+	IDevice device = getDeviceManagement().getDeviceByToken(token);
+	if (device == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceToken, ErrorLevel.ERROR);
+	}
+	return device;
     }
 
     private IDeviceManagement getDeviceManagement() {

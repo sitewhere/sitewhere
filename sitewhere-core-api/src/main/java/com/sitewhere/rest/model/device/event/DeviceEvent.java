@@ -16,7 +16,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
-import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 
@@ -26,14 +25,13 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
  * @author dadams
  */
 @JsonInclude(Include.NON_NULL)
-public abstract class DeviceEvent extends MetadataProvider
-	implements IDeviceEvent, Comparable<IDeviceEvent>, Serializable {
+public abstract class DeviceEvent extends MetadataProvider implements IDeviceEvent, Serializable {
 
     /** Serial version UID */
     private static final long serialVersionUID = 3532362334243746084L;
 
     /** Unqiue id for event */
-    private String id;
+    private UUID id;
 
     /** Alternate (external) id for event */
     private String alternateId;
@@ -64,16 +62,14 @@ public abstract class DeviceEvent extends MetadataProvider
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceEvent#getId()
+     * @see com.sitewhere.spi.device.event.IDeviceEvent#getId()
      */
     @Override
-    public String getId() {
+    public UUID getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
 	this.id = id;
     }
 
@@ -181,36 +177,5 @@ public abstract class DeviceEvent extends MetadataProvider
 
     public void setReceivedDate(Date receivedDate) {
 	this.receivedDate = receivedDate;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
-    @Override
-    public int compareTo(IDeviceEvent other) {
-	if ((getEventDate() != null) && (other.getEventDate() != null)) {
-	    return getEventDate().compareTo(other.getEventDate());
-	}
-	return 0;
-    }
-
-    /**
-     * Create a copy of an SPI object. Used by web services for marshaling.
-     * 
-     * @param source
-     * @param target
-     */
-    public static void copy(IDeviceEvent source, DeviceEvent target) throws SiteWhereException {
-	target.setId(source.getId());
-	target.setAlternateId(source.getAlternateId());
-	target.setDeviceId(source.getDeviceId());
-	target.setDeviceAssignmentId(source.getDeviceAssignmentId());
-	target.setAreaId(source.getAreaId());
-	target.setAssetId(source.getAssetId());
-	target.setReceivedDate(source.getReceivedDate());
-	target.setEventDate(source.getEventDate());
-	MetadataProvider.copy(source, target);
     }
 }

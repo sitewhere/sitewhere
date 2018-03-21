@@ -32,9 +32,6 @@ service DeviceEventManagement {
 	
 	// List device events that match criteria.
 	rpc ListDeviceEvents (GListDeviceEventsRequest) returns (GListDeviceEventsResponse) {}
-	
-	// Update an existing device event.
-	rpc UpdateDeviceEvent (GUpdateDeviceEventRequest) returns (GUpdateDeviceEventResponse) {}
 
 	// ####################
 	// ### MEASUREMENTS ###
@@ -152,7 +149,8 @@ message GAddDeviceEventBatchResponse {
 	
 // Request for getting an event by id.
 message GGetDeviceEventByIdRequest {
-	string id = 1;
+	com.sitewhere.grpc.model.GUUID deviceId = 1;
+	com.sitewhere.grpc.model.GUUID eventId = 2;
 }
 
 // Response for getting an event by id.
@@ -162,7 +160,8 @@ message GGetDeviceEventByIdResponse {
 	
 // Request for getting an event by alternate id.
 message GGetDeviceEventByAlternateIdRequest {
-	string alternateId = 1;
+	com.sitewhere.grpc.model.GUUID deviceId = 1;
+	string alternateId = 2;
 }
 
 // Response for getting an event by alternate id.
@@ -179,17 +178,6 @@ message GListDeviceEventsRequest {
 // Response for finding device events that meet criteria.
 message GListDeviceEventsResponse {
 	com.sitewhere.grpc.model.GDeviceEventSearchResults results = 1;
-}
-	
-// Request for updating a device event.
-message GUpdateDeviceEventRequest {
-	string id = 1;
-	com.sitewhere.grpc.model.GDeviceEventCreateRequest event = 2;
-}
-	
-// Response for updating a device event.
-message GUpdateDeviceEventResponse {
-	com.sitewhere.grpc.model.GAnyDeviceEvent event = 1;
 }
 
 // ####################
@@ -209,7 +197,7 @@ message GAddMeasurementsForAssignmentResponse {
 	
 // Request for list of measurements for an assignment.
 message GListMeasurementsForAssignmentRequest {
-	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+	com.sitewhere.grpc.model.GUUID assignmentId = 1;
 	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
 }
 	
@@ -246,7 +234,7 @@ message GAddLocationForAssignmentResponse {
 	
 // Request for list of locations for an assignment.
 message GListLocationsForAssignmentRequest {
-	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+	com.sitewhere.grpc.model.GUUID assignmentId = 1;
 	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
 }
 	
@@ -283,7 +271,7 @@ message GAddAlertForAssignmentResponse {
 	
 // Request for list of alerts for an assignment.
 message GListAlertsForAssignmentRequest {
-	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+	com.sitewhere.grpc.model.GUUID assignmentId = 1;
 	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
 }
 // Response for list of alerts for an assignment.
@@ -332,7 +320,7 @@ message GGetStreamDataForAssignmentResponse {
 	
 // Request for list of stream data for an assignment.
 message GListStreamDataForAssignmentRequest {
-	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+	com.sitewhere.grpc.model.GUUID assignmentId = 1;
 	string streamId = 2;
 	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 3;
 }
@@ -358,7 +346,7 @@ message GAddCommandInvocationForAssignmentResponse {
 	
 // Request for list of command invocations for an assignment.
 message GListCommandInvocationsForAssignmentRequest {
-	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+	com.sitewhere.grpc.model.GUUID assignmentId = 1;
 	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
 }
 // Response for list of command invocations for an assignment.
@@ -394,8 +382,9 @@ message GAddCommandResponseForAssignmentResponse {
 		
 // Request for list of command responses for an invocation.
 message GListCommandResponsesForInvocationRequest {
-	string invocationId = 1;
-	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
+	com.sitewhere.grpc.model.GUUID deviceId = 1;
+	com.sitewhere.grpc.model.GUUID invocationEventId = 2;
+	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 3;
 }
 // Response for list of command responses for an invocation.
 message GListCommandResponsesForInvocationResponse {
@@ -404,7 +393,7 @@ message GListCommandResponsesForInvocationResponse {
 	
 // Request for list of command responses for an assignment.
 message GListCommandResponsesForAssignmentRequest {
-	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+	com.sitewhere.grpc.model.GUUID assignmentId = 1;
 	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
 }
 // Response for list of command responses for an assignment.
@@ -440,7 +429,7 @@ message GAddStateChangeForAssignmentResponse {
 	
 // Request for list of state changes for an assignment.
 message GListStateChangesForAssignmentRequest {
-	com.sitewhere.grpc.model.GDeviceAssignment assignment = 1;
+	com.sitewhere.grpc.model.GUUID assignmentId = 1;
 	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 2;
 }
 // Response for list of state changes for an assignment.

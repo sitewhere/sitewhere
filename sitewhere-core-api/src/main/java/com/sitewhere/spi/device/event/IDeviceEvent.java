@@ -18,14 +18,14 @@ import com.sitewhere.spi.common.IMetadataProvider;
  * 
  * @author Derek
  */
-public interface IDeviceEvent extends IMetadataProvider, Comparable<IDeviceEvent>, Serializable {
+public interface IDeviceEvent extends IMetadataProvider, Serializable {
 
     /**
-     * Get a string that uniquely identifies the event.
+     * Get unique event identifier.
      * 
      * @return
      */
-    public String getId();
+    public UUID getId();
 
     /**
      * Get alternate id that can be used for correlating events with external

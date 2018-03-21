@@ -29,7 +29,6 @@ import com.sitewhere.influxdb.InfluxDbClient;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
@@ -88,15 +87,16 @@ public class InfluxDbDeviceEvent {
     /**
      * Get an event by unique id.
      * 
+     * @param deviceId
      * @param eventId
      * @param client
      * @return
      * @throws SiteWhereException
      */
-    public static IDeviceEvent getEventById(String eventId, InfluxDbClient client) throws SiteWhereException {
-	Query query = new Query(
-		"SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where eid='" + eventId + "'",
-		client.getDatabase().getValue());
+    public static IDeviceEvent getEventById(UUID deviceId, UUID eventId, InfluxDbClient client)
+	    throws SiteWhereException {
+	Query query = new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where " + EVENT_DEVICE
+		+ "='" + deviceId + "' and " + EVENT_ID + "='" + eventId + "'", client.getDatabase().getValue());
 	QueryResult response = client.getInflux().query(query, TimeUnit.MILLISECONDS);
 	List<IDeviceEvent> results = InfluxDbDeviceEvent.eventsOfType(response, IDeviceEvent.class);
 	if (results.size() > 0) {
@@ -108,7 +108,7 @@ public class InfluxDbDeviceEvent {
     /**
      * Search for of events of a given type associated with an assignment.
      * 
-     * @param assignment
+     * @param assignmentId
      * @param type
      * @param criteria
      * @param client
@@ -116,15 +116,15 @@ public class InfluxDbDeviceEvent {
      * @return
      * @throws SiteWhereException
      */
-    public static <T> SearchResults<T> searchByAssignment(IDeviceAssignment assignment, DeviceEventType type,
+    public static <T> SearchResults<T> searchByAssignment(UUID assignmentId, DeviceEventType type,
 	    ISearchCriteria criteria, InfluxDbClient client, Class<T> clazz) throws SiteWhereException {
-	Query query = InfluxDbDeviceEvent.queryEventsOfTypeForAssignment(type, assignment, criteria,
+	Query query = InfluxDbDeviceEvent.queryEventsOfTypeForAssignment(type, assignmentId, criteria,
 		client.getDatabase().getValue());
 	LOGGER.debug("Query: " + query.getCommand());
 	QueryResult response = client.getInflux().query(query, TimeUnit.MILLISECONDS);
 	List<T> results = InfluxDbDeviceEvent.eventsOfType(response, clazz);
 
-	Query countQuery = InfluxDbDeviceEvent.queryEventsOfTypeForAssignmentCount(type, assignment, criteria,
+	Query countQuery = InfluxDbDeviceEvent.queryEventsOfTypeForAssignmentCount(type, assignmentId, criteria,
 		client.getDatabase().getValue());
 	LOGGER.debug("Count: " + countQuery.getCommand());
 	QueryResult countResponse = client.getInflux().query(countQuery);
@@ -164,16 +164,16 @@ public class InfluxDbDeviceEvent {
      * meet the search criteria.
      * 
      * @param type
-     * @param assignment
+     * @param assignmentId
      * @param criteria
      * @param database
      * @return
      * @throws SiteWhereException
      */
-    protected static Query queryEventsOfTypeForAssignment(DeviceEventType type, IDeviceAssignment assignment,
+    protected static Query queryEventsOfTypeForAssignment(DeviceEventType type, UUID assignmentId,
 	    ISearchCriteria criteria, String database) throws SiteWhereException {
 	return new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where type='" + type.name()
-		+ "' and " + InfluxDbDeviceEvent.EVENT_ASSIGNMENT + "='" + assignment.getId() + "'"
+		+ "' and " + InfluxDbDeviceEvent.EVENT_ASSIGNMENT + "='" + assignmentId + "'"
 		+ buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_ASSIGNMENT + " ORDER BY time DESC"
 		+ buildPagingCriteria(criteria), database);
     }
@@ -183,18 +183,17 @@ public class InfluxDbDeviceEvent {
      * and that meet the search criteria.
      * 
      * @param type
-     * @param assignment
+     * @param assignmentId
      * @param criteria
      * @param database
      * @return
      * @throws SiteWhereException
      */
-    protected static Query queryEventsOfTypeForAssignmentCount(DeviceEventType type, IDeviceAssignment assignment,
+    protected static Query queryEventsOfTypeForAssignmentCount(DeviceEventType type, UUID assignmentId,
 	    ISearchCriteria criteria, String database) throws SiteWhereException {
 	return new Query("SELECT count(" + EVENT_ID + ") FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS
-		+ " where type='" + type.name() + "' and " + InfluxDbDeviceEvent.EVENT_ASSIGNMENT + "='"
-		+ assignment.getId() + "'" + buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_ASSIGNMENT,
-		database);
+		+ " where type='" + type.name() + "' and " + InfluxDbDeviceEvent.EVENT_ASSIGNMENT + "='" + assignmentId
+		+ "'" + buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_ASSIGNMENT, database);
     }
 
     /**
@@ -460,7 +459,7 @@ public class InfluxDbDeviceEvent {
      * @throws SiteWhereException
      */
     protected static void loadFromMap(DeviceEvent event, Map<String, Object> values) throws SiteWhereException {
-	event.setId((String) values.get(EVENT_ID));
+	event.setId(validateUUID((String) values.get(EVENT_ID)));
 	event.setDeviceId(validateUUID((String) values.get(EVENT_DEVICE)));
 	event.setDeviceAssignmentId(validateUUID((String) values.get(EVENT_ASSIGNMENT)));
 	event.setAreaId(validateUUID((String) values.get(EVENT_AREA)));
@@ -478,7 +477,7 @@ public class InfluxDbDeviceEvent {
 	}
     }
 
-    protected static UUID validateUUID(String value) throws SiteWhereException {
+    public static UUID validateUUID(String value) throws SiteWhereException {
 	if (value == null) {
 	    throw new SiteWhereException("Invalid UUID in map.");
 	}
@@ -530,7 +529,7 @@ public class InfluxDbDeviceEvent {
 	}
 
 	builder.time(event.getEventDate().getTime(), precision);
-	builder.addField(EVENT_ID, event.getId());
+	builder.addField(EVENT_ID, event.getId().toString());
 	builder.tag(EVENT_TYPE, event.getEventType().name());
 	builder.tag(EVENT_DEVICE, event.getDeviceId().toString());
 	builder.tag(EVENT_ASSIGNMENT, event.getDeviceAssignmentId().toString());

@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.device.event;
 
+import java.util.UUID;
+
 /**
  * Represents a response from a device regarding a previously sent command.
  * 
@@ -19,14 +21,14 @@ public interface IDeviceCommandResponse extends IDeviceEvent {
      * 
      * @return
      */
-    public String getOriginatingEventId();
+    public UUID getOriginatingEventId();
 
     /**
      * Get id of event sent as a response.
      * 
      * @return
      */
-    public String getResponseEventId();
+    public UUID getResponseEventId();
 
     /**
      * Get response payload.

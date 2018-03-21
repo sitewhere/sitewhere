@@ -11,7 +11,6 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.bson.Document;
-import org.bson.types.ObjectId;
 
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
@@ -24,6 +23,9 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
  * @author dadams
  */
 public class MongoDeviceEvent {
+
+    /** Property for id */
+    public static final String PROP_ID = "_id";
 
     /** Alternate (external) id */
     public static final String PROP_ALTERNATE_ID = "alid";
@@ -57,7 +59,7 @@ public class MongoDeviceEvent {
      * @param isNested
      */
     public static void toDocument(IDeviceEvent source, Document target, boolean isNested) {
-	target.append("_id", (source.getId() != null) ? new ObjectId(source.getId()) : new ObjectId());
+	target.append(PROP_ID, source.getId());
 
 	// Only set if there is a value (sparse index).
 	if (source.getAlternateId() != null) {
@@ -83,7 +85,7 @@ public class MongoDeviceEvent {
      * @param isNested
      */
     public static void fromDocument(Document source, DeviceEvent target, boolean isNested) {
-	ObjectId id = (ObjectId) source.get("_id");
+	UUID id = (UUID) source.get(PROP_ID);
 	String alternateId = (String) source.get(PROP_ALTERNATE_ID);
 	String eventType = (String) source.get(PROP_EVENT_TYPE);
 	UUID deviceId = (UUID) source.get(PROP_DEVICE_ID);
@@ -93,9 +95,7 @@ public class MongoDeviceEvent {
 	Date eventDate = (Date) source.get(PROP_EVENT_DATE);
 	Date receivedDate = (Date) source.get(PROP_RECEIVED_DATE);
 
-	if (id != null) {
-	    target.setId(id.toString());
-	}
+	target.setId(id);
 	if (eventType != null) {
 	    target.setEventType(DeviceEventType.valueOf(eventType));
 	}

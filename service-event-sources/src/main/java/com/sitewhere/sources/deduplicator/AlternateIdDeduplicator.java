@@ -14,11 +14,12 @@ import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IDeviceEventDeduplicator;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Implementation of {@link IDeviceEventDeduplicator} that checks the alternate
@@ -46,10 +47,12 @@ public class AlternateIdDeduplicator extends TenantEngineLifecycleComponent impl
     @Override
     public boolean isDuplicate(IDecodedDeviceRequest<?> request) throws SiteWhereException {
 	if (request.getRequest() instanceof IDeviceEventCreateRequest) {
-	    String alternateId = ((IDeviceEventCreateRequest) request.getRequest()).getAlternateId();
+	    IDeviceEventCreateRequest createRequest = (IDeviceEventCreateRequest) request.getRequest();
+	    String alternateId = createRequest.getAlternateId();
 	    if (alternateId != null) {
-		IDeviceEvent existing = getDeviceEventManagement(getTenantEngine().getTenant())
-			.getDeviceEventByAlternateId(alternateId);
+		IDevice device = getDeviceManagement().getDeviceByToken(request.getDeviceToken());
+		IDeviceEvent existing = getDeviceEventManagement().getDeviceEventByAlternateId(device.getId(),
+			alternateId);
 		if (existing != null) {
 		    LOGGER.info("Found event with same alternate id. Will be treated as duplicate.");
 		    return true;
@@ -70,7 +73,11 @@ public class AlternateIdDeduplicator extends TenantEngineLifecycleComponent impl
 	return LOGGER;
     }
 
-    private IDeviceEventManagement getDeviceEventManagement(ITenant tenant) {
+    private IDeviceManagement getDeviceManagement() {
+	return null;
+    }
+
+    private IDeviceEventManagement getDeviceEventManagement() {
 	return null;
     }
 }

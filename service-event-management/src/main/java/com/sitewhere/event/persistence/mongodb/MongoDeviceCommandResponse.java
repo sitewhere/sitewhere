@@ -7,6 +7,8 @@
  */
 package com.sitewhere.event.persistence.mongodb;
 
+import java.util.UUID;
+
 import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
@@ -72,8 +74,8 @@ public class MongoDeviceCommandResponse implements MongoConverter<IDeviceCommand
     public static void fromDocument(Document source, DeviceCommandResponse target) {
 	MongoDeviceEvent.fromDocument(source, target, false);
 
-	String originator = (String) source.get(PROP_ORIGINATING_EVENT_ID);
-	String responder = (String) source.get(PROP_RESPONSE_EVENT_ID);
+	UUID originator = (UUID) source.get(PROP_ORIGINATING_EVENT_ID);
+	UUID responder = (UUID) source.get(PROP_RESPONSE_EVENT_ID);
 	String response = (String) source.get(PROP_RESPONSE);
 
 	target.setOriginatingEventId(originator);

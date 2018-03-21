@@ -207,7 +207,7 @@ public class SiteWhereSolrFactory {
      */
     protected static void addFieldsFromEventDocument(SolrDocument document, DeviceEvent event)
 	    throws SiteWhereException {
-	String id = (String) document.get(ISolrFields.EVENT_ID);
+	UUID id = (UUID) document.get(ISolrFields.EVENT_ID);
 	UUID deviceId = (UUID) document.get(ISolrFields.DEVICE_ID);
 	UUID assignmentId = (UUID) document.get(ISolrFields.ASSIGNMENT_ID);
 	UUID areaId = (UUID) document.get(ISolrFields.AREA_ID);

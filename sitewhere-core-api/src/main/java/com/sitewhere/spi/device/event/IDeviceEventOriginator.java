@@ -8,6 +8,7 @@
 package com.sitewhere.spi.device.event;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * Wrapper for device event originator information.
@@ -21,5 +22,5 @@ public interface IDeviceEventOriginator extends Serializable {
      * 
      * @return
      */
-    public String getEventId();
+    public UUID getEventId();
 }

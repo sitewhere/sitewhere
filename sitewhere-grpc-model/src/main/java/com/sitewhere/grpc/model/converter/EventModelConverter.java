@@ -246,7 +246,7 @@ public class EventModelConverter {
      * @throws SiteWhereException
      */
     public static void copyApiDeviceEvent(GDeviceEvent grpc, DeviceEvent api) throws SiteWhereException {
-	api.setId(grpc.getId());
+	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
 	api.setAlternateId(grpc.hasAlternateId() ? grpc.getAlternateId().getValue() : null);
 	api.setEventType(EventModelConverter.asApiDeviceEventType(grpc.getEventType()));
 	api.setDeviceId(CommonModelConverter.asApiUuid(grpc.getDeviceId()));
@@ -267,7 +267,7 @@ public class EventModelConverter {
      */
     public static GDeviceEvent createGrpcDeviceEvent(IDeviceEvent api) throws SiteWhereException {
 	GDeviceEvent.Builder grpc = GDeviceEvent.newBuilder();
-	grpc.setId(api.getId());
+	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
 	if (api.getAlternateId() != null) {
 	    grpc.setAlternateId(GOptionalString.newBuilder().setValue(api.getAlternateId()).build());
 	}
@@ -1270,8 +1270,10 @@ public class EventModelConverter {
     public static DeviceCommandResponseCreateRequest asApiDeviceCommandResponseCreateRequest(
 	    GDeviceCommandResponseCreateRequest grpc) throws SiteWhereException {
 	DeviceCommandResponseCreateRequest api = new DeviceCommandResponseCreateRequest();
-	api.setOriginatingEventId(grpc.getOriginatingEventId());
-	api.setResponseEventId(grpc.hasResponseEventId() ? grpc.getResponseEventId().getValue() : null);
+	api.setOriginatingEventId(
+		grpc.hasOriginatingEventId() ? CommonModelConverter.asApiUuid(grpc.getOriginatingEventId()) : null);
+	api.setResponseEventId(
+		grpc.hasResponseEventId() ? CommonModelConverter.asApiUuid(grpc.getResponseEventId()) : null);
 	api.setResponse(grpc.hasResponse() ? grpc.getResponse().getValue() : null);
 	EventModelConverter.copyApiDeviceEventCreateRequest(grpc.getEvent(), api);
 	return api;
@@ -1287,9 +1289,11 @@ public class EventModelConverter {
     public static GDeviceCommandResponseCreateRequest asGrpcDeviceCommandResponseCreateRequest(
 	    IDeviceCommandResponseCreateRequest api) throws SiteWhereException {
 	GDeviceCommandResponseCreateRequest.Builder grpc = GDeviceCommandResponseCreateRequest.newBuilder();
-	grpc.setOriginatingEventId(api.getOriginatingEventId());
+	if (api.getOriginatingEventId() != null) {
+	    grpc.setOriginatingEventId(CommonModelConverter.asGrpcUuid(api.getOriginatingEventId()));
+	}
 	if (api.getResponseEventId() != null) {
-	    grpc.setResponseEventId(GOptionalString.newBuilder().setValue(api.getResponseEventId()).build());
+	    grpc.setResponseEventId(CommonModelConverter.asGrpcUuid(api.getResponseEventId()));
 	}
 	if (api.getResponse() != null) {
 	    grpc.setResponse(GOptionalString.newBuilder().setValue(api.getResponse()).build());
@@ -1356,8 +1360,10 @@ public class EventModelConverter {
     public static DeviceCommandResponse asApiDeviceCommandResponse(GDeviceCommandResponse grpc)
 	    throws SiteWhereException {
 	DeviceCommandResponse api = new DeviceCommandResponse();
-	api.setOriginatingEventId(grpc.getOriginatingEventId());
-	api.setResponseEventId(grpc.hasResponseEventId() ? grpc.getResponseEventId().getValue() : null);
+	api.setOriginatingEventId(
+		grpc.hasOriginatingEventId() ? CommonModelConverter.asApiUuid(grpc.getOriginatingEventId()) : null);
+	api.setResponseEventId(
+		grpc.hasResponseEventId() ? CommonModelConverter.asApiUuid(grpc.getResponseEventId()) : null);
 	api.setResponse(grpc.hasResponse() ? grpc.getResponse().getValue() : null);
 	EventModelConverter.copyApiDeviceEvent(grpc.getEvent(), api);
 	return api;
@@ -1373,9 +1379,11 @@ public class EventModelConverter {
     public static GDeviceCommandResponse asGrpcDeviceCommandResponse(IDeviceCommandResponse api)
 	    throws SiteWhereException {
 	GDeviceCommandResponse.Builder grpc = GDeviceCommandResponse.newBuilder();
-	grpc.setOriginatingEventId(api.getOriginatingEventId());
+	if (api.getOriginatingEventId() != null) {
+	    grpc.setOriginatingEventId(CommonModelConverter.asGrpcUuid(api.getOriginatingEventId()));
+	}
 	if (api.getResponseEventId() != null) {
-	    grpc.setResponseEventId(GOptionalString.newBuilder().setValue(api.getResponseEventId()).build());
+	    grpc.setResponseEventId(CommonModelConverter.asGrpcUuid(api.getResponseEventId()));
 	}
 	if (api.getResponse() != null) {
 	    grpc.setResponse(GOptionalString.newBuilder().setValue(api.getResponse()).build());

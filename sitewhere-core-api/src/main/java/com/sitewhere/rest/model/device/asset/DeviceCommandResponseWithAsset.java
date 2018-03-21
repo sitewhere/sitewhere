@@ -7,6 +7,8 @@
  */
 package com.sitewhere.rest.model.device.asset;
 
+import java.util.UUID;
+
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
@@ -29,24 +31,20 @@ public class DeviceCommandResponseWithAsset extends DeviceEventWithAsset impleme
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.event.IDeviceCommandResponse#
-     * getOriginatingEventId()
+     * @see
+     * com.sitewhere.spi.device.event.IDeviceCommandResponse#getOriginatingEventId()
      */
     @Override
-    public String getOriginatingEventId() {
+    public UUID getOriginatingEventId() {
 	return ((IDeviceCommandResponse) getWrapped()).getOriginatingEventId();
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.device.event.IDeviceCommandResponse#getResponseEventId( )
+     * com.sitewhere.spi.device.event.IDeviceCommandResponse#getResponseEventId()
      */
     @Override
-    public String getResponseEventId() {
+    public UUID getResponseEventId() {
 	return ((IDeviceCommandResponse) getWrapped()).getResponseEventId();
     }
 

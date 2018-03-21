@@ -7,6 +7,8 @@
  */
 package com.sitewhere.web.rest.controllers;
 
+import java.util.UUID;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
@@ -14,15 +16,18 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sitewhere.rest.model.device.event.request.DeviceEventCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestControllerBase;
 
@@ -51,30 +56,15 @@ public class DeviceEvents extends RestControllerBase {
      * @param eventId
      * @return
      */
-    @RequestMapping(value = "/{eventId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{deviceToken}/id/{eventId}", method = RequestMethod.GET)
     @ApiOperation(value = "Get event by unique id")
     @Secured({ SiteWhereRoles.REST })
-    public IDeviceEvent getEventById(@ApiParam(value = "Event id", required = true) @PathVariable String eventId,
+    public IDeviceEvent getEventById(
+	    @ApiParam(value = "Device token", required = true) @PathVariable String deviceToken,
+	    @ApiParam(value = "Event id", required = true) @PathVariable String eventId,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getDeviceEventManagement().getDeviceEventById(eventId);
-    }
-
-    /**
-     * Update information for an existing device event.
-     * 
-     * @param eventId
-     * @param request
-     * @param servletRequest
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/{eventId}", method = RequestMethod.PUT)
-    @ApiOperation(value = "Update event by unique id")
-    @Secured({ SiteWhereRoles.REST })
-    public IDeviceEvent updateEvent(@ApiParam(value = "Event id", required = true) @PathVariable String eventId,
-	    @RequestBody DeviceEventCreateRequest request, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	return getDeviceEventManagement().updateDeviceEvent(eventId, request);
+	IDevice device = assureDevice(deviceToken);
+	return getDeviceEventManagement().getDeviceEventById(device.getId(), UUID.fromString(eventId));
     }
 
     /**
@@ -83,13 +73,34 @@ public class DeviceEvents extends RestControllerBase {
      * @param altId
      * @return
      */
-    @RequestMapping(value = "/alternate/{alternateId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{deviceToken}/alternate/{alternateId}", method = RequestMethod.GET)
     @ApiOperation(value = "Get event by alternate (external) id")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceEvent getEventByAlternateId(
+	    @ApiParam(value = "Device token", required = true) @PathVariable String deviceToken,
 	    @ApiParam(value = "Alternate id", required = true) @PathVariable String alternateId,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getDeviceEventManagement().getDeviceEventByAlternateId(alternateId);
+	IDevice device = assureDevice(deviceToken);
+	return getDeviceEventManagement().getDeviceEventByAlternateId(device.getId(), alternateId);
+    }
+
+    /**
+     * Assure that a device exists for the given token.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    private IDevice assureDevice(String token) throws SiteWhereException {
+	IDevice device = getDeviceManagement().getDeviceByToken(token);
+	if (device == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceToken, ErrorLevel.ERROR);
+	}
+	return device;
+    }
+
+    private IDeviceManagement getDeviceManagement() {
+	return getMicroservice().getDeviceManagementApiDemux().getApiChannel();
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {

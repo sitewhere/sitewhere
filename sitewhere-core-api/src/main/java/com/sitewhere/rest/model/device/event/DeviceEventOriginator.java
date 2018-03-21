@@ -8,6 +8,7 @@
 package com.sitewhere.rest.model.device.event;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventOriginator;
@@ -25,22 +26,21 @@ public class DeviceEventOriginator implements IDeviceEventOriginator, Serializab
     private static final long serialVersionUID = -5674524224174870647L;
 
     /** Originating event id */
-    private String eventId;
+    private UUID eventId;
 
     public DeviceEventOriginator(IDeviceEvent event) {
 	this.eventId = event.getId();
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.event.IDeviceEventOriginator#getEventId()
      */
-    public String getEventId() {
+    @Override
+    public UUID getEventId() {
 	return eventId;
     }
 
-    public void setEventId(String eventId) {
+    public void setEventId(UUID eventId) {
 	this.eventId = eventId;
     }
 }

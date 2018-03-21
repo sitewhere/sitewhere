@@ -8,6 +8,7 @@
 package com.sitewhere.rest.model.device.event.request;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -29,10 +30,10 @@ public class DeviceCommandResponseCreateRequest extends DeviceEventCreateRequest
     private static final long serialVersionUID = -9170930846188888841L;
 
     /** Event id that generated response */
-    private String originatingEventId;
+    private UUID originatingEventId;
 
     /** Event sent in response */
-    private String responseEventId;
+    private UUID responseEventId;
 
     /** Data sent for response */
     private String response;
@@ -42,30 +43,30 @@ public class DeviceCommandResponseCreateRequest extends DeviceEventCreateRequest
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.event.request.
-     * IDeviceCommandResponseCreateRequest# getOriginatingEventId()
+     * @see
+     * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest#
+     * getOriginatingEventId()
      */
-    public String getOriginatingEventId() {
+    @Override
+    public UUID getOriginatingEventId() {
 	return originatingEventId;
     }
 
-    public void setOriginatingEventId(String originatingEventId) {
+    public void setOriginatingEventId(UUID originatingEventId) {
 	this.originatingEventId = originatingEventId;
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.event.request.
-     * IDeviceCommandResponseCreateRequest# getResponseEventId()
+     * @see
+     * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest#
+     * getResponseEventId()
      */
-    public String getResponseEventId() {
+    @Override
+    public UUID getResponseEventId() {
 	return responseEventId;
     }
 
-    public void setResponseEventId(String responseEventId) {
+    public void setResponseEventId(UUID responseEventId) {
 	this.responseEventId = responseEventId;
     }
 
@@ -75,6 +76,7 @@ public class DeviceCommandResponseCreateRequest extends DeviceEventCreateRequest
      * @see com.sitewhere.spi.device.event.request.
      * IDeviceCommandResponseCreateRequest#getResponse ()
      */
+    @Override
     public String getResponse() {
 	return response;
     }

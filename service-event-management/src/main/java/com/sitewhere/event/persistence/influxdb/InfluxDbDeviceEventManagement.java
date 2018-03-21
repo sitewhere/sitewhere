@@ -43,7 +43,6 @@ import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
@@ -149,25 +148,21 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceEventById(
-     * java.lang .String)
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceEventById(java
+     * .util.UUID, java.util.UUID)
      */
     @Override
-    public IDeviceEvent getDeviceEventById(String id) throws SiteWhereException {
-	return InfluxDbDeviceEvent.getEventById(id, getClient());
+    public IDeviceEvent getDeviceEventById(UUID deviceId, UUID eventId) throws SiteWhereException {
+	return InfluxDbDeviceEvent.getEventById(deviceId, eventId, getClient());
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * getDeviceEventByAlternateId(java.lang.String)
+     * getDeviceEventByAlternateId(java.util.UUID, java.lang.String)
      */
     @Override
-    public IDeviceEvent getDeviceEventByAlternateId(String alternateId) throws SiteWhereException {
+    public IDeviceEvent getDeviceEventByAlternateId(UUID deviceId, String alternateId) throws SiteWhereException {
 	throw new SiteWhereException("Not supported yet for InfluxDB device event management.");
     }
 
@@ -210,7 +205,6 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
 	    IDeviceMeasurementsCreateRequest measurements) throws SiteWhereException {
 	DeviceMeasurements mxs = DeviceEventManagementPersistence.deviceMeasurementsCreateLogic(measurements,
 		assignment);
-	mxs.setId(UUID.randomUUID().toString());
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceMeasurements.saveToBuilder(mxs, builder);
 	addUserDefinedTags(assignment, builder);
@@ -220,16 +214,14 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceMeasurements(com.sitewhere.spi.device.IDeviceAssignment,
+     * listDeviceMeasurementsForAssignment(java.util.UUID,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceMeasurements> listDeviceMeasurements(IDeviceAssignment assignment,
+    public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForAssignment(UUID assignmentId,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchByAssignment(assignment, DeviceEventType.Measurements, criteria, getClient(),
+	return InfluxDbDeviceEvent.searchByAssignment(assignmentId, DeviceEventType.Measurements, criteria, getClient(),
 		IDeviceMeasurements.class);
     }
 
@@ -256,7 +248,6 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     public IDeviceLocation addDeviceLocation(IDeviceAssignment assignment, IDeviceLocationCreateRequest request)
 	    throws SiteWhereException {
 	DeviceLocation location = DeviceEventManagementPersistence.deviceLocationCreateLogic(assignment, request);
-	location.setId(UUID.randomUUID().toString());
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceLocation.saveToBuilder(location, builder);
 	addUserDefinedTags(assignment, builder);
@@ -266,17 +257,14 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceLocations
-     * (com.sitewhere.spi.device.IDeviceAssignment,
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+     * listDeviceLocationsForAssignment(java.util.UUID,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceLocation> listDeviceLocations(IDeviceAssignment assignment,
+    public ISearchResults<IDeviceLocation> listDeviceLocationsForAssignment(UUID assignmentId,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchByAssignment(assignment, DeviceEventType.Location, criteria, getClient(),
+	return InfluxDbDeviceEvent.searchByAssignment(assignmentId, DeviceEventType.Location, criteria, getClient(),
 		IDeviceLocation.class);
     }
 
@@ -304,7 +292,6 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     public IDeviceAlert addDeviceAlert(IDeviceAssignment assignment, IDeviceAlertCreateRequest request)
 	    throws SiteWhereException {
 	DeviceAlert alert = DeviceEventManagementPersistence.deviceAlertCreateLogic(assignment, request);
-	alert.setId(UUID.randomUUID().toString());
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceAlert.saveToBuilder(alert, builder);
 	addUserDefinedTags(assignment, builder);
@@ -314,16 +301,14 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceAlerts(
-     * com.sitewhere.spi.device.IDeviceAssignment,
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+     * listDeviceAlertsForAssignment(java.util.UUID,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceAlert> listDeviceAlerts(IDeviceAssignment assignment,
+    public ISearchResults<IDeviceAlert> listDeviceAlertsForAssignment(UUID assignmentId,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchByAssignment(assignment, DeviceEventType.Alert, criteria, getClient(),
+	return InfluxDbDeviceEvent.searchByAssignment(assignmentId, DeviceEventType.Alert, criteria, getClient(),
 		IDeviceAlert.class);
     }
 
@@ -368,14 +353,12 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceStreamData(com.sitewhere.spi.device.IDeviceAssignment,
-     * java.lang.String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+     * listDeviceStreamDataForAssignment(java.util.UUID, java.lang.String,
+     * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceStreamData> listDeviceStreamData(IDeviceAssignment assignment, String streamId,
+    public ISearchResults<IDeviceStreamData> listDeviceStreamDataForAssignment(UUID assignmentId, String streamId,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	List<IDeviceStreamData> results = new ArrayList<IDeviceStreamData>();
 	return new SearchResults<IDeviceStreamData>(results);
@@ -394,7 +377,6 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
 	    IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
 	DeviceCommandInvocation ci = DeviceEventManagementPersistence.deviceCommandInvocationCreateLogic(assignment,
 		request);
-	ci.setId(UUID.randomUUID().toString());
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceCommandInvocation.saveToBuilder(ci, builder);
 	addUserDefinedTags(assignment, builder);
@@ -404,16 +386,14 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandInvocations(com.sitewhere.spi.device.IDeviceAssignment,
+     * listDeviceCommandInvocationsForAssignment(java.util.UUID,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocations(IDeviceAssignment assignment,
+    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForAssignment(UUID assignmentId,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchByAssignment(assignment, DeviceEventType.CommandInvocation, criteria,
+	return InfluxDbDeviceEvent.searchByAssignment(assignmentId, DeviceEventType.CommandInvocation, criteria,
 		getClient(), IDeviceCommandInvocation.class);
     }
 
@@ -430,13 +410,11 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandInvocationResponses(java.lang.String)
+     * listDeviceCommandInvocationResponses(java.util.UUID, java.util.UUID)
      */
     @Override
-    public ISearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(String invocationId)
+    public ISearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(UUID deviceId, UUID invocationId)
 	    throws SiteWhereException {
 	return InfluxDbDeviceCommandResponse.getResponsesForInvocation(invocationId, getClient().getInflux(),
 		getClient().getDatabase().getValue());
@@ -454,7 +432,6 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
 	    IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
 	DeviceCommandResponse cr = DeviceEventManagementPersistence.deviceCommandResponseCreateLogic(assignment,
 		request);
-	cr.setId(UUID.randomUUID().toString());
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceCommandResponse.saveToBuilder(cr, builder);
 	addUserDefinedTags(assignment, builder);
@@ -464,16 +441,14 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandResponses(com.sitewhere.spi.device.IDeviceAssignment,
+     * listDeviceCommandResponsesForAssignment(java.util.UUID,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponses(IDeviceAssignment assignment,
+    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForAssignment(UUID assignmentId,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchByAssignment(assignment, DeviceEventType.CommandResponse, criteria,
+	return InfluxDbDeviceEvent.searchByAssignment(assignmentId, DeviceEventType.CommandResponse, criteria,
 		getClient(), IDeviceCommandResponse.class);
     }
 
@@ -500,7 +475,6 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     public IDeviceStateChange addDeviceStateChange(IDeviceAssignment assignment,
 	    IDeviceStateChangeCreateRequest request) throws SiteWhereException {
 	DeviceStateChange sc = DeviceEventManagementPersistence.deviceStateChangeCreateLogic(assignment, request);
-	sc.setId(UUID.randomUUID().toString());
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceStateChange.saveToBuilder(sc, builder);
 	addUserDefinedTags(assignment, builder);
@@ -510,16 +484,14 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceStateChanges(com.sitewhere.spi.device.IDeviceAssignment,
+     * listDeviceStateChangesForAssignment(java.util.UUID,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceStateChange> listDeviceStateChanges(IDeviceAssignment assignment,
+    public ISearchResults<IDeviceStateChange> listDeviceStateChangesForAssignment(UUID assignmentId,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchByAssignment(assignment, DeviceEventType.StateChange, criteria, getClient(),
+	return InfluxDbDeviceEvent.searchByAssignment(assignmentId, DeviceEventType.StateChange, criteria, getClient(),
 		IDeviceStateChange.class);
     }
 
@@ -533,18 +505,6 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	return InfluxDbDeviceEvent.searchByAreaIds(areaIds, DeviceEventType.StateChange, criteria, getClient(),
 		IDeviceStateChange.class);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#updateDeviceEvent(
-     * java.lang.String,
-     * com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest)
-     */
-    @Override
-    public IDeviceEvent updateDeviceEvent(String eventId, IDeviceEventCreateRequest request) throws SiteWhereException {
-	throw new SiteWhereException("Not supported yet for InfluxDB device event management.");
     }
 
     /*

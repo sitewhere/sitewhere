@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -114,7 +115,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		Acknowledge ack = Acknowledge.parseDelimitedFrom(stream);
 		LOGGER.debug("Decoded acknowledge for: " + ack.getHardwareId());
 		DeviceCommandResponseCreateRequest request = new DeviceCommandResponseCreateRequest();
-		request.setOriginatingEventId(header.getOriginator());
+		request.setOriginatingEventId(UUID.fromString(header.getOriginator()));
 		request.setResponse(ack.getMessage());
 
 		DecodedDeviceRequest<IDeviceCommandResponseCreateRequest> decoded = new DecodedDeviceRequest<IDeviceCommandResponseCreateRequest>();

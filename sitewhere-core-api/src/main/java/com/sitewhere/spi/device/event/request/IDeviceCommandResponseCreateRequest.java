@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.device.event.request;
 
+import java.util.UUID;
+
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 
 /**
@@ -21,14 +23,14 @@ public interface IDeviceCommandResponseCreateRequest extends IDeviceEventCreateR
      * 
      * @return
      */
-    public String getOriginatingEventId();
+    public UUID getOriginatingEventId();
 
     /**
      * Get id of event sent as a response.
      * 
      * @return
      */
-    public String getResponseEventId();
+    public UUID getResponseEventId();
 
     /**
      * Get response payload.

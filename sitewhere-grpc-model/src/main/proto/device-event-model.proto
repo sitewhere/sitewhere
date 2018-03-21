@@ -80,8 +80,8 @@ message GDeviceCommandInvocationCreateRequest {
 
 // Request data for a device command response.
 message GDeviceCommandResponseCreateRequest {
-	string originatingEventId = 1;
-	GOptionalString responseEventId = 2;
+	GUUID originatingEventId = 1;
+	GUUID responseEventId = 2;
 	GOptionalString response = 3;
 	GDeviceEventCreateRequest event = 4;
 }
@@ -123,7 +123,7 @@ enum GDeviceEventType {
 
 // Common device event information.
 message GDeviceEvent {
-	string id = 1;
+	GUUID id = 1;
 	GOptionalString alternateId = 2;
 	GDeviceEventType eventType = 3;
 	GUUID deviceId = 4;
@@ -180,8 +180,8 @@ message GDeviceCommandInvocation {
 
 // Command response event.
 message GDeviceCommandResponse {
-	string originatingEventId = 1;
-	GOptionalString responseEventId = 2;
+	GUUID originatingEventId = 1;
+	GUUID responseEventId = 2;
 	GOptionalString response = 3;
 	GDeviceEvent event = 4;
 }

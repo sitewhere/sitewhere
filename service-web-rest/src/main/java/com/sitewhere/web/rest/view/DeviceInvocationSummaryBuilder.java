@@ -13,6 +13,8 @@ import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.view.DeviceCommandInvocationSummary;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -30,18 +32,18 @@ public class DeviceInvocationSummaryBuilder {
 
     /**
      * Creates a {@link DeviceCommandInvocationSummary} using data from a
-     * {@link DeviceCommandInvocation} that has its command information
-     * populated.
+     * {@link DeviceCommandInvocation} that has its command information populated.
      * 
      * @param invocation
      * @param responses
-     * @param tenant
+     * @param deviceManagement
+     * @param deviceEventManagement
      * @return
      * @throws SiteWhereException
      */
     public static DeviceCommandInvocationSummary build(DeviceCommandInvocation invocation,
-	    List<IDeviceCommandResponse> responses, IDeviceEventManagement deviceEventManagement)
-	    throws SiteWhereException {
+	    List<IDeviceCommandResponse> responses, IDeviceManagement deviceManagement,
+	    IDeviceEventManagement deviceEventManagement) throws SiteWhereException {
 	DeviceCommandInvocationSummary summary = new DeviceCommandInvocationSummary();
 	summary.setName(invocation.getCommand().getName());
 	summary.setNamespace(invocation.getCommand().getNamespace());
@@ -58,7 +60,9 @@ public class DeviceInvocationSummaryBuilder {
 	    DeviceCommandInvocationSummary.Response rsp = new DeviceCommandInvocationSummary.Response();
 	    rsp.setDate(response.getEventDate());
 	    if (response.getResponseEventId() != null) {
-		IDeviceEvent event = deviceEventManagement.getDeviceEventById(response.getResponseEventId());
+		IDevice device = deviceManagement.getDevice(response.getDeviceId());
+		IDeviceEvent event = deviceEventManagement.getDeviceEventById(device.getId(),
+			response.getResponseEventId());
 		rsp.setDescription(getDeviceEventDescription(event));
 	    } else if (response.getResponse() != null) {
 		rsp.setDescription("Ack (\"" + response.getResponse() + "\")");

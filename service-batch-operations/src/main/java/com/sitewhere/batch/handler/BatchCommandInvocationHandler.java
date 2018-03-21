@@ -101,7 +101,8 @@ public class BatchCommandInvocationHandler extends TenantEngineLifecycleComponen
 	// Invoke the command.
 	IDeviceCommandInvocation invocation = getDeviceEventManagement().addDeviceCommandInvocation(assignment,
 		request);
-	updated.getMetadata().put(IBatchCommandInvocationRequest.META_INVOCATION_EVENT_ID, invocation.getId());
+	updated.getMetadata().put(IBatchCommandInvocationRequest.META_INVOCATION_EVENT_ID,
+		invocation.getId().toString());
 
 	return ElementProcessingStatus.Succeeded;
     }

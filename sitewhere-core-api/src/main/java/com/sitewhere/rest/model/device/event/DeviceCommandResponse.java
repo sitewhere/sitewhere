@@ -8,6 +8,7 @@
 package com.sitewhere.rest.model.device.event;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -29,10 +30,10 @@ public class DeviceCommandResponse extends DeviceEvent implements IDeviceCommand
     private static final long serialVersionUID = 4448837178695704510L;
 
     /** Event id that generated response */
-    private String originatingEventId;
+    private UUID originatingEventId;
 
     /** Event sent in response */
-    private String responseEventId;
+    private UUID responseEventId;
 
     /** Data sent for response */
     private String response;
@@ -42,31 +43,28 @@ public class DeviceCommandResponse extends DeviceEvent implements IDeviceCommand
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.event.IDeviceCommandResponse#
-     * getOriginatingEventId()
+     * @see
+     * com.sitewhere.spi.device.event.IDeviceCommandResponse#getOriginatingEventId()
      */
-    public String getOriginatingEventId() {
+    @Override
+    public UUID getOriginatingEventId() {
 	return originatingEventId;
     }
 
-    public void setOriginatingEventId(String originatingEventId) {
+    public void setOriginatingEventId(UUID originatingEventId) {
 	this.originatingEventId = originatingEventId;
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.device.event.IDeviceCommandResponse#getResponseEventId(
-     * )
+     * com.sitewhere.spi.device.event.IDeviceCommandResponse#getResponseEventId()
      */
-    public String getResponseEventId() {
+    @Override
+    public UUID getResponseEventId() {
 	return responseEventId;
     }
 
-    public void setResponseEventId(String responseEventId) {
+    public void setResponseEventId(UUID responseEventId) {
 	this.responseEventId = responseEventId;
     }
 
@@ -75,6 +73,7 @@ public class DeviceCommandResponse extends DeviceEvent implements IDeviceCommand
      * 
      * @see com.sitewhere.spi.device.event.IDeviceCommandResponse#getResponse()
      */
+    @Override
     public String getResponse() {
 	return response;
     }

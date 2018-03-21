@@ -10,6 +10,7 @@ package com.sitewhere.communication.test.coap;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.CoapResponse;
@@ -148,7 +149,7 @@ public class CoapTests {
     public void testAddAcknowledgement() {
 	CoapClient client = createClientFor("devices/82aed708-f49f-4d19-a58f-5668339595d9/acks");
 	DeviceCommandResponseCreateRequest ack = new DeviceCommandResponseCreateRequest();
-	ack.setOriginatingEventId("1234567890");
+	ack.setOriginatingEventId(UUID.randomUUID());
 	ack.setResponse("Arbitrary string containing response content.");
 	ack.setMetadata(new HashMap<String, String>());
 	ack.getMetadata().put("meta1", "value");
@@ -182,7 +183,7 @@ public class CoapTests {
     protected void sendSilecticaRuleAck(String rule) {
 	CoapClient client = createClientFor("devices/00173B1200210024/acks");
 	DeviceCommandResponseCreateRequest ack = new DeviceCommandResponseCreateRequest();
-	ack.setOriginatingEventId("1234567890");
+	ack.setOriginatingEventId(UUID.randomUUID());
 	ack.setResponse(rule);
 	try {
 	    CoapResponse response = client.post(MarshalUtils.marshalJson(ack), MediaTypeRegistry.APPLICATION_JSON);

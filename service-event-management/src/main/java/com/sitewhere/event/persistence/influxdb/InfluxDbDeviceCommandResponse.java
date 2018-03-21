@@ -9,6 +9,7 @@ package com.sitewhere.event.persistence.influxdb;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.influxdb.InfluxDB;
@@ -60,8 +61,8 @@ public class InfluxDbDeviceCommandResponse {
      */
     public static void loadFromMap(DeviceCommandResponse event, Map<String, Object> values) throws SiteWhereException {
 	event.setEventType(DeviceEventType.CommandResponse);
-	event.setOriginatingEventId(InfluxDbDeviceEvent.find(values, RSP_ORIGINATING_EVENT_ID));
-	event.setResponseEventId(InfluxDbDeviceEvent.find(values, RSP_RESPONSE_EVENT_ID, true));
+	event.setOriginatingEventId(InfluxDbDeviceEvent.validateUUID((String) values.get(RSP_ORIGINATING_EVENT_ID)));
+	event.setResponseEventId(InfluxDbDeviceEvent.validateUUID((String) values.get(RSP_RESPONSE_EVENT_ID)));
 	event.setResponse(InfluxDbDeviceEvent.find(values, RSP_RESPONSE, true));
 
 	InfluxDbDeviceEvent.loadFromMap(event, values);
@@ -75,9 +76,9 @@ public class InfluxDbDeviceCommandResponse {
      * @throws SiteWhereException
      */
     public static void saveToBuilder(DeviceCommandResponse event, Point.Builder builder) throws SiteWhereException {
-	builder.tag(RSP_ORIGINATING_EVENT_ID, event.getOriginatingEventId());
+	builder.tag(RSP_ORIGINATING_EVENT_ID, event.getOriginatingEventId().toString());
 	if (event.getResponseEventId() != null) {
-	    builder.tag(RSP_RESPONSE_EVENT_ID, event.getResponseEventId());
+	    builder.tag(RSP_RESPONSE_EVENT_ID, event.getResponseEventId().toString());
 	}
 	if (event.getResponse() != null) {
 	    builder.tag(RSP_RESPONSE, event.getResponse());
@@ -95,7 +96,7 @@ public class InfluxDbDeviceCommandResponse {
      * @return
      * @throws SiteWhereException
      */
-    public static SearchResults<IDeviceCommandResponse> getResponsesForInvocation(String originatingEventId,
+    public static SearchResults<IDeviceCommandResponse> getResponsesForInvocation(UUID originatingEventId,
 	    InfluxDB influx, String database) throws SiteWhereException {
 	Query query = queryResponsesForInvocation(originatingEventId, database);
 	QueryResult response = influx.query(query, TimeUnit.MILLISECONDS);
@@ -115,7 +116,7 @@ public class InfluxDbDeviceCommandResponse {
      * @return
      * @throws SiteWhereException
      */
-    public static Query queryResponsesForInvocation(String originatingEventId, String database)
+    public static Query queryResponsesForInvocation(UUID originatingEventId, String database)
 	    throws SiteWhereException {
 	return new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where type='"
 		+ DeviceEventType.CommandResponse + "' and " + InfluxDbDeviceCommandResponse.RSP_ORIGINATING_EVENT_ID
@@ -131,7 +132,7 @@ public class InfluxDbDeviceCommandResponse {
      * @return
      * @throws SiteWhereException
      */
-    public static Query queryResponsesForInvocationCount(String originatingEventId, String database)
+    public static Query queryResponsesForInvocationCount(UUID originatingEventId, String database)
 	    throws SiteWhereException {
 	return new Query("SELECT count(eid) FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where type='"
 		+ DeviceEventType.CommandResponse + "' and " + InfluxDbDeviceCommandResponse.RSP_ORIGINATING_EVENT_ID

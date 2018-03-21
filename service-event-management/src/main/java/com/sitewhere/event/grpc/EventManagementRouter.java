@@ -69,8 +69,6 @@ import com.sitewhere.grpc.service.GListStateChangesForAssignmentRequest;
 import com.sitewhere.grpc.service.GListStateChangesForAssignmentResponse;
 import com.sitewhere.grpc.service.GListStreamDataForAssignmentRequest;
 import com.sitewhere.grpc.service.GListStreamDataForAssignmentResponse;
-import com.sitewhere.grpc.service.GUpdateDeviceEventRequest;
-import com.sitewhere.grpc.service.GUpdateDeviceEventResponse;
 import com.sitewhere.microservice.grpc.TenantTokenServerInterceptor;
 import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
@@ -178,22 +176,6 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
 	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
 	if (engine != null) {
 	    engine.listDeviceEvents(request, responseObserver);
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#updateDeviceEvent(com.sitewhere.grpc.
-     * service.GUpdateDeviceEventRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void updateDeviceEvent(GUpdateDeviceEventRequest request,
-	    StreamObserver<GUpdateDeviceEventResponse> responseObserver) {
-	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.updateDeviceEvent(request, responseObserver);
 	}
     }
 
