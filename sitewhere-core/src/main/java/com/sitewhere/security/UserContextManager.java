@@ -70,9 +70,8 @@ public class UserContextManager {
      * Set tenant for current context (creating a placeholder if necessary).
      * 
      * @param tenant
-     * @throws SiteWhereException
      */
-    public static void setCurrentTenant(ITenant tenant) throws SiteWhereException {
+    public static void setCurrentTenant(ITenant tenant) {
 	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 	if (auth == null) {
 	    SitewhereAuthentication sw = new SitewhereAuthentication(null, null);

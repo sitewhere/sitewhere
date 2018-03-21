@@ -7,6 +7,8 @@ springBoot {
 
 apply plugin: 'com.moowork.node'
 node {
+	version = '8.10.0'
+	npmVersion = '5.7.1'
 	nodeModulesDir = file("${rootProject.projectDir}/sitewhere-ui")
 	npmWorkDir = file("${rootProject.projectDir}/sitewhere-ui")
 	download = true

@@ -42,6 +42,14 @@
 
 			</im:influxdb-configurations>
 
+			<!-- Apache Cassandra global configuration management -->
+			<im:cassandra-configurations>
+
+				<im:cassandra-configuration id="tenant"
+					contactPoints="${cassandra.contact.points:cassandra}" keyspace="${cassandra.keyspace:tenant-[[tenant.id]]}" />
+
+			</im:cassandra-configurations>
+
 		</im:persistence-configurations>
 
 		<!-- Global connector configurations -->

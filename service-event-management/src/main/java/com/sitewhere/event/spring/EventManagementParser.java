@@ -16,9 +16,11 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
+import com.sitewhere.cassandra.CassandraClient;
 import com.sitewhere.configuration.datastore.DatastoreConfiguration;
 import com.sitewhere.configuration.datastore.DatastoreConfigurationParser;
 import com.sitewhere.configuration.parser.IEventManagementParser.Elements;
+import com.sitewhere.event.persistence.cassandra.CassandraDeviceEventManagement;
 import com.sitewhere.event.persistence.influxdb.InfluxDbDeviceEventManagement;
 import com.sitewhere.event.persistence.mongodb.DeviceEventManagementMongoClient;
 import com.sitewhere.event.persistence.mongodb.MongoDeviceEventManagement;
@@ -119,6 +121,34 @@ public class EventManagementParser extends AbstractBeanDefinitionParser {
 	    BeanDefinitionBuilder management = BeanDefinitionBuilder
 		    .rootBeanDefinition(InfluxDbDeviceEventManagement.class);
 	    management.addPropertyReference("client", EventManagementBeans.BEAN_INFLUXDB_CLIENT);
+
+	    context.getRegistry().registerBeanDefinition(EventManagementBeans.BEAN_EVENT_MANAGEMENT,
+		    management.getBeanDefinition());
+	    break;
+	}
+	case Cassandra: {
+	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(CassandraClient.class);
+	    client.addConstructorArgValue(config.getConfiguration());
+	    context.getRegistry().registerBeanDefinition(EventManagementBeans.BEAN_CASSANDRA_CLIENT,
+		    client.getBeanDefinition());
+
+	    BeanDefinitionBuilder management = BeanDefinitionBuilder
+		    .rootBeanDefinition(CassandraDeviceEventManagement.class);
+	    management.addPropertyReference("client", EventManagementBeans.BEAN_CASSANDRA_CLIENT);
+
+	    context.getRegistry().registerBeanDefinition(EventManagementBeans.BEAN_EVENT_MANAGEMENT,
+		    management.getBeanDefinition());
+	    break;
+	}
+	case CassandraReference: {
+	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(CassandraClient.class);
+	    client.addConstructorArgReference((String) config.getConfiguration());
+	    context.getRegistry().registerBeanDefinition(EventManagementBeans.BEAN_CASSANDRA_CLIENT,
+		    client.getBeanDefinition());
+
+	    BeanDefinitionBuilder management = BeanDefinitionBuilder
+		    .rootBeanDefinition(CassandraDeviceEventManagement.class);
+	    management.addPropertyReference("client", EventManagementBeans.BEAN_CASSANDRA_CLIENT);
 
 	    context.getRegistry().registerBeanDefinition(EventManagementBeans.BEAN_EVENT_MANAGEMENT,
 		    management.getBeanDefinition());

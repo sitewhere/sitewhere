@@ -20,10 +20,12 @@ import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.ServiceNotAvailableException;
+import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
 
 import io.grpc.MethodDescriptor;
 import io.grpc.Status;
 import io.grpc.Status.Code;
+import io.grpc.StatusException;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 
@@ -143,8 +145,18 @@ public class GrpcUtils {
     public static void handleServerMethodException(MethodDescriptor<?, ?> method, Throwable t,
 	    StreamObserver<?> observer) {
 	LOGGER.error("Server exception in call to " + method.getFullMethodName() + ".", t);
+	Throwable thrown = convertServerException(t);
+	observer.onError(thrown);
+    }
 
-	Throwable thrown = t;
+    /**
+     * Convert server exception to one that can be passed back via GRPC.
+     * 
+     * @param t
+     * @return
+     */
+    public static StatusException convertServerException(Throwable t) {
+	StatusException thrown = null;
 	if (t instanceof SiteWhereSystemException) {
 	    SiteWhereSystemException sysex = (SiteWhereSystemException) t;
 	    Status status = Status.fromCode(Code.FAILED_PRECONDITION)
@@ -155,8 +167,13 @@ public class GrpcUtils {
 	    Status status = Status.fromCode(Code.FAILED_PRECONDITION)
 		    .withDescription(ErrorCode.Error.getCode() + ":" + sw.getMessage());
 	    thrown = status.asException();
+	} else if (t instanceof TenantEngineNotAvailableException) {
+	    TenantEngineNotAvailableException sw = (TenantEngineNotAvailableException) t;
+	    Status status = Status.fromCode(Code.UNAVAILABLE).withDescription(sw.getMessage());
+	    thrown = status.asException();
+	} else {
+	    thrown = Status.fromThrowable(t).asException();
 	}
-
-	observer.onError(thrown);
+	return thrown;
     }
 }

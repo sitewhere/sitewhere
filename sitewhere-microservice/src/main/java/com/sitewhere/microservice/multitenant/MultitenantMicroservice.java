@@ -38,6 +38,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
+import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
@@ -201,6 +202,29 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
 	    engine = getFailedTenantEngines().get(id);
 	}
 	return engine;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
+     * assureTenantEngineAvailable(java.util.UUID)
+     */
+    @Override
+    public T assureTenantEngineAvailable(UUID tenantId) throws TenantEngineNotAvailableException {
+	try {
+	    T engine = getTenantEngineByTenantId(tenantId);
+	    if (engine == null) {
+		throw new TenantEngineNotAvailableException("No tenant engine found for tenant id.");
+	    } else if (engine.getLifecycleStatus() == LifecycleStatus.InitializationError) {
+		throw new TenantEngineNotAvailableException("Requested tenant engine failed initialization.");
+	    } else if (engine.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		throw new TenantEngineNotAvailableException("Requested tenant engine failed to start.");
+	    } else if (engine.getLifecycleStatus() != LifecycleStatus.Started) {
+		throw new TenantEngineNotAvailableException("Requested tenant engine has not started.");
+	    }
+	    return engine;
+	} catch (SiteWhereException e) {
+	    throw new TenantEngineNotAvailableException(e);
+	}
     }
 
     /**

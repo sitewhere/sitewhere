@@ -14,6 +14,8 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
+import com.sitewhere.grpc.client.GrpcUtils;
+import com.sitewhere.grpc.client.spi.server.IGrpcRouter;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
 import com.sitewhere.grpc.service.GCreateAssetRequest;
 import com.sitewhere.grpc.service.GCreateAssetResponse;
@@ -41,7 +43,7 @@ import com.sitewhere.grpc.service.GUpdateAssetTypeRequest;
 import com.sitewhere.grpc.service.GUpdateAssetTypeResponse;
 import com.sitewhere.microservice.grpc.TenantTokenServerInterceptor;
 import com.sitewhere.security.UserContextManager;
-import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
 
 import io.grpc.stub.StreamObserver;
 
@@ -50,7 +52,8 @@ import io.grpc.stub.StreamObserver;
  * 
  * @author Derek
  */
-public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementImplBase {
+public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementImplBase
+	implements IGrpcRouter<AssetManagementGrpc.AssetManagementImplBase> {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -63,27 +66,23 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
 	this.microservice = microservice;
     }
 
-    /**
-     * Based on token passed via GRPC header, look up service implementation running
-     * in tenant engine.
-     * 
-     * @return
+    /*
+     * @see com.sitewhere.spi.grpc.IGrpcRouter#getTenantImplementation()
      */
-    protected AssetManagementGrpc.AssetManagementImplBase getTenantImplementation() {
+    @Override
+    public AssetManagementGrpc.AssetManagementImplBase getTenantImplementation(StreamObserver<?> observer) {
 	String tenantId = TenantTokenServerInterceptor.TENANT_ID_KEY.get();
 	if (tenantId == null) {
 	    throw new RuntimeException("Tenant id not found in asset management request.");
 	}
 	try {
 	    IAssetManagementTenantEngine engine = getMicroservice()
-		    .getTenantEngineByTenantId(UUID.fromString(tenantId));
-	    if (engine != null) {
-		UserContextManager.setCurrentTenant(engine.getTenant());
-		return engine.getAssetManagementImpl();
-	    }
-	    throw new RuntimeException("Tenant engine not found.");
-	} catch (SiteWhereException e) {
-	    throw new RuntimeException("Error locating tenant engine.", e);
+		    .assureTenantEngineAvailable(UUID.fromString(tenantId));
+	    UserContextManager.setCurrentTenant(engine.getTenant());
+	    return engine.getAssetManagementImpl();
+	} catch (TenantEngineNotAvailableException e) {
+	    observer.onError(GrpcUtils.convertServerException(e));
+	    return null;
 	}
     }
 
@@ -95,7 +94,10 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     @Override
     public void createAssetType(GCreateAssetTypeRequest request,
 	    StreamObserver<GCreateAssetTypeResponse> responseObserver) {
-	getTenantImplementation().createAssetType(request, responseObserver);
+	AssetManagementGrpc.AssetManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.createAssetType(request, responseObserver);
+	}
     }
 
     /*
@@ -106,7 +108,10 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     @Override
     public void updateAssetType(GUpdateAssetTypeRequest request,
 	    StreamObserver<GUpdateAssetTypeResponse> responseObserver) {
-	getTenantImplementation().updateAssetType(request, responseObserver);
+	AssetManagementGrpc.AssetManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.updateAssetType(request, responseObserver);
+	}
     }
 
     /*
@@ -117,7 +122,10 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     @Override
     public void getAssetTypeById(GGetAssetTypeByIdRequest request,
 	    StreamObserver<GGetAssetTypeByIdResponse> responseObserver) {
-	getTenantImplementation().getAssetTypeById(request, responseObserver);
+	AssetManagementGrpc.AssetManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getAssetTypeById(request, responseObserver);
+	}
     }
 
     /*
@@ -128,7 +136,10 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     @Override
     public void getAssetTypeByToken(GGetAssetTypeByTokenRequest request,
 	    StreamObserver<GGetAssetTypeByTokenResponse> responseObserver) {
-	getTenantImplementation().getAssetTypeByToken(request, responseObserver);
+	AssetManagementGrpc.AssetManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getAssetTypeByToken(request, responseObserver);
+	}
     }
 
     /*
@@ -139,7 +150,10 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     @Override
     public void deleteAssetType(GDeleteAssetTypeRequest request,
 	    StreamObserver<GDeleteAssetTypeResponse> responseObserver) {
-	getTenantImplementation().deleteAssetType(request, responseObserver);
+	AssetManagementGrpc.AssetManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.deleteAssetType(request, responseObserver);
+	}
     }
 
     /*
@@ -150,7 +164,10 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     @Override
     public void listAssetTypes(GListAssetTypesRequest request,
 	    StreamObserver<GListAssetTypesResponse> responseObserver) {
-	getTenantImplementation().listAssetTypes(request, responseObserver);
+	AssetManagementGrpc.AssetManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.listAssetTypes(request, responseObserver);
+	}
     }
 
     /*
@@ -160,7 +177,10 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
      */
     @Override
     public void createAsset(GCreateAssetRequest request, StreamObserver<GCreateAssetResponse> responseObserver) {
-	getTenantImplementation().createAsset(request, responseObserver);
+	AssetManagementGrpc.AssetManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.createAsset(request, responseObserver);
+	}
     }
 
     /*
@@ -172,7 +192,10 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
      */
     @Override
     public void getAssetById(GGetAssetByIdRequest request, StreamObserver<GGetAssetByIdResponse> responseObserver) {
-	getTenantImplementation().getAssetById(request, responseObserver);
+	AssetManagementGrpc.AssetManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getAssetById(request, responseObserver);
+	}
     }
 
     /*
@@ -183,7 +206,10 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
     @Override
     public void getAssetByToken(GGetAssetByTokenRequest request,
 	    StreamObserver<GGetAssetByTokenResponse> responseObserver) {
-	getTenantImplementation().getAssetByToken(request, responseObserver);
+	AssetManagementGrpc.AssetManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getAssetByToken(request, responseObserver);
+	}
     }
 
     /*
@@ -193,7 +219,10 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
      */
     @Override
     public void updateAsset(GUpdateAssetRequest request, StreamObserver<GUpdateAssetResponse> responseObserver) {
-	getTenantImplementation().updateAsset(request, responseObserver);
+	AssetManagementGrpc.AssetManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.updateAsset(request, responseObserver);
+	}
     }
 
     /*
@@ -205,7 +234,10 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
      */
     @Override
     public void deleteAsset(GDeleteAssetRequest request, StreamObserver<GDeleteAssetResponse> responseObserver) {
-	getTenantImplementation().deleteAsset(request, responseObserver);
+	AssetManagementGrpc.AssetManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.deleteAsset(request, responseObserver);
+	}
     }
 
     /*
@@ -217,7 +249,10 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
      */
     @Override
     public void listAssets(GListAssetsRequest request, StreamObserver<GListAssetsResponse> responseObserver) {
-	getTenantImplementation().listAssets(request, responseObserver);
+	AssetManagementGrpc.AssetManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.listAssets(request, responseObserver);
+	}
     }
 
     public IAssetManagementMicroservice getMicroservice() {

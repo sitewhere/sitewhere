@@ -201,7 +201,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	    boolean require) throws SiteWhereException {
 	component.lifecycleInitialize(monitor);
 	if (require) {
-	    if (component.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+	    if (component.getLifecycleStatus() == LifecycleStatus.InitializationError) {
 		throw new ServerStartupException(component, "Error initializing '" + component.getComponentName() + "'",
 			component.getLifecycleError());
 	    }

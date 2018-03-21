@@ -78,6 +78,9 @@ public class InstanceManagementParser extends AbstractBeanDefinitionParser {
 		(new InfluxConfigurationsParser()).parse(child, context);
 		break;
 	    }
+	    case CassandraConfigurations: {
+		(new CassandraConfigurationsParser()).parse(child, context);
+	    }
 	    }
 	}
     }

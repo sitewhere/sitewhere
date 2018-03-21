@@ -12,6 +12,8 @@ import java.util.UUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sitewhere.grpc.client.GrpcUtils;
+import com.sitewhere.grpc.client.spi.server.IGrpcRouter;
 import com.sitewhere.grpc.service.GCreateScheduleRequest;
 import com.sitewhere.grpc.service.GCreateScheduleResponse;
 import com.sitewhere.grpc.service.GCreateScheduledJobRequest;
@@ -37,7 +39,7 @@ import com.sitewhere.microservice.grpc.TenantTokenServerInterceptor;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementMicroservice;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementTenantEngine;
 import com.sitewhere.security.UserContextManager;
-import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
 
 import io.grpc.stub.StreamObserver;
 
@@ -46,7 +48,8 @@ import io.grpc.stub.StreamObserver;
  * 
  * @author Derek
  */
-public class ScheduleManagementRouter extends ScheduleManagementGrpc.ScheduleManagementImplBase {
+public class ScheduleManagementRouter extends ScheduleManagementGrpc.ScheduleManagementImplBase
+	implements IGrpcRouter<ScheduleManagementGrpc.ScheduleManagementImplBase> {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -59,27 +62,23 @@ public class ScheduleManagementRouter extends ScheduleManagementGrpc.ScheduleMan
 	this.microservice = microservice;
     }
 
-    /**
-     * Based on token passed via GRPC header, look up service implementation running
-     * in tenant engine.
-     * 
-     * @return
+    /*
+     * @see com.sitewhere.spi.grpc.IGrpcRouter#getTenantImplementation()
      */
-    protected ScheduleManagementGrpc.ScheduleManagementImplBase getTenantImplementation() {
+    @Override
+    public ScheduleManagementGrpc.ScheduleManagementImplBase getTenantImplementation(StreamObserver<?> observer) {
 	String tenantId = TenantTokenServerInterceptor.TENANT_ID_KEY.get();
 	if (tenantId == null) {
 	    throw new RuntimeException("Tenant id not found in schedule management request.");
 	}
 	try {
 	    IScheduleManagementTenantEngine engine = getMicroservice()
-		    .getTenantEngineByTenantId(UUID.fromString(tenantId));
-	    if (engine != null) {
-		UserContextManager.setCurrentTenant(engine.getTenant());
-		return engine.getScheduleManagementImpl();
-	    }
-	    throw new RuntimeException("Tenant engine not found.");
-	} catch (SiteWhereException e) {
-	    throw new RuntimeException("Error locating tenant engine.", e);
+		    .assureTenantEngineAvailable(UUID.fromString(tenantId));
+	    UserContextManager.setCurrentTenant(engine.getTenant());
+	    return engine.getScheduleManagementImpl();
+	} catch (TenantEngineNotAvailableException e) {
+	    observer.onError(GrpcUtils.convertServerException(e));
+	    return null;
 	}
     }
 
@@ -92,7 +91,10 @@ public class ScheduleManagementRouter extends ScheduleManagementGrpc.ScheduleMan
     @Override
     public void createSchedule(GCreateScheduleRequest request,
 	    StreamObserver<GCreateScheduleResponse> responseObserver) {
-	getTenantImplementation().createSchedule(request, responseObserver);
+	ScheduleManagementGrpc.ScheduleManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.createSchedule(request, responseObserver);
+	}
     }
 
     /*
@@ -104,7 +106,10 @@ public class ScheduleManagementRouter extends ScheduleManagementGrpc.ScheduleMan
     @Override
     public void updateSchedule(GUpdateScheduleRequest request,
 	    StreamObserver<GUpdateScheduleResponse> responseObserver) {
-	getTenantImplementation().updateSchedule(request, responseObserver);
+	ScheduleManagementGrpc.ScheduleManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.updateSchedule(request, responseObserver);
+	}
     }
 
     /*
@@ -116,7 +121,10 @@ public class ScheduleManagementRouter extends ScheduleManagementGrpc.ScheduleMan
     @Override
     public void getScheduleByToken(GGetScheduleByTokenRequest request,
 	    StreamObserver<GGetScheduleByTokenResponse> responseObserver) {
-	getTenantImplementation().getScheduleByToken(request, responseObserver);
+	ScheduleManagementGrpc.ScheduleManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getScheduleByToken(request, responseObserver);
+	}
     }
 
     /*
@@ -127,7 +135,10 @@ public class ScheduleManagementRouter extends ScheduleManagementGrpc.ScheduleMan
      */
     @Override
     public void listSchedules(GListSchedulesRequest request, StreamObserver<GListSchedulesResponse> responseObserver) {
-	getTenantImplementation().listSchedules(request, responseObserver);
+	ScheduleManagementGrpc.ScheduleManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.listSchedules(request, responseObserver);
+	}
     }
 
     /*
@@ -139,7 +150,10 @@ public class ScheduleManagementRouter extends ScheduleManagementGrpc.ScheduleMan
     @Override
     public void deleteSchedule(GDeleteScheduleRequest request,
 	    StreamObserver<GDeleteScheduleResponse> responseObserver) {
-	getTenantImplementation().deleteSchedule(request, responseObserver);
+	ScheduleManagementGrpc.ScheduleManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.deleteSchedule(request, responseObserver);
+	}
     }
 
     /*
@@ -151,7 +165,10 @@ public class ScheduleManagementRouter extends ScheduleManagementGrpc.ScheduleMan
     @Override
     public void createScheduledJob(GCreateScheduledJobRequest request,
 	    StreamObserver<GCreateScheduledJobResponse> responseObserver) {
-	getTenantImplementation().createScheduledJob(request, responseObserver);
+	ScheduleManagementGrpc.ScheduleManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.createScheduledJob(request, responseObserver);
+	}
     }
 
     /*
@@ -163,7 +180,10 @@ public class ScheduleManagementRouter extends ScheduleManagementGrpc.ScheduleMan
     @Override
     public void updateScheduledJob(GUpdateScheduledJobRequest request,
 	    StreamObserver<GUpdateScheduledJobResponse> responseObserver) {
-	getTenantImplementation().updateScheduledJob(request, responseObserver);
+	ScheduleManagementGrpc.ScheduleManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.updateScheduledJob(request, responseObserver);
+	}
     }
 
     /*
@@ -175,7 +195,10 @@ public class ScheduleManagementRouter extends ScheduleManagementGrpc.ScheduleMan
     @Override
     public void getScheduledJobByToken(GGetScheduledJobByTokenRequest request,
 	    StreamObserver<GGetScheduledJobByTokenResponse> responseObserver) {
-	getTenantImplementation().getScheduledJobByToken(request, responseObserver);
+	ScheduleManagementGrpc.ScheduleManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getScheduledJobByToken(request, responseObserver);
+	}
     }
 
     /*
@@ -187,7 +210,10 @@ public class ScheduleManagementRouter extends ScheduleManagementGrpc.ScheduleMan
     @Override
     public void listScheduledJobs(GListScheduledJobsRequest request,
 	    StreamObserver<GListScheduledJobsResponse> responseObserver) {
-	getTenantImplementation().listScheduledJobs(request, responseObserver);
+	ScheduleManagementGrpc.ScheduleManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.listScheduledJobs(request, responseObserver);
+	}
     }
 
     /*
@@ -199,7 +225,10 @@ public class ScheduleManagementRouter extends ScheduleManagementGrpc.ScheduleMan
     @Override
     public void deleteScheduledJob(GDeleteScheduledJobRequest request,
 	    StreamObserver<GDeleteScheduledJobResponse> responseObserver) {
-	getTenantImplementation().deleteScheduledJob(request, responseObserver);
+	ScheduleManagementGrpc.ScheduleManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.deleteScheduledJob(request, responseObserver);
+	}
     }
 
     protected IScheduleManagementMicroservice getMicroservice() {

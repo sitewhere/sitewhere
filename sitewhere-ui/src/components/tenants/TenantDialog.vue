@@ -19,8 +19,8 @@
               <v-container fluid>
                 <v-layout row wrap>
                   <v-flex xs12>
-                    <v-text-field required class="mt-1" label="Tenant id"
-                      v-model="tenantId" hide-details prepend-icon="info"
+                    <v-text-field required class="mt-1" label="Tenant token"
+                      v-model="tenantToken" hide-details prepend-icon="info"
                       :rules="[rules.tenantId]">
                     </v-text-field>
                   </v-flex>
@@ -79,7 +79,7 @@ export default {
     active: null,
     menu: null,
     dialogVisible: false,
-    tenantId: null,
+    tenantToken: null,
     tenantName: null,
     tenantLogoUrl: null,
     tenantAuthToken: null,
@@ -89,8 +89,8 @@ export default {
     templatesList: [],
     allUsers: [],
     rules: {
-      tenantId: (value) => {
-        const pattern = /^[\w]*$/
+      tenantToken: (value) => {
+        const pattern = /^[\w-]*$/
         return pattern.test(value) || 'Tenant id should be alphanumeric with no spaces.'
       }
     },
@@ -108,7 +108,7 @@ export default {
     // Generate payload from UI.
     generatePayload: function () {
       let payload = {}
-      payload.id = this.$data.tenantId
+      payload.token = this.$data.tenantToken
       payload.name = this.$data.tenantName
       payload.logoUrl = this.$data.tenantLogoUrl
       payload.authenticationToken = this.$data.tenantAuthToken
@@ -120,7 +120,7 @@ export default {
 
     // Reset dialog contents.
     reset: function (e) {
-      this.$data.tenantId = null
+      this.$data.tenantToken = null
       this.$data.tenantName = null
       this.$data.tenantLogoUrl = null
       this.$data.tenantAuthToken = null
@@ -148,7 +148,7 @@ export default {
       this.reset()
 
       if (payload) {
-        this.$data.tenantId = payload.id
+        this.$data.tenantToken = payload.token
         this.$data.tenantName = payload.name
         this.$data.tenantLogoUrl = payload.logoUrl
         this.$data.tenantAuthToken = payload.authenticationToken

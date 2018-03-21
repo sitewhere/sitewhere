@@ -23,7 +23,7 @@ public class InstanceSettings implements IInstanceSettings {
     private String instanceId;
 
     /** Id of instance template to use */
-    @Value("${sitewhere.instance.template.id:mongodb-default}")
+    @Value("${sitewhere.instance.template.id:default}")
     private String instanceTemplateId;
 
     /** Zookeeper hostname info for microservices */

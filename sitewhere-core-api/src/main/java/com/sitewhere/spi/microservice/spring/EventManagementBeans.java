@@ -14,11 +14,14 @@ package com.sitewhere.spi.microservice.spring;
  */
 public class EventManagementBeans {
 
-    /** Bean id for event mangement MongoDB client */
+    /** Bean id for MongoDB client */
     public static final String BEAN_MONGODB_CLIENT = "mongoClient";
 
-    /** Bean id for asset mangement MongoDB client */
+    /** Bean id for InfluxDB client */
     public static final String BEAN_INFLUXDB_CLIENT = "influxClient";
+
+    /** Bean id for Apache Cassandra client */
+    public static final String BEAN_CASSANDRA_CLIENT = "cassandraClient";
 
     /** Bean id for event management in server configuration */
     public static final String BEAN_EVENT_MANAGEMENT = "eventManagement";

@@ -45,7 +45,7 @@ public class TenantManagementPersistenceLogic extends Persistence {
 	}
 
 	// Validate tenant token.
-	requireFormat("Token", request.getToken(), "^[\\w-]+$", ErrorCode.TenantIdFormat);
+	requireFormat("Token", tenant.getToken(), "^[\\w-]+$", ErrorCode.TenantIdFormat);
 
 	// Name is required.
 	require("Name", request.getName());

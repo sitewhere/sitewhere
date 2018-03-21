@@ -39,6 +39,15 @@ public interface IMultitenantMicroservice<T extends IMicroserviceTenantEngine> e
     public T getTenantEngineByTenantId(UUID tenantId) throws SiteWhereException;
 
     /**
+     * Make sure the given tenant engine exists and is started.
+     * 
+     * @param tenantId
+     * @return
+     * @throws SiteWhereException
+     */
+    public T assureTenantEngineAvailable(UUID tenantId) throws TenantEngineNotAvailableException;
+
+    /**
      * Shuts down and restarts the given tenant engine.
      * 
      * @param tenantId

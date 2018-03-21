@@ -66,7 +66,7 @@ public class InfluxConfigurationsParser extends AbstractBeanDefinitionParser {
 
 	Attr id = element.getAttributeNode("id");
 	if (id == null) {
-	    throw new RuntimeException("No id specified for InfluxDB configuation.");
+	    throw new RuntimeException("No id specified for InfluxDB configuration.");
 	}
 
 	// Register bean using id as part of name.

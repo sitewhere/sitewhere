@@ -12,6 +12,8 @@ import java.util.UUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sitewhere.grpc.client.GrpcUtils;
+import com.sitewhere.grpc.client.spi.server.IGrpcRouter;
 import com.sitewhere.grpc.service.GGetAreaLabelRequest;
 import com.sitewhere.grpc.service.GGetAreaLabelResponse;
 import com.sitewhere.grpc.service.GGetAreaTypeLabelRequest;
@@ -34,9 +36,7 @@ import com.sitewhere.labels.spi.microservice.ILabelGenerationMicroservice;
 import com.sitewhere.labels.spi.microservice.ILabelGenerationTenantEngine;
 import com.sitewhere.microservice.grpc.TenantTokenServerInterceptor;
 import com.sitewhere.security.UserContextManager;
-import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.grpc.IGrpcRouter;
-import com.sitewhere.spi.microservice.RuntimeServiceNotAvailableException;
+import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
 
 import io.grpc.stub.StreamObserver;
 
@@ -63,21 +63,19 @@ public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationIm
      * @see com.sitewhere.spi.grpc.IGrpcRouter#getTenantImplementation()
      */
     @Override
-    public LabelGenerationImplBase getTenantImplementation() {
+    public LabelGenerationImplBase getTenantImplementation(StreamObserver<?> observer) {
 	String tenantId = TenantTokenServerInterceptor.TENANT_ID_KEY.get();
 	if (tenantId == null) {
 	    throw new RuntimeException("Tenant id not found in label generation request.");
 	}
 	try {
 	    ILabelGenerationTenantEngine engine = getMicroservice()
-		    .getTenantEngineByTenantId(UUID.fromString(tenantId));
-	    if (engine != null) {
-		UserContextManager.setCurrentTenant(engine.getTenant());
-		return engine.getLabelGenerationImpl();
-	    }
-	    throw new RuntimeServiceNotAvailableException("Tenant engine not found.");
-	} catch (SiteWhereException e) {
-	    throw new RuntimeServiceNotAvailableException("Error locating tenant engine.", e);
+		    .assureTenantEngineAvailable(UUID.fromString(tenantId));
+	    UserContextManager.setCurrentTenant(engine.getTenant());
+	    return engine.getLabelGenerationImpl();
+	} catch (TenantEngineNotAvailableException e) {
+	    observer.onError(GrpcUtils.convertServerException(e));
+	    return null;
 	}
     }
 
@@ -89,7 +87,10 @@ public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationIm
     @Override
     public void getAreaTypeLabel(GGetAreaTypeLabelRequest request,
 	    StreamObserver<GGetAreaTypeLabelResponse> responseObserver) {
-	getTenantImplementation().getAreaTypeLabel(request, responseObserver);
+	LabelGenerationGrpc.LabelGenerationImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getAreaTypeLabel(request, responseObserver);
+	}
     }
 
     /*
@@ -99,7 +100,10 @@ public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationIm
      */
     @Override
     public void getAreaLabel(GGetAreaLabelRequest request, StreamObserver<GGetAreaLabelResponse> responseObserver) {
-	getTenantImplementation().getAreaLabel(request, responseObserver);
+	LabelGenerationGrpc.LabelGenerationImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getAreaLabel(request, responseObserver);
+	}
     }
 
     /*
@@ -110,7 +114,10 @@ public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationIm
     @Override
     public void getDeviceTypeLabel(GGetDeviceTypeLabelRequest request,
 	    StreamObserver<GGetDeviceTypeLabelResponse> responseObserver) {
-	getTenantImplementation().getDeviceTypeLabel(request, responseObserver);
+	LabelGenerationGrpc.LabelGenerationImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getDeviceTypeLabel(request, responseObserver);
+	}
     }
 
     /*
@@ -121,7 +128,10 @@ public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationIm
     @Override
     public void getDeviceLabel(GGetDeviceLabelRequest request,
 	    StreamObserver<GGetDeviceLabelResponse> responseObserver) {
-	getTenantImplementation().getDeviceLabel(request, responseObserver);
+	LabelGenerationGrpc.LabelGenerationImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getDeviceLabel(request, responseObserver);
+	}
     }
 
     /*
@@ -132,7 +142,10 @@ public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationIm
     @Override
     public void getDeviceGroupLabel(GGetDeviceGroupLabelRequest request,
 	    StreamObserver<GGetDeviceGroupLabelResponse> responseObserver) {
-	getTenantImplementation().getDeviceGroupLabel(request, responseObserver);
+	LabelGenerationGrpc.LabelGenerationImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getDeviceGroupLabel(request, responseObserver);
+	}
     }
 
     /*
@@ -143,7 +156,10 @@ public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationIm
     @Override
     public void getDeviceAssignmentLabel(GGetDeviceAssignmentLabelRequest request,
 	    StreamObserver<GGetDeviceAssignmentLabelResponse> responseObserver) {
-	getTenantImplementation().getDeviceAssignmentLabel(request, responseObserver);
+	LabelGenerationGrpc.LabelGenerationImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getDeviceAssignmentLabel(request, responseObserver);
+	}
     }
 
     /*
@@ -154,7 +170,10 @@ public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationIm
     @Override
     public void getAssetTypeLabel(GGetAssetTypeLabelRequest request,
 	    StreamObserver<GGetAssetTypeLabelResponse> responseObserver) {
-	getTenantImplementation().getAssetTypeLabel(request, responseObserver);
+	LabelGenerationGrpc.LabelGenerationImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getAssetTypeLabel(request, responseObserver);
+	}
     }
 
     /*
@@ -164,7 +183,10 @@ public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationIm
      */
     @Override
     public void getAssetLabel(GGetAssetLabelRequest request, StreamObserver<GGetAssetLabelResponse> responseObserver) {
-	getTenantImplementation().getAssetLabel(request, responseObserver);
+	LabelGenerationGrpc.LabelGenerationImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getAssetLabel(request, responseObserver);
+	}
     }
 
     public ILabelGenerationMicroservice getMicroservice() {

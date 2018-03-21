@@ -5,7 +5,9 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.grpc;
+package com.sitewhere.grpc.client.spi.server;
+
+import io.grpc.stub.StreamObserver;
 
 /**
  * Common logic for GRPC routers.
@@ -20,6 +22,7 @@ public interface IGrpcRouter<T> {
      * Get tenant implementation to route to.
      * 
      * @return
+     * @throws Throwable
      */
-    public T getTenantImplementation();
+    public T getTenantImplementation(StreamObserver<?> observer);
 }
