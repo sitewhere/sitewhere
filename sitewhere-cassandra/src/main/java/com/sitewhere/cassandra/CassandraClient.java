@@ -12,6 +12,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.exceptions.QueryExecutionException;
 import com.sitewhere.configuration.instance.cassandra.CassandraConfiguration;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.server.lifecycle.parameters.StringComponentParameter;
@@ -86,7 +87,23 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
 	    builder.addContactPoint(contactPoint.trim());
 	}
 	this.cluster = builder.build();
-	this.session = getCluster().connect(getKeyspace().getValue());
+	this.session = getCluster().connect();
+	initializeTenant();
+    }
+
+    /**
+     * Initializes tenant keyspace if not already created.
+     */
+    protected void initializeTenant() throws SiteWhereException {
+	try {
+	    String createKeyspace = "CREATE KEYSPACE IF NOT EXISTS " + getKeyspace().getValue()
+		    + " WITH replication =  {'class':'SimpleStrategy','replication_factor':'1'}";
+	    getSession().execute(createKeyspace);
+	    String useKeyspace = "USE " + getKeyspace().getValue() + ";";
+	    getSession().execute(useKeyspace);
+	} catch (QueryExecutionException e) {
+	    throw new SiteWhereException("Unable to create tenant keyspace.", e);
+	}
     }
 
     /*

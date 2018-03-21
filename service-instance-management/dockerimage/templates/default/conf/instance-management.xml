@@ -46,7 +46,7 @@
 			<im:cassandra-configurations>
 
 				<im:cassandra-configuration id="tenant"
-					contactPoints="${cassandra.contact.points:cassandra}" keyspace="${cassandra.keyspace:tenant-[[tenant.id]]}" />
+					contactPoints="${cassandra.contact.points:cassandra}" keyspace="${cassandra.keyspace:tenant_[[tenant.id]]}" />
 
 			</im:cassandra-configurations>
 
