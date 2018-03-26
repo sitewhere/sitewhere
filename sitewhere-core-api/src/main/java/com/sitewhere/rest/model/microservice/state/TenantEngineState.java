@@ -8,6 +8,7 @@
 package com.sitewhere.rest.model.microservice.state;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -26,8 +27,8 @@ public class TenantEngineState implements ITenantEngineState {
     /** Microservice details */
     private IMicroserviceDetails microservice;
 
-    /** Tenant token */
-    private String tenantToken;
+    /** Tenant id */
+    private UUID tenantId;
 
     /** Lifecycle status */
     private LifecycleStatus lifecycleStatus;
@@ -49,15 +50,15 @@ public class TenantEngineState implements ITenantEngineState {
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.state.ITenantEngineState#getTenantToken()
+     * @see com.sitewhere.spi.microservice.state.ITenantEngineState#getTenantId()
      */
     @Override
-    public String getTenantToken() {
-	return tenantToken;
+    public UUID getTenantId() {
+	return tenantId;
     }
 
-    public void setTenantToken(String tenantToken) {
-	this.tenantToken = tenantToken;
+    public void setTenantId(UUID tenantId) {
+	this.tenantId = tenantId;
     }
 
     /*

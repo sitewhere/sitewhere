@@ -124,10 +124,14 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	    getTenantScriptSynchronizer().add(script);
 	}
 
-	// Wait for remote APIs to become available.
+	// Wait for asset management API to become available and bootstrapped.
 	getAssetManagementApiChannel().waitForApiAvailable();
-	getEventManagementApiChannel().waitForApiAvailable();
 	waitForModuleBootstrapped(IMicroserviceIdentifiers.ASSET_MANAGEMENT, 2, TimeUnit.MINUTES);
+
+	// Wait for event management APIs to become available for the given tenant.
+	getEventManagementApiChannel().waitForApiAvailable();
+	getMicroservice().getTopologyStateAggregator().waitForTenantEngineAvailable(
+		IMicroserviceIdentifiers.EVENT_MANAGEMENT, getTenant().getId(), 2, TimeUnit.MINUTES, 1);
 
 	// Execute remote calls as superuser.
 	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
@@ -208,11 +212,11 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	return LOGGER;
     }
 
-    public IAssetManagementApiChannel getAssetManagementApiChannel() {
+    public IAssetManagementApiChannel<?> getAssetManagementApiChannel() {
 	return ((IDeviceManagementMicroservice) getMicroservice()).getAssetManagementApiDemux().waitForApiChannel();
     }
 
-    public IDeviceEventManagementApiChannel getEventManagementApiChannel() {
+    public IDeviceEventManagementApiChannel<?> getEventManagementApiChannel() {
 	return ((IDeviceManagementMicroservice) getMicroservice()).getEventManagementApiDemux().waitForApiChannel();
     }
 }

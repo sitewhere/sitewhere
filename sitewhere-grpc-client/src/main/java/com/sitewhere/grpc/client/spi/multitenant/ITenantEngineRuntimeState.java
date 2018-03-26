@@ -5,9 +5,13 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.grpc.client.spi.client;
+package com.sitewhere.grpc.client.spi.multitenant;
 
-import com.sitewhere.grpc.client.spi.IApiDemux;
-
-public interface ILabelGenerationApiDemux extends IApiDemux<ILabelGenerationApiChannel<?>> {
+/**
+ * Provides information about the runtime state of a tenant engine running on a
+ * remote microservice.
+ * 
+ * @author Derek
+ */
+public interface ITenantEngineRuntimeState {
 }

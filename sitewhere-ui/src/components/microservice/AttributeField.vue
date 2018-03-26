@@ -38,7 +38,7 @@
         v-model="attrConstValue">
       </device-type-selector>
       <scripts-selector v-else-if="attribute.type === 'Script'"
-        v-model="attrConstValue" :tenantId="tenantId">
+        v-model="attrConstValue" :tenantToken="tenantToken">
       </scripts-selector>
     </v-flex>
     <v-flex xs3 class="pl-2">
@@ -78,7 +78,7 @@ export default {
     ScriptsSelector
   },
 
-  props: ['attribute', 'attrValues', 'readOnly', 'tenantId'],
+  props: ['attribute', 'attrValues', 'readOnly', 'tenantToken'],
 
   created: function () {
     this.onLoadValue(this.attrValues)

@@ -7,6 +7,7 @@
  */
 package com.sitewhere.grpc.client.spi.client;
 
+import com.sitewhere.grpc.client.GrpcChannel;
 import com.sitewhere.grpc.client.spi.IApiChannel;
 import com.sitewhere.spi.user.IUserManagement;
 
@@ -16,6 +17,5 @@ import com.sitewhere.spi.user.IUserManagement;
  * 
  * @author Derek
  */
-@SuppressWarnings("rawtypes")
-public interface IUserManagementApiChannel extends IUserManagement, IApiChannel {
+public interface IUserManagementApiChannel<T extends GrpcChannel<?, ?>> extends IUserManagement, IApiChannel<T> {
 }

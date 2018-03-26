@@ -25,7 +25,7 @@ import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
  *
  * @param <IAssetManagementApiChannel>
  */
-public class DeviceEventManagementApiDemux extends ApiDemux<IDeviceEventManagementApiChannel>
+public class DeviceEventManagementApiDemux extends ApiDemux<IDeviceEventManagementApiChannel<?>>
 	implements IDeviceEventManagementApiDemux {
 
     /** Static logger instance */

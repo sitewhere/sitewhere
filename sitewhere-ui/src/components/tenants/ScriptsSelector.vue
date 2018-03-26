@@ -14,7 +14,7 @@ export default {
     selectedId: null
   }),
 
-  props: ['value', 'tenantId'],
+  props: ['value', 'tenantToken'],
 
   watch: {
     value: function (updated) {
@@ -29,7 +29,7 @@ export default {
   created: function () {
     this.$data.selectedId = this.value
     var component = this
-    _listTenantScriptMetadata(component.$store, this.tenantId)
+    _listTenantScriptMetadata(component.$store, this.tenantToken)
       .then(function (response) {
         component.$data.scripts = response.data
       }).catch(function (e) {

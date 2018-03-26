@@ -18,11 +18,9 @@ export function createTenant (axios, payload) {
 /**
  * Get a tenant by tenant id.
  */
-export function getTenant (axios, tenantId, includeRuntimeInfo) {
+export function getTenant (axios, tenantToken) {
   let query = ''
-  query += (includeRuntimeInfo)
-    ? '?includeRuntimeInfo=true' : '?includeRuntimeInfo=false'
-  return restAuthGet(axios, 'tenants/' + tenantId + query)
+  return restAuthGet(axios, 'tenants/' + tenantToken + query)
 }
 
 /**

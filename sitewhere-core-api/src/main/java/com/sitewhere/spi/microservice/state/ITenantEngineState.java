@@ -8,6 +8,7 @@
 package com.sitewhere.spi.microservice.state;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
@@ -26,11 +27,11 @@ public interface ITenantEngineState {
     public IMicroserviceDetails getMicroservice();
 
     /**
-     * Get tenant token.
+     * Get tenant id.
      * 
      * @return
      */
-    public String getTenantToken();
+    public UUID getTenantId();
 
     /**
      * Get current lifeycle status of tenant engine.

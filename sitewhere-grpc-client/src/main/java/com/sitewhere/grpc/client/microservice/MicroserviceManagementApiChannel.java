@@ -14,7 +14,6 @@ import org.apache.commons.logging.LogFactory;
 
 import com.google.protobuf.ByteString;
 import com.sitewhere.grpc.client.ApiChannel;
-import com.sitewhere.grpc.client.GrpcChannel;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IMicroserviceManagementApiChannel;
@@ -42,7 +41,7 @@ import com.sitewhere.spi.tracing.ITracerProvider;
  * @author Derek
  */
 public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceManagementGrpcChannel>
-	implements IMicroserviceManagementApiChannel {
+	implements IMicroserviceManagementApiChannel<MicroserviceManagementGrpcChannel> {
 
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(MicroserviceManagementApiChannel.class);
@@ -57,8 +56,7 @@ public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceMan
      * .tracing.ITracerProvider, java.lang.String, int)
      */
     @Override
-    @SuppressWarnings("rawtypes")
-    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
+    public MicroserviceManagementGrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
 	return new MicroserviceManagementGrpcChannel(tracerProvider, host, port);
     }
 

@@ -12,9 +12,8 @@ import java.util.UUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitewhere.grpc.client.ApiChannel;
-import com.sitewhere.grpc.client.GrpcChannel;
 import com.sitewhere.grpc.client.GrpcUtils;
+import com.sitewhere.grpc.client.MultitenantApiChannel;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.model.asset.AssetModelConverter;
@@ -61,8 +60,8 @@ import com.sitewhere.spi.tracing.ITracerProvider;
  * 
  * @author Derek
  */
-public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcChannel>
-	implements IAssetManagementApiChannel {
+public class AssetManagementApiChannel extends MultitenantApiChannel<AssetManagementGrpcChannel>
+	implements IAssetManagementApiChannel<AssetManagementGrpcChannel> {
 
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(AssetManagementApiChannel.class);
@@ -77,8 +76,7 @@ public class AssetManagementApiChannel extends ApiChannel<AssetManagementGrpcCha
      * .tracing.ITracerProvider, java.lang.String, int)
      */
     @Override
-    @SuppressWarnings("rawtypes")
-    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
+    public AssetManagementGrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
 	return new AssetManagementGrpcChannel(tracerProvider, host, port);
     }
 

@@ -13,9 +13,8 @@ import java.util.UUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitewhere.grpc.client.ApiChannel;
-import com.sitewhere.grpc.client.GrpcChannel;
 import com.sitewhere.grpc.client.GrpcUtils;
+import com.sitewhere.grpc.client.MultitenantApiChannel;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.converter.CommonModelConverter;
@@ -106,8 +105,8 @@ import com.sitewhere.spi.tracing.ITracerProvider;
  * 
  * @author Derek
  */
-public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManagementGrpcChannel>
-	implements IDeviceEventManagementApiChannel {
+public class DeviceEventManagementApiChannel extends MultitenantApiChannel<DeviceEventManagementGrpcChannel>
+	implements IDeviceEventManagementApiChannel<DeviceEventManagementGrpcChannel> {
 
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(DeviceEventManagementApiChannel.class);
@@ -122,8 +121,7 @@ public class DeviceEventManagementApiChannel extends ApiChannel<DeviceEventManag
      * .tracing.ITracerProvider, java.lang.String, int)
      */
     @Override
-    @SuppressWarnings("rawtypes")
-    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
+    public DeviceEventManagementGrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
 	return new DeviceEventManagementGrpcChannel(tracerProvider, host, port);
     }
 

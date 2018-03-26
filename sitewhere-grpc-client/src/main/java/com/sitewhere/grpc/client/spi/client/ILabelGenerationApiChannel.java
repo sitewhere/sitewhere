@@ -7,7 +7,9 @@
  */
 package com.sitewhere.grpc.client.spi.client;
 
+import com.sitewhere.grpc.client.MultitenantGrpcChannel;
 import com.sitewhere.grpc.client.spi.IApiChannel;
+import com.sitewhere.grpc.client.spi.multitenant.IMultitenantApiChannel;
 import com.sitewhere.spi.label.ILabelGeneration;
 
 /**
@@ -16,6 +18,6 @@ import com.sitewhere.spi.label.ILabelGeneration;
  * 
  * @author Derek
  */
-@SuppressWarnings("rawtypes")
-public interface ILabelGenerationApiChannel extends ILabelGeneration, IApiChannel {
+public interface ILabelGenerationApiChannel<T extends MultitenantGrpcChannel<?, ?>>
+	extends ILabelGeneration, IMultitenantApiChannel<T> {
 }

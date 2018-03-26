@@ -24,7 +24,8 @@ import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
  *
  * @param <IAssetManagementApiChannel>
  */
-public class LabelGenerationApiDemux extends ApiDemux<ILabelGenerationApiChannel> implements ILabelGenerationApiDemux {
+public class LabelGenerationApiDemux extends ApiDemux<ILabelGenerationApiChannel<?>>
+	implements ILabelGenerationApiDemux {
 
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(LabelGenerationApiDemux.class);

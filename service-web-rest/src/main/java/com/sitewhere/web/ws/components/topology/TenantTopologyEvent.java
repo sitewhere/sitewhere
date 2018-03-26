@@ -8,6 +8,7 @@
 package com.sitewhere.web.ws.components.topology;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -30,8 +31,8 @@ public class TenantTopologyEvent implements ITenantEngineState {
     /** Microservice information */
     private IMicroserviceDetails microservice;
 
-    /** Tenant token */
-    private String tenantToken;
+    /** Tenant id */
+    private UUID tenantId;
 
     /** Status of tenant */
     private LifecycleStatus lifecycleStatus;
@@ -42,7 +43,7 @@ public class TenantTopologyEvent implements ITenantEngineState {
     public TenantTopologyEvent(TopologyEventType type, ITenantEngineState state) {
 	this.type = type;
 	this.microservice = state.getMicroservice();
-	this.tenantToken = state.getTenantToken();
+	this.tenantId = state.getTenantId();
 	this.lifecycleStatus = state.getLifecycleStatus();
 	this.lifecycleErrorStack = state.getLifecycleErrorStack();
     }
@@ -69,15 +70,15 @@ public class TenantTopologyEvent implements ITenantEngineState {
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.state.ITenantEngineState#getTenantToken()
+     * @see com.sitewhere.spi.microservice.state.ITenantEngineState#getTenantId()
      */
     @Override
-    public String getTenantToken() {
-	return tenantToken;
+    public UUID getTenantId() {
+	return tenantId;
     }
 
-    public void setTenantToken(String tenantToken) {
-	this.tenantToken = tenantToken;
+    public void setTenantId(UUID tenantId) {
+	this.tenantId = tenantId;
     }
 
     /*

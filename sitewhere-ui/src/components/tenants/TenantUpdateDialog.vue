@@ -19,7 +19,7 @@ export default {
     TenantDialog
   },
 
-  props: ['tenantId'],
+  props: ['tenantToken'],
 
   methods: {
     // Get handle to nested dialog component.
@@ -30,7 +30,7 @@ export default {
     // Send event to open dialog.
     onOpenDialog: function () {
       var component = this
-      _getTenant(this.$store, this.tenantId)
+      _getTenant(this.$store, this.tenantToken)
         .then(function (response) {
           component.onLoaded(response)
         }).catch(function (e) {
@@ -46,7 +46,7 @@ export default {
     // Handle payload commit.
     onCommit: function (payload) {
       var component = this
-      _updateTenant(this.$store, this.tenantId, payload)
+      _updateTenant(this.$store, this.tenantToken, payload)
         .then(function (response) {
           component.onCommitted(response)
         }).catch(function (e) {

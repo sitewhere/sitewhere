@@ -24,7 +24,7 @@ import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
  *
  * @param <IAssetManagementApiChannel>
  */
-public class ScheduleManagementApiDemux extends ApiDemux<IScheduleManagementApiChannel>
+public class ScheduleManagementApiDemux extends ApiDemux<IScheduleManagementApiChannel<?>>
 	implements IScheduleManagementApiDemux {
 
     /** Static logger instance */
@@ -47,7 +47,7 @@ public class ScheduleManagementApiDemux extends ApiDemux<IScheduleManagementApiC
      * com.sitewhere.grpc.model.spi.IApiDemux#createApiChannel(java.lang.String)
      */
     @Override
-    public IScheduleManagementApiChannel createApiChannel(String host) throws SiteWhereException {
+    public IScheduleManagementApiChannel<?> createApiChannel(String host) throws SiteWhereException {
 	return new ScheduleManagementApiChannel(this, getMicroservice(), host);
     }
 

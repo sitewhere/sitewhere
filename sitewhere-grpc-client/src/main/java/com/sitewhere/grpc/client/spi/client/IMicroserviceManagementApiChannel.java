@@ -7,6 +7,7 @@
  */
 package com.sitewhere.grpc.client.spi.client;
 
+import com.sitewhere.grpc.client.GrpcChannel;
 import com.sitewhere.grpc.client.spi.IApiChannel;
 import com.sitewhere.spi.microservice.IMicroserviceManagement;
 
@@ -16,6 +17,6 @@ import com.sitewhere.spi.microservice.IMicroserviceManagement;
  * 
  * @author Derek
  */
-@SuppressWarnings("rawtypes")
-public interface IMicroserviceManagementApiChannel extends IMicroserviceManagement, IApiChannel {
+public interface IMicroserviceManagementApiChannel<T extends GrpcChannel<?, ?>>
+	extends IMicroserviceManagement, IApiChannel<T> {
 }

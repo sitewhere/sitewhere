@@ -240,7 +240,7 @@ public class KafkaModelConverter {
     public static TenantEngineState asApiTenantEngineState(GTenantEngineState grpc) throws SiteWhereException {
 	TenantEngineState api = new TenantEngineState();
 	api.setMicroservice(MicroserviceModelConverter.asApiMicroserviceDetails(grpc.getMicroservice()));
-	api.setTenantToken(grpc.getTenantToken());
+	api.setTenantId(CommonModelConverter.asApiUuid(grpc.getTenantId()));
 	api.setLifecycleStatus(KafkaModelConverter.asApiLifecycleStatus(grpc.getStatus()));
 	if (grpc.getErrorList().size() > 0) {
 	    api.setLifecycleErrorStack(new ArrayList<String>());
@@ -261,7 +261,7 @@ public class KafkaModelConverter {
     public static GTenantEngineState asGrpcTenantEngineState(ITenantEngineState api) throws SiteWhereException {
 	GTenantEngineState.Builder grpc = GTenantEngineState.newBuilder();
 	grpc.setMicroservice(MicroserviceModelConverter.asGrpcMicroserviceDetails(api.getMicroservice()));
-	grpc.setTenantToken(api.getTenantToken());
+	grpc.setTenantId(CommonModelConverter.asGrpcUuid(api.getTenantId()));
 	grpc.setStatus(KafkaModelConverter.asGrpcLifecycleStatus(api.getLifecycleStatus()));
 	if (api.getLifecycleErrorStack() != null) {
 	    for (String error : api.getLifecycleErrorStack()) {

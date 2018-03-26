@@ -24,7 +24,8 @@ import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
  *
  * @param <IAssetManagementApiChannel>
  */
-public class AssetManagementApiDemux extends ApiDemux<IAssetManagementApiChannel> implements IAssetManagementApiDemux {
+public class AssetManagementApiDemux extends ApiDemux<IAssetManagementApiChannel<?>>
+	implements IAssetManagementApiDemux {
 
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(AssetManagementApiChannel.class);

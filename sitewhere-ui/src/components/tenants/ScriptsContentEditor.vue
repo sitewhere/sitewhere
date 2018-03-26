@@ -67,7 +67,7 @@ export default {
     }
   }),
 
-  props: ['script', 'version', 'tenantId'],
+  props: ['script', 'version', 'tenantToken'],
 
   components: {
     codemirror
@@ -108,7 +108,7 @@ export default {
     // Update content.
     updateContent: function () {
       var component = this
-      _getTenantScriptContent(this.$store, this.tenantId,
+      _getTenantScriptContent(this.$store, this.tenantToken,
         this.$data.selectedScript.id, this.$data.selectedVersion.versionId)
         .then(function (response) {
           component.$data.content = response.data
@@ -128,7 +128,7 @@ export default {
         'type': script.type,
         'content': btoa(this.$data.content)
       }
-      _updateTenantScript(this.$store, this.tenantId,
+      _updateTenantScript(this.$store, this.tenantToken,
         this.$data.selectedScript.id, this.$data.selectedVersion.versionId,
         updated)
         .then(function (response) {
@@ -144,7 +144,7 @@ export default {
       var request = {
         'comment': 'I am a clone.'
       }
-      _cloneTenantScript(this.$store, this.tenantId,
+      _cloneTenantScript(this.$store, this.tenantToken,
         this.$data.selectedScript.id, this.$data.selectedVersion.versionId,
         request)
         .then(function (response) {
@@ -157,7 +157,7 @@ export default {
     // Activate current version.
     onActivate: function () {
       var component = this
-      _activateTenantScript(this.$store, this.tenantId,
+      _activateTenantScript(this.$store, this.tenantToken,
         this.$data.selectedScript.id, this.$data.selectedVersion.versionId)
         .then(function (response) {
           component.$emit('activated', response.data)

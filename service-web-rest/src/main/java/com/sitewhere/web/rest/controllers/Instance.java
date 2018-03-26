@@ -130,13 +130,15 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantId}/state", method = RequestMethod.GET)
+    @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/state", method = RequestMethod.GET)
     @ApiOperation(value = "Get state information for specific tenant engine across all microservice instances")
     @Secured({ SiteWhereRoles.REST })
     public List<ITenantEngineState> getMicroserviceTenantRuntimeState(
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
-	    @ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId) throws SiteWhereException {
-	return getTopologyStateAggregator().getTenantEngineState(identifier, tenantId);
+	    @ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken)
+	    throws SiteWhereException {
+	ITenant tenant = assureTenant(tenantToken);
+	return getTopologyStateAggregator().getTenantEngineState(identifier, tenant.getId());
     }
 
     /**

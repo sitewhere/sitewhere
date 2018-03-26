@@ -70,14 +70,14 @@
       </v-card>
     </v-card>
     <scripts-content-editor :script="selectedScript"
-      :version="selectedVersion" :tenantId="tenantId"
+      :version="selectedVersion" :tenantToken="tenantToken"
       @saved="onContentSaved" @cloned="onVersionCloned"
       @activated="onVersionActivated">
     </scripts-content-editor>
     <v-snackbar :timeout="1500" success v-model="showMessage">{{ message }}
       <v-btn dark flat @click.native="showMessage = false">Close</v-btn>
     </v-snackbar>
-    <scripts-create-dialog ref="create" :tenantId="tenantId"
+    <scripts-create-dialog ref="create" :tenantToken="tenantToken"
       @scriptAdded="onScriptAdded">
     </scripts-create-dialog>
   </div>
@@ -104,7 +104,7 @@ export default {
     showMessage: false
   }),
 
-  props: ['tenantId'],
+  props: ['tenantToken'],
 
   components: {
     ScriptsContentEditor,
@@ -119,7 +119,7 @@ export default {
     // Refresh list of scripts.
     refresh: function () {
       var component = this
-      _listTenantScriptMetadata(this.$store, this.tenantId)
+      _listTenantScriptMetadata(this.$store, this.tenantToken)
         .then(function (response) {
           let scripts = response.data
           let scriptId = component.$data.scriptAfterRefresh

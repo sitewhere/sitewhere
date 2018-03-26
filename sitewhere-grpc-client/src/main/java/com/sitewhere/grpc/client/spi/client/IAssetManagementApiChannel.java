@@ -7,15 +7,16 @@
  */
 package com.sitewhere.grpc.client.spi.client;
 
-import com.sitewhere.grpc.client.spi.IApiChannel;
+import com.sitewhere.grpc.client.MultitenantGrpcChannel;
+import com.sitewhere.grpc.client.spi.multitenant.IMultitenantApiChannel;
 import com.sitewhere.spi.asset.IAssetManagement;
 
 /**
- * Provides an {@link IApiChannel} that supplies the {@link IAssetManagement}.
- * API.
+ * Provides an {@link IMultitenantApiChannel} that supplies the
+ * {@link IAssetManagement}. API.
  * 
  * @author Derek
  */
-@SuppressWarnings("rawtypes")
-public interface IAssetManagementApiChannel extends IAssetManagement, IApiChannel {
+public interface IAssetManagementApiChannel<T extends MultitenantGrpcChannel<?, ?>>
+	extends IAssetManagement, IMultitenantApiChannel<T> {
 }

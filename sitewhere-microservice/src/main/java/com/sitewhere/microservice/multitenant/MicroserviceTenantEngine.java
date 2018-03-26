@@ -357,7 +357,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	state.setMicroservice(getMicroservice().getMicroserviceDetails());
 	state.setLifecycleStatus(getLifecycleStatus());
 	state.setLifecycleErrorStack(getLifecycleError() != null ? parseErrors(getLifecycleError()) : null);
-	state.setTenantToken(getTenant().getToken());
+	state.setTenantId(getTenant().getId());
 	return state;
     }
 

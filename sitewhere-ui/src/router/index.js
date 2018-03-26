@@ -94,10 +94,10 @@ export default new Router({
           path: 'tenants',
           component: TenantsList
         }, {
-          path: 'tenants/:tenantId',
+          path: 'tenants/:tenantToken',
           component: TenantDetail
         }, {
-          path: 'tenants/:tenantId/:identifier',
+          path: 'tenants/:tenantToken/:identifier',
           component: TenantMicroserviceEditor
         }, {
           path: 'users',
@@ -111,7 +111,7 @@ export default new Router({
         }
       ]
     }, {
-      path: '/tenants/:tenantId',
+      path: '/tenants/:tenantToken',
       component: TenantAdministration,
       children: [
         {

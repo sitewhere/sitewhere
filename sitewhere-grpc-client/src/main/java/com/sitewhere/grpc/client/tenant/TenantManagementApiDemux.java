@@ -24,7 +24,7 @@ import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
  *
  * @param <IAssetManagementApiChannel>
  */
-public class TenantManagementApiDemux extends ApiDemux<ITenantManagementApiChannel>
+public class TenantManagementApiDemux extends ApiDemux<ITenantManagementApiChannel<?>>
 	implements ITenantManagementApiDemux {
 
     /** Static logger instance */
@@ -47,7 +47,7 @@ public class TenantManagementApiDemux extends ApiDemux<ITenantManagementApiChann
      * com.sitewhere.grpc.model.spi.IApiDemux#createApiChannel(java.lang.String)
      */
     @Override
-    public ITenantManagementApiChannel createApiChannel(String host) throws SiteWhereException {
+    public ITenantManagementApiChannel<?> createApiChannel(String host) throws SiteWhereException {
 	return new CachedTenantManagementApiChannel(this, getMicroservice(), host);
     }
 

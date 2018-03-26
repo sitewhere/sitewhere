@@ -15,7 +15,7 @@ export default {
   data: () => ({
   }),
 
-  props: ['tenantId'],
+  props: ['tenantToken'],
 
   components: {
     ScriptsDialog
@@ -36,7 +36,7 @@ export default {
     // Handle payload commit.
     onCommit: function (payload) {
       var component = this
-      _createTenantScript(this.$store, this.tenantId, payload)
+      _createTenantScript(this.$store, this.tenantToken, payload)
         .then(function (response) {
           component.onCommitted(payload, response)
         }).catch(function (e) {

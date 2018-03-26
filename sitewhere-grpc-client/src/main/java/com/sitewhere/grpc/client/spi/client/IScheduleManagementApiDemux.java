@@ -9,5 +9,5 @@ package com.sitewhere.grpc.client.spi.client;
 
 import com.sitewhere.grpc.client.spi.IApiDemux;
 
-public interface IScheduleManagementApiDemux extends IApiDemux<IScheduleManagementApiChannel> {
+public interface IScheduleManagementApiDemux extends IApiDemux<IScheduleManagementApiChannel<?>> {
 }

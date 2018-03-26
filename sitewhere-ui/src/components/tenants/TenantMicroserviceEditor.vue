@@ -12,10 +12,10 @@
     <unsaved-updates-warning class="mb-3" :unsaved="dirty"
       @save="onSaveConfiguration" @revert="onRevertConfiguration">
     </unsaved-updates-warning>
-    <tenant-runtimes-block :identifier="identifier" :tenantId="tenantId">
+    <tenant-runtimes-block :identifier="identifier" :tenantToken="tenantToken">
     </tenant-runtimes-block>
     <microservice-editor :config="config" :configModel="configModel"
-      :identifier="identifier" :tenantId="tenantId"
+      :identifier="identifier" :tenantToken="tenantToken"
       @dirty="onConfigurationUpdated">
     </microservice-editor>
   </div>
@@ -36,7 +36,7 @@ import {
 export default {
 
   data: () => ({
-    tenantId: null,
+    tenantToken: null,
     identifier: null,
     tenant: null,
     config: null,
@@ -52,7 +52,7 @@ export default {
   },
 
   created: function () {
-    this.$data.tenantId = this.$route.params.tenantId
+    this.$data.tenantToken = this.$route.params.tenantToken
     this.$data.identifier = this.$route.params.identifier
     this.refresh()
   },
@@ -73,13 +73,13 @@ export default {
             id: 'tenants',
             title: 'Configure Microservice',
             icon: 'layers',
-            route: '/tenants/' + component.$data.tenantId + '/' + microservice.identifier,
+            route: '/tenants/' + component.$data.tenantToken + '/' + microservice.identifier,
             longTitle: 'Configure Tenant Microservice: ' + microservice.name
           }
           component.$store.commit('currentSection', section)
         }).catch(function (e) {
         })
-      _getTenantConfiguration(this.$store, this.$data.tenantId,
+      _getTenantConfiguration(this.$store, this.$data.tenantToken,
         this.$data.identifier)
         .then(function (response) {
           component.$data.config = response.data
@@ -90,7 +90,7 @@ export default {
     // Refresh only tenant information.
     refreshTenant: function () {
       var component = this
-      _getTenant(this.$store, this.$data.tenantId, true)
+      _getTenant(this.$store, this.$data.tenantToken, true)
         .then(function (response) {
           component.onLoaded(response.data)
         }).catch(function (e) {
@@ -110,7 +110,7 @@ export default {
     // Called when configuration is to be saved.
     onSaveConfiguration: function () {
       var component = this
-      _updateTenantConfiguration(this.$store, this.$data.tenantId,
+      _updateTenantConfiguration(this.$store, this.$data.tenantToken,
         this.$data.identifier, this.$data.config)
         .then(function (response) {
           component.$data.dirty = false
@@ -126,7 +126,7 @@ export default {
 
     // Navigate back to microservices list.
     onBackToList: function () {
-      this.$router.push('/system/tenants/' + this.$data.tenantId)
+      this.$router.push('/system/tenants/' + this.$data.tenantToken)
     }
   }
 }

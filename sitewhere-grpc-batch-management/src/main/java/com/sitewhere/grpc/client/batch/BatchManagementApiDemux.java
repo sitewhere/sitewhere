@@ -24,7 +24,8 @@ import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
  *
  * @param <IAssetManagementApiChannel>
  */
-public class BatchManagementApiDemux extends ApiDemux<IBatchManagementApiChannel> implements IBatchManagementApiDemux {
+public class BatchManagementApiDemux extends ApiDemux<IBatchManagementApiChannel<?>>
+	implements IBatchManagementApiDemux {
 
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(BatchManagementApiDemux.class);

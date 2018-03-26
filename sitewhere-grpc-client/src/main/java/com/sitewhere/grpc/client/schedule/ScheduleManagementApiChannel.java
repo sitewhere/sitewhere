@@ -10,9 +10,8 @@ package com.sitewhere.grpc.client.schedule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitewhere.grpc.client.ApiChannel;
-import com.sitewhere.grpc.client.GrpcChannel;
 import com.sitewhere.grpc.client.GrpcUtils;
+import com.sitewhere.grpc.client.MultitenantApiChannel;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
 import com.sitewhere.grpc.model.converter.ScheduleModelConverter;
@@ -53,8 +52,8 @@ import com.sitewhere.spi.tracing.ITracerProvider;
  * 
  * @author Derek
  */
-public class ScheduleManagementApiChannel extends ApiChannel<ScheduleManagementGrpcChannel>
-	implements IScheduleManagementApiChannel {
+public class ScheduleManagementApiChannel extends MultitenantApiChannel<ScheduleManagementGrpcChannel>
+	implements IScheduleManagementApiChannel<ScheduleManagementGrpcChannel> {
 
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(ScheduleManagementApiChannel.class);
@@ -69,8 +68,7 @@ public class ScheduleManagementApiChannel extends ApiChannel<ScheduleManagementG
      * .tracing.ITracerProvider, java.lang.String, int)
      */
     @Override
-    @SuppressWarnings("rawtypes")
-    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
+    public ScheduleManagementGrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
 	return new ScheduleManagementGrpcChannel(tracerProvider, host, port);
     }
 

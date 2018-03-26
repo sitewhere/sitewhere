@@ -11,7 +11,7 @@
         </microservice-banner>
         <!-- Grouped attributes for current context -->
         <component-attributes :currentContext="currentContext"
-          :tenantId="tenantId" :readOnly="true" :dirty="dirty">
+          :tenantToken="tenantToken" :readOnly="true" :dirty="dirty">
         </component-attributes>
         <!-- Elements -->
         <v-card v-if="currentContext.content">
@@ -42,10 +42,10 @@
       </v-card-text>
     </v-card>
     <component-create-dialog ref="create" :context="dialogContext"
-      :tenantId="tenantId" @elementAdded="onComponentAdded">
+      :tenantToken="tenantToken" @elementAdded="onComponentAdded">
     </component-create-dialog>
     <component-update-dialog ref="update" :context="dialogContext"
-      :tenantId="tenantId" @elementUpdated="onConfigurationElementUpdated">
+      :tenantToken="tenantToken" @elementUpdated="onConfigurationElementUpdated">
     </component-update-dialog>
   </span>
 </template>
@@ -69,7 +69,7 @@ export default {
     dirty: false
   }),
 
-  props: ['config', 'configModel', 'identifier', 'tenantId'],
+  props: ['config', 'configModel', 'identifier', 'tenantToken'],
 
   components: {
     FloatingActionButton,

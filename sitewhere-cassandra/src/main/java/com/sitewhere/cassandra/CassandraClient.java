@@ -11,7 +11,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.UserType;
 import com.datastax.driver.core.exceptions.QueryExecutionException;
 import com.sitewhere.configuration.instance.cassandra.CassandraConfiguration;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -40,6 +42,18 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
 
     /** Cassandra session */
     private Session session;
+
+    /** User type for location */
+    private UserType locationType;
+
+    /** Prepared statement for inserting a device location by id */
+    private PreparedStatement insertDeviceLocationById;
+
+    /** Prepared statement for inserting a device location by assignment */
+    private PreparedStatement insertDeviceLocationByAssignment;
+
+    /** Prepared statement for inserting a device location by area */
+    private PreparedStatement insertDeviceLocationByArea;
 
     /** Contact points parameter */
     private ILifecycleComponentParameter<String> contactPoints;
@@ -88,21 +102,75 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
 	}
 	this.cluster = builder.build();
 	this.session = getCluster().connect();
+
+	// Intitialize tenant data constructs.
 	initializeTenant();
+	initializePreparedStatements();
     }
 
     /**
      * Initializes tenant keyspace if not already created.
      */
     protected void initializeTenant() throws SiteWhereException {
+	// Create keyspace.
+	execute("CREATE KEYSPACE IF NOT EXISTS " + getKeyspace().getValue()
+		+ " WITH replication =  {'class':'SimpleStrategy','replication_factor':'1'}");
+
+	// Use keyspace.
+	execute("USE " + getKeyspace().getValue() + ";");
+
+	// Create location type.
+	execute("CREATE TYPE IF NOT EXISTS " + getKeyspace().getValue()
+		+ ".sw_location (latitude double, longitude double, elevation double);");
+	this.locationType = session.getCluster().getMetadata().getKeyspace(getKeyspace().getValue())
+		.getUserType("sw_location");
+
+	// Create measurements type.
+	execute("CREATE TYPE IF NOT EXISTS " + getKeyspace().getValue()
+		+ ".sw_measurements (measurements map<text, double>);");
+
+	// Create alerts type.
+	execute("CREATE TYPE IF NOT EXISTS " + getKeyspace().getValue()
+		+ ".sw_alert (source text, level text, type text, message text);");
+
+	// Create events_by_id table.
+	execute("CREATE TABLE IF NOT EXISTS " + getKeyspace().getValue()
+		+ ".events_by_id (deviceId uuid, eventId uuid, alternateId text, eventType text, assignmentId uuid, areaId uuid, assetId uuid, eventDate timestamp, receivedDate timestamp, location frozen<sw_location>, measurements frozen<sw_measurements>, alert frozen<sw_alert>, PRIMARY KEY ((deviceId), eventId));");
+
+	// Create events_by_assignment table.
+	execute("CREATE TABLE IF NOT EXISTS " + getKeyspace().getValue()
+		+ ".events_by_assignment (deviceId uuid, eventId uuid, alternateId text, eventType text, assignmentId uuid, areaId uuid, assetId uuid, eventDate timestamp, receivedDate timestamp, location frozen<sw_location>, measurements frozen<sw_measurements>, alert frozen<sw_alert>, PRIMARY KEY ((deviceId), assignmentId, eventDate, eventId)) WITH CLUSTERING ORDER BY (assignmentId asc, eventDate desc, eventId asc);");
+
+	// Create events_by_area table.
+	execute("CREATE TABLE IF NOT EXISTS " + getKeyspace().getValue()
+		+ ".events_by_area (deviceId uuid, eventId uuid, alternateId text, eventType text, assignmentId uuid, areaId uuid, assetId uuid, eventDate timestamp, receivedDate timestamp, location frozen<sw_location>, measurements frozen<sw_measurements>, alert frozen<sw_alert>, PRIMARY KEY ((deviceId), areaId, eventDate, eventId)) WITH CLUSTERING ORDER BY (areaId asc, eventDate desc, eventId asc);");
+    }
+
+    /**
+     * Initialize prepared statements.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void initializePreparedStatements() throws SiteWhereException {
+	this.insertDeviceLocationById = getSession().prepare("insert into " + getKeyspace().getValue()
+		+ ".events_by_id (deviceId, eventId, alternateId, eventType, assignmentId, areaId, assetId, eventDate, receivedDate, location) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	this.insertDeviceLocationByAssignment = getSession().prepare("insert into " + getKeyspace().getValue()
+		+ ".events_by_assignment (deviceId, eventId, alternateId, eventType, assignmentId, areaId, assetId, eventDate, receivedDate, location) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	this.insertDeviceLocationByArea = getSession().prepare("insert into " + getKeyspace().getValue()
+		+ ".events_by_area (deviceId, eventId, alternateId, eventType, assignmentId, areaId, assetId, eventDate, receivedDate, location) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    }
+
+    /**
+     * Execute a query in the current Cassandra session.
+     * 
+     * @param query
+     * @throws SiteWhereException
+     */
+    protected void execute(String query) throws SiteWhereException {
 	try {
-	    String createKeyspace = "CREATE KEYSPACE IF NOT EXISTS " + getKeyspace().getValue()
-		    + " WITH replication =  {'class':'SimpleStrategy','replication_factor':'1'}";
-	    getSession().execute(createKeyspace);
-	    String useKeyspace = "USE " + getKeyspace().getValue() + ";";
-	    getSession().execute(useKeyspace);
+	    getSession().execute(query);
 	} catch (QueryExecutionException e) {
-	    throw new SiteWhereException("Unable to create tenant keyspace.", e);
+	    throw new SiteWhereException("Query execution failed.", e);
 	}
     }
 
@@ -162,5 +230,37 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
 
     public void setSession(Session session) {
 	this.session = session;
+    }
+
+    public UserType getLocationType() {
+	return locationType;
+    }
+
+    public void setLocationType(UserType locationType) {
+	this.locationType = locationType;
+    }
+
+    public PreparedStatement getInsertDeviceLocationById() {
+	return insertDeviceLocationById;
+    }
+
+    public void setInsertDeviceLocationById(PreparedStatement insertDeviceLocationById) {
+	this.insertDeviceLocationById = insertDeviceLocationById;
+    }
+
+    public PreparedStatement getInsertDeviceLocationByAssignment() {
+	return insertDeviceLocationByAssignment;
+    }
+
+    public void setInsertDeviceLocationByAssignment(PreparedStatement insertDeviceLocationByAssignment) {
+	this.insertDeviceLocationByAssignment = insertDeviceLocationByAssignment;
+    }
+
+    public PreparedStatement getInsertDeviceLocationByArea() {
+	return insertDeviceLocationByArea;
+    }
+
+    public void setInsertDeviceLocationByArea(PreparedStatement insertDeviceLocationByArea) {
+	this.insertDeviceLocationByArea = insertDeviceLocationByArea;
     }
 }

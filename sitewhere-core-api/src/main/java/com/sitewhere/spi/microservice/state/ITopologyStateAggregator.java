@@ -8,6 +8,8 @@
 package com.sitewhere.spi.microservice.state;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import com.sitewhere.spi.SiteWhereException;
 
@@ -27,15 +29,29 @@ public interface ITopologyStateAggregator extends IMicroserviceStateUpdatesKafka
     public IInstanceTopologySnapshot getInstanceTopologySnapshot();
 
     /**
-     * For a given type of microservice, find all tenant engines running on the
-     * instance and return their state.
+     * For a given type of microservice, find tenant engines across all instances
+     * for the given tenant and return their state.
      * 
      * @param identifier
      * @param tenantId
      * @return
      * @throws SiteWhereException
      */
-    public List<ITenantEngineState> getTenantEngineState(String identifier, String tenantId) throws SiteWhereException;
+    public List<ITenantEngineState> getTenantEngineState(String identifier, UUID tenantId) throws SiteWhereException;
+
+    /**
+     * Wait for a tenant engine of the given type for the given tenant id to become
+     * available.
+     * 
+     * @param identifier
+     * @param tenantId
+     * @param duration
+     * @param unit
+     * @param logMessageDelay
+     * @throws SiteWhereException
+     */
+    public void waitForTenantEngineAvailable(String identifier, UUID tenantId, long duration, TimeUnit unit,
+	    long logMessageDelay) throws SiteWhereException;
 
     /**
      * Add listener for instance topology updates.

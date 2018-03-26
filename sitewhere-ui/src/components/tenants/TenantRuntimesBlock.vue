@@ -38,7 +38,7 @@ export default {
     TenantRuntimeEntry
   },
 
-  props: ['identifier', 'tenantId'],
+  props: ['identifier', 'tenantToken'],
 
   computed: {
   },
@@ -53,7 +53,7 @@ export default {
     refresh: function () {
       var component = this
       _getMicroserviceTenantRuntimeState(this.$store, this.identifier,
-        this.tenantId)
+        this.tenantToken)
         .then(function (response) {
           var rts = response.data
           rts.forEach(function (element) {

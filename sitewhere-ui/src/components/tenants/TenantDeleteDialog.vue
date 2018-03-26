@@ -17,7 +17,7 @@ export default {
     error: null
   }),
 
-  props: ['tenantId'],
+  props: ['tenantToken'],
 
   components: {
     DeleteDialog
@@ -32,7 +32,7 @@ export default {
     // Perform delete.
     onDeleteConfirmed: function () {
       var component = this
-      _deleteTenant(this.$store, this.tenantId, true)
+      _deleteTenant(this.$store, this.tenantToken, true)
         .then(function (response) {
           component.onDeleted(response)
         }).catch(function (e) {

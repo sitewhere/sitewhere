@@ -48,7 +48,7 @@ import ErrorBanner from '../common/ErrorBanner'
 export default {
   data: () => ({
     drawer: true,
-    tenantId: null,
+    tenantToken: null,
     sections: [{
       id: 'areasGroup',
       title: 'Area Management',
@@ -192,21 +192,21 @@ export default {
       return
     }
 
-    // Verify that a tenant id was specified in the route.
-    var tenantId = this.$route.params.tenantId
-    if (!tenantId) {
-      console.log('No tenant id passed. Logging out!')
+    // Verify that a tenant token was specified in the route.
+    var tenantToken = this.$route.params.tenantToken
+    if (!tenantToken) {
+      console.log('No tenant token passed. Logging out!')
       this.onLogOut()
       return
     }
-    this.$data.tenantId = tenantId
+    this.$data.tenantToken = tenantToken
 
     // Load tenant if tenant id changed or not already loaded.
     var tenant = this.$store.getters.selectedTenant
-    if ((!tenant) || (tenant.id !== tenantId)) {
-      this.onLoadTenant(tenantId)
+    if ((!tenant) || (tenant.token !== tenantToken)) {
+      this.onLoadTenant(tenantToken)
     } else {
-      console.log('tenant ' + tenantId + ' already loaded')
+      console.log('tenant ' + tenantToken + ' already loaded')
 
       // Select first section from list.
       this.onSectionClicked(this.$data.sections[0])
@@ -215,22 +215,22 @@ export default {
 
   methods: {
     // Load tenant based on tenant id.
-    onLoadTenant: function (tenantId) {
-      console.log('loading tenant ' + tenantId)
+    onLoadTenant: function (tenantToken) {
+      console.log('loading tenant ' + tenantToken)
       var component = this
 
       // Make api call to load tenant.
-      _getTenant(this.$store, tenantId)
+      _getTenant(this.$store, tenantToken)
         .then(function (response) {
           component.onTenantLoaded(response.data)
         }).catch(function (e) {
-          console.log('Unable to load tenant ' + tenantId + '. Logging out!')
+          console.log('Unable to load tenant ' + tenantToken + '. Logging out!')
           component.onLogOut()
         })
     },
     // Called after tenant is loaded.
     onTenantLoaded: function (tenant) {
-      console.log('Successfully loaded ' + tenant.id + ' tenant.')
+      console.log('Successfully loaded ' + tenant.token + ' tenant.')
       this.$store.commit('selectedTenant', tenant)
 
       // Select first section from list.
@@ -239,7 +239,7 @@ export default {
     // Called when a section is clicked.
     onSectionClicked: function (section) {
       this.$store.commit('currentSection', section)
-      this.$router.push('/tenants/' + this.$data.tenantId + '/' + section.route)
+      this.$router.push('/tenants/' + this.$data.tenantToken + '/' + section.route)
     },
     onUserAction: function (action) {
       if (action.id === 'logout') {

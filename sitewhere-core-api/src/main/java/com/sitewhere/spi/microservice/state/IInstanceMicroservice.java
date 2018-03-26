@@ -8,6 +8,7 @@
 package com.sitewhere.spi.microservice.state;
 
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Microservice associated with a SiteWhere instance.
@@ -28,7 +29,7 @@ public interface IInstanceMicroservice {
      * 
      * @return
      */
-    public Map<String, IInstanceTenantEngine> getTenantEngines();
+    public Map<UUID, IInstanceTenantEngine> getTenantEngines();
 
     /**
      * Get time the last microservice update was received.

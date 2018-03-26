@@ -9,6 +9,7 @@ package com.sitewhere.rest.model.microservice.state;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import com.sitewhere.spi.microservice.state.IInstanceMicroservice;
 import com.sitewhere.spi.microservice.state.IInstanceTenantEngine;
@@ -25,7 +26,7 @@ public class InstanceMicroservice implements IInstanceMicroservice {
     private IMicroserviceState latestState;
 
     /** Map of tenant engines by tenant id */
-    private Map<String, IInstanceTenantEngine> tenantEngines = new HashMap<String, IInstanceTenantEngine>();
+    private Map<UUID, IInstanceTenantEngine> tenantEngines = new HashMap<UUID, IInstanceTenantEngine>();
 
     /** Time last update was received */
     private long lastUpdated;
@@ -48,11 +49,11 @@ public class InstanceMicroservice implements IInstanceMicroservice {
      * com.sitewhere.spi.microservice.state.IInstanceMicroservice#getTenantEngines()
      */
     @Override
-    public Map<String, IInstanceTenantEngine> getTenantEngines() {
+    public Map<UUID, IInstanceTenantEngine> getTenantEngines() {
 	return tenantEngines;
     }
 
-    public void setTenantEngines(Map<String, IInstanceTenantEngine> tenantEngines) {
+    public void setTenantEngines(Map<UUID, IInstanceTenantEngine> tenantEngines) {
 	this.tenantEngines = tenantEngines;
     }
 

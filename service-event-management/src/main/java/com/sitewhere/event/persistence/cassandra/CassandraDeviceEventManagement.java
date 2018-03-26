@@ -9,12 +9,21 @@ package com.sitewhere.event.persistence.cassandra;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.datastax.driver.core.BoundStatement;
+import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.ResultSetFuture;
+import com.datastax.driver.core.exceptions.QueryExecutionException;
+import com.google.common.util.concurrent.Futures;
 import com.sitewhere.cassandra.CassandraClient;
 import com.sitewhere.event.persistence.DeviceEventManagementPersistence;
+import com.sitewhere.rest.model.device.event.DeviceAlert;
+import com.sitewhere.rest.model.device.event.DeviceLocation;
+import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -124,8 +133,9 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
      */
     @Override
     public IDeviceMeasurements addDeviceMeasurements(IDeviceAssignment assignment,
-	    IDeviceMeasurementsCreateRequest measurements) throws SiteWhereException {
-	throw new SiteWhereException("Not implemented.");
+	    IDeviceMeasurementsCreateRequest request) throws SiteWhereException {
+	DeviceMeasurements mxs = DeviceEventManagementPersistence.deviceMeasurementsCreateLogic(request, assignment);
+	return mxs;
     }
 
     /*
@@ -159,7 +169,26 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     @Override
     public IDeviceLocation addDeviceLocation(IDeviceAssignment assignment, IDeviceLocationCreateRequest request)
 	    throws SiteWhereException {
-	throw new SiteWhereException("Not implemented.");
+	DeviceLocation location = DeviceEventManagementPersistence.deviceLocationCreateLogic(assignment, request);
+
+	// Build insert for event by id.
+	BoundStatement eventById = getClient().getInsertDeviceLocationById().bind();
+	CassandraDeviceLocation.bindFields(getClient(), eventById, location);
+	ResultSetFuture eventByIdFuture = getClient().getSession().executeAsync(eventById);
+
+	// Build insert for event by assignment.
+	BoundStatement eventByAssn = getClient().getInsertDeviceLocationByAssignment().bind();
+	CassandraDeviceLocation.bindFields(getClient(), eventByAssn, location);
+	ResultSetFuture eventByAssnFuture = getClient().getSession().executeAsync(eventByAssn);
+
+	// Build insert for event by area.
+	BoundStatement eventByArea = getClient().getInsertDeviceLocationByArea().bind();
+	CassandraDeviceLocation.bindFields(getClient(), eventByArea, location);
+	ResultSetFuture eventByAreaFuture = getClient().getSession().executeAsync(eventByArea);
+
+	processMultiple(eventByIdFuture, eventByAssnFuture, eventByAreaFuture);
+
+	return location;
     }
 
     /*
@@ -193,7 +222,8 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     @Override
     public IDeviceAlert addDeviceAlert(IDeviceAssignment assignment, IDeviceAlertCreateRequest request)
 	    throws SiteWhereException {
-	throw new SiteWhereException("Not implemented.");
+	DeviceAlert alert = DeviceEventManagementPersistence.deviceAlertCreateLogic(assignment, request);
+	return alert;
     }
 
     /*
@@ -361,6 +391,21 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     public ISearchResults<IDeviceStateChange> listDeviceStateChangesForAreas(List<UUID> areaIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented.");
+    }
+
+    protected void processMultiple(ResultSetFuture... futures) throws SiteWhereException {
+	try {
+	    List<ResultSet> results = Futures.successfulAsList(futures).get();
+	    if (results.size() != futures.length) {
+		throw new SiteWhereException("One or more queries failed.");
+	    }
+	} catch (QueryExecutionException e) {
+	    throw new SiteWhereException("Unable to add device location.", e);
+	} catch (InterruptedException e) {
+	    throw new SiteWhereException("Unable to add device location.", e);
+	} catch (ExecutionException e) {
+	    throw new SiteWhereException("Unable to add device location.", e);
+	}
     }
 
     /*

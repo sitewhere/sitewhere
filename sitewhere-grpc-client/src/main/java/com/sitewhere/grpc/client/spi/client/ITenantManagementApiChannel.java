@@ -7,6 +7,7 @@
  */
 package com.sitewhere.grpc.client.spi.client;
 
+import com.sitewhere.grpc.client.GrpcChannel;
 import com.sitewhere.grpc.client.spi.IApiChannel;
 import com.sitewhere.spi.tenant.ITenantAdministration;
 import com.sitewhere.spi.tenant.ITenantManagement;
@@ -17,6 +18,6 @@ import com.sitewhere.spi.tenant.ITenantManagement;
  * 
  * @author Derek
  */
-@SuppressWarnings("rawtypes")
-public interface ITenantManagementApiChannel extends ITenantManagement, ITenantAdministration, IApiChannel {
+public interface ITenantManagementApiChannel<T extends GrpcChannel<?, ?>>
+	extends ITenantManagement, ITenantAdministration, IApiChannel<T> {
 }

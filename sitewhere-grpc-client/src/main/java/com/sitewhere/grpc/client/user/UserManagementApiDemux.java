@@ -24,7 +24,7 @@ import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
  *
  * @param <IAssetManagementApiChannel>
  */
-public class UserManagementApiDemux extends ApiDemux<IUserManagementApiChannel> implements IUserManagementApiDemux {
+public class UserManagementApiDemux extends ApiDemux<IUserManagementApiChannel<?>> implements IUserManagementApiDemux {
 
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(UserManagementApiDemux.class);
@@ -46,7 +46,7 @@ public class UserManagementApiDemux extends ApiDemux<IUserManagementApiChannel> 
      * com.sitewhere.grpc.model.spi.IApiDemux#createApiChannel(java.lang.String)
      */
     @Override
-    public IUserManagementApiChannel createApiChannel(String host) throws SiteWhereException {
+    public IUserManagementApiChannel<?> createApiChannel(String host) throws SiteWhereException {
 	return new CachedUserManagementApiChannel(this, getMicroservice(), host);
     }
 

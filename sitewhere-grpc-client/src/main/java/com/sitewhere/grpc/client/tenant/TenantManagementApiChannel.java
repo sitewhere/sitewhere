@@ -14,7 +14,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.grpc.client.ApiChannel;
-import com.sitewhere.grpc.client.GrpcChannel;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
@@ -51,7 +50,7 @@ import com.sitewhere.spi.tracing.ITracerProvider;
  * @author Derek
  */
 public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcChannel>
-	implements ITenantManagementApiChannel {
+	implements ITenantManagementApiChannel<TenantManagementGrpcChannel> {
 
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(TenantManagementApiChannel.class);
@@ -66,8 +65,7 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
      * .tracing.ITracerProvider, java.lang.String, int)
      */
     @Override
-    @SuppressWarnings("rawtypes")
-    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
+    public TenantManagementGrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
 	return new TenantManagementGrpcChannel(tracerProvider, host, port);
     }
 

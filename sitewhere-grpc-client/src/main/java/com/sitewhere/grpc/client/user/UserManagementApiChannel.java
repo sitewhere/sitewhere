@@ -13,7 +13,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.grpc.client.ApiChannel;
-import com.sitewhere.grpc.client.GrpcChannel;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
@@ -65,7 +64,7 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
  * @author Derek
  */
 public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChannel>
-	implements IUserManagementApiChannel {
+	implements IUserManagementApiChannel<UserManagementGrpcChannel> {
 
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(UserManagementApiChannel.class);
@@ -80,8 +79,7 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
      * .tracing.ITracerProvider, java.lang.String, int)
      */
     @Override
-    @SuppressWarnings("rawtypes")
-    public GrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
+    public UserManagementGrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
 	return new UserManagementGrpcChannel(tracerProvider, host, port);
     }
 

@@ -79,7 +79,7 @@ message GMicroserviceState {
 // Tenant engine state.
 message GTenantEngineState {
 	com.sitewhere.grpc.model.GMicroserviceDetails microservice = 1;
-	string tenantToken = 2;
+	com.sitewhere.grpc.model.GUUID tenantId = 2;
 	GLifecycleStatus status = 3;
 	repeated string error = 4;
 }

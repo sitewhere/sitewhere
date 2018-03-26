@@ -21,7 +21,7 @@
                   <v-flex xs12>
                     <v-text-field required class="mt-1" label="Tenant token"
                       v-model="tenantToken" hide-details prepend-icon="info"
-                      :rules="[rules.tenantId]">
+                      :rules="[rules.tenantToken]">
                     </v-text-field>
                   </v-flex>
                   <v-flex xs12>
@@ -91,7 +91,7 @@ export default {
     rules: {
       tenantToken: (value) => {
         const pattern = /^[\w-]*$/
-        return pattern.test(value) || 'Tenant id should be alphanumeric with no spaces.'
+        return pattern.test(value) || 'Tenant token should be alphanumeric with no spaces.'
       }
     },
     error: null

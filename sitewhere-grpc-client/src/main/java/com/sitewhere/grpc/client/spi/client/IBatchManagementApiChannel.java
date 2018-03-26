@@ -7,15 +7,16 @@
  */
 package com.sitewhere.grpc.client.spi.client;
 
-import com.sitewhere.grpc.client.spi.IApiChannel;
+import com.sitewhere.grpc.client.MultitenantGrpcChannel;
+import com.sitewhere.grpc.client.spi.multitenant.IMultitenantApiChannel;
 import com.sitewhere.spi.batch.IBatchManagement;
 
 /**
- * Provides an {@link IApiChannel} that supplies the {@link IBatchManagement}.
- * API.
+ * Provides an {@link IMultitenantApiChannel} that supplies the
+ * {@link IBatchManagement}. API.
  * 
  * @author Derek
  */
-@SuppressWarnings("rawtypes")
-public interface IBatchManagementApiChannel extends IBatchManagement, IApiChannel {
+public interface IBatchManagementApiChannel<T extends MultitenantGrpcChannel<?, ?>>
+	extends IBatchManagement, IMultitenantApiChannel<T> {
 }

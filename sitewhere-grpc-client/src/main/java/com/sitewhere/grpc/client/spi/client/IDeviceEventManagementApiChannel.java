@@ -7,15 +7,16 @@
  */
 package com.sitewhere.grpc.client.spi.client;
 
-import com.sitewhere.grpc.client.spi.IApiChannel;
+import com.sitewhere.grpc.client.MultitenantGrpcChannel;
+import com.sitewhere.grpc.client.spi.multitenant.IMultitenantApiChannel;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 
 /**
- * Provides an {@link IApiChannel} that supplies the
+ * Provides an {@link IMultitenantApiChannel} that supplies the
  * {@link IDeviceEventManagement}. API.
  * 
  * @author Derek
  */
-@SuppressWarnings("rawtypes")
-public interface IDeviceEventManagementApiChannel extends IDeviceEventManagement, IApiChannel {
+public interface IDeviceEventManagementApiChannel<T extends MultitenantGrpcChannel<?, ?>>
+	extends IDeviceEventManagement, IMultitenantApiChannel<T> {
 }

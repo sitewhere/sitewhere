@@ -29,9 +29,8 @@ import io.opentracing.ActiveSpan;
  *
  * @param <T>
  */
-@SuppressWarnings("rawtypes")
 public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngineLifecycleComponent
-	implements IApiChannel {
+	implements IApiChannel<T> {
 
     /** Interval at which GRPC connection will be checked */
     private static final long CONNECTION_CHECK_INTERVAL = 2 * 1000;
@@ -76,7 +75,6 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
      * spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    @SuppressWarnings("unchecked")
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	this.grpcChannel = (T) createGrpcChannel(getMicroservice(), getHostname(), getPort());
 	initializeNestedComponent(getGrpcChannel(), monitor, true);

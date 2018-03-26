@@ -9,11 +9,14 @@ package com.sitewhere.microservice.state;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sitewhere.grpc.client.spi.ApiNotAvailableException;
 import com.sitewhere.rest.model.microservice.state.InstanceMicroservice;
 import com.sitewhere.rest.model.microservice.state.InstanceTenantEngine;
 import com.sitewhere.rest.model.microservice.state.InstanceTopologyEntry;
@@ -43,6 +46,9 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(TopologyStateAggregator.class);
 
+    /** Interval at which tenant engine will be checked */
+    private static final long TENANT_ENGINE_CHECK_INTERVAL = 2 * 1000;
+
     /** Latest inferred instance topology snapshot */
     private IInstanceTopologySnapshot instanceTopologySnapshot = new InstanceTopologySnapshot();
 
@@ -55,15 +61,15 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
 
     /*
      * @see com.sitewhere.spi.microservice.state.ITopologyStateAggregator#
-     * getTenantEngineState(java.lang.String, java.lang.String)
+     * getTenantEngineState(java.lang.String, java.util.UUID)
      */
     @Override
-    public List<ITenantEngineState> getTenantEngineState(String identifier, String tenantId) throws SiteWhereException {
+    public List<ITenantEngineState> getTenantEngineState(String identifier, UUID tenantId) throws SiteWhereException {
+	List<ITenantEngineState> result = new ArrayList<>();
 	IInstanceTopologyEntry entry = getInstanceTopologySnapshot().getTopologyEntriesByIdentifier().get(identifier);
 	if (entry == null) {
-	    throw new SiteWhereException("No microservices found for the given identifier.");
+	    return result;
 	}
-	List<ITenantEngineState> result = new ArrayList<>();
 	for (IInstanceMicroservice microservice : entry.getMicroservicesByHostname().values()) {
 	    IInstanceTenantEngine tenantEngine = microservice.getTenantEngines().get(tenantId);
 	    if (tenantEngine != null) {
@@ -71,6 +77,41 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
 	    }
 	}
 	return result;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.state.ITopologyStateAggregator#
+     * waitForTenantEngineAvailable(java.lang.String, java.util.UUID, long,
+     * java.util.concurrent.TimeUnit, long)
+     */
+    @Override
+    public void waitForTenantEngineAvailable(String identifier, UUID tenantId, long duration, TimeUnit unit,
+	    long logMessageDelay) throws SiteWhereException {
+	long start = System.currentTimeMillis();
+	long deadline = start + unit.toMillis(duration);
+	long logAfter = start + unit.toMillis(logMessageDelay);
+	while ((System.currentTimeMillis() - deadline) < 0) {
+	    try {
+		List<ITenantEngineState> engines = getTenantEngineState(identifier, tenantId);
+		for (ITenantEngineState engine : engines) {
+		    if (engine.getLifecycleStatus() == LifecycleStatus.Started) {
+			return;
+		    }
+		}
+		if ((System.currentTimeMillis() - logAfter) > 0) {
+		    if (engines.size() > 0) {
+			getLogger().info("Tenant engine/s found. Waiting for started state.");
+		    } else {
+			getLogger().info("No tenant engine/s found. Waiting for startup.");
+		    }
+		}
+		Thread.sleep(TENANT_ENGINE_CHECK_INTERVAL);
+	    } catch (Exception e) {
+		throw new ApiNotAvailableException("Unhandled exception waiting for tenant engine to become available.",
+			e);
+	    }
+	}
+	throw new ApiNotAvailableException("Tenant engine not available within timeout period.");
     }
 
     /*
@@ -105,12 +146,12 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
 
 	// Get microservice and existing engine (creating if necessary.
 	IInstanceMicroservice microservice = getOrCreateMicroservice(placeholder);
-	IInstanceTenantEngine engine = microservice.getTenantEngines().get(updated.getTenantToken());
+	IInstanceTenantEngine engine = microservice.getTenantEngines().get(updated.getTenantId());
 	if (engine == null) {
 	    InstanceTenantEngine created = new InstanceTenantEngine();
 	    created.setLatestState(updated);
 	    created.setLastUpdated(System.currentTimeMillis());
-	    microservice.getTenantEngines().put(updated.getTenantToken(), created);
+	    microservice.getTenantEngines().put(updated.getTenantId(), created);
 	    engine = created;
 	    onTenantEngineAdded(microservice.getLatestState(), updated);
 	} else {
@@ -121,7 +162,7 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
 	    // Handle terminated tenant engine.
 	    if ((updated.getLifecycleStatus() == LifecycleStatus.Terminating)
 		    || (updated.getLifecycleStatus() == LifecycleStatus.Terminated)) {
-		microservice.getTenantEngines().remove(existing.getTenantToken());
+		microservice.getTenantEngines().remove(existing.getTenantId());
 		onTenantEngineRemoved(microservice.getLatestState(), existing);
 	    } else if (existing.getLifecycleStatus() != updated.getLifecycleStatus()) {
 		onTenantEngineUpdated(microservice.getLatestState(), existing, updated);
@@ -237,7 +278,7 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
      */
     protected String tenantId(IMicroserviceState microservice, ITenantEngineState tenantEngine) {
 	return microservice.getMicroservice().getIdentifier() + ":" + microservice.getMicroservice().getHostname() + ":"
-		+ tenantEngine.getTenantToken();
+		+ tenantEngine.getTenantId();
     }
 
     /**
