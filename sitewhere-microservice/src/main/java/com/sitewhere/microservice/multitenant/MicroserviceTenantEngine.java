@@ -26,6 +26,7 @@ import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
@@ -474,13 +475,14 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * waitForModuleBootstrapped(java.lang.String, long,
-     * java.util.concurrent.TimeUnit)
+     * waitForModuleBootstrapped(com.sitewhere.spi.microservice.
+     * MicroserviceIdentifier, long, java.util.concurrent.TimeUnit)
      */
     @Override
-    public void waitForModuleBootstrapped(String identifier, long time, TimeUnit unit) throws SiteWhereException {
-	String bspath = getMicroservice().getInstanceTenantStatePath(getTenant().getId()) + "/" + identifier + "/"
-		+ MicroserviceTenantEngine.MODULE_BOOTSTRAPPED_NAME;
+    public void waitForModuleBootstrapped(MicroserviceIdentifier identifier, long time, TimeUnit unit)
+	    throws SiteWhereException {
+	String bspath = getMicroservice().getInstanceTenantStatePath(getTenant().getId()) + "/" + identifier.getPath()
+		+ "/" + MicroserviceTenantEngine.MODULE_BOOTSTRAPPED_NAME;
 	CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
 	long deadline = System.currentTimeMillis() + unit.toMillis(time);
 	while ((deadline - System.currentTimeMillis()) > 0) {
@@ -488,7 +490,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 		if (curator.checkExists().forPath(bspath) != null) {
 		    return;
 		}
-		getLogger().info("Waiting for '" + identifier + "' to be bootstrapped before continuing...");
+		getLogger().info("Waiting for bootstrap file at " + bspath + " before continuing...");
 		Thread.sleep(3000);
 	    } catch (InterruptedException e) {
 		throw new SiteWhereException("Interrupted while waiting for module to be bootstrapped.", e);
@@ -517,7 +519,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     @Override
     public String getTenantStatePath() throws SiteWhereException {
 	return getMicroservice().getInstanceTenantStatePath(getTenant().getId()) + "/"
-		+ getMicroservice().getIdentifier();
+		+ getMicroservice().getIdentifier().getPath();
     }
 
     /*
@@ -537,7 +539,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
      */
     @Override
     public String getModuleConfigurationName() throws SiteWhereException {
-	return getMicroservice().getIdentifier() + MicroserviceTenantEngine.MODULE_CONFIGURATION_SUFFIX;
+	return getMicroservice().getIdentifier().getPath() + MicroserviceTenantEngine.MODULE_CONFIGURATION_SUFFIX;
     }
 
     /*

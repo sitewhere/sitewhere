@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.state.IInstanceMicroservice;
 import com.sitewhere.spi.microservice.state.IInstanceTopologyEntry;
 import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
@@ -27,14 +28,14 @@ public class TopologySummaryBuilder {
      * @return
      */
     public static List<InstanceTopologySummary> build(IInstanceTopologySnapshot snapshot) {
-	Map<String, InstanceTopologySummary> summaries = new HashMap<>();
+	Map<MicroserviceIdentifier, InstanceTopologySummary> summaries = new HashMap<>();
 	for (IInstanceTopologyEntry entry : snapshot.getTopologyEntriesByIdentifier().values()) {
 	    for (IInstanceMicroservice microservice : entry.getMicroservicesByHostname().values()) {
 		IMicroserviceDetails details = microservice.getLatestState().getMicroservice();
 		InstanceTopologySummary summary = summaries.get(details.getIdentifier());
 		if (summary == null) {
 		    summary = new InstanceTopologySummary();
-		    summary.setIdentifier(details.getIdentifier());
+		    summary.setIdentifier(details.getIdentifier().getPath());
 		    summary.setName(details.getName());
 		    summary.setIcon(details.getIcon());
 		    summary.setDescription(details.getDescription());

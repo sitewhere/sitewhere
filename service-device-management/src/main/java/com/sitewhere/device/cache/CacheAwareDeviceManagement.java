@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.microservice.hazelcast.cache;
+package com.sitewhere.device.cache;
 
 import java.util.UUID;
 
@@ -24,7 +24,7 @@ import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
-import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.ICachingMicroservice;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -58,17 +58,20 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
     /** Device assignment by id cache */
     private ICacheProvider<UUID, IDeviceAssignment> deviceAssignmentByIdCache;
 
-    public CacheAwareDeviceManagement(IDeviceManagement delegate, IMicroservice microservice) {
+    public CacheAwareDeviceManagement(IDeviceManagement delegate, ICachingMicroservice microservice) {
 	super(delegate);
-	this.areaCache = new DeviceManagementCacheProviders.AreaCache(microservice, true);
-	this.areaByIdCache = new DeviceManagementCacheProviders.AreaByIdCache(microservice, true);
-	this.deviceTypeCache = new DeviceManagementCacheProviders.DeviceTypeCache(microservice, true);
-	this.deviceTypeByIdCache = new DeviceManagementCacheProviders.DeviceTypeByIdCache(microservice, true);
-	this.deviceCache = new DeviceManagementCacheProviders.DeviceCache(microservice, true);
-	this.deviceByIdCache = new DeviceManagementCacheProviders.DeviceByIdCache(microservice, true);
-	this.deviceAssignmentCache = new DeviceManagementCacheProviders.DeviceAssignmentCache(microservice, true);
-	this.deviceAssignmentByIdCache = new DeviceManagementCacheProviders.DeviceAssignmentByIdCache(microservice,
-		true);
+	this.areaCache = new DeviceManagementCacheProviders.AreaByTokenCache(microservice.getHazelcastManager());
+	this.areaByIdCache = new DeviceManagementCacheProviders.AreaByIdCache(microservice.getHazelcastManager());
+	this.deviceTypeCache = new DeviceManagementCacheProviders.DeviceTypeByTokenCache(
+		microservice.getHazelcastManager());
+	this.deviceTypeByIdCache = new DeviceManagementCacheProviders.DeviceTypeByIdCache(
+		microservice.getHazelcastManager());
+	this.deviceCache = new DeviceManagementCacheProviders.DeviceByTokenCache(microservice.getHazelcastManager());
+	this.deviceByIdCache = new DeviceManagementCacheProviders.DeviceByIdCache(microservice.getHazelcastManager());
+	this.deviceAssignmentCache = new DeviceManagementCacheProviders.DeviceAssignmentByTokenCache(
+		microservice.getHazelcastManager());
+	this.deviceAssignmentByIdCache = new DeviceManagementCacheProviders.DeviceAssignmentByIdCache(
+		microservice.getHazelcastManager());
     }
 
     /*

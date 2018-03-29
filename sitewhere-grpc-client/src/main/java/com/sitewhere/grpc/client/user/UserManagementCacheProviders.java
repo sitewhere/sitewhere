@@ -12,8 +12,9 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sitewhere.grpc.client.cache.CacheIdentifier;
 import com.sitewhere.grpc.client.cache.CacheProvider;
-import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.hazelcast.IHazelcastProvider;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 
@@ -35,13 +36,13 @@ public class UserManagementCacheProviders {
      * 
      * @author Derek
      */
-    public static class UserCache extends CacheProvider<String, IUser> {
+    public static class UserByTokenCache extends CacheProvider<String, IUser> {
 
 	/** Static logger instance */
-	private static Log LOGGER = LogFactory.getLog(UserCache.class);
+	private static Log LOGGER = LogFactory.getLog(UserByTokenCache.class);
 
-	public UserCache(IMicroservice microservice, boolean createOnStartup) {
-	    super(microservice, ID_USER_CACHE, createOnStartup);
+	public UserByTokenCache(IHazelcastProvider hazelcastProvider) {
+	    super(hazelcastProvider, CacheIdentifier.UserByToken);
 	}
 
 	/*
@@ -58,13 +59,13 @@ public class UserManagementCacheProviders {
      * 
      * @author Derek
      */
-    public static class GrantedAuthoritiesCache extends CacheProvider<String, List<IGrantedAuthority>> {
+    public static class GrantedAuthorityByTokenCache extends CacheProvider<String, List<IGrantedAuthority>> {
 
 	/** Static logger instance */
-	private static Log LOGGER = LogFactory.getLog(GrantedAuthoritiesCache.class);
+	private static Log LOGGER = LogFactory.getLog(GrantedAuthorityByTokenCache.class);
 
-	public GrantedAuthoritiesCache(IMicroservice microservice, boolean createOnStartup) {
-	    super(microservice, ID_GRANTED_AUTHORITIES_CACHE, createOnStartup);
+	public GrantedAuthorityByTokenCache(IHazelcastProvider hazelcastProvider) {
+	    super(hazelcastProvider, CacheIdentifier.GrantedAuthorityByToken);
 	}
 
 	/*

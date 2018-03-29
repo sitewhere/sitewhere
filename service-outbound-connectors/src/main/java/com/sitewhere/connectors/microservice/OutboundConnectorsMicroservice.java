@@ -21,7 +21,7 @@ import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -59,8 +59,8 @@ public class OutboundConnectorsMicroservice extends MultitenantMicroservice<IOut
      * @see com.sitewhere.spi.microservice.IMicroservice#getIdentifier()
      */
     @Override
-    public String getIdentifier() {
-	return IMicroserviceIdentifiers.OUTBOUND_CONNECTORS;
+    public MicroserviceIdentifier getIdentifier() {
+	return MicroserviceIdentifier.OutboundConnectors;
     }
 
     /*

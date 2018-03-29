@@ -16,7 +16,7 @@ import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.hazelcast.IHazelcastProvider;
 
 /**
  * Cache providers for device management entities.
@@ -25,42 +25,18 @@ import com.sitewhere.spi.microservice.IMicroservice;
  */
 public class DeviceManagementCacheProviders {
 
-    /** Cache id for area cache */
-    public static final String ID_AREA_CACHE = "area_by_token";
-
-    /** Cache id for area by id cache */
-    public static final String ID_AREA_ID_CACHE = "area_by_id";
-
-    /** Cache id for device type cache */
-    public static final String ID_DEVICE_TYPE_CACHE = "device_type_by_token";
-
-    /** Cache id for device type by id cache */
-    public static final String ID_DEVICE_TYPE_ID_CACHE = "device_type_by_id";
-
-    /** Cache id for device cache */
-    public static final String ID_DEVICE_CACHE = "device_by_token";
-
-    /** Cache id for device by id cache */
-    public static final String ID_DEVICE_ID_CACHE = "device_by_id";
-
-    /** Cache id for device assignment cache */
-    public static final String ID_ASSIGNMENT_CACHE = "assignment_by_token";
-
-    /** Cache id for device assignment by id cache */
-    public static final String ID_ASSIGNMENT_ID_CACHE = "assignment_by_id";
-
     /**
      * Cache for areas.
      * 
      * @author Derek
      */
-    public static class AreaCache extends CacheProvider<String, IArea> {
+    public static class AreaByTokenCache extends CacheProvider<String, IArea> {
 
 	/** Static logger instance */
-	private static Log LOGGER = LogFactory.getLog(AreaCache.class);
+	private static Log LOGGER = LogFactory.getLog(AreaByTokenCache.class);
 
-	public AreaCache(IMicroservice microservice, boolean createOnStartup) {
-	    super(microservice, ID_AREA_CACHE, createOnStartup);
+	public AreaByTokenCache(IHazelcastProvider hazelcastProvider) {
+	    super(hazelcastProvider, CacheIdentifier.AreaByToken);
 	}
 
 	/*
@@ -82,8 +58,8 @@ public class DeviceManagementCacheProviders {
 	/** Static logger instance */
 	private static Log LOGGER = LogFactory.getLog(AreaByIdCache.class);
 
-	public AreaByIdCache(IMicroservice microservice, boolean createOnStartup) {
-	    super(microservice, ID_AREA_ID_CACHE, createOnStartup);
+	public AreaByIdCache(IHazelcastProvider hazelcastProvider) {
+	    super(hazelcastProvider, CacheIdentifier.AreaById);
 	}
 
 	/*
@@ -100,13 +76,13 @@ public class DeviceManagementCacheProviders {
      * 
      * @author Derek
      */
-    public static class DeviceTypeCache extends CacheProvider<String, IDeviceType> {
+    public static class DeviceTypeByTokenCache extends CacheProvider<String, IDeviceType> {
 
 	/** Static logger instance */
-	private static Log LOGGER = LogFactory.getLog(DeviceTypeCache.class);
+	private static Log LOGGER = LogFactory.getLog(DeviceTypeByTokenCache.class);
 
-	public DeviceTypeCache(IMicroservice microservice, boolean createOnStartup) {
-	    super(microservice, ID_DEVICE_TYPE_CACHE, createOnStartup);
+	public DeviceTypeByTokenCache(IHazelcastProvider hazelcastProvider) {
+	    super(hazelcastProvider, CacheIdentifier.DeviceByToken);
 	}
 
 	/*
@@ -128,8 +104,8 @@ public class DeviceManagementCacheProviders {
 	/** Static logger instance */
 	private static Log LOGGER = LogFactory.getLog(DeviceTypeByIdCache.class);
 
-	public DeviceTypeByIdCache(IMicroservice microservice, boolean createOnStartup) {
-	    super(microservice, ID_DEVICE_TYPE_ID_CACHE, createOnStartup);
+	public DeviceTypeByIdCache(IHazelcastProvider hazelcastProvider) {
+	    super(hazelcastProvider, CacheIdentifier.DeviceTypeById);
 	}
 
 	/*
@@ -142,17 +118,17 @@ public class DeviceManagementCacheProviders {
     }
 
     /**
-     * Cache for devices.
+     * Cache for devices by token.
      * 
      * @author Derek
      */
-    public static class DeviceCache extends CacheProvider<String, IDevice> {
+    public static class DeviceByTokenCache extends CacheProvider<String, IDevice> {
 
 	/** Static logger instance */
-	private static Log LOGGER = LogFactory.getLog(DeviceCache.class);
+	private static Log LOGGER = LogFactory.getLog(DeviceByTokenCache.class);
 
-	public DeviceCache(IMicroservice microservice, boolean createOnStartup) {
-	    super(microservice, ID_DEVICE_CACHE, createOnStartup);
+	public DeviceByTokenCache(IHazelcastProvider hazelcastProvider) {
+	    super(hazelcastProvider, CacheIdentifier.DeviceByToken);
 	}
 
 	/*
@@ -174,8 +150,8 @@ public class DeviceManagementCacheProviders {
 	/** Static logger instance */
 	private static Log LOGGER = LogFactory.getLog(DeviceByIdCache.class);
 
-	public DeviceByIdCache(IMicroservice microservice, boolean createOnStartup) {
-	    super(microservice, ID_DEVICE_ID_CACHE, createOnStartup);
+	public DeviceByIdCache(IHazelcastProvider hazelcastProvider) {
+	    super(hazelcastProvider, CacheIdentifier.DeviceById);
 	}
 
 	/*
@@ -188,17 +164,17 @@ public class DeviceManagementCacheProviders {
     }
 
     /**
-     * Cache for device assignments.
+     * Cache for device assignments by token.
      * 
      * @author Derek
      */
-    public static class DeviceAssignmentCache extends CacheProvider<String, IDeviceAssignment> {
+    public static class DeviceAssignmentByTokenCache extends CacheProvider<String, IDeviceAssignment> {
 
 	/** Static logger instance */
-	private static Log LOGGER = LogFactory.getLog(DeviceAssignmentCache.class);
+	private static Log LOGGER = LogFactory.getLog(DeviceAssignmentByTokenCache.class);
 
-	public DeviceAssignmentCache(IMicroservice microservice, boolean createOnStartup) {
-	    super(microservice, ID_ASSIGNMENT_CACHE, createOnStartup);
+	public DeviceAssignmentByTokenCache(IHazelcastProvider hazelcastProvider) {
+	    super(hazelcastProvider, CacheIdentifier.DeviceAssignmentByToken);
 	}
 
 	/*
@@ -220,8 +196,8 @@ public class DeviceManagementCacheProviders {
 	/** Static logger instance */
 	private static Log LOGGER = LogFactory.getLog(DeviceAssignmentByIdCache.class);
 
-	public DeviceAssignmentByIdCache(IMicroservice microservice, boolean createOnStartup) {
-	    super(microservice, ID_ASSIGNMENT_ID_CACHE, createOnStartup);
+	public DeviceAssignmentByIdCache(IHazelcastProvider hazelcastProvider) {
+	    super(hazelcastProvider, CacheIdentifier.DeviceAssignmentById);
 	}
 
 	/*

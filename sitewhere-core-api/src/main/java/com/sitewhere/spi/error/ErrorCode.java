@@ -31,6 +31,13 @@ public enum ErrorCode {
     /** Bad username */
     InvalidMetadataFieldName(10, "Metadata field name contains invalid characters."),
 
+    /****************
+     * MICROSERVICE *
+     ***************/
+
+    /** Unknown microservice identifier */
+    InvalidMicroserviceIdentifier(500, "Microservice identifier was not recognized."),
+
     /*********
      * USERS *
      *********/

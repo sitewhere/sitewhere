@@ -10,7 +10,6 @@ package com.sitewhere.microservice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 
-import com.sitewhere.microservice.hazelcast.HazelcastManager;
 import com.sitewhere.microservice.instance.InstanceSettings;
 import com.sitewhere.microservice.kafka.KafkaTopicNaming;
 import com.sitewhere.microservice.security.SystemUser;
@@ -18,7 +17,6 @@ import com.sitewhere.microservice.security.TokenManagement;
 import com.sitewhere.microservice.zookeeper.ZookeeperManager;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
-import com.sitewhere.spi.microservice.hazelcast.IHazelcastManager;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.microservice.security.ISystemUser;
@@ -42,12 +40,6 @@ public class MicroserviceConfiguration {
     }
 
     @Bean
-    @Autowired
-    public IHazelcastManager hazelcastManager(IMicroservice microservice) {
-	return new HazelcastManager(microservice);
-    }
-
-    @Bean
     IKafkaTopicNaming kafkaTopicNaming() {
 	return new KafkaTopicNaming();
     }
@@ -65,7 +57,7 @@ public class MicroserviceConfiguration {
     @Bean
     @Autowired
     public Tracer tracer(IInstanceSettings instanceSettings, IMicroservice microservice) {
-	return new Configuration(microservice.getIdentifier(),
+	return new Configuration(microservice.getIdentifier().getPath(),
 		new Configuration.SamplerConfiguration(ProbabilisticSampler.TYPE, 1),
 		new Configuration.ReporterConfiguration(null, instanceSettings.getTracerServer(), null, null, null))
 			.getTracer();

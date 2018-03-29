@@ -10,6 +10,7 @@ package com.sitewhere.tenant.spi.microservice;
 import java.io.File;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.ICachingMicroservice;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.tenant.spi.grpc.ITenantManagementGrpcServer;
@@ -22,7 +23,7 @@ import com.sitewhere.tenant.spi.templates.ITenantTemplateManager;
  * 
  * @author Derek
  */
-public interface ITenantManagementMicroservice extends IGlobalMicroservice {
+public interface ITenantManagementMicroservice extends IGlobalMicroservice, ICachingMicroservice {
 
     /**
      * Get tenant templates file handle on filesystem.
@@ -61,8 +62,8 @@ public interface ITenantManagementMicroservice extends IGlobalMicroservice {
     public ITenantModelProducer getTenantModelProducer();
 
     /**
-     * Get Kafka consumer that listens for tenant model updates and bootstraps
-     * newly added tenants.
+     * Get Kafka consumer that listens for tenant model updates and bootstraps newly
+     * added tenants.
      * 
      * @return
      */

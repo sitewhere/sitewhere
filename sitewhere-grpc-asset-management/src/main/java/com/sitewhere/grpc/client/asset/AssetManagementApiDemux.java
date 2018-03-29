@@ -15,7 +15,7 @@ import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiDemux;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 
 /**
  * Demultiplexes asset management requests across one or more API channels.
@@ -35,11 +35,11 @@ public class AssetManagementApiDemux extends ApiDemux<IAssetManagementApiChannel
     }
 
     /*
-     * @see com.sitewhere.grpc.model.spi.IApiDemux#getTargetIdentifier()
+     * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
     @Override
-    public String getTargetIdentifier() {
-	return IMicroserviceIdentifiers.ASSET_MANAGEMENT;
+    public MicroserviceIdentifier getTargetIdentifier() {
+	return MicroserviceIdentifier.AssetManagement;
     }
 
     /*

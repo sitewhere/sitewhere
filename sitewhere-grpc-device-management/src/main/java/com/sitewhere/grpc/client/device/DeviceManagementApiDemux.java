@@ -15,7 +15,7 @@ import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 
 /**
  * Demultiplexes device management requests across one or more API channels.
@@ -35,11 +35,11 @@ public class DeviceManagementApiDemux extends ApiDemux<IDeviceManagementApiChann
     }
 
     /*
-     * @see com.sitewhere.grpc.model.spi.IApiDemux#getTargetIdentifier()
+     * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
     @Override
-    public String getTargetIdentifier() {
-	return IMicroserviceIdentifiers.DEVICE_MANAGEMENT;
+    public MicroserviceIdentifier getTargetIdentifier() {
+	return MicroserviceIdentifier.DeviceManagement;
     }
 
     /*

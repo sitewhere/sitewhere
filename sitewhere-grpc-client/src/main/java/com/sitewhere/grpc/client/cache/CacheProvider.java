@@ -7,13 +7,10 @@
  */
 package com.sitewhere.grpc.client.cache;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.hazelcast.core.IMap;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.cache.ICacheProvider;
-import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.hazelcast.IHazelcastProvider;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -29,22 +26,15 @@ public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
     /** Cache prefix for global caches */
     private static final String GLOBAL_CACHE_INDICATOR = "_global_";
 
-    /** Parent microservice */
-    private IMicroservice microservice;
+    /** Hazelcast provider */
+    private IHazelcastProvider hazelcastProvider;
 
-    /** Global cache identifier */
-    private String identifier;
+    /** Cache identifier */
+    private CacheIdentifier cacheIdentifier;
 
-    /** Indicates whether to create cache on startup */
-    boolean createIfNotFound;
-
-    /** Cache handle */
-    private Map<String, IMap<K, V>> cachesByTenantId = new HashMap<String, IMap<K, V>>();
-
-    public CacheProvider(IMicroservice microservice, String identifier, boolean createIfNotFound) {
-	this.microservice = microservice;
-	this.identifier = identifier;
-	this.createIfNotFound = createIfNotFound;
+    public CacheProvider(IHazelcastProvider hazelcastProvider, CacheIdentifier cacheIdentifier) {
+	this.hazelcastProvider = hazelcastProvider;
+	this.cacheIdentifier = cacheIdentifier;
     }
 
     /*
@@ -99,14 +89,13 @@ public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
      */
     protected IMap<K, V> getCache(ITenant tenant) throws SiteWhereException {
 	String tenantId = (tenant != null) ? tenant.getId().toString() : GLOBAL_CACHE_INDICATOR;
-	IMap<K, V> cache = getCachesByTenantId().get(tenantId);
-	boolean hzInitialized = getMicroservice().getHazelcastManager().getHazelcastInstance() != null;
-	if ((hzInitialized) && (cache == null)) {
+	boolean hzInitialized = (getHazelcastProvider().getHazelcastInstance() != null)
+		&& (getHazelcastProvider().getHazelcastInstance().getLifecycleService().isRunning());
+	if (hzInitialized) {
 	    String cacheName = getCacheNameForTenant(tenantId);
-	    cache = getMicroservice().getHazelcastManager().getHazelcastInstance().getMap(cacheName);
-	    getCachesByTenantId().put(tenantId, cache);
+	    return getHazelcastProvider().getHazelcastInstance().getMap(cacheName);
 	}
-	return cache;
+	return null;
     }
 
     /**
@@ -116,38 +105,22 @@ public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
      * @return
      */
     protected String getCacheNameForTenant(String tenantId) {
-	return getIdentifier() + ":" + tenantId;
+	return getCacheIdentifier().getCacheKey() + ":" + tenantId;
     }
 
-    protected IMicroservice getMicroservice() {
-	return microservice;
+    public IHazelcastProvider getHazelcastProvider() {
+	return hazelcastProvider;
     }
 
-    protected void setMicroservice(IMicroservice microservice) {
-	this.microservice = microservice;
+    public void setHazelcastProvider(IHazelcastProvider hazelcastProvider) {
+	this.hazelcastProvider = hazelcastProvider;
     }
 
-    protected String getIdentifier() {
-	return identifier;
+    public CacheIdentifier getCacheIdentifier() {
+	return cacheIdentifier;
     }
 
-    protected void setIdentifier(String identifier) {
-	this.identifier = identifier;
-    }
-
-    protected boolean isCreateIfNotFound() {
-	return createIfNotFound;
-    }
-
-    protected void setCreateIfNotFound(boolean createIfNotFound) {
-	this.createIfNotFound = createIfNotFound;
-    }
-
-    public Map<String, IMap<K, V>> getCachesByTenantId() {
-	return cachesByTenantId;
-    }
-
-    public void setCachesByTenantId(Map<String, IMap<K, V>> cachesByTenantId) {
-	this.cachesByTenantId = cachesByTenantId;
+    public void setCacheIdentifier(CacheIdentifier cacheIdentifier) {
+	this.cacheIdentifier = cacheIdentifier;
     }
 }

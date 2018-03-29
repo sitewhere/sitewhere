@@ -20,6 +20,7 @@ import com.sitewhere.grpc.model.MicroserviceModel.GElementNodeList;
 import com.sitewhere.grpc.model.MicroserviceModel.GElementRole;
 import com.sitewhere.grpc.model.MicroserviceModel.GMicroserviceConfiguration;
 import com.sitewhere.grpc.model.MicroserviceModel.GMicroserviceDetails;
+import com.sitewhere.grpc.model.MicroserviceModel.GMicroserviceIdentifier;
 import com.sitewhere.grpc.model.MicroserviceModel.GNodeType;
 import com.sitewhere.grpc.model.MicroserviceModel.GXmlNode;
 import com.sitewhere.rest.model.configuration.AttributeChoice;
@@ -30,6 +31,7 @@ import com.sitewhere.rest.model.configuration.ElementRole;
 import com.sitewhere.rest.model.configuration.XmlNode;
 import com.sitewhere.rest.model.microservice.state.MicroserviceDetails;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
 import com.sitewhere.spi.microservice.configuration.model.IAttributeChoice;
 import com.sitewhere.spi.microservice.configuration.model.IAttributeNode;
@@ -120,7 +122,7 @@ public class MicroserviceModelConverter {
     }
 
     /**
-     * Convert attribute type from API to GRPC.
+     * Convert attribute type from GRPC to API.
      * 
      * @param grpc
      * @return
@@ -413,6 +415,112 @@ public class MicroserviceModelConverter {
     }
 
     /**
+     * Convert microservice identifier from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static MicroserviceIdentifier asApiMicroserviceIdentifier(GMicroserviceIdentifier grpc)
+	    throws SiteWhereException {
+	switch (grpc) {
+	case MSID_ASSET_MANAGEMENT:
+	    return MicroserviceIdentifier.AssetManagement;
+	case MSID_BATCH_OPERATIONS:
+	    return MicroserviceIdentifier.BatchOperations;
+	case MSID_COMMAND_DELIVERY:
+	    return MicroserviceIdentifier.CommandDelivery;
+	case MSID_DEVICE_MANAGEMENT:
+	    return MicroserviceIdentifier.DeviceManagement;
+	case MSID_DEVICE_REGISTRATION:
+	    return MicroserviceIdentifier.DeviceRegistration;
+	case MSID_EVENT_MANAGEMENT:
+	    return MicroserviceIdentifier.EventManagement;
+	case MSID_EVENT_SEARCH:
+	    return MicroserviceIdentifier.EventSearch;
+	case MSID_EVENT_SOURCES:
+	    return MicroserviceIdentifier.EventSources;
+	case MSID_INBOUND_PROCESSING:
+	    return MicroserviceIdentifier.InboundProcessing;
+	case MSID_INSTANCE_MANAGEMENT:
+	    return MicroserviceIdentifier.InstanceManagement;
+	case MSID_LABEL_GENERATION:
+	    return MicroserviceIdentifier.LabelGeneration;
+	case MSID_OUTBOUND_CONNECTORS:
+	    return MicroserviceIdentifier.OutboundConnectors;
+	case MSID_PRESENCE_MANAGEMENT:
+	    return MicroserviceIdentifier.PresenceManagement;
+	case MSID_RULE_PROCESSING:
+	    return MicroserviceIdentifier.RuleProcessing;
+	case MSID_SCHEDULE_MANAGEMENT:
+	    return MicroserviceIdentifier.ScheduleManagement;
+	case MSID_STREAMING_MEDIA:
+	    return MicroserviceIdentifier.StreamingMedia;
+	case MSID_TENANT_MANAGEMENT:
+	    return MicroserviceIdentifier.TenantManagement;
+	case MSID_USER_MANAGEMENT:
+	    return MicroserviceIdentifier.UserManagement;
+	case MSID_WEB_REST:
+	    return MicroserviceIdentifier.WebRest;
+	case UNRECOGNIZED:
+	    throw new SiteWhereException("Unknown microservice identifier: " + grpc.name());
+	}
+	return null;
+    }
+
+    /**
+     * Convert microservice identifier from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GMicroserviceIdentifier asGrpcMicroserviceIdentifier(MicroserviceIdentifier api)
+	    throws SiteWhereException {
+	switch (api) {
+	case AssetManagement:
+	    return GMicroserviceIdentifier.MSID_ASSET_MANAGEMENT;
+	case BatchOperations:
+	    return GMicroserviceIdentifier.MSID_BATCH_OPERATIONS;
+	case CommandDelivery:
+	    return GMicroserviceIdentifier.MSID_COMMAND_DELIVERY;
+	case DeviceManagement:
+	    return GMicroserviceIdentifier.MSID_DEVICE_MANAGEMENT;
+	case DeviceRegistration:
+	    return GMicroserviceIdentifier.MSID_DEVICE_REGISTRATION;
+	case EventManagement:
+	    return GMicroserviceIdentifier.MSID_EVENT_MANAGEMENT;
+	case EventSearch:
+	    return GMicroserviceIdentifier.MSID_EVENT_SEARCH;
+	case EventSources:
+	    return GMicroserviceIdentifier.MSID_EVENT_SOURCES;
+	case InboundProcessing:
+	    return GMicroserviceIdentifier.MSID_INBOUND_PROCESSING;
+	case InstanceManagement:
+	    return GMicroserviceIdentifier.MSID_INSTANCE_MANAGEMENT;
+	case LabelGeneration:
+	    return GMicroserviceIdentifier.MSID_LABEL_GENERATION;
+	case OutboundConnectors:
+	    return GMicroserviceIdentifier.MSID_OUTBOUND_CONNECTORS;
+	case PresenceManagement:
+	    return GMicroserviceIdentifier.MSID_PRESENCE_MANAGEMENT;
+	case RuleProcessing:
+	    return GMicroserviceIdentifier.MSID_RULE_PROCESSING;
+	case ScheduleManagement:
+	    return GMicroserviceIdentifier.MSID_SCHEDULE_MANAGEMENT;
+	case StreamingMedia:
+	    return GMicroserviceIdentifier.MSID_STREAMING_MEDIA;
+	case TenantManagement:
+	    return GMicroserviceIdentifier.MSID_TENANT_MANAGEMENT;
+	case UserManagement:
+	    return GMicroserviceIdentifier.MSID_USER_MANAGEMENT;
+	case WebRest:
+	    return GMicroserviceIdentifier.MSID_WEB_REST;
+	}
+	throw new SiteWhereException("Unknown microservice identifier: " + api.name());
+    }
+
+    /**
      * Convert microservice details from GRPC to API.
      * 
      * @param grpc
@@ -421,7 +529,7 @@ public class MicroserviceModelConverter {
      */
     public static MicroserviceDetails asApiMicroserviceDetails(GMicroserviceDetails grpc) throws SiteWhereException {
 	MicroserviceDetails api = new MicroserviceDetails();
-	api.setIdentifier(grpc.getIdentifier());
+	api.setIdentifier(MicroserviceModelConverter.asApiMicroserviceIdentifier(grpc.getIdentifier()));
 	api.setHostname(grpc.getHostname());
 	api.setName(grpc.getName());
 	api.setIcon(grpc.getIcon());
@@ -439,7 +547,7 @@ public class MicroserviceModelConverter {
      */
     public static GMicroserviceDetails asGrpcMicroserviceDetails(IMicroserviceDetails api) throws SiteWhereException {
 	GMicroserviceDetails.Builder grpc = GMicroserviceDetails.newBuilder();
-	grpc.setIdentifier(api.getIdentifier());
+	grpc.setIdentifier(MicroserviceModelConverter.asGrpcMicroserviceIdentifier(api.getIdentifier()));
 	grpc.setHostname(api.getHostname());
 	grpc.setName(api.getName());
 	grpc.setIcon(api.getIcon());

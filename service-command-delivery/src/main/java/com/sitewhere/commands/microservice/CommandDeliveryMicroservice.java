@@ -15,7 +15,7 @@ import com.sitewhere.commands.spi.microservice.ICommandDeliveryMicroservice;
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryTenantEngine;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -45,8 +45,8 @@ public class CommandDeliveryMicroservice extends MultitenantMicroservice<IComman
      * @see com.sitewhere.spi.microservice.IMicroservice#getIdentifier()
      */
     @Override
-    public String getIdentifier() {
-	return IMicroserviceIdentifiers.COMMAND_DELIVERY;
+    public MicroserviceIdentifier getIdentifier() {
+	return MicroserviceIdentifier.CommandDelivery;
     }
 
     /*

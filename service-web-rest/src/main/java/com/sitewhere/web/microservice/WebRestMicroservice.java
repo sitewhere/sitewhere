@@ -31,7 +31,7 @@ import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.management.MicroserviceManagementCoordinator;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordinator;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -53,7 +53,7 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     private static final String NAME = "Web/REST";
 
     /** Web/REST configuration file name */
-    private static final String CONFIGURATION_PATH = IMicroserviceIdentifiers.WEB_REST + ".xml";
+    private static final String CONFIGURATION_PATH = MicroserviceIdentifier.WebRest.getPath() + ".xml";
 
     /** User management API demux */
     private IUserManagementApiDemux userManagementApiDemux;
@@ -93,13 +93,11 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.IMicroservice#getIdentifier()
+     * @see com.sitewhere.spi.microservice.IMicroservice#getIdentifier()
      */
     @Override
-    public String getIdentifier() {
-	return IMicroserviceIdentifiers.WEB_REST;
+    public MicroserviceIdentifier getIdentifier() {
+	return MicroserviceIdentifier.WebRest;
     }
 
     /*

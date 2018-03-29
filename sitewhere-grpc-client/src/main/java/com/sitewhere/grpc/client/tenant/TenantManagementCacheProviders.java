@@ -12,8 +12,9 @@ import java.util.UUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sitewhere.grpc.client.cache.CacheIdentifier;
 import com.sitewhere.grpc.client.cache.CacheProvider;
-import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.hazelcast.IHazelcastProvider;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -34,13 +35,13 @@ public class TenantManagementCacheProviders {
      * 
      * @author Derek
      */
-    public static class TenantCache extends CacheProvider<String, ITenant> {
+    public static class TenantByTokenCache extends CacheProvider<String, ITenant> {
 
 	/** Static logger instance */
-	private static Log LOGGER = LogFactory.getLog(TenantCache.class);
+	private static Log LOGGER = LogFactory.getLog(TenantByTokenCache.class);
 
-	public TenantCache(IMicroservice microservice, boolean createOnStartup) {
-	    super(microservice, ID_TENANT_CACHE, createOnStartup);
+	public TenantByTokenCache(IHazelcastProvider hazelcastProvider) {
+	    super(hazelcastProvider, CacheIdentifier.TenantByToken);
 	}
 
 	/*
@@ -62,8 +63,8 @@ public class TenantManagementCacheProviders {
 	/** Static logger instance */
 	private static Log LOGGER = LogFactory.getLog(TenantByIdCache.class);
 
-	public TenantByIdCache(IMicroservice microservice, boolean createOnStartup) {
-	    super(microservice, ID_TENANT_BY_ID_CACHE, createOnStartup);
+	public TenantByIdCache(IHazelcastProvider hazelcastProvider) {
+	    super(hazelcastProvider, CacheIdentifier.TenantById);
 	}
 
 	/*

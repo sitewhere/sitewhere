@@ -48,7 +48,7 @@ public class MicroserviceStateUpdatesKafkaProducer extends MicroserviceKafkaProd
 	byte[] payload = KafkaModelMarshaler.buildStateUpdateMessage(update);
 	if (getLifecycleStatus() == LifecycleStatus.Started) {
 	    getLogger().debug("Sending microservice state update.");
-	    send(state.getMicroservice().getIdentifier(), payload);
+	    send(state.getMicroservice().getIdentifier().getPath(), payload);
 	} else {
 	    getLogger().warn("Skipping microservice state update. Kafka producer not started.");
 	}
@@ -65,7 +65,7 @@ public class MicroserviceStateUpdatesKafkaProducer extends MicroserviceKafkaProd
 	byte[] payload = KafkaModelMarshaler.buildStateUpdateMessage(update);
 	if (getLifecycleStatus() == LifecycleStatus.Started) {
 	    getLogger().debug("Sending tenant engine state update.");
-	    send(state.getMicroservice().getIdentifier(), payload);
+	    send(state.getMicroservice().getIdentifier().getPath(), payload);
 	} else {
 	    getLogger().warn("Skipping tenant engine state update. Kafka producer not started.");
 	}

@@ -15,7 +15,7 @@ import com.sitewhere.grpc.client.spi.client.IBatchManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IBatchManagementApiDemux;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 
 /**
  * Demultiplexes batch management requests across one or more API channels.
@@ -35,11 +35,11 @@ public class BatchManagementApiDemux extends ApiDemux<IBatchManagementApiChannel
     }
 
     /*
-     * @see com.sitewhere.grpc.model.spi.IApiDemux#getTargetIdentifier()
+     * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
     @Override
-    public String getTargetIdentifier() {
-	return IMicroserviceIdentifiers.BATCH_OPERATIONS;
+    public MicroserviceIdentifier getTargetIdentifier() {
+	return MicroserviceIdentifier.BatchOperations;
     }
 
     /*

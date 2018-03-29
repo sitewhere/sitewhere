@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 
 /**
  * Kafka consumer that listens for state updates and aggregates them to produce
@@ -37,7 +38,8 @@ public interface ITopologyStateAggregator extends IMicroserviceStateUpdatesKafka
      * @return
      * @throws SiteWhereException
      */
-    public List<ITenantEngineState> getTenantEngineState(String identifier, UUID tenantId) throws SiteWhereException;
+    public List<ITenantEngineState> getTenantEngineState(MicroserviceIdentifier identifier, UUID tenantId)
+	    throws SiteWhereException;
 
     /**
      * Wait for a tenant engine of the given type for the given tenant id to become
@@ -50,8 +52,8 @@ public interface ITopologyStateAggregator extends IMicroserviceStateUpdatesKafka
      * @param logMessageDelay
      * @throws SiteWhereException
      */
-    public void waitForTenantEngineAvailable(String identifier, UUID tenantId, long duration, TimeUnit unit,
-	    long logMessageDelay) throws SiteWhereException;
+    public void waitForTenantEngineAvailable(MicroserviceIdentifier identifier, UUID tenantId, long duration,
+	    TimeUnit unit, long logMessageDelay) throws SiteWhereException;
 
     /**
      * Add listener for instance topology updates.

@@ -15,7 +15,7 @@ import com.sitewhere.search.configuration.EventSearchModelProvider;
 import com.sitewhere.search.spi.microservice.IEventSearchMicroservice;
 import com.sitewhere.search.spi.microservice.IEventSearchTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -45,8 +45,8 @@ public class EventSearchMicroservice extends MultitenantMicroservice<IEventSearc
      * @see com.sitewhere.spi.microservice.IMicroservice#getIdentifier()
      */
     @Override
-    public String getIdentifier() {
-	return IMicroserviceIdentifiers.EVENT_SEARCH;
+    public MicroserviceIdentifier getIdentifier() {
+	return MicroserviceIdentifier.EventSearch;
     }
 
     /*

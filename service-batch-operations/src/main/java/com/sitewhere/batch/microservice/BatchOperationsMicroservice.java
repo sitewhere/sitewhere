@@ -23,7 +23,7 @@ import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -64,8 +64,8 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
      * @see com.sitewhere.spi.microservice.IMicroservice#getIdentifier()
      */
     @Override
-    public String getIdentifier() {
-	return IMicroserviceIdentifiers.BATCH_OPERATIONS;
+    public MicroserviceIdentifier getIdentifier() {
+	return MicroserviceIdentifier.BatchOperations;
     }
 
     /*

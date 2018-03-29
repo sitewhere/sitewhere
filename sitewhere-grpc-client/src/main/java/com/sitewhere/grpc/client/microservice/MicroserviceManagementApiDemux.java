@@ -15,6 +15,7 @@ import com.sitewhere.grpc.client.spi.client.IMicroserviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IMicroserviceManagementApiDemux;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 
 /**
  * Demultiplexes microservice management requests across one or more API
@@ -31,18 +32,18 @@ public class MicroserviceManagementApiDemux extends ApiDemux<IMicroserviceManage
     private static Log LOGGER = LogFactory.getLog(MicroserviceManagementApiDemux.class);
 
     /** Target identifier */
-    private String targetIdentifier;
+    private MicroserviceIdentifier targetIdentifier;
 
-    public MicroserviceManagementApiDemux(IMicroservice microservice, String targetIdentifier) {
+    public MicroserviceManagementApiDemux(IMicroservice microservice, MicroserviceIdentifier targetIdentifier) {
 	super(microservice);
 	this.targetIdentifier = targetIdentifier;
     }
 
     /*
-     * @see com.sitewhere.grpc.model.spi.IApiDemux#getTargetIdentifier()
+     * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
     @Override
-    public String getTargetIdentifier() {
+    public MicroserviceIdentifier getTargetIdentifier() {
 	return targetIdentifier;
     }
 

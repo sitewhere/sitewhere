@@ -13,15 +13,17 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.microservice.GlobalMicroservice;
-import com.sitewhere.microservice.hazelcast.cache.CacheAwareUserManagement;
+import com.sitewhere.microservice.hazelcast.HazelcastManager;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
+import com.sitewhere.spi.microservice.hazelcast.IHazelcastManager;
 import com.sitewhere.spi.microservice.spring.UserManagementBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.user.IUserManagement;
+import com.sitewhere.user.cache.CacheAwareUserManagement;
 import com.sitewhere.user.configuration.UserManagementModelProvider;
 import com.sitewhere.user.grpc.UserManagementGrpcServer;
 import com.sitewhere.user.kafka.UserManagementKafkaTriggers;
@@ -43,10 +45,13 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
     private static final String NAME = "User Management";
 
     /** User management configuration file name */
-    private static final String CONFIGURATION_PATH = IMicroserviceIdentifiers.USER_MANAGEMENT + ".xml";
+    private static final String CONFIGURATION_PATH = MicroserviceIdentifier.UserManagement.getPath() + ".xml";
 
     /** Responds to user management GRPC requests */
     private IUserManagementGrpcServer userManagementGrpcServer;
+
+    /** Hazelcast manager */
+    private IHazelcastManager hazelcastManager;
 
     /** User management persistence API */
     private UserManagementAccessor userManagementAccessor = new UserManagementAccessor();
@@ -65,13 +70,11 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.IMicroservice#getIdentifier()
+     * @see com.sitewhere.spi.microservice.IMicroservice#getIdentifier()
      */
     @Override
-    public String getIdentifier() {
-	return IMicroserviceIdentifiers.USER_MANAGEMENT;
+    public MicroserviceIdentifier getIdentifier() {
+	return MicroserviceIdentifier.UserManagement;
     }
 
     /*
@@ -190,10 +193,17 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
      */
     @Override
     public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create Hazelcast manager.
+	this.hazelcastManager = new HazelcastManager(this);
+
+	// Create GRPC server.
 	this.userManagementGrpcServer = new UserManagementGrpcServer(this, getUserManagementAccessor());
 
 	// Composite step for initializing microservice.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
+
+	// Initialize Hazelcast manager.
+	init.addInitializeStep(this, getHazelcastManager(), true);
 
 	// Initialize user management GRPC server.
 	init.addInitializeStep(this, getUserManagementGrpcServer(), true);
@@ -213,6 +223,9 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
     public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
+
+	// Start Hazelcast manager.
+	start.addStartStep(this, getHazelcastManager(), true);
 
 	// Start GRPC server.
 	start.addStartStep(this, getUserManagementGrpcServer(), true);
@@ -235,6 +248,9 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
 	// Stop GRPC server.
 	stop.addStopStep(this, getUserManagementGrpcServer());
 
+	// Stop Hazelcast manager.
+	stop.addStopStep(this, getHazelcastManager());
+
 	// Execute shutdown steps.
 	stop.execute(monitor);
     }
@@ -252,6 +268,19 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
 
     public void setUserManagementGrpcServer(IUserManagementGrpcServer userManagementGrpcServer) {
 	this.userManagementGrpcServer = userManagementGrpcServer;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.ICachingMicroservice#getHazelcastManager()
+     */
+    @Override
+    public IHazelcastManager getHazelcastManager() {
+	return hazelcastManager;
+    }
+
+    public void setHazelcastManager(IHazelcastManager hazelcastManager) {
+	this.hazelcastManager = hazelcastManager;
     }
 
     /*

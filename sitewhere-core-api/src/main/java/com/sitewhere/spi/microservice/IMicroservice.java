@@ -15,7 +15,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
-import com.sitewhere.spi.microservice.hazelcast.IHazelcastManager;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.microservice.security.ISystemUser;
@@ -55,7 +54,7 @@ public interface IMicroservice extends ILifecycleComponent, ITracerProvider {
      * 
      * @return
      */
-    public String getIdentifier();
+    public MicroserviceIdentifier getIdentifier();
 
     /**
      * Get assigned hostname.
@@ -206,13 +205,6 @@ public interface IMicroservice extends ILifecycleComponent, ITracerProvider {
      * @return
      */
     public IZookeeperManager getZookeeperManager();
-
-    /**
-     * Get manager for Hazelcast instance.
-     * 
-     * @return
-     */
-    public IHazelcastManager getHazelcastManager();
 
     /**
      * Get metric registry.

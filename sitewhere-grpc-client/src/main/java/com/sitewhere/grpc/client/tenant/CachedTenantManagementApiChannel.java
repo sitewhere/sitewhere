@@ -9,10 +9,12 @@ package com.sitewhere.grpc.client.tenant;
 
 import java.util.UUID;
 
+import com.sitewhere.grpc.client.cache.NearCacheManager;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.cache.ICacheProvider;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -22,16 +24,20 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class CachedTenantManagementApiChannel extends TenantManagementApiChannel {
 
+    /** Manages local cache */
+    private NearCacheManager nearCacheManager;
+
     /** Tenant cache */
-    private ICacheProvider<String, ITenant> tenantCache;
+    private ICacheProvider<String, ITenant> tenantByTokenCache;
 
     /** Tenant by id cache */
     private ICacheProvider<UUID, ITenant> tenantByIdCache;
 
     public CachedTenantManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
 	super(demux, microservice, host);
-	this.tenantCache = new TenantManagementCacheProviders.TenantCache(microservice, false);
-	this.tenantByIdCache = new TenantManagementCacheProviders.TenantByIdCache(microservice, false);
+	this.nearCacheManager = new NearCacheManager(MicroserviceIdentifier.TenantManagement);
+	this.tenantByTokenCache = new TenantManagementCacheProviders.TenantByTokenCache(nearCacheManager);
+	this.tenantByIdCache = new TenantManagementCacheProviders.TenantByIdCache(nearCacheManager);
     }
 
     /*
@@ -58,7 +64,7 @@ public class CachedTenantManagementApiChannel extends TenantManagementApiChannel
      */
     @Override
     public ITenant getTenantByToken(String token) throws SiteWhereException {
-	ITenant tenant = getTenantCache().getCacheEntry(null, token);
+	ITenant tenant = getTenantByTokenCache().getCacheEntry(null, token);
 	if (tenant != null) {
 	    getLogger().trace("Using cached information for tenant '" + token + "'.");
 	    return tenant;
@@ -68,12 +74,12 @@ public class CachedTenantManagementApiChannel extends TenantManagementApiChannel
 	return super.getTenantByToken(token);
     }
 
-    public ICacheProvider<String, ITenant> getTenantCache() {
-	return tenantCache;
+    public ICacheProvider<String, ITenant> getTenantByTokenCache() {
+	return tenantByTokenCache;
     }
 
-    public void setTenantCache(ICacheProvider<String, ITenant> tenantCache) {
-	this.tenantCache = tenantCache;
+    public void setTenantByTokenCache(ICacheProvider<String, ITenant> tenantByTokenCache) {
+	this.tenantByTokenCache = tenantByTokenCache;
     }
 
     public ICacheProvider<UUID, ITenant> getTenantByIdCache() {

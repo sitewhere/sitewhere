@@ -17,17 +17,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.microservice.GlobalMicroservice;
-import com.sitewhere.microservice.hazelcast.cache.CacheAwareTenantManagement;
+import com.sitewhere.microservice.hazelcast.HazelcastManager;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
+import com.sitewhere.spi.microservice.hazelcast.IHazelcastManager;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.microservice.spring.TenantManagementBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenantAdministration;
 import com.sitewhere.spi.tenant.ITenantManagement;
+import com.sitewhere.tenant.cache.CacheAwareTenantManagement;
 import com.sitewhere.tenant.configuration.TenantManagementModelProvider;
 import com.sitewhere.tenant.grpc.TenantManagementGrpcServer;
 import com.sitewhere.tenant.kafka.TenantBootstrapModelConsumer;
@@ -55,7 +57,7 @@ public class TenantManagementMicroservice extends GlobalMicroservice
     private static final String NAME = "Tenant Management";
 
     /** Tenant management configuration file name */
-    private static final String CONFIGURATION_PATH = IMicroserviceIdentifiers.TENANT_MANAGEMENT + ".xml";
+    private static final String CONFIGURATION_PATH = MicroserviceIdentifier.TenantManagement.getPath() + ".xml";
 
     /** Root folder for instance templates */
     private static final String TEMPLATES_ROOT = "/templates";
@@ -65,6 +67,9 @@ public class TenantManagementMicroservice extends GlobalMicroservice
 
     /** Accessor for tenant management implementation */
     private TenantManagementAccessor tenantManagementAccessor = new TenantManagementAccessor();
+
+    /** Hazelcast manager */
+    private IHazelcastManager hazelcastManager;
 
     /** Tenant management implementation */
     private ITenantManagement tenantManagement;
@@ -90,13 +95,11 @@ public class TenantManagementMicroservice extends GlobalMicroservice
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.IMicroservice#getIdentifier()
+     * @see com.sitewhere.spi.microservice.IMicroservice#getIdentifier()
      */
     @Override
-    public String getIdentifier() {
-	return IMicroserviceIdentifiers.TENANT_MANAGEMENT;
+    public MicroserviceIdentifier getIdentifier() {
+	return MicroserviceIdentifier.TenantManagement;
     }
 
     /*
@@ -214,12 +217,20 @@ public class TenantManagementMicroservice extends GlobalMicroservice
      */
     @Override
     public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.tenantModelProducer = new TenantModelProducer(this);
-	this.tenantBootstrapModelConsumer = new TenantBootstrapModelConsumer(this);
+	// Create Hazelcast manager.
+	this.hazelcastManager = new HazelcastManager(this);
+
+	// Initialize components that communicate via Kafka.
+	initializeKafkaComponents();
+
+	// Initialize GRPC server.
 	this.tenantManagementGrpcServer = new TenantManagementGrpcServer(this, getTenantManagementAccessor(), this);
 
 	// Composite step for initializing microservice.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
+
+	// Initialize Hazelcast manager.
+	init.addInitializeStep(this, getHazelcastManager(), true);
 
 	// Initialize tenant template manager.
 	init.addInitializeStep(this, getTenantTemplateManager(), true);
@@ -237,6 +248,16 @@ public class TenantManagementMicroservice extends GlobalMicroservice
 	init.execute(monitor);
     }
 
+    /**
+     * Initialize Apache Kafka components.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void initializeKafkaComponents() throws SiteWhereException {
+	this.tenantModelProducer = new TenantModelProducer(this);
+	this.tenantBootstrapModelConsumer = new TenantBootstrapModelConsumer(this);
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -248,6 +269,9 @@ public class TenantManagementMicroservice extends GlobalMicroservice
     public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
+
+	// Start Hazelcast manager.
+	start.addStartStep(this, getHazelcastManager(), true);
 
 	// Start tenant template manager.
 	start.addStartStep(this, getTenantTemplateManager(), true);
@@ -287,6 +311,9 @@ public class TenantManagementMicroservice extends GlobalMicroservice
 
 	// Stop tenant template manager.
 	stop.addStopStep(this, getTenantTemplateManager());
+
+	// Stop Hazelcast manager.
+	stop.addStopStep(this, getHazelcastManager());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -328,6 +355,19 @@ public class TenantManagementMicroservice extends GlobalMicroservice
 
     public void setTenantManagementGrpcServer(ITenantManagementGrpcServer tenantManagementGrpcServer) {
 	this.tenantManagementGrpcServer = tenantManagementGrpcServer;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.ICachingMicroservice#getHazelcastManager()
+     */
+    @Override
+    public IHazelcastManager getHazelcastManager() {
+	return hazelcastManager;
+    }
+
+    public void setHazelcastManager(IHazelcastManager hazelcastManager) {
+	this.hazelcastManager = hazelcastManager;
     }
 
     /*

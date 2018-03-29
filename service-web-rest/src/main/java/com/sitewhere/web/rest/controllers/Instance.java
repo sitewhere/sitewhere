@@ -30,6 +30,7 @@ import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.IMicroserviceManagement;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordinator;
 import com.sitewhere.spi.microservice.scripting.IScriptManagement;
@@ -138,7 +139,11 @@ public class Instance extends RestControllerBase {
 	    @ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken)
 	    throws SiteWhereException {
 	ITenant tenant = assureTenant(tenantToken);
-	return getTopologyStateAggregator().getTenantEngineState(identifier, tenant.getId());
+	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
+	if (msid == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidMicroserviceIdentifier, ErrorLevel.ERROR);
+	}
+	return getTopologyStateAggregator().getTenantEngineState(msid, tenant.getId());
     }
 
     /**
@@ -154,7 +159,9 @@ public class Instance extends RestControllerBase {
     public IConfigurationModel getMicroserviceConfigurationModel(
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier)
 	    throws SiteWhereException {
-	return getMicroserviceManagementCoordinator().getMicroserviceManagement(identifier).getConfigurationModel();
+	MicroserviceIdentifier msid = assureMicroserviceIdentifier(identifier);
+	IMicroserviceManagement management = getMicroserviceManagementCoordinator().getMicroserviceManagement(msid);
+	return management.getConfigurationModel();
     }
 
     /**
@@ -170,8 +177,8 @@ public class Instance extends RestControllerBase {
     public ElementContent getMicroserviceGlobalConfiguration(
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier)
 	    throws SiteWhereException {
-	IMicroserviceManagement management = getMicroserviceManagementCoordinator()
-		.getMicroserviceManagement(identifier);
+	MicroserviceIdentifier msid = assureMicroserviceIdentifier(identifier);
+	IMicroserviceManagement management = getMicroserviceManagementCoordinator().getMicroserviceManagement(msid);
 	return ConfigurationContentParser.parse(management.getGlobalConfiguration(),
 		management.getConfigurationModel());
     }
@@ -191,8 +198,8 @@ public class Instance extends RestControllerBase {
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
 	    @ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken)
 	    throws SiteWhereException {
-	IMicroserviceManagement management = getMicroserviceManagementCoordinator()
-		.getMicroserviceManagement(identifier);
+	MicroserviceIdentifier msid = assureMicroserviceIdentifier(identifier);
+	IMicroserviceManagement management = getMicroserviceManagementCoordinator().getMicroserviceManagement(msid);
 	ITenant tenant = assureTenant(tenantToken);
 	return ConfigurationContentParser.parse(management.getTenantConfiguration(tenant.getId()),
 		management.getConfigurationModel());
@@ -211,8 +218,8 @@ public class Instance extends RestControllerBase {
     public void updateMicroserviceGlobalConfiguration(
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
 	    @RequestBody ElementContent content) throws SiteWhereException {
-	IMicroserviceManagement management = getMicroserviceManagementCoordinator()
-		.getMicroserviceManagement(identifier);
+	MicroserviceIdentifier msid = assureMicroserviceIdentifier(identifier);
+	IMicroserviceManagement management = getMicroserviceManagementCoordinator().getMicroserviceManagement(msid);
 	Document xml = ConfigurationContentParser.buildXml(content, management.getConfigurationModel());
 	String config = ConfigurationContentParser.format(xml);
 	management.updateGlobalConfiguration(config.getBytes());
@@ -233,8 +240,8 @@ public class Instance extends RestControllerBase {
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
 	    @ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken,
 	    @RequestBody ElementContent content) throws SiteWhereException {
-	IMicroserviceManagement management = getMicroserviceManagementCoordinator()
-		.getMicroserviceManagement(identifier);
+	MicroserviceIdentifier msid = assureMicroserviceIdentifier(identifier);
+	IMicroserviceManagement management = getMicroserviceManagementCoordinator().getMicroserviceManagement(msid);
 	Document xml = ConfigurationContentParser.buildXml(content, management.getConfigurationModel());
 	String config = ConfigurationContentParser.format(xml);
 	ITenant tenant = assureTenant(tenantToken);
@@ -388,6 +395,21 @@ public class Instance extends RestControllerBase {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantToken, ErrorLevel.ERROR);
 	}
 	return tenant;
+    }
+
+    /**
+     * Verify that a microservice identifier exists for the given path.
+     * 
+     * @param path
+     * @return
+     * @throws SiteWhereException
+     */
+    protected MicroserviceIdentifier assureMicroserviceIdentifier(String path) throws SiteWhereException {
+	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(path);
+	if (msid == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidMicroserviceIdentifier, ErrorLevel.ERROR);
+	}
+	return msid;
     }
 
     public IMicroserviceManagementCoordinator getMicroserviceManagementCoordinator() {

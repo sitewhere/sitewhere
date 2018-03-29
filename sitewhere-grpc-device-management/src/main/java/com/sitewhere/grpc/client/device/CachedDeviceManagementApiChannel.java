@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import com.sitewhere.grpc.client.cache.CacheUtils;
 import com.sitewhere.grpc.client.cache.DeviceManagementCacheProviders;
+import com.sitewhere.grpc.client.cache.NearCacheManager;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
@@ -20,6 +21,7 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -28,6 +30,9 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel {
+
+    /** Manages local cache */
+    private NearCacheManager nearCacheManager;
 
     /** Area cache */
     private ICacheProvider<String, IArea> areaCache;
@@ -55,15 +60,15 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
 
     public CachedDeviceManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
 	super(demux, microservice, host);
-	this.areaCache = new DeviceManagementCacheProviders.AreaCache(microservice, false);
-	this.areaByIdCache = new DeviceManagementCacheProviders.AreaByIdCache(microservice, false);
-	this.deviceTypeCache = new DeviceManagementCacheProviders.DeviceTypeCache(microservice, false);
-	this.deviceTypeByIdCache = new DeviceManagementCacheProviders.DeviceTypeByIdCache(microservice, false);
-	this.deviceCache = new DeviceManagementCacheProviders.DeviceCache(microservice, false);
-	this.deviceByIdCache = new DeviceManagementCacheProviders.DeviceByIdCache(microservice, false);
-	this.deviceAssignmentCache = new DeviceManagementCacheProviders.DeviceAssignmentCache(microservice, false);
-	this.deviceAssignmentByIdCache = new DeviceManagementCacheProviders.DeviceAssignmentByIdCache(microservice,
-		false);
+	this.nearCacheManager = new NearCacheManager(MicroserviceIdentifier.DeviceManagement);
+	this.areaCache = new DeviceManagementCacheProviders.AreaByTokenCache(nearCacheManager);
+	this.areaByIdCache = new DeviceManagementCacheProviders.AreaByIdCache(nearCacheManager);
+	this.deviceTypeCache = new DeviceManagementCacheProviders.DeviceTypeByTokenCache(nearCacheManager);
+	this.deviceTypeByIdCache = new DeviceManagementCacheProviders.DeviceTypeByIdCache(nearCacheManager);
+	this.deviceCache = new DeviceManagementCacheProviders.DeviceByTokenCache(nearCacheManager);
+	this.deviceByIdCache = new DeviceManagementCacheProviders.DeviceByIdCache(nearCacheManager);
+	this.deviceAssignmentCache = new DeviceManagementCacheProviders.DeviceAssignmentByTokenCache(nearCacheManager);
+	this.deviceAssignmentByIdCache = new DeviceManagementCacheProviders.DeviceAssignmentByIdCache(nearCacheManager);
     }
 
     /*

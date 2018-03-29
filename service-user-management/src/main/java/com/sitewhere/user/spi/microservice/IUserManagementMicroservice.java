@@ -7,6 +7,7 @@
  */
 package com.sitewhere.user.spi.microservice;
 
+import com.sitewhere.spi.microservice.ICachingMicroservice;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.user.spi.grpc.IUserManagementGrpcServer;
@@ -16,7 +17,7 @@ import com.sitewhere.user.spi.grpc.IUserManagementGrpcServer;
  * 
  * @author Derek
  */
-public interface IUserManagementMicroservice extends IGlobalMicroservice {
+public interface IUserManagementMicroservice extends IGlobalMicroservice, ICachingMicroservice {
 
     /**
      * Get GRPC server for user managment APIS.

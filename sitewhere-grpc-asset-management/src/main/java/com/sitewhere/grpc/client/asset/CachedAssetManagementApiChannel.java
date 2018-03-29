@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import com.sitewhere.grpc.client.cache.AssetManagementCacheProviders;
 import com.sitewhere.grpc.client.cache.CacheUtils;
+import com.sitewhere.grpc.client.cache.NearCacheManager;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
@@ -18,6 +19,7 @@ import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.cache.ICacheProvider;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -26,6 +28,9 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 public class CachedAssetManagementApiChannel extends AssetManagementApiChannel {
+
+    /** Manages local cache */
+    private NearCacheManager nearCacheManager;
 
     /** Asset type cache */
     private ICacheProvider<String, IAssetType> assetTypeCache;
@@ -41,10 +46,11 @@ public class CachedAssetManagementApiChannel extends AssetManagementApiChannel {
 
     public CachedAssetManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
 	super(demux, microservice, host);
-	this.assetTypeCache = new AssetManagementCacheProviders.AssetTypeByTokenCache(microservice, false);
-	this.assetTypeByIdCache = new AssetManagementCacheProviders.AssetTypeByIdCache(microservice, false);
-	this.assetCache = new AssetManagementCacheProviders.AssetByTokenCache(microservice, false);
-	this.assetByIdCache = new AssetManagementCacheProviders.AssetByIdCache(microservice, false);
+	this.nearCacheManager = new NearCacheManager(MicroserviceIdentifier.AssetManagement);
+	this.assetTypeCache = new AssetManagementCacheProviders.AssetTypeByTokenCache(nearCacheManager);
+	this.assetTypeByIdCache = new AssetManagementCacheProviders.AssetTypeByIdCache(nearCacheManager);
+	this.assetCache = new AssetManagementCacheProviders.AssetByTokenCache(nearCacheManager);
+	this.assetByIdCache = new AssetManagementCacheProviders.AssetByIdCache(nearCacheManager);
     }
 
     /*

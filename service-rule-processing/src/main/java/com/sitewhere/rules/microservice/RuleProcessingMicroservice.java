@@ -21,7 +21,7 @@ import com.sitewhere.rules.spi.microservice.IRuleProcessingMicroservice;
 import com.sitewhere.rules.spi.microservice.IRuleProcessingTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -59,8 +59,8 @@ public class RuleProcessingMicroservice extends MultitenantMicroservice<IRulePro
      * @see com.sitewhere.spi.microservice.IMicroservice#getIdentifier()
      */
     @Override
-    public String getIdentifier() {
-	return IMicroserviceIdentifiers.RULE_PROCESSING;
+    public MicroserviceIdentifier getIdentifier() {
+	return MicroserviceIdentifier.RuleProcessing;
     }
 
     /*

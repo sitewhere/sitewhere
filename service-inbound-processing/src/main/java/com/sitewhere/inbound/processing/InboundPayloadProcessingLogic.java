@@ -77,7 +77,7 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	this.deviceLookupTimer = createTimerMetric("deviceLookup");
 	this.assignmentLookupTimer = createTimerMetric("assignmentLookup");
 	this.eventStorageTimer = createTimerMetric("eventStorage");
-	// logMetricsToConsole();
+	logMetricsToConsole();
     }
 
     /**

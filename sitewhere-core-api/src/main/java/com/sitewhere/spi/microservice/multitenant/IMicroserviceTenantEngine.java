@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.IConfigurationListener;
 import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.microservice.scripting.IScriptManager;
@@ -169,7 +170,8 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
      * @param unit
      * @throws SiteWhereException
      */
-    public void waitForModuleBootstrapped(String identifier, long time, TimeUnit unit) throws SiteWhereException;
+    public void waitForModuleBootstrapped(MicroserviceIdentifier identifier, long time, TimeUnit unit)
+	    throws SiteWhereException;
 
     /**
      * Executes tenant initialization code. Called after Spring context has been

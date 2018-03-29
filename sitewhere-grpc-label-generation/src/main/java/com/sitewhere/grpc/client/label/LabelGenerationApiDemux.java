@@ -15,7 +15,7 @@ import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiChannel;
 import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiDemux;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 
 /**
  * Demultiplexes label generation requests across one or more API channels.
@@ -35,11 +35,11 @@ public class LabelGenerationApiDemux extends ApiDemux<ILabelGenerationApiChannel
     }
 
     /*
-     * @see com.sitewhere.grpc.model.spi.IApiDemux#getTargetIdentifier()
+     * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
     @Override
-    public String getTargetIdentifier() {
-	return IMicroserviceIdentifiers.LABEL_GENERATION;
+    public MicroserviceIdentifier getTargetIdentifier() {
+	return MicroserviceIdentifier.LabelGeneration;
     }
 
     /*

@@ -9,10 +9,12 @@ package com.sitewhere.grpc.client.user;
 
 import java.util.List;
 
+import com.sitewhere.grpc.client.cache.NearCacheManager;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.cache.ICacheProvider;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 
@@ -23,6 +25,9 @@ import com.sitewhere.spi.user.IUser;
  */
 public class CachedUserManagementApiChannel extends UserManagementApiChannel {
 
+    /** Manages local cache */
+    private NearCacheManager nearCacheManager;
+
     /** User cache */
     private ICacheProvider<String, IUser> userCache;
 
@@ -31,8 +36,9 @@ public class CachedUserManagementApiChannel extends UserManagementApiChannel {
 
     public CachedUserManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
 	super(demux, microservice, host);
-	this.userCache = new UserManagementCacheProviders.UserCache(microservice, false);
-	this.grantedAuthorityCache = new UserManagementCacheProviders.GrantedAuthoritiesCache(microservice, false);
+	this.nearCacheManager = new NearCacheManager(MicroserviceIdentifier.UserManagement);
+	this.userCache = new UserManagementCacheProviders.UserByTokenCache(nearCacheManager);
+	this.grantedAuthorityCache = new UserManagementCacheProviders.GrantedAuthorityByTokenCache(nearCacheManager);
     }
 
     /*

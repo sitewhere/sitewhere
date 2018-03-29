@@ -9,6 +9,7 @@ package com.sitewhere.spi.microservice.management;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroserviceManagement;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
@@ -28,5 +29,6 @@ public interface IMicroserviceManagementCoordinator extends ILifecycleComponent 
      * @return
      * @throws SiteWhereException
      */
-    public IMicroserviceManagement getMicroserviceManagement(String identifier) throws SiteWhereException;
+    public IMicroserviceManagement getMicroserviceManagement(MicroserviceIdentifier identifier)
+	    throws SiteWhereException;
 }

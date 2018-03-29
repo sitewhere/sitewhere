@@ -15,7 +15,7 @@ import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IUserManagementApiDemux;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 
 /**
  * Demultiplexes user management requests across one or more API channels.
@@ -34,11 +34,11 @@ public class UserManagementApiDemux extends ApiDemux<IUserManagementApiChannel<?
     }
 
     /*
-     * @see com.sitewhere.grpc.model.spi.IApiDemux#getTargetIdentifier()
+     * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
     @Override
-    public String getTargetIdentifier() {
-	return IMicroserviceIdentifiers.USER_MANAGEMENT;
+    public MicroserviceIdentifier getTargetIdentifier() {
+	return MicroserviceIdentifier.UserManagement;
     }
 
     /*

@@ -9,7 +9,7 @@ package com.sitewhere.microservice.spring;
 
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
-import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 
 /**
  * Registers parsers for elements in the instance management configuration
@@ -26,6 +26,7 @@ public class InstanceManagementNamespaceHandler extends NamespaceHandlerSupport 
      */
     @Override
     public void init() {
-	registerBeanDefinitionParser(IMicroserviceIdentifiers.INSTANCE_MANAGEMENT, new InstanceManagementParser());
+	registerBeanDefinitionParser(MicroserviceIdentifier.InstanceManagement.getPath(),
+		new InstanceManagementParser());
     }
 }

@@ -27,7 +27,7 @@ import com.hazelcast.core.HazelcastInstance;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.hazelcast.IHazelcastManager;
 import com.sitewhere.spi.microservice.state.IInstanceMicroservice;
 import com.sitewhere.spi.microservice.state.IInstanceTopologyEntry;
@@ -201,8 +201,9 @@ public class HazelcastManager extends LifecycleComponent implements IHazelcastMa
 		IInstanceTopologySnapshot topology = getMicroservice().getTopologyStateAggregator()
 			.getInstanceTopologySnapshot();
 		if (topology != null) {
-		    Map<String, IInstanceTopologyEntry> byIdent = topology.getTopologyEntriesByIdentifier();
-		    IInstanceTopologyEntry tenantManagement = byIdent.get(IMicroserviceIdentifiers.TENANT_MANAGEMENT);
+		    Map<MicroserviceIdentifier, IInstanceTopologyEntry> byIdent = topology
+			    .getTopologyEntriesByIdentifier();
+		    IInstanceTopologyEntry tenantManagement = byIdent.get(MicroserviceIdentifier.TenantManagement);
 		    if (tenantManagement != null) {
 			List<String> members = new ArrayList<>();
 			Map<String, IInstanceMicroservice> byHostname = tenantManagement.getMicroservicesByHostname();

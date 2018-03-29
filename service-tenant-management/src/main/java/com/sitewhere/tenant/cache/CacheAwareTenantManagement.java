@@ -5,14 +5,14 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.microservice.hazelcast.cache;
+package com.sitewhere.tenant.cache;
 
 import java.util.UUID;
 
 import com.sitewhere.grpc.client.tenant.TenantManagementCacheProviders;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.cache.ICacheProvider;
-import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.ICachingMicroservice;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
@@ -26,11 +26,12 @@ import com.sitewhere.tenant.TenantManagementDecorator;
 public class CacheAwareTenantManagement extends TenantManagementDecorator {
 
     /** Tenant cache */
-    private ICacheProvider<String, ITenant> tenantCache;
+    private ICacheProvider<String, ITenant> tenantByTokenCache;
 
-    public CacheAwareTenantManagement(ITenantManagement delegate, IMicroservice microservice) {
+    public CacheAwareTenantManagement(ITenantManagement delegate, ICachingMicroservice microservice) {
 	super(delegate);
-	this.tenantCache = new TenantManagementCacheProviders.TenantCache(microservice, true);
+	this.tenantByTokenCache = new TenantManagementCacheProviders.TenantByTokenCache(
+		microservice.getHazelcastManager());
     }
 
     /*
@@ -41,7 +42,7 @@ public class CacheAwareTenantManagement extends TenantManagementDecorator {
     @Override
     public ITenant createTenant(ITenantCreateRequest request) throws SiteWhereException {
 	ITenant result = super.createTenant(request);
-	getTenantCache().setCacheEntry(null, result.getToken(), result);
+	getTenantByTokenCache().setCacheEntry(null, result.getToken(), result);
 	getLogger().trace("Added created tenant to cache.");
 	return result;
     }
@@ -54,7 +55,7 @@ public class CacheAwareTenantManagement extends TenantManagementDecorator {
     @Override
     public ITenant updateTenant(UUID id, ITenantCreateRequest request) throws SiteWhereException {
 	ITenant result = super.updateTenant(id, request);
-	getTenantCache().setCacheEntry(null, result.getToken(), result);
+	getTenantByTokenCache().setCacheEntry(null, result.getToken(), result);
 	getLogger().trace("Updated tenant in cache.");
 	return result;
     }
@@ -65,8 +66,8 @@ public class CacheAwareTenantManagement extends TenantManagementDecorator {
     @Override
     public ITenant getTenant(UUID id) throws SiteWhereException {
 	ITenant result = super.getTenant(id);
-	if ((result != null) && (getTenantCache().getCacheEntry(null, result.getToken()) == null)) {
-	    getTenantCache().setCacheEntry(null, result.getToken(), result);
+	if ((result != null) && (getTenantByTokenCache().getCacheEntry(null, result.getToken()) == null)) {
+	    getTenantByTokenCache().setCacheEntry(null, result.getToken(), result);
 	    getLogger().trace("Added tenant to cache.");
 	}
 	return result;
@@ -80,8 +81,8 @@ public class CacheAwareTenantManagement extends TenantManagementDecorator {
     @Override
     public ITenant getTenantByToken(String token) throws SiteWhereException {
 	ITenant result = super.getTenantByToken(token);
-	if ((result != null) && (getTenantCache().getCacheEntry(null, result.getToken()) == null)) {
-	    getTenantCache().setCacheEntry(null, result.getToken(), result);
+	if ((result != null) && (getTenantByTokenCache().getCacheEntry(null, result.getToken()) == null)) {
+	    getTenantByTokenCache().setCacheEntry(null, result.getToken(), result);
 	    getLogger().trace("Added tenant to cache.");
 	}
 	return result;
@@ -95,16 +96,16 @@ public class CacheAwareTenantManagement extends TenantManagementDecorator {
     @Override
     public ITenant deleteTenant(UUID tenantId, boolean force) throws SiteWhereException {
 	ITenant result = super.deleteTenant(tenantId, force);
-	getTenantCache().removeCacheEntry(null, result.getToken());
+	getTenantByTokenCache().removeCacheEntry(null, result.getToken());
 	getLogger().trace("Removed tenant from cache.");
 	return result;
     }
 
-    public ICacheProvider<String, ITenant> getTenantCache() {
-	return tenantCache;
+    public ICacheProvider<String, ITenant> getTenantByTokenCache() {
+	return tenantByTokenCache;
     }
 
-    public void setTenantCache(ICacheProvider<String, ITenant> tenantCache) {
-	this.tenantCache = tenantCache;
+    public void setTenantByTokenCache(ICacheProvider<String, ITenant> tenantByTokenCache) {
+	this.tenantByTokenCache = tenantByTokenCache;
     }
 }

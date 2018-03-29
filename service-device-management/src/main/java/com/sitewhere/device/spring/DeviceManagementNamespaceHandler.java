@@ -9,7 +9,7 @@ package com.sitewhere.device.spring;
 
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
-import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 
 /**
  * Registers parsers for elements in the device management configuration schema.
@@ -25,6 +25,6 @@ public class DeviceManagementNamespaceHandler extends NamespaceHandlerSupport {
      */
     @Override
     public void init() {
-	registerBeanDefinitionParser(IMicroserviceIdentifiers.DEVICE_MANAGEMENT, new DeviceManagementParser());
+	registerBeanDefinitionParser(MicroserviceIdentifier.DeviceManagement.getPath(), new DeviceManagementParser());
     }
 }

@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.microservice.hazelcast.cache;
+package com.sitewhere.asset.cache;
 
 import java.util.UUID;
 
@@ -20,7 +20,7 @@ import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.asset.request.IAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IAssetTypeCreateRequest;
 import com.sitewhere.spi.cache.ICacheProvider;
-import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.ICachingMicroservice;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -42,12 +42,14 @@ public class CacheAwareAssetManagement extends AssetManagementDecorator {
     /** Asset by id cache */
     private ICacheProvider<UUID, IAsset> assetByIdCache;
 
-    public CacheAwareAssetManagement(IAssetManagement delegate, IMicroservice microservice) {
+    public CacheAwareAssetManagement(IAssetManagement delegate, ICachingMicroservice microservice) {
 	super(delegate);
-	this.assetTypeCache = new AssetManagementCacheProviders.AssetTypeByTokenCache(microservice, true);
-	this.assetTypeByIdCache = new AssetManagementCacheProviders.AssetTypeByIdCache(microservice, true);
-	this.assetCache = new AssetManagementCacheProviders.AssetByTokenCache(microservice, true);
-	this.assetByIdCache = new AssetManagementCacheProviders.AssetByIdCache(microservice, true);
+	this.assetTypeCache = new AssetManagementCacheProviders.AssetTypeByTokenCache(
+		microservice.getHazelcastManager());
+	this.assetTypeByIdCache = new AssetManagementCacheProviders.AssetTypeByIdCache(
+		microservice.getHazelcastManager());
+	this.assetCache = new AssetManagementCacheProviders.AssetByTokenCache(microservice.getHazelcastManager());
+	this.assetByIdCache = new AssetManagementCacheProviders.AssetByIdCache(microservice.getHazelcastManager());
     }
 
     /*

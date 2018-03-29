@@ -14,7 +14,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetType;
-import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.hazelcast.IHazelcastProvider;
 
 /**
  * Cache providers for asset management entities.
@@ -22,18 +22,6 @@ import com.sitewhere.spi.microservice.IMicroservice;
  * @author Derek
  */
 public class AssetManagementCacheProviders {
-
-    /** Cache id for asset type by token cache */
-    public static final String ID_ASSET_TYPE_CACHE = "asset_type_by_token";
-
-    /** Cache id for asset type by id cache */
-    public static final String ID_ASSET_TYPE_ID_CACHE = "asset_type_by_id";
-
-    /** Cache id for asset by token cache */
-    public static final String ID_ASSET_CACHE = "asset_by_token";
-
-    /** Cache id for asset by id cache */
-    public static final String ID_ASSET_ID_CACHE = "asset_by_id";
 
     /**
      * Cache for asset types by token.
@@ -45,8 +33,8 @@ public class AssetManagementCacheProviders {
 	/** Static logger instance */
 	private static Log LOGGER = LogFactory.getLog(AssetByTokenCache.class);
 
-	public AssetTypeByTokenCache(IMicroservice microservice, boolean createOnStartup) {
-	    super(microservice, ID_ASSET_TYPE_CACHE, createOnStartup);
+	public AssetTypeByTokenCache(IHazelcastProvider hazelcastProvider) {
+	    super(hazelcastProvider, CacheIdentifier.AssetTypeByToken);
 	}
 
 	/*
@@ -68,8 +56,8 @@ public class AssetManagementCacheProviders {
 	/** Static logger instance */
 	private static Log LOGGER = LogFactory.getLog(AssetByTokenCache.class);
 
-	public AssetTypeByIdCache(IMicroservice microservice, boolean createOnStartup) {
-	    super(microservice, ID_ASSET_TYPE_ID_CACHE, createOnStartup);
+	public AssetTypeByIdCache(IHazelcastProvider hazelcastProvider) {
+	    super(hazelcastProvider, CacheIdentifier.AssetTypeById);
 	}
 
 	/*
@@ -91,8 +79,8 @@ public class AssetManagementCacheProviders {
 	/** Static logger instance */
 	private static Log LOGGER = LogFactory.getLog(AssetByTokenCache.class);
 
-	public AssetByTokenCache(IMicroservice microservice, boolean createOnStartup) {
-	    super(microservice, ID_ASSET_CACHE, createOnStartup);
+	public AssetByTokenCache(IHazelcastProvider hazelcastProvider) {
+	    super(hazelcastProvider, CacheIdentifier.AssetByToken);
 	}
 
 	/*
@@ -114,8 +102,8 @@ public class AssetManagementCacheProviders {
 	/** Static logger instance */
 	private static Log LOGGER = LogFactory.getLog(AssetByTokenCache.class);
 
-	public AssetByIdCache(IMicroservice microservice, boolean createOnStartup) {
-	    super(microservice, ID_ASSET_ID_CACHE, createOnStartup);
+	public AssetByIdCache(IHazelcastProvider hazelcastProvider) {
+	    super(hazelcastProvider, CacheIdentifier.AssetById);
 	}
 
 	/*

@@ -5,14 +5,14 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.microservice.hazelcast.cache;
+package com.sitewhere.user.cache;
 
 import java.util.List;
 
 import com.sitewhere.grpc.client.user.UserManagementCacheProviders;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.cache.ICacheProvider;
-import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.ICachingMicroservice;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
@@ -32,10 +32,11 @@ public class CacheAwareUserManagement extends UserManagementDecorator {
     /** Granted authority cache */
     private ICacheProvider<String, List<IGrantedAuthority>> grantedAuthorityCache;
 
-    public CacheAwareUserManagement(IUserManagement delegate, IMicroservice microservice) {
+    public CacheAwareUserManagement(IUserManagement delegate, ICachingMicroservice microservice) {
 	super(delegate);
-	this.userCache = new UserManagementCacheProviders.UserCache(microservice, true);
-	this.grantedAuthorityCache = new UserManagementCacheProviders.GrantedAuthoritiesCache(microservice, true);
+	this.userCache = new UserManagementCacheProviders.UserByTokenCache(microservice.getHazelcastManager());
+	this.grantedAuthorityCache = new UserManagementCacheProviders.GrantedAuthorityByTokenCache(
+		microservice.getHazelcastManager());
     }
 
     /*

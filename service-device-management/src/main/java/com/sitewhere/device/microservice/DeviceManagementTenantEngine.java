@@ -15,6 +15,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.sitewhere.device.cache.CacheAwareDeviceManagement;
 import com.sitewhere.device.grpc.DeviceManagementImpl;
 import com.sitewhere.device.initializer.GroovyDeviceModelInitializer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
@@ -23,14 +24,14 @@ import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.service.DeviceManagementGrpc;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
-import com.sitewhere.microservice.hazelcast.cache.CacheAwareDeviceManagement;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.ICachingMicroservice;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
@@ -73,7 +74,8 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	// Create management interfaces.
 	IDeviceManagement implementation = (IDeviceManagement) getModuleContext()
 		.getBean(DeviceManagementBeans.BEAN_DEVICE_MANAGEMENT);
-	this.deviceManagement = new CacheAwareDeviceManagement(implementation, getMicroservice());
+	this.deviceManagement = new CacheAwareDeviceManagement(implementation,
+		(ICachingMicroservice) getMicroservice());
 	this.deviceManagementImpl = new DeviceManagementImpl(getDeviceManagement());
 
 	// Create step that will initialize components.
@@ -126,12 +128,12 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 
 	// Wait for asset management API to become available and bootstrapped.
 	getAssetManagementApiChannel().waitForApiAvailable();
-	waitForModuleBootstrapped(IMicroserviceIdentifiers.ASSET_MANAGEMENT, 2, TimeUnit.MINUTES);
+	waitForModuleBootstrapped(MicroserviceIdentifier.AssetManagement, 2, TimeUnit.MINUTES);
 
 	// Wait for event management APIs to become available for the given tenant.
 	getEventManagementApiChannel().waitForApiAvailable();
 	getMicroservice().getTopologyStateAggregator().waitForTenantEngineAvailable(
-		IMicroserviceIdentifiers.EVENT_MANAGEMENT, getTenant().getId(), 2, TimeUnit.MINUTES, 1);
+		MicroserviceIdentifier.EventManagement, getTenant().getId(), 2, TimeUnit.MINUTES, 1);
 
 	// Execute remote calls as superuser.
 	Authentication previous = SecurityContextHolder.getContext().getAuthentication();

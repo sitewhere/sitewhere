@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.microservice.state;
 
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 
 /**
@@ -16,8 +17,8 @@ import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
  */
 public class MicroserviceDetails implements IMicroserviceDetails {
 
-    /** Function indentifier */
-    private String identifier;
+    /** Microservice indentifier */
+    private MicroserviceIdentifier identifier;
 
     /** Unique hostname */
     private String hostname;
@@ -39,11 +40,11 @@ public class MicroserviceDetails implements IMicroserviceDetails {
      * com.sitewhere.spi.microservice.state.IMicroserviceDetails#getIdentifier()
      */
     @Override
-    public String getIdentifier() {
+    public MicroserviceIdentifier getIdentifier() {
 	return identifier;
     }
 
-    public void setIdentifier(String identifier) {
+    public void setIdentifier(MicroserviceIdentifier identifier) {
 	this.identifier = identifier;
     }
 

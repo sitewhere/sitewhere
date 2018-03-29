@@ -34,7 +34,7 @@ import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -54,7 +54,7 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
     private static final String NAME = "Instance Management";
 
     /** User management configuration file name */
-    private static final String CONFIGURATION_PATH = IMicroserviceIdentifiers.INSTANCE_MANAGEMENT + ".xml";
+    private static final String CONFIGURATION_PATH = MicroserviceIdentifier.InstanceManagement.getPath() + ".xml";
 
     /** Instance template manager */
     private IInstanceTemplateManager instanceTemplateManager = new InstanceTemplateManager();
@@ -76,13 +76,11 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.IMicroservice#getIdentifier()
+     * @see com.sitewhere.spi.microservice.IMicroservice#getIdentifier()
      */
     @Override
-    public String getIdentifier() {
-	return IMicroserviceIdentifiers.INSTANCE_MANAGEMENT;
+    public MicroserviceIdentifier getIdentifier() {
+	return MicroserviceIdentifier.InstanceManagement;
     }
 
     /*

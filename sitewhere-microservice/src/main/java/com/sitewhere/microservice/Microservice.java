@@ -35,7 +35,6 @@ import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.configuration.model.IElementNode;
 import com.sitewhere.spi.microservice.configuration.model.IElementRole;
 import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
-import com.sitewhere.spi.microservice.hazelcast.IHazelcastManager;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.microservice.security.ISystemUser;
@@ -79,10 +78,6 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     /** Zookeeper manager */
     @Autowired
     private IZookeeperManager zookeeperManager;
-
-    /** Get Hazelcast manager */
-    @Autowired
-    private IHazelcastManager hazelcastManager;
 
     /** JWT token management */
     @Autowired
@@ -150,12 +145,6 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
 	// Initialize Zookeeper configuration management.
 	initialize.addInitializeStep(this, getZookeeperManager(), true);
-
-	// Initialize Hazelcast manager.
-	initialize.addInitializeStep(this, getHazelcastManager(), true);
-
-	// Start Hazelcast manager.
-	initialize.addStartStep(this, getHazelcastManager(), true);
 
 	// Initialize microservice management GRPC server.
 	initialize.addInitializeStep(this, getMicroserviceManagementGrpcServer(), true);
@@ -235,12 +224,6 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
 	// Terminate Zk manager.
 	terminate.addStopStep(this, getZookeeperManager());
-
-	// Stop Hazelcast manager.
-	terminate.addStopStep(this, getHazelcastManager());
-
-	// Terminate Hazelcast manager.
-	terminate.addTerminateStep(this, getHazelcastManager());
 
 	// Execute shutdown steps.
 	terminate.execute(monitor);
@@ -439,18 +422,6 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
     public void setZookeeperManager(IZookeeperManager zookeeperManager) {
 	this.zookeeperManager = zookeeperManager;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getHazelcastManager()
-     */
-    @Override
-    public IHazelcastManager getHazelcastManager() {
-	return hazelcastManager;
-    }
-
-    public void setHazelcastManager(IHazelcastManager hazelcastManager) {
-	this.hazelcastManager = hazelcastManager;
     }
 
     /*

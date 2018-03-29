@@ -15,7 +15,7 @@ import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiDemux;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 
 /**
  * Demultiplexes tenant management requests across one or more API channels.
@@ -35,11 +35,11 @@ public class TenantManagementApiDemux extends ApiDemux<ITenantManagementApiChann
     }
 
     /*
-     * @see com.sitewhere.grpc.model.spi.IApiDemux#getTargetIdentifier()
+     * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
     @Override
-    public String getTargetIdentifier() {
-	return IMicroserviceIdentifiers.TENANT_MANAGEMENT;
+    public MicroserviceIdentifier getTargetIdentifier() {
+	return MicroserviceIdentifier.TenantManagement;
     }
 
     /*

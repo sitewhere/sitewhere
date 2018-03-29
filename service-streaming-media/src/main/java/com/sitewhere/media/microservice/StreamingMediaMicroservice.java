@@ -15,7 +15,7 @@ import com.sitewhere.media.spi.microservice.IStreamingMediaMicroservice;
 import com.sitewhere.media.spi.microservice.IStreamingMediaTenantEngine;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -45,8 +45,8 @@ public class StreamingMediaMicroservice extends MultitenantMicroservice<IStreami
      * @see com.sitewhere.spi.microservice.IMicroservice#getIdentifier()
      */
     @Override
-    public String getIdentifier() {
-	return IMicroserviceIdentifiers.STREAMING_MEDIA;
+    public MicroserviceIdentifier getIdentifier() {
+	return MicroserviceIdentifier.StreamingMedia;
     }
 
     /*

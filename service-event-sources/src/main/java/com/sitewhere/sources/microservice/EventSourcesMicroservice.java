@@ -21,7 +21,7 @@ import com.sitewhere.sources.configuration.EventSourcesModelProvider;
 import com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice;
 import com.sitewhere.sources.spi.microservice.IEventSourcesTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroserviceIdentifiers;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -58,13 +58,11 @@ public class EventSourcesMicroservice extends MultitenantMicroservice<IEventSour
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.IMicroservice#getIdentifier()
+     * @see com.sitewhere.spi.microservice.IMicroservice#getIdentifier()
      */
     @Override
-    public String getIdentifier() {
-	return IMicroserviceIdentifiers.EVENT_SOURCES;
+    public MicroserviceIdentifier getIdentifier() {
+	return MicroserviceIdentifier.EventSources;
     }
 
     /*

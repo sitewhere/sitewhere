@@ -7,21 +7,12 @@
  */
 package com.sitewhere.spi.microservice.hazelcast;
 
-import com.hazelcast.core.HazelcastInstance;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
- * Manage Apache Ignite data grid which is used for replicated caching across
- * microservices.
+ * Manager for a Hazelcast instance.
  * 
  * @author Derek
  */
-public interface IHazelcastManager extends ILifecycleComponent {
-
-    /**
-     * Get Hazelcast instance.
-     * 
-     * @return
-     */
-    public HazelcastInstance getHazelcastInstance();
+public interface IHazelcastManager extends ILifecycleComponent, IHazelcastProvider {
 }
