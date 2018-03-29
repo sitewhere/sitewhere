@@ -25,6 +25,9 @@ dependencies {
 	// Hazelcast for distributed caching.
 	compile group: 'com.hazelcast', name: 'hazelcast', version: "${rootProject.ext['hazelcast.version']}"
 	compile group: 'javax.cache', name: 'cache-api', version: "1.0.0"
+      
+    // Metrics support
+    compile group: 'io.dropwizard.metrics', name: 'metrics-core', version:'3.1.5'
 	
 	// Opentracing APIs.
     compile group: 'io.opentracing', name: 'opentracing-api', version: '0.30.0'

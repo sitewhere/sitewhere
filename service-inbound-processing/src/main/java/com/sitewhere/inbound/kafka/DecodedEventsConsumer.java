@@ -27,11 +27,14 @@ import com.sitewhere.inbound.processing.InboundPayloadProcessingLogic;
 import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
+import com.sitewhere.inbound.spi.processing.IInboundProcessingConfiguration;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
+import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
+import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
@@ -51,19 +54,19 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
     /** Suffix for group id */
     private static String GROUP_ID_SUFFIX = "decoded-event-consumers";
 
-    /** Number of threads processing inbound events */
-    private static final int CONCURRENT_EVENT_PROCESSING_THREADS = 10;
+    /** Get settings for inbound processing */
+    private IInboundProcessingConfiguration configuration;
 
     /** Executor */
     private ExecutorService executor;
 
     /** Inbound payload processing logic */
-    private InboundPayloadProcessingLogic inboundPayloadProcessingLogic;
+    private InboundPayloadProcessingLogic inboundPayloadProcessingLogic = new InboundPayloadProcessingLogic();
 
     public DecodedEventsConsumer(IInboundProcessingMicroservice microservice,
-	    IInboundProcessingTenantEngine tenantEngine) {
+	    IInboundProcessingTenantEngine tenantEngine, IInboundProcessingConfiguration configuration) {
 	super(microservice, tenantEngine);
-	this.inboundPayloadProcessingLogic = new InboundPayloadProcessingLogic(tenantEngine);
+	this.configuration = configuration;
     }
 
     /*
@@ -99,6 +102,25 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
     }
 
     /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+
+	// Create step that will initialize components.
+	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
+
+	// Initialize inbound processing logic.
+	init.addInitializeStep(this, getInboundPayloadProcessingLogic(), true);
+
+	// Execute initialization steps.
+	init.execute(monitor);
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer#start(com.
@@ -106,9 +128,20 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	super.start(monitor);
-	executor = Executors.newFixedThreadPool(CONCURRENT_EVENT_PROCESSING_THREADS,
+	// Create step that will start components.
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
+
+	// Start inbound processing logic.
+	start.addStartStep(this, getInboundPayloadProcessingLogic(), true);
+
+	// Execute startup steps.
+	start.execute(monitor);
+
+	getLogger().info("Allocating " + getConfiguration().getProcessingThreadCount()
+		+ " threads for inbound event processing.");
+	executor = Executors.newFixedThreadPool(getConfiguration().getProcessingThreadCount(),
 		new InboundEventProcessingThreadFactory());
+	super.start(monitor);
     }
 
     /*
@@ -120,6 +153,16 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.stop(monitor);
+
+	// Create step that will stop components.
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
+
+	// Stop inbound processing logic.
+	stop.addStopStep(this, getInboundPayloadProcessingLogic());
+
+	// Execute shutdown steps.
+	stop.execute(monitor);
+
 	if (executor != null) {
 	    executor.shutdown();
 	    try {
@@ -148,6 +191,11 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 	return LOGGER;
     }
 
+    /*
+     * @see com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer#
+     * getInboundPayloadProcessingLogic()
+     */
+    @Override
     public InboundPayloadProcessingLogic getInboundPayloadProcessingLogic() {
 	return inboundPayloadProcessingLogic;
     }
@@ -201,5 +249,13 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 	public Thread newThread(Runnable r) {
 	    return new Thread(r, "Inbound Event Processing " + counter.incrementAndGet());
 	}
+    }
+
+    public IInboundProcessingConfiguration getConfiguration() {
+	return configuration;
+    }
+
+    public void setConfiguration(IInboundProcessingConfiguration configuration) {
+	this.configuration = configuration;
     }
 }

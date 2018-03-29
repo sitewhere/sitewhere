@@ -13,6 +13,6 @@
 	<!-- Allow property placeholder substitution -->
 	<context:property-placeholder />
 
-	<ip:inbound-processing></ip:inbound-processing>
+	<ip:inbound-processing processingThreadCount="25" />
 
 </beans>

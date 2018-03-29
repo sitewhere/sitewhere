@@ -39,7 +39,7 @@ public class InitializeTenantEngineOperation<T extends IMicroserviceTenantEngine
     private static Log LOGGER = LogFactory.getLog(InitializeTenantEngineOperation.class);
 
     /** Max time to wait for tenant to be bootstrapped from template */
-    private static final long MAX_WAIT_FOR_TENANT_BOOTSTRAPPED = 5 * 1000;
+    private static final long MAX_WAIT_FOR_TENANT_BOOTSTRAPPED = 60 * 1000;
 
     /** Parent microservice */
     private MultitenantMicroservice<T> microservice;
@@ -119,7 +119,7 @@ public class InitializeTenantEngineOperation<T extends IMicroserviceTenantEngine
 			getMicroservice().getInstanceTenantBootstrappedIndicatorPath(getTenant().getId())) != null) {
 		    return;
 		}
-		Thread.sleep(500);
+		Thread.sleep(1000);
 	    }
 	    throw new SiteWhereException("Tenant not bootstrapped within time limit. Aborting");
 	} catch (Throwable t) {

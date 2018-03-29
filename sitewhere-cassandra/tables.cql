@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS events_by_id (
   deviceId uuid,
   eventId uuid,
   alternateId text,
-  eventType text,
+  eventType tinyint,
   assignmentId uuid,
   areaId uuid,
   assetId uuid,
@@ -28,14 +28,15 @@ CREATE TABLE IF NOT EXISTS events_by_id (
   location frozen<sw_location>,
   measurements frozen<sw_measurements>,
   alert frozen<sw_alert>,
-  PRIMARY KEY ((deviceId), eventId)
+  PRIMARY KEY (eventId)
 )
 
 CREATE TABLE IF NOT EXISTS events_by_assignment (
   deviceId uuid,
+  bucket int,
   eventId uuid,
   alternateId text,
-  eventType text,
+  eventType tinyint,
   assignmentId uuid,
   areaId uuid,
   assetId uuid,
@@ -44,14 +45,15 @@ CREATE TABLE IF NOT EXISTS events_by_assignment (
   location frozen<sw_location>,
   measurements frozen<sw_measurements>,
   alert frozen<sw_alert>,
-  PRIMARY KEY ((deviceId), assignmentId, eventDate, eventId)
-) WITH CLUSTERING ORDER BY (assignmentId asc, eventDate desc, eventId asc)
+  PRIMARY KEY ((assignmentId, eventType, bucket), eventDate, eventId)
+) WITH CLUSTERING ORDER BY (eventDate desc, eventId asc)
 
 CREATE TABLE IF NOT EXISTS events_by_area (
   deviceId uuid,
+  bucket int,
   eventId uuid,
   alternateId text,
-  eventType text,
+  eventType tinyint,
   assignmentId uuid,
   areaId uuid,
   assetId uuid,
@@ -60,5 +62,22 @@ CREATE TABLE IF NOT EXISTS events_by_area (
   location frozen<sw_location>,
   measurements frozen<sw_measurements>,
   alert frozen<sw_alert>,
-  PRIMARY KEY ((deviceId), areaId, eventDate, eventId)
-) WITH CLUSTERING ORDER BY (areaId asc, eventDate desc, eventId asc)
+  PRIMARY KEY ((areaId, eventType, bucket), eventDate, eventId)
+) WITH CLUSTERING ORDER BY (eventDate desc, eventId asc)
+
+CREATE TABLE IF NOT EXISTS events_by_asset (
+  deviceId uuid,
+  bucket int,
+  eventId uuid,
+  alternateId text,
+  eventType tinyint,
+  assignmentId uuid,
+  areaId uuid,
+  assetId uuid,
+  eventDate timestamp,
+  receivedDate timestamp,
+  location frozen<sw_location>,
+  measurements frozen<sw_measurements>,
+  alert frozen<sw_alert>,
+  PRIMARY KEY ((assetId, eventType, bucket), eventDate, eventId)
+) WITH CLUSTERING ORDER BY (eventDate desc, eventId asc)

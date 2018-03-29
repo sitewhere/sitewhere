@@ -7,9 +7,8 @@
  */
 package com.sitewhere.schedule;
 
-import com.sitewhere.server.lifecycle.LifecycleComponentDecorator;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponentDecorator;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduledJob;
@@ -24,30 +23,11 @@ import com.sitewhere.spi.search.ISearchResults;
  * 
  * @author Derek
  */
-public class ScheduleManagementDecorator extends LifecycleComponentDecorator<IScheduleManagement>
+public class ScheduleManagementDecorator extends TenantEngineLifecycleComponentDecorator<IScheduleManagement>
 	implements IScheduleManagement {
 
     public ScheduleManagementDecorator(IScheduleManagement delegate) {
 	super(delegate);
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
-     * setTenantEngine(com.sitewhere.spi.microservice.multitenant.
-     * IMicroserviceTenantEngine)
-     */
-    @Override
-    public void setTenantEngine(IMicroserviceTenantEngine tenantEngine) {
-	getDelegate().setTenantEngine(tenantEngine);
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
-     * getTenantEngine()
-     */
-    @Override
-    public IMicroserviceTenantEngine getTenantEngine() {
-	return getDelegate().getTenantEngine();
     }
 
     /*

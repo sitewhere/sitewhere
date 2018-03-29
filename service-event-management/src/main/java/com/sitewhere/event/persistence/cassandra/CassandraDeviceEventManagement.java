@@ -9,7 +9,6 @@ package com.sitewhere.event.persistence.cassandra;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,8 +16,9 @@ import org.apache.commons.logging.LogFactory;
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
-import com.datastax.driver.core.exceptions.QueryExecutionException;
+import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.sitewhere.cassandra.CassandraClient;
 import com.sitewhere.event.persistence.DeviceEventManagementPersistence;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
@@ -171,22 +171,31 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	    throws SiteWhereException {
 	DeviceLocation location = DeviceEventManagementPersistence.deviceLocationCreateLogic(assignment, request);
 
+	int bucket = (int) (System.currentTimeMillis() / (60 * 60 * 1000));
+	getLogger().info("Using bucket: " + bucket);
+
 	// Build insert for event by id.
 	BoundStatement eventById = getClient().getInsertDeviceLocationById().bind();
 	CassandraDeviceLocation.bindFields(getClient(), eventById, location);
-	ResultSetFuture eventByIdFuture = getClient().getSession().executeAsync(eventById);
+	process(eventById, location);
 
 	// Build insert for event by assignment.
 	BoundStatement eventByAssn = getClient().getInsertDeviceLocationByAssignment().bind();
 	CassandraDeviceLocation.bindFields(getClient(), eventByAssn, location);
-	ResultSetFuture eventByAssnFuture = getClient().getSession().executeAsync(eventByAssn);
+	eventByAssn.setInt("bucket", bucket);
+	process(eventByAssn, location);
 
 	// Build insert for event by area.
 	BoundStatement eventByArea = getClient().getInsertDeviceLocationByArea().bind();
 	CassandraDeviceLocation.bindFields(getClient(), eventByArea, location);
-	ResultSetFuture eventByAreaFuture = getClient().getSession().executeAsync(eventByArea);
+	eventByArea.setInt("bucket", bucket);
+	process(eventByArea, location);
 
-	processMultiple(eventByIdFuture, eventByAssnFuture, eventByAreaFuture);
+	// Build insert for event by asset.
+	BoundStatement eventByAsset = getClient().getInsertDeviceLocationByAsset().bind();
+	CassandraDeviceLocation.bindFields(getClient(), eventByAsset, location);
+	eventByAsset.setInt("bucket", bucket);
+	process(eventByAsset, location);
 
 	return location;
     }
@@ -393,19 +402,33 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	throw new SiteWhereException("Not implemented.");
     }
 
-    protected void processMultiple(ResultSetFuture... futures) throws SiteWhereException {
-	try {
-	    List<ResultSet> results = Futures.successfulAsList(futures).get();
-	    if (results.size() != futures.length) {
-		throw new SiteWhereException("One or more queries failed.");
+    /**
+     * Process a Cassandra query and handle failures.
+     * 
+     * @param statement
+     * @param event
+     * @throws SiteWhereException
+     */
+    protected void process(BoundStatement statement, IDeviceEvent event) throws SiteWhereException {
+	ResultSetFuture future = getClient().getSession().executeAsync("SELECT release_version FROM system.local");
+	Futures.addCallback(future, new FutureCallback<ResultSet>() {
+	    /*
+	     * @see
+	     * com.google.common.util.concurrent.FutureCallback#onSuccess(java.lang.Object)
+	     */
+	    @Override
+	    public void onSuccess(ResultSet result) {
 	    }
-	} catch (QueryExecutionException e) {
-	    throw new SiteWhereException("Unable to add device location.", e);
-	} catch (InterruptedException e) {
-	    throw new SiteWhereException("Unable to add device location.", e);
-	} catch (ExecutionException e) {
-	    throw new SiteWhereException("Unable to add device location.", e);
-	}
+
+	    /*
+	     * @see com.google.common.util.concurrent.FutureCallback#onFailure(java.lang.
+	     * Throwable)
+	     */
+	    @Override
+	    public void onFailure(Throwable t) {
+		getLogger().error("Failed to persist Cassandra event: " + event.getId(), t);
+	    }
+	}, MoreExecutors.directExecutor());
     }
 
     /*

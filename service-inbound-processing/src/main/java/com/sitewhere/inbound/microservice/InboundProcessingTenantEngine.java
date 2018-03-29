@@ -22,12 +22,14 @@ import com.sitewhere.inbound.spi.kafka.IPersistedEventsConsumer;
 import com.sitewhere.inbound.spi.kafka.IUnregisteredEventsProducer;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
+import com.sitewhere.inbound.spi.processing.IInboundProcessingConfiguration;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
+import com.sitewhere.spi.microservice.spring.InboundProcessingBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -71,7 +73,11 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	IInboundProcessingMicroservice ipMicroservice = (IInboundProcessingMicroservice) getMicroservice();
 
-	this.decodedEventsConsumer = new DecodedEventsConsumer(ipMicroservice, this);
+	// Load core configuration parameters.
+	IInboundProcessingConfiguration configuration = (IInboundProcessingConfiguration) getModuleContext()
+		.getBean(InboundProcessingBeans.BEAN_INBOUND_PROCESSING_CONFIGURATION);
+
+	this.decodedEventsConsumer = new DecodedEventsConsumer(ipMicroservice, this, configuration);
 	this.unregisteredDeviceEventsProducer = new UnregisteredEventsProducer(ipMicroservice);
 	this.persistedEventsConsumer = new PersistedEventsConsumer(ipMicroservice, this);
 	this.enrichedEventsProducer = new EnrichedEventsProducer(ipMicroservice);
@@ -143,25 +149,25 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
     @Override
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will stop components.
-	ICompositeLifecycleStep start = new CompositeLifecycleStep("Stop " + getComponentName());
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
 
 	// Stop decoded events consumer.
-	start.addStopStep(this, getDecodedEventsConsumer());
+	stop.addStopStep(this, getDecodedEventsConsumer());
 
 	// Stop unregistered device events producer.
-	start.addStopStep(this, getUnregisteredDeviceEventsProducer());
+	stop.addStopStep(this, getUnregisteredDeviceEventsProducer());
 
 	// Stop persisted events consumer.
-	start.addStopStep(this, getPersistedEventsConsumer());
+	stop.addStopStep(this, getPersistedEventsConsumer());
 
 	// Stop enriched events producer.
-	start.addStopStep(this, getEnrichedEventsProducer());
+	stop.addStopStep(this, getEnrichedEventsProducer());
 
 	// Stop enriched command invocations producer.
-	start.addStopStep(this, getEnrichedCommandInvocationsProducer());
+	stop.addStopStep(this, getEnrichedCommandInvocationsProducer());
 
 	// Execute shutdown steps.
-	start.execute(monitor);
+	stop.execute(monitor);
     }
 
     /*

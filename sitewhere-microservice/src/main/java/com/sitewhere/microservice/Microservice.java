@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.codahale.metrics.MetricRegistry;
 import com.sitewhere.Version;
 import com.sitewhere.microservice.management.MicroserviceManagementGrpcServer;
 import com.sitewhere.microservice.state.MicroserviceStateUpdatesKafkaProducer;
@@ -119,6 +120,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
     /** Executor for heartbeat */
     private ExecutorService microserviceHeartbeatService;
+
+    /** Metric registry */
+    private MetricRegistry metricRegistry = new MetricRegistry();
 
     public Microservice() {
 	this.microserviceOperationsService = Executors
@@ -535,6 +539,18 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
     public void setInstanceSettings(IInstanceSettings instanceSettings) {
 	this.instanceSettings = instanceSettings;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getMetricRegistry()
+     */
+    @Override
+    public MetricRegistry getMetricRegistry() {
+	return metricRegistry;
+    }
+
+    public void setMetricRegistry(MetricRegistry metricRegistry) {
+	this.metricRegistry = metricRegistry;
     }
 
     /*

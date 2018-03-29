@@ -10,6 +10,7 @@ package com.sitewhere.spi.microservice;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
+import com.codahale.metrics.MetricRegistry;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
@@ -212,6 +213,13 @@ public interface IMicroservice extends ILifecycleComponent, ITracerProvider {
      * @return
      */
     public IHazelcastManager getHazelcastManager();
+
+    /**
+     * Get metric registry.
+     * 
+     * @return
+     */
+    public MetricRegistry getMetricRegistry();
 
     /**
      * Wait for SiteWhere instance configuration metadata to become initialized

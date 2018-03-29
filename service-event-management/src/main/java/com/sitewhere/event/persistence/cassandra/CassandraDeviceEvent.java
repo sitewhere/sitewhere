@@ -9,6 +9,7 @@ package com.sitewhere.event.persistence.cassandra;
 
 import com.datastax.driver.core.BoundStatement;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 
 public class CassandraDeviceEvent {
@@ -26,7 +27,7 @@ public class CassandraDeviceEvent {
 	if (event.getAlternateId() != null) {
 	    bound.setString("alternateId", event.getAlternateId());
 	}
-	bound.setString("eventType", event.getEventType().name());
+	bound.setByte("eventType", getIndicatorForEventType(event.getEventType()));
 	bound.setUUID("assignmentId", event.getDeviceAssignmentId());
 	if (event.getAreaId() != null) {
 	    bound.setUUID("areaId", event.getAreaId());
@@ -36,5 +37,29 @@ public class CassandraDeviceEvent {
 	}
 	bound.setTimestamp("eventDate", event.getEventDate());
 	bound.setTimestamp("receivedDate", event.getReceivedDate());
+    }
+
+    /**
+     * Get indicator value for event type.
+     * 
+     * @param type
+     * @return
+     * @throws SiteWhereException
+     */
+    public static Byte getIndicatorForEventType(DeviceEventType type) throws SiteWhereException {
+	switch (type) {
+	case Measurements: {
+	    return 0;
+	}
+	case Location: {
+	    return 1;
+	}
+	case Alert: {
+	    return 2;
+	}
+	default: {
+	    throw new SiteWhereException("Unsupported event type: " + type.name());
+	}
+	}
     }
 }

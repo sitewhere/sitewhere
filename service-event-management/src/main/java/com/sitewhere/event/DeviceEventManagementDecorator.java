@@ -10,7 +10,7 @@ package com.sitewhere.event;
 import java.util.List;
 import java.util.UUID;
 
-import com.sitewhere.server.lifecycle.LifecycleComponentDecorator;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponentDecorator;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceAlert;
@@ -32,7 +32,6 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
-import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 
@@ -43,30 +42,11 @@ import com.sitewhere.spi.search.ISearchResults;
  * 
  * @author Derek
  */
-public class DeviceEventManagementDecorator extends LifecycleComponentDecorator<IDeviceEventManagement>
+public class DeviceEventManagementDecorator extends TenantEngineLifecycleComponentDecorator<IDeviceEventManagement>
 	implements IDeviceEventManagement {
 
     public DeviceEventManagementDecorator(IDeviceEventManagement delegate) {
 	super(delegate);
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
-     * setTenantEngine(com.sitewhere.spi.microservice.multitenant.
-     * IMicroserviceTenantEngine)
-     */
-    @Override
-    public void setTenantEngine(IMicroserviceTenantEngine tenantEngine) {
-	getDelegate().setTenantEngine(tenantEngine);
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
-     * getTenantEngine()
-     */
-    @Override
-    public IMicroserviceTenantEngine getTenantEngine() {
-	return getDelegate().getTenantEngine();
     }
 
     /*

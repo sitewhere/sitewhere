@@ -22,5 +22,14 @@
 	<xsd:complexType name="inboundProcessingType">
 		<xsd:sequence>
 		</xsd:sequence>
+		<xsd:attribute name="processingThreadCount" type="sw:substitutableInt"
+			use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Number of threads dedicated to parallel
+					processing of inbound decoded events.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:complexType>
 </xsd:schema>

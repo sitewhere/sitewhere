@@ -9,7 +9,7 @@ package com.sitewhere.batch;
 
 import java.util.UUID;
 
-import com.sitewhere.server.lifecycle.LifecycleComponentDecorator;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponentDecorator;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.IBatchElement;
 import com.sitewhere.spi.batch.IBatchManagement;
@@ -18,7 +18,6 @@ import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.batch.request.IBatchElementUpdateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
-import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.batch.IBatchOperationSearchCriteria;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
@@ -29,7 +28,7 @@ import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
  * 
  * @author Derek
  */
-public class BatchManagementDecorator extends LifecycleComponentDecorator<IBatchManagement>
+public class BatchManagementDecorator extends TenantEngineLifecycleComponentDecorator<IBatchManagement>
 	implements IBatchManagement {
 
     public BatchManagementDecorator(IBatchManagement delegate) {
@@ -128,24 +127,5 @@ public class BatchManagementDecorator extends LifecycleComponentDecorator<IBatch
     public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request)
 	    throws SiteWhereException {
 	return getDelegate().createBatchCommandInvocation(request);
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
-     * setTenantEngine(com.sitewhere.spi.microservice.multitenant.
-     * IMicroserviceTenantEngine)
-     */
-    @Override
-    public void setTenantEngine(IMicroserviceTenantEngine tenantEngine) {
-	getDelegate().setTenantEngine(tenantEngine);
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
-     * getTenantEngine()
-     */
-    @Override
-    public IMicroserviceTenantEngine getTenantEngine() {
-	return getDelegate().getTenantEngine();
     }
 }

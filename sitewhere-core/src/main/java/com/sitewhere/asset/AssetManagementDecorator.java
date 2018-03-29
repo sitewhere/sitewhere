@@ -9,14 +9,13 @@ package com.sitewhere.asset;
 
 import java.util.UUID;
 
-import com.sitewhere.server.lifecycle.LifecycleComponentDecorator;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponentDecorator;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.asset.request.IAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IAssetTypeCreateRequest;
-import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAssetTypeSearchCritiera;
 import com.sitewhere.spi.search.asset.IAssetSearchCriteria;
@@ -27,7 +26,7 @@ import com.sitewhere.spi.search.asset.IAssetSearchCriteria;
  * 
  * @author Derek
  */
-public class AssetManagementDecorator extends LifecycleComponentDecorator<IAssetManagement>
+public class AssetManagementDecorator extends TenantEngineLifecycleComponentDecorator<IAssetManagement>
 	implements IAssetManagement {
 
     public AssetManagementDecorator(IAssetManagement delegate) {
@@ -142,24 +141,5 @@ public class AssetManagementDecorator extends LifecycleComponentDecorator<IAsset
     @Override
     public ISearchResults<IAssetType> listAssetTypes(IAssetTypeSearchCritiera criteria) throws SiteWhereException {
 	return getDelegate().listAssetTypes(criteria);
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
-     * setTenantEngine(com.sitewhere.spi.microservice.multitenant.
-     * IMicroserviceTenantEngine)
-     */
-    @Override
-    public void setTenantEngine(IMicroserviceTenantEngine tenantEngine) {
-	getDelegate().setTenantEngine(tenantEngine);
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
-     * getTenantEngine()
-     */
-    @Override
-    public IMicroserviceTenantEngine getTenantEngine() {
-	return getDelegate().getTenantEngine();
     }
 }

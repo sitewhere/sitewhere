@@ -10,9 +10,14 @@ package com.sitewhere.inbound.spring;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
+
+import com.sitewhere.inbound.processing.InboundProcessingConfiguration;
+import com.sitewhere.spi.microservice.spring.InboundProcessingBeans;
 
 /**
  * Parses elements related to inbound event processing.
@@ -34,6 +39,18 @@ public class InboundProcessingParser extends AbstractBeanDefinitionParser {
      */
     @Override
     protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
+
+	// Build event sources manager and inject the list of beans.
+	BeanDefinitionBuilder config = BeanDefinitionBuilder.rootBeanDefinition(InboundProcessingConfiguration.class);
+
+	Attr processingThreadCount = element.getAttributeNode("processingThreadCount");
+	if (processingThreadCount != null) {
+	    config.addPropertyValue("processingThreadCount", processingThreadCount.getValue());
+	}
+
+	context.getRegistry().registerBeanDefinition(InboundProcessingBeans.BEAN_INBOUND_PROCESSING_CONFIGURATION,
+		config.getBeanDefinition());
+
 	return null;
     }
 }
