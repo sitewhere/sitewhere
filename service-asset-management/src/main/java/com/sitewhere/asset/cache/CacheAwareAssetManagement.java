@@ -12,6 +12,7 @@ import java.util.UUID;
 import com.sitewhere.asset.AssetManagementDecorator;
 import com.sitewhere.grpc.client.cache.AssetManagementCacheProviders;
 import com.sitewhere.grpc.client.cache.CacheUtils;
+import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
 import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
@@ -19,7 +20,6 @@ import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.asset.request.IAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IAssetTypeCreateRequest;
-import com.sitewhere.spi.cache.ICacheProvider;
 import com.sitewhere.spi.microservice.ICachingMicroservice;
 import com.sitewhere.spi.tenant.ITenant;
 

@@ -15,4 +15,13 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
  * @author Derek
  */
 public interface IHazelcastManager extends ILifecycleComponent, IHazelcastProvider {
+
+    /** Hazelcast communication port */
+    public static final int HZ_PORT = 5701;
+
+    /** Group name */
+    public static final String GROUP_NAME = "sitewhere";
+
+    /** Group password */
+    public static final String GROUP_PASSWORD = "sitewhere";
 }

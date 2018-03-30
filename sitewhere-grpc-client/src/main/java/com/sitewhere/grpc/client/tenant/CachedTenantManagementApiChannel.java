@@ -11,10 +11,11 @@ import java.util.UUID;
 
 import com.sitewhere.grpc.client.cache.NearCacheManager;
 import com.sitewhere.grpc.client.spi.IApiDemux;
+import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.cache.ICacheProvider;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -35,9 +36,36 @@ public class CachedTenantManagementApiChannel extends TenantManagementApiChannel
 
     public CachedTenantManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
 	super(demux, microservice, host);
-	this.nearCacheManager = new NearCacheManager(MicroserviceIdentifier.TenantManagement);
+	this.nearCacheManager = new NearCacheManager(microservice, MicroserviceIdentifier.TenantManagement);
 	this.tenantByTokenCache = new TenantManagementCacheProviders.TenantByTokenCache(nearCacheManager);
 	this.tenantByIdCache = new TenantManagementCacheProviders.TenantByIdCache(nearCacheManager);
+	getNearCacheManager().setCacheProviders(tenantByTokenCache, tenantByIdCache);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+
+	// Start near cache manager.
+	startNestedComponent(getNearCacheManager(), monitor, true);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.stop(monitor);
+
+	// Stop near cache manager.
+	stopNestedComponent(getNearCacheManager(), monitor);
     }
 
     /*
@@ -72,6 +100,14 @@ public class CachedTenantManagementApiChannel extends TenantManagementApiChannel
 	    getLogger().trace("No cached information for tenant '" + token + "'.");
 	}
 	return super.getTenantByToken(token);
+    }
+
+    public NearCacheManager getNearCacheManager() {
+	return nearCacheManager;
+    }
+
+    public void setNearCacheManager(NearCacheManager nearCacheManager) {
+	this.nearCacheManager = nearCacheManager;
     }
 
     public ICacheProvider<String, ITenant> getTenantByTokenCache() {

@@ -34,7 +34,7 @@ public class AssetManagementCacheProviders {
 	private static Log LOGGER = LogFactory.getLog(AssetByTokenCache.class);
 
 	public AssetTypeByTokenCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.AssetTypeByToken);
+	    super(hazelcastProvider, CacheIdentifier.AssetTypeByToken, 1000);
 	}
 
 	/*
@@ -57,7 +57,7 @@ public class AssetManagementCacheProviders {
 	private static Log LOGGER = LogFactory.getLog(AssetByTokenCache.class);
 
 	public AssetTypeByIdCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.AssetTypeById);
+	    super(hazelcastProvider, CacheIdentifier.AssetTypeById, 1000);
 	}
 
 	/*
@@ -80,7 +80,7 @@ public class AssetManagementCacheProviders {
 	private static Log LOGGER = LogFactory.getLog(AssetByTokenCache.class);
 
 	public AssetByTokenCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.AssetByToken);
+	    super(hazelcastProvider, CacheIdentifier.AssetByToken, 5000);
 	}
 
 	/*
@@ -103,7 +103,7 @@ public class AssetManagementCacheProviders {
 	private static Log LOGGER = LogFactory.getLog(AssetByTokenCache.class);
 
 	public AssetByIdCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.AssetById);
+	    super(hazelcastProvider, CacheIdentifier.AssetById, 5000);
 	}
 
 	/*

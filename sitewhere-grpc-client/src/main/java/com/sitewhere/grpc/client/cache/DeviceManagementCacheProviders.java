@@ -36,7 +36,7 @@ public class DeviceManagementCacheProviders {
 	private static Log LOGGER = LogFactory.getLog(AreaByTokenCache.class);
 
 	public AreaByTokenCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.AreaByToken);
+	    super(hazelcastProvider, CacheIdentifier.AreaByToken, 1000);
 	}
 
 	/*
@@ -59,7 +59,7 @@ public class DeviceManagementCacheProviders {
 	private static Log LOGGER = LogFactory.getLog(AreaByIdCache.class);
 
 	public AreaByIdCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.AreaById);
+	    super(hazelcastProvider, CacheIdentifier.AreaById, 1000);
 	}
 
 	/*
@@ -82,7 +82,7 @@ public class DeviceManagementCacheProviders {
 	private static Log LOGGER = LogFactory.getLog(DeviceTypeByTokenCache.class);
 
 	public DeviceTypeByTokenCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.DeviceByToken);
+	    super(hazelcastProvider, CacheIdentifier.DeviceByToken, 100);
 	}
 
 	/*
@@ -105,7 +105,7 @@ public class DeviceManagementCacheProviders {
 	private static Log LOGGER = LogFactory.getLog(DeviceTypeByIdCache.class);
 
 	public DeviceTypeByIdCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.DeviceTypeById);
+	    super(hazelcastProvider, CacheIdentifier.DeviceTypeById, 100);
 	}
 
 	/*
@@ -128,7 +128,7 @@ public class DeviceManagementCacheProviders {
 	private static Log LOGGER = LogFactory.getLog(DeviceByTokenCache.class);
 
 	public DeviceByTokenCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.DeviceByToken);
+	    super(hazelcastProvider, CacheIdentifier.DeviceByToken, 5000);
 	}
 
 	/*
@@ -151,7 +151,7 @@ public class DeviceManagementCacheProviders {
 	private static Log LOGGER = LogFactory.getLog(DeviceByIdCache.class);
 
 	public DeviceByIdCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.DeviceById);
+	    super(hazelcastProvider, CacheIdentifier.DeviceById, 5000);
 	}
 
 	/*
@@ -174,7 +174,7 @@ public class DeviceManagementCacheProviders {
 	private static Log LOGGER = LogFactory.getLog(DeviceAssignmentByTokenCache.class);
 
 	public DeviceAssignmentByTokenCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.DeviceAssignmentByToken);
+	    super(hazelcastProvider, CacheIdentifier.DeviceAssignmentByToken, 5000);
 	}
 
 	/*
@@ -197,7 +197,7 @@ public class DeviceManagementCacheProviders {
 	private static Log LOGGER = LogFactory.getLog(DeviceAssignmentByIdCache.class);
 
 	public DeviceAssignmentByIdCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.DeviceAssignmentById);
+	    super(hazelcastProvider, CacheIdentifier.DeviceAssignmentById, 5000);
 	}
 
 	/*

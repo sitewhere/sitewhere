@@ -13,13 +13,14 @@ import com.sitewhere.grpc.client.cache.AssetManagementCacheProviders;
 import com.sitewhere.grpc.client.cache.CacheUtils;
 import com.sitewhere.grpc.client.cache.NearCacheManager;
 import com.sitewhere.grpc.client.spi.IApiDemux;
+import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
 import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetType;
-import com.sitewhere.spi.cache.ICacheProvider;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -46,11 +47,37 @@ public class CachedAssetManagementApiChannel extends AssetManagementApiChannel {
 
     public CachedAssetManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
 	super(demux, microservice, host);
-	this.nearCacheManager = new NearCacheManager(MicroserviceIdentifier.AssetManagement);
+	this.nearCacheManager = new NearCacheManager(microservice, MicroserviceIdentifier.AssetManagement);
 	this.assetTypeCache = new AssetManagementCacheProviders.AssetTypeByTokenCache(nearCacheManager);
 	this.assetTypeByIdCache = new AssetManagementCacheProviders.AssetTypeByIdCache(nearCacheManager);
 	this.assetCache = new AssetManagementCacheProviders.AssetByTokenCache(nearCacheManager);
 	this.assetByIdCache = new AssetManagementCacheProviders.AssetByIdCache(nearCacheManager);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+
+	// Start near cache manager.
+	startNestedComponent(getNearCacheManager(), monitor, true);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.stop(monitor);
+
+	// Stop near cache manager.
+	stopNestedComponent(getNearCacheManager(), monitor);
     }
 
     /*
@@ -122,6 +149,14 @@ public class CachedAssetManagementApiChannel extends AssetManagementApiChannel {
 	    getLogger().debug("No cached information for asset type token '" + token + "'.");
 	}
 	return super.getAssetTypeByToken(token);
+    }
+
+    public NearCacheManager getNearCacheManager() {
+	return nearCacheManager;
+    }
+
+    public void setNearCacheManager(NearCacheManager nearCacheManager) {
+	this.nearCacheManager = nearCacheManager;
     }
 
     public ICacheProvider<String, IAssetType> getAssetTypeCache() {

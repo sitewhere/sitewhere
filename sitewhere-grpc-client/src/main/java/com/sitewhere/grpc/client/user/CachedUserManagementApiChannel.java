@@ -11,10 +11,11 @@ import java.util.List;
 
 import com.sitewhere.grpc.client.cache.NearCacheManager;
 import com.sitewhere.grpc.client.spi.IApiDemux;
+import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.cache.ICacheProvider;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 
@@ -36,9 +37,36 @@ public class CachedUserManagementApiChannel extends UserManagementApiChannel {
 
     public CachedUserManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
 	super(demux, microservice, host);
-	this.nearCacheManager = new NearCacheManager(MicroserviceIdentifier.UserManagement);
+	this.nearCacheManager = new NearCacheManager(microservice, MicroserviceIdentifier.UserManagement);
 	this.userCache = new UserManagementCacheProviders.UserByTokenCache(nearCacheManager);
 	this.grantedAuthorityCache = new UserManagementCacheProviders.GrantedAuthorityByTokenCache(nearCacheManager);
+	getNearCacheManager().setCacheProviders(userCache, grantedAuthorityCache);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+
+	// Start near cache manager.
+	startNestedComponent(getNearCacheManager(), monitor, true);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.stop(monitor);
+
+	// Stop near cache manager.
+	stopNestedComponent(getNearCacheManager(), monitor);
     }
 
     /*
@@ -73,6 +101,14 @@ public class CachedUserManagementApiChannel extends UserManagementApiChannel {
 	    getLogger().trace("No cached authorities for user '" + username + "'.");
 	}
 	return super.getGrantedAuthorities(username);
+    }
+
+    public NearCacheManager getNearCacheManager() {
+	return nearCacheManager;
+    }
+
+    public void setNearCacheManager(NearCacheManager nearCacheManager) {
+	this.nearCacheManager = nearCacheManager;
     }
 
     public ICacheProvider<String, IUser> getUserCache() {

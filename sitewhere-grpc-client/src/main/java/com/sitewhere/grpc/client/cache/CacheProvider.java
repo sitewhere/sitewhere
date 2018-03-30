@@ -8,8 +8,8 @@
 package com.sitewhere.grpc.client.cache;
 
 import com.hazelcast.core.IMap;
+import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.cache.ICacheProvider;
 import com.sitewhere.spi.microservice.hazelcast.IHazelcastProvider;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -32,9 +32,13 @@ public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
     /** Cache identifier */
     private CacheIdentifier cacheIdentifier;
 
-    public CacheProvider(IHazelcastProvider hazelcastProvider, CacheIdentifier cacheIdentifier) {
+    /** Maximum cache size */
+    private int maximumSize;
+
+    public CacheProvider(IHazelcastProvider hazelcastProvider, CacheIdentifier cacheIdentifier, int maximumSize) {
 	this.hazelcastProvider = hazelcastProvider;
 	this.cacheIdentifier = cacheIdentifier;
+	this.maximumSize = maximumSize;
     }
 
     /*
@@ -88,14 +92,15 @@ public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
      * @throws SiteWhereException
      */
     protected IMap<K, V> getCache(ITenant tenant) throws SiteWhereException {
-	String tenantId = (tenant != null) ? tenant.getId().toString() : GLOBAL_CACHE_INDICATOR;
 	boolean hzInitialized = (getHazelcastProvider().getHazelcastInstance() != null)
 		&& (getHazelcastProvider().getHazelcastInstance().getLifecycleService().isRunning());
 	if (hzInitialized) {
-	    String cacheName = getCacheNameForTenant(tenantId);
+	    String cacheName = getCacheNameForTenant(tenant);
 	    return getHazelcastProvider().getHazelcastInstance().getMap(cacheName);
+	} else {
+	    getLogger().warn("Trying to access uninitialized cache.");
+	    return null;
 	}
-	return null;
     }
 
     /**
@@ -104,8 +109,33 @@ public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
      * @param tenant
      * @return
      */
-    protected String getCacheNameForTenant(String tenantId) {
+    protected String getCacheNameForTenant(ITenant tenant) {
+	String tenantId = (tenant != null) ? tenant.getId().toString() : GLOBAL_CACHE_INDICATOR;
 	return getCacheIdentifier().getCacheKey() + ":" + tenantId;
+    }
+
+    /*
+     * @see com.sitewhere.grpc.client.spi.cache.ICacheProvider#getCacheIdentifier()
+     */
+    @Override
+    public CacheIdentifier getCacheIdentifier() {
+	return cacheIdentifier;
+    }
+
+    public void setCacheIdentifier(CacheIdentifier cacheIdentifier) {
+	this.cacheIdentifier = cacheIdentifier;
+    }
+
+    /*
+     * @see com.sitewhere.grpc.client.spi.cache.ICacheProvider#getMaximumSize()
+     */
+    @Override
+    public int getMaximumSize() {
+	return maximumSize;
+    }
+
+    public void setMaximumSize(int maximumSize) {
+	this.maximumSize = maximumSize;
     }
 
     public IHazelcastProvider getHazelcastProvider() {
@@ -114,13 +144,5 @@ public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
 
     public void setHazelcastProvider(IHazelcastProvider hazelcastProvider) {
 	this.hazelcastProvider = hazelcastProvider;
-    }
-
-    public CacheIdentifier getCacheIdentifier() {
-	return cacheIdentifier;
-    }
-
-    public void setCacheIdentifier(CacheIdentifier cacheIdentifier) {
-	this.cacheIdentifier = cacheIdentifier;
     }
 }

@@ -9,9 +9,9 @@ package com.sitewhere.user.cache;
 
 import java.util.List;
 
+import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
 import com.sitewhere.grpc.client.user.UserManagementCacheProviders;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.cache.ICacheProvider;
 import com.sitewhere.spi.microservice.ICachingMicroservice;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;

@@ -8,6 +8,7 @@
 package com.sitewhere.microservice.hazelcast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -19,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.GroupConfig;
 import com.hazelcast.config.JoinConfig;
+import com.hazelcast.config.MapConfig;
 import com.hazelcast.config.MulticastConfig;
 import com.hazelcast.config.NetworkConfig;
 import com.hazelcast.config.TcpIpConfig;
@@ -41,20 +43,11 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  */
 public class HazelcastManager extends LifecycleComponent implements IHazelcastManager {
 
-    /** Hazelcast communication port */
-    private static final int HZ_PORT = 5701;
-
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(HazelcastManager.class);
 
     /** Microservice */
     private IMicroservice microservice;
-
-    /** Overrides group name from configuration file */
-    private String groupName = "sitewhere";
-
-    /** Overrides group password from configuration file */
-    private String groupPassword = "sitewhere";
 
     /** Singleton hazelcast instance */
     private HazelcastInstance hazelcastInstance;
@@ -87,6 +80,7 @@ public class HazelcastManager extends LifecycleComponent implements IHazelcastMa
 	try {
 	    Config config = new Config();
 	    config.setInstanceName(getMicroservice().getHostname());
+	    config.setMapConfigs(new HashMap<String, MapConfig>());
 
 	    // Set up network discovery.
 	    NetworkConfig networkConfig = new NetworkConfig();
@@ -98,14 +92,16 @@ public class HazelcastManager extends LifecycleComponent implements IHazelcastMa
 	    tcpIpConfig.addMember(members);
 	    tcpIpConfig.setEnabled(true);
 	    joinConfig.setTcpIpConfig(tcpIpConfig);
-	    networkConfig.setPort(HZ_PORT);
+	    networkConfig.setPort(IHazelcastManager.HZ_PORT);
 	    networkConfig.setJoin(joinConfig);
 	    networkConfig.setPortAutoIncrement(false);
-	    networkConfig.setPublicAddress(getMicroservice().getHostname() + ":" + String.valueOf(HZ_PORT));
+	    networkConfig.setPublicAddress(
+		    getMicroservice().getHostname() + ":" + String.valueOf(IHazelcastManager.HZ_PORT));
 	    config.setNetworkConfig(networkConfig);
 
 	    HazelcastManager.configureManagementCenter(config);
-	    HazelcastManager.performGroupOverrides(config, getGroupName(), getGroupPassword());
+	    HazelcastManager.performGroupOverrides(config, IHazelcastManager.GROUP_NAME,
+		    IHazelcastManager.GROUP_PASSWORD);
 	    HazelcastManager.performPropertyOverrides(config);
 	    hazelcastInstance = Hazelcast.newHazelcastInstance(config);
 	    getLogger().info("Hazelcast instance '" + config.getInstanceName() + "' started.");
@@ -196,17 +192,16 @@ public class HazelcastManager extends LifecycleComponent implements IHazelcastMa
 
 	@Override
 	public void run() {
-	    getLogger().info("Hazelcast waiting for tenant management microservice to enter topology...");
 	    while (true) {
 		IInstanceTopologySnapshot topology = getMicroservice().getTopologyStateAggregator()
 			.getInstanceTopologySnapshot();
 		if (topology != null) {
 		    Map<MicroserviceIdentifier, IInstanceTopologyEntry> byIdent = topology
 			    .getTopologyEntriesByIdentifier();
-		    IInstanceTopologyEntry tenantManagement = byIdent.get(MicroserviceIdentifier.TenantManagement);
-		    if (tenantManagement != null) {
+		    IInstanceTopologyEntry allForIdentifier = byIdent.get(getMicroservice().getIdentifier());
+		    if (allForIdentifier != null) {
 			List<String> members = new ArrayList<>();
-			Map<String, IInstanceMicroservice> byHostname = tenantManagement.getMicroservicesByHostname();
+			Map<String, IInstanceMicroservice> byHostname = allForIdentifier.getMicroservicesByHostname();
 			for (String hostname : byHostname.keySet()) {
 			    String member = hostname + ":" + HZ_PORT;
 			    members.add(member);
@@ -241,21 +236,5 @@ public class HazelcastManager extends LifecycleComponent implements IHazelcastMa
 
     protected void setMicroservice(IMicroservice microservice) {
 	this.microservice = microservice;
-    }
-
-    public String getGroupName() {
-	return groupName;
-    }
-
-    public void setGroupName(String groupName) {
-	this.groupName = groupName;
-    }
-
-    public String getGroupPassword() {
-	return groupPassword;
-    }
-
-    public void setGroupPassword(String groupPassword) {
-	this.groupPassword = groupPassword;
     }
 }

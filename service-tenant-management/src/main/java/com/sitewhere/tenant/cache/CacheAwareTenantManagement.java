@@ -9,9 +9,9 @@ package com.sitewhere.tenant.cache;
 
 import java.util.UUID;
 
+import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
 import com.sitewhere.grpc.client.tenant.TenantManagementCacheProviders;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.cache.ICacheProvider;
 import com.sitewhere.spi.microservice.ICachingMicroservice;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;

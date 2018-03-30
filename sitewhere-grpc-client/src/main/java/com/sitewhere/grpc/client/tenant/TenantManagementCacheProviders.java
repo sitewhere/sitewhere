@@ -41,7 +41,7 @@ public class TenantManagementCacheProviders {
 	private static Log LOGGER = LogFactory.getLog(TenantByTokenCache.class);
 
 	public TenantByTokenCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.TenantByToken);
+	    super(hazelcastProvider, CacheIdentifier.TenantByToken, 100);
 	}
 
 	/*
@@ -64,7 +64,7 @@ public class TenantManagementCacheProviders {
 	private static Log LOGGER = LogFactory.getLog(TenantByIdCache.class);
 
 	public TenantByIdCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.TenantById);
+	    super(hazelcastProvider, CacheIdentifier.TenantById, 100);
 	}
 
 	/*

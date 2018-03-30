@@ -13,15 +13,16 @@ import com.sitewhere.grpc.client.cache.CacheUtils;
 import com.sitewhere.grpc.client.cache.DeviceManagementCacheProviders;
 import com.sitewhere.grpc.client.cache.NearCacheManager;
 import com.sitewhere.grpc.client.spi.IApiDemux;
+import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
 import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
-import com.sitewhere.spi.cache.ICacheProvider;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -60,7 +61,7 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
 
     public CachedDeviceManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
 	super(demux, microservice, host);
-	this.nearCacheManager = new NearCacheManager(MicroserviceIdentifier.DeviceManagement);
+	this.nearCacheManager = new NearCacheManager(microservice, MicroserviceIdentifier.DeviceManagement);
 	this.areaCache = new DeviceManagementCacheProviders.AreaByTokenCache(nearCacheManager);
 	this.areaByIdCache = new DeviceManagementCacheProviders.AreaByIdCache(nearCacheManager);
 	this.deviceTypeCache = new DeviceManagementCacheProviders.DeviceTypeByTokenCache(nearCacheManager);
@@ -69,6 +70,32 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
 	this.deviceByIdCache = new DeviceManagementCacheProviders.DeviceByIdCache(nearCacheManager);
 	this.deviceAssignmentCache = new DeviceManagementCacheProviders.DeviceAssignmentByTokenCache(nearCacheManager);
 	this.deviceAssignmentByIdCache = new DeviceManagementCacheProviders.DeviceAssignmentByIdCache(nearCacheManager);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+
+	// Start near cache manager.
+	startNestedComponent(getNearCacheManager(), monitor, true);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.stop(monitor);
+
+	// Stop near cache manager.
+	stopNestedComponent(getNearCacheManager(), monitor);
     }
 
     /*
@@ -209,6 +236,14 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
 	    getLogger().trace("No cached information for assignment id '" + id + "'.");
 	}
 	return super.getDeviceAssignment(id);
+    }
+
+    public NearCacheManager getNearCacheManager() {
+	return nearCacheManager;
+    }
+
+    public void setNearCacheManager(NearCacheManager nearCacheManager) {
+	this.nearCacheManager = nearCacheManager;
     }
 
     public ICacheProvider<String, IArea> getAreaCache() {

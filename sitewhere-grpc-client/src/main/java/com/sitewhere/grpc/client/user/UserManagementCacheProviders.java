@@ -42,7 +42,7 @@ public class UserManagementCacheProviders {
 	private static Log LOGGER = LogFactory.getLog(UserByTokenCache.class);
 
 	public UserByTokenCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.UserByToken);
+	    super(hazelcastProvider, CacheIdentifier.UserByToken, 100);
 	}
 
 	/*
@@ -65,7 +65,7 @@ public class UserManagementCacheProviders {
 	private static Log LOGGER = LogFactory.getLog(GrantedAuthorityByTokenCache.class);
 
 	public GrantedAuthorityByTokenCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.GrantedAuthorityByToken);
+	    super(hazelcastProvider, CacheIdentifier.GrantedAuthorityByToken, 100);
 	}
 
 	/*

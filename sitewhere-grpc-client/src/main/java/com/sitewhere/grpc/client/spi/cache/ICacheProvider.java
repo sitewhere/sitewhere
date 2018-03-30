@@ -5,15 +5,16 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.cache;
+package com.sitewhere.grpc.client.spi.cache;
 
 import org.apache.commons.logging.Log;
 
+import com.sitewhere.grpc.client.cache.CacheIdentifier;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
- * Provides access to a cache hosted on the Ignite data grid.
+ * Provides access to a cache hosted in Hazelcast.
  * 
  * @author Derek
  *
@@ -21,6 +22,20 @@ import com.sitewhere.spi.tenant.ITenant;
  * @param <V>
  */
 public interface ICacheProvider<K, V> {
+
+    /**
+     * Get cache identifier.
+     * 
+     * @return
+     */
+    public CacheIdentifier getCacheIdentifier();
+
+    /**
+     * Get maximum size for cache.
+     * 
+     * @return
+     */
+    public int getMaximumSize();
 
     /**
      * Set a cache entry.
