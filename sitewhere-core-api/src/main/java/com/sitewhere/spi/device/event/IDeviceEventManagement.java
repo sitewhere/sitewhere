@@ -10,14 +10,18 @@ package com.sitewhere.spi.device.event;
 import java.util.List;
 import java.util.UUID;
 
+import org.reactivestreams.Processor;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceAssignmentEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.spi.device.event.streaming.IEventStreamAck;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
@@ -70,6 +74,16 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
      * @throws SiteWhereException
      */
     public ISearchResults<IDeviceEvent> listDeviceEvents(UUID deviceAssignmentId, IDateRangeSearchCriteria criteria)
+	    throws SiteWhereException;
+
+    /**
+     * Stream information for creating multiple events across (potentially) multiple
+     * assignments.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public Processor<IDeviceAssignmentEventCreateRequest, IEventStreamAck> streamDeviceAssignmentCreateEvents()
 	    throws SiteWhereException;
 
     /**

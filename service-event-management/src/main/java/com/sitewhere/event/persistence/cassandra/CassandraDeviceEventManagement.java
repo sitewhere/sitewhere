@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.reactivestreams.Processor;
 
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.ResultSet;
@@ -21,6 +22,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.sitewhere.cassandra.CassandraClient;
 import com.sitewhere.event.persistence.DeviceEventManagementPersistence;
+import com.sitewhere.event.persistence.streaming.DeviceAssignmentEventCreateProcessor;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
@@ -42,12 +44,14 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceAssignmentEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.spi.device.event.streaming.IEventStreamAck;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
@@ -127,6 +131,16 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     public ISearchResults<IDeviceEvent> listDeviceEvents(UUID deviceAssignmentId, IDateRangeSearchCriteria criteria)
 	    throws SiteWhereException {
 	throw new SiteWhereException("Not implemented.");
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+     * streamDeviceAssignmentCreateEvents()
+     */
+    @Override
+    public Processor<IDeviceAssignmentEventCreateRequest, IEventStreamAck> streamDeviceAssignmentCreateEvents()
+	    throws SiteWhereException {
+	return new DeviceAssignmentEventCreateProcessor(this);
     }
 
     /*

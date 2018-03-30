@@ -32,6 +32,9 @@ service DeviceEventManagement {
 	
 	// List device events that match criteria.
 	rpc ListDeviceEvents (GListDeviceEventsRequest) returns (GListDeviceEventsResponse) {}
+	
+	// Stream device events for one or more device assignments.
+	rpc StreamDeviceAssignmentEventCreateRequests (stream com.sitewhere.grpc.model.GDeviceAssignmentEventCreateRequest) returns (com.sitewhere.grpc.model.GEventStreamAck) {}
 
 	// ####################
 	// ### MEASUREMENTS ###

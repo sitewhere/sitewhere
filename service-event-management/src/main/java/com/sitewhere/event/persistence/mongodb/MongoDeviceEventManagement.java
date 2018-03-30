@@ -14,6 +14,7 @@ import java.util.UUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
+import org.reactivestreams.Processor;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoTimeoutException;
@@ -22,6 +23,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.IndexOptions;
 import com.sitewhere.event.persistence.DeviceEventManagementPersistence;
+import com.sitewhere.event.persistence.streaming.DeviceAssignmentEventCreateProcessor;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
@@ -51,12 +53,14 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceAssignmentEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.spi.device.event.streaming.IEventStreamAck;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
@@ -231,6 +235,16 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 	    cursor.close();
 	}
 	return results;
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+     * streamDeviceAssignmentCreateEvents()
+     */
+    @Override
+    public Processor<IDeviceAssignmentEventCreateRequest, IEventStreamAck> streamDeviceAssignmentCreateEvents()
+	    throws SiteWhereException {
+	return new DeviceAssignmentEventCreateProcessor(this);
     }
 
     /*

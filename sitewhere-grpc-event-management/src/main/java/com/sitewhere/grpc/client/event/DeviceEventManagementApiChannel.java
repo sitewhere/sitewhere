@@ -12,9 +12,11 @@ import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.reactivestreams.Processor;
 
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.MultitenantApiChannel;
+import com.sitewhere.grpc.client.event.streaming.DeviceAssignmentEventCreateProcessor;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.converter.CommonModelConverter;
@@ -86,12 +88,14 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceAssignmentEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.spi.device.event.streaming.IEventStreamAck;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
@@ -223,6 +227,23 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
 	    return results;
 	} catch (Throwable t) {
 	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.METHOD_LIST_DEVICE_EVENTS, t);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+     * streamDeviceAssignmentCreateEvents()
+     */
+    @Override
+    public Processor<IDeviceAssignmentEventCreateRequest, IEventStreamAck> streamDeviceAssignmentCreateEvents()
+	    throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this,
+		    DeviceEventManagementGrpc.METHOD_STREAM_DEVICE_ASSIGNMENT_EVENT_CREATE_REQUESTS);
+	    return new DeviceAssignmentEventCreateProcessor(getGrpcChannel());
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(
+		    DeviceEventManagementGrpc.METHOD_STREAM_DEVICE_ASSIGNMENT_EVENT_CREATE_REQUESTS, t);
 	}
     }
 

@@ -16,6 +16,8 @@ import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.server.IGrpcRouter;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceAssignmentEventCreateRequest;
+import com.sitewhere.grpc.model.DeviceEventModel.GEventStreamAck;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
 import com.sitewhere.grpc.service.GAddAlertForAssignmentRequest;
 import com.sitewhere.grpc.service.GAddAlertForAssignmentResponse;
@@ -177,6 +179,21 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
 	if (engine != null) {
 	    engine.listDeviceEvents(request, responseObserver);
 	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
+     * DeviceEventManagementImplBase#streamDeviceAssignmentEventCreateRequests(io.
+     * grpc.stub.StreamObserver)
+     */
+    @Override
+    public StreamObserver<GDeviceAssignmentEventCreateRequest> streamDeviceAssignmentEventCreateRequests(
+	    StreamObserver<GEventStreamAck> responseObserver) {
+	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    return engine.streamDeviceAssignmentEventCreateRequests(responseObserver);
+	}
+	return null;
     }
 
     /*

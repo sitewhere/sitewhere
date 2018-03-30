@@ -26,6 +26,7 @@ import com.sitewhere.grpc.model.DeviceEventModel.GAnyDeviceEventCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceAlert;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceAlertCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceAlertSearchResults;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceAssignmentEventCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceCommandInvocation;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceCommandInvocationCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceCommandInvocationSearchResults;
@@ -52,6 +53,7 @@ import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStateChangeSearchResults
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStreamData;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStreamDataCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStreamDataSearchResults;
+import com.sitewhere.grpc.model.DeviceEventModel.GEventStreamAck;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
@@ -64,6 +66,7 @@ import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.device.event.DeviceStreamData;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceAssignmentEventCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceEventCreateRequest;
@@ -71,6 +74,7 @@ import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceStateChangeCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceStreamDataCreateRequest;
+import com.sitewhere.rest.model.device.event.streaming.EventStreamAck;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.AlertLevel;
@@ -91,6 +95,7 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceAssignmentEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
@@ -100,6 +105,7 @@ import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.event.state.StateChangeCategory;
 import com.sitewhere.spi.device.event.state.StateChangeType;
+import com.sitewhere.spi.device.event.streaming.IEventStreamAck;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 
@@ -1949,6 +1955,62 @@ public class EventModelConverter {
 	grpc.putAllDeviceMetadata(api.getDeviceMetadata());
 	grpc.setAssignmentStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(api.getAssignmentStatus()));
 	grpc.putAllAssignmentMetadata(api.getAssignmentMetadata());
+	return grpc.build();
+    }
+
+    /**
+     * Convert device assignment event create request from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceAssignmentEventCreateRequest asApiDeviceAssignmentEventCreateRequest(
+	    GDeviceAssignmentEventCreateRequest grpc) throws SiteWhereException {
+	DeviceAssignmentEventCreateRequest api = new DeviceAssignmentEventCreateRequest();
+	api.setDeviceAssignmentId(CommonModelConverter.asApiUuid(grpc.getDeviceAssignmentId()));
+	api.setRequest(EventModelConverter.asApiDeviceEventCreateRequest(grpc.getRequest()));
+	return api;
+    }
+
+    /**
+     * Convert device assignment event create request from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceAssignmentEventCreateRequest asGrpcDeviceAssignmentEventCreateRequest(
+	    IDeviceAssignmentEventCreateRequest api) throws SiteWhereException {
+	GDeviceAssignmentEventCreateRequest.Builder grpc = GDeviceAssignmentEventCreateRequest.newBuilder();
+	grpc.setDeviceAssignmentId(CommonModelConverter.asGrpcUuid(api.getDeviceAssignmentId()));
+	grpc.setRequest(EventModelConverter.asGrpcDeviceEventCreateRequest(api.getRequest()));
+	return grpc.build();
+    }
+
+    /**
+     * Convert event stream ack from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static EventStreamAck asApiEventStreamAck(GEventStreamAck grpc) throws SiteWhereException {
+	EventStreamAck api = new EventStreamAck();
+	api.setProcessedEventCount(grpc.getProcessedEventCount());
+	return api;
+    }
+
+    /**
+     * Convert event stream ack from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GEventStreamAck asGrpcEventStreamAck(IEventStreamAck api) throws SiteWhereException {
+	GEventStreamAck.Builder grpc = GEventStreamAck.newBuilder();
+	grpc.setProcessedEventCount(api.getProcessedEventCount());
 	return grpc.build();
     }
 }

@@ -39,4 +39,7 @@ dependencies {
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
+    
+    // Reactive streams (until swap to Java 9).
+    compile group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.1.12'
 }

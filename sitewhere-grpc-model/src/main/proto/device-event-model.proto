@@ -109,6 +109,17 @@ message GAnyDeviceEventCreateRequest {
 	}
 }
 
+// Request for creating device event for an assignment.
+message GDeviceAssignmentEventCreateRequest {
+	GUUID deviceAssignmentId = 1;
+	GAnyDeviceEventCreateRequest request = 2;
+}
+
+// Response for streaming methods.
+message GEventStreamAck {
+	uint64 processedEventCount = 1;
+}
+
 // Device event type.
 enum GDeviceEventType {
 	EVENT_TYPE_MEASUREMENTS = 0;

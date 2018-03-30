@@ -13,8 +13,10 @@ import java.util.UUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.regionserver.BloomType;
+import org.reactivestreams.Processor;
 
 import com.sitewhere.event.persistence.DeviceEventManagementPersistence;
+import com.sitewhere.event.persistence.streaming.DeviceAssignmentEventCreateProcessor;
 import com.sitewhere.hbase.DeviceIdManager;
 import com.sitewhere.hbase.HBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
@@ -39,12 +41,14 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceAssignmentEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.spi.device.event.streaming.IEventStreamAck;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
@@ -185,6 +189,16 @@ public class HBaseDeviceEventManagement extends TenantEngineLifecycleComponent i
     public ISearchResults<IDeviceEvent> listDeviceEvents(UUID deviceAssignmentId, IDateRangeSearchCriteria criteria)
 	    throws SiteWhereException {
 	return HBaseDeviceEvent.listDeviceEvents(context, null, criteria);
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+     * streamDeviceAssignmentCreateEvents()
+     */
+    @Override
+    public Processor<IDeviceAssignmentEventCreateRequest, IEventStreamAck> streamDeviceAssignmentCreateEvents()
+	    throws SiteWhereException {
+	return new DeviceAssignmentEventCreateProcessor(this);
     }
 
     /*

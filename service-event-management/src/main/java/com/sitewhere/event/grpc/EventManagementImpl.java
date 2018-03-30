@@ -7,8 +7,10 @@
  */
 package com.sitewhere.event.grpc;
 
+import com.sitewhere.event.grpc.streaming.DeviceAssignmentEventCreateStreamObserver;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceAlertSearchResults;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceAssignmentEventCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceCommandInvocationSearchResults;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceCommandResponseSearchResults;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEventSearchResults;
@@ -16,6 +18,7 @@ import com.sitewhere.grpc.model.DeviceEventModel.GDeviceLocationSearchResults;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceMeasurementsSearchResults;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStateChangeSearchResults;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStreamDataSearchResults;
+import com.sitewhere.grpc.model.DeviceEventModel.GEventStreamAck;
 import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.grpc.model.converter.DeviceModelConverter;
 import com.sitewhere.grpc.model.converter.EventModelConverter;
@@ -211,6 +214,27 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	} catch (Throwable e) {
 	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_DEVICE_EVENTS, e,
 		    responseObserver);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
+     * DeviceEventManagementImplBase#streamDeviceAssignmentEventCreateRequests(io.
+     * grpc.stub.StreamObserver)
+     */
+    @Override
+    public StreamObserver<GDeviceAssignmentEventCreateRequest> streamDeviceAssignmentEventCreateRequests(
+	    StreamObserver<GEventStreamAck> responseObserver) {
+	try {
+	    DeviceAssignmentEventCreateStreamObserver observer = new DeviceAssignmentEventCreateStreamObserver(
+		    getDeviceEventManagement(), responseObserver);
+	    observer.start();
+	    return observer;
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(
+		    DeviceEventManagementGrpc.METHOD_STREAM_DEVICE_ASSIGNMENT_EVENT_CREATE_REQUESTS, e,
+		    responseObserver);
+	    return null;
 	}
     }
 

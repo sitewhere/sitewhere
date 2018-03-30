@@ -10,6 +10,8 @@ package com.sitewhere.event;
 import java.util.List;
 import java.util.UUID;
 
+import org.reactivestreams.Processor;
+
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponentDecorator;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
@@ -24,12 +26,14 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceAssignmentEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.spi.device.event.streaming.IEventStreamAck;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
@@ -87,6 +91,16 @@ public class DeviceEventManagementDecorator extends TenantEngineLifecycleCompone
     public ISearchResults<IDeviceEvent> listDeviceEvents(UUID deviceAssignmentId, IDateRangeSearchCriteria criteria)
 	    throws SiteWhereException {
 	return getDelegate().listDeviceEvents(deviceAssignmentId, criteria);
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+     * streamDeviceAssignmentCreateEvents()
+     */
+    @Override
+    public Processor<IDeviceAssignmentEventCreateRequest, IEventStreamAck> streamDeviceAssignmentCreateEvents()
+	    throws SiteWhereException {
+	return getDelegate().streamDeviceAssignmentCreateEvents();
     }
 
     /*
