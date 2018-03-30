@@ -105,8 +105,8 @@ public class NearCacheManager extends LifecycleComponent implements INearCacheMa
 		.setSize(10000);
 
 	// Configure near cache.
-	return new NearCacheConfig().setName("default").setInMemoryFormat(InMemoryFormat.OBJECT)
-		.setInvalidateOnChange(true).setTimeToLiveSeconds(60).setMaxIdleSeconds(5 * 60)
+	return new NearCacheConfig().setName("default").setInMemoryFormat(InMemoryFormat.BINARY)
+		.setInvalidateOnChange(true).setTimeToLiveSeconds(60).setMaxIdleSeconds(20)
 		.setEvictionConfig(evictionConfig).setCacheLocalEntries(false)
 		.setLocalUpdatePolicy(LocalUpdatePolicy.INVALIDATE);
     }

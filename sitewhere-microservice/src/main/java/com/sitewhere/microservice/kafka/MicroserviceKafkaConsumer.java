@@ -7,8 +7,8 @@
  */
 package com.sitewhere.microservice.kafka;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,6 +20,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.clients.consumer.OffsetCommitCallback;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
@@ -151,17 +152,20 @@ public abstract class MicroserviceKafkaConsumer extends TenantEngineLifecycleCom
 	    try {
 		getConsumer().subscribe(getSourceTopicNames());
 		while (true) {
-		    ConsumerRecords<String, byte[]> records = consumer.poll(Long.MAX_VALUE);
+		    ConsumerRecords<String, byte[]> records = getConsumer().poll(Long.MAX_VALUE);
 
 		    for (TopicPartition topicPartition : records.partitions()) {
 			List<ConsumerRecord<String, byte[]>> topicRecords = records.records(topicPartition);
 			for (ConsumerRecord<String, byte[]> record : topicRecords) {
 			    received(record.key(), record.value());
 			}
-
-			long lastPartitionOffset = topicRecords.get(topicRecords.size() - 1).offset();
-			getConsumer().commitSync(Collections.singletonMap(topicPartition,
-				new OffsetAndMetadata(lastPartitionOffset + 1)));
+			getConsumer().commitAsync(new OffsetCommitCallback() {
+			    public void onComplete(Map<TopicPartition, OffsetAndMetadata> offsets, Exception e) {
+				if (e != null) {
+				    getLogger().error("Commit failed for offsets " + offsets, e);
+				}
+			    }
+			});
 		    }
 		}
 	    } catch (WakeupException e) {

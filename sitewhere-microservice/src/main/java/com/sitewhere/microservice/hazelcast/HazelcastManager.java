@@ -18,10 +18,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.hazelcast.config.Config;
+import com.hazelcast.config.EvictionConfig;
+import com.hazelcast.config.EvictionConfig.MaxSizePolicy;
+import com.hazelcast.config.EvictionPolicy;
 import com.hazelcast.config.GroupConfig;
+import com.hazelcast.config.InMemoryFormat;
 import com.hazelcast.config.JoinConfig;
 import com.hazelcast.config.MapConfig;
 import com.hazelcast.config.MulticastConfig;
+import com.hazelcast.config.NearCacheConfig;
+import com.hazelcast.config.NearCacheConfig.LocalUpdatePolicy;
 import com.hazelcast.config.NetworkConfig;
 import com.hazelcast.config.TcpIpConfig;
 import com.hazelcast.core.Hazelcast;
@@ -99,6 +105,9 @@ public class HazelcastManager extends LifecycleComponent implements IHazelcastMa
 		    getMicroservice().getHostname() + ":" + String.valueOf(IHazelcastManager.HZ_PORT));
 	    config.setNetworkConfig(networkConfig);
 
+	    // Use near cache for fast response.
+	    config.addMapConfig(createDefaultMapConfig());
+
 	    HazelcastManager.configureManagementCenter(config);
 	    HazelcastManager.performGroupOverrides(config, IHazelcastManager.GROUP_NAME,
 		    IHazelcastManager.GROUP_PASSWORD);
@@ -108,6 +117,21 @@ public class HazelcastManager extends LifecycleComponent implements IHazelcastMa
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to create Hazelcast instance.", e);
 	}
+    }
+
+    protected MapConfig createDefaultMapConfig() {
+	// Configure eviction.
+	EvictionConfig evictionConfig = new EvictionConfig();
+	evictionConfig.setMaximumSizePolicy(MaxSizePolicy.ENTRY_COUNT).setEvictionPolicy(EvictionPolicy.LRU)
+		.setSize(10000);
+
+	// Configure near cache.
+	NearCacheConfig nearConfig = new NearCacheConfig().setName("default").setInMemoryFormat(InMemoryFormat.BINARY)
+		.setInvalidateOnChange(true).setTimeToLiveSeconds(60).setMaxIdleSeconds(20)
+		.setEvictionConfig(evictionConfig).setCacheLocalEntries(true)
+		.setLocalUpdatePolicy(LocalUpdatePolicy.INVALIDATE);
+
+	return new MapConfig().setName("default").setNearCacheConfig(nearConfig);
     }
 
     /*

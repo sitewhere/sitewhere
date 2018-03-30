@@ -96,7 +96,11 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
     @Override
     public IArea getAreaByToken(String token) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	IArea result = super.getAreaByToken(token);
+	IArea result = getAreaCache().getCacheEntry(tenant, token);
+	if (result != null) {
+	    return result;
+	}
+	result = super.getAreaByToken(token);
 	if ((result != null) && (getAreaCache().getCacheEntry(tenant, token) == null)) {
 	    getAreaCache().setCacheEntry(tenant, result.getToken(), result);
 	    getAreaByIdCache().setCacheEntry(tenant, result.getId(), result);
@@ -111,7 +115,11 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
     @Override
     public IArea getArea(UUID id) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	IArea result = super.getArea(id);
+	IArea result = getAreaByIdCache().getCacheEntry(tenant, id);
+	if (result != null) {
+	    return result;
+	}
+	result = super.getArea(id);
 	if ((result != null) && (getAreaByIdCache().getCacheEntry(tenant, id) == null)) {
 	    getAreaCache().setCacheEntry(tenant, result.getToken(), result);
 	    getAreaByIdCache().setCacheEntry(tenant, result.getId(), result);
@@ -173,7 +181,11 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
     @Override
     public IDevice getDeviceByToken(String deviceToken) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	IDevice result = super.getDeviceByToken(deviceToken);
+	IDevice result = getDeviceCache().getCacheEntry(tenant, deviceToken);
+	if (result != null) {
+	    return result;
+	}
+	result = super.getDeviceByToken(deviceToken);
 	if ((result != null) && (getDeviceCache().getCacheEntry(tenant, deviceToken) == null)) {
 	    getDeviceCache().setCacheEntry(tenant, result.getToken(), result);
 	    getDeviceByIdCache().setCacheEntry(tenant, result.getId(), result);
@@ -188,7 +200,11 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
     @Override
     public IDevice getDevice(UUID deviceId) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	IDevice result = super.getDevice(deviceId);
+	IDevice result = getDeviceByIdCache().getCacheEntry(tenant, deviceId);
+	if (result != null) {
+	    return result;
+	}
+	result = super.getDevice(deviceId);
 	if ((result != null) && (getDeviceByIdCache().getCacheEntry(tenant, deviceId) == null)) {
 	    getDeviceCache().setCacheEntry(tenant, result.getToken(), result);
 	    getDeviceByIdCache().setCacheEntry(tenant, result.getId(), result);
@@ -252,7 +268,11 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
     @Override
     public IDeviceAssignment getDeviceAssignmentByToken(String token) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	IDeviceAssignment result = super.getDeviceAssignmentByToken(token);
+	IDeviceAssignment result = getDeviceAssignmentCache().getCacheEntry(tenant, token);
+	if (result != null) {
+	    return result;
+	}
+	result = super.getDeviceAssignmentByToken(token);
 	if ((result != null) && (getDeviceAssignmentCache().getCacheEntry(tenant, token) == null)) {
 	    getDeviceAssignmentCache().setCacheEntry(tenant, result.getToken(), result);
 	    getDeviceAssignmentByIdCache().setCacheEntry(tenant, result.getId(), result);
@@ -269,7 +289,11 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
     @Override
     public IDeviceAssignment getDeviceAssignment(UUID id) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	IDeviceAssignment result = super.getDeviceAssignment(id);
+	IDeviceAssignment result = getDeviceAssignmentByIdCache().getCacheEntry(tenant, id);
+	if (result != null) {
+	    return result;
+	}
+	result = super.getDeviceAssignment(id);
 	if ((result != null) && (getDeviceAssignmentByIdCache().getCacheEntry(tenant, id) == null)) {
 	    getDeviceAssignmentCache().setCacheEntry(tenant, result.getToken(), result);
 	    getDeviceAssignmentByIdCache().setCacheEntry(tenant, result.getId(), result);
@@ -347,7 +371,11 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
     @Override
     public IDeviceType getDeviceTypeByToken(String token) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	IDeviceType result = super.getDeviceTypeByToken(token);
+	IDeviceType result = getDeviceTypeCache().getCacheEntry(tenant, token);
+	if (result != null) {
+	    return result;
+	}
+	result = super.getDeviceTypeByToken(token);
 	if ((result != null) && (getDeviceTypeCache().getCacheEntry(tenant, token) == null)) {
 	    getDeviceTypeCache().setCacheEntry(tenant, result.getToken(), result);
 	    getDeviceTypeByIdCache().setCacheEntry(tenant, result.getId(), result);
@@ -363,7 +391,11 @@ public class CacheAwareDeviceManagement extends DeviceManagementDecorator {
     @Override
     public IDeviceType getDeviceType(UUID id) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	IDeviceType result = super.getDeviceType(id);
+	IDeviceType result = getDeviceTypeByIdCache().getCacheEntry(tenant, id);
+	if (result != null) {
+	    return result;
+	}
+	result = super.getDeviceType(id);
 	if ((result != null) && (getDeviceTypeByIdCache().getCacheEntry(tenant, id) == null)) {
 	    getDeviceTypeCache().setCacheEntry(tenant, result.getToken(), result);
 	    getDeviceTypeByIdCache().setCacheEntry(tenant, result.getId(), result);
