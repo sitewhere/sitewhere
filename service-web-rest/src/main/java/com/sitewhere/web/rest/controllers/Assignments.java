@@ -314,7 +314,8 @@ public class Assignments extends RestControllerBase {
 	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
 	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
-	return getDeviceEventManagement().listDeviceEvents(assertDeviceAssignment(token), criteria);
+	IDeviceAssignment assignment = assertDeviceAssignment(token);
+	return getDeviceEventManagement().listDeviceEvents(assignment.getId(), criteria);
     }
 
     /**
@@ -384,8 +385,8 @@ public class Assignments extends RestControllerBase {
     public DeviceMeasurements createMeasurements(@RequestBody DeviceMeasurementsCreateRequest input,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDeviceMeasurements result = getDeviceEventManagement().addDeviceMeasurements(assertDeviceAssignment(token),
-		input);
+	IDeviceAssignment assignment = assertDeviceAssignment(token);
+	IDeviceMeasurements result = getDeviceEventManagement().addDeviceMeasurements(assignment.getId(), input);
 	return DeviceMeasurements.copy(result);
     }
 
@@ -426,9 +427,10 @@ public class Assignments extends RestControllerBase {
     @ApiOperation(value = "Create location event for device assignment")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceLocation createLocation(@RequestBody DeviceLocationCreateRequest input,
-	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getDeviceEventManagement().addDeviceLocation(assertDeviceAssignment(token), input);
+	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token)
+	    throws SiteWhereException {
+	IDeviceAssignment assignment = assertDeviceAssignment(token);
+	return getDeviceEventManagement().addDeviceLocation(assignment.getId(), input);
     }
 
     /**
@@ -470,7 +472,8 @@ public class Assignments extends RestControllerBase {
     public IDeviceAlert createAlert(@RequestBody DeviceAlertCreateRequest input,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getDeviceEventManagement().addDeviceAlert(assertDeviceAssignment(token), input);
+	IDeviceAssignment assignment = assertDeviceAssignment(token);
+	return getDeviceEventManagement().addDeviceAlert(assignment.getId(), input);
     }
 
     /**
@@ -584,7 +587,7 @@ public class Assignments extends RestControllerBase {
 	    request.setEventDate(new Date());
 	    request.setUpdateState(false);
 	    request.setData(payload);
-	    getDeviceEventManagement().addDeviceStreamData(assignment, stream, request);
+	    getDeviceEventManagement().addDeviceStreamData(assignment.getId(), stream, request);
 	    svtResponse.setStatus(HttpServletResponse.SC_CREATED);
 	} catch (SiteWhereSystemException e) {
 	    if (e.getCode() == ErrorCode.InvalidStreamId) {
@@ -616,7 +619,8 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Sequence Number", required = true) @PathVariable long sequenceNumber,
 	    HttpServletRequest servletRequest, HttpServletResponse svtResponse) throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	IDeviceStreamData chunk = getDeviceEventManagement().getDeviceStreamData(assignment, streamId, sequenceNumber);
+	IDeviceStreamData chunk = getDeviceEventManagement().getDeviceStreamData(assignment.getId(), streamId,
+		sequenceNumber);
 	if (chunk == null) {
 	    svtResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
 	    return;
@@ -674,8 +678,9 @@ public class Assignments extends RestControllerBase {
     public IDeviceCommandInvocation createCommandInvocation(@RequestBody DeviceCommandInvocationCreateRequest request,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDeviceCommandInvocation result = getDeviceEventManagement()
-		.addDeviceCommandInvocation(assertDeviceAssignment(token), request);
+	IDeviceAssignment assignment = assertDeviceAssignment(token);
+	IDeviceCommandInvocation result = getDeviceEventManagement().addDeviceCommandInvocation(assignment.getId(),
+		request);
 	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(getDeviceManagement());
 	return helper.convert(result);
     }
@@ -740,8 +745,8 @@ public class Assignments extends RestControllerBase {
     public DeviceStateChange createStateChange(@RequestBody DeviceStateChangeCreateRequest input,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDeviceStateChange result = getDeviceEventManagement().addDeviceStateChange(assertDeviceAssignment(token),
-		input);
+	IDeviceAssignment assignment = assertDeviceAssignment(token);
+	IDeviceStateChange result = getDeviceEventManagement().addDeviceStateChange(assignment.getId(), input);
 	return DeviceStateChange.copy(result);
     }
 
@@ -783,8 +788,8 @@ public class Assignments extends RestControllerBase {
     public DeviceCommandResponse createCommandResponse(@RequestBody DeviceCommandResponseCreateRequest input,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDeviceCommandResponse result = getDeviceEventManagement()
-		.addDeviceCommandResponse(assertDeviceAssignment(token), input);
+	IDeviceAssignment assignment = assertDeviceAssignment(token);
+	IDeviceCommandResponse result = getDeviceEventManagement().addDeviceCommandResponse(assignment.getId(), input);
 	return DeviceCommandResponse.copy(result);
     }
 

@@ -52,30 +52,32 @@ public class UnaryEventStorageStrategy implements IInboundEventStorageStrategy {
 	IDeviceEventCreateRequest request = EventModelConverter.asApiDeviceEventCreateRequest(grpc);
 	switch (request.getEventType()) {
 	case Measurements:
-	    getDeviceEventManagement().addDeviceMeasurements(assignment, (IDeviceMeasurementsCreateRequest) request);
+	    getDeviceEventManagement().addDeviceMeasurements(assignment.getId(),
+		    (IDeviceMeasurementsCreateRequest) request);
 	    break;
 	case Alert:
-	    getDeviceEventManagement().addDeviceAlert(assignment, (IDeviceAlertCreateRequest) request);
+	    getDeviceEventManagement().addDeviceAlert(assignment.getId(), (IDeviceAlertCreateRequest) request);
 	    break;
 	case CommandInvocation:
-	    getDeviceEventManagement().addDeviceCommandInvocation(assignment,
+	    getDeviceEventManagement().addDeviceCommandInvocation(assignment.getId(),
 		    (IDeviceCommandInvocationCreateRequest) request);
 	    break;
 	case CommandResponse:
-	    getDeviceEventManagement().addDeviceCommandResponse(assignment,
+	    getDeviceEventManagement().addDeviceCommandResponse(assignment.getId(),
 		    (IDeviceCommandResponseCreateRequest) request);
 	    break;
 	case Location:
-	    getDeviceEventManagement().addDeviceLocation(assignment, (IDeviceLocationCreateRequest) request);
+	    getDeviceEventManagement().addDeviceLocation(assignment.getId(), (IDeviceLocationCreateRequest) request);
 	    break;
 	case StateChange:
-	    getDeviceEventManagement().addDeviceStateChange(assignment, (IDeviceStateChangeCreateRequest) request);
+	    getDeviceEventManagement().addDeviceStateChange(assignment.getId(),
+		    (IDeviceStateChangeCreateRequest) request);
 	    break;
 	case StreamData: {
 	    IDeviceStreamDataCreateRequest sdreq = (IDeviceStreamDataCreateRequest) request;
 	    IDeviceStream stream = getDeviceManagement().getDeviceStream(assignment.getId(), sdreq.getStreamId());
 	    if (stream != null) {
-		getDeviceEventManagement().addDeviceStreamData(assignment, stream, sdreq);
+		getDeviceEventManagement().addDeviceStreamData(assignment.getId(), stream, sdreq);
 	    } else {
 		throw new SiteWhereException("Stream data references invalid stream: " + sdreq.getStreamId());
 	    }

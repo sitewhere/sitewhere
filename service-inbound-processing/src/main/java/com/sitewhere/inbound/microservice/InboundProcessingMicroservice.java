@@ -41,7 +41,7 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
     /** Microservice name */
     private static final String NAME = "Inbound Processing";
 
-    /** Device management API channel */
+    /** Device management API demux */
     private IDeviceManagementApiDemux deviceManagementApiDemux;
 
     /** Device event management API channel */

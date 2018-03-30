@@ -87,7 +87,7 @@ public class DeviceStreamManager extends TenantEngineLifecycleComponent implemen
     public void handleDeviceStreamDataRequest(String deviceToken, IDeviceStreamDataCreateRequest request)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = getCurrentAssignment(deviceToken);
-	getDeviceEventManagement(getTenantEngine().getTenant()).addDeviceStreamData(assignment, null, request);
+	getDeviceEventManagement(getTenantEngine().getTenant()).addDeviceStreamData(assignment.getId(), null, request);
     }
 
     /*
@@ -101,8 +101,8 @@ public class DeviceStreamManager extends TenantEngineLifecycleComponent implemen
     public void handleSendDeviceStreamDataRequest(String deviceToken, ISendDeviceStreamDataRequest request)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = getCurrentAssignment(deviceToken);
-	IDeviceStreamData data = getDeviceEventManagement(getTenantEngine().getTenant()).getDeviceStreamData(assignment,
-		request.getStreamId(), request.getSequenceNumber());
+	IDeviceStreamData data = getDeviceEventManagement(getTenantEngine().getTenant())
+		.getDeviceStreamData(assignment.getId(), request.getStreamId(), request.getSequenceNumber());
 	SendDeviceStreamDataCommand command = new SendDeviceStreamDataCommand();
 	command.setStreamId(request.getStreamId());
 	command.setSequenceNumber(request.getSequenceNumber());

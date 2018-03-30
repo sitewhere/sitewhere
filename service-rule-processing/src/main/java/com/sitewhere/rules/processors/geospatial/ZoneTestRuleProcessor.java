@@ -21,7 +21,6 @@ import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rules.spi.IRuleProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IZone;
-import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.geospatial.ZoneContainment;
@@ -68,15 +67,13 @@ public class ZoneTestRuleProcessor extends RuleProcessor {
 		    ? ZoneContainment.Inside
 		    : ZoneContainment.Outside;
 	    if (test.getCondition() == containment) {
-		IDeviceAssignment assignment = getDeviceManagement()
-			.getDeviceAssignment(location.getDeviceAssignmentId());
 		DeviceAlertCreateRequest alert = new DeviceAlertCreateRequest();
 		alert.setType(test.getAlertType());
 		alert.setLevel(test.getAlertLevel());
 		alert.setMessage(test.getAlertMessage());
 		alert.setUpdateState(false);
 		alert.setEventDate(new Date());
-		getDeviceEventManagement().addDeviceAlert(assignment, alert);
+		getDeviceEventManagement().addDeviceAlert(location.getDeviceAssignmentId(), alert);
 	    }
 	}
     }

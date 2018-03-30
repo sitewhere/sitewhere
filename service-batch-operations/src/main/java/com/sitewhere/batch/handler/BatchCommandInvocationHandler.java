@@ -80,11 +80,11 @@ public class BatchCommandInvocationHandler extends TenantEngineLifecycleComponen
 	}
 
 	// Find the current assignment information for the device.
-	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignment(device.getDeviceAssignmentId());
-	if (assignment == null) {
+	if (device.getDeviceAssignmentId() == null) {
 	    getLogger().info("Device is not currently assigned. Skipping command invocation.");
 	    return ElementProcessingStatus.Failed;
 	}
+	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignment(device.getDeviceAssignmentId());
 
 	// Create the request.
 	DeviceCommandInvocationCreateRequest request = new DeviceCommandInvocationCreateRequest();
@@ -99,7 +99,7 @@ public class BatchCommandInvocationHandler extends TenantEngineLifecycleComponen
 	request.setMetadata(metadata);
 
 	// Invoke the command.
-	IDeviceCommandInvocation invocation = getDeviceEventManagement().addDeviceCommandInvocation(assignment,
+	IDeviceCommandInvocation invocation = getDeviceEventManagement().addDeviceCommandInvocation(assignment.getId(),
 		request);
 	updated.getMetadata().put(IBatchCommandInvocationRequest.META_INVOCATION_EVENT_ID,
 		invocation.getId().toString());

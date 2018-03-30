@@ -62,13 +62,13 @@ public class DeviceEventManagementPersistence extends Persistence {
 	    IDeviceEventManagement management) throws SiteWhereException {
 	DeviceEventBatchResponse response = new DeviceEventBatchResponse();
 	for (IDeviceMeasurementsCreateRequest measurements : batch.getMeasurements()) {
-	    response.getCreatedMeasurements().add(management.addDeviceMeasurements(assignment, measurements));
+	    response.getCreatedMeasurements().add(management.addDeviceMeasurements(assignment.getId(), measurements));
 	}
 	for (IDeviceLocationCreateRequest location : batch.getLocations()) {
-	    response.getCreatedLocations().add(management.addDeviceLocation(assignment, location));
+	    response.getCreatedLocations().add(management.addDeviceLocation(assignment.getId(), location));
 	}
 	for (IDeviceAlertCreateRequest alert : batch.getAlerts()) {
-	    response.getCreatedAlerts().add(management.addDeviceAlert(assignment, alert));
+	    response.getCreatedAlerts().add(management.addDeviceAlert(assignment.getId(), alert));
 	}
 	return response;
     }

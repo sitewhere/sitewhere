@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.UUID;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
@@ -34,12 +33,12 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
     /**
      * Add a batch of events for the given assignment.
      * 
-     * @param assignment
+     * @param deviceAssignmentId
      * @param batch
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceEventBatchResponse addDeviceEventBatch(IDeviceAssignment assignment, IDeviceEventBatch batch)
+    public IDeviceEventBatchResponse addDeviceEventBatch(UUID deviceAssignmentId, IDeviceEventBatch batch)
 	    throws SiteWhereException;
 
     /**
@@ -65,23 +64,23 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
     /**
      * List all events for the given assignment that meet the search criteria.
      * 
-     * @param assignment
+     * @param deviceAssignmentId
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IDeviceEvent> listDeviceEvents(IDeviceAssignment assignment,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
+    public ISearchResults<IDeviceEvent> listDeviceEvents(UUID deviceAssignmentId, IDateRangeSearchCriteria criteria)
+	    throws SiteWhereException;
 
     /**
      * Add measurements for a given device assignment.
      * 
-     * @param assignment
+     * @param deviceAssignmentId
      * @param measurements
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceMeasurements addDeviceMeasurements(IDeviceAssignment assignment,
+    public IDeviceMeasurements addDeviceMeasurements(UUID deviceAssignmentId,
 	    IDeviceMeasurementsCreateRequest measurements) throws SiteWhereException;
 
     /**
@@ -109,12 +108,12 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
     /**
      * Add location for a given device assignment.
      * 
-     * @param assignment
+     * @param deviceAssignmentId
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceLocation addDeviceLocation(IDeviceAssignment assignment, IDeviceLocationCreateRequest request)
+    public IDeviceLocation addDeviceLocation(UUID deviceAssignmentId, IDeviceLocationCreateRequest request)
 	    throws SiteWhereException;
 
     /**
@@ -142,12 +141,12 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
     /**
      * Add alert for a given device assignment.
      * 
-     * @param assignment
+     * @param deviceAssignmentId
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceAlert addDeviceAlert(IDeviceAssignment assignment, IDeviceAlertCreateRequest request)
+    public IDeviceAlert addDeviceAlert(UUID deviceAssignmentId, IDeviceAlertCreateRequest request)
 	    throws SiteWhereException;
 
     /**
@@ -175,25 +174,25 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
     /**
      * Add a chunk of stream data for a given device assignment.
      * 
-     * @param assignment
+     * @param deviceAssignmentId
      * @param stream
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceStreamData addDeviceStreamData(IDeviceAssignment assignment, IDeviceStream stream,
+    public IDeviceStreamData addDeviceStreamData(UUID deviceAssignmentId, IDeviceStream stream,
 	    IDeviceStreamDataCreateRequest request) throws SiteWhereException;
 
     /**
      * Get a single chunk of data from a device stream.
      * 
-     * @param assignment
+     * @param deviceAssignmentId
      * @param streamId
      * @param sequenceNumber
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceStreamData getDeviceStreamData(IDeviceAssignment assignment, String streamId, long sequenceNumber)
+    public IDeviceStreamData getDeviceStreamData(UUID deviceAssignmentId, String streamId, long sequenceNumber)
 	    throws SiteWhereException;
 
     /**
@@ -212,12 +211,12 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
     /**
      * Add a device command invocation event for the given assignment.
      * 
-     * @param assignment
+     * @param deviceAssignmentId
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceCommandInvocation addDeviceCommandInvocation(IDeviceAssignment assignment,
+    public IDeviceCommandInvocation addDeviceCommandInvocation(UUID deviceAssignmentId,
 	    IDeviceCommandInvocationCreateRequest request) throws SiteWhereException;
 
     /**
@@ -256,12 +255,12 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
     /**
      * Adds a new device command response event.
      * 
-     * @param assignment
+     * @param deviceAssignmentId
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceCommandResponse addDeviceCommandResponse(IDeviceAssignment assignment,
+    public IDeviceCommandResponse addDeviceCommandResponse(UUID deviceAssignmentId,
 	    IDeviceCommandResponseCreateRequest request) throws SiteWhereException;
 
     /**
@@ -289,13 +288,13 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
     /**
      * Adds a new device state change event.
      * 
-     * @param assignment
+     * @param deviceAssignmentId
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceStateChange addDeviceStateChange(IDeviceAssignment assignment,
-	    IDeviceStateChangeCreateRequest request) throws SiteWhereException;
+    public IDeviceStateChange addDeviceStateChange(UUID deviceAssignmentId, IDeviceStateChangeCreateRequest request)
+	    throws SiteWhereException;
 
     /**
      * Gets the most recent device state change entries for an assignment.

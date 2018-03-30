@@ -120,25 +120,25 @@ public class DeviceEventRequestBuilder {
 
 	public AssignmentScope persist(DeviceLocationCreateRequest.Builder builder) throws SiteWhereException {
 	    DeviceLocationCreateRequest request = builder.build();
-	    events.addDeviceLocation(getDeviceAssignment(), request);
+	    events.addDeviceLocation(getDeviceAssignment().getId(), request);
 	    return this;
 	}
 
 	public AssignmentScope persist(DeviceMeasurementsCreateRequest.Builder builder) throws SiteWhereException {
 	    DeviceMeasurementsCreateRequest request = builder.build();
-	    events.addDeviceMeasurements(getDeviceAssignment(), request);
+	    events.addDeviceMeasurements(getDeviceAssignment().getId(), request);
 	    return this;
 	}
 
 	public AssignmentScope persist(DeviceAlertCreateRequest.Builder builder) throws SiteWhereException {
 	    DeviceAlertCreateRequest request = builder.build();
-	    events.addDeviceAlert(getDeviceAssignment(), request);
+	    events.addDeviceAlert(getDeviceAssignment().getId(), request);
 	    return this;
 	}
 
 	public AssignmentScope persist(DeviceCommandInvocationCreateRequest.Builder builder) throws SiteWhereException {
 	    DeviceCommandInvocationCreateRequest request = builder.build();
-	    events.addDeviceCommandInvocation(getDeviceAssignment(), request);
+	    events.addDeviceCommandInvocation(getDeviceAssignment().getId(), request);
 	    return this;
 	}
 

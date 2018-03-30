@@ -58,7 +58,7 @@ public class DeviceActions implements IDeviceActions {
 	location.setElevation(elevation);
 	location.setEventDate(new Date());
 	location.setUpdateState(updateState);
-	getDeviceEventManagement().addDeviceLocation(assignment, location);
+	getDeviceEventManagement().addDeviceLocation(assignment.getId(), location);
     }
 
     /*
@@ -88,7 +88,7 @@ public class DeviceActions implements IDeviceActions {
 	create.setTarget(CommandTarget.Assignment);
 	create.setTargetId(assignment.getToken());
 	create.setEventDate(new Date());
-	getDeviceEventManagement().addDeviceCommandInvocation(assignment, create);
+	getDeviceEventManagement().addDeviceCommandInvocation(assignment.getId(), create);
     }
 
     public IDeviceManagement getDeviceManagement() {

@@ -445,7 +445,7 @@ public class Devices extends RestControllerBase {
 	    }
 	}
 
-	return getDeviceEventManagement().addDeviceEventBatch(assignment, batch);
+	return getDeviceEventManagement().addDeviceEventBatch(assignment.getId(), batch);
     }
 
     /**
