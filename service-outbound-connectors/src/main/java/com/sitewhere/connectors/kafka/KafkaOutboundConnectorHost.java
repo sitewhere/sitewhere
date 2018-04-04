@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.connectors.spi.IOutboundConnector;
@@ -144,10 +145,16 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
 
     /*
      * @see
-     * com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#received(
-     * java.lang.String, byte[])
+     * com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#processBatch(
+     * java.util.List)
      */
     @Override
+    public void processBatch(List<ConsumerRecord<String, byte[]>> records) throws SiteWhereException {
+	for (ConsumerRecord<String, byte[]> record : records) {
+	    received(record.key(), record.value());
+	}
+    }
+
     public void received(String key, byte[] message) throws SiteWhereException {
 	executor.execute(new EventPayloadProcessor(message));
     }

@@ -196,8 +196,7 @@ public class HBaseDeviceEventManagement extends TenantEngineLifecycleComponent i
      * streamDeviceAssignmentCreateEvents()
      */
     @Override
-    public Processor<IDeviceAssignmentEventCreateRequest, IEventStreamAck> streamDeviceAssignmentCreateEvents()
-	    throws SiteWhereException {
+    public Processor<IDeviceAssignmentEventCreateRequest, IEventStreamAck> streamDeviceAssignmentCreateEvents() {
 	return new DeviceAssignmentEventCreateProcessor(this);
     }
 

@@ -17,6 +17,8 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+
 import com.sitewhere.grpc.kafka.model.KafkaModel.GStateUpdate;
 import com.sitewhere.grpc.model.converter.KafkaModelConverter;
 import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
@@ -112,13 +114,17 @@ public abstract class MicroserviceStateUpdatesKafkaConsumer extends Microservice
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.microservice.spi.kafka.IMicroserviceKafkaConsumer#received(
-     * java.lang.String, byte[])
+     * com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#processBatch(
+     * java.util.List)
      */
     @Override
+    public void processBatch(List<ConsumerRecord<String, byte[]>> records) throws SiteWhereException {
+	for (ConsumerRecord<String, byte[]> record : records) {
+	    received(record.key(), record.value());
+	}
+    }
+
     public void received(String key, byte[] message) throws SiteWhereException {
 	try {
 	    getQueuedStateUpdates().put(message);

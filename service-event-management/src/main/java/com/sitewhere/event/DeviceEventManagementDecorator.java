@@ -98,8 +98,7 @@ public class DeviceEventManagementDecorator extends TenantEngineLifecycleCompone
      * streamDeviceAssignmentCreateEvents()
      */
     @Override
-    public Processor<IDeviceAssignmentEventCreateRequest, IEventStreamAck> streamDeviceAssignmentCreateEvents()
-	    throws SiteWhereException {
+    public Processor<IDeviceAssignmentEventCreateRequest, IEventStreamAck> streamDeviceAssignmentCreateEvents() {
 	return getDelegate().streamDeviceAssignmentCreateEvents();
     }
 

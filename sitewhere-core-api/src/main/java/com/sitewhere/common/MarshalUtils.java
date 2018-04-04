@@ -10,7 +10,6 @@ package com.sitewhere.common;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.sitewhere.spi.SiteWhereException;
 
 public class MarshalUtils {
 
@@ -30,13 +29,12 @@ public class MarshalUtils {
      * 
      * @param object
      * @return
-     * @throws SiteWhereException
      */
-    public static byte[] marshalJson(Object object) throws SiteWhereException {
+    public static byte[] marshalJson(Object object) {
 	try {
 	    return MAPPER.writeValueAsBytes(object);
 	} catch (JsonProcessingException e) {
-	    throw new SiteWhereException("Could not marshal object as JSON: " + object.getClass().getName(), e);
+	    throw new RuntimeException("Could not marshal object as JSON: " + object.getClass().getName(), e);
 	}
     }
 
@@ -45,13 +43,12 @@ public class MarshalUtils {
      * 
      * @param object
      * @return
-     * @throws SiteWhereException
      */
-    public static String marshalJsonAsString(Object object) throws SiteWhereException {
+    public static String marshalJsonAsString(Object object) {
 	try {
 	    return (object != null) ? MAPPER.writeValueAsString(object) : "NULL";
 	} catch (JsonProcessingException e) {
-	    throw new SiteWhereException("Could not marshal object as JSON: " + object.getClass().getName(), e);
+	    throw new RuntimeException("Could not marshal object as JSON: " + object.getClass().getName(), e);
 	}
     }
 
@@ -60,13 +57,12 @@ public class MarshalUtils {
      * 
      * @param object
      * @return
-     * @throws SiteWhereException
      */
-    public static String marshalJsonAsPrettyString(Object object) throws SiteWhereException {
+    public static String marshalJsonAsPrettyString(Object object) {
 	try {
 	    return (object != null) ? PRETTY_MAPPER.writeValueAsString(object) : "NULL";
 	} catch (JsonProcessingException e) {
-	    throw new SiteWhereException("Could not marshal object as JSON: " + object.getClass().getName(), e);
+	    throw new RuntimeException("Could not marshal object as JSON: " + object.getClass().getName(), e);
 	}
     }
 
@@ -76,13 +72,12 @@ public class MarshalUtils {
      * @param json
      * @param type
      * @return
-     * @throws SiteWhereException
      */
-    public static <T> T unmarshalJson(byte[] json, Class<T> type) throws SiteWhereException {
+    public static <T> T unmarshalJson(byte[] json, Class<T> type) {
 	try {
 	    return MAPPER.readValue(json, type);
 	} catch (Throwable e) {
-	    throw new SiteWhereException("Unable to parse JSON.", e);
+	    throw new RuntimeException("Unable to parse JSON.", e);
 	}
     }
 }

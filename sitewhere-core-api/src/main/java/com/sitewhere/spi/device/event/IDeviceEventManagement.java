@@ -81,10 +81,8 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
      * assignments.
      * 
      * @return
-     * @throws SiteWhereException
      */
-    public Processor<IDeviceAssignmentEventCreateRequest, IEventStreamAck> streamDeviceAssignmentCreateEvents()
-	    throws SiteWhereException;
+    public Processor<IDeviceAssignmentEventCreateRequest, IEventStreamAck> streamDeviceAssignmentCreateEvents();
 
     /**
      * Add measurements for a given device assignment.

@@ -235,16 +235,10 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
      * streamDeviceAssignmentCreateEvents()
      */
     @Override
-    public Processor<IDeviceAssignmentEventCreateRequest, IEventStreamAck> streamDeviceAssignmentCreateEvents()
-	    throws SiteWhereException {
-	try {
-	    GrpcUtils.logClientMethodEntry(this,
-		    DeviceEventManagementGrpc.METHOD_STREAM_DEVICE_ASSIGNMENT_EVENT_CREATE_REQUESTS);
-	    return new DeviceAssignmentEventCreateProcessor(getGrpcChannel());
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(
-		    DeviceEventManagementGrpc.METHOD_STREAM_DEVICE_ASSIGNMENT_EVENT_CREATE_REQUESTS, t);
-	}
+    public Processor<IDeviceAssignmentEventCreateRequest, IEventStreamAck> streamDeviceAssignmentCreateEvents() {
+	GrpcUtils.logClientMethodEntry(this,
+		DeviceEventManagementGrpc.METHOD_STREAM_DEVICE_ASSIGNMENT_EVENT_CREATE_REQUESTS);
+	return new DeviceAssignmentEventCreateProcessor(getGrpcChannel());
     }
 
     /*

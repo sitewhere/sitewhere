@@ -45,6 +45,9 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
     /** Service implementation */
     protected BindableService serviceImplementation;
 
+    /** Indicates whether to use tracing interceptor */
+    protected boolean useTracingInterceptor = false;
+
     /** Interceptor for JWT authentication */
     protected JwtServerInterceptor jwt;
 
@@ -74,7 +77,9 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	try {
 	    ServerBuilder<?> builder = ServerBuilder.forPort(port);
-	    this.server = builder.addService(getServiceImplementation()).intercept(jwt).intercept(trace).build();
+	    builder.addService(getServiceImplementation()).intercept(jwt);
+	    builder.intercept(trace);
+	    this.server = builder.build();
 	    getLogger().info("Initialized GRPC server on port " + port + ".");
 	} catch (Throwable e) {
 	    throw new SiteWhereException("Unable to initialize tenant management GRPC server.", e);
@@ -117,9 +122,7 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.grpc.IManagedGrpcServer#getMicroservice()
+     * @see com.sitewhere.grpc.client.spi.server.IGrpcServer#getMicroservice()
      */
     @Override
     public IMicroservice getMicroservice() {
@@ -131,10 +134,8 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.grpc.IManagedGrpcServer#
-     * getServiceImplementation()
+     * @see
+     * com.sitewhere.grpc.client.spi.server.IGrpcServer#getServiceImplementation()
      */
     @Override
     public BindableService getServiceImplementation() {
@@ -143,6 +144,19 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
 
     public void setServiceImplementation(BindableService serviceImplementation) {
 	this.serviceImplementation = serviceImplementation;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.client.spi.server.IGrpcServer#isUseTracingInterceptor()
+     */
+    @Override
+    public boolean isUseTracingInterceptor() {
+	return useTracingInterceptor;
+    }
+
+    public void setUseTracingInterceptor(boolean useTracingInterceptor) {
+	this.useTracingInterceptor = useTracingInterceptor;
     }
 
     /*

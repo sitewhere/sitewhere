@@ -18,7 +18,6 @@ import org.apache.commons.logging.LogFactory;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.rest.model.configuration.ConfigurationModel;
 import com.sitewhere.rest.model.configuration.ElementRole;
-import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModelProvider;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRole;
@@ -103,12 +102,8 @@ public abstract class ConfigurationModelProvider implements IConfigurationModelP
 	    List<IElementNode> elements = usedElements.get(roleId);
 	    model.getElementsByRole().put(roleId, elements);
 	}
-	try {
-	    if (LOGGER.isDebugEnabled()) {
-		LOGGER.debug("Built model:\n\n" + MarshalUtils.marshalJsonAsPrettyString(model));
-	    }
-	} catch (SiteWhereException e) {
-	    LOGGER.error("Unable to marshal model.", e);
+	if (LOGGER.isDebugEnabled()) {
+	    LOGGER.debug("Built model:\n\n" + MarshalUtils.marshalJsonAsPrettyString(model));
 	}
 	return model;
     }

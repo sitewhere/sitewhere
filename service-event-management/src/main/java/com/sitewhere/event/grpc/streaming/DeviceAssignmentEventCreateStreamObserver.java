@@ -8,8 +8,6 @@
 package com.sitewhere.event.grpc.streaming;
 
 import org.reactivestreams.Processor;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceAssignmentEventCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GEventStreamAck;
@@ -20,6 +18,7 @@ import com.sitewhere.spi.device.event.request.IDeviceAssignmentEventCreateReques
 import com.sitewhere.spi.device.event.streaming.IEventStreamAck;
 
 import io.grpc.stub.StreamObserver;
+import reactor.core.publisher.BaseSubscriber;
 
 public class DeviceAssignmentEventCreateStreamObserver implements StreamObserver<GDeviceAssignmentEventCreateRequest> {
 
@@ -32,12 +31,10 @@ public class DeviceAssignmentEventCreateStreamObserver implements StreamObserver
     /** Response observer */
     private StreamObserver<GEventStreamAck> responseObserver;
 
-    /** Subscription */
-    private Subscription subscription;
-
     public DeviceAssignmentEventCreateStreamObserver(IDeviceEventManagement deviceEventManagement,
 	    StreamObserver<GEventStreamAck> responseObserver) throws SiteWhereException {
 	this.deviceEventManagement = deviceEventManagement;
+	this.responseObserver = responseObserver;
     }
 
     /**
@@ -46,32 +43,35 @@ public class DeviceAssignmentEventCreateStreamObserver implements StreamObserver
      * @throws SiteWhereException
      */
     public void start() throws SiteWhereException {
-	Processor<IDeviceAssignmentEventCreateRequest, IEventStreamAck> processor = getDeviceEventManagement()
-		.streamDeviceAssignmentCreateEvents();
-	processor.subscribe(new Subscriber<IEventStreamAck>() {
+	this.processor = getDeviceEventManagement().streamDeviceAssignmentCreateEvents();
+	processor.subscribe(new BaseSubscriber<IEventStreamAck>() {
 
+	    /*
+	     * @see reactor.core.publisher.BaseSubscriber#hookOnNext(java.lang.Object)
+	     */
 	    @Override
-	    public void onSubscribe(Subscription s) {
-		subscription = s;
-	    }
-
-	    @Override
-	    public void onNext(IEventStreamAck t) {
+	    protected void hookOnNext(IEventStreamAck value) {
 		try {
-		    getResponseObserver().onNext(EventModelConverter.asGrpcEventStreamAck(t));
+		    getResponseObserver().onNext(EventModelConverter.asGrpcEventStreamAck(value));
 		} catch (SiteWhereException e) {
-		    getResponseObserver().onError(e);
+		    throw new RuntimeException(e);
 		}
 	    }
 
+	    /*
+	     * @see reactor.core.publisher.BaseSubscriber#hookOnComplete()
+	     */
 	    @Override
-	    public void onError(Throwable t) {
-		getResponseObserver().onError(t);
+	    protected void hookOnComplete() {
+		getResponseObserver().onCompleted();
 	    }
 
+	    /*
+	     * @see reactor.core.publisher.BaseSubscriber#hookOnError(java.lang.Throwable)
+	     */
 	    @Override
-	    public void onComplete() {
-		getResponseObserver().onCompleted();
+	    protected void hookOnError(Throwable throwable) {
+		getResponseObserver().onError(throwable);
 	    }
 	});
     }
@@ -84,7 +84,7 @@ public class DeviceAssignmentEventCreateStreamObserver implements StreamObserver
 	try {
 	    getProcessor().onNext(EventModelConverter.asApiDeviceAssignmentEventCreateRequest(value));
 	} catch (SiteWhereException e) {
-	    onError(e);
+	    getProcessor().onError(e);
 	}
     }
 
@@ -126,13 +126,5 @@ public class DeviceAssignmentEventCreateStreamObserver implements StreamObserver
 
     public void setResponseObserver(StreamObserver<GEventStreamAck> responseObserver) {
 	this.responseObserver = responseObserver;
-    }
-
-    public Subscription getSubscription() {
-	return subscription;
-    }
-
-    public void setSubscription(Subscription subscription) {
-	this.subscription = subscription;
     }
 }

@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import com.sitewhere.commands.microservice.CommandDeliveryTenantEngine;
 import com.sitewhere.commands.spi.kafka.IEnrichedCommandInvocationsConsumer;
@@ -125,10 +126,16 @@ public class EnrichedCommandInvocationsConsumer extends MicroserviceKafkaConsume
 
     /*
      * @see
-     * com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#received(
-     * java.lang.String, byte[])
+     * com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#processBatch(
+     * java.util.List)
      */
     @Override
+    public void processBatch(List<ConsumerRecord<String, byte[]>> records) throws SiteWhereException {
+	for (ConsumerRecord<String, byte[]> record : records) {
+	    received(record.key(), record.value());
+	}
+    }
+
     public void received(String key, byte[] message) throws SiteWhereException {
 	executor.execute(new CommandInvocationProcessor(getTenantEngine(), message));
     }

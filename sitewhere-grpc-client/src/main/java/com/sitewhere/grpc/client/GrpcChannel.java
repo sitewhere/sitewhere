@@ -37,6 +37,9 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
     /** Remote port */
     protected int port;
 
+    /** Indicates whether to use the tracing interceptor */
+    protected boolean useTracingInterceptor = false;
+
     /** GRPC managed channe */
     protected ManagedChannel channel;
 
@@ -68,8 +71,12 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.channel = ManagedChannelBuilder.forAddress(getHostname(), getPort()).usePlaintext(true).intercept(jwt)
-		.intercept(trace).build();
+	ManagedChannelBuilder<?> builder = ManagedChannelBuilder.forAddress(getHostname(), getPort()).usePlaintext(true)
+		.intercept(jwt);
+	if (isUseTracingInterceptor()) {
+	    builder.intercept(trace);
+	}
+	this.channel = builder.build();
 	this.blockingStub = createBlockingStub();
 	this.asyncStub = createAsyncStub();
     }
@@ -164,5 +171,13 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
 
     public void setPort(int port) {
 	this.port = port;
+    }
+
+    public boolean isUseTracingInterceptor() {
+	return useTracingInterceptor;
+    }
+
+    public void setUseTracingInterceptor(boolean useTracingInterceptor) {
+	this.useTracingInterceptor = useTracingInterceptor;
     }
 }

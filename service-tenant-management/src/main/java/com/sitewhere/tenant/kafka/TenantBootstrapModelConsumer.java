@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.curator.framework.CuratorFramework;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.zookeeper.data.Stat;
 
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdate;
@@ -118,13 +119,17 @@ public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer impl
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.microservice.spi.kafka.IMicroserviceKafkaConsumer#received(
-     * java.lang.String, byte[])
+     * com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#processBatch(
+     * java.util.List)
      */
     @Override
+    public void processBatch(List<ConsumerRecord<String, byte[]>> records) throws SiteWhereException {
+	for (ConsumerRecord<String, byte[]> record : records) {
+	    received(record.key(), record.value());
+	}
+    }
+
     public void received(String key, byte[] message) throws SiteWhereException {
 	GTenantModelUpdate update = KafkaModelMarshaler.parseTenantModelUpdateMessage(message);
 

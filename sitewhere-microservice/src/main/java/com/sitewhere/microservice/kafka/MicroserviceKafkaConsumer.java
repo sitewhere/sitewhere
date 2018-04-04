@@ -156,9 +156,7 @@ public abstract class MicroserviceKafkaConsumer extends TenantEngineLifecycleCom
 
 		    for (TopicPartition topicPartition : records.partitions()) {
 			List<ConsumerRecord<String, byte[]>> topicRecords = records.records(topicPartition);
-			for (ConsumerRecord<String, byte[]> record : topicRecords) {
-			    received(record.key(), record.value());
-			}
+			processBatch(topicRecords);
 			getConsumer().commitAsync(new OffsetCommitCallback() {
 			    public void onComplete(Map<TopicPartition, OffsetAndMetadata> offsets, Exception e) {
 				if (e != null) {

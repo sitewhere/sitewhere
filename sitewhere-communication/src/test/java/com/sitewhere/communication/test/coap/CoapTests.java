@@ -24,7 +24,6 @@ import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreate
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
-import com.sitewhere.spi.SiteWhereException;
 
 public class CoapTests {
 
@@ -44,15 +43,10 @@ public class CoapTests {
 	Map<String, String> metadata = new HashMap<String, String>();
 	metadata.put("ipaddress", "localhost");
 	registration.setMetadata(metadata);
-	try {
-	    CoapResponse response = client.post(MarshalUtils.marshalJson(registration),
-		    MediaTypeRegistry.APPLICATION_JSON);
-	    System.out.println(response.getCode());
-	    System.out.println(response.getOptions());
-	    System.out.println(response.getResponseText());
-	} catch (SiteWhereException e) {
-	    e.printStackTrace();
-	}
+	CoapResponse response = client.post(MarshalUtils.marshalJson(registration), MediaTypeRegistry.APPLICATION_JSON);
+	System.out.println(response.getCode());
+	System.out.println(response.getOptions());
+	System.out.println(response.getResponseText());
     }
 
     @Test
@@ -72,14 +66,10 @@ public class CoapTests {
 	mxs.addOrReplaceMeasurement("pwr", 38.23);
 	mxs.addOrReplaceMeasurement("fln", 59.95);
 	mxs.setEventDate(new Date());
-	try {
-	    CoapResponse response = client.post(MarshalUtils.marshalJson(mxs), MediaTypeRegistry.APPLICATION_JSON);
-	    System.out.println(response.getCode());
-	    System.out.println(response.getOptions());
-	    System.out.println(response.getResponseText());
-	} catch (SiteWhereException e) {
-	    e.printStackTrace();
-	}
+	CoapResponse response = client.post(MarshalUtils.marshalJson(mxs), MediaTypeRegistry.APPLICATION_JSON);
+	System.out.println(response.getCode());
+	System.out.println(response.getOptions());
+	System.out.println(response.getResponseText());
     }
 
     @Test
@@ -98,14 +88,10 @@ public class CoapTests {
 	DeviceAlertCreateRequest alert = new DeviceAlertCreateRequest();
 	alert.setType("alert.test");
 	alert.setMessage("Danger! Danger!");
-	try {
-	    CoapResponse response = client.post(MarshalUtils.marshalJson(alert), MediaTypeRegistry.APPLICATION_JSON);
-	    System.out.println(response.getCode());
-	    System.out.println(response.getOptions());
-	    System.out.println(response.getResponseText());
-	} catch (SiteWhereException e) {
-	    e.printStackTrace();
-	}
+	CoapResponse response = client.post(MarshalUtils.marshalJson(alert), MediaTypeRegistry.APPLICATION_JSON);
+	System.out.println(response.getCode());
+	System.out.println(response.getOptions());
+	System.out.println(response.getResponseText());
     }
 
     @Test
@@ -125,14 +111,10 @@ public class CoapTests {
 	location.setLatitude(33.7490);
 	location.setLongitude(-84.3880);
 	location.setElevation(0.0);
-	try {
-	    CoapResponse response = client.post(MarshalUtils.marshalJson(location), MediaTypeRegistry.APPLICATION_JSON);
-	    System.out.println(response.getCode());
-	    System.out.println(response.getOptions());
-	    System.out.println(response.getResponseText());
-	} catch (SiteWhereException e) {
-	    e.printStackTrace();
-	}
+	CoapResponse response = client.post(MarshalUtils.marshalJson(location), MediaTypeRegistry.APPLICATION_JSON);
+	System.out.println(response.getCode());
+	System.out.println(response.getOptions());
+	System.out.println(response.getResponseText());
     }
 
     @Test
@@ -153,14 +135,10 @@ public class CoapTests {
 	ack.setResponse("Arbitrary string containing response content.");
 	ack.setMetadata(new HashMap<String, String>());
 	ack.getMetadata().put("meta1", "value");
-	try {
-	    CoapResponse response = client.post(MarshalUtils.marshalJson(ack), MediaTypeRegistry.APPLICATION_JSON);
-	    System.out.println(response.getCode());
-	    System.out.println(response.getOptions());
-	    System.out.println(response.getResponseText());
-	} catch (SiteWhereException e) {
-	    e.printStackTrace();
-	}
+	CoapResponse response = client.post(MarshalUtils.marshalJson(ack), MediaTypeRegistry.APPLICATION_JSON);
+	System.out.println(response.getCode());
+	System.out.println(response.getOptions());
+	System.out.println(response.getResponseText());
     }
 
     @Test
@@ -185,17 +163,10 @@ public class CoapTests {
 	DeviceCommandResponseCreateRequest ack = new DeviceCommandResponseCreateRequest();
 	ack.setOriginatingEventId(UUID.randomUUID());
 	ack.setResponse(rule);
-	try {
-	    CoapResponse response = client.post(MarshalUtils.marshalJson(ack), MediaTypeRegistry.APPLICATION_JSON);
-	    System.out.println(response.getCode());
-	    System.out.println(response.getOptions());
-	    System.out.println(response.getResponseText());
-	    Thread.sleep(100);
-	} catch (SiteWhereException e) {
-	    e.printStackTrace();
-	} catch (InterruptedException e) {
-	    e.printStackTrace();
-	}
+	CoapResponse response = client.post(MarshalUtils.marshalJson(ack), MediaTypeRegistry.APPLICATION_JSON);
+	System.out.println(response.getCode());
+	System.out.println(response.getOptions());
+	System.out.println(response.getResponseText());
     }
 
     /** Send Silectica rule as an ack (payload only version) */

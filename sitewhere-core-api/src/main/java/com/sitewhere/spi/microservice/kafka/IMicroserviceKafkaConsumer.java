@@ -9,6 +9,8 @@ package com.sitewhere.spi.microservice.kafka;
 
 import java.util.List;
 
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
@@ -29,8 +31,7 @@ public interface IMicroserviceKafkaConsumer extends ITenantEngineLifecycleCompon
     public IMicroservice getMicroservice();
 
     /**
-     * Get tenant engine associated with consumer. May be null for global
-     * consumers.
+     * Get tenant engine associated with consumer. May be null for global consumers.
      * 
      * @return
      */
@@ -61,11 +62,10 @@ public interface IMicroserviceKafkaConsumer extends ITenantEngineLifecycleCompon
     public List<String> getSourceTopicNames() throws SiteWhereException;
 
     /**
-     * Received a message from the topic.
+     * Process a batch of records.
      * 
-     * @param key
-     * @param message
+     * @param records
      * @throws SiteWhereException
      */
-    public void received(String key, byte[] message) throws SiteWhereException;
+    public void processBatch(List<ConsumerRecord<String, byte[]>> records) throws SiteWhereException;
 }

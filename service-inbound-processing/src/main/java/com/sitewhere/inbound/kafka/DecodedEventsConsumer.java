@@ -10,19 +10,11 @@ package com.sitewhere.inbound.kafka;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
-import com.sitewhere.grpc.model.converter.KafkaModelConverter;
-import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
 import com.sitewhere.inbound.processing.InboundPayloadProcessingLogic;
 import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
@@ -30,7 +22,6 @@ import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.inbound.spi.processing.IInboundProcessingConfiguration;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
-import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
@@ -56,9 +47,6 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 
     /** Get settings for inbound processing */
     private IInboundProcessingConfiguration configuration;
-
-    /** Executor */
-    private ExecutorService executor;
 
     /** Inbound payload processing logic */
     private InboundPayloadProcessingLogic inboundPayloadProcessingLogic = new InboundPayloadProcessingLogic();
@@ -139,8 +127,6 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 
 	getLogger().info("Allocating " + getConfiguration().getProcessingThreadCount()
 		+ " threads for inbound event processing.");
-	executor = Executors.newFixedThreadPool(getConfiguration().getProcessingThreadCount(),
-		new InboundEventProcessingThreadFactory());
 	super.start(monitor);
     }
 
@@ -162,25 +148,16 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
-
-	if (executor != null) {
-	    executor.shutdown();
-	    try {
-		executor.awaitTermination(10, TimeUnit.SECONDS);
-	    } catch (InterruptedException e) {
-		getLogger().warn("Executor did not terminate within allotted time.");
-	    }
-	}
     }
 
     /*
      * @see
-     * com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#received(
-     * java.lang.String, byte[])
+     * com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#processBatch(
+     * java.util.List)
      */
     @Override
-    public void received(String key, byte[] message) throws SiteWhereException {
-	executor.execute(new InboundEventPayloadProcessor(getTenantEngine(), message));
+    public void processBatch(List<ConsumerRecord<String, byte[]>> records) throws SiteWhereException {
+	new InboundEventPayloadProcessor(getTenantEngine(), records).run();
     }
 
     /*
@@ -212,12 +189,13 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
      */
     protected class InboundEventPayloadProcessor extends SystemUserRunnable {
 
-	/** Encoded payload */
-	private byte[] encoded;
+	/** List of records to process for partition */
+	private List<ConsumerRecord<String, byte[]>> records;
 
-	public InboundEventPayloadProcessor(IMicroserviceTenantEngine tenantEngine, byte[] encoded) {
+	public InboundEventPayloadProcessor(IMicroserviceTenantEngine tenantEngine,
+		List<ConsumerRecord<String, byte[]>> records) {
 	    super(tenantEngine.getMicroservice(), tenantEngine.getTenant());
-	    this.encoded = encoded;
+	    this.records = records;
 	}
 
 	/*
@@ -226,28 +204,7 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 	 */
 	@Override
 	public void runAsSystemUser() throws SiteWhereException {
-	    try {
-		GInboundEventPayload grpc = KafkaModelMarshaler.parseInboundEventPayloadMessage(encoded);
-		if (getLogger().isDebugEnabled()) {
-		    InboundEventPayload payload = KafkaModelConverter.asApiInboundEventPayload(grpc);
-		    getLogger().debug(
-			    "Received decoded event payload:\n\n" + MarshalUtils.marshalJsonAsPrettyString(payload));
-		}
-		getInboundPayloadProcessingLogic().process(grpc);
-	    } catch (SiteWhereException e) {
-		getLogger().error("Unable to parse inbound event payload.", e);
-	    }
-	}
-    }
-
-    /** Used for naming inbound event processing threads */
-    private class InboundEventProcessingThreadFactory implements ThreadFactory {
-
-	/** Counts threads */
-	private AtomicInteger counter = new AtomicInteger();
-
-	public Thread newThread(Runnable r) {
-	    return new Thread(r, "Inbound Event Processing " + counter.incrementAndGet());
+	    getInboundPayloadProcessingLogic().process(records);
 	}
     }
 

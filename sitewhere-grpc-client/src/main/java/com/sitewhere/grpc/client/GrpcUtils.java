@@ -35,7 +35,7 @@ public class GrpcUtils {
     private static Log LOGGER = LogFactory.getLog(GrpcUtils.class);
 
     public static void logClientMethodEntry(IApiChannel<?> channel, MethodDescriptor<?, ?> method,
-	    DebugParameter... parameters) throws SiteWhereException {
+	    DebugParameter... parameters) {
 	LOGGER.debug(channel.getClass().getSimpleName() + " connected to '" + channel.getHostname()
 		+ "' received call to  " + method.getFullMethodName() + ".");
 	if (LOGGER.isTraceEnabled()) {

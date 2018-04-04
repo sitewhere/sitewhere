@@ -8,11 +8,12 @@
 package com.sitewhere.event.persistence.streaming;
 
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.reactivestreams.Processor;
 import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 
+import com.sitewhere.rest.model.device.event.streaming.EventStreamAck;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
@@ -25,23 +26,25 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.streaming.IEventStreamAck;
 
+import reactor.core.publisher.BaseSubscriber;
+
 /**
  * Handles streaming device assignment event create requests into an
  * {@link IDeviceEventManagement} implementation.
  * 
  * @author Derek
  */
-public class DeviceAssignmentEventCreateProcessor
+public class DeviceAssignmentEventCreateProcessor extends BaseSubscriber<IDeviceAssignmentEventCreateRequest>
 	implements Processor<IDeviceAssignmentEventCreateRequest, IEventStreamAck> {
+
+    /** Device event management implementation */
+    private IDeviceEventManagement deviceEventManagement;
 
     /** Subscriber */
     private Subscriber<? super IEventStreamAck> subscriber;
 
-    /** Subscription */
-    private Subscription subscription;
-
-    /** Device event management implementation */
-    private IDeviceEventManagement deviceEventManagement;
+    /** Counter for processed events */
+    private AtomicLong processedCount = new AtomicLong();
 
     public DeviceAssignmentEventCreateProcessor(IDeviceEventManagement deviceEventManagement) {
 	this.deviceEventManagement = deviceEventManagement;
@@ -56,22 +59,12 @@ public class DeviceAssignmentEventCreateProcessor
     }
 
     /*
-     * @see
-     * org.reactivestreams.Subscriber#onSubscribe(org.reactivestreams.Subscription)
+     * @see reactor.core.publisher.BaseSubscriber#hookOnNext(java.lang.Object)
      */
     @Override
-    public void onSubscribe(Subscription s) {
-	this.subscription = s;
-	s.request(1);
-    }
-
-    /*
-     * @see org.reactivestreams.Subscriber#onNext(java.lang.Object)
-     */
-    @Override
-    public void onNext(IDeviceAssignmentEventCreateRequest t) {
-	UUID assignmentId = t.getDeviceAssignmentId();
-	IDeviceEventCreateRequest request = t.getRequest();
+    protected void hookOnNext(IDeviceAssignmentEventCreateRequest value) {
+	UUID assignmentId = value.getDeviceAssignmentId();
+	IDeviceEventCreateRequest request = value.getRequest();
 	try {
 	    switch (request.getEventType()) {
 	    case Alert: {
@@ -106,26 +99,29 @@ public class DeviceAssignmentEventCreateProcessor
 		throw new SiteWhereException("Unable to process event of type " + request.getEventType().name());
 	    }
 	    }
-	    getSubscription().request(1);
+	    getProcessedCount().incrementAndGet();
 	} catch (SiteWhereException e) {
 	    getSubscriber().onError(e);
 	}
     }
 
     /*
-     * @see org.reactivestreams.Subscriber#onError(java.lang.Throwable)
+     * @see reactor.core.publisher.BaseSubscriber#hookOnComplete()
      */
     @Override
-    public void onError(Throwable t) {
-	getSubscriber().onError(t);
+    protected void hookOnComplete() {
+	EventStreamAck ack = new EventStreamAck();
+	ack.setProcessedEventCount(getProcessedCount().get());
+	getSubscriber().onNext(ack);
+	getSubscriber().onComplete();
     }
 
-    /*
-     * @see org.reactivestreams.Subscriber#onComplete()
-     */
-    @Override
-    public void onComplete() {
-	getSubscriber().onComplete();
+    public IDeviceEventManagement getDeviceEventManagement() {
+	return deviceEventManagement;
+    }
+
+    public void setDeviceEventManagement(IDeviceEventManagement deviceEventManagement) {
+	this.deviceEventManagement = deviceEventManagement;
     }
 
     public Subscriber<? super IEventStreamAck> getSubscriber() {
@@ -136,19 +132,11 @@ public class DeviceAssignmentEventCreateProcessor
 	this.subscriber = subscriber;
     }
 
-    protected Subscription getSubscription() {
-	return subscription;
+    public AtomicLong getProcessedCount() {
+	return processedCount;
     }
 
-    protected void setSubscription(Subscription subscription) {
-	this.subscription = subscription;
-    }
-
-    public IDeviceEventManagement getDeviceEventManagement() {
-	return deviceEventManagement;
-    }
-
-    public void setDeviceEventManagement(IDeviceEventManagement deviceEventManagement) {
-	this.deviceEventManagement = deviceEventManagement;
+    public void setProcessedCount(AtomicLong processedCount) {
+	this.processedCount = processedCount;
     }
 }

@@ -191,8 +191,7 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
      * streamDeviceAssignmentCreateEvents()
      */
     @Override
-    public Processor<IDeviceAssignmentEventCreateRequest, IEventStreamAck> streamDeviceAssignmentCreateEvents()
-	    throws SiteWhereException {
+    public Processor<IDeviceAssignmentEventCreateRequest, IEventStreamAck> streamDeviceAssignmentCreateEvents() {
 	return new DeviceAssignmentEventCreateProcessor(this);
     }
 
