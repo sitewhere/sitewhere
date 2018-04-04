@@ -302,8 +302,7 @@ public class SiteWherePersistence {
     }
 
     /**
-     * Common logic for creating new device command and populating it from
-     * request.
+     * Common logic for creating new device command and populating it from request.
      * 
      * @param request
      * @param token
@@ -398,8 +397,7 @@ public class SiteWherePersistence {
     }
 
     /**
-     * Common logic for creating new device status and populating it from
-     * request.
+     * Common logic for creating new device status and populating it from request.
      * 
      * @param spec
      * @param request
@@ -484,8 +482,7 @@ public class SiteWherePersistence {
     }
 
     /**
-     * Common logic for creating new device object and populating it from
-     * request.
+     * Common logic for creating new device object and populating it from request.
      * 
      * @param request
      * @return
@@ -1424,14 +1421,14 @@ public class SiteWherePersistence {
 		List<String> ids = tenant.getAuthorizedUserIds();
 		ids.remove(username);
 		request.setAuthorizedUserIds(ids);
+		request.setMetadata(null);
 		management.updateTenant(tenant.getId(), request);
 	    }
 	}
     }
 
     /**
-     * Common logic for creating a granted authority based on an incoming
-     * request.
+     * Common logic for creating a granted authority based on an incoming request.
      * 
      * @param source
      * @return
