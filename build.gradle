@@ -3,14 +3,12 @@ import org.apache.tools.ant.filters.FixCrLfFilter;
 buildscript {
 	repositories {
 		maven { url "https://plugins.gradle.org/m2/" }
-        maven { url "http://repo.spring.io/libs-snapshot" }
-	}
+ 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.0.RELEASE")
 		classpath 'com.netflix.nebula:gradle-extra-configurations-plugin:3.0.3'
 		classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.3'
 		classpath 'io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE'
-		classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
 		classpath 'com.bmuschko:gradle-docker-plugin:3.2.5'
 		classpath "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0"
 		classpath "com.moowork.gradle:gradle-node-plugin:1.2.0"
@@ -35,7 +33,7 @@ ext['solr.version'] = '6.4.0'
 ext['siddhi.version'] = '3.1.2'
 
 apply plugin: 'distribution'
-
+    
 allprojects {
     group = 'com.sitewhere'
 	version = '2.0.ea4'
