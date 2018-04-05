@@ -47,7 +47,7 @@ public class AssetManagementApiDemux extends ApiDemux<IAssetManagementApiChannel
      * com.sitewhere.grpc.model.spi.IApiDemux#createApiChannel(java.lang.String)
      */
     @Override
-    public IAssetManagementApiChannel createApiChannel(String host) throws SiteWhereException {
+    public IAssetManagementApiChannel<?> createApiChannel(String host) throws SiteWhereException {
 	return new CachedAssetManagementApiChannel(this, getMicroservice(), host);
     }
 

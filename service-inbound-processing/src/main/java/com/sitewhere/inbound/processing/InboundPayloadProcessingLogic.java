@@ -7,6 +7,7 @@
  */
 package com.sitewhere.inbound.processing;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -89,16 +90,22 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	this.deviceLookupTimer = createTimerMetric("deviceLookup");
 	this.assignmentLookupTimer = createTimerMetric("assignmentLookup");
 	this.eventStorageTimer = createTimerMetric("eventStorage");
-	logMetricsToConsole();
+	// logMetricsToConsole();
     }
 
     /**
-     * Process a batch of records inbound event records.
+     * Process a batch of inbound event records.
      * 
      * @param records
      * @throws SiteWhereException
      */
     public void process(List<ConsumerRecord<String, byte[]>> records) throws SiteWhereException {
+	// Verify inbound records and build assignment event create requests.
+	List<DeviceAssignmentEventCreateRequest> requests = buildRequests(records);
+	if (requests.size() == 0) {
+	    return;
+	}
+
 	CountDownLatch latch = new CountDownLatch(1);
 	Processor<IDeviceAssignmentEventCreateRequest, IEventStreamAck> stream = getDeviceEventManagement()
 		.streamDeviceAssignmentCreateEvents();
@@ -130,8 +137,8 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 		latch.countDown();
 	    }
 	});
-	Flux<ConsumerRecord<String, byte[]>> recordsFlux = Flux.fromIterable(records);
-	recordsFlux.map(this::processPayload).subscribe(stream);
+	Flux<DeviceAssignmentEventCreateRequest> requestsFlux = Flux.fromIterable(requests);
+	requestsFlux.subscribe(stream);
 	try {
 	    latch.await();
 	} catch (InterruptedException e) {
@@ -140,23 +147,38 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
     }
 
     /**
+     * Build requests based on batch of Kafka records.
+     * 
+     * @param records
+     * @return
+     */
+    protected List<DeviceAssignmentEventCreateRequest> buildRequests(List<ConsumerRecord<String, byte[]>> records)
+	    throws SiteWhereException {
+	List<DeviceAssignmentEventCreateRequest> requests = new ArrayList<>();
+	for (ConsumerRecord<String, byte[]> record : records) {
+	    GInboundEventPayload message = decodeRequest(record);
+	    DeviceAssignmentEventCreateRequest request = verifyAndBuildRequest(message);
+	    if (request != null) {
+		requests.add(request);
+	    }
+	}
+	return requests;
+    }
+
+    /**
      * Process an inbound payload into an assignment event create request.
      * 
      * @param record
      * @return
+     * @throws SiteWhereException
      */
-    protected DeviceAssignmentEventCreateRequest processPayload(ConsumerRecord<String, byte[]> record) {
-	try {
-	    GInboundEventPayload message = KafkaModelMarshaler.parseInboundEventPayloadMessage(record.value());
-	    if (getLogger().isDebugEnabled()) {
-		InboundEventPayload payload = KafkaModelConverter.asApiInboundEventPayload(message);
-		getLogger()
-			.debug("Received decoded event payload:\n\n" + MarshalUtils.marshalJsonAsPrettyString(payload));
-	    }
-	    return verifyAndBuildRequest(message);
-	} catch (SiteWhereException e) {
-	    throw new RuntimeException("Unable to process inbound event payload.", e);
+    protected GInboundEventPayload decodeRequest(ConsumerRecord<String, byte[]> record) throws SiteWhereException {
+	GInboundEventPayload message = KafkaModelMarshaler.parseInboundEventPayloadMessage(record.value());
+	if (getLogger().isDebugEnabled()) {
+	    InboundEventPayload payload = KafkaModelConverter.asApiInboundEventPayload(message);
+	    getLogger().debug("Received decoded event payload:\n\n" + MarshalUtils.marshalJsonAsPrettyString(payload));
 	}
+	return message;
     }
 
     /**

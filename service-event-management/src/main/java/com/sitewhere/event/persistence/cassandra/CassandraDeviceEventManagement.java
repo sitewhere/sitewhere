@@ -190,30 +190,27 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
 	DeviceLocation location = DeviceEventManagementPersistence.deviceLocationCreateLogic(assignment, request);
 
-	int bucket = (int) (System.currentTimeMillis() / (60 * 60 * 1000));
-	getLogger().info("Using bucket: " + bucket);
-
 	// Build insert for event by id.
-	BoundStatement eventById = getClient().getInsertDeviceLocationById().bind();
+	BoundStatement eventById = getClient().getInsertDeviceEventById().bind();
 	CassandraDeviceLocation.bindFields(getClient(), eventById, location);
 	process(eventById, location);
 
 	// Build insert for event by assignment.
-	BoundStatement eventByAssn = getClient().getInsertDeviceLocationByAssignment().bind();
+	BoundStatement eventByAssn = getClient().getInsertDeviceEventByAssignment().bind();
 	CassandraDeviceLocation.bindFields(getClient(), eventByAssn, location);
-	eventByAssn.setInt("bucket", bucket);
+	eventByAssn.setInt("bucket", getClient().getBucketValue(location.getEventDate()));
 	process(eventByAssn, location);
 
 	// Build insert for event by area.
-	BoundStatement eventByArea = getClient().getInsertDeviceLocationByArea().bind();
+	BoundStatement eventByArea = getClient().getInsertDeviceEventByArea().bind();
 	CassandraDeviceLocation.bindFields(getClient(), eventByArea, location);
-	eventByArea.setInt("bucket", bucket);
+	eventByArea.setInt("bucket", getClient().getBucketValue(location.getEventDate()));
 	process(eventByArea, location);
 
 	// Build insert for event by asset.
-	BoundStatement eventByAsset = getClient().getInsertDeviceLocationByAsset().bind();
+	BoundStatement eventByAsset = getClient().getInsertDeviceEventByAsset().bind();
 	CassandraDeviceLocation.bindFields(getClient(), eventByAsset, location);
-	eventByAsset.setInt("bucket", bucket);
+	eventByAsset.setInt("bucket", getClient().getBucketValue(location.getEventDate()));
 	process(eventByAsset, location);
 
 	return location;
@@ -428,7 +425,7 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
      * @throws SiteWhereException
      */
     protected void process(BoundStatement statement, IDeviceEvent event) throws SiteWhereException {
-	ResultSetFuture future = getClient().getSession().executeAsync("SELECT release_version FROM system.local");
+	ResultSetFuture future = getClient().getSession().executeAsync(statement);
 	Futures.addCallback(future, new FutureCallback<ResultSet>() {
 	    /*
 	     * @see
@@ -477,11 +474,11 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 		.getApiChannel();
     }
 
-    protected CassandraClient getClient() {
+    public CassandraClient getClient() {
 	return client;
     }
 
-    protected void setClient(CassandraClient client) {
+    public void setClient(CassandraClient client) {
 	this.client = client;
     }
 }

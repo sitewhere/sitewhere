@@ -7,10 +7,14 @@
  */
 package com.sitewhere.cassandra;
 
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.HostDistance;
+import com.datastax.driver.core.PoolingOptions;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.UserType;
@@ -47,16 +51,16 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
     private UserType locationType;
 
     /** Prepared statement for inserting a device location by id */
-    private PreparedStatement insertDeviceLocationById;
+    private PreparedStatement insertDeviceEventById;
 
     /** Prepared statement for inserting a device location by assignment */
-    private PreparedStatement insertDeviceLocationByAssignment;
+    private PreparedStatement insertDeviceEventByAssignment;
 
     /** Prepared statement for inserting a device location by area */
-    private PreparedStatement insertDeviceLocationByArea;
+    private PreparedStatement insertDeviceEventByArea;
 
     /** Prepared statement for inserting a device location by asset */
-    private PreparedStatement insertDeviceLocationByAsset;
+    private PreparedStatement insertDeviceEventByAsset;
 
     /** Contact points parameter */
     private ILifecycleComponentParameter<String> contactPoints;
@@ -103,6 +107,11 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
 	for (String contactPoint : contactPoints) {
 	    builder.addContactPoint(contactPoint.trim());
 	}
+	PoolingOptions pooling = new PoolingOptions();
+	pooling.setMaxRequestsPerConnection(HostDistance.LOCAL, 32768);
+	pooling.setMaxRequestsPerConnection(HostDistance.REMOTE, 32768);
+	pooling.setMaxQueueSize(32768);
+	builder.withPoolingOptions(pooling);
 	this.cluster = builder.build();
 	this.session = getCluster().connect();
 
@@ -159,14 +168,14 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
      * @throws SiteWhereException
      */
     protected void initializePreparedStatements() throws SiteWhereException {
-	this.insertDeviceLocationById = getSession().prepare("insert into " + getKeyspace().getValue()
-		+ ".events_by_id (deviceId, eventId, alternateId, eventType, assignmentId, areaId, assetId, eventDate, receivedDate, location) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-	this.insertDeviceLocationByAssignment = getSession().prepare("insert into " + getKeyspace().getValue()
-		+ ".events_by_assignment (deviceId, bucket, eventId, alternateId, eventType, assignmentId, areaId, assetId, eventDate, receivedDate, location) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-	this.insertDeviceLocationByArea = getSession().prepare("insert into " + getKeyspace().getValue()
-		+ ".events_by_area (deviceId, bucket, eventId, alternateId, eventType, assignmentId, areaId, assetId, eventDate, receivedDate, location) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-	this.insertDeviceLocationByAsset = getSession().prepare("insert into " + getKeyspace().getValue()
-		+ ".events_by_asset (deviceId, bucket, eventId, alternateId, eventType, assignmentId, areaId, assetId, eventDate, receivedDate, location) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	this.insertDeviceEventById = getSession().prepare("insert into " + getKeyspace().getValue()
+		+ ".events_by_id (deviceId, eventId, alternateId, eventType, assignmentId, areaId, assetId, eventDate, receivedDate, location, measurements, alert) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	this.insertDeviceEventByAssignment = getSession().prepare("insert into " + getKeyspace().getValue()
+		+ ".events_by_assignment (deviceId, bucket, eventId, alternateId, eventType, assignmentId, areaId, assetId, eventDate, receivedDate, location, measurements, alert) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	this.insertDeviceEventByArea = getSession().prepare("insert into " + getKeyspace().getValue()
+		+ ".events_by_area (deviceId, bucket, eventId, alternateId, eventType, assignmentId, areaId, assetId, eventDate, receivedDate, location, measurements, alert) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	this.insertDeviceEventByAsset = getSession().prepare("insert into " + getKeyspace().getValue()
+		+ ".events_by_asset (deviceId, bucket, eventId, alternateId, eventType, assignmentId, areaId, assetId, eventDate, receivedDate, location, measurements, alert) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     }
 
     /**
@@ -181,6 +190,16 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
 	} catch (QueryExecutionException e) {
 	    throw new SiteWhereException("Query execution failed.", e);
 	}
+    }
+
+    /**
+     * Get value that allows events to be grouped into buckets based on date.
+     * 
+     * @param date
+     * @return
+     */
+    public int getBucketValue(Date date) {
+	return (int) (date.getTime() / (60 * 60 * 1000));
     }
 
     /*
@@ -249,35 +268,35 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
 	this.locationType = locationType;
     }
 
-    public PreparedStatement getInsertDeviceLocationById() {
-	return insertDeviceLocationById;
+    public PreparedStatement getInsertDeviceEventById() {
+	return insertDeviceEventById;
     }
 
-    public void setInsertDeviceLocationById(PreparedStatement insertDeviceLocationById) {
-	this.insertDeviceLocationById = insertDeviceLocationById;
+    public void setInsertDeviceEventById(PreparedStatement insertDeviceEventById) {
+	this.insertDeviceEventById = insertDeviceEventById;
     }
 
-    public PreparedStatement getInsertDeviceLocationByAssignment() {
-	return insertDeviceLocationByAssignment;
+    public PreparedStatement getInsertDeviceEventByAssignment() {
+	return insertDeviceEventByAssignment;
     }
 
-    public void setInsertDeviceLocationByAssignment(PreparedStatement insertDeviceLocationByAssignment) {
-	this.insertDeviceLocationByAssignment = insertDeviceLocationByAssignment;
+    public void setInsertDeviceEventByAssignment(PreparedStatement insertDeviceEventByAssignment) {
+	this.insertDeviceEventByAssignment = insertDeviceEventByAssignment;
     }
 
-    public PreparedStatement getInsertDeviceLocationByArea() {
-	return insertDeviceLocationByArea;
+    public PreparedStatement getInsertDeviceEventByArea() {
+	return insertDeviceEventByArea;
     }
 
-    public void setInsertDeviceLocationByArea(PreparedStatement insertDeviceLocationByArea) {
-	this.insertDeviceLocationByArea = insertDeviceLocationByArea;
+    public void setInsertDeviceEventByArea(PreparedStatement insertDeviceEventByArea) {
+	this.insertDeviceEventByArea = insertDeviceEventByArea;
     }
 
-    public PreparedStatement getInsertDeviceLocationByAsset() {
-	return insertDeviceLocationByAsset;
+    public PreparedStatement getInsertDeviceEventByAsset() {
+	return insertDeviceEventByAsset;
     }
 
-    public void setInsertDeviceLocationByAsset(PreparedStatement insertDeviceLocationByAsset) {
-	this.insertDeviceLocationByAsset = insertDeviceLocationByAsset;
+    public void setInsertDeviceEventByAsset(PreparedStatement insertDeviceEventByAsset) {
+	this.insertDeviceEventByAsset = insertDeviceEventByAsset;
     }
 }
