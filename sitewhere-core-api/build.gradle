@@ -11,12 +11,14 @@ dependencies {
     
     // Apache Zookeeper and Curator for centralized configuration management.
     compile (group: 'org.apache.zookeeper', name: 'zookeeper', version: "${rootProject.ext['zookeeper.version']}") {
-		exclude (module: 'log4j')   
- 		exclude (module: 'slf4j-log4j12')   
+		exclude module: 'log4j'
+ 		exclude module: 'slf4j-log4j12'
+ 		exclude group: "io.netty"
     }
     compile (group: 'org.apache.curator', name: 'curator-recipes', version:"${rootProject.ext['curator.version']}") {
-		exclude (module: 'log4j')   
- 		exclude (module: 'slf4j-log4j12')   
+		exclude module: 'log4j'
+ 		exclude module: 'slf4j-log4j12'
+ 		exclude group: "io.netty"
     }
     
     // Groovy for dynamic processing.
@@ -42,4 +44,14 @@ dependencies {
     
     // Reactive streams (until swap to Java 9).
     compile 'io.projectreactor:reactor-core'
+}
+
+// Publish jar.
+apply plugin: 'maven-publish'
+publishing {
+	publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+	}
 }

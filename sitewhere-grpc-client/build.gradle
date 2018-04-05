@@ -4,3 +4,13 @@ dependencies {
     compile project(':sitewhere-core')
     compile project(':sitewhere-grpc-model')
 }
+
+// Publish jar.
+apply plugin: 'maven-publish'
+publishing {
+	publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+	}
+}

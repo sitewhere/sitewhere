@@ -5,3 +5,13 @@ dependencies {
     
     compile group: 'org.mongodb', name: 'mongo-java-driver'
 }
+
+// Publish jar.
+apply plugin: 'maven-publish'
+publishing {
+	publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+	}
+}

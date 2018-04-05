@@ -23,3 +23,13 @@ dependencies {
     // Tracing support
     compile group: 'com.uber.jaeger', name: 'jaeger-core', version:'0.21.0'
 }
+
+// Publish jar.
+apply plugin: 'maven-publish'
+publishing {
+	publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+	}
+}

@@ -36,3 +36,13 @@ eclipse.classpath.file.whenMerged {
 	entries += new org.gradle.plugins.ide.eclipse.model.SourceFolder('src/main/resources', null)    
 	entries += new org.gradle.plugins.ide.eclipse.model.SourceFolder('src/generated/main/java', null)    
 }
+
+// Publish jar.
+apply plugin: 'maven-publish'
+publishing {
+	publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+	}
+}

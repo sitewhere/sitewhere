@@ -5,3 +5,13 @@ dependencies {
 	
     compile group: 'org.apache.commons', name: 'commons-text', version: '1.2'
 }
+
+// Publish jar.
+apply plugin: 'maven-publish'
+publishing {
+	publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+	}
+}
