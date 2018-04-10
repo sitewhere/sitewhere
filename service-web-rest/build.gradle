@@ -56,10 +56,22 @@ task buildUserInterface(type: NpmTask, dependsOn: npm_install) {
 // Before building the Spring Boot WAR, generate user interface.
 apply plugin: 'war'
 bootWar {
+	classifier = 'boot'
 	dependsOn buildUserInterface
 	with {
 		from( "${rootProject.projectDir}/sitewhere-ui/dist" )
 	}
+}
+
+// Keep original jar.
+jar { enabled = true }
+
+// Only publish thin jar.
+apply plugin: 'maven-publish'
+publishing {
+    publications {
+	mavenJava(MavenPublication) { from components.java }
+    }
 }
 
 // Create a Dockerfile.
@@ -69,15 +81,15 @@ task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, depends
     maintainer "${rootProject.ext['docker.maintainer']}"
 	
 	// Copy Spring Boot jar.
-	copyFile("${project.name}-${project.version}.war", "/")
+	copyFile("${project.name}-${project.version}-boot.war", "/")
 
 	// Run Java command to start application.
-	defaultCommand 'java', '-Xmx768M', '-XX:+UnlockExperimentalVMOptions', '-XX:+UseCGroupMemoryLimitForHeap', '-jar', "/${project.name}-${project.version}.war"
+	defaultCommand 'java', '-Xmx768M', '-XX:+UnlockExperimentalVMOptions', '-XX:+UseCGroupMemoryLimitForHeap', '-jar', "/${project.name}-${project.version}-boot.war"
 }
 
 // Copy artifact to Docker input folder.
 task copyArtifactToDocker(type: Copy, dependsOn: dockerFile) {
-    from "${buildDir}/libs/${project.name}-${project.version}.war"
+    from "${buildDir}/libs/${project.name}-${project.version}-boot.war"
     into 'build/docker'
 }
 

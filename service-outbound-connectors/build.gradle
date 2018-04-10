@@ -3,33 +3,45 @@ description = 'SiteWhere Outbound Connectors Microservice'
 apply plugin: 'nebula.provided-base'
 
 dependencies {
-	compile project(':sitewhere-communication')
-	compile project(':sitewhere-microservice')
-	
-	// Connectivity to other microservices.
-	compile project(':sitewhere-grpc-device-management')
-	compile project(':sitewhere-grpc-event-management')
-	
-	// Spring Web support.
+    compile project(':sitewhere-communication')
+    compile project(':sitewhere-microservice')
+
+    // Connectivity to other microservices.
+    compile project(':sitewhere-grpc-device-management')
+    compile project(':sitewhere-grpc-event-management')
+
+    // Spring Web support.
     compile group: 'org.springframework', name: 'spring-web'
-    
+
     // Amazon SQS dependencies.
-	compile group: 'com.amazonaws', name: 'aws-java-sdk-sqs', version: '1.9.6'
-    
+    compile group: 'com.amazonaws', name: 'aws-java-sdk-sqs', version: '1.9.6'
+
     // Azure dependencies.
     compile group: 'org.apache.qpid', name: 'qpid-amqp-1-0-client', version:'0.32'
     compile group: 'org.apache.activemq', name: 'activemq-broker'
-    
+
     // RabbitMQ dependencies.
     compile group: 'com.rabbitmq', name: 'amqp-client', version:'3.6.0'
-    
+
     // Apache Solr
     compile group: 'org.apache.solr', name: 'solr-solrj', version: "${rootProject.ext['solr.version']}"
 }
 
 apply plugin: 'org.springframework.boot'
-springBoot {
-    mainClassName = 'com.sitewhere.connectors.OutboundConnectorsApplication'
+springBoot { mainClassName = 'com.sitewhere.connectors.OutboundConnectorsApplication' }
+
+// Keep original jar.
+jar { enabled = true }
+
+// Reclassify Spring Boot jar.
+bootJar { classifier = 'boot' }
+
+// Only publish thin jar.
+apply plugin: 'maven-publish'
+publishing {
+    publications {
+	mavenJava(MavenPublication) { from components.java }
+    }
 }
 
 // Create a Dockerfile.
@@ -37,18 +49,18 @@ task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, depends
     destFile = project.file('build/docker/Dockerfile')
     from "${rootProject.ext['docker.base.image']}"
     maintainer "${rootProject.ext['docker.maintainer']}"
-	
-	// Copy Spring Boot jar.
-	copyFile("${project.name}-${project.version}.jar", "/")
 
-	// Run Java command to start application.
-	defaultCommand 'java', '-Xmx768M', '-XX:+UnlockExperimentalVMOptions', '-XX:+UseCGroupMemoryLimitForHeap', '-jar', "/${project.name}-${project.version}.jar"
+    // Copy Spring Boot jar.
+    copyFile("${project.name}-${project.version}-boot.jar", "/")
+
+    // Run Java command to start application.
+    defaultCommand 'java', '-Xmx768M', '-XX:+UnlockExperimentalVMOptions', '-XX:+UseCGroupMemoryLimitForHeap', '-jar', "/${project.name}-${project.version}-boot.jar"
 }
 
 // Copy artifacts to Docker input folder.
 task copyArtifactsToDocker(type: Copy, dependsOn: dockerFile) {
-    from "${buildDir}/libs/${project.name}-${project.version}.jar"
-	into 'build/docker'
+    from "${buildDir}/libs/${project.name}-${project.version}-boot.jar"
+    into 'build/docker'
 }
 
 // Build an image from the Dockerfile.
