@@ -1,3 +1,5 @@
+import org.ajoberstar.grgit.*
+
 description = 'SiteWhere Web/REST Microservice'
 
 apply plugin: 'org.springframework.boot'
@@ -9,8 +11,8 @@ apply plugin: 'com.moowork.node'
 node {
 	version = '8.10.0'
 	npmVersion = '5.7.1'
-	nodeModulesDir = file("${rootProject.projectDir}/sitewhere-ui")
-	npmWorkDir = file("${rootProject.projectDir}/sitewhere-ui")
+	nodeModulesDir = file("${projectDir}/sitewhere-ui-build/sitewhere2-admin-ui")
+	npmWorkDir = file("${projectDir}/sitewhere-ui-build")
 	download = true
 }
 
@@ -48,8 +50,18 @@ dependencies {
     compile group: 'io.opentracing.contrib', name: 'opentracing-spring-web', version:'0.0.10'
 }
 
+// Pull SiteWhere admin user interface from GitHub.
+task pullUserInterface() {
+	// Clone SiteWhere repository.
+	delete "${projectDir}/sitewhere-ui-build/sitewhere2-admin-ui"
+	println "Pulling sitewhere2-admin-ui from GitHub..."
+	def repo = Grgit.clone(dir: "${projectDir}/sitewhere-ui-build/sitewhere2-admin-ui", 
+		uri: 'https://github.com/sitewhere/sitewhere2-admin-ui.git')
+	repo.close()
+}
+
 // Build user interface.
-task buildUserInterface(type: NpmTask, dependsOn: npm_install) {
+task buildUserInterface(type: NpmTask, dependsOn: ['pullUserInterface', 'npm_install']) {
 	args = ['run', 'build']
 }
 
@@ -59,7 +71,7 @@ bootWar {
 	classifier = 'boot'
 	dependsOn buildUserInterface
 	with {
-		from( "${rootProject.projectDir}/sitewhere-ui/dist" )
+		from( "${projectDir}/sitewhere-ui-build/sitewhere2-admin-ui/dist" )
 	}
 }
 
