@@ -10,9 +10,6 @@ package com.sitewhere.connectors.rabbitmq;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -44,9 +41,6 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class RabbitMqOutboundEventProcessor extends FilteredOutboundConnector
 	implements IMulticastingOutboundConnector<String> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(RabbitMqOutboundEventProcessor.class);
 
     /** Default connection URI */
     private static final String DEFAULT_CONNECTION_URI = "amqp://localhost";
@@ -105,7 +99,7 @@ public class RabbitMqOutboundEventProcessor extends FilteredOutboundConnector
 	    this.channel = connection.createChannel();
 	    this.exchange = getTenantEngine().getTenant().getId() + DEFAULT_EXCHANGE_SUFFIX;
 	    channel.exchangeDeclare(exchange, "topic");
-	    LOGGER.info("RabbitMQ outbound processor connected to: " + getConnectionUri());
+	    getLogger().info("RabbitMQ outbound processor connected to: " + getConnectionUri());
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to start RabbitMQ event processor.", e);
 	}
@@ -242,20 +236,10 @@ public class RabbitMqOutboundEventProcessor extends FilteredOutboundConnector
     protected void publish(IDeviceEvent event, String topic) throws SiteWhereException {
 	try {
 	    channel.basicPublish(exchange, topic, null, MarshalUtils.marshalJson(event));
-	    LOGGER.debug("Publishing event " + event.getId() + " to topic: " + topic);
+	    getLogger().debug("Publishing event " + event.getId() + " to topic: " + topic);
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to publish to RabbitMQ topic.", e);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*

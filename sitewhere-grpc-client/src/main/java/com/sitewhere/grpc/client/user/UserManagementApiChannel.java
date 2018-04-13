@@ -9,9 +9,6 @@ package com.sitewhere.grpc.client.user;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.grpc.client.ApiChannel;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.IApiDemux;
@@ -65,9 +62,6 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
  */
 public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChannel>
 	implements IUserManagementApiChannel<UserManagementGrpcChannel> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(UserManagementApiChannel.class);
 
     public UserManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
 	super(demux, microservice, host);
@@ -426,15 +420,5 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
 	} catch (Throwable t) {
 	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.METHOD_DELETE_GRANTED_AUTHORITY, t);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

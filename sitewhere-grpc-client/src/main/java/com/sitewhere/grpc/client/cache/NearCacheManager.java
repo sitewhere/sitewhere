@@ -13,9 +13,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.config.EvictionConfig;
@@ -44,9 +41,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * @author Derek
  */
 public class NearCacheManager extends LifecycleComponent implements INearCacheManager {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(NearCacheManager.class);
 
     /** Owning microservice */
     private IMicroservice owner;
@@ -230,13 +224,5 @@ public class NearCacheManager extends LifecycleComponent implements INearCacheMa
 
     public void setHazelcastInstance(HazelcastInstance hazelcastInstance) {
 	this.hazelcastInstance = hazelcastInstance;
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

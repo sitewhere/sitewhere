@@ -10,9 +10,6 @@ package com.sitewhere.sources;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
@@ -25,9 +22,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * @param <T>
  */
 public abstract class PollingInboundEventReceiver<T> extends InboundEventReceiver<T> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(PollingInboundEventReceiver.class);
 
     /** Default polling interval in milliseconds */
     private static final int DEFAULT_POLL_INTERVAL_MS = 10000;
@@ -85,28 +79,18 @@ public abstract class PollingInboundEventReceiver<T> extends InboundEventReceive
 		try {
 		    doPoll();
 		} catch (SiteWhereException e) {
-		    LOGGER.error("Error executing polling logic.", e);
+		    getLogger().error("Error executing polling logic.", e);
 		} catch (Exception e) {
-		    LOGGER.error("Unhandled exception in polling operation.", e);
+		    getLogger().error("Unhandled exception in polling operation.", e);
 		}
 		try {
 		    Thread.sleep(getPollIntervalMs());
 		} catch (InterruptedException e) {
-		    LOGGER.warn("Poller thread interrupted.");
+		    getLogger().warn("Poller thread interrupted.");
 		    return;
 		}
 	    }
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public int getPollIntervalMs() {

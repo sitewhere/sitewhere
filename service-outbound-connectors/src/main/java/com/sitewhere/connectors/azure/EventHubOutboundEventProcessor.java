@@ -25,9 +25,6 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.connectors.FilteredOutboundConnector;
 import com.sitewhere.connectors.spi.IOutboundConnector;
@@ -48,9 +45,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * @author Derek
  */
 public class EventHubOutboundEventProcessor extends FilteredOutboundConnector {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(EventHubOutboundEventProcessor.class);
 
     /** SAS identity name */
     private String sasName;
@@ -128,21 +122,21 @@ public class EventHubOutboundEventProcessor extends FilteredOutboundConnector {
 	    try {
 		sender.close();
 	    } catch (JMSException e) {
-		LOGGER.warn("Error closing message source for EventHub processor.", e);
+		getLogger().warn("Error closing message source for EventHub processor.", e);
 	    }
 	}
 	if (session != null) {
 	    try {
 		session.close();
 	    } catch (JMSException e) {
-		LOGGER.warn("Error closing session for EventHub processor.", e);
+		getLogger().warn("Error closing session for EventHub processor.", e);
 	    }
 	}
 	if (connection != null) {
 	    try {
 		connection.close();
 	    } catch (JMSException e) {
-		LOGGER.warn("Error closing session for EventHub processor.", e);
+		getLogger().warn("Error closing session for EventHub processor.", e);
 	    }
 	}
     }
@@ -217,16 +211,6 @@ public class EventHubOutboundEventProcessor extends FilteredOutboundConnector {
 	} catch (JMSException e) {
 	    throw new SiteWhereException(e);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public String getSasName() {

@@ -7,9 +7,6 @@
  */
 package com.sitewhere.connectors.aws.sqs;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Region;
@@ -36,9 +33,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * @author Derek
  */
 public class SqsOutboundEventProcessor extends FilteredOutboundConnector {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(SqsOutboundEventProcessor.class);
 
     /** SQS client */
     private AmazonSQSClient sqs;
@@ -157,17 +151,7 @@ public class SqsOutboundEventProcessor extends FilteredOutboundConnector {
 	message.setMessageBody(MarshalUtils.marshalJsonAsString(event));
 	message.setQueueUrl(getQueueUrl());
 	SendMessageResult result = getSqs().sendMessage(message);
-	LOGGER.debug("Sent SQS message with id: " + result.getMessageId());
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
+	getLogger().debug("Sent SQS message with id: " + result.getMessageId());
     }
 
     public AmazonSQSClient getSqs() {

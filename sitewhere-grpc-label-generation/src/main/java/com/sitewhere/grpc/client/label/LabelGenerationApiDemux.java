@@ -7,9 +7,6 @@
  */
 package com.sitewhere.grpc.client.label;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.grpc.client.ApiDemux;
 import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiChannel;
 import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiDemux;
@@ -26,9 +23,6 @@ import com.sitewhere.spi.microservice.MicroserviceIdentifier;
  */
 public class LabelGenerationApiDemux extends ApiDemux<ILabelGenerationApiChannel<?>>
 	implements ILabelGenerationApiDemux {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(LabelGenerationApiDemux.class);
 
     public LabelGenerationApiDemux(IMicroservice microservice) {
 	super(microservice);
@@ -49,13 +43,5 @@ public class LabelGenerationApiDemux extends ApiDemux<ILabelGenerationApiChannel
     @Override
     public ILabelGenerationApiChannel createApiChannel(String host) throws SiteWhereException {
 	return new LabelGenerationApiChannel(this, getMicroservice(), host);
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

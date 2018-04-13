@@ -10,9 +10,6 @@ package com.sitewhere.commands.encoding.protobuf;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.google.protobuf.ByteString;
 import com.sitewhere.commands.spi.ICommandExecutionEncoder;
 import com.sitewhere.common.MarshalUtils;
@@ -48,9 +45,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
 	implements ICommandExecutionEncoder<byte[]> {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(ProtobufExecutionEncoder.class);
-
     public ProtobufExecutionEncoder() {
 	super(LifecycleComponentType.CommandExecutionEncoder);
     }
@@ -68,7 +62,7 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
 	    throws SiteWhereException {
 	byte[] encoded = ProtobufMessageBuilder.createMessage(execution, nested, assignment,
 		getTenantEngine().getTenant());
-	LOGGER.debug("Protobuf message: 0x" + DataUtils.bytesToHex(encoded));
+	getLogger().debug("Protobuf message: 0x" + DataUtils.bytesToHex(encoded));
 	return encoded;
     }
 
@@ -151,8 +145,8 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
 	}
 	case DeviceMappingAck: {
 	    String json = MarshalUtils.marshalJsonAsPrettyString(command);
-	    LOGGER.warn("No protocol buffer encoding implemented for sending device mapping acknowledgement.");
-	    LOGGER.info("JSON representation of command is:\n" + json + "\n");
+	    getLogger().warn("No protocol buffer encoding implemented for sending device mapping acknowledgement.");
+	    getLogger().info("JSON representation of command is:\n" + json + "\n");
 	    return new byte[0];
 	}
 	}
@@ -218,15 +212,5 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to marshal device stream data chunk to protobuf.", e);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

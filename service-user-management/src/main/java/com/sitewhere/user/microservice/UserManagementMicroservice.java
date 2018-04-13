@@ -7,8 +7,6 @@
  */
 package com.sitewhere.user.microservice;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 
@@ -37,9 +35,6 @@ import com.sitewhere.user.spi.microservice.IUserManagementMicroservice;
  * @author Derek
  */
 public class UserManagementMicroservice extends GlobalMicroservice implements IUserManagementMicroservice {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(UserManagementMicroservice.class);
 
     /** Microservice name */
     private static final String NAME = "User Management";
@@ -294,16 +289,6 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
 
     public void setUserManagement(IUserManagement userManagement) {
 	this.userManagement = userManagement;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public UserManagementAccessor getUserManagementAccessor() {

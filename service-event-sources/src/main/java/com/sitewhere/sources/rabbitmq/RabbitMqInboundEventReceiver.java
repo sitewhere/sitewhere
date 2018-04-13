@@ -14,9 +14,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -36,9 +33,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * @author Derek
  */
 public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(RabbitMqInboundEventReceiver.class);
 
     /** Default connection URI */
     private static final String DEFAULT_CONNECTION_URI = "amqp://localhost";
@@ -116,7 +110,7 @@ public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
 	    connectionFuture.cancel(true);
 	}
 
-	LOGGER.info("Scheduling reconnect");
+	getLogger().info("Scheduling reconnect");
 
 	Runnable task = () -> connect();
 	connectionFuture = connectionExecutor.schedule(task, this.getReconnectInterval(), TimeUnit.SECONDS);
@@ -134,7 +128,7 @@ public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
 	    connection.addShutdownListener(new ShutdownListener() {
 		public void shutdownCompleted(ShutdownSignalException cause) {
-		    LOGGER.info("shutdown signal received", cause);
+		    getLogger().info("shutdown signal received", cause);
 
 		    // Do nothing if SiteWhere initiated the connection close
 		    if (!cause.isInitiatedByApplication()) {
@@ -146,11 +140,11 @@ public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
 	    this.channel = connection.createChannel();
 
-	    LOGGER.info("RabbitMQ receiver connected to: " + getConnectionUri());
+	    getLogger().info("RabbitMQ receiver connected to: " + getConnectionUri());
 
 	    channel.queueDeclare(getQueueName(), isDurable(), false, false, null);
 
-	    LOGGER.info("RabbitMQ receiver using " + (isDurable() ? "durable " : "") + "queue: " + getQueueName());
+	    getLogger().info("RabbitMQ receiver using " + (isDurable() ? "durable " : "") + "queue: " + getQueueName());
 
 	    // Add consumer callback for channel.
 	    Consumer consumer = new DefaultConsumer(channel) {
@@ -164,7 +158,7 @@ public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
 	    channel.basicConsume(getQueueName(), true, consumer);
 
 	} catch (Exception e) {
-	    LOGGER.error("Connection Error", e);
+	    getLogger().error("Connection Error", e);
 	    connection = null;
 	    scheduleReconnect();
 	}
@@ -199,16 +193,6 @@ public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
 	connectionExecutor.shutdownNow();
 	executors.shutdownNow();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*

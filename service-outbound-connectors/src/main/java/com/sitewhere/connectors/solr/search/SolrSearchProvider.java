@@ -13,8 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.NoOpResponseParser;
@@ -51,9 +49,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public class SolrSearchProvider extends LifecycleComponent implements IDeviceEventSearchProvider {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(SolrSearchProvider.class);
-
     /** Id returned for provider */
     private static final String ID = "solr";
 
@@ -85,31 +80,21 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	LOGGER.info("Solr search provider starting.");
+	getLogger().info("Solr search provider starting.");
 	if (getSolr() == null) {
 	    throw new SiteWhereException("No Solr configuration provided to " + getClass().getName());
 	}
 	try {
-	    LOGGER.info("Attempting to ping Solr server to verify availability...");
+	    getLogger().info("Attempting to ping Solr server to verify availability...");
 	    SolrPingResponse response = getSolr().getSolrClient().ping();
 	    int pingTime = response.getQTime();
-	    LOGGER.info("Solr server location verified. Ping responded in " + pingTime + " ms.");
+	    getLogger().info("Solr server location verified. Ping responded in " + pingTime + " ms.");
 	} catch (SolrServerException e) {
 	    throw new SiteWhereException("Ping failed. Verify that Solr server is available.", e);
 	} catch (IOException e) {
 	    throw new SiteWhereException("Exception in ping. Verify that Solr server is available.", e);
 	}
-	LOGGER.info("Solr search provider started.");
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
+	getLogger().info("Solr search provider started.");
     }
 
     /**
@@ -138,7 +123,7 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
     @Override
     public List<IDeviceEvent> executeQuery(String queryString) throws SiteWhereException {
 	try {
-	    LOGGER.debug("About to execute Solr search with query string: " + queryString);
+	    getLogger().debug("About to execute Solr search with query string: " + queryString);
 	    List<IDeviceEvent> results = new ArrayList<IDeviceEvent>();
 	    SolrQuery solrQuery = new SolrQuery();
 	    solrQuery.setQuery(queryString);
@@ -164,7 +149,7 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
     @Override
     public JsonNode executeQueryWithRawResponse(String queryString) throws SiteWhereException {
 	try {
-	    LOGGER.debug("About to execute Solr search with query string: " + queryString);
+	    getLogger().debug("About to execute Solr search with query string: " + queryString);
 
 	    NoOpResponseParser rawJsonResponseParser = new NoOpResponseParser();
 	    rawJsonResponseParser.setWriterType("json");

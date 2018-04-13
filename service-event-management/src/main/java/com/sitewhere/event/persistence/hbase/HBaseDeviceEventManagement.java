@@ -10,8 +10,6 @@ package com.sitewhere.event.persistence.hbase;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.regionserver.BloomType;
 import org.reactivestreams.Processor;
 
@@ -63,9 +61,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * @author Derek
  */
 public class HBaseDeviceEventManagement extends TenantEngineLifecycleComponent implements IDeviceEventManagement {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(HBaseDeviceEventManagement.class);
 
     /** Device management implementation */
     private IDeviceManagement deviceManagement;
@@ -138,16 +133,6 @@ public class HBaseDeviceEventManagement extends TenantEngineLifecycleComponent i
     protected void ensureTablesExist() throws SiteWhereException {
 	SiteWhereTables.assureTenantTable(context, ISiteWhereHBase.UID_TABLE_NAME, BloomType.ROW);
 	SiteWhereTables.assureTenantTable(context, ISiteWhereHBase.EVENTS_TABLE_NAME, BloomType.ROW);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*

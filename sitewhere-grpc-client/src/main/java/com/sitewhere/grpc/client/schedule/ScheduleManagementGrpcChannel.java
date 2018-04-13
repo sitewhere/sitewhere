@@ -7,9 +7,6 @@
  */
 package com.sitewhere.grpc.client.schedule;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.grpc.client.MultitenantGrpcChannel;
 import com.sitewhere.grpc.service.ScheduleManagementGrpc;
 import com.sitewhere.grpc.service.ScheduleManagementGrpc.ScheduleManagementBlockingStub;
@@ -24,9 +21,6 @@ import com.sitewhere.spi.tracing.ITracerProvider;
  */
 public class ScheduleManagementGrpcChannel
 	extends MultitenantGrpcChannel<ScheduleManagementBlockingStub, ScheduleManagementStub> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(ScheduleManagementGrpcChannel.class);
 
     public ScheduleManagementGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
 	super(tracerProvider, host, port);
@@ -50,15 +44,5 @@ public class ScheduleManagementGrpcChannel
     @Override
     public ScheduleManagementStub createAsyncStub() {
 	return ScheduleManagementGrpc.newStub(getChannel());
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

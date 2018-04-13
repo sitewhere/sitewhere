@@ -11,9 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventRequestBuilder;
@@ -36,9 +33,6 @@ import groovy.lang.Binding;
  * @author Derek
  */
 public class GroovyEventDecoder extends GroovyComponent implements IDeviceEventDecoder<byte[]> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(GroovyEventDecoder.class);
 
     public GroovyEventDecoder() {
 	super(LifecycleComponentType.DeviceEventDecoder);
@@ -64,23 +58,13 @@ public class GroovyEventDecoder extends GroovyComponent implements IDeviceEventD
 	    binding.setVariable(IGroovyVariables.VAR_DECODED_EVENTS, events);
 	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD, payload);
 	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD_METADATA, metadata);
-	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
-	    LOGGER.debug("About to execute '" + getScriptId() + "' with payload: " + payload);
+	    binding.setVariable(IGroovyVariables.VAR_LOGGER, getLogger());
+	    getLogger().debug("About to execute '" + getScriptId() + "' with payload: " + payload);
 	    run(binding);
 	    return (List<IDecodedDeviceRequest<?>>) binding.getVariable(IGroovyVariables.VAR_DECODED_EVENTS);
 	} catch (SiteWhereException e) {
 	    throw new EventDecodeException("Unable to execute event decoder script.", e);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     private IDeviceManagement getDeviceManagement() {

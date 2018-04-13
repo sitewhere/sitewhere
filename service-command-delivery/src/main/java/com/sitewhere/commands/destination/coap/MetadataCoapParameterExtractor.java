@@ -9,9 +9,6 @@ package com.sitewhere.commands.destination.coap;
 
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -27,9 +24,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public class MetadataCoapParameterExtractor extends TenantEngineLifecycleComponent
 	implements ICommandDeliveryParameterExtractor<CoapParameters> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(MetadataCoapParameterExtractor.class);
 
     /** Default metadata field for remote hostname */
     public static final String DEFAULT_HOSTNAME_METADATA = "hostname";
@@ -96,16 +90,6 @@ public class MetadataCoapParameterExtractor extends TenantEngineLifecycleCompone
 	    coap.setMethod(method);
 	}
 	return coap;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public String getHostnameMetadataField() {

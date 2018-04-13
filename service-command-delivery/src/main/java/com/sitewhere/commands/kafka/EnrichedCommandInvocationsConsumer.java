@@ -16,8 +16,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import com.sitewhere.commands.microservice.CommandDeliveryTenantEngine;
@@ -42,9 +40,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  */
 public class EnrichedCommandInvocationsConsumer extends MicroserviceKafkaConsumer
 	implements IEnrichedCommandInvocationsConsumer {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(EnrichedCommandInvocationsConsumer.class);
 
     /** Consumer id */
     private static String CONSUMER_ID = UUID.randomUUID().toString();
@@ -138,14 +133,6 @@ public class EnrichedCommandInvocationsConsumer extends MicroserviceKafkaConsume
 
     public void received(String key, byte[] message) throws SiteWhereException {
 	executor.execute(new CommandInvocationProcessor(getTenantEngine(), message));
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /**

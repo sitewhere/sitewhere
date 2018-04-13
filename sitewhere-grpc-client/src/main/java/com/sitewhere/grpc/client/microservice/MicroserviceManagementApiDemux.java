@@ -7,9 +7,6 @@
  */
 package com.sitewhere.grpc.client.microservice;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.grpc.client.ApiDemux;
 import com.sitewhere.grpc.client.spi.client.IMicroserviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IMicroserviceManagementApiDemux;
@@ -27,9 +24,6 @@ import com.sitewhere.spi.microservice.MicroserviceIdentifier;
  */
 public class MicroserviceManagementApiDemux extends ApiDemux<IMicroserviceManagementApiChannel<?>>
 	implements IMicroserviceManagementApiDemux {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(MicroserviceManagementApiDemux.class);
 
     /** Target identifier */
     private MicroserviceIdentifier targetIdentifier;
@@ -54,13 +48,5 @@ public class MicroserviceManagementApiDemux extends ApiDemux<IMicroserviceManage
     @Override
     public IMicroserviceManagementApiChannel<?> createApiChannel(String host) throws SiteWhereException {
 	return new MicroserviceManagementApiChannel(this, getMicroservice(), host);
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

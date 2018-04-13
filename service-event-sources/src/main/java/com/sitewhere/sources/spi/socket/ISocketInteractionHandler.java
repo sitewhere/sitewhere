@@ -11,6 +11,7 @@ import java.net.Socket;
 
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Interface for handling socket communication with a remote device.
@@ -19,12 +20,12 @@ import com.sitewhere.spi.SiteWhereException;
  * 
  * @param <T>
  */
-public interface ISocketInteractionHandler<T> {
+public interface ISocketInteractionHandler<T> extends ITenantEngineLifecycleComponent {
 
     /**
-     * Delegates processing of socket information. Commands parsed from the
-     * socket should be passed to {@link IInboundEventReceiver}
-     * onEventPayloadReceived() method.
+     * Delegates processing of socket information. Commands parsed from the socket
+     * should be passed to {@link IInboundEventReceiver} onEventPayloadReceived()
+     * method.
      * 
      * @param socket
      * @param receiver

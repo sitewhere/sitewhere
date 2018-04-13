@@ -13,9 +13,6 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.sources.InboundEventReceiver;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.sources.spi.socket.ISocketInteractionHandler;
@@ -30,9 +27,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * @author Derek
  */
 public class SocketInboundEventReceiver<T> extends InboundEventReceiver<T> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(SocketInboundEventReceiver.class);
 
     /** Default number of threads used to service requests */
     private static final int DEFAULT_NUM_THREADS = 5;
@@ -84,27 +78,17 @@ public class SocketInboundEventReceiver<T> extends InboundEventReceiver<T> {
 	    }
 	    startNestedComponent(getHandlerFactory(), monitor, true);
 
-	    LOGGER.info("Receiver creating server socket on " + getBindAddress() + ":" + getPort() + ".");
+	    getLogger().info("Receiver creating server socket on " + getBindAddress() + ":" + getPort() + ".");
 	    this.server = new ServerSocket(getPort());
 	    this.processing = new ServerProcessingThread();
 	    this.processingService = Executors.newSingleThreadExecutor();
 	    this.pool = Executors.newFixedThreadPool(getNumThreads());
-	    LOGGER.info("Socket receiver creating processing pool of " + getNumThreads() + " threads.");
+	    getLogger().info("Socket receiver creating processing pool of " + getNumThreads() + " threads.");
 	    processingService.execute(processing);
-	    LOGGER.info("Socket receiver processing started.");
+	    getLogger().info("Socket receiver processing started.");
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to bind server socket for event receiver.", e);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*
@@ -147,7 +131,7 @@ public class SocketInboundEventReceiver<T> extends InboundEventReceiver<T> {
 	    getHandlerFactory().stop(monitor);
 	}
 
-	LOGGER.info("Socket receiver processing stopped.");
+	getLogger().info("Socket receiver processing stopped.");
     }
 
     /**
@@ -169,7 +153,7 @@ public class SocketInboundEventReceiver<T> extends InboundEventReceiver<T> {
 		    pool.submit(processor);
 		} catch (IOException e) {
 		    if (!terminate) {
-			LOGGER.error("Exception while accepting request in event receiver server socket.", e);
+			getLogger().error("Exception while accepting request in event receiver server socket.", e);
 		    }
 		}
 	    }
@@ -197,11 +181,11 @@ public class SocketInboundEventReceiver<T> extends InboundEventReceiver<T> {
 	@Override
 	public void run() {
 	    try {
-		LOGGER.debug("About to process request received on port " + getPort() + ".");
+		getLogger().debug("About to process request received on port " + getPort() + ".");
 		getHandlerFactory().newInstance().process(socket, SocketInboundEventReceiver.this);
-		LOGGER.debug("Processing complete.");
+		getLogger().debug("Processing complete.");
 	    } catch (SiteWhereException e) {
-		LOGGER.error("Exception processing request in event receiver server socket.", e);
+		getLogger().error("Exception processing request in event receiver server socket.", e);
 	    }
 	}
     }

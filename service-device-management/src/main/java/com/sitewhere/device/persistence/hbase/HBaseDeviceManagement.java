@@ -10,8 +10,6 @@ package com.sitewhere.device.persistence.hbase;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.regionserver.BloomType;
 
 import com.sitewhere.device.persistence.DeviceManagementPersistence;
@@ -64,9 +62,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implements IDeviceManagement {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(HBaseDeviceManagement.class);
-
     /** Used to communicate with HBase */
     private ISiteWhereHBaseClient client;
 
@@ -103,16 +98,6 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
 	deviceIdManager = new DeviceIdManager();
 	deviceIdManager.load(context);
 	context.setDeviceIdManager(deviceIdManager);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /**

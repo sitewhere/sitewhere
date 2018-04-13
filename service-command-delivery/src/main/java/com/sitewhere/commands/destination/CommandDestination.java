@@ -7,9 +7,6 @@
  */
 package com.sitewhere.commands.destination;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor;
 import com.sitewhere.commands.spi.ICommandDeliveryProvider;
 import com.sitewhere.commands.spi.ICommandDestination;
@@ -31,9 +28,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * @param <T>
  */
 public class CommandDestination<T, P> extends TenantEngineLifecycleComponent implements ICommandDestination<T, P> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(CommandDestination.class);
 
     /** Unique destination id */
     private String destinationId;
@@ -68,7 +62,7 @@ public class CommandDestination<T, P> extends TenantEngineLifecycleComponent imp
 	    P params = getCommandDeliveryParameterExtractor().extractDeliveryParameters(nesting, assignment, execution);
 	    getCommandDeliveryProvider().deliver(nesting, assignment, execution, encoded, params);
 	} else {
-	    LOGGER.info("Skipping command delivery. Encoder returned null.");
+	    getLogger().info("Skipping command delivery. Encoder returned null.");
 	}
     }
 
@@ -88,7 +82,7 @@ public class CommandDestination<T, P> extends TenantEngineLifecycleComponent imp
 	    P params = getCommandDeliveryParameterExtractor().extractDeliveryParameters(nesting, assignment, null);
 	    getCommandDeliveryProvider().deliverSystemCommand(nesting, assignment, encoded, params);
 	} else {
-	    LOGGER.info("Skipping system command delivery. Encoder returned null.");
+	    getLogger().info("Skipping system command delivery. Encoder returned null.");
 	}
     }
 
@@ -130,16 +124,6 @@ public class CommandDestination<T, P> extends TenantEngineLifecycleComponent imp
     @Override
     public String getComponentName() {
 	return "Command Destination (" + getDestinationId() + ")";
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*

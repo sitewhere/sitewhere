@@ -7,9 +7,6 @@
  */
 package com.sitewhere.commands.microservice;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.commands.kafka.EnrichedCommandInvocationsConsumer;
 import com.sitewhere.commands.spi.ICommandDestinationsManager;
 import com.sitewhere.commands.spi.kafka.IEnrichedCommandInvocationsConsumer;
@@ -32,9 +29,6 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 public class CommandDeliveryTenantEngine extends MicroserviceTenantEngine implements ICommandDeliveryTenantEngine {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(CommandDeliveryTenantEngine.class);
 
     /** Command destinations manager */
     private ICommandDestinationsManager commandDestinationsManager;
@@ -132,13 +126,5 @@ public class CommandDeliveryTenantEngine extends MicroserviceTenantEngine implem
     public void setEnrichedCommandInvocationsConsumer(
 	    IEnrichedCommandInvocationsConsumer enrichedCommandInvocationsConsumer) {
 	this.enrichedCommandInvocationsConsumer = enrichedCommandInvocationsConsumer;
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

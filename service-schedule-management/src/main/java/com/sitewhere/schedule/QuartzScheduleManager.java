@@ -10,8 +10,6 @@ package com.sitewhere.schedule;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -41,9 +39,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * @author Derek
  */
 public class QuartzScheduleManager extends TenantEngineLifecycleComponent implements IScheduleManager {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(QuartzScheduleManager.class);
 
     /** Instance id common to all schedulers */
     private static final String INSTANCE_ID = "sitewhere";
@@ -111,7 +106,7 @@ public class QuartzScheduleManager extends TenantEngineLifecycleComponent implem
 	    updated.put(schedule.getToken(), schedule);
 	}
 	this.schedulesByToken = updated;
-	LOGGER.info("Updated cache with " + getSchedulesByToken().size() + " schedules.");
+	getLogger().info("Updated cache with " + getSchedulesByToken().size() + " schedules.");
     }
 
     /**
@@ -179,7 +174,7 @@ public class QuartzScheduleManager extends TenantEngineLifecycleComponent implem
 	    throw new SiteWhereException("Job references unknown schedule: " + job.getScheduleToken());
 	}
 
-	LOGGER.info("Scheduling job " + job.getToken() + " for '" + schedule.getName() + "'.");
+	getLogger().info("Scheduling job " + job.getToken() + " for '" + schedule.getName() + "'.");
 	Trigger trigger = QuartzBuilder.buildTrigger(job, schedule);
 	try {
 	    getScheduler().scheduleJob(detail, trigger);
@@ -202,16 +197,6 @@ public class QuartzScheduleManager extends TenantEngineLifecycleComponent implem
 	} catch (SchedulerException e) {
 	    throw new SiteWhereException("Unable to unschedule job.", e);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /**

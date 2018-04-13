@@ -11,9 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
@@ -34,9 +31,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * @param <T>
  */
 public abstract class InboundEventSource<T> extends TenantEngineLifecycleComponent implements IInboundEventSource<T> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(InboundEventSource.class);
 
     /** Manager for all event sources in a tenant */
     private IEventSourcesManager eventSourcesManager;
@@ -175,23 +169,13 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
-    }
-
-    /*
      * @see
      * com.sitewhere.sources.spi.IInboundEventSource#onEncodedEventReceived(com.
      * sitewhere.sources.spi.IInboundEventReceiver, java.lang.Object, java.util.Map)
      */
     @Override
     public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encoded, Map<String, Object> metadata) {
-	LOGGER.debug("Device event receiver picked up event.");
+	getLogger().debug("Device event receiver picked up event.");
 	List<IDecodedDeviceRequest<?>> requests = decodeEvent(encoded, metadata);
 	if (requests != null) {
 	    for (IDecodedDeviceRequest<?> decoded : requests) {
@@ -230,7 +214,7 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
 	    boolean isDuplicate = ((getDeviceEventDeduplicator() != null)
 		    && (getDeviceEventDeduplicator().isDuplicate(decoded)));
 	    if (isDuplicate) {
-		LOGGER.info("Event not processed due to duplicate detected.");
+		getLogger().info("Event not processed due to duplicate detected.");
 	    }
 	    return !isDuplicate;
 	} catch (SiteWhereException e) {

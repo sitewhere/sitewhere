@@ -9,9 +9,6 @@ package com.sitewhere.grpc.client.asset;
 
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.MultitenantApiChannel;
 import com.sitewhere.grpc.client.spi.IApiDemux;
@@ -62,9 +59,6 @@ import com.sitewhere.spi.tracing.ITracerProvider;
  */
 public class AssetManagementApiChannel extends MultitenantApiChannel<AssetManagementGrpcChannel>
 	implements IAssetManagementApiChannel<AssetManagementGrpcChannel> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(AssetManagementApiChannel.class);
 
     public AssetManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
 	super(demux, microservice, host);
@@ -322,15 +316,5 @@ public class AssetManagementApiChannel extends MultitenantApiChannel<AssetManage
 	} catch (Throwable t) {
 	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.METHOD_LIST_ASSETS, t);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

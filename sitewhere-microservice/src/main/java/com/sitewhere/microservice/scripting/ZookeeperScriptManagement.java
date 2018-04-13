@@ -15,8 +15,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.zookeeper.KeeperException.NoNodeException;
 
 import com.sitewhere.common.MarshalUtils;
@@ -37,9 +35,6 @@ import com.sitewhere.spi.microservice.scripting.IScriptVersion;
  * @author Derek
  */
 public class ZookeeperScriptManagement extends LifecycleComponent implements IScriptManagement {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(ZookeeperScriptManagement.class);
 
     /** Folder path for script metadata */
     public static final String METADATA_FOLDER = "metadata";
@@ -395,14 +390,6 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
 	    }
 	}
 	return version;
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     protected IZookeeperManager getZookeeperManager() {

@@ -10,8 +10,6 @@ package com.sitewhere.grpc.client.event;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.reactivestreams.Processor;
 
 import com.sitewhere.grpc.client.GrpcUtils;
@@ -110,9 +108,6 @@ import com.sitewhere.spi.tracing.ITracerProvider;
  */
 public class DeviceEventManagementApiChannel extends MultitenantApiChannel<DeviceEventManagementGrpcChannel>
 	implements IDeviceEventManagementApiChannel<DeviceEventManagementGrpcChannel> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(DeviceEventManagementApiChannel.class);
 
     public DeviceEventManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
 	super(demux, microservice, host);
@@ -864,15 +859,5 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
 	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_AREAS,
 		    t);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

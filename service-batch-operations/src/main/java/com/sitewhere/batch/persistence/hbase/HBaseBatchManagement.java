@@ -9,9 +9,6 @@ package com.sitewhere.batch.persistence.hbase;
 
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.batch.persistence.BatchManagementPersistence;
 import com.sitewhere.hbase.HBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
@@ -37,9 +34,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * @author Derek
  */
 public class HBaseBatchManagement extends TenantEngineLifecycleComponent implements IBatchManagement {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(HBaseBatchManagement.class);
 
     /** Used to communicate with HBase */
     private ISiteWhereHBaseClient client;
@@ -152,16 +146,6 @@ public class HBaseBatchManagement extends TenantEngineLifecycleComponent impleme
 	IBatchOperationCreateRequest generic = BatchManagementPersistence.batchCommandInvocationCreateLogic(request,
 		uuid);
 	return createBatchOperation(generic);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public ISiteWhereHBaseClient getClient() {

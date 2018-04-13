@@ -10,8 +10,6 @@ package com.sitewhere.event.persistence.cassandra;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.reactivestreams.Processor;
 
 import com.datastax.driver.core.BoundStatement;
@@ -67,9 +65,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * @author Derek
  */
 public class CassandraDeviceEventManagement extends TenantEngineLifecycleComponent implements IDeviceEventManagement {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(CassandraDeviceEventManagement.class);
 
     /** Configured Cassandra client */
     private CassandraClient client;
@@ -444,14 +439,6 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 		getLogger().error("Failed to persist Cassandra event: " + event.getId(), t);
 	    }
 	}, MoreExecutors.directExecutor());
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /**

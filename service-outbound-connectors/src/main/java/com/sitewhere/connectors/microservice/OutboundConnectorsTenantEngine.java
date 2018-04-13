@@ -7,9 +7,6 @@
  */
 package com.sitewhere.connectors.microservice;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.connectors.spi.IOutboundConnectorsManager;
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsTenantEngine;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
@@ -31,9 +28,6 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class OutboundConnectorsTenantEngine extends MicroserviceTenantEngine
 	implements IOutboundConnectorsTenantEngine {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(OutboundConnectorsTenantEngine.class);
 
     /** Manages the outbound connectors for this tenant */
     private IOutboundConnectorsManager outboundConnectorsManager;
@@ -116,13 +110,5 @@ public class OutboundConnectorsTenantEngine extends MicroserviceTenantEngine
 
     public void setOutboundConnectorsManager(IOutboundConnectorsManager outboundConnectorsManager) {
 	this.outboundConnectorsManager = outboundConnectorsManager;
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

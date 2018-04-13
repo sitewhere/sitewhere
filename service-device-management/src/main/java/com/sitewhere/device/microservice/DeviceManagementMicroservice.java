@@ -7,9 +7,6 @@
  */
 package com.sitewhere.device.microservice;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.device.configuration.DeviceManagementModelProvider;
 import com.sitewhere.device.grpc.DeviceManagementGrpcServer;
 import com.sitewhere.device.spi.grpc.IDeviceManagementGrpcServer;
@@ -37,9 +34,6 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class DeviceManagementMicroservice extends MultitenantMicroservice<IDeviceManagementTenantEngine>
 	implements IDeviceManagementMicroservice {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(DeviceManagementMicroservice.class);
 
     /** Microservice name */
     private static final String NAME = "Device Management";
@@ -195,16 +189,6 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*

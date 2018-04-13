@@ -7,9 +7,6 @@
  */
 package com.sitewhere.schedule.microservice;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.schedule.configuration.ScheduleManagementModelProvider;
 import com.sitewhere.schedule.grpc.ScheduleManagementGrpcServer;
@@ -31,9 +28,6 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class ScheduleManagementMicroservice extends MultitenantMicroservice<IScheduleManagementTenantEngine>
 	implements IScheduleManagementMicroservice {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(ScheduleManagementMicroservice.class);
 
     /** Microservice name */
     private static final String NAME = "Schedule Management";
@@ -153,13 +147,5 @@ public class ScheduleManagementMicroservice extends MultitenantMicroservice<ISch
 
     protected void setScheduleManagementGrpcServer(IScheduleManagementGrpcServer scheduleManagementGrpcServer) {
 	this.scheduleManagementGrpcServer = scheduleManagementGrpcServer;
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

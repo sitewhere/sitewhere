@@ -17,9 +17,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.batch.handler.BatchCommandInvocationHandler;
 import com.sitewhere.batch.spi.IBatchOperationHandler;
 import com.sitewhere.batch.spi.IBatchOperationManager;
@@ -47,9 +44,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  * @author Derek
  */
 public class BatchOperationManager extends TenantEngineLifecycleComponent implements IBatchOperationManager {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(BatchOperationManager.class);
 
     /** Number of threads used for batch operation processing */
     private static final int BATCH_PROCESSOR_THREAD_COUNT = 10;
@@ -118,16 +112,6 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.batch.IBatchOperationManager#process(com.
      * sitewhere.spi .device.batch.IBatchOperation)
      */
@@ -162,9 +146,12 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 	    this.operation = operation;
 	}
 
+	/*
+	 * @see java.lang.Runnable#run()
+	 */
 	@Override
 	public void run() {
-	    LOGGER.debug("Processing batch operation: " + operation.getToken());
+	    getLogger().debug("Processing batch operation: " + operation.getToken());
 	    try {
 		BatchOperationUpdateRequest request = new BatchOperationUpdateRequest();
 		request.setProcessingStatus(BatchOperationStatus.Processing);
@@ -186,7 +173,7 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 		}
 		getBatchManagement().updateBatchOperation(operation.getId(), request);
 	    } catch (SiteWhereException e) {
-		LOGGER.error("Error processing batch operation.", e);
+		getLogger().error("Error processing batch operation.", e);
 	    }
 	}
 
@@ -204,7 +191,7 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 		try {
 		    Thread.sleep(getThrottleDelayMs());
 		} catch (InterruptedException e) {
-		    LOGGER.warn("Throttle timer interrupted.");
+		    getLogger().warn("Throttle timer interrupted.");
 		}
 	    }
 	}
@@ -249,7 +236,7 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 		    request.setProcessedDate(new Date());
 		} catch (SiteWhereException t) {
 		    // Indicate element failed in processing.
-		    LOGGER.error("Error processing batch invocation element.", t);
+		    getLogger().error("Error processing batch invocation element.", t);
 		    request.setProcessingStatus(ElementProcessingStatus.Failed);
 		} finally {
 		    IBatchElement updated = getBatchManagement().updateBatchElement(element.getBatchOperationId(),
@@ -294,7 +281,7 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 	    }
 	    case Processing:
 	    case Unprocessed: {
-		LOGGER.warn("Batch element was not in an expected state: " + element.getProcessingStatus());
+		getLogger().warn("Batch element was not in an expected state: " + element.getProcessingStatus());
 		break;
 	    }
 	    }

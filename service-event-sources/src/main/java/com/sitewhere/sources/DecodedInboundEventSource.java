@@ -11,9 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
@@ -53,9 +50,6 @@ public class DecodedInboundEventSource extends InboundEventSource<DecodedDeviceR
     public static class NoOpDecoder extends TenantEngineLifecycleComponent
 	    implements IDeviceEventDecoder<DecodedDeviceRequest<?>> {
 
-	/** Static logger instance */
-	private static Log LOGGER = LogFactory.getLog(NoOpDecoder.class);
-
 	public NoOpDecoder() {
 	    super(LifecycleComponentType.DeviceEventDecoder);
 	}
@@ -92,16 +86,6 @@ public class DecodedInboundEventSource extends InboundEventSource<DecodedDeviceR
 	 */
 	@Override
 	public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Log getLogger() {
-	    return LOGGER;
 	}
     }
 }

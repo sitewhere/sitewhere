@@ -7,9 +7,6 @@
  */
 package com.sitewhere.grpc.client.user;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.grpc.client.GrpcChannel;
 import com.sitewhere.grpc.service.UserManagementGrpc;
 import com.sitewhere.grpc.service.UserManagementGrpc.UserManagementBlockingStub;
@@ -23,9 +20,6 @@ import com.sitewhere.spi.tracing.ITracerProvider;
  * @author Derek
  */
 public class UserManagementGrpcChannel extends GrpcChannel<UserManagementBlockingStub, UserManagementStub> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(UserManagementGrpcChannel.class);
 
     public UserManagementGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
 	super(tracerProvider, host, port);
@@ -49,15 +43,5 @@ public class UserManagementGrpcChannel extends GrpcChannel<UserManagementBlockin
     @Override
     public UserManagementStub createAsyncStub() {
 	return UserManagementGrpc.newStub(getChannel());
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

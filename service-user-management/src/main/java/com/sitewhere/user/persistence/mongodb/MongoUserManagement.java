@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 import org.springframework.stereotype.Component;
 
@@ -52,9 +50,6 @@ import com.sitewhere.user.persistence.UserManagementPersistence;
 @Component
 public class MongoUserManagement extends LifecycleComponent implements IUserManagement {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(MongoUserManagement.class);
-
     /** Injected with global SiteWhere Mongo client */
     private IUserManagementMongoClient mongoClient;
 
@@ -72,16 +67,6 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	/** Ensure that expected indexes exist */
 	ensureIndexes();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /**

@@ -18,8 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.curator.framework.CuratorFramework;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -46,9 +44,6 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
 
     /** Folder that contains default content shared by all tenants */
     private static final String DEFAULT_TENANT_CONTENT_FOLDER = "default";
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(TenantTemplateManager.class);
 
     /** Injected handle to microservice */
     @Autowired
@@ -85,7 +80,7 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
 		    TenantTemplate template = MarshalUtils.unmarshalJson(content, TenantTemplate.class);
 		    updated.put(template.getId(), template);
 		} catch (IOException e) {
-		    LOGGER.warn("Unable to unmarshal template.", e);
+		    getLogger().warn("Unable to unmarshal template.", e);
 		}
 	    }
 	}
@@ -94,9 +89,9 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
 	    templatesById.putAll(updated);
 	}
 
-	LOGGER.info("Template manager found the following templates:");
+	getLogger().info("Template manager found the following templates:");
 	for (ITenantTemplate template : getTenantTemplates()) {
-	    LOGGER.info("[" + template.getId() + "] " + template.getName());
+	    getLogger().info("[" + template.getId() + "] " + template.getName());
 	}
     }
 
@@ -152,16 +147,6 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
 	    throw new SiteWhereException("Template folder not found at '" + templateFolder.getAbsolutePath() + "'.");
 	}
 	ZkUtils.copyFolderRecursivelytoZk(curator, tenantPath, templateFolder, templateFolder);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public Map<String, ITenantTemplate> getTemplatesById() {

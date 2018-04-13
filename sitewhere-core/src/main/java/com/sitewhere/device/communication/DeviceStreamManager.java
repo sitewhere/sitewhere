@@ -7,9 +7,6 @@
  */
 package com.sitewhere.device.communication;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.rest.model.device.command.DeviceStreamAckCommand;
 import com.sitewhere.rest.model.device.command.SendDeviceStreamDataCommand;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -38,9 +35,6 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class DeviceStreamManager extends TenantEngineLifecycleComponent implements IDeviceStreamManager {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(DeviceStreamManager.class);
-
     public DeviceStreamManager() {
 	super(LifecycleComponentType.DeviceStreamManager);
     }
@@ -68,7 +62,7 @@ public class DeviceStreamManager extends TenantEngineLifecycleComponent implemen
 		getDeviceManagement(getTenantEngine().getTenant()).createDeviceStream(assignment.getId(), request);
 		ack.setStatus(DeviceStreamStatus.DeviceStreamCreated);
 	    } catch (SiteWhereException e) {
-		LOGGER.error("Unable to create device stream.", e);
+		getLogger().error("Unable to create device stream.", e);
 		ack.setStatus(DeviceStreamStatus.DeviceStreamFailed);
 	    }
 	}
@@ -114,16 +108,6 @@ public class DeviceStreamManager extends TenantEngineLifecycleComponent implemen
 	}
 	// getDeviceCommunication(getTenantEngine().getTenant()).deliverSystemCommand(hardwareId,
 	// command);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /**

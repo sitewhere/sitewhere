@@ -10,8 +10,6 @@ package com.sitewhere.tenant.microservice;
 import java.io.File;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -49,9 +47,6 @@ import com.sitewhere.tenant.spi.templates.ITenantTemplateManager;
  */
 public class TenantManagementMicroservice extends GlobalMicroservice
 	implements ITenantManagementMicroservice, ITenantAdministration {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(TenantManagementMicroservice.class);
 
     /** Microservice name */
     private static final String NAME = "Tenant Management";
@@ -426,16 +421,6 @@ public class TenantManagementMicroservice extends GlobalMicroservice
 
     public void setTenantBootstrapModelConsumer(ITenantBootstrapModelConsumer tenantBootstrapModelConsumer) {
 	this.tenantBootstrapModelConsumer = tenantBootstrapModelConsumer;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public TenantManagementAccessor getTenantManagementAccessor() {

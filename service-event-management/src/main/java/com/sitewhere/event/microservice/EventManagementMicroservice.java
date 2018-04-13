@@ -7,9 +7,6 @@
  */
 package com.sitewhere.event.microservice;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.event.configuration.EventManagementModelProvider;
 import com.sitewhere.event.grpc.EventManagementGrpcServer;
 import com.sitewhere.event.spi.grpc.IEventManagementGrpcServer;
@@ -34,9 +31,6 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class EventManagementMicroservice extends MultitenantMicroservice<IEventManagementTenantEngine>
 	implements IEventManagementMicroservice {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(EventManagementMicroservice.class);
 
     /** Microservice name */
     private static final String NAME = "Event Management";
@@ -208,16 +202,6 @@ public class EventManagementMicroservice extends MultitenantMicroservice<IEventM
 
     public void setDeviceManagementApiDemux(IDeviceManagementApiDemux deviceManagementApiDemux) {
 	this.deviceManagementApiDemux = deviceManagementApiDemux;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public IEventManagementGrpcServer getEventManagementGrpcServer() {

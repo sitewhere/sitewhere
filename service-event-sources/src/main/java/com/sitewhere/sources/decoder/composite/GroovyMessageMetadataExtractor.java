@@ -9,9 +9,6 @@ package com.sitewhere.sources.decoder.composite;
 
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.sources.spi.EventDecodeException;
@@ -31,9 +28,6 @@ import groovy.lang.Binding;
  * @author Derek
  */
 public class GroovyMessageMetadataExtractor extends GroovyComponent implements IMessageMetadataExtractor<byte[]> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(GroovyMessageMetadataExtractor.class);
 
     public GroovyMessageMetadataExtractor() {
 	super(LifecycleComponentType.Other);
@@ -55,22 +49,12 @@ public class GroovyMessageMetadataExtractor extends GroovyComponent implements I
 		    getDeviceManagement(getTenantEngine().getTenant()));
 	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD, payload);
 	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD_METADATA, eventSourceMetadata);
-	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
-	    LOGGER.debug("About to execute '" + getScriptId() + "' with payload: " + payload);
+	    binding.setVariable(IGroovyVariables.VAR_LOGGER, getLogger());
+	    getLogger().debug("About to execute '" + getScriptId() + "' with payload: " + payload);
 	    return (IMessageMetadata<byte[]>) run(binding);
 	} catch (SiteWhereException e) {
 	    throw new EventDecodeException("Unable to run metadata extractor.", e);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     private IDeviceManagement getDeviceManagement(ITenant tenant) {

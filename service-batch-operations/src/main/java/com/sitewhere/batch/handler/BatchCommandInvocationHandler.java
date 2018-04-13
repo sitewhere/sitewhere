@@ -10,9 +10,6 @@ package com.sitewhere.batch.handler;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.batch.BatchOperationTypes;
 import com.sitewhere.batch.spi.IBatchOperationHandler;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
@@ -40,9 +37,6 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
  * @author Derek
  */
 public class BatchCommandInvocationHandler extends TenantEngineLifecycleComponent implements IBatchOperationHandler {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(BatchCommandInvocationHandler.class);
 
     /*
      * @see com.sitewhere.batch.spi.IBatchOperationHandler#getOperationType()
@@ -105,14 +99,6 @@ public class BatchCommandInvocationHandler extends TenantEngineLifecycleComponen
 		invocation.getId().toString());
 
 	return ElementProcessingStatus.Succeeded;
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public IDeviceManagementApiChannel<?> getDeviceManagement() {

@@ -9,9 +9,6 @@ package com.sitewhere.registration;
 
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.registration.spi.IRegistrationManager;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
@@ -42,9 +39,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public class DefaultRegistrationManager extends TenantEngineLifecycleComponent implements IRegistrationManager {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(DefaultRegistrationManager.class);
-
     /** Indicates if new devices can register with the system */
     private boolean allowNewDevices = true;
 
@@ -73,17 +67,17 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
      */
     @Override
     public void handleDeviceRegistration(IDeviceRegistrationRequest request) throws SiteWhereException {
-	LOGGER.debug("Handling device registration request.");
+	getLogger().debug("Handling device registration request.");
 	IDevice device = getDeviceManagement().getDeviceByToken(request.getDeviceToken());
 	IDeviceType deviceType = getDeviceTypeFor(request);
 
 	// Create device if it does not already exist.
 	if (device == null) {
 	    if (!isAllowNewDevices()) {
-		LOGGER.warn("Ignoring device registration request since new devices are not allowed.");
+		getLogger().warn("Ignoring device registration request since new devices are not allowed.");
 		return;
 	    }
-	    LOGGER.debug("Creating new device as part of registration.");
+	    getLogger().debug("Creating new device as part of registration.");
 	    DeviceCreateRequest deviceCreate = new DeviceCreateRequest();
 	    deviceCreate.setToken(request.getDeviceToken());
 	    deviceCreate.setDeviceTypeToken(request.getDeviceTypeToken());
@@ -91,11 +85,11 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 	    deviceCreate.setMetadata(request.getMetadata());
 	    device = getDeviceManagement().createDevice(deviceCreate);
 	} else if (!device.getDeviceTypeId().equals(deviceType.getId())) {
-	    LOGGER.info("Found existing device registration, but device type does not match.");
+	    getLogger().info("Found existing device registration, but device type does not match.");
 	    sendInvalidDeviceType(request.getDeviceToken());
 	    return;
 	} else {
-	    LOGGER.info("Found existing device registration. Updating metadata.");
+	    getLogger().info("Found existing device registration. Updating metadata.");
 	    DeviceCreateRequest deviceUpdate = new DeviceCreateRequest();
 	    deviceUpdate.setMetadata(request.getMetadata());
 	    device = getDeviceManagement().updateDevice(device.getId(), deviceUpdate);
@@ -103,7 +97,7 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 
 	// Make sure device is assigned.
 	if (device.getDeviceAssignmentId() == null) {
-	    LOGGER.debug("Handling unassigned device for registration.");
+	    getLogger().debug("Handling unassigned device for registration.");
 	    DeviceAssignmentCreateRequest assnCreate = new DeviceAssignmentCreateRequest();
 	    assnCreate.setDeviceToken(device.getToken());
 	    getDeviceManagement().createDeviceAssignment(assnCreate);
@@ -268,16 +262,6 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 	    }
 	    this.autoAssignArea = area;
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public boolean isAllowNewDevices() {

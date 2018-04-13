@@ -9,8 +9,6 @@ package com.sitewhere.schedule.persistence.mongodb;
 
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 
 import com.mongodb.MongoTimeoutException;
@@ -44,9 +42,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public class MongoScheduleManagement extends TenantEngineLifecycleComponent implements IScheduleManagement {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(MongoScheduleManagement.class);
-
     /** Converter lookup */
     private static IMongoConverterLookup LOOKUP = new MongoConverters();
 
@@ -68,16 +63,6 @@ public class MongoScheduleManagement extends TenantEngineLifecycleComponent impl
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Ensure that collection indexes exist.
 	ensureIndexes();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /**

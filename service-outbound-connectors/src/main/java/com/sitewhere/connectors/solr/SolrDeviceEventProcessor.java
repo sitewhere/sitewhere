@@ -16,8 +16,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.SolrPingResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
@@ -40,9 +38,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * @author Derek
  */
 public class SolrDeviceEventProcessor extends FilteredOutboundConnector {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(SolrDeviceEventProcessor.class);
 
     /** Number of documents to buffer before blocking calls */
     private static final int BUFFER_SIZE = 1000;
@@ -89,27 +84,18 @@ public class SolrDeviceEventProcessor extends FilteredOutboundConnector {
 	    this.solrConnection = new SolrConnection(getSolrConfiguration());
 	    getSolrConnection().start(monitor);
 
-	    LOGGER.info("Attempting to ping Solr server to verify availability...");
+	    getLogger().info("Attempting to ping Solr server to verify availability...");
 	    SolrPingResponse response = getSolrConnection().getSolrClient().ping();
 	    int pingTime = response.getQTime();
-	    LOGGER.info("Solr server location verified. Ping responded in " + pingTime + " ms.");
+	    getLogger().info("Solr server location verified. Ping responded in " + pingTime + " ms.");
 	} catch (SolrServerException e) {
 	    throw new SiteWhereException("Ping failed. Verify that Solr server is available.", e);
 	} catch (IOException e) {
 	    throw new SiteWhereException("Exception in ping. Verify that Solr server is available.", e);
 	}
-	LOGGER.info("Solr event processor indexing events to server at: " + getSolrConfiguration().getSolrServerUrl());
+	getLogger().info(
+		"Solr event processor indexing events to server at: " + getSolrConfiguration().getSolrServerUrl());
 	executor.execute(new SolrDocumentQueueProcessor());
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*
@@ -169,7 +155,7 @@ public class SolrDeviceEventProcessor extends FilteredOutboundConnector {
 
 	@Override
 	public void run() {
-	    LOGGER.info("Started Solr indexing thread.");
+	    getLogger().info("Started Solr indexing thread.");
 	    boolean interrupted = false;
 
 	    while (!interrupted) {
@@ -183,7 +169,7 @@ public class SolrDeviceEventProcessor extends FilteredOutboundConnector {
 			    batch.add(document);
 			}
 		    } catch (InterruptedException e) {
-			LOGGER.error("Solr indexing thread interrupted.", e);
+			getLogger().error("Solr indexing thread interrupted.", e);
 			interrupted = true;
 			break;
 		    }
@@ -192,15 +178,15 @@ public class SolrDeviceEventProcessor extends FilteredOutboundConnector {
 		    try {
 			UpdateResponse response = getSolrConnection().getSolrClient().add(batch, COMMIT_INTERVAL);
 			if (response.getStatus() != 0) {
-			    LOGGER.warn("Bad response code indexing documents: " + response.getStatus());
+			    getLogger().warn("Bad response code indexing documents: " + response.getStatus());
 			}
-			LOGGER.debug("Indexed " + batch.size() + " documents in Solr.");
+			getLogger().debug("Indexed " + batch.size() + " documents in Solr.");
 		    } catch (SolrServerException e) {
-			LOGGER.error("Exception indexing SiteWhere document.", e);
+			getLogger().error("Exception indexing SiteWhere document.", e);
 		    } catch (IOException e) {
-			LOGGER.error("IOException indexing SiteWhere document.", e);
+			getLogger().error("IOException indexing SiteWhere document.", e);
 		    } catch (Throwable e) {
-			LOGGER.error("Unhandled exception indexing SiteWhere document.", e);
+			getLogger().error("Unhandled exception indexing SiteWhere document.", e);
 		    }
 		}
 	    }

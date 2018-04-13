@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 
 import com.mongodb.MongoClientException;
@@ -93,9 +91,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public class MongoDeviceManagement extends TenantEngineLifecycleComponent implements IDeviceManagement {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(MongoDeviceManagement.class);
-
     /** Converter lookup */
     private static IMongoConverterLookup LOOKUP = new MongoConverters();
 
@@ -116,16 +111,6 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Ensure that collection indexes exist.
 	ensureIndexes();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /**

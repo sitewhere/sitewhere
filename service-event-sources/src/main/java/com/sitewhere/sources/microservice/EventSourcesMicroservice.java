@@ -7,9 +7,6 @@
  */
 package com.sitewhere.sources.microservice;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.grpc.client.device.DeviceManagementApiDemux;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiDemux;
 import com.sitewhere.grpc.client.spi.ApiNotAvailableException;
@@ -34,9 +31,6 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class EventSourcesMicroservice extends MultitenantMicroservice<IEventSourcesTenantEngine>
 	implements IEventSourcesMicroservice {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(EventSourcesMicroservice.class);
 
     /** Microservice name */
     public static final String NAME = "Event Sources";
@@ -217,15 +211,5 @@ public class EventSourcesMicroservice extends MultitenantMicroservice<IEventSour
 
     public void setDeviceEventManagementApiDemux(IDeviceEventManagementApiDemux deviceEventManagementApiDemux) {
 	this.deviceEventManagementApiDemux = deviceEventManagementApiDemux;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

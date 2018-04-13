@@ -19,6 +19,7 @@ import java.util.UUID;
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponentLogger;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponentParameter;
 import com.sitewhere.spi.server.lifecycle.ILifecycleConstraints;
 import com.sitewhere.spi.server.lifecycle.ILifecycleHierarchyRoot;
@@ -33,13 +34,16 @@ import io.opentracing.ActiveSpan;
  * 
  * @author Derek
  */
-public abstract class LifecycleComponent implements ILifecycleComponent {
+public class LifecycleComponent implements ILifecycleComponent {
 
     /** Unique component id */
     private String componentId = UUID.randomUUID().toString();
 
     /** Component type */
     private LifecycleComponentType componentType;
+
+    /** Component logger */
+    private LifecycleComponentLogger logger;
 
     /** Date/time component was created */
     private Date createdDate = new Date();
@@ -62,6 +66,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 
     public LifecycleComponent(LifecycleComponentType type) {
 	this.componentType = type;
+	this.logger = new LifecycleComponentLogger(this);
     }
 
     /*
@@ -102,6 +107,14 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
     @Override
     public Date getCreatedDate() {
 	return createdDate;
+    }
+
+    /*
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+     */
+    @Override
+    public ILifecycleComponentLogger getLogger() {
+	return logger;
     }
 
     /*

@@ -14,9 +14,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.hazelcast.config.Config;
 import com.hazelcast.config.EvictionConfig;
 import com.hazelcast.config.EvictionConfig.MaxSizePolicy;
@@ -48,9 +45,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * @author Derek
  */
 public class HazelcastManager extends LifecycleComponent implements IHazelcastManager {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(HazelcastManager.class);
 
     /** Microservice */
     private IMicroservice microservice;
@@ -160,14 +154,6 @@ public class HazelcastManager extends LifecycleComponent implements IHazelcastMa
 
     public void setHazelcastInstance(HazelcastInstance hazelcastInstance) {
 	this.hazelcastInstance = hazelcastInstance;
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /**

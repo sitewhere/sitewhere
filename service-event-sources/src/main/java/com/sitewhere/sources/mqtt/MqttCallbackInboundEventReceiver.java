@@ -9,8 +9,6 @@ package com.sitewhere.sources.mqtt;
 
 import java.net.URISyntaxException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.fusesource.hawtbuf.Buffer;
 import org.fusesource.hawtbuf.UTF8Buffer;
 import org.fusesource.mqtt.client.Callback;
@@ -33,9 +31,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  */
 @SuppressWarnings("deprecation")
 public class MqttCallbackInboundEventReceiver extends InboundEventReceiver<byte[]> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(MqttCallbackInboundEventReceiver.class);
 
     /** Default hostname if not set via Spring */
     public static final String DEFAULT_HOSTNAME = "localhost";
@@ -79,14 +74,14 @@ public class MqttCallbackInboundEventReceiver extends InboundEventReceiver<byte[
 	} catch (URISyntaxException e) {
 	    throw new SiteWhereException("Invalid hostname for MQTT server.", e);
 	}
-	LOGGER.info("Receiver connecting to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
+	getLogger().info("Receiver connecting to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
 	connection = mqtt.callbackConnection();
 	createListener();
 	connection.connect(new Callback<Void>() {
 
 	    @Override
 	    public void onFailure(Throwable e) {
-		LOGGER.error("MQTT connection failed.", e);
+		getLogger().error("MQTT connection failed.", e);
 	    }
 
 	    @Override
@@ -96,12 +91,12 @@ public class MqttCallbackInboundEventReceiver extends InboundEventReceiver<byte[
 
 		    @Override
 		    public void onFailure(Throwable e) {
-			LOGGER.error("MQTT subscribe failed.", e);
+			getLogger().error("MQTT subscribe failed.", e);
 		    }
 
 		    @Override
 		    public void onSuccess(byte[] arg0) {
-			LOGGER.info("Subscribed to events on MQTT topic: " + getTopic());
+			getLogger().info("Subscribed to events on MQTT topic: " + getTopic());
 		    }
 		});
 	    }
@@ -115,11 +110,11 @@ public class MqttCallbackInboundEventReceiver extends InboundEventReceiver<byte[
 	connection.listener(new Listener() {
 
 	    public void onDisconnected() {
-		LOGGER.info("MQTT connection disconnected.");
+		getLogger().info("MQTT connection disconnected.");
 	    }
 
 	    public void onConnected() {
-		LOGGER.info("MQTT connection established.");
+		getLogger().info("MQTT connection established.");
 	    }
 
 	    /*
@@ -134,7 +129,7 @@ public class MqttCallbackInboundEventReceiver extends InboundEventReceiver<byte[
 	    }
 
 	    public void onFailure(Throwable value) {
-		LOGGER.info("MQTT connection died.");
+		getLogger().info("MQTT connection died.");
 		connection.disconnect(new Callback<Void>() {
 
 		    @Override
@@ -147,16 +142,6 @@ public class MqttCallbackInboundEventReceiver extends InboundEventReceiver<byte[
 		});
 	    }
 	});
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*
@@ -185,7 +170,7 @@ public class MqttCallbackInboundEventReceiver extends InboundEventReceiver<byte[
 
 		    @Override
 		    public void onFailure(Throwable e) {
-			LOGGER.info("MQTT disconnect failed.");
+			getLogger().info("MQTT disconnect failed.");
 		    }
 
 		    @Override
@@ -196,11 +181,11 @@ public class MqttCallbackInboundEventReceiver extends InboundEventReceiver<byte[
 
 		    @Override
 		    public void run() {
-			LOGGER.info("MQTT connection transport stopped.");
+			getLogger().info("MQTT connection transport stopped.");
 		    }
 		});
 	    } catch (Exception e) {
-		LOGGER.error("Error shutting down MQTT device event receiver.", e);
+		getLogger().error("Error shutting down MQTT device event receiver.", e);
 	    }
 	}
     }

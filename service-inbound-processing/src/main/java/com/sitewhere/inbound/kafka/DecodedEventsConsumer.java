@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import com.sitewhere.inbound.processing.InboundPayloadProcessingLogic;
@@ -35,9 +33,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * @author Derek
  */
 public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements IDecodedEventsConsumer {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(DecodedEventsConsumer.class);
 
     /** Consumer id */
     private static String CONSUMER_ID = UUID.randomUUID().toString();
@@ -158,14 +153,6 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
     @Override
     public void processBatch(List<ConsumerRecord<String, byte[]>> records) throws SiteWhereException {
 	new InboundEventPayloadProcessor(getTenantEngine(), records).run();
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*

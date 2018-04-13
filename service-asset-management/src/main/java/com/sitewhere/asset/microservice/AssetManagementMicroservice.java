@@ -7,9 +7,6 @@
  */
 package com.sitewhere.asset.microservice;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.asset.configuration.AssetManagementModelProvider;
 import com.sitewhere.asset.grpc.AssetManagementGrpcServer;
 import com.sitewhere.asset.spi.grpc.IAssetManagementGrpcServer;
@@ -36,9 +33,6 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetManagementTenantEngine>
 	implements IAssetManagementMicroservice {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(AssetManagementMicroservice.class);
 
     /** Microservice name */
     private static final String NAME = "Asset Management";
@@ -238,16 +232,6 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
 
     public void setHazelcastManager(IHazelcastManager hazelcastManager) {
 	this.hazelcastManager = hazelcastManager;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public IAssetManagementGrpcServer getAssetManagementGrpcServer() {

@@ -9,9 +9,6 @@ package com.sitewhere.grpc.client.label;
 
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.MultitenantApiChannel;
 import com.sitewhere.grpc.client.spi.IApiDemux;
@@ -48,9 +45,6 @@ import com.sitewhere.spi.tracing.ITracerProvider;
  */
 public class LabelGenerationApiChannel extends MultitenantApiChannel<LabelGenerationGrpcChannel>
 	implements ILabelGenerationApiChannel<LabelGenerationGrpcChannel> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(LabelGenerationApiChannel.class);
 
     public LabelGenerationApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
 	super(demux, microservice, host);
@@ -241,13 +235,5 @@ public class LabelGenerationApiChannel extends MultitenantApiChannel<LabelGenera
 	} catch (Throwable t) {
 	    throw GrpcUtils.handleClientMethodException(LabelGenerationGrpc.METHOD_GET_ASSET_LABEL, t);
 	}
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

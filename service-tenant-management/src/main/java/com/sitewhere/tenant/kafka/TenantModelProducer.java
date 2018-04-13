@@ -7,9 +7,6 @@
  */
 package com.sitewhere.tenant.kafka;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdateType;
 import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
@@ -26,9 +23,6 @@ import com.sitewhere.tenant.spi.kafka.ITenantModelProducer;
  */
 public class TenantModelProducer extends MicroserviceKafkaProducer implements ITenantModelProducer {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(TenantModelProducer.class);
-
     public TenantModelProducer(IMicroservice microservice) {
 	super(microservice);
     }
@@ -44,7 +38,7 @@ public class TenantModelProducer extends MicroserviceKafkaProducer implements IT
 	byte[] message = KafkaModelMarshaler
 		.buildTenantModelUpdateMessage(GTenantModelUpdateType.TENANTMODEL_TENANT_ADDED, tenant);
 	send(tenant.getToken(), message);
-	LOGGER.info("Sent Kafka tenant model update for added tenant.");
+	getLogger().info("Sent Kafka tenant model update for added tenant.");
     }
 
     /*
@@ -58,7 +52,7 @@ public class TenantModelProducer extends MicroserviceKafkaProducer implements IT
 	byte[] message = KafkaModelMarshaler
 		.buildTenantModelUpdateMessage(GTenantModelUpdateType.TENANTMODEL_TENANT_UPDATED, tenant);
 	send(tenant.getToken(), message);
-	LOGGER.info("Sent Kafka tenant model update for updated tenant.");
+	getLogger().info("Sent Kafka tenant model update for updated tenant.");
     }
 
     /*
@@ -72,7 +66,7 @@ public class TenantModelProducer extends MicroserviceKafkaProducer implements IT
 	byte[] message = KafkaModelMarshaler
 		.buildTenantModelUpdateMessage(GTenantModelUpdateType.TENANTMODEL_TENANT_DELETED, tenant);
 	send(tenant.getToken(), message);
-	LOGGER.info("Sent Kafka tenant model update for deleted tenant.");
+	getLogger().info("Sent Kafka tenant model update for deleted tenant.");
     }
 
     /*
@@ -83,15 +77,5 @@ public class TenantModelProducer extends MicroserviceKafkaProducer implements IT
     @Override
     public String getTargetTopicName() throws SiteWhereException {
 	return getMicroservice().getKafkaTopicNaming().getTenantUpdatesTopic();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

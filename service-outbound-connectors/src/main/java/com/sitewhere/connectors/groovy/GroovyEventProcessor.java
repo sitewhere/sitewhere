@@ -7,9 +7,6 @@
  */
 package com.sitewhere.connectors.groovy;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.connectors.FilteredOutboundConnector;
 import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventRequestBuilder;
 import com.sitewhere.rest.model.device.event.scripting.DeviceEventSupport;
@@ -35,9 +32,6 @@ import groovy.lang.Binding;
  * @author Derek
  */
 public class GroovyEventProcessor extends FilteredOutboundConnector {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(GroovyEventProcessor.class);
 
     /** Supports building device management entities */
     private DeviceManagementRequestBuilder deviceBuilder;
@@ -146,15 +140,5 @@ public class GroovyEventProcessor extends FilteredOutboundConnector {
 	binding.setVariable("device", device);
 	binding.setVariable("deviceBuilder", deviceBuilder);
 	binding.setVariable("eventBuilder", eventsBuilder);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

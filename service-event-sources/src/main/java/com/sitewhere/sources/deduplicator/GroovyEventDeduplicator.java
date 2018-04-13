@@ -7,9 +7,6 @@
  */
 package com.sitewhere.sources.deduplicator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventRequestBuilder;
@@ -34,9 +31,6 @@ import groovy.lang.Binding;
  */
 public class GroovyEventDeduplicator extends GroovyComponent implements IDeviceEventDeduplicator {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(GroovyEventDeduplicator.class);
-
     public GroovyEventDeduplicator() {
 	super(LifecycleComponentType.DeviceEventDeduplicator);
     }
@@ -56,23 +50,13 @@ public class GroovyEventDeduplicator extends GroovyComponent implements IDeviceE
 	    binding.setVariable(IGroovyVariables.VAR_EVENT_MANAGEMENT_BUILDER,
 		    new DeviceEventRequestBuilder(getDeviceManagement(), getDeviceEventManagement()));
 	    binding.setVariable(IGroovyVariables.VAR_DECODED_DEVICE_REQUEST, request);
-	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
-	    LOGGER.debug("About to execute '" + getScriptId() + "' for event request: " + request);
+	    binding.setVariable(IGroovyVariables.VAR_LOGGER, getLogger());
+	    getLogger().debug("About to execute '" + getScriptId() + "' for event request: " + request);
 	    Boolean isDuplicate = (Boolean) run(binding);
 	    return isDuplicate;
 	} catch (SiteWhereException e) {
 	    throw new EventDecodeException("Unable to run deduplicator script.", e);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     private IDeviceManagement getDeviceManagement() {

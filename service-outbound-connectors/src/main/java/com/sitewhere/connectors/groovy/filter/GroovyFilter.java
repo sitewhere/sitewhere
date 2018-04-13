@@ -7,9 +7,6 @@
  */
 package com.sitewhere.connectors.groovy.filter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.connectors.filter.DeviceEventFilter;
 import com.sitewhere.connectors.spi.IDeviceEventFilter;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
@@ -29,9 +26,6 @@ import groovy.lang.Binding;
  * @author Derek
  */
 public class GroovyFilter extends DeviceEventFilter {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(GroovyFilter.class);
 
     /** Groovy configuration */
     private GroovyConfiguration groovyConfiguration;
@@ -67,17 +61,6 @@ public class GroovyFilter extends DeviceEventFilter {
 	binding.setVariable("context", context);
 	binding.setVariable("event", event);
 	return true;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.device.event.processor.filter.DeviceEventFilter#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public GroovyConfiguration getGroovyConfiguration() {

@@ -9,8 +9,6 @@ package com.sitewhere.influxdb;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDB.LogLevel;
 import org.influxdb.InfluxDBFactory;
@@ -29,9 +27,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * @author Derek
  */
 public class InfluxDbClient extends TenantEngineLifecycleComponent implements IDiscoverableTenantLifecycleComponent {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(InfluxDbClient.class);
 
     /** InfluxDB configuration parameters */
     private InfluxConfiguration configuration;
@@ -114,14 +109,6 @@ public class InfluxDbClient extends TenantEngineLifecycleComponent implements ID
     @Override
     public boolean isRequired() {
 	return true;
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public InfluxConfiguration getConfiguration() {

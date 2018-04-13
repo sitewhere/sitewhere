@@ -7,9 +7,6 @@
  */
 package com.sitewhere.grpc.client.asset;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.grpc.client.MultitenantGrpcChannel;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
 import com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementBlockingStub;
@@ -24,9 +21,6 @@ import com.sitewhere.spi.tracing.ITracerProvider;
  */
 public class AssetManagementGrpcChannel
 	extends MultitenantGrpcChannel<AssetManagementBlockingStub, AssetManagementStub> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(AssetManagementGrpcChannel.class);
 
     public AssetManagementGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
 	super(tracerProvider, host, port);
@@ -50,15 +44,5 @@ public class AssetManagementGrpcChannel
     @Override
     public AssetManagementStub createAsyncStub() {
 	return AssetManagementGrpc.newStub(getChannel());
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

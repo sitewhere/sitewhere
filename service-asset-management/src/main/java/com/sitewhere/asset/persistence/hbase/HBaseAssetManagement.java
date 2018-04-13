@@ -9,8 +9,6 @@ package com.sitewhere.asset.persistence.hbase;
 
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.regionserver.BloomType;
 
 import com.sitewhere.hbase.HBaseContext;
@@ -37,9 +35,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * @author Derek
  */
 public class HBaseAssetManagement extends TenantEngineLifecycleComponent implements IAssetManagement {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(HBaseAssetManagement.class);
 
     /** Used to communicate with HBase */
     private ISiteWhereHBaseClient client;
@@ -78,16 +73,6 @@ public class HBaseAssetManagement extends TenantEngineLifecycleComponent impleme
 	assetIdManager = new AssetIdManager();
 	assetIdManager.load(context);
 	context.setAssetIdManager(assetIdManager);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /**

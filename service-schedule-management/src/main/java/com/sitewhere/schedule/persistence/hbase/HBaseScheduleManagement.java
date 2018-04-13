@@ -7,8 +7,6 @@
  */
 package com.sitewhere.schedule.persistence.hbase;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.regionserver.BloomType;
 
 import com.sitewhere.hbase.HBaseContext;
@@ -34,9 +32,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * @author Derek
  */
 public class HBaseScheduleManagement extends TenantEngineLifecycleComponent implements IScheduleManagement {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(HBaseScheduleManagement.class);
 
     /** Used to communicate with HBase */
     private ISiteWhereHBaseClient client;
@@ -85,16 +80,6 @@ public class HBaseScheduleManagement extends TenantEngineLifecycleComponent impl
     protected void ensureTablesExist() throws SiteWhereException {
 	SiteWhereTables.assureTenantTable(context, ISiteWhereHBase.UID_TABLE_NAME, BloomType.ROW);
 	SiteWhereTables.assureTenantTable(context, ISiteWhereHBase.SCHEDULES_TABLE_NAME, BloomType.ROW);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*

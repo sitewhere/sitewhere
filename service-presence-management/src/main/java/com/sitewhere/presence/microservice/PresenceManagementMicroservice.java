@@ -7,9 +7,6 @@
  */
 package com.sitewhere.presence.microservice;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.presence.configuration.PresenceManagementModelProvider;
 import com.sitewhere.presence.spi.microservice.IPresenceManagementMicroservice;
@@ -26,9 +23,6 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class PresenceManagementMicroservice extends MultitenantMicroservice<IPresenceManagementTenantEngine>
 	implements IPresenceManagementMicroservice {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(PresenceManagementMicroservice.class);
 
     /** Microservice name */
     private static final String NAME = "Presence Management";
@@ -72,13 +66,5 @@ public class PresenceManagementMicroservice extends MultitenantMicroservice<IPre
     @Override
     public IPresenceManagementTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
 	return new PresenceManagementTenantEngine(this, tenant);
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

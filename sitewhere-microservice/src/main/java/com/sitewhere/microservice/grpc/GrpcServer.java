@@ -9,9 +9,6 @@ package com.sitewhere.microservice.grpc;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.grpc.client.spi.server.IGrpcServer;
 import com.sitewhere.grpc.model.tracing.ServerTracingInterceptor;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -29,9 +26,6 @@ import io.grpc.ServerBuilder;
  * @author Derek
  */
 public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcServer {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(GrpcServer.class);
 
     /** Port for GRPC server */
     protected int port;
@@ -157,16 +151,6 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
 
     public void setUseTracingInterceptor(boolean useTracingInterceptor) {
 	this.useTracingInterceptor = useTracingInterceptor;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public Server getServer() {

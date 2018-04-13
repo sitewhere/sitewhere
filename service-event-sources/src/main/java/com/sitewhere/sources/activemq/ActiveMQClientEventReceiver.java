@@ -25,8 +25,6 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.sources.InboundEventReceiver;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
@@ -40,9 +38,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * @author Derek
  */
 public class ActiveMQClientEventReceiver extends InboundEventReceiver<byte[]> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(ActiveMQClientEventReceiver.class);
 
     /** Number of consumers reading messages from the queue */
     private static final int DEFAULT_NUM_CONSUMERS = 3;
@@ -94,7 +89,7 @@ public class ActiveMQClientEventReceiver extends InboundEventReceiver<byte[]> {
 	    consumersPool.execute(consumer);
 	    consumers.add(consumer);
 	}
-	LOGGER.info("Created " + consumers.size() + " consumers for processing ActiveMQ messages.");
+	getLogger().info("Created " + consumers.size() + " consumers for processing ActiveMQ messages.");
     }
 
     /*
@@ -119,16 +114,6 @@ public class ActiveMQClientEventReceiver extends InboundEventReceiver<byte[]> {
 	for (Consumer consumer : consumers) {
 	    consumer.stop();
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*
@@ -219,10 +204,10 @@ public class ActiveMQClientEventReceiver extends InboundEventReceiver<byte[]> {
 			byte[] buffer = new byte[(int) bytesMessage.getBodyLength()];
 			onEventPayloadReceived(buffer, null);
 		    } else {
-			LOGGER.warn("Ignoring unknown JMS message type: " + message.getClass().getName());
+			getLogger().warn("Ignoring unknown JMS message type: " + message.getClass().getName());
 		    }
 		} catch (Throwable e) {
-		    LOGGER.error("Error in ActiveMQ message processing.", e);
+		    getLogger().error("Error in ActiveMQ message processing.", e);
 		    return;
 		}
 	    }

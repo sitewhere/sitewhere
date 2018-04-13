@@ -9,8 +9,6 @@ package com.sitewhere.asset.microservice;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -42,9 +40,6 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 public class AssetManagementTenantEngine extends MicroserviceTenantEngine implements IAssetManagementTenantEngine {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(AssetManagementTenantEngine.class);
 
     /** Asset management persistence API */
     private IAssetManagement assetManagement;
@@ -196,15 +191,5 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
 
     public void setAssetManagementImpl(AssetManagementGrpc.AssetManagementImplBase assetManagementImpl) {
 	this.assetManagementImpl = assetManagementImpl;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

@@ -7,9 +7,6 @@
  */
 package com.sitewhere.grpc.client.microservice;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.grpc.client.GrpcChannel;
 import com.sitewhere.grpc.service.MicroserviceManagementGrpc;
 import com.sitewhere.grpc.service.MicroserviceManagementGrpc.MicroserviceManagementBlockingStub;
@@ -24,9 +21,6 @@ import com.sitewhere.spi.tracing.ITracerProvider;
  */
 public class MicroserviceManagementGrpcChannel
 	extends GrpcChannel<MicroserviceManagementBlockingStub, MicroserviceManagementStub> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(MicroserviceManagementGrpcChannel.class);
 
     public MicroserviceManagementGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
 	super(tracerProvider, host, port);
@@ -50,15 +44,5 @@ public class MicroserviceManagementGrpcChannel
     @Override
     public MicroserviceManagementStub createAsyncStub() {
 	return MicroserviceManagementGrpc.newStub(getChannel());
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

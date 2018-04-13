@@ -9,9 +9,6 @@ package com.sitewhere.cassandra;
 
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.HostDistance;
 import com.datastax.driver.core.PoolingOptions;
@@ -34,9 +31,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * @author Derek
  */
 public class CassandraClient extends TenantEngineLifecycleComponent implements IDiscoverableTenantLifecycleComponent {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(CassandraClient.class);
 
     /** Cassandra configuration */
     private CassandraConfiguration configuration;
@@ -200,14 +194,6 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
      */
     public int getBucketValue(Date date) {
 	return (int) (date.getTime() / (60 * 60 * 1000));
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*

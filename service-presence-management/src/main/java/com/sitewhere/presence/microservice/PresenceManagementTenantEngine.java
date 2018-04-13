@@ -7,9 +7,6 @@
  */
 package com.sitewhere.presence.microservice;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.presence.spi.microservice.IPresenceManagementTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
@@ -27,9 +24,6 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class PresenceManagementTenantEngine extends MicroserviceTenantEngine
 	implements IPresenceManagementTenantEngine {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(PresenceManagementTenantEngine.class);
 
     public PresenceManagementTenantEngine(IMultitenantMicroservice<?> microservice, ITenant tenant) {
 	super(microservice, tenant);
@@ -67,13 +61,5 @@ public class PresenceManagementTenantEngine extends MicroserviceTenantEngine
      */
     @Override
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

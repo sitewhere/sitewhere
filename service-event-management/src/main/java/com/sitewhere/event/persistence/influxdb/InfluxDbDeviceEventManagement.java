@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.influxdb.dto.Point;
 import org.reactivestreams.Processor;
 
@@ -69,9 +67,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * @author Derek
  */
 public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponent implements IDeviceEventManagement {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(InfluxDbDeviceEventManagement.class);
 
     /** Client */
     private InfluxDbClient client;
@@ -510,16 +505,6 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	return InfluxDbDeviceEvent.searchByAreaIds(areaIds, DeviceEventType.StateChange, criteria, getClient(),
 		IDeviceStateChange.class);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /**

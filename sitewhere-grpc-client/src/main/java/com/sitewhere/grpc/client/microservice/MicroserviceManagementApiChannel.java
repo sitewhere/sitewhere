@@ -9,9 +9,6 @@ package com.sitewhere.grpc.client.microservice;
 
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.google.protobuf.ByteString;
 import com.sitewhere.grpc.client.ApiChannel;
 import com.sitewhere.grpc.client.GrpcUtils;
@@ -42,9 +39,6 @@ import com.sitewhere.spi.tracing.ITracerProvider;
  */
 public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceManagementGrpcChannel>
 	implements IMicroserviceManagementApiChannel<MicroserviceManagementGrpcChannel> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(MicroserviceManagementApiChannel.class);
 
     public MicroserviceManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
 	super(demux, microservice, host, microservice.getInstanceSettings().getManagementGrpcPort());
@@ -160,15 +154,5 @@ public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceMan
 	    throw GrpcUtils.handleClientMethodException(MicroserviceManagementGrpc.METHOD_UPDATE_TENANT_CONFIGURATION,
 		    t);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

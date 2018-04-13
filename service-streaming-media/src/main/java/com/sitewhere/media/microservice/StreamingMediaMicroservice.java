@@ -7,9 +7,6 @@
  */
 package com.sitewhere.media.microservice;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.media.configuration.StreamingMediaModelProvider;
 import com.sitewhere.media.spi.microservice.IStreamingMediaMicroservice;
 import com.sitewhere.media.spi.microservice.IStreamingMediaTenantEngine;
@@ -26,9 +23,6 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class StreamingMediaMicroservice extends MultitenantMicroservice<IStreamingMediaTenantEngine>
 	implements IStreamingMediaMicroservice {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(StreamingMediaMicroservice.class);
 
     /** Microservice name */
     private static final String NAME = "Streaming Media";
@@ -72,13 +66,5 @@ public class StreamingMediaMicroservice extends MultitenantMicroservice<IStreami
     @Override
     public IStreamingMediaTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
 	return new StreamingMediaTenantEngine(this, tenant);
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

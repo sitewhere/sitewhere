@@ -7,9 +7,6 @@
  */
 package com.sitewhere.connectors.microservice;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.connectors.configuration.OutboundConnectorsModelProvider;
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsMicroservice;
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsTenantEngine;
@@ -34,9 +31,6 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class OutboundConnectorsMicroservice extends MultitenantMicroservice<IOutboundConnectorsTenantEngine>
 	implements IOutboundConnectorsMicroservice {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(OutboundConnectorsMicroservice.class);
 
     /** Microservice name */
     private static final String NAME = "Outbound Connectors";
@@ -187,14 +181,6 @@ public class OutboundConnectorsMicroservice extends MultitenantMicroservice<IOut
 
 	// Device event management.
 	this.deviceEventManagementApiDemux = new DeviceEventManagementApiDemux(this);
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*

@@ -7,9 +7,6 @@
  */
 package com.sitewhere.batch.microservice;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.batch.grpc.BatchManagementImpl;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
 import com.sitewhere.grpc.service.BatchManagementGrpc;
@@ -32,9 +29,6 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implements IBatchOperationsTenantEngine {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(BatchOperationsTenantEngine.class);
 
     /** Batch management persistence implementation */
     private IBatchManagement batchManagement;
@@ -142,13 +136,5 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
 
     public void setBatchManagementImpl(BatchManagementGrpc.BatchManagementImplBase batchManagementImpl) {
 	this.batchManagementImpl = batchManagementImpl;
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

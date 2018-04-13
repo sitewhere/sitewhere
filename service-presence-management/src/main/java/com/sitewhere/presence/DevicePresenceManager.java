@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.joda.time.Period;
 import org.joda.time.format.ISOPeriodFormat;
 import org.joda.time.format.PeriodFormatter;
@@ -35,9 +33,6 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 public class DevicePresenceManager extends TenantEngineLifecycleComponent implements IDevicePresenceManager {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(DevicePresenceManager.class);
 
     /** Default presence check interval (10 min) */
     private static final String DEFAULT_PRESENCE_CHECK_INTERVAL = "10m";
@@ -100,16 +95,6 @@ public class DevicePresenceManager extends TenantEngineLifecycleComponent implem
 	}
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
-    }
-
     /**
      * Thread that checks for device presence.
      * 
@@ -136,7 +121,7 @@ public class DevicePresenceManager extends TenantEngineLifecycleComponent implem
 	    }
 	    int checkIntervalSecs = checkInterval.toStandardSeconds().getSeconds();
 
-	    LOGGER.info("Presence manager checking every " + PERIOD_FORMATTER.print(checkInterval) + " ("
+	    getLogger().info("Presence manager checking every " + PERIOD_FORMATTER.print(checkInterval) + " ("
 		    + checkIntervalSecs + " seconds) " + "for devices with last interaction date of more than "
 		    + PERIOD_FORMATTER.print(missingInterval) + " (" + missingIntervalSecs + " seconds) " + ".");
 
@@ -184,13 +169,13 @@ public class DevicePresenceManager extends TenantEngineLifecycleComponent implem
 			// }
 		    }
 		} catch (SiteWhereException e) {
-		    LOGGER.error("Error processing presence query.", e);
+		    getLogger().error("Error processing presence query.", e);
 		}
 
 		try {
 		    Thread.sleep(checkIntervalSecs * 1000);
 		} catch (InterruptedException e) {
-		    LOGGER.info("Presence check thread shut down.");
+		    getLogger().info("Presence check thread shut down.");
 		}
 	    }
 	}

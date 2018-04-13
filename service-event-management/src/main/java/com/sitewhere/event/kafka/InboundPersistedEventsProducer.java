@@ -7,9 +7,6 @@
  */
 package com.sitewhere.event.kafka;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.event.spi.kafka.IInboundPersistedEventsProducer;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
@@ -24,9 +21,6 @@ import com.sitewhere.spi.microservice.IMicroservice;
 public class InboundPersistedEventsProducer extends MicroserviceKafkaProducer
 	implements IInboundPersistedEventsProducer {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(InboundPersistedEventsProducer.class);
-
     public InboundPersistedEventsProducer(IMicroservice microservice) {
 	super(microservice);
     }
@@ -38,13 +32,5 @@ public class InboundPersistedEventsProducer extends MicroserviceKafkaProducer
     @Override
     public String getTargetTopicName() throws SiteWhereException {
 	return getMicroservice().getKafkaTopicNaming().getInboundPersistedEventsTopic(getTenantEngine().getTenant());
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

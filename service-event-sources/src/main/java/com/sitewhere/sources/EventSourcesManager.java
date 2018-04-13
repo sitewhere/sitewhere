@@ -11,9 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
 import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -36,9 +33,6 @@ import io.opentracing.ActiveSpan;
  * @author Derek
  */
 public class EventSourcesManager extends TenantEngineLifecycleComponent implements IEventSourcesManager {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(EventSourcesManager.class);
 
     /** Count of decoded events */
     private AtomicInteger decodedCount = new AtomicInteger();
@@ -73,10 +67,10 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 		initializeNestedComponent(source, monitor, true);
 	    } catch (SiteWhereException e) {
 		TracerUtils.handleErrorInTracerSpan(span, e);
-		LOGGER.error("Error initializing event source.", e);
+		getLogger().error("Error initializing event source.", e);
 	    } catch (Throwable e) {
 		TracerUtils.handleErrorInTracerSpan(span, e);
-		LOGGER.error("Unhandled exception initializing event source.", e);
+		getLogger().error("Unhandled exception initializing event source.", e);
 	    } finally {
 		TracerUtils.finishTracerSpan(span);
 	    }
@@ -97,10 +91,10 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 	    initializeNestedComponent(getDecodedEventsProducer(), monitor, true);
 	} catch (SiteWhereException e) {
 	    TracerUtils.handleErrorInTracerSpan(span, e);
-	    LOGGER.error("Error initializing decoded events producer.", e);
+	    getLogger().error("Error initializing decoded events producer.", e);
 	} catch (Throwable e) {
 	    TracerUtils.handleErrorInTracerSpan(span, e);
-	    LOGGER.error("Unhandled exception initializing decoded events producer.", e);
+	    getLogger().error("Unhandled exception initializing decoded events producer.", e);
 	} finally {
 	    TracerUtils.finishTracerSpan(span);
 	}
@@ -124,10 +118,10 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 		startNestedComponent(source, monitor, true);
 	    } catch (SiteWhereException e) {
 		TracerUtils.handleErrorInTracerSpan(span, e);
-		LOGGER.error("Error starting event source.", e);
+		getLogger().error("Error starting event source.", e);
 	    } catch (Throwable e) {
 		TracerUtils.handleErrorInTracerSpan(span, e);
-		LOGGER.error("Unhandled exception starting event source.", e);
+		getLogger().error("Unhandled exception starting event source.", e);
 	    } finally {
 		TracerUtils.finishTracerSpan(span);
 	    }
@@ -147,10 +141,10 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 	    startNestedComponent(getDecodedEventsProducer(), monitor, true);
 	} catch (SiteWhereException e) {
 	    TracerUtils.handleErrorInTracerSpan(span, e);
-	    LOGGER.error("Error starting decoded events producer.", e);
+	    getLogger().error("Error starting decoded events producer.", e);
 	} catch (Throwable e) {
 	    TracerUtils.handleErrorInTracerSpan(span, e);
-	    LOGGER.error("Unhandled exception starting decoded events producer.", e);
+	    getLogger().error("Unhandled exception starting decoded events producer.", e);
 	} finally {
 	    TracerUtils.finishTracerSpan(span);
 	}
@@ -174,10 +168,10 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 		source.stop(monitor);
 	    } catch (SiteWhereException e) {
 		TracerUtils.handleErrorInTracerSpan(span, e);
-		LOGGER.error("Error stopping event source.", e);
+		getLogger().error("Error stopping event source.", e);
 	    } catch (Throwable e) {
 		TracerUtils.handleErrorInTracerSpan(span, e);
-		LOGGER.error("Unhandled exception stopping event source.", e);
+		getLogger().error("Unhandled exception stopping event source.", e);
 	    } finally {
 		TracerUtils.finishTracerSpan(span);
 	    }
@@ -197,10 +191,10 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 	    getDecodedEventsProducer().stop(monitor);
 	} catch (SiteWhereException e) {
 	    TracerUtils.handleErrorInTracerSpan(span, e);
-	    LOGGER.error("Error stopping decoded events producer.", e);
+	    getLogger().error("Error stopping decoded events producer.", e);
 	} catch (Throwable e) {
 	    TracerUtils.handleErrorInTracerSpan(span, e);
-	    LOGGER.error("Unhandled exception stopping decoded events producer.", e);
+	    getLogger().error("Unhandled exception stopping decoded events producer.", e);
 	} finally {
 	    TracerUtils.finishTracerSpan(span);
 	}
@@ -265,14 +259,6 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 
     public void setEventSources(List<IInboundEventSource<?>> eventSources) {
 	this.eventSources = eventSources;
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public DecodedEventsProducer getDecodedEventsProducer() {

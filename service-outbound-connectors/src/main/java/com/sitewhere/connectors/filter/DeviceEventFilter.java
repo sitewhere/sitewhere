@@ -7,9 +7,6 @@
  */
 package com.sitewhere.connectors.filter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.connectors.spi.IDeviceEventFilter;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -22,9 +19,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * @author Derek
  */
 public abstract class DeviceEventFilter extends TenantEngineLifecycleComponent implements IDeviceEventFilter {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(DeviceEventFilter.class);
 
     public DeviceEventFilter() {
 	super(LifecycleComponentType.OutboundEventProcessorFilter);
@@ -49,10 +43,5 @@ public abstract class DeviceEventFilter extends TenantEngineLifecycleComponent i
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-    }
-
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

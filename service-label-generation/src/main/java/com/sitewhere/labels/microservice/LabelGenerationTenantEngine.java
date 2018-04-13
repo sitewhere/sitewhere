@@ -7,9 +7,6 @@
  */
 package com.sitewhere.labels.microservice;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.grpc.service.LabelGenerationGrpc;
 import com.sitewhere.labels.grpc.LabelGenerationImpl;
 import com.sitewhere.labels.spi.microservice.ILabelGenerationTenantEngine;
@@ -32,9 +29,6 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 public class LabelGenerationTenantEngine extends MicroserviceTenantEngine implements ILabelGenerationTenantEngine {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(LabelGenerationTenantEngine.class);
 
     /** Label generation implementation */
     private ILabelGeneratorManager labelGeneratorManager;
@@ -143,13 +137,5 @@ public class LabelGenerationTenantEngine extends MicroserviceTenantEngine implem
 
     public void setLabelGenerationImpl(LabelGenerationGrpc.LabelGenerationImplBase labelGenerationImpl) {
 	this.labelGenerationImpl = labelGenerationImpl;
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

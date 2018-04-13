@@ -7,9 +7,6 @@
  */
 package com.sitewhere.rules.processors.geospatial;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.rules.spi.IRuleProcessor;
 import com.sitewhere.rules.spi.microservice.IRuleProcessingMicroservice;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -31,9 +28,6 @@ import com.sitewhere.spi.device.event.IDeviceStateChange;
  * @author Derek
  */
 public class RuleProcessor extends TenantEngineLifecycleComponent implements IRuleProcessor {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(RuleProcessor.class);
 
     /** Default number of threads used for processing */
     private static final int DEFAULT_NUM_PROCESSING_THREADS = 2;
@@ -126,14 +120,6 @@ public class RuleProcessor extends TenantEngineLifecycleComponent implements IRu
 
     public void setNumProcessingThreads(int numProcessingThreads) {
 	this.numProcessingThreads = numProcessingThreads;
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*

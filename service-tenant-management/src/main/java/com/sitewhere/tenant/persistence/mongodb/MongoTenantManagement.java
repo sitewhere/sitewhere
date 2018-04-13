@@ -11,8 +11,6 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 
 import com.mongodb.BasicDBList;
@@ -46,9 +44,6 @@ import com.sitewhere.tenant.persistence.TenantManagementPersistenceLogic;
  */
 public class MongoTenantManagement extends LifecycleComponent implements ITenantManagement {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(MongoTenantManagement.class);
-
     /** Converter lookup */
     private static IMongoConverterLookup LOOKUP = new MongoConverters();
 
@@ -69,16 +64,6 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	/** Ensure that expected indexes exist */
 	ensureIndexes();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /**
@@ -184,7 +169,7 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
 		or.add(nameSearch);
 		dbCriteria.append("$or", or);
 	    } catch (PatternSyntaxException e) {
-		LOGGER.warn("Invalid regex for searching tenant list. Ignoring.");
+		getLogger().warn("Invalid regex for searching tenant list. Ignoring.");
 	    }
 	}
 	if (criteria.getUserId() != null) {

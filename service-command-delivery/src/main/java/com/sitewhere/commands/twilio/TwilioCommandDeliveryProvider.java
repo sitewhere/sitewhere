@@ -10,8 +10,6 @@ package com.sitewhere.commands.twilio;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -37,9 +35,6 @@ import com.twilio.sdk.resource.instance.Account;
  */
 public class TwilioCommandDeliveryProvider extends TenantEngineLifecycleComponent
 	implements ICommandDeliveryProvider<String, SmsParameters> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(TwilioCommandDeliveryProvider.class);
 
     /** Account SID */
     private String accountSid;
@@ -77,17 +72,7 @@ public class TwilioCommandDeliveryProvider extends TenantEngineLifecycleComponen
 	}
 	this.twilio = new TwilioRestClient(getAccountSid(), getAuthToken());
 	this.account = twilio.getAccount();
-	LOGGER.info("Twilio delivery provider started. Calls will originate from " + getFromPhoneNumber() + ".");
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
+	getLogger().info("Twilio delivery provider started. Calls will originate from " + getFromPhoneNumber() + ".");
     }
 
     /*
@@ -102,7 +87,7 @@ public class TwilioCommandDeliveryProvider extends TenantEngineLifecycleComponen
     @Override
     public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment, IDeviceCommandExecution execution,
 	    String encoded, SmsParameters params) throws SiteWhereException {
-	LOGGER.info("Delivering SMS command to " + params.getSmsPhoneNumber() + ".");
+	getLogger().info("Delivering SMS command to " + params.getSmsPhoneNumber() + ".");
 	sendSms(encoded, getFromPhoneNumber(), params.getSmsPhoneNumber());
     }
 

@@ -7,9 +7,6 @@
  */
 package com.sitewhere.search.microservice;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.search.configuration.EventSearchModelProvider;
 import com.sitewhere.search.spi.microservice.IEventSearchMicroservice;
@@ -26,9 +23,6 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class EventSearchMicroservice extends MultitenantMicroservice<IEventSearchTenantEngine>
 	implements IEventSearchMicroservice {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(EventSearchMicroservice.class);
 
     /** Microservice name */
     private static final String NAME = "Event Search";
@@ -72,13 +66,5 @@ public class EventSearchMicroservice extends MultitenantMicroservice<IEventSearc
     @Override
     public IEventSearchTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
 	return new EventSearchTenantEngine(this, tenant);
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

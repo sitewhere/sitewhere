@@ -14,8 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.curator.framework.CuratorFramework;
 
 import com.sitewhere.common.MarshalUtils;
@@ -32,9 +30,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * @author Derek
  */
 public class InstanceTemplateManager extends LifecycleComponent implements IInstanceTemplateManager {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(InstanceTemplateManager.class);
 
     /** Root folder for instance templates */
     private static final String TEMPLATES_ROOT = "/templates";
@@ -124,10 +119,10 @@ public class InstanceTemplateManager extends LifecycleComponent implements IInst
 	    templates.clear();
 	    templates.putAll(updated);
 	}
-	LOGGER.info("Loaded " + templates.size() + " instance templates:");
+	getLogger().info("Loaded " + templates.size() + " instance templates:");
 	for (String key : templates.keySet()) {
 	    IInstanceTemplate template = templates.get(key);
-	    LOGGER.info("- " + template.getName() + " (" + template.getId() + ")");
+	    getLogger().info("- " + template.getName() + " (" + template.getId() + ")");
 	}
     }
 
@@ -141,7 +136,7 @@ public class InstanceTemplateManager extends LifecycleComponent implements IInst
     protected IInstanceTemplate createTemplate(File folder) throws SiteWhereException {
 	File templateFile = new File(folder, TEMPLATE_FILE);
 	if (!templateFile.exists()) {
-	    LOGGER.warn("Template file not found for folder '" + folder.getAbsolutePath() + "'. Skipping.");
+	    getLogger().warn("Template file not found for folder '" + folder.getAbsolutePath() + "'. Skipping.");
 	    return null;
 	}
 	FileInputStream input = null;
@@ -150,19 +145,9 @@ public class InstanceTemplateManager extends LifecycleComponent implements IInst
 	    byte[] content = IOUtils.toByteArray(input);
 	    return MarshalUtils.unmarshalJson(content, InstanceTemplate.class);
 	} catch (IOException e) {
-	    LOGGER.error("Unable to read instance template file.", e);
+	    getLogger().error("Unable to read instance template file.", e);
 	    IOUtils.closeQuietly(input);
 	    return null;
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

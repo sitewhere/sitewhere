@@ -11,9 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.core.DataUtils;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.EventDecodeException;
@@ -31,9 +28,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public class PayloadLoggerEventDecoder extends TenantEngineLifecycleComponent implements IDeviceEventDecoder<byte[]> {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(PayloadLoggerEventDecoder.class);
-
     public PayloadLoggerEventDecoder() {
 	super(LifecycleComponentType.DeviceEventDecoder);
     }
@@ -47,20 +41,10 @@ public class PayloadLoggerEventDecoder extends TenantEngineLifecycleComponent im
     @Override
     public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, Object> metadata)
 	    throws EventDecodeException {
-	LOGGER.info("=== EVENT DATA BEGIN ===");
-	LOGGER.info(new String(payload));
-	LOGGER.info("(hex) " + DataUtils.bytesToHex(payload));
-	LOGGER.info("=== EVENT DATA END ===");
+	getLogger().info("=== EVENT DATA BEGIN ===");
+	getLogger().info(new String(payload));
+	getLogger().info("(hex) " + DataUtils.bytesToHex(payload));
+	getLogger().info("=== EVENT DATA END ===");
 	return new ArrayList<IDecodedDeviceRequest<?>>();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

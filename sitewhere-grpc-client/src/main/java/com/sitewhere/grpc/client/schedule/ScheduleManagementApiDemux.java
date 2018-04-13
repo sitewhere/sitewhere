@@ -7,9 +7,6 @@
  */
 package com.sitewhere.grpc.client.schedule;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.grpc.client.ApiDemux;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiDemux;
@@ -26,9 +23,6 @@ import com.sitewhere.spi.microservice.MicroserviceIdentifier;
  */
 public class ScheduleManagementApiDemux extends ApiDemux<IScheduleManagementApiChannel<?>>
 	implements IScheduleManagementApiDemux {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(ScheduleManagementApiDemux.class);
 
     public ScheduleManagementApiDemux(IMicroservice microservice) {
 	super(microservice);
@@ -49,13 +43,5 @@ public class ScheduleManagementApiDemux extends ApiDemux<IScheduleManagementApiC
     @Override
     public IScheduleManagementApiChannel<?> createApiChannel(String host) throws SiteWhereException {
 	return new ScheduleManagementApiChannel(this, getMicroservice(), host);
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

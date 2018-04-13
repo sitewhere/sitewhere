@@ -12,9 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.label.ILabelGenerator;
@@ -28,9 +25,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * @author Derek
  */
 public class LabelGeneratorManager extends TenantEngineLifecycleComponent implements ILabelGeneratorManager {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(LabelGeneratorManager.class);
 
     /** List of label generators */
     private List<ILabelGenerator> labelGenerators = new ArrayList<ILabelGenerator>();
@@ -90,16 +84,6 @@ public class LabelGeneratorManager extends TenantEngineLifecycleComponent implem
     @Override
     public ILabelGenerator getLabelGenerator(String id) throws SiteWhereException {
 	return getGeneratorsById().get(id);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public Map<String, ILabelGenerator> getGeneratorsById() {

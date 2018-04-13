@@ -7,9 +7,6 @@
  */
 package com.sitewhere.commands.groovy;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor;
 import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.groovy.GroovyComponent;
@@ -29,9 +26,6 @@ import groovy.lang.Binding;
  * @param <T>
  */
 public class GroovyParameterExtractor<T> extends GroovyComponent implements ICommandDeliveryParameterExtractor<T> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(GroovyParameterExtractor.class);
 
     public GroovyParameterExtractor() {
 	super(LifecycleComponentType.CommandParameterExtractor);
@@ -54,20 +48,10 @@ public class GroovyParameterExtractor<T> extends GroovyComponent implements ICom
 	    Binding binding = new Binding();
 	    binding.setVariable(IGroovyVariables.VAR_NESTING_CONTEXT, nesting);
 	    binding.setVariable(IGroovyVariables.VAR_ASSIGNMENT, assignment);
-	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
+	    binding.setVariable(IGroovyVariables.VAR_LOGGER, getLogger());
 	    return (T) run(binding);
 	} catch (SiteWhereException e) {
 	    throw new SiteWhereException("Unable to run parameter extractor script.", e);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

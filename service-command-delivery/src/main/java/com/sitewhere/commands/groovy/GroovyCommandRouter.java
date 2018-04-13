@@ -9,9 +9,6 @@ package com.sitewhere.commands.groovy;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.commands.spi.ICommandDestination;
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
 import com.sitewhere.groovy.IGroovyVariables;
@@ -32,9 +29,6 @@ import groovy.lang.Binding;
  * @author Derek
  */
 public class GroovyCommandRouter extends GroovyComponent implements IOutboundCommandRouter {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(GroovyCommandRouter.class);
 
     /** List of available command destinations */
     private List<ICommandDestination<?, ?>> commandDestinations;
@@ -101,8 +95,8 @@ public class GroovyCommandRouter extends GroovyComponent implements IOutboundCom
 	    binding.setVariable(IGroovyVariables.VAR_SYSTEM_COMMAND, system);
 	    binding.setVariable(IGroovyVariables.VAR_NESTING_CONTEXT, nesting);
 	    binding.setVariable(IGroovyVariables.VAR_ASSIGNMENT, assignment);
-	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
-	    LOGGER.debug("About to route command using script '" + getScriptId() + "'");
+	    binding.setVariable(IGroovyVariables.VAR_LOGGER, getLogger());
+	    getLogger().debug("About to route command using script '" + getScriptId() + "'");
 	    String target = (String) run(binding);
 	    if (target != null) {
 		for (ICommandDestination<?, ?> destination : getCommandDestinations()) {
@@ -115,21 +109,11 @@ public class GroovyCommandRouter extends GroovyComponent implements IOutboundCom
 		    }
 		}
 	    } else {
-		LOGGER.warn("Groovy command router did not return a command destination id.");
+		getLogger().warn("Groovy command router did not return a command destination id.");
 	    }
 	} catch (SiteWhereException e) {
 	    throw new SiteWhereException("Unable to run router script.", e);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public List<ICommandDestination<?, ?>> getCommandDestinations() {

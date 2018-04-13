@@ -7,9 +7,6 @@
  */
 package com.sitewhere.connectors.groovy.routing;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.connectors.spi.routing.IRouteBuilder;
 import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -27,9 +24,6 @@ import groovy.lang.Binding;
  */
 public class GroovyRouteBuilder extends GroovyComponent implements IRouteBuilder<String> {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(GroovyRouteBuilder.class);
-
     public GroovyRouteBuilder() {
 	super(LifecycleComponentType.OutboundEventProcessorFilter);
     }
@@ -45,7 +39,7 @@ public class GroovyRouteBuilder extends GroovyComponent implements IRouteBuilder
     @Override
     public String build(IDeviceEvent event, IDevice device, IDeviceAssignment assignment) throws SiteWhereException {
 	Binding binding = new Binding();
-	binding.setVariable("logger", LOGGER);
+	binding.setVariable("logger", getLogger());
 	binding.setVariable("event", event);
 	binding.setVariable("device", device);
 	binding.setVariable("assignment", assignment);
@@ -58,15 +52,5 @@ public class GroovyRouteBuilder extends GroovyComponent implements IRouteBuilder
 	} catch (SiteWhereException e) {
 	    throw new SiteWhereException("Unable to run route builder script.", e);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

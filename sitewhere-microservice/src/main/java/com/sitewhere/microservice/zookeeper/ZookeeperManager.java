@@ -9,8 +9,6 @@ package com.sitewhere.microservice.zookeeper;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -29,9 +27,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * @author Derek
  */
 public class ZookeeperManager extends LifecycleComponent implements IZookeeperManager {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(ZookeeperManager.class);
 
     /** Base namespace for all SiteWhere Zookeeper artifacts */
     private static final String SITEWHERE_ZK_NAMESPACE = "sitewhere";
@@ -111,16 +106,6 @@ public class ZookeeperManager extends LifecycleComponent implements IZookeeperMa
 
     public void setCurator(CuratorFramework curator) {
 	this.curator = curator;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public IInstanceSettings getInstanceSettings() {

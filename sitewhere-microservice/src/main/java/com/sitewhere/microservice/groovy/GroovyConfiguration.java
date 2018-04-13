@@ -10,8 +10,6 @@ package com.sitewhere.microservice.groovy;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.control.CompilationFailedException;
 
 import com.sitewhere.server.lifecycle.LifecycleComponent;
@@ -33,9 +31,6 @@ import groovy.util.ScriptException;
  * @author Derek
  */
 public class GroovyConfiguration extends LifecycleComponent implements IGroovyConfiguration {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(GroovyConfiguration.class);
 
     /** Synchronizer for loading Zk scripts to filesystem */
     private IScriptSynchronizer scriptSynchronizer;
@@ -102,16 +97,6 @@ public class GroovyConfiguration extends LifecycleComponent implements IGroovyCo
 	} catch (Throwable e) {
 	    throw new SiteWhereException("Unhandled exception in Groovy script.", e);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public IScriptSynchronizer getScriptSynchronizer() {

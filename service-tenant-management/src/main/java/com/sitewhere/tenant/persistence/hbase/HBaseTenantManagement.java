@@ -9,8 +9,6 @@ package com.sitewhere.tenant.persistence.hbase;
 
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.regionserver.BloomType;
 
 import com.sitewhere.hbase.HBaseContext;
@@ -35,9 +33,6 @@ import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
  * @author Derek
  */
 public class HBaseTenantManagement extends LifecycleComponent implements ITenantManagement {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(HBaseTenantManagement.class);
 
     /** Used to communicate with HBase */
     private ISiteWhereHBaseClient client;
@@ -86,16 +81,6 @@ public class HBaseTenantManagement extends LifecycleComponent implements ITenant
     protected void ensureTablesExist() throws SiteWhereException {
 	SiteWhereTables.assureTable(client, ISiteWhereHBase.USERS_TABLE_NAME, BloomType.ROW);
 	SiteWhereTables.assureTable(client, ISiteWhereHBase.UID_TABLE_NAME, BloomType.ROW);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*

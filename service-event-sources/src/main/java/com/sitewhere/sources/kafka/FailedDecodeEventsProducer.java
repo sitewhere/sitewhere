@@ -7,9 +7,6 @@
  */
 package com.sitewhere.sources.kafka;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
@@ -22,9 +19,6 @@ import com.sitewhere.spi.microservice.IMicroservice;
  */
 public class FailedDecodeEventsProducer extends MicroserviceKafkaProducer {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(FailedDecodeEventsProducer.class);
-
     public FailedDecodeEventsProducer(IMicroservice microservice) {
 	super(microservice);
     }
@@ -36,13 +30,5 @@ public class FailedDecodeEventsProducer extends MicroserviceKafkaProducer {
     @Override
     public String getTargetTopicName() throws SiteWhereException {
 	return getMicroservice().getKafkaTopicNaming().getEventSourceFailedDecodeTopic(getTenantEngine().getTenant());
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

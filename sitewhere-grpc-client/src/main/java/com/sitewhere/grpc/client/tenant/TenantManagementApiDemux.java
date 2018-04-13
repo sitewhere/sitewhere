@@ -7,9 +7,6 @@
  */
 package com.sitewhere.grpc.client.tenant;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.grpc.client.ApiDemux;
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiDemux;
@@ -26,9 +23,6 @@ import com.sitewhere.spi.microservice.MicroserviceIdentifier;
  */
 public class TenantManagementApiDemux extends ApiDemux<ITenantManagementApiChannel<?>>
 	implements ITenantManagementApiDemux {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(TenantManagementApiDemux.class);
 
     public TenantManagementApiDemux(IMicroservice microservice) {
 	super(microservice);
@@ -49,13 +43,5 @@ public class TenantManagementApiDemux extends ApiDemux<ITenantManagementApiChann
     @Override
     public ITenantManagementApiChannel<?> createApiChannel(String host) throws SiteWhereException {
 	return new CachedTenantManagementApiChannel(this, getMicroservice(), host);
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

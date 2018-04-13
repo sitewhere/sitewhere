@@ -7,9 +7,6 @@
  */
 package com.sitewhere.batch.microservice;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.batch.configuration.BatchOperationsModelProvider;
 import com.sitewhere.batch.grpc.BatchManagementGrpcServer;
 import com.sitewhere.batch.spi.grpc.IBatchManagementGrpcServer;
@@ -36,9 +33,6 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchOperationsTenantEngine>
 	implements IBatchOperationsMicroservice {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(BatchOperationsMicroservice.class);
 
     /** Microservice name */
     private static final String NAME = "Batch Operations";
@@ -243,13 +237,5 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
 
     public void setDeviceEventManagementApiDemux(IDeviceEventManagementApiDemux deviceEventManagementApiDemux) {
 	this.deviceEventManagementApiDemux = deviceEventManagementApiDemux;
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

@@ -10,8 +10,6 @@ package com.sitewhere.connectors.mqtt;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.fusesource.hawtdispatch.Dispatch;
 import org.fusesource.hawtdispatch.DispatchQueue;
 import org.fusesource.mqtt.client.Future;
@@ -45,9 +43,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  */
 public class MqttOutboundConnector extends FilteredOutboundConnector
 	implements IMulticastingOutboundConnector<String>, IMqttComponent {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(MqttOutboundConnector.class);
 
     private String protocol = MqttLifecycleComponent.DEFAULT_PROTOCOL;
 
@@ -121,7 +116,7 @@ public class MqttOutboundConnector extends FilteredOutboundConnector
 	this.queue = Dispatch.createQueue(getComponentId());
 	this.mqtt = MqttLifecycleComponent.configure(this, queue);
 
-	LOGGER.info("Connecting to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
+	getLogger().info("Connecting to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
 	connection = mqtt.futureConnection();
 	try {
 	    Future<Void> future = connection.connect();
@@ -129,7 +124,7 @@ public class MqttOutboundConnector extends FilteredOutboundConnector
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to connect to MQTT broker.", e);
 	}
-	LOGGER.info("Connected to MQTT broker.");
+	getLogger().info("Connected to MQTT broker.");
     }
 
     /*
@@ -154,7 +149,7 @@ public class MqttOutboundConnector extends FilteredOutboundConnector
 		connection.disconnect();
 		connection.kill();
 	    } catch (Exception e) {
-		LOGGER.error("Error shutting down MQTT device event receiver.", e);
+		getLogger().error("Error shutting down MQTT device event receiver.", e);
 	    }
 	}
 	if (queue != null) {
@@ -252,16 +247,6 @@ public class MqttOutboundConnector extends FilteredOutboundConnector
      */
     protected void publish(IDeviceEvent event, String topic) throws SiteWhereException {
 	connection.publish(topic, MarshalUtils.marshalJson(event), QoS.AT_LEAST_ONCE, false);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*

@@ -7,9 +7,6 @@
  */
 package com.sitewhere.sources.decoder.composite;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.ICompositeDeviceEventDecoder.IDecoderChoice;
 import com.sitewhere.sources.spi.ICompositeDeviceEventDecoder.IDeviceContext;
@@ -26,9 +23,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * @param <T>
  */
 public class DeviceTypeDecoderChoice<T> extends TenantEngineLifecycleComponent implements IDecoderChoice<T> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(DeviceTypeDecoderChoice.class);
 
     /** Device type token to match */
     private String deviceTypeToken;
@@ -90,16 +84,6 @@ public class DeviceTypeDecoderChoice<T> extends TenantEngineLifecycleComponent i
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getDeviceEventDecoder().lifecycleStop(monitor);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public String getDeviceTypeToken() {

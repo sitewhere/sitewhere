@@ -15,8 +15,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.zookeeper.data.Stat;
@@ -40,9 +38,6 @@ import com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice;
  * @author Derek
  */
 public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer implements ITenantBootstrapModelConsumer {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(TenantBootstrapModelConsumer.class);
 
     /** Consumer id */
     private static String CONSUMER_ID = UUID.randomUUID().toString();
@@ -140,16 +135,6 @@ public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer impl
 	}
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
-    }
-
     /**
      * Thread that takes care of bootstrapping a tenant based on its template.
      * 
@@ -172,9 +157,9 @@ public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer impl
 		createTenantsConfigurationRootIfNotFound(curator);
 		createTenantConfigurationIfNotFound(curator);
 	    } catch (SiteWhereException e) {
-		LOGGER.error("Unable to bootstrap tenant.", e);
+		getLogger().error("Unable to bootstrap tenant.", e);
 	    } catch (Throwable e) {
-		LOGGER.error("Unhandled exception while bootstrapping tenant.", e);
+		getLogger().error("Unhandled exception while bootstrapping tenant.", e);
 	    }
 	}
 
@@ -188,12 +173,12 @@ public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer impl
 	    Stat existing = curator.checkExists()
 		    .forPath(((ITenantManagementMicroservice) getMicroservice()).getInstanceTenantsConfigurationPath());
 	    if (existing == null) {
-		LOGGER.info("Zk node for tenant configurations not found. Creating...");
+		getLogger().info("Zk node for tenant configurations not found. Creating...");
 		curator.create().forPath(
 			((ITenantManagementMicroservice) getMicroservice()).getInstanceTenantsConfigurationPath());
-		LOGGER.info("Created tenant configurations Zk node.");
+		getLogger().info("Created tenant configurations Zk node.");
 	    } else {
-		LOGGER.info("Found Zk node for tenant configurations.");
+		getLogger().info("Found Zk node for tenant configurations.");
 	    }
 	}
 
@@ -208,16 +193,17 @@ public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer impl
 		    .getInstanceTenantConfigurationPath(getTenant().getId());
 	    Stat existing = curator.checkExists().forPath(tenantPath);
 	    if (existing == null) {
-		LOGGER.info("Zk node for tenant '" + getTenant().getName() + "' configuration not found. Creating...");
+		getLogger().info(
+			"Zk node for tenant '" + getTenant().getName() + "' configuration not found. Creating...");
 		curator.create().forPath(tenantPath);
-		LOGGER.info("Copying tenant template contents into Zk node...");
+		getLogger().info("Copying tenant template contents into Zk node...");
 		((ITenantManagementMicroservice) getMicroservice()).getTenantTemplateManager()
 			.copyTemplateContentsToZk(getTenant().getTenantTemplateId(), curator, tenantPath);
 		curator.create().forPath(((ITenantManagementMicroservice) getMicroservice())
 			.getInstanceTenantBootstrappedIndicatorPath(getTenant().getId()));
-		LOGGER.info("Tenant '" + getTenant().getName() + "' bootstrapped with template data.");
+		getLogger().info("Tenant '" + getTenant().getName() + "' bootstrapped with template data.");
 	    } else {
-		LOGGER.info("Found Zk node for tenant '" + getTenant().getName() + "'.");
+		getLogger().info("Found Zk node for tenant '" + getTenant().getName() + "'.");
 	    }
 	}
 

@@ -14,8 +14,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.TreeCache;
@@ -37,9 +35,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * @author Derek
  */
 public class ConfigurationMonitor extends LifecycleComponent implements IConfigurationMonitor {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(ConfigurationMonitor.class);
 
     /** Number of threads dedicated to handling configuration changes */
     private static final int CONFIGURATION_UPDATE_THREAD_COUNT = 3;
@@ -117,13 +112,13 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
 		    }
 		    default: {
 			String json = MarshalUtils.marshalJsonAsPrettyString(event);
-			LOGGER.info("Tree cache event.\n\n" + json);
+			getLogger().info("Tree cache event.\n\n" + json);
 		    }
 		    }
 		}
 	    });
 	    getTreeCache().start();
-	    LOGGER.info("Configuration manager listening for configuration updates.");
+	    getLogger().info("Configuration manager listening for configuration updates.");
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to start tree cache for configuration monitor.", e);
 	}
@@ -279,16 +274,6 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
 
     public void setListeners(List<IConfigurationListener> listeners) {
 	this.listeners = listeners;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public IZookeeperManager getZkManager() {

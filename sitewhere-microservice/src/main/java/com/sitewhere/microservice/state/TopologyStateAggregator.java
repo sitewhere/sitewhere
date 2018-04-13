@@ -13,9 +13,6 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.grpc.client.spi.ApiNotAvailableException;
 import com.sitewhere.rest.model.microservice.state.InstanceMicroservice;
 import com.sitewhere.rest.model.microservice.state.InstanceTenantEngine;
@@ -43,9 +40,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  * @author Derek
  */
 public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsumer implements ITopologyStateAggregator {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(TopologyStateAggregator.class);
 
     /** Interval at which tenant engine will be checked */
     private static final long TENANT_ENGINE_CHECK_INTERVAL = 2 * 1000;
@@ -394,15 +388,5 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
 
     public void setListeners(List<IInstanceTopologyUpdatesListener> listeners) {
 	this.listeners = listeners;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

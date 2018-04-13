@@ -10,9 +10,6 @@ package com.sitewhere.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.commands.spi.ICommandTargetResolver;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -32,9 +29,6 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class DefaultCommandTargetResolver extends TenantEngineLifecycleComponent implements ICommandTargetResolver {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(DefaultCommandTargetResolver.class);
-
     public DefaultCommandTargetResolver() {
 	super(LifecycleComponentType.CommandTargetResolver);
     }
@@ -47,7 +41,7 @@ public class DefaultCommandTargetResolver extends TenantEngineLifecycleComponent
      */
     @Override
     public List<IDeviceAssignment> resolveTargets(IDeviceCommandInvocation invocation) throws SiteWhereException {
-	LOGGER.debug("Resolving target for invocation.");
+	getLogger().debug("Resolving target for invocation.");
 	IDeviceAssignment assignment = getDeviceManagement(getTenantEngine().getTenant())
 		.getDeviceAssignment(invocation.getDeviceAssignmentId());
 	List<IDeviceAssignment> results = new ArrayList<IDeviceAssignment>();
@@ -63,16 +57,6 @@ public class DefaultCommandTargetResolver extends TenantEngineLifecycleComponent
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*

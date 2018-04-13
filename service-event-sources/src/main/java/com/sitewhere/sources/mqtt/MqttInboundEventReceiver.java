@@ -13,8 +13,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.fusesource.hawtdispatch.ShutdownException;
 import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.FutureConnection;
@@ -36,9 +34,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * @author Derek
  */
 public class MqttInboundEventReceiver extends MqttLifecycleComponent implements IInboundEventReceiver<byte[]> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(MqttInboundEventReceiver.class);
 
     /** Default subscribed topic name */
     public static final String DEFAULT_TOPIC = "SiteWhere/input/protobuf";
@@ -74,9 +69,9 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 	super.start(monitor);
 
 	this.executor = Executors.newSingleThreadExecutor(new SubscribersThreadFactory());
-	LOGGER.info("Receiver connecting to MQTT broker at '" + getBrokerInfo() + "'...");
+	getLogger().info("Receiver connecting to MQTT broker at '" + getBrokerInfo() + "'...");
 	connection = getConnection();
-	LOGGER.info("Receiver connected to MQTT broker.");
+	getLogger().info("Receiver connected to MQTT broker.");
 
 	// Subscribe to chosen topic.
 	Topic[] topics = { new Topic(getTopic(), QoS.AT_LEAST_ONCE) };
@@ -84,23 +79,13 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 	    Future<byte[]> future = connection.subscribe(topics);
 	    future.await();
 
-	    LOGGER.info("Subscribed to events on MQTT topic: " + getTopic());
+	    getLogger().info("Subscribed to events on MQTT topic: " + getTopic());
 	} catch (Exception e) {
 	    throw new SiteWhereException("Exception while attempting to subscribe to MQTT topic: " + getTopic(), e);
 	}
 
 	// Handle message processing in separate thread.
 	executor.execute(new MqttSubscriptionProcessor());
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*
@@ -148,7 +133,7 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 
 	@Override
 	public void run() {
-	    LOGGER.info("Started MQTT subscription processing thread.");
+	    getLogger().info("Started MQTT subscription processing thread.");
 	    while (true) {
 		try {
 		    Future<Message> future = connection.receive();
@@ -158,7 +143,7 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 		} catch (InterruptedException e) {
 		    break;
 		} catch (Throwable e) {
-		    LOGGER.error(e);
+		    getLogger().error(e);
 		}
 	    }
 	}
@@ -180,9 +165,9 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 		connection.disconnect().await();
 		connection.kill().await();
 	    } catch (ShutdownException e) {
-		LOGGER.info("Dispatcher has already been shut down.");
+		getLogger().info("Dispatcher has already been shut down.");
 	    } catch (Exception e) {
-		LOGGER.error("Error shutting down MQTT device event receiver.", e);
+		getLogger().error("Error shutting down MQTT device event receiver.", e);
 	    }
 	}
 	super.stop(monitor);

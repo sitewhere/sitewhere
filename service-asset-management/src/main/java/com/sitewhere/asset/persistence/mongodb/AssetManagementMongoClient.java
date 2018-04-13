@@ -7,8 +7,6 @@
  */
 package com.sitewhere.asset.persistence.mongodb;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
@@ -22,9 +20,6 @@ import com.sitewhere.spi.SiteWhereException;
  * @author Derek
  */
 public class AssetManagementMongoClient extends MongoDbClient implements IAssetManagementMongoClient {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(AssetManagementMongoClient.class);
 
     /** Injected name used for asset types collection */
     private String assetTypesCollectionName = IAssetManagementMongoClient.DEFAULT_ASSET_TYPES_COLLECTION_NAME;
@@ -51,16 +46,6 @@ public class AssetManagementMongoClient extends MongoDbClient implements IAssetM
      */
     public MongoCollection<Document> getAssetsCollection() throws SiteWhereException {
 	return getDatabase().getCollection(getAssetsCollectionName());
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public String getAssetTypesCollectionName() {

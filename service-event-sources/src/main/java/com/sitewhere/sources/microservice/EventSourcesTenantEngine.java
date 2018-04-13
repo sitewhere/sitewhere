@@ -7,9 +7,6 @@
  */
 package com.sitewhere.sources.microservice;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.sources.spi.IEventSourcesManager;
@@ -30,9 +27,6 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 public class EventSourcesTenantEngine extends MicroserviceTenantEngine implements IEventSourcesTenantEngine {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(EventSourcesTenantEngine.class);
 
     /** Event sources manager */
     private IEventSourcesManager eventSourcesManager;
@@ -121,15 +115,5 @@ public class EventSourcesTenantEngine extends MicroserviceTenantEngine implement
 
     public void setEventSourcesManager(IEventSourcesManager eventSourcesManager) {
 	this.eventSourcesManager = eventSourcesManager;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

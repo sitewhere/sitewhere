@@ -11,10 +11,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponentLogger;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponentParameter;
 import com.sitewhere.spi.server.lifecycle.ILifecycleConstraints;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -370,12 +369,10 @@ public class LifecycleComponentDecorator<T extends ILifecycleComponent> implemen
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public Log getLogger() {
+    public ILifecycleComponentLogger getLogger() {
 	return getDelegate().getLogger();
     }
 

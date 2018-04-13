@@ -32,8 +32,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.qpid.amqp_1_0.client.Message;
 
 import com.sitewhere.sources.InboundEventReceiver;
@@ -46,7 +44,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
-    private static Log LOGGER = LogFactory.getLog(EventHubInboundEventReceiver.class);
     private static String username = "";
     private static String password = "";
     private static String namespace = "";
@@ -107,16 +104,6 @@ public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
 	    task.deactivate();
 	}
 	executor.shutdownNow();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.device.communication.InboundEventReceiver#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     private class EventProcessor implements Runnable {

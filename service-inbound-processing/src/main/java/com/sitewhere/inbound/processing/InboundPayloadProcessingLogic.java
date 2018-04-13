@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.reactivestreams.Processor;
 
@@ -56,9 +54,6 @@ import reactor.core.publisher.Flux;
  * @author Derek
  */
 public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponent {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(InboundPayloadProcessingLogic.class);
 
     /** Meter for counting processed events */
     private Meter processedEvents;
@@ -295,14 +290,6 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
     protected IDeviceEventManagement getDeviceEventManagement() {
 	return ((IInboundProcessingMicroservice) getTenantEngine().getMicroservice()).getDeviceEventManagementApiDemux()
 		.getApiChannel();
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public Meter getProcessedEvents() {

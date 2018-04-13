@@ -7,9 +7,6 @@
  */
 package com.sitewhere.commands.groovy;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.commands.spi.CommandEncodeException;
 import com.sitewhere.commands.spi.ICommandExecutionEncoder;
 import com.sitewhere.groovy.IGroovyVariables;
@@ -35,9 +32,6 @@ public class GroovyCommandExecutionEncoder extends GroovyComponent implements IC
 	super(LifecycleComponentType.CommandExecutionEncoder);
     }
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(GroovyCommandExecutionEncoder.class);
-
     /*
      * (non-Javadoc)
      * 
@@ -54,7 +48,7 @@ public class GroovyCommandExecutionEncoder extends GroovyComponent implements IC
 	    binding.setVariable(IGroovyVariables.VAR_COMMAND_EXECUTION, command);
 	    binding.setVariable(IGroovyVariables.VAR_NESTING_CONTEXT, nested);
 	    binding.setVariable(IGroovyVariables.VAR_ASSIGNMENT, assignment);
-	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
+	    binding.setVariable(IGroovyVariables.VAR_LOGGER, getLogger());
 	    return (byte[]) run(binding);
 	} catch (SiteWhereException e) {
 	    throw new CommandEncodeException("Unable to run encoder script.", e);
@@ -77,20 +71,10 @@ public class GroovyCommandExecutionEncoder extends GroovyComponent implements IC
 	    binding.setVariable(IGroovyVariables.VAR_SYSTEM_COMMAND, command);
 	    binding.setVariable(IGroovyVariables.VAR_NESTING_CONTEXT, nested);
 	    binding.setVariable(IGroovyVariables.VAR_ASSIGNMENT, assignment);
-	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
+	    binding.setVariable(IGroovyVariables.VAR_LOGGER, getLogger());
 	    return (byte[]) run(binding);
 	} catch (SiteWhereException e) {
 	    throw new CommandEncodeException("Unable to run encoder script.", e);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

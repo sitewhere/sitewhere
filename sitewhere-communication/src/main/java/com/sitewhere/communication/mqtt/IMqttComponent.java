@@ -7,12 +7,14 @@
  */
 package com.sitewhere.communication.mqtt;
 
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+
 /**
  * Allows MQTT settings to be configured consistently across components.
  * 
  * @author Derek
  */
-public interface IMqttComponent {
+public interface IMqttComponent extends ILifecycleComponent {
 
     /**
      * Get broker hostname.

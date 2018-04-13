@@ -12,10 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.sources.spi.socket.ISocketInteractionHandler;
 import com.sitewhere.sources.spi.socket.ISocketInteractionHandlerFactory;
@@ -29,7 +27,8 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class ReadAllInteractionHandler implements ISocketInteractionHandler<byte[]> {
+public class ReadAllInteractionHandler extends TenantEngineLifecycleComponent
+	implements ISocketInteractionHandler<byte[]> {
 
     /*
      * (non-Javadoc)
@@ -61,16 +60,8 @@ public class ReadAllInteractionHandler implements ISocketInteractionHandler<byte
      */
     public static class Factory extends LifecycleComponent implements ISocketInteractionHandlerFactory<byte[]> {
 
-	/** Static logger instance */
-	private static Log LOGGER = LogFactory.getLog(Factory.class);
-
 	public Factory() {
 	    super(LifecycleComponentType.Other);
-	}
-
-	@Override
-	public Log getLogger() {
-	    return LOGGER;
 	}
 
 	/*

@@ -7,9 +7,6 @@
  */
 package com.sitewhere.commands.destination.mqtt;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -28,9 +25,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public class HardwareIdMqttParameterExtractor extends TenantEngineLifecycleComponent
 	implements ICommandDeliveryParameterExtractor<MqttParameters> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(HardwareIdMqttParameterExtractor.class);
 
     /** Default command topic */
     public static final String DEFAULT_COMMAND_TOPIC = "SiteWhere/command/%s";
@@ -69,16 +63,6 @@ public class HardwareIdMqttParameterExtractor extends TenantEngineLifecycleCompo
 	params.setSystemTopic(systemTopic);
 
 	return params;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public String getCommandTopicExpr() {

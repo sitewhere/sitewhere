@@ -11,9 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.sources.spi.EventDecodeException;
@@ -32,9 +29,6 @@ import groovy.lang.Binding;
  * @author Derek
  */
 public class GroovyStringEventDecoder extends GroovyComponent implements IDeviceEventDecoder<String> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(GroovyStringEventDecoder.class);
 
     public GroovyStringEventDecoder() {
 	super(LifecycleComponentType.DeviceEventDecoder);
@@ -55,8 +49,8 @@ public class GroovyStringEventDecoder extends GroovyComponent implements IDevice
 	    List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();
 	    binding.setVariable(IGroovyVariables.VAR_DECODED_EVENTS, events);
 	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD, payload);
-	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
-	    LOGGER.debug("About to execute '" + getScriptId() + "' with payload: " + payload);
+	    binding.setVariable(IGroovyVariables.VAR_LOGGER, getLogger());
+	    getLogger().debug("About to execute '" + getScriptId() + "' with payload: " + payload);
 	    run(binding);
 	    return (List<IDecodedDeviceRequest<?>>) binding.getVariable(IGroovyVariables.VAR_DECODED_EVENTS);
 	} catch (SiteWhereException e) {
@@ -83,15 +77,5 @@ public class GroovyStringEventDecoder extends GroovyComponent implements IDevice
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

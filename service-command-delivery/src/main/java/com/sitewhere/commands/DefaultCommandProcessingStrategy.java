@@ -9,9 +9,6 @@ package com.sitewhere.commands;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.commands.spi.ICommandExecutionBuilder;
 import com.sitewhere.commands.spi.ICommandProcessingStrategy;
 import com.sitewhere.commands.spi.ICommandTargetResolver;
@@ -38,9 +35,6 @@ import com.sitewhere.spi.tenant.ITenant;
 public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleComponent
 	implements ICommandProcessingStrategy {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(DefaultCommandProcessingStrategy.class);
-
     /** Configured command target resolver */
     private ICommandTargetResolver commandTargetResolver = new DefaultCommandTargetResolver();
 
@@ -61,7 +55,7 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
     @Override
     public void deliverCommand(IDeviceCommunication communication, IDeviceCommandInvocation invocation)
 	    throws SiteWhereException {
-	LOGGER.debug("Command processing strategy handling invocation.");
+	getLogger().debug("Command processing strategy handling invocation.");
 	IDeviceCommand command = getDeviceManagement(getTenantEngine().getTenant())
 		.getDeviceCommandByToken(invocation.getCommandToken());
 	if (command != null) {
@@ -125,16 +119,6 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
 	    throw new SiteWhereException("No command target resolver configured for command processing.");
 	}
 	startNestedComponent(getCommandTargetResolver(), monitor, true);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*

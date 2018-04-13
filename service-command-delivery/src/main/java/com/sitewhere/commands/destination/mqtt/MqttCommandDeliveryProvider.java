@@ -7,8 +7,6 @@
  */
 package com.sitewhere.commands.destination.mqtt;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.fusesource.hawtdispatch.ShutdownException;
 import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.QoS;
@@ -32,9 +30,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
 	implements ICommandDeliveryProvider<byte[], MqttParameters> {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(MqttCommandDeliveryProvider.class);
-
     /** Shared MQTT connection */
     private FutureConnection connection;
 
@@ -53,19 +48,9 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.start(monitor);
 
-	LOGGER.info("Connecting to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
+	getLogger().info("Connecting to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
 	connection = getConnection();
-	LOGGER.info("Connected to MQTT broker.");
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
+	getLogger().info("Connected to MQTT broker.");
     }
 
     /*
@@ -81,9 +66,9 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
 		connection.disconnect().await();
 		connection.kill().await();
 	    } catch (ShutdownException e) {
-		LOGGER.info("Dispatcher has already been shut down.");
+		getLogger().info("Dispatcher has already been shut down.");
 	    } catch (Exception e) {
-		LOGGER.error("Error shutting down MQTT device event receiver.", e);
+		getLogger().error("Error shutting down MQTT device event receiver.", e);
 	    }
 	}
 	super.stop(monitor);
@@ -102,9 +87,9 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
     public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment, IDeviceCommandExecution execution,
 	    byte[] encoded, MqttParameters params) throws SiteWhereException {
 	try {
-	    LOGGER.debug("About to publish command message to topic: " + params.getCommandTopic());
+	    getLogger().debug("About to publish command message to topic: " + params.getCommandTopic());
 	    connection.publish(params.getCommandTopic(), encoded, QoS.AT_LEAST_ONCE, false);
-	    LOGGER.debug("Command published.");
+	    getLogger().debug("Command published.");
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to publish command to MQTT topic.", e);
 	}
@@ -122,9 +107,9 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
     public void deliverSystemCommand(IDeviceNestingContext nested, IDeviceAssignment assignment, byte[] encoded,
 	    MqttParameters params) throws SiteWhereException {
 	try {
-	    LOGGER.debug("About to publish system message to topic: " + params.getSystemTopic());
+	    getLogger().debug("About to publish system message to topic: " + params.getSystemTopic());
 	    connection.publish(params.getSystemTopic(), encoded, QoS.AT_LEAST_ONCE, false);
-	    LOGGER.debug("Command published.");
+	    getLogger().debug("Command published.");
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to publish command to MQTT topic.", e);
 	}

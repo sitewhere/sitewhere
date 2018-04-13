@@ -7,9 +7,6 @@
  */
 package com.sitewhere.commands;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -25,9 +22,6 @@ import com.sitewhere.spi.device.command.ISystemCommand;
  */
 public class NoOpCommandRouter extends OutboundCommandRouter {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(NoOpCommandRouter.class);
-
     /*
      * (non-Javadoc)
      * 
@@ -39,7 +33,8 @@ public class NoOpCommandRouter extends OutboundCommandRouter {
     @Override
     public void routeCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
 	    IDeviceAssignment assignment) throws SiteWhereException {
-	LOGGER.warn("Ignoring routing of command. Add a command router to allow commands to be sent to destinations.");
+	getLogger().warn(
+		"Ignoring routing of command. Add a command router to allow commands to be sent to destinations.");
     }
 
     /*
@@ -53,17 +48,7 @@ public class NoOpCommandRouter extends OutboundCommandRouter {
     @Override
     public void routeSystemCommand(ISystemCommand command, IDeviceNestingContext nesting, IDeviceAssignment assignment)
 	    throws SiteWhereException {
-	LOGGER.warn(
+	getLogger().warn(
 		"Ignoring routing of system command. Add a command router to allow commands to be sent to destinations.");
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

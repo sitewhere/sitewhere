@@ -7,9 +7,6 @@
  */
 package com.sitewhere.commands;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.commands.spi.ICommandExecutionBuilder;
 import com.sitewhere.rest.model.device.command.DeviceCommandExecution;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
@@ -34,9 +31,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public class DefaultCommandExecutionBuilder extends LifecycleComponent implements ICommandExecutionBuilder {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(DefaultCommandExecutionBuilder.class);
-
     public DefaultCommandExecutionBuilder() {
 	super(LifecycleComponentType.CommandExecutionBuilder);
     }
@@ -51,7 +45,7 @@ public class DefaultCommandExecutionBuilder extends LifecycleComponent implement
     @Override
     public IDeviceCommandExecution createExecution(IDeviceCommand command, IDeviceCommandInvocation invocation)
 	    throws SiteWhereException {
-	LOGGER.debug("Building default command execution for invocation.");
+	getLogger().debug("Building default command execution for invocation.");
 	DeviceCommandExecution execution = new DeviceCommandExecution();
 	execution.setCommand(command);
 	execution.setInvocation(invocation);
@@ -169,16 +163,6 @@ public class DefaultCommandExecutionBuilder extends LifecycleComponent implement
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*

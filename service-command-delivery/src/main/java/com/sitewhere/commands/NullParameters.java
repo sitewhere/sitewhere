@@ -7,9 +7,6 @@
  */
 package com.sitewhere.commands;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor;
 import com.sitewhere.commands.spi.ICommandDeliveryProvider;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -36,9 +33,6 @@ public class NullParameters {
     public static class Extractor extends TenantEngineLifecycleComponent
 	    implements ICommandDeliveryParameterExtractor<NullParameters> {
 
-	/** Static logger instance */
-	private static Log LOGGER = LogFactory.getLog(Extractor.class);
-
 	/** Value to be returned */
 	private NullParameters parameters = new NullParameters();
 
@@ -59,16 +53,6 @@ public class NullParameters {
 	public NullParameters extractDeliveryParameters(IDeviceNestingContext nesting, IDeviceAssignment assignment,
 		IDeviceCommandExecution execution) throws SiteWhereException {
 	    return parameters;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Log getLogger() {
-	    return LOGGER;
 	}
     }
 }

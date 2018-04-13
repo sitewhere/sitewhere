@@ -7,8 +7,6 @@
  */
 package com.sitewhere.schedule.persistence.mongodb;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
@@ -22,9 +20,6 @@ import com.sitewhere.spi.SiteWhereException;
  * @author Derek
  */
 public class ScheduleManagementMongoClient extends MongoDbClient implements IScheduleManagementMongoClient {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(ScheduleManagementMongoClient.class);
 
     /** Injected name used for schedules collection */
     private String schedulesCollectionName = IScheduleManagementMongoClient.DEFAULT_SCHEDULES_COLLECTION_NAME;
@@ -54,16 +49,6 @@ public class ScheduleManagementMongoClient extends MongoDbClient implements ISch
     @Override
     public MongoCollection<Document> getScheduledJobsCollection() throws SiteWhereException {
 	return getDatabase().getCollection(getScheduledJobsCollectionName());
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public String getSchedulesCollectionName() {

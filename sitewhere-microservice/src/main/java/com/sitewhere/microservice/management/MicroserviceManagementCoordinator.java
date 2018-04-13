@@ -10,9 +10,6 @@ package com.sitewhere.microservice.management;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
 import com.sitewhere.grpc.client.microservice.MicroserviceManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IMicroserviceManagementApiDemux;
@@ -41,9 +38,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  */
 public class MicroserviceManagementCoordinator extends LifecycleComponent
 	implements IMicroserviceManagementCoordinator, IInstanceTopologyUpdatesListener {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(MicroserviceManagementCoordinator.class);
 
     /** Parent microservice */
     private IMicroservice microservice;
@@ -225,14 +219,6 @@ public class MicroserviceManagementCoordinator extends LifecycleComponent
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to shut down microservice management demux.", e);
 	}
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public IMicroservice getMicroservice() {

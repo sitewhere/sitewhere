@@ -9,9 +9,6 @@ package com.sitewhere.commands;
 
 import java.util.Iterator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.commands.spi.ICommandDestination;
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
 import com.sitewhere.spi.SiteWhereException;
@@ -28,9 +25,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * @author Derek
  */
 public class SingleChoiceCommandRouter extends OutboundCommandRouter {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(SingleChoiceCommandRouter.class);
 
     /** Destinations that will deliver all commands */
     private ICommandDestination<?, ?> destination;
@@ -78,15 +72,5 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
 	}
 	Iterator<ICommandDestination<?, ?>> it = getDestinations().values().iterator();
 	this.destination = it.next();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

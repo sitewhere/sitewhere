@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 import org.reactivestreams.Processor;
 
@@ -76,9 +74,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent implements IDeviceEventManagement {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(MongoDeviceEventManagement.class);
-
     /** Converter lookup */
     private static IMongoConverterLookup LOOKUP = new MongoConverters();
 
@@ -115,9 +110,9 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 	    this.eventBuffer = new DeviceEventBuffer(getMongoClient().getEventsCollection(),
 		    getBulkInsertMaxChunkSize());
 	    getEventBuffer().start();
-	    LOGGER.info("MongoDB device event management is using bulk inserts for events.");
+	    getLogger().info("MongoDB device event management is using bulk inserts for events.");
 	} else {
-	    LOGGER.info("MongoDB device event management is not using bulk inserts for events.");
+	    getLogger().info("MongoDB device event management is not using bulk inserts for events.");
 	}
     }
 
@@ -149,16 +144,6 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 			.append(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_EVENT_TYPE, 1));
 	getMongoClient().getEventsCollection().createIndex(new BasicDBObject(MongoDeviceEvent.PROP_AREA_ID, 1)
 		.append(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_EVENT_TYPE, 1));
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*

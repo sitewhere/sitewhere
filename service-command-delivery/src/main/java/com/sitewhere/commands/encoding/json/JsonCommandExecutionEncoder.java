@@ -7,9 +7,6 @@
  */
 package com.sitewhere.commands.encoding.json;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.commands.encoding.EncodedCommandExecution;
 import com.sitewhere.commands.spi.ICommandExecutionEncoder;
 import com.sitewhere.common.MarshalUtils;
@@ -30,21 +27,8 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class JsonCommandExecutionEncoder extends TenantEngineLifecycleComponent
 	implements ICommandExecutionEncoder<byte[]> {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(JsonCommandExecutionEncoder.class);
-
     public JsonCommandExecutionEncoder() {
 	super(LifecycleComponentType.CommandExecutionEncoder);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*
@@ -59,7 +43,7 @@ public class JsonCommandExecutionEncoder extends TenantEngineLifecycleComponent
     public byte[] encode(IDeviceCommandExecution command, IDeviceNestingContext nested, IDeviceAssignment assignment)
 	    throws SiteWhereException {
 	EncodedCommandExecution encoded = new EncodedCommandExecution(command, nested, assignment);
-	LOGGER.debug("Custom command being encoded:\n\n" + MarshalUtils.marshalJsonAsPrettyString(encoded));
+	getLogger().debug("Custom command being encoded:\n\n" + MarshalUtils.marshalJsonAsPrettyString(encoded));
 	return MarshalUtils.marshalJson(encoded);
     }
 
@@ -75,7 +59,7 @@ public class JsonCommandExecutionEncoder extends TenantEngineLifecycleComponent
     public byte[] encodeSystemCommand(ISystemCommand command, IDeviceNestingContext nested,
 	    IDeviceAssignment assignment) throws SiteWhereException {
 	EncodedCommandExecution encoded = new EncodedCommandExecution(command, nested, assignment);
-	LOGGER.debug("System command being encoded:\n\n" + MarshalUtils.marshalJsonAsPrettyString(encoded));
+	getLogger().debug("System command being encoded:\n\n" + MarshalUtils.marshalJsonAsPrettyString(encoded));
 	return MarshalUtils.marshalJson(encoded);
     }
 }

@@ -9,8 +9,6 @@ package com.sitewhere.batch.persistence.mongodb;
 
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 
 import com.mongodb.MongoClientException;
@@ -44,9 +42,6 @@ import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 public class MongoBatchManagement extends TenantEngineLifecycleComponent implements IBatchManagement {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(MongoBatchManagement.class);
 
     /** Converter lookup */
     private static IMongoConverterLookup LOOKUP = new MongoConverters();
@@ -348,16 +343,6 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
 	    throw new SiteWhereSystemException(ErrorCode.InvalidBatchElementId, ErrorLevel.ERROR);
 	}
 	return match;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public IDeviceManagement getDeviceManagement() {

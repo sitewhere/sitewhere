@@ -9,8 +9,6 @@ package com.sitewhere.instance.microservice;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.zookeeper.data.Stat;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,9 +44,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
  * @author Derek
  */
 public class InstanceManagementMicroservice extends GlobalMicroservice implements IInstanceManagementMicroservice {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(InstanceManagementMicroservice.class);
 
     /** Microservice name */
     private static final String NAME = "Instance Management";
@@ -230,11 +225,11 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
 		try {
 		    Stat existing = getZookeeperManager().getCurator().checkExists().forPath(getInstanceZkPath());
 		    if (existing == null) {
-			LOGGER.info("Zk node for instance not found. Creating...");
+			getLogger().info("Zk node for instance not found. Creating...");
 			getZookeeperManager().getCurator().create().forPath(getInstanceZkPath());
-			LOGGER.info("Created instance Zk node.");
+			getLogger().info("Created instance Zk node.");
 		    } else {
-			LOGGER.info("Found Zk node for instance.");
+			getLogger().info("Found Zk node for instance.");
 		    }
 		} catch (Exception e) {
 		    throw new SiteWhereException(e);
@@ -259,7 +254,7 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
 		    // Verify that instance state path exists.
 		    Stat existing = getZookeeperManager().getCurator().checkExists().forPath(getInstanceStatePath());
 		    if (existing == null) {
-			LOGGER.info("Instance state path '" + getInstanceStatePath() + "' not found. Creating...");
+			getLogger().info("Instance state path '" + getInstanceStatePath() + "' not found. Creating...");
 			getZookeeperManager().getCurator().create().forPath(getInstanceStatePath());
 		    }
 
@@ -267,12 +262,12 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
 		    existing = getZookeeperManager().getCurator().checkExists()
 			    .forPath(getInstanceBootstrappedMarker());
 		    if (existing == null) {
-			LOGGER.info("Bootstrap marker node '" + getInstanceBootstrappedMarker()
+			getLogger().info("Bootstrap marker node '" + getInstanceBootstrappedMarker()
 				+ "' not found. Bootstrapping...");
 			bootstrapInstanceConfiguration();
-			LOGGER.info("Bootstrapped instance configuration from template.");
+			getLogger().info("Bootstrapped instance configuration from template.");
 		    } else {
-			LOGGER.info("Found bootstrap marker node. Skipping instance bootstrap.");
+			getLogger().info("Found bootstrap marker node. Skipping instance bootstrap.");
 		    }
 		} catch (SiteWhereException e) {
 		    throw e;
@@ -405,16 +400,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
 
     public void setInstanceTemplateManager(IInstanceTemplateManager instanceTemplateManager) {
 	this.instanceTemplateManager = instanceTemplateManager;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*

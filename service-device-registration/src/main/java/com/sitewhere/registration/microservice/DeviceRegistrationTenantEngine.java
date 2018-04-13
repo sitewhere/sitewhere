@@ -7,9 +7,6 @@
  */
 package com.sitewhere.registration.microservice;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.registration.kafka.UnregisteredEventsConsumer;
 import com.sitewhere.registration.spi.IRegistrationManager;
@@ -33,9 +30,6 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class DeviceRegistrationTenantEngine extends MicroserviceTenantEngine
 	implements IDeviceRegistrationTenantEngine {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(DeviceRegistrationTenantEngine.class);
 
     /** Kafka consumer for unregistered device events */
     private IUnregisteredEventsConsumer unregisteredEventsConsumer;
@@ -134,13 +128,5 @@ public class DeviceRegistrationTenantEngine extends MicroserviceTenantEngine
 
     public void setRegistrationManager(IRegistrationManager registrationManager) {
 	this.registrationManager = registrationManager;
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

@@ -7,8 +7,6 @@
  */
 package com.sitewhere.sources.coap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.californium.core.network.config.NetworkConfig;
 
 import com.sitewhere.sources.InboundEventReceiver;
@@ -23,9 +21,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * @author Derek
  */
 public class CoapServerEventReceiver extends InboundEventReceiver<byte[]> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(CoapServerEventReceiver.class);
 
     /** Supplies standard CoAP port */
     private static final int COAP_PORT = NetworkConfig.getStandard().getInt(NetworkConfig.Keys.COAP_PORT);
@@ -67,16 +62,6 @@ public class CoapServerEventReceiver extends InboundEventReceiver<byte[]> {
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	server.stop();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*

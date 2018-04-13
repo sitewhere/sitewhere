@@ -9,9 +9,6 @@ package com.sitewhere.grpc.client.batch;
 
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.MultitenantApiChannel;
 import com.sitewhere.grpc.client.spi.IApiDemux;
@@ -58,9 +55,6 @@ import com.sitewhere.spi.tracing.ITracerProvider;
  */
 public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManagementGrpcChannel>
 	implements IBatchManagementApiChannel<BatchManagementGrpcChannel> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(BatchManagementApiChannel.class);
 
     public BatchManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
 	super(demux, microservice, host);
@@ -287,15 +281,5 @@ public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManage
 	} catch (Throwable t) {
 	    throw GrpcUtils.handleClientMethodException(BatchManagementGrpc.METHOD_UPDATE_BATCH_OPERATION_ELEMENT, t);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

@@ -7,9 +7,6 @@
  */
 package com.sitewhere.labels.microservice;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.grpc.client.asset.AssetManagementApiDemux;
 import com.sitewhere.grpc.client.device.DeviceManagementApiDemux;
 import com.sitewhere.grpc.client.spi.ApiNotAvailableException;
@@ -36,9 +33,6 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class LabelGenerationMicroservice extends MultitenantMicroservice<ILabelGenerationTenantEngine>
 	implements ILabelGenerationMicroservice {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(LabelGenerationMicroservice.class);
 
     /** Microservice name */
     private static final String NAME = "Label Generation";
@@ -243,13 +237,5 @@ public class LabelGenerationMicroservice extends MultitenantMicroservice<ILabelG
 
     public void setAssetManagementApiDemux(IAssetManagementApiDemux assetManagementApiDemux) {
 	this.assetManagementApiDemux = assetManagementApiDemux;
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

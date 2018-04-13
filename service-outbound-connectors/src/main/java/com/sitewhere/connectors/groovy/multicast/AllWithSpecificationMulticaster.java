@@ -12,9 +12,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.connectors.spi.multicast.IDeviceEventMulticaster;
 import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
@@ -40,9 +37,6 @@ import groovy.lang.Binding;
  * @param <T>
  */
 public abstract class AllWithSpecificationMulticaster<T> extends GroovyComponent implements IDeviceEventMulticaster<T> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(AllWithSpecificationMulticaster.class);
 
     /** Interval between refreshing list of devices with specification */
     private static final long REFRESH_INTERVAL_SECS = 60;
@@ -108,7 +102,7 @@ public abstract class AllWithSpecificationMulticaster<T> extends GroovyComponent
 		    routes.add(convertRoute(result));
 		}
 	    } catch (SiteWhereException e) {
-		LOGGER.error("Unable to run route calculator script.", e);
+		getLogger().error("Unable to run route calculator script.", e);
 	    }
 	}
 	return routes;
@@ -122,16 +116,6 @@ public abstract class AllWithSpecificationMulticaster<T> extends GroovyComponent
      * @throws SiteWhereException
      */
     public abstract T convertRoute(Object scriptResult) throws SiteWhereException;
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
-    }
 
     public GroovyConfiguration getGroovyConfiguration() {
 	return groovyConfiguration;
@@ -165,14 +149,14 @@ public abstract class AllWithSpecificationMulticaster<T> extends GroovyComponent
 		    DeviceSearchCriteria criteria = new DeviceSearchCriteria(token, false, 1, 0, null, null);
 		    ISearchResults<IDevice> results = getDeviceManagement(tenant).listDevices(false, criteria);
 		    matches = results.getResults();
-		    LOGGER.debug("Found " + matches.size() + " matches for routing.");
+		    getLogger().debug("Found " + matches.size() + " matches for routing.");
 		} catch (SiteWhereException e) {
-		    LOGGER.error("Unable to list devices for specification.", e);
+		    getLogger().error("Unable to list devices for specification.", e);
 		}
 		try {
 		    Thread.sleep(REFRESH_INTERVAL_SECS * 1000);
 		} catch (InterruptedException e) {
-		    LOGGER.info("Update thread shutting down.");
+		    getLogger().info("Update thread shutting down.");
 		    return;
 		}
 	    }

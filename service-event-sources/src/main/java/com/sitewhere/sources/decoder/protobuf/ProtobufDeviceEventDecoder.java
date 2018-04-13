@@ -16,9 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.communication.protobuf.proto.Sitewhere.Model.DeviceAlert;
 import com.sitewhere.communication.protobuf.proto.Sitewhere.Model.DeviceLocation;
 import com.sitewhere.communication.protobuf.proto.Sitewhere.Model.DeviceMeasurements;
@@ -64,9 +61,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent implements IDeviceEventDecoder<byte[]> {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(ProtobufDeviceEventDecoder.class);
-
     public ProtobufDeviceEventDecoder() {
 	super(LifecycleComponentType.DeviceEventDecoder);
     }
@@ -87,7 +81,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 	    switch (header.getCommand()) {
 	    case SEND_REGISTRATION: {
 		RegisterDevice register = RegisterDevice.parseDelimitedFrom(stream);
-		LOGGER.debug("Decoded registration for: " + register.getHardwareId());
+		getLogger().debug("Decoded registration for: " + register.getHardwareId());
 		DeviceRegistrationRequest request = new DeviceRegistrationRequest();
 		request.setDeviceToken(register.getHardwareId());
 		request.setDeviceTypeToken(register.getDeviceTypeToken());
@@ -113,7 +107,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 	    }
 	    case SEND_ACKNOWLEDGEMENT: {
 		Acknowledge ack = Acknowledge.parseDelimitedFrom(stream);
-		LOGGER.debug("Decoded acknowledge for: " + ack.getHardwareId());
+		getLogger().debug("Decoded acknowledge for: " + ack.getHardwareId());
 		DeviceCommandResponseCreateRequest request = new DeviceCommandResponseCreateRequest();
 		request.setOriginatingEventId(UUID.fromString(header.getOriginator()));
 		request.setResponse(ack.getMessage());
@@ -129,7 +123,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 	    }
 	    case SEND_DEVICE_MEASUREMENTS: {
 		DeviceMeasurements dm = DeviceMeasurements.parseDelimitedFrom(stream);
-		LOGGER.debug("Decoded measurement for: " + dm.getHardwareId());
+		getLogger().debug("Decoded measurement for: " + dm.getHardwareId());
 		DeviceMeasurementsCreateRequest request = new DeviceMeasurementsCreateRequest();
 		List<Measurement> measurements = dm.getMeasurementList();
 		for (Measurement current : measurements) {
@@ -164,7 +158,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 	    }
 	    case SEND_DEVICE_LOCATION: {
 		DeviceLocation location = DeviceLocation.parseDelimitedFrom(stream);
-		LOGGER.debug("Decoded location for: " + location.getHardwareId());
+		getLogger().debug("Decoded location for: " + location.getHardwareId());
 		DeviceLocationCreateRequest request = new DeviceLocationCreateRequest();
 		request.setLatitude(location.getLatitude());
 		request.setLongitude(location.getLongitude());
@@ -198,7 +192,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 	    }
 	    case SEND_DEVICE_ALERT: {
 		DeviceAlert alert = DeviceAlert.parseDelimitedFrom(stream);
-		LOGGER.debug("Decoded alert for: " + alert.getHardwareId());
+		getLogger().debug("Decoded alert for: " + alert.getHardwareId());
 		DeviceAlertCreateRequest request = new DeviceAlertCreateRequest();
 		request.setType(alert.getAlertType());
 		request.setMessage(alert.getAlertMessage());
@@ -232,7 +226,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 	    }
 	    case SEND_DEVICE_STREAM: {
 		DeviceStream devStream = DeviceStream.parseDelimitedFrom(stream);
-		LOGGER.debug("Decoded stream for: " + devStream.getHardwareId());
+		getLogger().debug("Decoded stream for: " + devStream.getHardwareId());
 		DeviceStreamCreateRequest request = new DeviceStreamCreateRequest();
 		request.setStreamId(devStream.getStreamId());
 		request.setContentType(devStream.getContentType());
@@ -255,7 +249,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 	    }
 	    case SEND_DEVICE_STREAM_DATA: {
 		DeviceStreamData streamData = DeviceStreamData.parseDelimitedFrom(stream);
-		LOGGER.debug("Decoded stream data for: " + streamData.getHardwareId());
+		getLogger().debug("Decoded stream data for: " + streamData.getHardwareId());
 		DeviceStreamDataCreateRequest request = new DeviceStreamDataCreateRequest();
 		request.setStreamId(streamData.getStreamId());
 		request.setSequenceNumber(streamData.getSequenceNumber());
@@ -285,7 +279,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 	    }
 	    case REQUEST_DEVICE_STREAM_DATA: {
 		DeviceStreamDataRequest request = DeviceStreamDataRequest.parseDelimitedFrom(stream);
-		LOGGER.debug("Decoded stream data request for: " + request.getHardwareId());
+		getLogger().debug("Decoded stream data request for: " + request.getHardwareId());
 		SendDeviceStreamDataRequest send = new SendDeviceStreamDataRequest();
 		send.setStreamId(request.getStreamId());
 		send.setSequenceNumber(request.getSequenceNumber());
@@ -307,15 +301,5 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 	} catch (IOException e) {
 	    throw new EventDecodeException("Unable to decode protobuf message.", e);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }

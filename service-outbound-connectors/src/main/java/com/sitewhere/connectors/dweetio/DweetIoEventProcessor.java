@@ -7,8 +7,6 @@
  */
 package com.sitewhere.connectors.dweetio;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.ResourceAccessException;
@@ -31,9 +29,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * @author Derek
  */
 public class DweetIoEventProcessor extends FilteredOutboundConnector {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(DweetIoEventProcessor.class);
 
     /** Base URI for REST calls */
     private static final String API_BASE = "https://dweet.io:443/dweet/for/";
@@ -107,16 +102,6 @@ public class DweetIoEventProcessor extends FilteredOutboundConnector {
 	} catch (ResourceAccessException e) {
 	    throw new SiteWhereException(e);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     public RestTemplate getClient() {

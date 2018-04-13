@@ -9,11 +9,9 @@ package com.sitewhere.sources.socket;
 
 import java.net.Socket;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.groovy.GroovyComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.sources.spi.socket.ISocketInteractionHandler;
 import com.sitewhere.sources.spi.socket.ISocketInteractionHandlerFactory;
@@ -29,10 +27,8 @@ import groovy.lang.Binding;
  * 
  * @author Derek
  */
-public class GroovySocketInteractionHandler implements ISocketInteractionHandler<byte[]> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(GroovySocketInteractionHandler.class);
+public class GroovySocketInteractionHandler extends TenantEngineLifecycleComponent
+	implements ISocketInteractionHandler<byte[]> {
 
     /** Variable that holds the socket */
     public static final String VAR_SOCKET = "socket";
@@ -60,8 +56,8 @@ public class GroovySocketInteractionHandler implements ISocketInteractionHandler
 	    Binding binding = new Binding();
 	    binding.setVariable(VAR_SOCKET, socket);
 	    binding.setVariable(VAR_EVENT_RECEIVER, receiver);
-	    binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
-	    LOGGER.info("About to execute '" + factory.getScriptId() + "' to interact with socket.");
+	    binding.setVariable(IGroovyVariables.VAR_LOGGER, getLogger());
+	    getLogger().info("About to execute '" + factory.getScriptId() + "' to interact with socket.");
 	    factory.run(binding);
 	} catch (SiteWhereException e) {
 	    throw new SiteWhereException("Unable to run socket interaction handler script.", e);
@@ -74,9 +70,6 @@ public class GroovySocketInteractionHandler implements ISocketInteractionHandler
      * @author Derek
      */
     public static class Factory extends GroovyComponent implements ISocketInteractionHandlerFactory<byte[]> {
-
-	/** Static logger instance */
-	private static Log LOGGER = LogFactory.getLog(Factory.class);
 
 	public Factory() {
 	    super(LifecycleComponentType.Other);
@@ -100,14 +93,6 @@ public class GroovySocketInteractionHandler implements ISocketInteractionHandler
 	 */
 	@Override
 	public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	}
-
-	/*
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Log getLogger() {
-	    return LOGGER;
 	}
 
 	/*

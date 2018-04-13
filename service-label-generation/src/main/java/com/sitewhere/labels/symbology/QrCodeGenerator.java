@@ -9,9 +9,6 @@ package com.sitewhere.labels.symbology;
 
 import java.net.URI;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
@@ -36,9 +33,6 @@ import net.glxn.qrgen.javase.QRCode;
  * @author Derek
  */
 public class QrCodeGenerator extends TenantEngineLifecycleComponent implements ILabelGenerator {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(QrCodeGenerator.class);
 
     /** Generator id */
     private String id;
@@ -157,16 +151,6 @@ public class QrCodeGenerator extends TenantEngineLifecycleComponent implements I
 	URI uri = provider.getAssetIdentifier(asset);
 	return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())
 		.withColor(getForegroundColor(), getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 
     /*

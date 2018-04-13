@@ -7,9 +7,6 @@
  */
 package com.sitewhere.rules.microservice;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.grpc.client.device.DeviceManagementApiDemux;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiDemux;
 import com.sitewhere.grpc.client.spi.ApiNotAvailableException;
@@ -34,9 +31,6 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class RuleProcessingMicroservice extends MultitenantMicroservice<IRuleProcessingTenantEngine>
 	implements IRuleProcessingMicroservice {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(RuleProcessingMicroservice.class);
 
     /** Microservice name */
     private static final String NAME = "Rule Processing";
@@ -213,13 +207,5 @@ public class RuleProcessingMicroservice extends MultitenantMicroservice<IRulePro
 
     public void setDeviceEventManagementApiDemux(IDeviceEventManagementApiDemux deviceEventManagementApiDemux) {
 	this.deviceEventManagementApiDemux = deviceEventManagementApiDemux;
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-     */
-    @Override
-    public Log getLogger() {
-	return LOGGER;
     }
 }
