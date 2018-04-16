@@ -24,7 +24,6 @@ import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.microservice.spring.InboundProcessingBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -54,8 +53,8 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
     /** Kafka producer for forwarding enriched command invocations */
     private IEnrichedCommandInvocationsProducer enrichedCommandInvocationsProducer;
 
-    public InboundProcessingTenantEngine(IMultitenantMicroservice<?> microservice, ITenant tenant) {
-	super(microservice, tenant);
+    public InboundProcessingTenantEngine(ITenant tenant) {
+	super(tenant);
     }
 
     /*
@@ -71,9 +70,9 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
 	IInboundProcessingConfiguration configuration = (IInboundProcessingConfiguration) getModuleContext()
 		.getBean(InboundProcessingBeans.BEAN_INBOUND_PROCESSING_CONFIGURATION);
 
-	this.decodedEventsConsumer = new DecodedEventsConsumer(ipMicroservice, this, configuration);
+	this.decodedEventsConsumer = new DecodedEventsConsumer(configuration);
 	this.unregisteredDeviceEventsProducer = new UnregisteredEventsProducer(ipMicroservice);
-	this.persistedEventsConsumer = new PersistedEventsConsumer(ipMicroservice, this);
+	this.persistedEventsConsumer = new PersistedEventsConsumer();
 	this.enrichedEventsProducer = new EnrichedEventsProducer(ipMicroservice);
 	this.enrichedCommandInvocationsProducer = new EnrichedCommandInvocationsProducer(ipMicroservice);
 

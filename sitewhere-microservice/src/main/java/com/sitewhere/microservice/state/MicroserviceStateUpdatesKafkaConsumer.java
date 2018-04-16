@@ -24,7 +24,6 @@ import com.sitewhere.grpc.model.converter.KafkaModelConverter;
 import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.state.IMicroserviceStateUpdatesKafkaConsumer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
@@ -48,10 +47,6 @@ public abstract class MicroserviceStateUpdatesKafkaConsumer extends Microservice
 
     /** Provides thread pool */
     private ExecutorService executor;
-
-    public MicroserviceStateUpdatesKafkaConsumer(IMicroservice microservice) {
-	super(microservice, null);
-    }
 
     /*
      * (non-Javadoc)

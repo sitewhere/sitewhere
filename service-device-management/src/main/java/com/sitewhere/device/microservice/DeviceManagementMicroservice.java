@@ -92,7 +92,7 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
      */
     @Override
     public IDeviceManagementTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new DeviceManagementTenantEngine(this, tenant);
+	return new DeviceManagementTenantEngine(tenant);
     }
 
     /*
@@ -105,16 +105,16 @@ public class DeviceManagementMicroservice extends MultitenantMicroservice<IDevic
     @Override
     public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create Hazelcast manager.
-	this.hazelcastManager = new HazelcastManager(this);
+	this.hazelcastManager = new HazelcastManager();
 
 	// Create device management GRPC server.
 	this.deviceManagementGrpcServer = new DeviceManagementGrpcServer(this);
 
 	// Event management microservice connectivity.
-	this.eventManagementApiDemux = new DeviceEventManagementApiDemux(this);
+	this.eventManagementApiDemux = new DeviceEventManagementApiDemux();
 
 	// Asset management microservice connectivity.
-	this.assetManagementApiDemux = new AssetManagementApiDemux(this);
+	this.assetManagementApiDemux = new AssetManagementApiDemux();
 
 	// Create step that will start components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());

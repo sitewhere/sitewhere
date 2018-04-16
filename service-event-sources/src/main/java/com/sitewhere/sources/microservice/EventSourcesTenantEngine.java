@@ -13,7 +13,6 @@ import com.sitewhere.sources.spi.IEventSourcesManager;
 import com.sitewhere.sources.spi.microservice.IEventSourcesTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.microservice.spring.EventSourcesBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -31,8 +30,8 @@ public class EventSourcesTenantEngine extends MicroserviceTenantEngine implement
     /** Event sources manager */
     private IEventSourcesManager eventSourcesManager;
 
-    public EventSourcesTenantEngine(IMultitenantMicroservice<IEventSourcesTenantEngine> microservice, ITenant tenant) {
-	super(microservice, tenant);
+    public EventSourcesTenantEngine(ITenant tenant) {
+	super(tenant);
     }
 
     /*

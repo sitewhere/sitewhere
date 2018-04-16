@@ -31,13 +31,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  */
 public abstract class ScriptSynchronizer extends LifecycleComponent implements IScriptSynchronizer {
 
-    /** Microservice reference */
-    private IConfigurableMicroservice microservice;
-
-    public ScriptSynchronizer(IConfigurableMicroservice microservice) {
-	this.microservice = microservice;
-    }
-
     /*
      * @see
      * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
@@ -46,7 +39,7 @@ public abstract class ScriptSynchronizer extends LifecycleComponent implements I
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.initialize(monitor);
-	getMicroservice().getConfigurationMonitor().getListeners().add(this);
+	((IConfigurableMicroservice) getMicroservice()).getConfigurationMonitor().getListeners().add(this);
     }
 
     /*
@@ -71,7 +64,7 @@ public abstract class ScriptSynchronizer extends LifecycleComponent implements I
     @Override
     public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.terminate(monitor);
-	getMicroservice().getConfigurationMonitor().getListeners().remove(this);
+	((IConfigurableMicroservice) getMicroservice()).getConfigurationMonitor().getListeners().remove(this);
     }
 
     /*
@@ -204,21 +197,46 @@ public abstract class ScriptSynchronizer extends LifecycleComponent implements I
      */
     protected void copy(String zkPath) throws SiteWhereException {
 	byte[] content = getZkContent(zkPath);
+	if (isFolder(zkPath)) {
+	    // Only copy files.
+	    return;
+	}
 	FileOutputStream output = null;
+	File out = getFileFor(zkPath);
 	try {
-	    File out = getFileFor(zkPath);
 	    if (!out.getParentFile().exists()) {
-		out.getParentFile().mkdirs();
+		getLogger().warn("Script parent folder '" + out.getParentFile().getAbsolutePath()
+			+ "' does not exist. Creating.");
+		if (!out.getParentFile().mkdirs()) {
+		    getLogger().warn("Mkdirs for '" + out.getParentFile().getAbsolutePath() + "' failed.");
+		}
 	    }
 	    output = new FileOutputStream(out);
 	    ByteArrayInputStream input = new ByteArrayInputStream(content);
 	    IOUtils.copy(input, output);
-	    getLogger().info("Copied script from '" + zkPath + "' to '" + out.getAbsolutePath() + "'.");
+	    getLogger().info("Copied script content (" + content.length + " bytes) from '" + zkPath + "' to '"
+		    + out.getAbsolutePath() + "'.");
 	} catch (IOException e) {
-	    throw new SiteWhereException("Unable to copy script from Zookeeper to filesystem.", e);
+	    throw new SiteWhereException("Unable to copy script from Zookeeper path '" + zkPath + "' to file '"
+		    + out.getAbsolutePath() + "'.", e);
 	} finally {
 	    IOUtils.closeQuietly(output);
 	}
+    }
+
+    /**
+     * Determine whether path represents a folder.
+     * 
+     * @param pathString
+     * @return
+     */
+    protected boolean isFolder(String pathString) {
+	Path path = Paths.get(pathString);
+	path = path.getFileName();
+	if ((path == null) || (path.toString().indexOf('.') == -1)) {
+	    return true;
+	}
+	return false;
     }
 
     /**
@@ -253,13 +271,5 @@ public abstract class ScriptSynchronizer extends LifecycleComponent implements I
 	} catch (Throwable e) {
 	    throw new SiteWhereException("Unable to get Zookeeper script content.", e);
 	}
-    }
-
-    protected IConfigurableMicroservice getMicroservice() {
-	return microservice;
-    }
-
-    protected void setMicroservice(IConfigurableMicroservice microservice) {
-	this.microservice = microservice;
     }
 }

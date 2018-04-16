@@ -84,7 +84,7 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
      */
     @Override
     public IBatchOperationsTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new BatchOperationsTenantEngine(this, tenant);
+	return new BatchOperationsTenantEngine(tenant);
     }
 
     /*
@@ -194,10 +194,10 @@ public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchO
 	this.batchManagementGrpcServer = new BatchManagementGrpcServer(this);
 
 	// Device management.
-	this.deviceManagementApiDemux = new DeviceManagementApiDemux(this);
+	this.deviceManagementApiDemux = new DeviceManagementApiDemux();
 
 	// Device event management.
-	this.deviceEventManagementApiDemux = new DeviceEventManagementApiDemux(this);
+	this.deviceEventManagementApiDemux = new DeviceEventManagementApiDemux();
     }
 
     /*

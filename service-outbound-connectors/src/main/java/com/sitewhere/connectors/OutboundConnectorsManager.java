@@ -13,7 +13,6 @@ import java.util.List;
 import com.sitewhere.connectors.kafka.KafkaOutboundConnectorHost;
 import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.connectors.spi.IOutboundConnectorsManager;
-import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsMicroservice;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -42,8 +41,7 @@ public class OutboundConnectorsManager extends TenantEngineLifecycleComponent im
 	getConnectorHosts().clear();
 	for (IOutboundConnector processor : getOutboundConnectors()) {
 	    // Create host for managing outbound connector.
-	    KafkaOutboundConnectorHost host = new KafkaOutboundConnectorHost(getTenantEngine().getMicroservice(),
-		    getTenantEngine(), processor);
+	    KafkaOutboundConnectorHost host = new KafkaOutboundConnectorHost(processor);
 	    initializeNestedComponent(host, monitor, true);
 	    getConnectorHosts().add(host);
 	}
@@ -93,9 +91,5 @@ public class OutboundConnectorsManager extends TenantEngineLifecycleComponent im
 
     public void setConnectorHosts(List<KafkaOutboundConnectorHost> connectorHosts) {
 	this.connectorHosts = connectorHosts;
-    }
-
-    protected IOutboundConnectorsMicroservice getMicroservice() {
-	return (IOutboundConnectorsMicroservice) getTenantEngine().getMicroservice();
     }
 }

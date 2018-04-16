@@ -18,7 +18,6 @@ import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.microservice.spring.EventManagementBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -42,9 +41,8 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
     /** Kafka producer for pushing persisted events to a topic */
     private IInboundPersistedEventsProducer inboundPersistedEventsProducer;
 
-    public EventManagementTenantEngine(IMultitenantMicroservice<IEventManagementTenantEngine> microservice,
-	    ITenant tenant) {
-	super(microservice, tenant);
+    public EventManagementTenantEngine(ITenant tenant) {
+	super(tenant);
     }
 
     /*

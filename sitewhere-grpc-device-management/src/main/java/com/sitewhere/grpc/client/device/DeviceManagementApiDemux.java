@@ -11,7 +11,6 @@ import com.sitewhere.grpc.client.ApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 
 /**
@@ -23,10 +22,6 @@ import com.sitewhere.spi.microservice.MicroserviceIdentifier;
  */
 public class DeviceManagementApiDemux extends ApiDemux<IDeviceManagementApiChannel<?>>
 	implements IDeviceManagementApiDemux {
-
-    public DeviceManagementApiDemux(IMicroservice microservice) {
-	super(microservice);
-    }
 
     /*
      * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()

@@ -20,7 +20,6 @@ import com.sitewhere.rest.model.microservice.state.InstanceTopologyEntry;
 import com.sitewhere.rest.model.microservice.state.InstanceTopologySnapshot;
 import com.sitewhere.rest.model.microservice.state.MicroserviceState;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.state.IInstanceMicroservice;
 import com.sitewhere.spi.microservice.state.IInstanceTenantEngine;
@@ -49,10 +48,6 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
 
     /** List of listeners for topology updates */
     private List<IInstanceTopologyUpdatesListener> listeners = new CopyOnWriteArrayList<>();
-
-    public TopologyStateAggregator(IMicroservice microservice) {
-	super(microservice);
-    }
 
     /*
      * @see com.sitewhere.spi.microservice.state.ITopologyStateAggregator#

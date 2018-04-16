@@ -15,8 +15,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import com.sitewhere.inbound.processing.InboundPayloadProcessingLogic;
 import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
-import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
-import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.inbound.spi.processing.IInboundProcessingConfiguration;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
@@ -46,9 +44,7 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
     /** Inbound payload processing logic */
     private InboundPayloadProcessingLogic inboundPayloadProcessingLogic = new InboundPayloadProcessingLogic();
 
-    public DecodedEventsConsumer(IInboundProcessingMicroservice microservice,
-	    IInboundProcessingTenantEngine tenantEngine, IInboundProcessingConfiguration configuration) {
-	super(microservice, tenantEngine);
+    public DecodedEventsConsumer(IInboundProcessingConfiguration configuration) {
 	this.configuration = configuration;
     }
 

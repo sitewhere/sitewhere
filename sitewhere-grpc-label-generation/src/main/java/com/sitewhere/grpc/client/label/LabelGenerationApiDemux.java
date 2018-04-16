@@ -11,7 +11,6 @@ import com.sitewhere.grpc.client.ApiDemux;
 import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiChannel;
 import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiDemux;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 
 /**
@@ -23,10 +22,6 @@ import com.sitewhere.spi.microservice.MicroserviceIdentifier;
  */
 public class LabelGenerationApiDemux extends ApiDemux<ILabelGenerationApiChannel<?>>
 	implements ILabelGenerationApiDemux {
-
-    public LabelGenerationApiDemux(IMicroservice microservice) {
-	super(microservice);
-    }
 
     /*
      * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()

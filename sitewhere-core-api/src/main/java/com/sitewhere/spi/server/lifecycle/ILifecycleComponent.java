@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroservice;
 
 /**
  * Lifecycle methods used in SiteWhere components.
@@ -40,6 +41,20 @@ public interface ILifecycleComponent {
      * @return
      */
     public LifecycleComponentType getComponentType();
+
+    /**
+     * Get microservice that owns the component.
+     * 
+     * @return
+     */
+    public IMicroservice getMicroservice();
+
+    /**
+     * Set microservice that owns the component.
+     * 
+     * @param microservice
+     */
+    public void setMicroservice(IMicroservice microservice);
 
     /**
      * Get current lifecycle status.

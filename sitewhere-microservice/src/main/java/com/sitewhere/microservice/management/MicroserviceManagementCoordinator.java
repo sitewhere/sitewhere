@@ -17,7 +17,6 @@ import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.IMicroserviceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordinator;
@@ -39,15 +38,8 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public class MicroserviceManagementCoordinator extends LifecycleComponent
 	implements IMicroserviceManagementCoordinator, IInstanceTopologyUpdatesListener {
 
-    /** Parent microservice */
-    private IMicroservice microservice;
-
     /** API demuxes by service identifier */
     private Map<MicroserviceIdentifier, IMicroserviceManagementApiDemux> demuxesByServiceIdentifier = new HashMap<>();
-
-    public MicroserviceManagementCoordinator(IMicroservice microservice) {
-	this.microservice = microservice;
-    }
 
     /*
      * @see
@@ -189,7 +181,7 @@ public class MicroserviceManagementCoordinator extends LifecycleComponent
 	    MicroserviceIdentifier identifier = details.getIdentifier();
 	    ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
 		    new LifecycleProgressContext(2, "Create microservice mangagement demux for '" + identifier + "'."),
-		    microservice);
+		    getMicroservice());
 	    initializeNestedComponent(demux, monitor, true);
 	    getLogger().info("Initialized microservice management demux for '" + identifier + "'.");
 
@@ -210,7 +202,7 @@ public class MicroserviceManagementCoordinator extends LifecycleComponent
 	try {
 	    MicroserviceIdentifier identifier = details.getIdentifier();
 	    ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
-		    new LifecycleProgressContext(2, "Shut down demux for '" + identifier + "'."), microservice);
+		    new LifecycleProgressContext(2, "Shut down demux for '" + identifier + "'."), getMicroservice());
 	    stopNestedComponent(demux, monitor);
 	    getLogger().info("Stopped microservice management demux for '" + identifier + "'.");
 
@@ -219,14 +211,6 @@ public class MicroserviceManagementCoordinator extends LifecycleComponent
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to shut down microservice management demux.", e);
 	}
-    }
-
-    public IMicroservice getMicroservice() {
-	return microservice;
-    }
-
-    public void setMicroservice(IMicroservice microservice) {
-	this.microservice = microservice;
     }
 
     public Map<MicroserviceIdentifier, IMicroserviceManagementApiDemux> getDemuxesByServiceIdentifier() {

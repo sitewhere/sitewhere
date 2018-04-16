@@ -13,7 +13,6 @@ import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.microservice.spring.OutboundConnectorsBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -32,8 +31,8 @@ public class OutboundConnectorsTenantEngine extends MicroserviceTenantEngine
     /** Manages the outbound connectors for this tenant */
     private IOutboundConnectorsManager outboundConnectorsManager;
 
-    public OutboundConnectorsTenantEngine(IMultitenantMicroservice<?> microservice, ITenant tenant) {
-	super(microservice, tenant);
+    public OutboundConnectorsTenantEngine(ITenant tenant) {
+	super(tenant);
     }
 
     /*

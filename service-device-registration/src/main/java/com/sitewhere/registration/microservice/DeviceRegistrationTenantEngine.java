@@ -15,7 +15,6 @@ import com.sitewhere.registration.spi.microservice.IDeviceRegistrationTenantEngi
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.microservice.spring.DeviceRegistrationBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -37,8 +36,8 @@ public class DeviceRegistrationTenantEngine extends MicroserviceTenantEngine
     /** Device registration manager */
     private IRegistrationManager registrationManager;
 
-    public DeviceRegistrationTenantEngine(IMultitenantMicroservice<?> microservice, ITenant tenant) {
-	super(microservice, tenant);
+    public DeviceRegistrationTenantEngine(ITenant tenant) {
+	super(tenant);
     }
 
     /*
@@ -48,11 +47,27 @@ public class DeviceRegistrationTenantEngine extends MicroserviceTenantEngine
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.unregisteredEventsConsumer = new UnregisteredEventsConsumer(this);
+	// Unregistered events consumer.
+	this.unregisteredEventsConsumer = new UnregisteredEventsConsumer();
 
 	// Load configured registration manager.
 	this.registrationManager = (IRegistrationManager) getModuleContext()
 		.getBean(DeviceRegistrationBeans.BEAN_REGISTRATION_MANAGER);
+
+	// Create step that will initialize components.
+	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
+
+	// Initialize discoverable lifecycle components.
+	init.addStep(initializeDiscoverableBeans(getModuleContext()));
+
+	// Initialize unregistered events consumer.
+	init.addInitializeStep(this, getUnregisteredEventsConsumer(), true);
+
+	// Initialize registration manager.
+	init.addInitializeStep(this, getRegistrationManager(), true);
+
+	// Execute initialization steps.
+	init.execute(monitor);
     }
 
     /*

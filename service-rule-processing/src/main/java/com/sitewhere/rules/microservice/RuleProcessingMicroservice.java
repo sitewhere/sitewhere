@@ -79,7 +79,7 @@ public class RuleProcessingMicroservice extends MultitenantMicroservice<IRulePro
      */
     @Override
     public IRuleProcessingTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new RuleProcessingTenantEngine(this, tenant);
+	return new RuleProcessingTenantEngine(tenant);
     }
 
     /*
@@ -177,10 +177,10 @@ public class RuleProcessingMicroservice extends MultitenantMicroservice<IRulePro
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiDemux = new DeviceManagementApiDemux(this);
+	this.deviceManagementApiDemux = new DeviceManagementApiDemux();
 
 	// Device event management.
-	this.deviceEventManagementApiDemux = new DeviceEventManagementApiDemux(this);
+	this.deviceEventManagementApiDemux = new DeviceEventManagementApiDemux();
     }
 
     /*

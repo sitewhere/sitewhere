@@ -65,6 +65,6 @@ public class StreamingMediaMicroservice extends MultitenantMicroservice<IStreami
      */
     @Override
     public IStreamingMediaTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new StreamingMediaTenantEngine(this, tenant);
+	return new StreamingMediaTenantEngine(tenant);
     }
 }

@@ -127,6 +127,14 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     }
 
     /*
+     * @see com.sitewhere.server.lifecycle.LifecycleComponent#getMicroservice()
+     */
+    @Override
+    public IMicroservice getMicroservice() {
+	return this;
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.
@@ -183,7 +191,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
      */
     protected void initializeStateManagement() {
 	this.stateUpdatesKafkaProducer = new MicroserviceStateUpdatesKafkaProducer(this);
-	this.topologyStateAggregator = new TopologyStateAggregator(this);
+	this.topologyStateAggregator = new TopologyStateAggregator();
 	this.microserviceHeartbeatService = Executors.newSingleThreadExecutor(new MicroserviceHeartbeatThreadFactory());
     }
 

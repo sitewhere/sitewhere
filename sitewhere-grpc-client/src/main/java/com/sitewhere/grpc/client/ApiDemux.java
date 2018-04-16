@@ -19,7 +19,6 @@ import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.state.IInstanceMicroservice;
 import com.sitewhere.spi.microservice.state.IInstanceTopologyEntry;
 import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
@@ -43,9 +42,6 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
     /** Amount of time to wait between check for available API channel */
     private static final int API_CHANNEL_WAIT_INTERVAL_IN_SECS = 3;
 
-    /** Microservice */
-    private IMicroservice microservice;
-
     /** List of API channels */
     private List<T> apiChannels = new ArrayList<>();
 
@@ -55,10 +51,6 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 
     /** Executor service */
     private ExecutorService executor;
-
-    public ApiDemux(IMicroservice microservice) {
-	this.microservice = microservice;
-    }
 
     /*
      * @see
@@ -317,18 +309,6 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 	public String getHost() {
 	    return host;
 	}
-    }
-
-    /*
-     * @see com.sitewhere.grpc.model.spi.IApiDemux#getMicroservice()
-     */
-    @Override
-    public IMicroservice getMicroservice() {
-	return microservice;
-    }
-
-    public void setMicroservice(IMicroservice microservice) {
-	this.microservice = microservice;
     }
 
     /*

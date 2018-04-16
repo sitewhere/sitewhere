@@ -79,7 +79,7 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
      */
     @Override
     public IInboundProcessingTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new InboundProcessingTenantEngine(this, tenant);
+	return new InboundProcessingTenantEngine(tenant);
     }
 
     /*
@@ -177,10 +177,10 @@ public class InboundProcessingMicroservice extends MultitenantMicroservice<IInbo
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiDemux = new DeviceManagementApiDemux(this);
+	this.deviceManagementApiDemux = new DeviceManagementApiDemux();
 
 	// Device event management.
-	this.deviceEventManagementApiDemux = new DeviceEventManagementApiDemux(this);
+	this.deviceEventManagementApiDemux = new DeviceEventManagementApiDemux();
     }
 
     /*

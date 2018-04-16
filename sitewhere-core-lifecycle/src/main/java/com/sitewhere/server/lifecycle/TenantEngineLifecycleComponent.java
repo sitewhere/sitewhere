@@ -54,9 +54,9 @@ public abstract class TenantEngineLifecycleComponent extends LifecycleComponent
     }
 
     /*
-     * @see com.sitewhere.server.lifecycle.LifecycleComponent#
-     * initializeNestedComponent(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleComponent,
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initializeNestedComponent(
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor, boolean)
      */
     @Override

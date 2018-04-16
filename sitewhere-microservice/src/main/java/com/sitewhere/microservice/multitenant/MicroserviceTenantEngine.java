@@ -27,6 +27,7 @@ import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
@@ -60,9 +61,6 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     /** Tenant template path (relative to configuration root) */
     public static final String TENANT_TEMPLATE_PATH = "/template.json";
 
-    /** Parent microservice */
-    private IMultitenantMicroservice<?> microservice;
-
     /** Hosted tenant */
     private ITenant tenant;
 
@@ -78,12 +76,21 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     /** Module context information */
     private ApplicationContext moduleContext;
 
-    public MicroserviceTenantEngine(IMultitenantMicroservice<?> microservice, ITenant tenant) {
-	this.microservice = microservice;
+    public MicroserviceTenantEngine(ITenant tenant) {
 	this.tenant = tenant;
 	this.tenantScriptSynchronizer = new TenantEngineScriptSynchronizer(this);
 	this.scriptManager = new TenantEngineScriptManager();
 	this.groovyConfiguration = new GroovyConfiguration(getTenantScriptSynchronizer());
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent#getTenantEngine
+     * ()
+     */
+    @Override
+    public IMicroserviceTenantEngine getTenantEngine() {
+	return this;
     }
 
     /*
@@ -163,7 +170,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	    Map<String, Object> properties = getMicroservice().getSpringProperties();
 	    properties.put("tenant.id", getTenant().getId());
 	    this.moduleContext = ConfigurationUtils.buildSubcontext(data, properties,
-		    getMicroservice().getGlobalApplicationContext());
+		    ((IConfigurableMicroservice) getMicroservice()).getGlobalApplicationContext());
 	    getLogger().info("Successfully loaded module configuration from '" + getModuleConfigurationPath() + "'.");
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to load module configuration.", e);
@@ -414,7 +421,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	    // Handle updated configuration file.
 	    if (getModuleConfigurationName().equals(path)) {
 		getLogger().info("Tenant engine configuration updated.");
-		getMicroservice().restartTenantEngine(getTenant().getId());
+		((IMultitenantMicroservice<?>) getMicroservice()).restartTenantEngine(getTenant().getId());
 	    }
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to process updated configuration file.", e);
@@ -434,7 +441,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	    // Handle updated configuration file.
 	    if (getModuleConfigurationName().equals(path)) {
 		getLogger().info("Tenant engine configuration deleted.");
-		getMicroservice().removeTenantEngine(getTenant().getId());
+		((IMultitenantMicroservice<?>) getMicroservice()).removeTenantEngine(getTenant().getId());
 	    }
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to process deleted configuration file.", e);
@@ -449,7 +456,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     public void onGlobalConfigurationUpdated() throws SiteWhereException {
 	getLogger().debug("Global configuration updated.");
 	try {
-	    getMicroservice().restartTenantEngine(getTenant().getId());
+	    ((IMultitenantMicroservice<?>) getMicroservice()).restartTenantEngine(getTenant().getId());
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to restart after global configuration update.", e);
 	}
@@ -481,8 +488,8 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     @Override
     public void waitForModuleBootstrapped(MicroserviceIdentifier identifier, long time, TimeUnit unit)
 	    throws SiteWhereException {
-	String bspath = getMicroservice().getInstanceTenantStatePath(getTenant().getId()) + "/" + identifier.getPath()
-		+ "/" + MicroserviceTenantEngine.MODULE_BOOTSTRAPPED_NAME;
+	String bspath = ((IConfigurableMicroservice) getMicroservice()).getInstanceTenantStatePath(getTenant().getId())
+		+ "/" + identifier.getPath() + "/" + MicroserviceTenantEngine.MODULE_BOOTSTRAPPED_NAME;
 	CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
 	long deadline = System.currentTimeMillis() + unit.toMillis(time);
 	while ((deadline - System.currentTimeMillis()) > 0) {
@@ -509,7 +516,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
      */
     @Override
     public String getTenantConfigurationPath() throws SiteWhereException {
-	return getMicroservice().getInstanceTenantConfigurationPath(getTenant().getId());
+	return ((IConfigurableMicroservice) getMicroservice()).getInstanceTenantConfigurationPath(getTenant().getId());
     }
 
     /*
@@ -518,7 +525,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
      */
     @Override
     public String getTenantStatePath() throws SiteWhereException {
-	return getMicroservice().getInstanceTenantStatePath(getTenant().getId()) + "/"
+	return ((IConfigurableMicroservice) getMicroservice()).getInstanceTenantStatePath(getTenant().getId()) + "/"
 		+ getMicroservice().getIdentifier().getPath();
     }
 
@@ -562,21 +569,6 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     @Override
     public String getModuleBootstrappedPath() throws SiteWhereException {
 	return getTenantStatePath() + "/" + MicroserviceTenantEngine.MODULE_BOOTSTRAPPED_NAME;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
-     * getMicroservice()
-     */
-    @Override
-    public IMultitenantMicroservice<?> getMicroservice() {
-	return microservice;
-    }
-
-    public void setMicroservice(IMultitenantMicroservice<?> microservice) {
-	this.microservice = microservice;
     }
 
     /*

@@ -83,7 +83,7 @@ public class EventManagementMicroservice extends MultitenantMicroservice<IEventM
      */
     @Override
     public IEventManagementTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new EventManagementTenantEngine(this, tenant);
+	return new EventManagementTenantEngine(tenant);
     }
 
     /*
@@ -188,7 +188,7 @@ public class EventManagementMicroservice extends MultitenantMicroservice<IEventM
 	this.eventManagementGrpcServer = new EventManagementGrpcServer(this);
 
 	// Device management.
-	this.deviceManagementApiDemux = new DeviceManagementApiDemux(this);
+	this.deviceManagementApiDemux = new DeviceManagementApiDemux();
     }
 
     /*

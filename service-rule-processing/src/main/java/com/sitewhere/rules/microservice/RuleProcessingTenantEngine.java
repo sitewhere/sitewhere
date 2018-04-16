@@ -13,7 +13,6 @@ import com.sitewhere.rules.spi.microservice.IRuleProcessingTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.microservice.spring.RuleProcessingBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -31,8 +30,8 @@ public class RuleProcessingTenantEngine extends MicroserviceTenantEngine impleme
     /** Rule processors manager */
     private IRuleProcessorsManager ruleProcessorsManager;
 
-    public RuleProcessingTenantEngine(IMultitenantMicroservice<?> microservice, ITenant tenant) {
-	super(microservice, tenant);
+    public RuleProcessingTenantEngine(ITenant tenant) {
+	super(tenant);
     }
 
     /*

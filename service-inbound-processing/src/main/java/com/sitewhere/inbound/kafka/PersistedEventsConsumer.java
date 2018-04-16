@@ -28,7 +28,6 @@ import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.rest.model.microservice.kafka.payload.PersistedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
@@ -54,11 +53,6 @@ public class PersistedEventsConsumer extends MicroserviceKafkaConsumer implement
 
     /** Logic for enriching outbound event payload */
     private OutboundPayloadEnrichmentLogic outboundPayloadEnrichmentLogic;
-
-    public PersistedEventsConsumer(IMicroservice microservice, IInboundProcessingTenantEngine tenantEngine) {
-	super(microservice, tenantEngine);
-	this.outboundPayloadEnrichmentLogic = new OutboundPayloadEnrichmentLogic(tenantEngine);
-    }
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#
@@ -88,6 +82,18 @@ public class PersistedEventsConsumer extends MicroserviceKafkaConsumer implement
 	topics.add(
 		getMicroservice().getKafkaTopicNaming().getInboundPersistedEventsTopic(getTenantEngine().getTenant()));
 	return topics;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+	this.outboundPayloadEnrichmentLogic = new OutboundPayloadEnrichmentLogic(
+		(IInboundProcessingTenantEngine) getTenantEngine());
     }
 
     /*

@@ -65,6 +65,6 @@ public class PresenceManagementMicroservice extends MultitenantMicroservice<IPre
      */
     @Override
     public IPresenceManagementTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new PresenceManagementTenantEngine(this, tenant);
+	return new PresenceManagementTenantEngine(tenant);
     }
 }

@@ -31,7 +31,6 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.ICachingMicroservice;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.microservice.spring.DeviceManagementBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -52,9 +51,8 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
     /** Responds to device management GRPC requests */
     private DeviceManagementGrpc.DeviceManagementImplBase deviceManagementImpl;
 
-    public DeviceManagementTenantEngine(IMultitenantMicroservice<IDeviceManagementTenantEngine> microservice,
-	    ITenant tenant) {
-	super(microservice, tenant);
+    public DeviceManagementTenantEngine(ITenant tenant) {
+	super(tenant);
     }
 
     /*

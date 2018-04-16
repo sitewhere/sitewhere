@@ -18,7 +18,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-import com.sitewhere.commands.microservice.CommandDeliveryTenantEngine;
 import com.sitewhere.commands.spi.kafka.IEnrichedCommandInvocationsConsumer;
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryTenantEngine;
 import com.sitewhere.common.MarshalUtils;
@@ -52,10 +51,6 @@ public class EnrichedCommandInvocationsConsumer extends MicroserviceKafkaConsume
 
     /** Executor */
     private ExecutorService executor;
-
-    public EnrichedCommandInvocationsConsumer(CommandDeliveryTenantEngine tenantEngine) {
-	super(tenantEngine.getMicroservice(), tenantEngine);
-    }
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#

@@ -35,8 +35,6 @@ import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
-import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
@@ -56,9 +54,7 @@ public class KafkaRuleProcessorHost extends MicroserviceKafkaConsumer {
     /** Executor */
     private ExecutorService executor;
 
-    public KafkaRuleProcessorHost(IMicroservice microservice, IMicroserviceTenantEngine tenantEngine,
-	    IRuleProcessor ruleProcessor) {
-	super(microservice, tenantEngine);
+    public KafkaRuleProcessorHost(IRuleProcessor ruleProcessor) {
 	this.ruleProcessor = ruleProcessor;
     }
 

@@ -31,7 +31,6 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.hazelcast.IHazelcastManager;
 import com.sitewhere.spi.microservice.state.IInstanceMicroservice;
@@ -46,18 +45,11 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  */
 public class HazelcastManager extends LifecycleComponent implements IHazelcastManager {
 
-    /** Microservice */
-    private IMicroservice microservice;
-
     /** Singleton hazelcast instance */
     private HazelcastInstance hazelcastInstance;
 
     /** For background threads */
     private ExecutorService executor;
-
-    public HazelcastManager(IMicroservice microservice) {
-	this.microservice = microservice;
-    }
 
     /*
      * @see
@@ -238,13 +230,5 @@ public class HazelcastManager extends LifecycleComponent implements IHazelcastMa
 		}
 	    }
 	}
-    }
-
-    protected IMicroservice getMicroservice() {
-	return microservice;
-    }
-
-    protected void setMicroservice(IMicroservice microservice) {
-	this.microservice = microservice;
     }
 }

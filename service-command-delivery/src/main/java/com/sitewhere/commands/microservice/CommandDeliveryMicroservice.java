@@ -65,6 +65,6 @@ public class CommandDeliveryMicroservice extends MultitenantMicroservice<IComman
      */
     @Override
     public ICommandDeliveryTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new CommandDeliveryTenantEngine(this, tenant);
+	return new CommandDeliveryTenantEngine(tenant);
     }
 }

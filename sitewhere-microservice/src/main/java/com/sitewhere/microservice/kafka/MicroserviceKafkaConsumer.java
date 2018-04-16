@@ -28,9 +28,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer;
-import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
@@ -46,17 +44,6 @@ public abstract class MicroserviceKafkaConsumer extends TenantEngineLifecycleCom
 
     /** Executor service */
     private ExecutorService executor;
-
-    /** Parent microservice */
-    private IMicroservice microservice;
-
-    /** Parent tenant engine (null for global consumers) */
-    private IMicroserviceTenantEngine tenantEngine;
-
-    public MicroserviceKafkaConsumer(IMicroservice microservice, IMicroserviceTenantEngine tenantEngine) {
-	this.microservice = microservice;
-	this.tenantEngine = tenantEngine;
-    }
 
     /*
      * (non-Javadoc)
@@ -108,28 +95,6 @@ public abstract class MicroserviceKafkaConsumer extends TenantEngineLifecycleCom
 	config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class.getName());
 	config.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
 	return config;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#
-     * getMicroservice()
-     */
-    @Override
-    public IMicroservice getMicroservice() {
-	return microservice;
-    }
-
-    public void setMicroservice(IMicroservice microservice) {
-	this.microservice = microservice;
-    }
-
-    @Override
-    public IMicroserviceTenantEngine getTenantEngine() {
-	return tenantEngine;
-    }
-
-    public void setTenantEngine(IMicroserviceTenantEngine tenantEngine) {
-	this.tenantEngine = tenantEngine;
     }
 
     public KafkaConsumer<String, byte[]> getConsumer() {

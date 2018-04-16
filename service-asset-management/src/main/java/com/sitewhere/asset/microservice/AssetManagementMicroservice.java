@@ -88,7 +88,7 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
      */
     @Override
     public IAssetManagementTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new AssetManagementTenantEngine(this, tenant);
+	return new AssetManagementTenantEngine(tenant);
     }
 
     /*
@@ -126,7 +126,7 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
     @Override
     public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create Hazelcast manager.
-	this.hazelcastManager = new HazelcastManager(this);
+	this.hazelcastManager = new HazelcastManager();
 
 	// Create GRPC components.
 	createGrpcComponents();
@@ -205,7 +205,7 @@ public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetM
 	this.assetManagementGrpcServer = new AssetManagementGrpcServer(this);
 
 	// Device management.
-	this.deviceManagementApiDemux = new DeviceManagementApiDemux(this);
+	this.deviceManagementApiDemux = new DeviceManagementApiDemux();
     }
 
     /*

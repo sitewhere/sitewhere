@@ -13,7 +13,6 @@ import java.util.List;
 import com.sitewhere.rules.kafka.KafkaRuleProcessorHost;
 import com.sitewhere.rules.spi.IRuleProcessor;
 import com.sitewhere.rules.spi.IRuleProcessorsManager;
-import com.sitewhere.rules.spi.microservice.IRuleProcessingMicroservice;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -41,8 +40,7 @@ public class RuleProcessorsManager extends TenantEngineLifecycleComponent implem
 	getRuleProcessorHosts().clear();
 	for (IRuleProcessor processor : getRuleProcessors()) {
 	    // Create host for managing rule processor.
-	    KafkaRuleProcessorHost host = new KafkaRuleProcessorHost(getTenantEngine().getMicroservice(),
-		    getTenantEngine(), processor);
+	    KafkaRuleProcessorHost host = new KafkaRuleProcessorHost(processor);
 	    initializeNestedComponent(host, monitor, true);
 	    getRuleProcessorHosts().add(host);
 	}
@@ -90,9 +88,5 @@ public class RuleProcessorsManager extends TenantEngineLifecycleComponent implem
 
     public void setRuleProcessorHosts(List<KafkaRuleProcessorHost> ruleProcessorHosts) {
 	this.ruleProcessorHosts = ruleProcessorHosts;
-    }
-
-    protected IRuleProcessingMicroservice getMicroservice() {
-	return (IRuleProcessingMicroservice) getTenantEngine().getMicroservice();
     }
 }

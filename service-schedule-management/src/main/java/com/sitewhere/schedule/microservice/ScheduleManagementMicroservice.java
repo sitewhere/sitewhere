@@ -73,7 +73,7 @@ public class ScheduleManagementMicroservice extends MultitenantMicroservice<ISch
      */
     @Override
     public IScheduleManagementTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new ScheduleManagementTenantEngine(this, tenant);
+	return new ScheduleManagementTenantEngine(tenant);
     }
 
     /*

@@ -65,6 +65,6 @@ public class EventSearchMicroservice extends MultitenantMicroservice<IEventSearc
      */
     @Override
     public IEventSearchTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new EventSearchTenantEngine(this, tenant);
+	return new EventSearchTenantEngine(tenant);
     }
 }

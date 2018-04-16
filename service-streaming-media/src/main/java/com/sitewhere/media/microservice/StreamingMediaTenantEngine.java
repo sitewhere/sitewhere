@@ -11,7 +11,6 @@ import com.sitewhere.media.spi.microservice.IStreamingMediaTenantEngine;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -24,8 +23,8 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class StreamingMediaTenantEngine extends MicroserviceTenantEngine implements IStreamingMediaTenantEngine {
 
-    public StreamingMediaTenantEngine(IMultitenantMicroservice<?> microservice, ITenant tenant) {
-	super(microservice, tenant);
+    public StreamingMediaTenantEngine(ITenant tenant) {
+	super(tenant);
     }
 
     /*

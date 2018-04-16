@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponentLogger;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponentParameter;
@@ -65,6 +66,24 @@ public class LifecycleComponentDecorator<T extends ILifecycleComponent> implemen
     @Override
     public LifecycleComponentType getComponentType() {
 	return getDelegate().getComponentType();
+    }
+
+    /*
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getMicroservice()
+     */
+    @Override
+    public IMicroservice getMicroservice() {
+	return getDelegate().getMicroservice();
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#setMicroservice(com.
+     * sitewhere.spi.microservice.IMicroservice)
+     */
+    @Override
+    public void setMicroservice(IMicroservice microservice) {
+	getDelegate().setMicroservice(microservice);
     }
 
     /*

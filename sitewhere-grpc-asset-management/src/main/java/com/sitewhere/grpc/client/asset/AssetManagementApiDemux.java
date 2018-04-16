@@ -11,7 +11,6 @@ import com.sitewhere.grpc.client.ApiDemux;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiDemux;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 
 /**
@@ -23,10 +22,6 @@ import com.sitewhere.spi.microservice.MicroserviceIdentifier;
  */
 public class AssetManagementApiDemux extends ApiDemux<IAssetManagementApiChannel<?>>
 	implements IAssetManagementApiDemux {
-
-    public AssetManagementApiDemux(IMicroservice microservice) {
-	super(microservice);
-    }
 
     /*
      * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()

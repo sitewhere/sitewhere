@@ -74,7 +74,7 @@ public class DeviceRegistrationMicroservice extends MultitenantMicroservice<IDev
      */
     @Override
     public IDeviceRegistrationTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new DeviceRegistrationTenantEngine(this, tenant);
+	return new DeviceRegistrationTenantEngine(tenant);
     }
 
     /*
@@ -161,7 +161,7 @@ public class DeviceRegistrationMicroservice extends MultitenantMicroservice<IDev
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiDemux = new DeviceManagementApiDemux(this);
+	this.deviceManagementApiDemux = new DeviceManagementApiDemux();
     }
 
     /*

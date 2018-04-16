@@ -213,7 +213,7 @@ public class TenantManagementMicroservice extends GlobalMicroservice
     @Override
     public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create Hazelcast manager.
-	this.hazelcastManager = new HazelcastManager(this);
+	this.hazelcastManager = new HazelcastManager();
 
 	// Initialize components that communicate via Kafka.
 	initializeKafkaComponents();
@@ -250,7 +250,7 @@ public class TenantManagementMicroservice extends GlobalMicroservice
      */
     protected void initializeKafkaComponents() throws SiteWhereException {
 	this.tenantModelProducer = new TenantModelProducer(this);
-	this.tenantBootstrapModelConsumer = new TenantBootstrapModelConsumer(this);
+	this.tenantBootstrapModelConsumer = new TenantBootstrapModelConsumer();
     }
 
     /*

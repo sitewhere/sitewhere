@@ -189,7 +189,7 @@ public class UserManagementMicroservice extends GlobalMicroservice implements IU
     @Override
     public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create Hazelcast manager.
-	this.hazelcastManager = new HazelcastManager(this);
+	this.hazelcastManager = new HazelcastManager();
 
 	// Create GRPC server.
 	this.userManagementGrpcServer = new UserManagementGrpcServer(this, getUserManagementAccessor());

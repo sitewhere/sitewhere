@@ -11,6 +11,7 @@ import java.io.File;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
+import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
@@ -35,7 +36,6 @@ public class TenantEngineScriptSynchronizer extends ScriptSynchronizer {
     private String zkScriptRootPath;
 
     public TenantEngineScriptSynchronizer(IMicroserviceTenantEngine tenantEngine) {
-	super(tenantEngine.getMicroservice());
 	this.tenantEngine = tenantEngine;
     }
 
@@ -48,8 +48,8 @@ public class TenantEngineScriptSynchronizer extends ScriptSynchronizer {
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.initialize(monitor);
 	setFileSystemRoot(computeFilesystemPathForTenant());
-	setZkScriptRootPath(
-		getMicroservice().getScriptManagement().getScriptContentZkPath(getTenantEngine().getTenant().getId()));
+	setZkScriptRootPath(((IMultitenantMicroservice<?>) getMicroservice()).getScriptManagement()
+		.getScriptContentZkPath(getTenantEngine().getTenant().getId()));
     }
 
     /**

@@ -33,13 +33,6 @@ import com.sitewhere.spi.tenant.ITenant;
 public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleComponent, IConfigurationListener {
 
     /**
-     * Get parent microservice.
-     * 
-     * @return
-     */
-    public IMultitenantMicroservice<?> getMicroservice();
-
-    /**
      * Get tenant hosted by engine.
      * 
      * @return

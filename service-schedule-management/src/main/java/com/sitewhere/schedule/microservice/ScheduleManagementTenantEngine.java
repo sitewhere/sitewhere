@@ -23,7 +23,6 @@ import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.microservice.spring.ScheduleManagementBeans;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
@@ -46,8 +45,8 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine
     /** Responds to schedule management GRPC requests */
     private ScheduleManagementGrpc.ScheduleManagementImplBase scheduleManagementImpl;
 
-    public ScheduleManagementTenantEngine(IMultitenantMicroservice<?> microservice, ITenant tenant) {
-	super(microservice, tenant);
+    public ScheduleManagementTenantEngine(ITenant tenant) {
+	super(tenant);
     }
 
     /*

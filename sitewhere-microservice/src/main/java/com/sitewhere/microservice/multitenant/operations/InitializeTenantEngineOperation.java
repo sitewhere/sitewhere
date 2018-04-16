@@ -21,7 +21,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -76,10 +75,7 @@ public class InitializeTenantEngineOperation<T extends IMicroserviceTenantEngine
 	    ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
 		    new LifecycleProgressContext(1, "Initialize tenant engine."), getMicroservice());
 	    long start = System.currentTimeMillis();
-	    created.lifecycleInitialize(monitor);
-	    if (created.getLifecycleStatus() == LifecycleStatus.InitializationError) {
-		throw created.getLifecycleError();
-	    }
+	    getMicroservice().initializeNestedComponent(created, monitor, true);
 
 	    // Mark tenant engine as initialized and remove failed engine if present.
 	    getMicroservice().getInitializedTenantEngines().put(getTenant().getId(), created);

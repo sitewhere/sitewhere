@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import com.sitewhere.microservice.security.SystemUserCallable;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.microservice.groovy.IGroovyComponent;
 import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -64,7 +65,7 @@ public abstract class GroovyComponent extends TenantEngineLifecycleComponent imp
 	if (getScriptId() == null) {
 	    throw new SiteWhereException("Script id was not initialized properly.");
 	}
-	this.scriptMetadata = getTenantEngine().getMicroservice().getScriptManagement()
+	this.scriptMetadata = ((IConfigurableMicroservice) getMicroservice()).getScriptManagement()
 		.getScriptMetadata(getTenantEngine().getTenant().getId(), getScriptId());
 	if (getScriptMetadata() == null) {
 	    throw new SiteWhereException("Script '" + getScriptId() + "' was not found.");

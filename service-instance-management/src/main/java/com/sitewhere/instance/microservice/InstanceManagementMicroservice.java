@@ -34,6 +34,7 @@ import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
+import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
@@ -53,6 +54,9 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
 
     /** Instance template manager */
     private IInstanceTemplateManager instanceTemplateManager = new InstanceTemplateManager();
+
+    /** Instance script synchronizer */
+    private IScriptSynchronizer instanceScriptSynchronizer;
 
     /** User management API demux */
     private IUserManagementApiDemux userManagementApiDemux;
@@ -140,16 +144,28 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
      */
     @Override
     public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create script synchronizer.
+	this.instanceScriptSynchronizer = new InstanceScriptSynchronizer();
+
 	// Create GRPC components.
 	createGrpcComponents();
+
+	// Create step that will start components.
+	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
+
+	// Initialize instance script synchronizer.
+	init.addInitializeStep(this, getInstanceScriptSynchronizer(), true);
+
+	// Execute initialization steps.
+	init.execute(monitor);
     }
 
     /**
      * Create components that interact via GRPC.
      */
     protected void createGrpcComponents() {
-	this.userManagementApiDemux = new UserManagementApiDemux(this);
-	this.tenantManagementApiDemux = new TenantManagementApiDemux(this);
+	this.userManagementApiDemux = new UserManagementApiDemux();
+	this.tenantManagementApiDemux = new TenantManagementApiDemux();
     }
 
     /*
@@ -167,6 +183,9 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
 
 	// Start instance template manager.
 	start.addStartStep(this, getInstanceTemplateManager(), true);
+
+	// Start instance script synchronizer.
+	start.addStartStep(this, getInstanceScriptSynchronizer(), true);
 
 	// Initialize user management API channel.
 	start.addInitializeStep(this, getUserManagementApiDemux(), true);
@@ -202,6 +221,9 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
 
 	// Stop user management API demux.
 	stop.addStopStep(this, getUserManagementApiDemux());
+
+	// Stop instance script synchronizer.
+	stop.addStopStep(this, getInstanceScriptSynchronizer());
 
 	// Stop instance template manager.
 	stop.addStopStep(this, getInstanceTemplateManager());
@@ -329,16 +351,15 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
      */
     protected void initializeUserModelFromInstanceTemplateScripts(String templatePath, List<String> scripts)
 	    throws SiteWhereException {
-	InstanceScriptSynchronizer synchronizer = new InstanceScriptSynchronizer(this);
 	for (String script : scripts) {
-	    synchronizer.add(script);
+	    getInstanceScriptSynchronizer().add(script);
 	}
 
 	// Wait for user management APIs to become available.
 	getUserManagementApiDemux().waitForApiChannel().waitForApiAvailable();
 	getLogger().info("User management API detected as available.");
 
-	GroovyConfiguration groovy = new GroovyConfiguration(synchronizer);
+	GroovyConfiguration groovy = new GroovyConfiguration(getInstanceScriptSynchronizer());
 	groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize user model."), this));
 	for (String script : scripts) {
 	    GroovyUserModelInitializer initializer = new GroovyUserModelInitializer(groovy, script);
@@ -355,16 +376,15 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
      */
     protected void initializeTenantModelFromInstanceTemplateScripts(String templatePath, List<String> scripts)
 	    throws SiteWhereException {
-	InstanceScriptSynchronizer synchronizer = new InstanceScriptSynchronizer(this);
 	for (String script : scripts) {
-	    synchronizer.add(script);
+	    getInstanceScriptSynchronizer().add(script);
 	}
 
 	// Wait for tenant management APIs to become available.
 	getTenantManagementApiDemux().waitForApiChannel().waitForApiAvailable();
 	getLogger().info("Tenant management API detected as available.");
 
-	GroovyConfiguration groovy = new GroovyConfiguration(synchronizer);
+	GroovyConfiguration groovy = new GroovyConfiguration(getInstanceScriptSynchronizer());
 	groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize tenant model."), this));
 	for (String script : scripts) {
 	    GroovyTenantModelInitializer initializer = new GroovyTenantModelInitializer(groovy, script);
@@ -400,6 +420,19 @@ public class InstanceManagementMicroservice extends GlobalMicroservice implement
 
     public void setInstanceTemplateManager(IInstanceTemplateManager instanceTemplateManager) {
 	this.instanceTemplateManager = instanceTemplateManager;
+    }
+
+    /*
+     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * getInstanceScriptSynchronizer()
+     */
+    @Override
+    public IScriptSynchronizer getInstanceScriptSynchronizer() {
+	return instanceScriptSynchronizer;
+    }
+
+    public void setInstanceScriptSynchronizer(IScriptSynchronizer instanceScriptSynchronizer) {
+	this.instanceScriptSynchronizer = instanceScriptSynchronizer;
     }
 
     /*

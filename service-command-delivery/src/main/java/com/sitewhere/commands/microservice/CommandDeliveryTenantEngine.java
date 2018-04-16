@@ -15,7 +15,6 @@ import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.microservice.spring.CommandDestinationsBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -36,8 +35,8 @@ public class CommandDeliveryTenantEngine extends MicroserviceTenantEngine implem
     /** Kafka consumer for enriched command invocations */
     private IEnrichedCommandInvocationsConsumer enrichedCommandInvocationsConsumer;
 
-    public CommandDeliveryTenantEngine(IMultitenantMicroservice<?> microservice, ITenant tenant) {
-	super(microservice, tenant);
+    public CommandDeliveryTenantEngine(ITenant tenant) {
+	super(tenant);
     }
 
     /*
@@ -47,11 +46,24 @@ public class CommandDeliveryTenantEngine extends MicroserviceTenantEngine implem
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.enrichedCommandInvocationsConsumer = new EnrichedCommandInvocationsConsumer(this);
+	// Listener for enriched command invocations.
+	this.enrichedCommandInvocationsConsumer = new EnrichedCommandInvocationsConsumer();
 
 	// Load configured registration manager.
 	this.commandDestinationsManager = (ICommandDestinationsManager) getModuleContext()
 		.getBean(CommandDestinationsBeans.BEAN_COMMAND_DESTINATIONS_MANAGER);
+
+	// Create step that will initialize components.
+	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
+
+	// Initialize command destinations manager.
+	init.addInitializeStep(this, getCommandDestinationsManager(), true);
+
+	// Initialize enriched command invocations consumer.
+	init.addInitializeStep(this, getEnrichedCommandInvocationsConsumer(), true);
+
+	// Execute initialization steps.
+	init.execute(monitor);
     }
 
     /*

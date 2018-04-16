@@ -11,7 +11,6 @@ import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.presence.spi.microservice.IPresenceManagementTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -25,8 +24,8 @@ import com.sitewhere.spi.tenant.ITenant;
 public class PresenceManagementTenantEngine extends MicroserviceTenantEngine
 	implements IPresenceManagementTenantEngine {
 
-    public PresenceManagementTenantEngine(IMultitenantMicroservice<?> microservice, ITenant tenant) {
-	super(microservice, tenant);
+    public PresenceManagementTenantEngine(ITenant tenant) {
+	super(tenant);
     }
 
     /*

@@ -15,7 +15,6 @@ import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.label.ILabelGeneratorManager;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.microservice.spring.LabelGenerationBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -36,8 +35,8 @@ public class LabelGenerationTenantEngine extends MicroserviceTenantEngine implem
     /** Responds to label generation GRPC requests */
     private LabelGenerationGrpc.LabelGenerationImplBase labelGenerationImpl;
 
-    public LabelGenerationTenantEngine(IMultitenantMicroservice<?> microservice, ITenant tenant) {
-	super(microservice, tenant);
+    public LabelGenerationTenantEngine(ITenant tenant) {
+	super(tenant);
     }
 
     /*

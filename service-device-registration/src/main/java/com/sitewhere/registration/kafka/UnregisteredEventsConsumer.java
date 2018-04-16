@@ -24,7 +24,6 @@ import com.sitewhere.grpc.model.converter.KafkaModelConverter;
 import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
-import com.sitewhere.registration.microservice.DeviceRegistrationTenantEngine;
 import com.sitewhere.registration.spi.kafka.IUnregisteredEventsConsumer;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationTenantEngine;
 import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
@@ -51,10 +50,6 @@ public class UnregisteredEventsConsumer extends MicroserviceKafkaConsumer implem
 
     /** Executor */
     private ExecutorService executor;
-
-    public UnregisteredEventsConsumer(DeviceRegistrationTenantEngine tenantEngine) {
-	super(tenantEngine.getMicroservice(), tenantEngine);
-    }
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#

@@ -29,7 +29,6 @@ public class MicroserviceManagementApiDemux extends ApiDemux<IMicroserviceManage
     private MicroserviceIdentifier targetIdentifier;
 
     public MicroserviceManagementApiDemux(IMicroservice microservice, MicroserviceIdentifier targetIdentifier) {
-	super(microservice);
 	this.targetIdentifier = targetIdentifier;
     }
 

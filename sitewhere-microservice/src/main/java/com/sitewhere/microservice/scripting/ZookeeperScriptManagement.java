@@ -45,20 +45,14 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
     /** Suffix added to indicate a metadata file */
     public static final String METADATA_SUFFIX = ".meta";
 
-    /** Microservice */
-    private IConfigurableMicroservice microservice;
-
-    public ZookeeperScriptManagement(IConfigurableMicroservice microservice) {
-	this.microservice = microservice;
-    }
-
     /*
      * @see com.sitewhere.spi.microservice.scripting.IScriptManagement#
      * getScriptMetadataZkPath(java.util.UUID)
      */
     @Override
     public String getScriptMetadataZkPath(UUID tenantId) throws SiteWhereException {
-	return getMicroservice().getInstanceTenantScriptsPath(tenantId) + "/" + METADATA_FOLDER;
+	return ((IConfigurableMicroservice) getMicroservice()).getInstanceTenantScriptsPath(tenantId) + "/"
+		+ METADATA_FOLDER;
     }
 
     /*
@@ -67,7 +61,8 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
      */
     @Override
     public String getScriptContentZkPath(UUID tenantId) throws SiteWhereException {
-	return getMicroservice().getInstanceTenantScriptsPath(tenantId) + "/" + CONTENT_FOLDER;
+	return ((IConfigurableMicroservice) getMicroservice()).getInstanceTenantScriptsPath(tenantId) + "/"
+		+ CONTENT_FOLDER;
     }
 
     /*
@@ -394,9 +389,5 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
 
     protected IZookeeperManager getZookeeperManager() {
 	return getMicroservice().getZookeeperManager();
-    }
-
-    protected IConfigurableMicroservice getMicroservice() {
-	return microservice;
     }
 }

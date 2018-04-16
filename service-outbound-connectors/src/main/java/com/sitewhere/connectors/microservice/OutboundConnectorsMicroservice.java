@@ -79,7 +79,7 @@ public class OutboundConnectorsMicroservice extends MultitenantMicroservice<IOut
      */
     @Override
     public IOutboundConnectorsTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new OutboundConnectorsTenantEngine(this, tenant);
+	return new OutboundConnectorsTenantEngine(tenant);
     }
 
     /*
@@ -177,10 +177,10 @@ public class OutboundConnectorsMicroservice extends MultitenantMicroservice<IOut
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiDemux = new DeviceManagementApiDemux(this);
+	this.deviceManagementApiDemux = new DeviceManagementApiDemux();
 
 	// Device event management.
-	this.deviceEventManagementApiDemux = new DeviceEventManagementApiDemux(this);
+	this.deviceEventManagementApiDemux = new DeviceEventManagementApiDemux();
     }
 
     /*

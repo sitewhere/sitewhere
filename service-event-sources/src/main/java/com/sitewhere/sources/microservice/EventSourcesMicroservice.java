@@ -83,7 +83,7 @@ public class EventSourcesMicroservice extends MultitenantMicroservice<IEventSour
      */
     @Override
     public IEventSourcesTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new EventSourcesTenantEngine(this, tenant);
+	return new EventSourcesTenantEngine(tenant);
     }
 
     /*
@@ -181,10 +181,10 @@ public class EventSourcesMicroservice extends MultitenantMicroservice<IEventSour
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiDemux = new DeviceManagementApiDemux(this);
+	this.deviceManagementApiDemux = new DeviceManagementApiDemux();
 
 	// Device event management.
-	this.deviceEventManagementApiDemux = new DeviceEventManagementApiDemux(this);
+	this.deviceEventManagementApiDemux = new DeviceEventManagementApiDemux();
     }
 
     /*

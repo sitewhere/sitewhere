@@ -35,8 +35,6 @@ import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
-import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
@@ -56,9 +54,7 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
     /** Executor */
     private ExecutorService executor;
 
-    public KafkaOutboundConnectorHost(IMicroservice microservice, IMicroserviceTenantEngine tenantEngine,
-	    IOutboundConnector outboundConnector) {
-	super(microservice, tenantEngine);
+    public KafkaOutboundConnectorHost(IOutboundConnector outboundConnector) {
 	this.outboundConnector = outboundConnector;
     }
 

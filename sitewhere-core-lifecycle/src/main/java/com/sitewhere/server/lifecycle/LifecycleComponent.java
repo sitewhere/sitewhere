@@ -18,6 +18,7 @@ import java.util.UUID;
 
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponentLogger;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponentParameter;
@@ -41,6 +42,9 @@ public class LifecycleComponent implements ILifecycleComponent {
 
     /** Component type */
     private LifecycleComponentType componentType;
+
+    /** Owning microservice */
+    private IMicroservice microservice;
 
     /** Component logger */
     private LifecycleComponentLogger logger;
@@ -212,6 +216,10 @@ public class LifecycleComponent implements ILifecycleComponent {
     @Override
     public void initializeNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor,
 	    boolean require) throws SiteWhereException {
+	if (getMicroservice() == null) {
+	    throw new SiteWhereException("Microservice reference not set in parent component: " + getClass().getName());
+	}
+	component.setMicroservice(getMicroservice());
 	component.lifecycleInitialize(monitor);
 	if (require) {
 	    if (component.getLifecycleStatus() == LifecycleStatus.InitializationError) {
@@ -596,6 +604,24 @@ public class LifecycleComponent implements ILifecycleComponent {
 		buildComponentMap(sub, map);
 	    }
 	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getMicroservice()
+     */
+    @Override
+    public IMicroservice getMicroservice() {
+	return microservice;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#setMicroservice(com.
+     * sitewhere.spi.microservice.IMicroservice)
+     */
+    @Override
+    public void setMicroservice(IMicroservice microservice) {
+	this.microservice = microservice;
     }
 
     /*

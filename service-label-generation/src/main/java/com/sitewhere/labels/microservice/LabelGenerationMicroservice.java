@@ -84,7 +84,7 @@ public class LabelGenerationMicroservice extends MultitenantMicroservice<ILabelG
      */
     @Override
     public ILabelGenerationTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new LabelGenerationTenantEngine(this, tenant);
+	return new LabelGenerationTenantEngine(tenant);
     }
 
     /*
@@ -194,10 +194,10 @@ public class LabelGenerationMicroservice extends MultitenantMicroservice<ILabelG
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiDemux = new DeviceManagementApiDemux(this);
+	this.deviceManagementApiDemux = new DeviceManagementApiDemux();
 
 	// Asset management.
-	this.assetManagementApiDemux = new AssetManagementApiDemux(this);
+	this.assetManagementApiDemux = new AssetManagementApiDemux();
     }
 
     /*

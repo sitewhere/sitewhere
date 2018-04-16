@@ -214,7 +214,7 @@ public abstract class ConfigurableMicroservice extends Microservice
 	getConfigurationMonitor().getListeners().add(this);
 
 	// Create script management support.
-	this.scriptManagement = new ZookeeperScriptManagement(this);
+	this.scriptManagement = new ZookeeperScriptManagement();
 
 	// Make sure that instance is bootstrapped before configuring.
 	waitForInstanceInitialization();

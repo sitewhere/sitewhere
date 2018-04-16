@@ -9,8 +9,9 @@ package com.sitewhere.microservice.scripting;
 
 import java.io.File;
 
-import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Implementation of {@link IScriptSynchronizer} that copies instance-level
@@ -26,8 +27,14 @@ public class InstanceScriptSynchronizer extends ScriptSynchronizer {
     /** Zookeeper root path */
     private String zkScriptRootPath;
 
-    public InstanceScriptSynchronizer(IConfigurableMicroservice microservice) {
-	super(microservice);
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
 	setFileSystemRoot(new File(getMicroservice().getInstanceSettings().getFileSystemStorageRoot()));
 	setZkScriptRootPath(getMicroservice().getInstanceZkPath());
     }

@@ -182,6 +182,9 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
 	// Initialize schedule management API demux.
 	init.addInitializeStep(this, getScheduleManagementApiDemux(), true);
 
+	// Initialize label generation API demux.
+	init.addInitializeStep(this, getLabelGenerationApiDemux(), true);
+
 	// Initialize microservice management coordinator.
 	init.addInitializeStep(this, getMicroserviceManagementCoordinator(), true);
 
@@ -196,31 +199,31 @@ public class WebRestMicroservice extends GlobalMicroservice implements IWebRestM
      */
     protected void createGrpcComponents() throws SiteWhereException {
 	// User management.
-	this.userManagementApiDemux = new UserManagementApiDemux(this);
+	this.userManagementApiDemux = new UserManagementApiDemux();
 
 	// Tenant management.
-	this.tenantManagementApiDemux = new TenantManagementApiDemux(this);
+	this.tenantManagementApiDemux = new TenantManagementApiDemux();
 
 	// Device management.
-	this.deviceManagementApiDemux = new DeviceManagementApiDemux(this);
+	this.deviceManagementApiDemux = new DeviceManagementApiDemux();
 
 	// Device event management.
-	this.deviceEventManagementApiDemux = new DeviceEventManagementApiDemux(this);
+	this.deviceEventManagementApiDemux = new DeviceEventManagementApiDemux();
 
 	// Asset management.
-	this.assetManagementApiDemux = new AssetManagementApiDemux(this);
+	this.assetManagementApiDemux = new AssetManagementApiDemux();
 
 	// Batch management.
-	this.batchManagementApiDemux = new BatchManagementApiDemux(this);
+	this.batchManagementApiDemux = new BatchManagementApiDemux();
 
 	// Schedule management.
-	this.scheduleManagementApiDemux = new ScheduleManagementApiDemux(this);
+	this.scheduleManagementApiDemux = new ScheduleManagementApiDemux();
 
 	// Label generation.
-	this.labelGenerationApiDemux = new LabelGenerationApiDemux(this);
+	this.labelGenerationApiDemux = new LabelGenerationApiDemux();
 
 	// Microservice management coordinator.
-	this.microserviceManagementCoordinator = new MicroserviceManagementCoordinator(this);
+	this.microserviceManagementCoordinator = new MicroserviceManagementCoordinator();
     }
 
     /*

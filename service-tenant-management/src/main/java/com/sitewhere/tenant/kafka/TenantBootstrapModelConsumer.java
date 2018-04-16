@@ -25,7 +25,6 @@ import com.sitewhere.grpc.model.converter.TenantModelConverter;
 import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.tenant.spi.kafka.ITenantBootstrapModelConsumer;
@@ -50,10 +49,6 @@ public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer impl
 
     /** Executor */
     private ExecutorService executor;
-
-    public TenantBootstrapModelConsumer(IMicroservice microservice) {
-	super(microservice, null);
-    }
 
     /*
      * (non-Javadoc)

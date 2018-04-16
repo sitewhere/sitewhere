@@ -26,7 +26,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.microservice.ICachingMicroservice;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.microservice.spring.AssetManagementBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -47,8 +46,8 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
     /** Responds to asset management GRPC requests */
     private AssetManagementGrpc.AssetManagementImplBase assetManagementImpl;
 
-    public AssetManagementTenantEngine(IMultitenantMicroservice<?> microservice, ITenant tenant) {
-	super(microservice, tenant);
+    public AssetManagementTenantEngine(ITenant tenant) {
+	super(tenant);
     }
 
     /*

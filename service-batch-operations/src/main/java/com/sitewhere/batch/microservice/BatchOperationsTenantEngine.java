@@ -15,7 +15,6 @@ import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.microservice.spring.BatchManagementBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -36,8 +35,8 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
     /** Responds to batch management GRPC requests */
     private BatchManagementGrpc.BatchManagementImplBase batchManagementImpl;
 
-    public BatchOperationsTenantEngine(IMultitenantMicroservice<?> microservice, ITenant tenant) {
-	super(microservice, tenant);
+    public BatchOperationsTenantEngine(ITenant tenant) {
+	super(tenant);
     }
 
     /*
