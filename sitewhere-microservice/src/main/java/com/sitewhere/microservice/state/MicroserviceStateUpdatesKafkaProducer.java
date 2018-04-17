@@ -12,7 +12,6 @@ import com.sitewhere.grpc.model.converter.KafkaModelConverter;
 import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.state.IMicroserviceState;
 import com.sitewhere.spi.microservice.state.IMicroserviceStateUpdatesKafkaProducer;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
@@ -26,10 +25,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  */
 public class MicroserviceStateUpdatesKafkaProducer extends MicroserviceKafkaProducer
 	implements IMicroserviceStateUpdatesKafkaProducer {
-
-    public MicroserviceStateUpdatesKafkaProducer(IMicroservice microservice) {
-	super(microservice);
-    }
 
     /*
      * @see

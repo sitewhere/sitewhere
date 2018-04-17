@@ -22,7 +22,6 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import com.sitewhere.microservice.MicroserviceApplication;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
@@ -49,13 +48,6 @@ public abstract class MicroserviceKafkaProducer extends TenantEngineLifecycleCom
 
     /** Producer */
     private KafkaProducer<String, byte[]> producer;
-
-    /** Microservice */
-    private IMicroservice microservice;
-
-    public MicroserviceKafkaProducer(IMicroservice microservice) {
-	this.microservice = microservice;
-    }
 
     /*
      * (non-Javadoc)
@@ -112,19 +104,6 @@ public abstract class MicroserviceKafkaProducer extends TenantEngineLifecycleCom
 	config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 	config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName());
 	return config;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer#
-     * getMicroservice()
-     */
-    @Override
-    public IMicroservice getMicroservice() {
-	return microservice;
-    }
-
-    public void setMicroservice(IMicroservice microservice) {
-	this.microservice = microservice;
     }
 
     public KafkaProducer<String, byte[]> getProducer() {

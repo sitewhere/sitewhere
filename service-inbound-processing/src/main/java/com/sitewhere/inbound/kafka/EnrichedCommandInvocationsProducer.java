@@ -10,7 +10,6 @@ package com.sitewhere.inbound.kafka;
 import com.sitewhere.inbound.spi.kafka.IEnrichedCommandInvocationsProducer;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 
 /**
  * Kafka producer that sends sends enriched device command invocations to a
@@ -20,10 +19,6 @@ import com.sitewhere.spi.microservice.IMicroservice;
  */
 public class EnrichedCommandInvocationsProducer extends MicroserviceKafkaProducer
 	implements IEnrichedCommandInvocationsProducer {
-
-    public EnrichedCommandInvocationsProducer(IMicroservice microservice) {
-	super(microservice);
-    }
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer#

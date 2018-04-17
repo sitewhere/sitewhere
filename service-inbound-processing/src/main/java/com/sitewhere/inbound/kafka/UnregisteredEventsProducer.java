@@ -10,7 +10,6 @@ package com.sitewhere.inbound.kafka;
 import com.sitewhere.inbound.spi.kafka.IUnregisteredEventsProducer;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 
 /**
  * Kafka producer that sends events for unregistered devices to a topic for
@@ -19,10 +18,6 @@ import com.sitewhere.spi.microservice.IMicroservice;
  * @author Derek
  */
 public class UnregisteredEventsProducer extends MicroserviceKafkaProducer implements IUnregisteredEventsProducer {
-
-    public UnregisteredEventsProducer(IMicroservice microservice) {
-	super(microservice);
-    }
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer#

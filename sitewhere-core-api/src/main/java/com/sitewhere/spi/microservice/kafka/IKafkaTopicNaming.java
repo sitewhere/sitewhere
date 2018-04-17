@@ -60,6 +60,13 @@ public interface IKafkaTopicNaming {
     public String getInstanceTopologyUpdatesTopic();
 
     /**
+     * Get topic for log aggregation across all microservices.
+     * 
+     * @return
+     */
+    public String getInstanceLoggingTopic();
+
+    /**
      * Get name for topic that contains events that have been decoded from inbound
      * event sources.
      * 

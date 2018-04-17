@@ -41,6 +41,9 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     /** Topic suffix for tenant model updates */
     protected static final String TENANT_MODEL_UPDATES_SUFFIX = "tenant-model-updates";
 
+    /** Topic suffix for instance-wide logging */
+    protected static final String INSTANCE_LOGGING_SUFFIX = "instance-logging";
+
     /** Topic suffix for events decoded by event sources for a tenant */
     protected static final String TENANT_TOPIC_EVENT_SOURCE_DECODED_EVENTS = "event-source-decoded-events";
 
@@ -120,6 +123,15 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     @Override
     public String getTenantUpdatesTopic() {
 	return getGlobalPrefix() + TENANT_MODEL_UPDATES_SUFFIX;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#
+     * getInstanceLoggingTopic()
+     */
+    @Override
+    public String getInstanceLoggingTopic() {
+	return getGlobalPrefix() + INSTANCE_LOGGING_SUFFIX;
     }
 
     /*

@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.codahale.metrics.MetricRegistry;
 import com.sitewhere.Version;
+import com.sitewhere.microservice.logging.MicroserviceLogProducer;
 import com.sitewhere.microservice.management.MicroserviceManagementGrpcServer;
 import com.sitewhere.microservice.state.MicroserviceStateUpdatesKafkaProducer;
 import com.sitewhere.microservice.state.TopologyStateAggregator;
@@ -37,6 +38,7 @@ import com.sitewhere.spi.microservice.configuration.model.IElementRole;
 import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
+import com.sitewhere.spi.microservice.logging.IMicroserviceLogProducer;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
@@ -110,6 +112,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     /** Kafka consumer for aggregating microservice/tenant engine state updates */
     private ITopologyStateAggregator topologyStateAggregator;
 
+    /** Kafka producer for centralized log handling */
+    private IMicroserviceLogProducer microserviceLogProducer;
+
     /** Lifecycle operations thread pool */
     private ExecutorService microserviceOperationsService;
 
@@ -124,6 +129,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 		.newSingleThreadExecutor(new MicroserviceOperationsThreadFactory());
 	this.configurationModel = buildConfigurationModel();
 	((ConfigurationModel) configurationModel).setMicroserviceDetails(getMicroserviceDetails());
+
+	// Create log producer so it can buffer log output.
+	this.microserviceLogProducer = new MicroserviceLogProducer();
     }
 
     /*
@@ -150,6 +158,12 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
 	// Organizes steps for initializing microservice.
 	ICompositeLifecycleStep initialize = new CompositeLifecycleStep("Initialize " + getName());
+
+	// Initialize Kafka producer for centralized logging.
+	initialize.addInitializeStep(this, getMicroserviceLogProducer(), true);
+
+	// Start Kafka producer for centralized logging.
+	initialize.addStartStep(this, getMicroserviceLogProducer(), true);
 
 	// Initialize Zookeeper configuration management.
 	initialize.addInitializeStep(this, getZookeeperManager(), true);
@@ -190,7 +204,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
      * Initialize components related to state management.
      */
     protected void initializeStateManagement() {
-	this.stateUpdatesKafkaProducer = new MicroserviceStateUpdatesKafkaProducer(this);
+	this.stateUpdatesKafkaProducer = new MicroserviceStateUpdatesKafkaProducer();
 	this.topologyStateAggregator = new TopologyStateAggregator();
 	this.microserviceHeartbeatService = Executors.newSingleThreadExecutor(new MicroserviceHeartbeatThreadFactory());
     }
@@ -232,6 +246,9 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
 	// Terminate Zk manager.
 	terminate.addStopStep(this, getZookeeperManager());
+
+	// Terminate log producer.
+	terminate.addStopStep(this, getMicroserviceLogProducer());
 
 	// Execute shutdown steps.
 	terminate.execute(monitor);
@@ -506,6 +523,19 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
 
     public void setTopologyStateAggregator(ITopologyStateAggregator topologyStateAggregator) {
 	this.topologyStateAggregator = topologyStateAggregator;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.IMicroservice#getMicroserviceLogProducer()
+     */
+    @Override
+    public IMicroserviceLogProducer getMicroserviceLogProducer() {
+	return microserviceLogProducer;
+    }
+
+    public void setMicroserviceLogProducer(IMicroserviceLogProducer microserviceLogProducer) {
+	this.microserviceLogProducer = microserviceLogProducer;
     }
 
     /*

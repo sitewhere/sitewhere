@@ -10,7 +10,6 @@ package com.sitewhere.inbound.kafka;
 import com.sitewhere.inbound.spi.kafka.IEnrichedEventsProducer;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 
 /**
  * Kafka producer that sends sends enriched events to a topic for further
@@ -19,10 +18,6 @@ import com.sitewhere.spi.microservice.IMicroservice;
  * @author Derek
  */
 public class EnrichedEventsProducer extends MicroserviceKafkaProducer implements IEnrichedEventsProducer {
-
-    public EnrichedEventsProducer(IMicroservice microservice) {
-	super(microservice);
-    }
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer#

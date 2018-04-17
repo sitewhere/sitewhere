@@ -9,7 +9,6 @@ package com.sitewhere.sources.kafka;
 
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 
 /**
  * Kafka producer for the stream of events that could not be decoded by all
@@ -18,10 +17,6 @@ import com.sitewhere.spi.microservice.IMicroservice;
  * @author Derek
  */
 public class FailedDecodeEventsProducer extends MicroserviceKafkaProducer {
-
-    public FailedDecodeEventsProducer(IMicroservice microservice) {
-	super(microservice);
-    }
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer#

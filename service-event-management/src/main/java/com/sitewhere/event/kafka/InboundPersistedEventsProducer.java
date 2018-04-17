@@ -10,7 +10,6 @@ package com.sitewhere.event.kafka;
 import com.sitewhere.event.spi.kafka.IInboundPersistedEventsProducer;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 
 /**
  * Kafka producer for events that have been persisted to the event datastore and
@@ -20,10 +19,6 @@ import com.sitewhere.spi.microservice.IMicroservice;
  */
 public class InboundPersistedEventsProducer extends MicroserviceKafkaProducer
 	implements IInboundPersistedEventsProducer {
-
-    public InboundPersistedEventsProducer(IMicroservice microservice) {
-	super(microservice);
-    }
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer#

@@ -17,7 +17,6 @@ import com.sitewhere.inbound.spi.kafka.IEnrichedCommandInvocationsProducer;
 import com.sitewhere.inbound.spi.kafka.IEnrichedEventsProducer;
 import com.sitewhere.inbound.spi.kafka.IPersistedEventsConsumer;
 import com.sitewhere.inbound.spi.kafka.IUnregisteredEventsProducer;
-import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.inbound.spi.processing.IInboundProcessingConfiguration;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
@@ -64,17 +63,15 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	IInboundProcessingMicroservice ipMicroservice = (IInboundProcessingMicroservice) getMicroservice();
-
 	// Load core configuration parameters.
 	IInboundProcessingConfiguration configuration = (IInboundProcessingConfiguration) getModuleContext()
 		.getBean(InboundProcessingBeans.BEAN_INBOUND_PROCESSING_CONFIGURATION);
 
 	this.decodedEventsConsumer = new DecodedEventsConsumer(configuration);
-	this.unregisteredDeviceEventsProducer = new UnregisteredEventsProducer(ipMicroservice);
+	this.unregisteredDeviceEventsProducer = new UnregisteredEventsProducer();
 	this.persistedEventsConsumer = new PersistedEventsConsumer();
-	this.enrichedEventsProducer = new EnrichedEventsProducer(ipMicroservice);
-	this.enrichedCommandInvocationsProducer = new EnrichedCommandInvocationsProducer(ipMicroservice);
+	this.enrichedEventsProducer = new EnrichedEventsProducer();
+	this.enrichedCommandInvocationsProducer = new EnrichedCommandInvocationsProducer();
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());

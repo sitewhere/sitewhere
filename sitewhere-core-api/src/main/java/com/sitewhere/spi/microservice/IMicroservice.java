@@ -17,6 +17,7 @@ import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
+import com.sitewhere.spi.microservice.logging.IMicroserviceLogProducer;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
@@ -164,6 +165,14 @@ public interface IMicroservice extends ILifecycleComponent, ITracerProvider {
      * @return
      */
     public ITopologyStateAggregator getTopologyStateAggregator();
+
+    /**
+     * Get Kafka producer that allows log messages to be processed in a centralized
+     * fashion.
+     * 
+     * @return
+     */
+    public IMicroserviceLogProducer getMicroserviceLogProducer();
 
     /**
      * Code executed after microservice has been started.

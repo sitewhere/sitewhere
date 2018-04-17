@@ -249,7 +249,7 @@ public class TenantManagementMicroservice extends GlobalMicroservice
      * @throws SiteWhereException
      */
     protected void initializeKafkaComponents() throws SiteWhereException {
-	this.tenantModelProducer = new TenantModelProducer(this);
+	this.tenantModelProducer = new TenantModelProducer();
 	this.tenantBootstrapModelConsumer = new TenantBootstrapModelConsumer();
     }
 

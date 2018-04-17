@@ -87,7 +87,7 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 	ActiveSpan span = null;
 	try {
 	    span = monitor.getMicroservice().getTracer().buildSpan("Initialize decoded events producer").startActive();
-	    decodedEventsProducer = new DecodedEventsProducer(monitor.getMicroservice());
+	    decodedEventsProducer = new DecodedEventsProducer();
 	    initializeNestedComponent(getDecodedEventsProducer(), monitor, true);
 	} catch (SiteWhereException e) {
 	    TracerUtils.handleErrorInTracerSpan(span, e);

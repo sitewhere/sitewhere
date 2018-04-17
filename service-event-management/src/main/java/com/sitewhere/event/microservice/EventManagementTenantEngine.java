@@ -85,7 +85,7 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 	this.eventManagement = new KafkaEventPersistenceTriggers(this, impl);
 
 	this.eventManagementImpl = new EventManagementImpl(getEventManagement());
-	this.inboundPersistedEventsProducer = new InboundPersistedEventsProducer(getMicroservice());
+	this.inboundPersistedEventsProducer = new InboundPersistedEventsProducer();
     }
 
     /*

@@ -91,3 +91,42 @@ message GStateUpdate {
 		GTenantEngineState tenantEngineState = 2;
 	}
 }
+
+// ###############
+// ### LOGGING ###
+// ###############
+
+// Log levels.
+enum GLogLevel {
+	LOG_LEVEL_TRACE = 0;
+	LOG_LEVEL_DEBUG = 1;
+	LOG_LEVEL_INFO = 2;
+	LOG_LEVEL_WARN = 3;
+	LOG_LEVEL_ERROR = 4;
+	LOG_LEVEL_FATAL = 5;
+}
+
+// Stack trace element.
+message GLoggedStackTraceElement {
+	string clazz = 1;
+	string method = 2;
+	string file = 3;
+	uint64 lineNumber = 4;
+}
+
+// Exception information.
+message GLoggedException {
+	string messageText = 1;
+	repeated GLoggedStackTraceElement elements = 2;
+}
+
+// Log message.
+message GMicroserviceLogMessage {
+	com.sitewhere.grpc.model.GMicroserviceIdentifier microserviceIdentifier = 1;
+	string microserviceContainerId = 2;
+	com.sitewhere.grpc.model.GUUID tenantId = 3;
+	uint64 timestamp = 4;
+	GLogLevel level = 5;
+	string messageText = 6;
+	GLoggedException exception = 7;
+}

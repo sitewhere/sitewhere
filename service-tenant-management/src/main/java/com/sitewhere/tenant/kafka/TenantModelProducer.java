@@ -11,7 +11,6 @@ import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdateType;
 import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.tenant.spi.kafka.ITenantModelProducer;
 
@@ -22,10 +21,6 @@ import com.sitewhere.tenant.spi.kafka.ITenantModelProducer;
  * @author Derek
  */
 public class TenantModelProducer extends MicroserviceKafkaProducer implements ITenantModelProducer {
-
-    public TenantModelProducer(IMicroservice microservice) {
-	super(microservice);
-    }
 
     /*
      * (non-Javadoc)
