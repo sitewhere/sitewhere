@@ -12,13 +12,7 @@ import com.sitewhere.spi.microservice.configuration.model.IRoleKey;
 public enum AssetManagementRoleKeys implements IRoleKey {
 
     /** Asset management */
-    AssetManagement("asset_mgmt"),
-
-    /** Asset modules */
-    AssetModules("asset_mods"),
-
-    /** Asset module */
-    AssetModule("asset_mod");
+    AssetManagement("asset_mgmt");
 
     private String id;
 

@@ -22,16 +22,7 @@ public enum AssetManagementRoles implements IConfigurationRoleProvider {
 
     /** Asset management. */
     AssetManagement(ConfigurationRole.build(AssetManagementRoleKeys.AssetManagement, "Asset Management", false, false,
-	    false,
-	    new IRoleKey[] { CommonDatastoreRoleKeys.DeviceManagementDatastore, AssetManagementRoleKeys.AssetModules },
-	    new IRoleKey[0], true)),
-
-    /** Asset modules. */
-    AssetModules(ConfigurationRole.build(AssetManagementRoleKeys.AssetModules, "Asset Modules", false, false, false,
-	    new IRoleKey[] { AssetManagementRoleKeys.AssetModule }, new IRoleKey[0], true)),
-
-    /** Asset Management. Asset module */
-    AssetModule(ConfigurationRole.build(AssetManagementRoleKeys.AssetModule, "Asset Module", true, true, true));
+	    false, new IRoleKey[] { CommonDatastoreRoleKeys.DeviceManagementDatastore }, new IRoleKey[0], true));
 
     private ConfigurationRole role;
 

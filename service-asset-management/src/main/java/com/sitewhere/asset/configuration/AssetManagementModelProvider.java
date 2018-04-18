@@ -10,9 +10,7 @@ package com.sitewhere.asset.configuration;
 import com.sitewhere.configuration.model.CommonDatastoreProvider;
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.configuration.parser.IAssetManagementParser;
-import com.sitewhere.rest.model.configuration.AttributeNode;
 import com.sitewhere.rest.model.configuration.ElementNode;
-import com.sitewhere.spi.microservice.configuration.model.AttributeType;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
@@ -79,15 +77,5 @@ public class AssetManagementModelProvider extends ConfigurationModelProvider {
 		AssetManagementRoleKeys.AssetManagement, this);
 	builder.description("Configure asset management features such as persistence and external modules.");
 	return builder.build();
-    }
-
-    /**
-     * Add common asset module attributes.
-     * 
-     * @param builder
-     */
-    protected void addCommonAssetModuleAttributes(ElementNode.Builder builder) {
-	builder.attribute((new AttributeNode.Builder("Module id", "moduleId", AttributeType.String)
-		.description("Unique id used to reference the asset module").build()));
     }
 }
