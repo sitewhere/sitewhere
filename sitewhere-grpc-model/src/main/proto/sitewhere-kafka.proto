@@ -122,7 +122,7 @@ message GLoggedException {
 
 // Log message.
 message GMicroserviceLogMessage {
-	com.sitewhere.grpc.model.GMicroserviceIdentifier microserviceIdentifier = 1;
+	string microserviceIdentifier = 1;
 	string microserviceContainerId = 2;
 	com.sitewhere.grpc.model.GUUID tenantId = 3;
 	uint64 timestamp = 4;

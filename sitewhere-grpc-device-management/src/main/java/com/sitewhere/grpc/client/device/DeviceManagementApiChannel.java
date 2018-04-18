@@ -41,7 +41,6 @@ import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
@@ -58,8 +57,8 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceManagementGrpcChannel>
 	implements IDeviceManagementApiChannel<DeviceManagementGrpcChannel> {
 
-    public DeviceManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
-	super(demux, microservice, host);
+    public DeviceManagementApiChannel(IApiDemux<?> demux, String host, int port) {
+	super(demux, host, port);
     }
 
     /*

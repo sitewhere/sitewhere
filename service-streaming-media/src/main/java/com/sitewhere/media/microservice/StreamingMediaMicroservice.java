@@ -21,7 +21,8 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public class StreamingMediaMicroservice extends MultitenantMicroservice<IStreamingMediaTenantEngine>
+public class StreamingMediaMicroservice
+	extends MultitenantMicroservice<MicroserviceIdentifier, IStreamingMediaTenantEngine>
 	implements IStreamingMediaMicroservice {
 
     /** Microservice name */

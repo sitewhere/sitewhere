@@ -20,7 +20,6 @@ import com.sitewhere.rest.model.microservice.state.InstanceTopologyEntry;
 import com.sitewhere.rest.model.microservice.state.InstanceTopologySnapshot;
 import com.sitewhere.rest.model.microservice.state.MicroserviceState;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.state.IInstanceMicroservice;
 import com.sitewhere.spi.microservice.state.IInstanceTenantEngine;
 import com.sitewhere.spi.microservice.state.IInstanceTopologyEntry;
@@ -54,8 +53,7 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
      * getTenantEngineState(java.lang.String, java.util.UUID)
      */
     @Override
-    public List<ITenantEngineState> getTenantEngineState(MicroserviceIdentifier identifier, UUID tenantId)
-	    throws SiteWhereException {
+    public List<ITenantEngineState> getTenantEngineState(String identifier, UUID tenantId) throws SiteWhereException {
 	List<ITenantEngineState> result = new ArrayList<>();
 	IInstanceTopologyEntry entry = getInstanceTopologySnapshot().getTopologyEntriesByIdentifier().get(identifier);
 	if (entry == null) {
@@ -76,8 +74,8 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
      * java.util.concurrent.TimeUnit, long)
      */
     @Override
-    public void waitForTenantEngineAvailable(MicroserviceIdentifier identifier, UUID tenantId, long duration,
-	    TimeUnit unit, long logMessageDelay) throws SiteWhereException {
+    public void waitForTenantEngineAvailable(String identifier, UUID tenantId, long duration, TimeUnit unit,
+	    long logMessageDelay) throws SiteWhereException {
 	long start = System.currentTimeMillis();
 	long deadline = start + unit.toMillis(duration);
 	long logAfter = start + unit.toMillis(logMessageDelay);

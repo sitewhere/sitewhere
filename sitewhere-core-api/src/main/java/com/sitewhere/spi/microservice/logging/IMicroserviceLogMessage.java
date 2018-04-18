@@ -9,8 +9,6 @@ package com.sitewhere.spi.microservice.logging;
 
 import java.util.UUID;
 
-import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-
 /**
  * Log message that includes metadata about microservice that generated it.
  * 
@@ -23,7 +21,7 @@ public interface IMicroserviceLogMessage {
      * 
      * @return
      */
-    public MicroserviceIdentifier getMicroserviceIdentifier();
+    public String getMicroserviceIdentifier();
 
     /**
      * Get unique container id for microservice instance.

@@ -29,7 +29,7 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public class EventSourcesMicroservice extends MultitenantMicroservice<IEventSourcesTenantEngine>
+public class EventSourcesMicroservice extends MultitenantMicroservice<MicroserviceIdentifier, IEventSourcesTenantEngine>
 	implements IEventSourcesMicroservice {
 
     /** Microservice name */

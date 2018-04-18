@@ -27,7 +27,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  *
  * @param <T>
  */
-public class TerminateConfigurationOperation<T extends IConfigurableMicroservice>
+public class TerminateConfigurationOperation<T extends IConfigurableMicroservice<?>>
 	extends CompletableConfigurationOperation<T> {
 
     /** Static logger instance */
@@ -78,7 +78,7 @@ public class TerminateConfigurationOperation<T extends IConfigurableMicroservice
 	this.microservice = microservice;
     }
 
-    public static <T extends IConfigurableMicroservice> CompletableFuture<T> createCompletableFuture(T microservice,
+    public static <T extends IConfigurableMicroservice<?>> CompletableFuture<T> createCompletableFuture(T microservice,
 	    ExecutorService executor) {
 	CompletableFuture<T> completableFuture = new CompletableFuture<T>();
 	executor.submit(new TerminateConfigurationOperation<T>(microservice, completableFuture));

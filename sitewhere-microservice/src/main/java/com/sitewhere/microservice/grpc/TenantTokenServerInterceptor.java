@@ -37,9 +37,9 @@ public class TenantTokenServerInterceptor implements ServerInterceptor {
     private static Log LOGGER = LogFactory.getLog(TenantTokenServerInterceptor.class);
 
     /** Parent microservice */
-    private IMicroservice microservice;
+    private IMicroservice<?> microservice;
 
-    public TenantTokenServerInterceptor(IMicroservice microservice) {
+    public TenantTokenServerInterceptor(IMicroservice<?> microservice) {
 	this.microservice = microservice;
     }
 
@@ -64,11 +64,11 @@ public class TenantTokenServerInterceptor implements ServerInterceptor {
 	}
     }
 
-    public IMicroservice getMicroservice() {
+    public IMicroservice<?> getMicroservice() {
 	return microservice;
     }
 
-    public void setMicroservice(IMicroservice microservice) {
+    public void setMicroservice(IMicroservice<?> microservice) {
 	this.microservice = microservice;
     }
 }

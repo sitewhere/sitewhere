@@ -34,7 +34,6 @@ import com.sitewhere.grpc.service.GGetDeviceTypeLabelResponse;
 import com.sitewhere.grpc.service.LabelGenerationGrpc;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.label.ILabel;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
@@ -46,8 +45,8 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public class LabelGenerationApiChannel extends MultitenantApiChannel<LabelGenerationGrpcChannel>
 	implements ILabelGenerationApiChannel<LabelGenerationGrpcChannel> {
 
-    public LabelGenerationApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
-	super(demux, microservice, host);
+    public LabelGenerationApiChannel(IApiDemux<?> demux, String host, int port) {
+	super(demux, host, port);
     }
 
     /*

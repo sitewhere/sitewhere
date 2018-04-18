@@ -90,5 +90,5 @@ public interface ILifecycleProgressMonitor extends IProgressReporter {
      * 
      * @return
      */
-    public IMicroservice getMicroservice();
+    public IMicroservice<?> getMicroservice();
 }

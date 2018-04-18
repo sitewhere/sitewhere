@@ -32,12 +32,12 @@ public abstract class SystemUserCallable<V> implements Callable<V> {
     private static Log LOGGER = LogFactory.getLog(SystemUserCallable.class);
 
     /** Tenant engine if tenant operation */
-    private IMicroservice microservice;
+    private IMicroservice<?> microservice;
 
     /** Tenant */
     private ITenant tenant;
 
-    public SystemUserCallable(IMicroservice microservice, ITenant tenant) {
+    public SystemUserCallable(IMicroservice<?> microservice, ITenant tenant) {
 	this.microservice = microservice;
 	this.tenant = tenant;
     }
@@ -70,11 +70,11 @@ public abstract class SystemUserCallable<V> implements Callable<V> {
 	}
     }
 
-    protected IMicroservice getMicroservice() {
+    protected IMicroservice<?> getMicroservice() {
 	return microservice;
     }
 
-    protected void setMicroservice(IMicroservice microservice) {
+    protected void setMicroservice(IMicroservice<?> microservice) {
 	this.microservice = microservice;
     }
 

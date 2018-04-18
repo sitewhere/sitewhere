@@ -20,7 +20,7 @@ import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
  *
  * @param <T>
  */
-public abstract class CompletableConfigurationOperation<T extends IConfigurableMicroservice> implements Callable<T> {
+public abstract class CompletableConfigurationOperation<T extends IConfigurableMicroservice<?>> implements Callable<T> {
 
     /** Completable future that tracks progress */
     private CompletableFuture<T> completableFuture;

@@ -57,7 +57,7 @@ public class RestApiConfiguration implements WebMvcConfigurer {
     private static final String API_LICENSE_URL = "https://github.com/sitewhere/sitewhere/blob/master/LICENSE.txt";
 
     @Autowired
-    private IWebRestMicroservice microservice;
+    private IWebRestMicroservice<?> microservice;
 
     @Bean
     public Docket sitewhereApi() {
@@ -122,11 +122,11 @@ public class RestApiConfiguration implements WebMvcConfigurer {
 	configurer.favorPathExtension(false);
     }
 
-    public IWebRestMicroservice getMicroservice() {
+    public IWebRestMicroservice<?> getMicroservice() {
 	return microservice;
     }
 
-    public void setMicroservice(IWebRestMicroservice microservice) {
+    public void setMicroservice(IWebRestMicroservice<?> microservice) {
 	this.microservice = microservice;
     }
 }

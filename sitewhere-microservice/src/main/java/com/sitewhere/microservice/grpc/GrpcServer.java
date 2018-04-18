@@ -13,7 +13,6 @@ import com.sitewhere.grpc.client.spi.server.IGrpcServer;
 import com.sitewhere.grpc.model.tracing.ServerTracingInterceptor;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 import io.grpc.BindableService;
@@ -28,37 +27,40 @@ import io.grpc.ServerBuilder;
 public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcServer {
 
     /** Port for GRPC server */
-    protected int port;
+    private int port;
 
     /** Wrapped GRPC server */
-    protected Server server;
-
-    /** Parent microservice */
-    protected IMicroservice microservice;
+    private Server server;
 
     /** Service implementation */
-    protected BindableService serviceImplementation;
+    private BindableService serviceImplementation;
 
     /** Indicates whether to use tracing interceptor */
-    protected boolean useTracingInterceptor = false;
+    private boolean useTracingInterceptor = true;
 
     /** Interceptor for JWT authentication */
-    protected JwtServerInterceptor jwt;
+    private JwtServerInterceptor jwtInterceptor;
 
     /** Interceptor for open tracing APIs */
-    protected ServerTracingInterceptor trace;
+    private ServerTracingInterceptor tracingInterceptor;
 
-    public GrpcServer(IMicroservice microservice, BindableService serviceImplementation) {
-	this(microservice, serviceImplementation, microservice.getInstanceSettings().getGrpcPort());
-    }
-
-    public GrpcServer(IMicroservice microservice, BindableService serviceImplementation, int port) {
-	this.microservice = microservice;
+    public GrpcServer(BindableService serviceImplementation, int port) {
 	this.serviceImplementation = serviceImplementation;
 	this.port = port;
+    }
 
-	this.jwt = new JwtServerInterceptor(microservice, serviceImplementation.getClass());
-	this.trace = new ServerTracingInterceptor(microservice.getTracer());
+    /**
+     * Build server component based on configuration.
+     * 
+     * @return
+     */
+    protected Server buildServer() {
+	ServerBuilder<?> builder = ServerBuilder.forPort(port);
+	builder.addService(getServiceImplementation()).intercept(getJwtInterceptor());
+	if (isUseTracingInterceptor()) {
+	    builder.intercept(getTracingInterceptor());
+	}
+	return builder.build();
     }
 
     /*
@@ -70,13 +72,12 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	try {
-	    ServerBuilder<?> builder = ServerBuilder.forPort(port);
-	    builder.addService(getServiceImplementation()).intercept(jwt);
-	    builder.intercept(trace);
-	    this.server = builder.build();
+	    this.jwtInterceptor = new JwtServerInterceptor(getMicroservice(), getServiceImplementation().getClass());
+	    this.tracingInterceptor = new ServerTracingInterceptor(getMicroservice().getTracer());
+	    this.server = buildServer();
 	    getLogger().info("Initialized GRPC server on port " + port + ".");
 	} catch (Throwable e) {
-	    throw new SiteWhereException("Unable to initialize tenant management GRPC server.", e);
+	    throw new SiteWhereException("Unable to initialize GRPC server.", e);
 	}
     }
 
@@ -93,7 +94,7 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
 	    getServer().start();
 	    getLogger().info("Started GRPC server on port " + port + ".");
 	} catch (IOException e) {
-	    throw new SiteWhereException("Unable to start tenant management GRPC server.", e);
+	    throw new SiteWhereException("Unable to start GRPC server.", e);
 	}
     }
 
@@ -113,18 +114,6 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
 	} catch (InterruptedException e) {
 	    getLogger().error("Interrupted while waiting for GRPC server to terminate.", e);
 	}
-    }
-
-    /*
-     * @see com.sitewhere.grpc.client.spi.server.IGrpcServer#getMicroservice()
-     */
-    @Override
-    public IMicroservice getMicroservice() {
-	return microservice;
-    }
-
-    public void setMicroservice(IMicroservice microservice) {
-	this.microservice = microservice;
     }
 
     /*
@@ -159,5 +148,29 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
 
     public void setServer(Server server) {
 	this.server = server;
+    }
+
+    public int getPort() {
+	return port;
+    }
+
+    public void setPort(int port) {
+	this.port = port;
+    }
+
+    public JwtServerInterceptor getJwtInterceptor() {
+	return jwtInterceptor;
+    }
+
+    public void setJwtInterceptor(JwtServerInterceptor jwtInterceptor) {
+	this.jwtInterceptor = jwtInterceptor;
+    }
+
+    public ServerTracingInterceptor getTracingInterceptor() {
+	return tracingInterceptor;
+    }
+
+    public void setTracingInterceptor(ServerTracingInterceptor tracingInterceptor) {
+	this.tracingInterceptor = tracingInterceptor;
     }
 }

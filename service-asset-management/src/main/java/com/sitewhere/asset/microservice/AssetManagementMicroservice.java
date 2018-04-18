@@ -31,7 +31,8 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public class AssetManagementMicroservice extends MultitenantMicroservice<IAssetManagementTenantEngine>
+public class AssetManagementMicroservice
+	extends MultitenantMicroservice<MicroserviceIdentifier, IAssetManagementTenantEngine>
 	implements IAssetManagementMicroservice {
 
     /** Microservice name */

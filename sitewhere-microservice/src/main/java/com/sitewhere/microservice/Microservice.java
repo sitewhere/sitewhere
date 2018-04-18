@@ -30,6 +30,7 @@ import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.server.lifecycle.TracerUtils;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
@@ -59,7 +60,8 @@ import io.opentracing.Tracer;
  * 
  * @author Derek
  */
-public abstract class Microservice extends LifecycleComponent implements IMicroservice {
+public abstract class Microservice<T extends IFunctionIdentifier> extends LifecycleComponent
+	implements IMicroservice<T> {
 
     /** Instance configuration folder name */
     private static final String INSTANCE_CONFIGURATION_FOLDER = "/conf";
@@ -138,7 +140,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
      * @see com.sitewhere.server.lifecycle.LifecycleComponent#getMicroservice()
      */
     @Override
-    public IMicroservice getMicroservice() {
+    public IMicroservice<T> getMicroservice() {
 	return this;
     }
 
@@ -301,7 +303,7 @@ public abstract class Microservice extends LifecycleComponent implements IMicros
     @Override
     public IMicroserviceDetails getMicroserviceDetails() {
 	MicroserviceDetails details = new MicroserviceDetails();
-	details.setIdentifier(getIdentifier());
+	details.setIdentifier(getIdentifier().getPath());
 	details.setHostname(getHostname());
 
 	IElementNode root = getRootElementNode();

@@ -18,8 +18,7 @@ import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
  */
 public class MicroserviceManagementGrpcServer extends GrpcServer implements IMicroserviceManagementGrpcServer {
 
-    public MicroserviceManagementGrpcServer(IMicroservice microservice) {
-	super(microservice, new MicroserviceManagementImpl(microservice),
-		microservice.getInstanceSettings().getManagementGrpcPort());
+    public MicroserviceManagementGrpcServer(IMicroservice<?> microservice) {
+	super(new MicroserviceManagementImpl(microservice), microservice.getInstanceSettings().getManagementGrpcPort());
     }
 }

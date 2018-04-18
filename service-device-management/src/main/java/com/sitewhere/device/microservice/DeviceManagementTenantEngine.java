@@ -121,12 +121,12 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 
 	// Wait for asset management API to become available and bootstrapped.
 	getAssetManagementApiChannel().waitForApiAvailable();
-	waitForModuleBootstrapped(MicroserviceIdentifier.AssetManagement, 2, TimeUnit.MINUTES);
+	waitForModuleBootstrapped(MicroserviceIdentifier.AssetManagement.getPath(), 2, TimeUnit.MINUTES);
 
 	// Wait for event management APIs to become available for the given tenant.
 	getEventManagementApiChannel().waitForApiAvailable();
 	getMicroservice().getTopologyStateAggregator().waitForTenantEngineAvailable(
-		MicroserviceIdentifier.EventManagement, getTenant().getId(), 2, TimeUnit.MINUTES, 1);
+		MicroserviceIdentifier.EventManagement.getPath(), getTenant().getId(), 2, TimeUnit.MINUTES, 1);
 
 	// Execute remote calls as superuser.
 	Authentication previous = SecurityContextHolder.getContext().getAuthentication();

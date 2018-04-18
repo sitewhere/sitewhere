@@ -26,7 +26,6 @@ import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
@@ -167,10 +166,10 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     protected void loadModuleConfiguration() throws SiteWhereException {
 	try {
 	    byte[] data = getModuleConfiguration();
-	    Map<String, Object> properties = getMicroservice().getSpringProperties();
+	    Map<String, Object> properties = ((IConfigurableMicroservice<?>) getMicroservice()).getSpringProperties();
 	    properties.put("tenant.id", getTenant().getId());
 	    this.moduleContext = ConfigurationUtils.buildSubcontext(data, properties,
-		    ((IConfigurableMicroservice) getMicroservice()).getGlobalApplicationContext());
+		    ((IConfigurableMicroservice<?>) getMicroservice()).getGlobalApplicationContext());
 	    getLogger().info("Successfully loaded module configuration from '" + getModuleConfigurationPath() + "'.");
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to load module configuration.", e);
@@ -421,7 +420,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	    // Handle updated configuration file.
 	    if (getModuleConfigurationName().equals(path)) {
 		getLogger().info("Tenant engine configuration updated.");
-		((IMultitenantMicroservice<?>) getMicroservice()).restartTenantEngine(getTenant().getId());
+		((IMultitenantMicroservice<?, ?>) getMicroservice()).restartTenantEngine(getTenant().getId());
 	    }
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to process updated configuration file.", e);
@@ -441,7 +440,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	    // Handle updated configuration file.
 	    if (getModuleConfigurationName().equals(path)) {
 		getLogger().info("Tenant engine configuration deleted.");
-		((IMultitenantMicroservice<?>) getMicroservice()).removeTenantEngine(getTenant().getId());
+		((IMultitenantMicroservice<?, ?>) getMicroservice()).removeTenantEngine(getTenant().getId());
 	    }
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to process deleted configuration file.", e);
@@ -456,7 +455,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     public void onGlobalConfigurationUpdated() throws SiteWhereException {
 	getLogger().debug("Global configuration updated.");
 	try {
-	    ((IMultitenantMicroservice<?>) getMicroservice()).restartTenantEngine(getTenant().getId());
+	    ((IMultitenantMicroservice<?, ?>) getMicroservice()).restartTenantEngine(getTenant().getId());
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to restart after global configuration update.", e);
 	}
@@ -482,14 +481,13 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * waitForModuleBootstrapped(com.sitewhere.spi.microservice.
-     * MicroserviceIdentifier, long, java.util.concurrent.TimeUnit)
+     * waitForModuleBootstrapped(java.lang.String, long,
+     * java.util.concurrent.TimeUnit)
      */
     @Override
-    public void waitForModuleBootstrapped(MicroserviceIdentifier identifier, long time, TimeUnit unit)
-	    throws SiteWhereException {
-	String bspath = ((IConfigurableMicroservice) getMicroservice()).getInstanceTenantStatePath(getTenant().getId())
-		+ "/" + identifier.getPath() + "/" + MicroserviceTenantEngine.MODULE_BOOTSTRAPPED_NAME;
+    public void waitForModuleBootstrapped(String identifier, long time, TimeUnit unit) throws SiteWhereException {
+	String bspath = ((IConfigurableMicroservice<?>) getMicroservice()).getInstanceTenantStatePath(
+		getTenant().getId()) + "/" + identifier + "/" + MicroserviceTenantEngine.MODULE_BOOTSTRAPPED_NAME;
 	CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
 	long deadline = System.currentTimeMillis() + unit.toMillis(time);
 	while ((deadline - System.currentTimeMillis()) > 0) {
@@ -516,7 +514,8 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
      */
     @Override
     public String getTenantConfigurationPath() throws SiteWhereException {
-	return ((IConfigurableMicroservice) getMicroservice()).getInstanceTenantConfigurationPath(getTenant().getId());
+	return ((IConfigurableMicroservice<?>) getMicroservice())
+		.getInstanceTenantConfigurationPath(getTenant().getId());
     }
 
     /*
@@ -525,7 +524,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
      */
     @Override
     public String getTenantStatePath() throws SiteWhereException {
-	return ((IConfigurableMicroservice) getMicroservice()).getInstanceTenantStatePath(getTenant().getId()) + "/"
+	return ((IConfigurableMicroservice<?>) getMicroservice()).getInstanceTenantStatePath(getTenant().getId()) + "/"
 		+ getMicroservice().getIdentifier().getPath();
     }
 

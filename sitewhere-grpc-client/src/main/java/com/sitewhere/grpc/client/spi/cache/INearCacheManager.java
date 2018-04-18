@@ -7,8 +7,7 @@
  */
 package com.sitewhere.grpc.client.spi.cache;
 
-import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.hazelcast.IHazelcastProvider;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
@@ -21,18 +20,11 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 public interface INearCacheManager extends ILifecycleComponent, IHazelcastProvider {
 
     /**
-     * Get microservice that owns this cache manager.
-     * 
-     * @return
-     */
-    public IMicroservice getOwner();
-
-    /**
      * Get target cache type to connect to.
      * 
      * @return
      */
-    public MicroserviceIdentifier getTarget();
+    public IFunctionIdentifier getTarget();
 
     /**
      * Get cache providers served by manager.

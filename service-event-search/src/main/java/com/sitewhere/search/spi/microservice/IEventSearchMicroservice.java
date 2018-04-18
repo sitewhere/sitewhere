@@ -7,6 +7,7 @@
  */
 package com.sitewhere.search.spi.microservice;
 
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
@@ -14,5 +15,6 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
  * 
  * @author Derek
  */
-public interface IEventSearchMicroservice extends IMultitenantMicroservice<IEventSearchTenantEngine> {
+public interface IEventSearchMicroservice
+	extends IMultitenantMicroservice<MicroserviceIdentifier, IEventSearchTenantEngine> {
 }

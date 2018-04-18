@@ -19,6 +19,6 @@ import com.sitewhere.microservice.grpc.MultitenantGrpcServer;
 public class LabelGenerationGrpcServer extends MultitenantGrpcServer implements ILabelGenerationGrpcServer {
 
     public LabelGenerationGrpcServer(ILabelGenerationMicroservice microservice) {
-	super(microservice, new LabelGenerationRouter(microservice));
+	super(new LabelGenerationRouter(microservice), microservice.getInstanceSettings().getGrpcPort());
     }
 }

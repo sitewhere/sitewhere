@@ -165,12 +165,12 @@ public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer impl
 	 * @throws Exception
 	 */
 	protected void createTenantsConfigurationRootIfNotFound(CuratorFramework curator) throws Exception {
-	    Stat existing = curator.checkExists()
-		    .forPath(((ITenantManagementMicroservice) getMicroservice()).getInstanceTenantsConfigurationPath());
+	    Stat existing = curator.checkExists().forPath(
+		    ((ITenantManagementMicroservice<?>) getMicroservice()).getInstanceTenantsConfigurationPath());
 	    if (existing == null) {
 		getLogger().info("Zk node for tenant configurations not found. Creating...");
 		curator.create().forPath(
-			((ITenantManagementMicroservice) getMicroservice()).getInstanceTenantsConfigurationPath());
+			((ITenantManagementMicroservice<?>) getMicroservice()).getInstanceTenantsConfigurationPath());
 		getLogger().info("Created tenant configurations Zk node.");
 	    } else {
 		getLogger().info("Found Zk node for tenant configurations.");
@@ -184,7 +184,7 @@ public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer impl
 	 * @throws Exception
 	 */
 	protected void createTenantConfigurationIfNotFound(CuratorFramework curator) throws Exception {
-	    String tenantPath = ((ITenantManagementMicroservice) getMicroservice())
+	    String tenantPath = ((ITenantManagementMicroservice<?>) getMicroservice())
 		    .getInstanceTenantConfigurationPath(getTenant().getId());
 	    Stat existing = curator.checkExists().forPath(tenantPath);
 	    if (existing == null) {
@@ -192,9 +192,9 @@ public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer impl
 			"Zk node for tenant '" + getTenant().getName() + "' configuration not found. Creating...");
 		curator.create().forPath(tenantPath);
 		getLogger().info("Copying tenant template contents into Zk node...");
-		((ITenantManagementMicroservice) getMicroservice()).getTenantTemplateManager()
+		((ITenantManagementMicroservice<?>) getMicroservice()).getTenantTemplateManager()
 			.copyTemplateContentsToZk(getTenant().getTenantTemplateId(), curator, tenantPath);
-		curator.create().forPath(((ITenantManagementMicroservice) getMicroservice())
+		curator.create().forPath(((ITenantManagementMicroservice<?>) getMicroservice())
 			.getInstanceTenantBootstrappedIndicatorPath(getTenant().getId()));
 		getLogger().info("Tenant '" + getTenant().getName() + "' bootstrapped with template data.");
 	    } else {

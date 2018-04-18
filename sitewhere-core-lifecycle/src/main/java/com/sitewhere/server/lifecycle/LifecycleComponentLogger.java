@@ -50,14 +50,14 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      */
     protected void log(LogLevel level, Object message, Throwable e) {
 	MicroserviceLogMessage log = new MicroserviceLogMessage();
-	IMicroservice microservice = getLifecycleComponent().getMicroservice();
+	IMicroservice<?> microservice = getLifecycleComponent().getMicroservice();
 	if (microservice == null) {
 	    getLogger().error("Microservice was null for component '" + getLifecycleComponent().getClass().getName()
 		    + "'. Unable to forward log message.");
 	    return;
 	}
 	if (microservice.getMicroserviceLogProducer() != null) {
-	    log.setMicroserviceIdentifier(microservice.getIdentifier());
+	    log.setMicroserviceIdentifier(microservice.getIdentifier().getPath());
 	    log.setMicroserviceContainerId(microservice.getHostname());
 	    if (getLifecycleComponent() instanceof ITenantEngineLifecycleComponent) {
 		IMicroserviceTenantEngine engine = ((ITenantEngineLifecycleComponent) getLifecycleComponent())

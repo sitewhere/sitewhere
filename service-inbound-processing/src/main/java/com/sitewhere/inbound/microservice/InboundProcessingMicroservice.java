@@ -29,7 +29,8 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public class InboundProcessingMicroservice extends MultitenantMicroservice<IInboundProcessingTenantEngine>
+public class InboundProcessingMicroservice
+	extends MultitenantMicroservice<MicroserviceIdentifier, IInboundProcessingTenantEngine>
 	implements IInboundProcessingMicroservice {
 
     /** Microservice name */

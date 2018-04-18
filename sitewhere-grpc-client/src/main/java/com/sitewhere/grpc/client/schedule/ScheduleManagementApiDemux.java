@@ -27,8 +27,8 @@ public class ScheduleManagementApiDemux extends ApiDemux<IScheduleManagementApiC
      * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
     @Override
-    public MicroserviceIdentifier getTargetIdentifier() {
-	return MicroserviceIdentifier.ScheduleManagement;
+    public String getTargetIdentifier() {
+	return MicroserviceIdentifier.ScheduleManagement.getPath();
     }
 
     /*
@@ -37,6 +37,6 @@ public class ScheduleManagementApiDemux extends ApiDemux<IScheduleManagementApiC
      */
     @Override
     public IScheduleManagementApiChannel<?> createApiChannel(String host) throws SiteWhereException {
-	return new ScheduleManagementApiChannel(this, getMicroservice(), host);
+	return new ScheduleManagementApiChannel(this, host, getMicroservice().getInstanceSettings().getGrpcPort());
     }
 }

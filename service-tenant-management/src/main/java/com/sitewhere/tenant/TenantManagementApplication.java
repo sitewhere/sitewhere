@@ -20,10 +20,10 @@ import com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice;
  * @author Derek
  */
 @ComponentScan
-public class TenantManagementApplication extends MicroserviceApplication<ITenantManagementMicroservice> {
+public class TenantManagementApplication extends MicroserviceApplication<ITenantManagementMicroservice<?>> {
 
     @Autowired
-    private ITenantManagementMicroservice microservice;
+    private ITenantManagementMicroservice<?> microservice;
 
     /*
      * (non-Javadoc)
@@ -32,7 +32,7 @@ public class TenantManagementApplication extends MicroserviceApplication<ITenant
      * com.sitewhere.microservice.spi.IMicroserviceApplication#getMicroservice()
      */
     @Override
-    public ITenantManagementMicroservice getMicroservice() {
+    public ITenantManagementMicroservice<?> getMicroservice() {
 	return microservice;
     }
 

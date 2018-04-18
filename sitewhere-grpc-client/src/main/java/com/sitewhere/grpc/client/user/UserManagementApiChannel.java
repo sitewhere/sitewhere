@@ -45,7 +45,6 @@ import com.sitewhere.grpc.service.GUpdateUserRequest;
 import com.sitewhere.grpc.service.GUpdateUserResponse;
 import com.sitewhere.grpc.service.UserManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.tracing.ITracerProvider;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria;
@@ -63,8 +62,8 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
 public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChannel>
 	implements IUserManagementApiChannel<UserManagementGrpcChannel> {
 
-    public UserManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
-	super(demux, microservice, host);
+    public UserManagementApiChannel(IApiDemux<?> demux, String host, int port) {
+	super(demux, host, port);
     }
 
     /*

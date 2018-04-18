@@ -19,6 +19,6 @@ import com.sitewhere.microservice.grpc.MultitenantGrpcServer;
 public class BatchManagementGrpcServer extends MultitenantGrpcServer implements IBatchManagementGrpcServer {
 
     public BatchManagementGrpcServer(IBatchOperationsMicroservice microservice) {
-	super(microservice, new BatchManagementRouter(microservice));
+	super(new BatchManagementRouter(microservice), microservice.getInstanceSettings().getGrpcPort());
     }
 }

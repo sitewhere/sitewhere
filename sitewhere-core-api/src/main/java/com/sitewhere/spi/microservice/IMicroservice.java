@@ -34,7 +34,8 @@ import com.sitewhere.spi.tracing.ITracerProvider;
  * 
  * @author Derek
  */
-public interface IMicroservice extends ILifecycleComponent, ITracerProvider {
+public interface IMicroservice<T extends IFunctionIdentifier>
+	extends ILifecycleComponent, ITracerProvider, IMicroserviceClassification<T> {
 
     /**
      * Get name shown for microservice.
@@ -55,7 +56,7 @@ public interface IMicroservice extends ILifecycleComponent, ITracerProvider {
      * 
      * @return
      */
-    public MicroserviceIdentifier getIdentifier();
+    public T getIdentifier();
 
     /**
      * Get assigned hostname.

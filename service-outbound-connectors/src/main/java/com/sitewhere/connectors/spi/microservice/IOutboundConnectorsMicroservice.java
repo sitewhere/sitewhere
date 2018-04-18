@@ -9,6 +9,7 @@ package com.sitewhere.connectors.spi.microservice;
 
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
@@ -16,7 +17,8 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
  * 
  * @author Derek
  */
-public interface IOutboundConnectorsMicroservice extends IMultitenantMicroservice<IOutboundConnectorsTenantEngine> {
+public interface IOutboundConnectorsMicroservice
+	extends IMultitenantMicroservice<MicroserviceIdentifier, IOutboundConnectorsTenantEngine> {
 
     /**
      * Get device management API demux.

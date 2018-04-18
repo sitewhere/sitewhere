@@ -467,8 +467,7 @@ public class KafkaModelConverter {
     public static MicroserviceLogMessage asApiMicroserviceLogMessage(GMicroserviceLogMessage grpc)
 	    throws SiteWhereException {
 	MicroserviceLogMessage api = new MicroserviceLogMessage();
-	api.setMicroserviceIdentifier(
-		MicroserviceModelConverter.asApiMicroserviceIdentifier(grpc.getMicroserviceIdentifier()));
+	api.setMicroserviceIdentifier(grpc.getMicroserviceIdentifier());
 	api.setMicroserviceContainerId(grpc.getMicroserviceContainerId());
 	if (grpc.hasTenantId()) {
 	    api.setTenantId(CommonModelConverter.asApiUuid(grpc.getTenantId()));
@@ -491,8 +490,7 @@ public class KafkaModelConverter {
     public static GMicroserviceLogMessage asGrpcMicroserviceLogMessage(IMicroserviceLogMessage api)
 	    throws SiteWhereException {
 	GMicroserviceLogMessage.Builder grpc = GMicroserviceLogMessage.newBuilder();
-	grpc.setMicroserviceIdentifier(
-		MicroserviceModelConverter.asGrpcMicroserviceIdentifier(api.getMicroserviceIdentifier()));
+	grpc.setMicroserviceIdentifier(api.getMicroserviceIdentifier());
 	grpc.setMicroserviceContainerId(api.getMicroserviceContainerId());
 	if (api.getTenantId() != null) {
 	    grpc.setTenantId(CommonModelConverter.asGrpcUuid(api.getTenantId()));

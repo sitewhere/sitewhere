@@ -35,6 +35,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
@@ -49,8 +50,8 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngine> extends ConfigurableMicroservice
-	implements IMultitenantMicroservice<T> {
+public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T extends IMicroserviceTenantEngine>
+	extends ConfigurableMicroservice<I> implements IMultitenantMicroservice<I, T> {
 
     /** Max number of tenants being added/removed concurrently */
     private static final int MAX_CONCURRENT_TENANT_OPERATIONS = 5;
@@ -509,7 +510,7 @@ public abstract class MultitenantMicroservice<T extends IMicroserviceTenantEngin
      */
     private class TenantEngineStarter extends SystemUserRunnable {
 
-	public TenantEngineStarter(IMicroservice microservice) {
+	public TenantEngineStarter(IMicroservice<?> microservice) {
 	    super(microservice, null);
 	}
 

@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.scripting.IScriptManagement;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
@@ -23,7 +24,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
  * 
  * @author Derek
  */
-public interface IConfigurableMicroservice extends IMicroservice {
+public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extends IMicroservice<T> {
 
     /**
      * Get configuration monitor.

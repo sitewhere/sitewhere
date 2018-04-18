@@ -16,7 +16,7 @@ import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 public class InstanceManagementMicroserviceConfiguration {
 
     @Bean
-    public IInstanceManagementMicroservice instanceManagementMicroservice() {
+    public IInstanceManagementMicroservice<?> instanceManagementMicroservice() {
 	return new InstanceManagementMicroservice();
     }
 }

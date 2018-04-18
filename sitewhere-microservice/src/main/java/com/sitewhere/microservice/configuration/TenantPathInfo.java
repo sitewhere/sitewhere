@@ -34,7 +34,7 @@ public class TenantPathInfo {
      * @return
      * @throws SiteWhereException
      */
-    public static TenantPathInfo compute(String fullPath, IConfigurableMicroservice microservice)
+    public static TenantPathInfo compute(String fullPath, IConfigurableMicroservice<?> microservice)
 	    throws SiteWhereException {
 	String tenantsRoot = microservice.getInstanceTenantsConfigurationPath() + "/";
 	if (fullPath.startsWith(tenantsRoot)) {

@@ -45,8 +45,8 @@ import com.sitewhere.tenant.spi.templates.ITenantTemplateManager;
  * 
  * @author Derek
  */
-public class TenantManagementMicroservice extends GlobalMicroservice
-	implements ITenantManagementMicroservice, ITenantAdministration {
+public class TenantManagementMicroservice extends GlobalMicroservice<MicroserviceIdentifier>
+	implements ITenantManagementMicroservice<MicroserviceIdentifier>, ITenantAdministration {
 
     /** Microservice name */
     private static final String NAME = "Tenant Management";

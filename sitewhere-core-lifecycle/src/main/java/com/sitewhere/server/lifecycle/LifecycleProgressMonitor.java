@@ -37,9 +37,9 @@ public class LifecycleProgressMonitor implements ILifecycleProgressMonitor {
     private Deque<ILifecycleProgressContext> contextStack = new ArrayDeque<ILifecycleProgressContext>();
 
     /** Microservice associated with component */
-    private IMicroservice microservice;
+    private IMicroservice<?> microservice;
 
-    public LifecycleProgressMonitor(ILifecycleProgressContext initialContext, IMicroservice microservice) {
+    public LifecycleProgressMonitor(ILifecycleProgressContext initialContext, IMicroservice<?> microservice) {
 	this.microservice = microservice;
 	contextStack.push(initialContext);
 	try {
@@ -170,11 +170,11 @@ public class LifecycleProgressMonitor implements ILifecycleProgressMonitor {
      * getMicroservice()
      */
     @Override
-    public IMicroservice getMicroservice() {
+    public IMicroservice<?> getMicroservice() {
 	return microservice;
     }
 
-    public void setMicroservice(IMicroservice microservice) {
+    public void setMicroservice(IMicroservice<?> microservice) {
 	this.microservice = microservice;
     }
 }

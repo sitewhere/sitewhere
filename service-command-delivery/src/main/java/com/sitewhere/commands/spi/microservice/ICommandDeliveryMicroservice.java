@@ -7,6 +7,7 @@
  */
 package com.sitewhere.commands.spi.microservice;
 
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
@@ -14,5 +15,6 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
  * 
  * @author Derek
  */
-public interface ICommandDeliveryMicroservice extends IMultitenantMicroservice<ICommandDeliveryTenantEngine> {
+public interface ICommandDeliveryMicroservice
+	extends IMultitenantMicroservice<MicroserviceIdentifier, ICommandDeliveryTenantEngine> {
 }

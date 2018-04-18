@@ -26,8 +26,8 @@ public class UserManagementApiDemux extends ApiDemux<IUserManagementApiChannel<?
      * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
     @Override
-    public MicroserviceIdentifier getTargetIdentifier() {
-	return MicroserviceIdentifier.UserManagement;
+    public String getTargetIdentifier() {
+	return MicroserviceIdentifier.UserManagement.getPath();
     }
 
     /*
@@ -36,6 +36,6 @@ public class UserManagementApiDemux extends ApiDemux<IUserManagementApiChannel<?
      */
     @Override
     public IUserManagementApiChannel<?> createApiChannel(String host) throws SiteWhereException {
-	return new CachedUserManagementApiChannel(this, getMicroservice(), host);
+	return new CachedUserManagementApiChannel(this, host, getMicroservice().getInstanceSettings().getGrpcPort());
     }
 }

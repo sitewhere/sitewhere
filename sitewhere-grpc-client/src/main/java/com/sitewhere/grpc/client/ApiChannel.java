@@ -15,7 +15,6 @@ import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.server.lifecycle.TracerUtils;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 import io.grpc.ConnectivityState;
@@ -38,9 +37,6 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
     /** Parent demux */
     private IApiDemux<?> demux;
 
-    /** Microservice */
-    private IMicroservice microservice;
-
     /** Hostname */
     private String hostname;
 
@@ -50,13 +46,8 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
     /** Underlying GRPC channel */
     private T grpcChannel;
 
-    public ApiChannel(IApiDemux<?> demux, IMicroservice microservice, String hostname) {
-	this(demux, microservice, hostname, microservice.getInstanceSettings().getGrpcPort());
-    }
-
-    public ApiChannel(IApiDemux<?> demux, IMicroservice microservice, String hostname, int port) {
+    public ApiChannel(IApiDemux<?> demux, String hostname, int port) {
 	this.demux = demux;
-	this.microservice = microservice;
 	this.hostname = hostname;
 	this.port = port;
     }
@@ -195,17 +186,5 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
 
     public void setDemux(IApiDemux<?> demux) {
 	this.demux = demux;
-    }
-
-    /*
-     * @see com.sitewhere.grpc.model.spi.IApiChannel#getMicroservice()
-     */
-    @Override
-    public IMicroservice getMicroservice() {
-	return microservice;
-    }
-
-    public void setMicroservice(IMicroservice microservice) {
-	this.microservice = microservice;
     }
 }

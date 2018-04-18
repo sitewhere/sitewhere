@@ -35,7 +35,7 @@ import io.opentracing.ActiveSpan;
  * @author Derek
  */
 @ComponentScan
-public abstract class MicroserviceApplication<T extends IMicroservice> implements IMicroserviceApplication<T> {
+public abstract class MicroserviceApplication<T extends IMicroservice<?>> implements IMicroserviceApplication<T> {
 
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(MicroserviceApplication.class);
@@ -162,7 +162,7 @@ public abstract class MicroserviceApplication<T extends IMicroservice> implement
 
 	@Override
 	public void run() {
-	    IMicroservice service = getMicroservice();
+	    IMicroservice<?> service = getMicroservice();
 	    try {
 		// Stop microservice.
 		LifecycleProgressMonitor stopMonitor = new LifecycleProgressMonitor(

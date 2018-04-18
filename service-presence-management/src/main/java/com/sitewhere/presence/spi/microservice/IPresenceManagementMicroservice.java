@@ -7,6 +7,7 @@
  */
 package com.sitewhere.presence.spi.microservice;
 
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
@@ -14,5 +15,6 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
  * 
  * @author Derek
  */
-public interface IPresenceManagementMicroservice extends IMultitenantMicroservice<IPresenceManagementTenantEngine> {
+public interface IPresenceManagementMicroservice
+	extends IMultitenantMicroservice<MicroserviceIdentifier, IPresenceManagementTenantEngine> {
 }

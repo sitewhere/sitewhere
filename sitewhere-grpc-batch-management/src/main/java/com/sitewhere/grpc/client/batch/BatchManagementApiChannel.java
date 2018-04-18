@@ -41,7 +41,6 @@ import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.batch.request.IBatchElementUpdateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.batch.IBatchOperationSearchCriteria;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
@@ -56,8 +55,8 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManagementGrpcChannel>
 	implements IBatchManagementApiChannel<BatchManagementGrpcChannel> {
 
-    public BatchManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
-	super(demux, microservice, host);
+    public BatchManagementApiChannel(IApiDemux<?> demux, String host, int port) {
+	super(demux, host, port);
     }
 
     /*

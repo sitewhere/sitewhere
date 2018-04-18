@@ -33,14 +33,14 @@ public class RestControllerBase {
     private static Log LOGGER = LogFactory.getLog(RestControllerBase.class);
 
     @Autowired
-    private IWebRestMicroservice microservice;
+    private IWebRestMicroservice<?> microservice;
 
     /**
      * Get handle to microservice.
      * 
      * @return
      */
-    public IWebRestMicroservice getMicroservice() {
+    public IWebRestMicroservice<?> getMicroservice() {
 	return microservice;
     }
 

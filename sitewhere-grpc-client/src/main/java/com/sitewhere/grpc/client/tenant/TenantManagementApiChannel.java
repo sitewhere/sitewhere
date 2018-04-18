@@ -32,7 +32,6 @@ import com.sitewhere.grpc.service.GUpdateTenantRequest;
 import com.sitewhere.grpc.service.GUpdateTenantResponse;
 import com.sitewhere.grpc.service.TenantManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.user.ITenantSearchCriteria;
@@ -49,8 +48,8 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcChannel>
 	implements ITenantManagementApiChannel<TenantManagementGrpcChannel> {
 
-    public TenantManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
-	super(demux, microservice, host);
+    public TenantManagementApiChannel(IApiDemux<?> demux, String host, int port) {
+	super(demux, host, port);
     }
 
     /*

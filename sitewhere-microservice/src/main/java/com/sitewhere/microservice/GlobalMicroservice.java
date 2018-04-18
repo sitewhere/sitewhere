@@ -11,6 +11,7 @@ import org.apache.curator.framework.CuratorFramework;
 
 import com.sitewhere.microservice.configuration.ConfigurableMicroservice;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
@@ -19,7 +20,8 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public abstract class GlobalMicroservice extends ConfigurableMicroservice implements IGlobalMicroservice {
+public abstract class GlobalMicroservice<T extends IFunctionIdentifier> extends ConfigurableMicroservice<T>
+	implements IGlobalMicroservice<T> {
 
     /*
      * (non-Javadoc)

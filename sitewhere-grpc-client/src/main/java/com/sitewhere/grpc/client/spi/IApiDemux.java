@@ -11,8 +11,6 @@ import java.util.List;
 
 import com.sitewhere.grpc.client.ApiChannel;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
@@ -25,18 +23,11 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 public interface IApiDemux<T extends IApiChannel> extends ITenantEngineLifecycleComponent {
 
     /**
-     * Get parent microservice.
-     * 
-     * @return
-     */
-    public IMicroservice getMicroservice();
-
-    /**
      * Get microservice identifier that will trigger creation of an API channel.
      * 
      * @return
      */
-    public MicroserviceIdentifier getTargetIdentifier();
+    public String getTargetIdentifier();
 
     /**
      * List of available {@link IApiChannel} that can be used for routing.

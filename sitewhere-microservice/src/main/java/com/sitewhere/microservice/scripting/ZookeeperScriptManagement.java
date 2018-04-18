@@ -51,7 +51,7 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
      */
     @Override
     public String getScriptMetadataZkPath(UUID tenantId) throws SiteWhereException {
-	return ((IConfigurableMicroservice) getMicroservice()).getInstanceTenantScriptsPath(tenantId) + "/"
+	return ((IConfigurableMicroservice<?>) getMicroservice()).getInstanceTenantScriptsPath(tenantId) + "/"
 		+ METADATA_FOLDER;
     }
 
@@ -61,7 +61,7 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
      */
     @Override
     public String getScriptContentZkPath(UUID tenantId) throws SiteWhereException {
-	return ((IConfigurableMicroservice) getMicroservice()).getInstanceTenantScriptsPath(tenantId) + "/"
+	return ((IConfigurableMicroservice<?>) getMicroservice()).getInstanceTenantScriptsPath(tenantId) + "/"
 		+ CONTENT_FOLDER;
     }
 

@@ -18,7 +18,7 @@ import com.sitewhere.tenant.templates.TenantTemplateManager;
 public class TenantManagementMicroserviceConfiguration {
 
     @Bean
-    public ITenantManagementMicroservice tenantManagementMicroservice() {
+    public ITenantManagementMicroservice<?> tenantManagementMicroservice() {
 	return new TenantManagementMicroservice();
     }
 

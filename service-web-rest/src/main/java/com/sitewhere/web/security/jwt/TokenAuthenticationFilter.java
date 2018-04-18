@@ -53,12 +53,13 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
     /** Web/REST microservice */
-    private IWebRestMicroservice microservice;
+    private IWebRestMicroservice<?> microservice;
 
     /** Authentication manager */
     private AuthenticationManager authenticationManager;
 
-    public TokenAuthenticationFilter(IWebRestMicroservice microservice, AuthenticationManager authenticationManager) {
+    public TokenAuthenticationFilter(IWebRestMicroservice<?> microservice,
+	    AuthenticationManager authenticationManager) {
 	this.microservice = microservice;
 	this.authenticationManager = authenticationManager;
     }
@@ -174,11 +175,11 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	return request.getHeader(ISiteWhereWebConstants.HEADER_TENANT_AUTH);
     }
 
-    public IWebRestMicroservice getMicroservice() {
+    public IWebRestMicroservice<?> getMicroservice() {
 	return microservice;
     }
 
-    public void setMicroservice(IWebRestMicroservice microservice) {
+    public void setMicroservice(IWebRestMicroservice<?> microservice) {
 	this.microservice = microservice;
     }
 

@@ -51,7 +51,7 @@ import io.opentracing.contrib.web.servlet.filter.TracingFilter;
 public class WebRestConfiguration {
 
     @Autowired
-    private IWebRestMicroservice microservice;
+    private IWebRestMicroservice<?> microservice;
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
@@ -217,11 +217,11 @@ public class WebRestConfiguration {
 	return registration;
     }
 
-    public IWebRestMicroservice getMicroservice() {
+    public IWebRestMicroservice<?> getMicroservice() {
 	return microservice;
     }
 
-    public void setMicroservice(IWebRestMicroservice microservice) {
+    public void setMicroservice(IWebRestMicroservice<?> microservice) {
 	this.microservice = microservice;
     }
 }

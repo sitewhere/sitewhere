@@ -10,7 +10,6 @@ package com.sitewhere.grpc.client.spi;
 import java.util.concurrent.TimeUnit;
 
 import com.sitewhere.grpc.client.GrpcChannel;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 import com.sitewhere.spi.tracing.ITracerProvider;
 
@@ -76,11 +75,4 @@ public interface IApiChannel<T extends GrpcChannel<?, ?>> extends ITenantEngineL
      * @return
      */
     public IApiDemux<?> getDemux();
-
-    /**
-     * Get parent microservice.
-     * 
-     * @return
-     */
-    public IMicroservice getMicroservice();
 }

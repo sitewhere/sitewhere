@@ -53,7 +53,7 @@ public class RestAuthConfiguration implements WebMvcConfigurer {
     private static final String API_LICENSE_URL = "https://github.com/sitewhere/sitewhere/blob/master/LICENSE.txt";
 
     @Autowired
-    private IWebRestMicroservice microservice;
+    private IWebRestMicroservice<?> microservice;
 
     @Bean
     public Docket sitewhereAuth() {

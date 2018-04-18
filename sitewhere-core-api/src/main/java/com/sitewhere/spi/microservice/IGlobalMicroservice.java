@@ -15,7 +15,7 @@ import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
  * 
  * @author Derek
  */
-public interface IGlobalMicroservice extends IConfigurableMicroservice {
+public interface IGlobalMicroservice<T extends IFunctionIdentifier> extends IConfigurableMicroservice<T> {
 
     /**
      * Get configuration data.

@@ -47,14 +47,14 @@ public interface ILifecycleComponent {
      * 
      * @return
      */
-    public IMicroservice getMicroservice();
+    public IMicroservice<?> getMicroservice();
 
     /**
      * Set microservice that owns the component.
      * 
      * @param microservice
      */
-    public void setMicroservice(IMicroservice microservice);
+    public void setMicroservice(IMicroservice<?> microservice);
 
     /**
      * Get current lifecycle status.

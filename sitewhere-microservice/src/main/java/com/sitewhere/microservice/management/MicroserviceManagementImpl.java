@@ -7,9 +7,6 @@
  */
 package com.sitewhere.microservice.management;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.google.protobuf.ByteString;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.model.MicroserviceModel.GConfigurationContent;
@@ -41,14 +38,10 @@ import io.grpc.stub.StreamObserver;
  */
 public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.MicroserviceManagementImplBase {
 
-    /** Static logger instance */
-    @SuppressWarnings("unused")
-    private static Log LOGGER = LogFactory.getLog(MicroserviceManagementImpl.class);
-
     /** Microservice */
-    private IMicroservice microservice;
+    private IMicroservice<?> microservice;
 
-    public MicroserviceManagementImpl(IMicroservice microservice) {
+    public MicroserviceManagementImpl(IMicroservice<?> microservice) {
 	this.microservice = microservice;
     }
 
@@ -87,7 +80,7 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	    GConfigurationContent.Builder configuration = GConfigurationContent.newBuilder();
 
 	    if (getMicroservice() instanceof IGlobalMicroservice) {
-		byte[] content = ((IGlobalMicroservice) getMicroservice()).getConfiguration();
+		byte[] content = ((IGlobalMicroservice<?>) getMicroservice()).getConfiguration();
 		configuration.setContent(ByteString.copyFrom(content));
 	    } else {
 		throw new SiteWhereException("Requesting global configuration from a tenant microservice.");
@@ -116,7 +109,7 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	    GConfigurationContent.Builder configuration = GConfigurationContent.newBuilder();
 
 	    if (getMicroservice() instanceof IMultitenantMicroservice) {
-		byte[] content = ((IMultitenantMicroservice<?>) getMicroservice())
+		byte[] content = ((IMultitenantMicroservice<?, ?>) getMicroservice())
 			.getTenantConfiguration(CommonModelConverter.asApiUuid(request.getTenantId()));
 		configuration.setContent(ByteString.copyFrom(content));
 	    } else {
@@ -145,7 +138,7 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	    byte[] content = request.getConfiguration().getContent().toByteArray();
 
 	    if (getMicroservice() instanceof IGlobalMicroservice) {
-		((IGlobalMicroservice) getMicroservice()).updateConfiguration(content);
+		((IGlobalMicroservice<?>) getMicroservice()).updateConfiguration(content);
 	    } else {
 		throw new SiteWhereException("Requesting global configuration update from a tenant microservice.");
 	    }
@@ -172,7 +165,7 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	    byte[] content = request.getConfiguration().getContent().toByteArray();
 
 	    if (getMicroservice() instanceof IMultitenantMicroservice) {
-		((IMultitenantMicroservice<?>) getMicroservice())
+		((IMultitenantMicroservice<?, ?>) getMicroservice())
 			.updateTenantConfiguration(CommonModelConverter.asApiUuid(request.getTenantId()), content);
 	    } else {
 		throw new SiteWhereException("Requesting tenant configuration from a global microservice.");
@@ -187,11 +180,11 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	}
     }
 
-    public IMicroservice getMicroservice() {
+    public IMicroservice<?> getMicroservice() {
 	return microservice;
     }
 
-    public void setMicroservice(IMicroservice microservice) {
+    public void setMicroservice(IMicroservice<?> microservice) {
 	this.microservice = microservice;
     }
 }

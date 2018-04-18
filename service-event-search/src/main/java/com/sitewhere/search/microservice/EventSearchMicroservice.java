@@ -21,7 +21,7 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public class EventSearchMicroservice extends MultitenantMicroservice<IEventSearchTenantEngine>
+public class EventSearchMicroservice extends MultitenantMicroservice<MicroserviceIdentifier, IEventSearchTenantEngine>
 	implements IEventSearchMicroservice {
 
     /** Microservice name */

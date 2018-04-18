@@ -62,7 +62,7 @@ public class Users extends RestControllerBase {
 
     /** Injected reference to microservice */
     @Autowired
-    IWebRestMicroservice webRestMicroservice;
+    IWebRestMicroservice<?> webRestMicroservice;
 
     /** Static logger instance */
     @SuppressWarnings("unused")

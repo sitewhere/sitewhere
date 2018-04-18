@@ -12,7 +12,7 @@ package com.sitewhere.spi.microservice;
  * 
  * @author Derek
  */
-public enum MicroserviceIdentifier {
+public enum MicroserviceIdentifier implements IFunctionIdentifier {
 
     AssetManagement("asset-management"),
 

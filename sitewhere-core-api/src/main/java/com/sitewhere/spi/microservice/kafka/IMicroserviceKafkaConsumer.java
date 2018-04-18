@@ -12,8 +12,6 @@ import java.util.List;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
@@ -22,20 +20,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
  * @author Derek
  */
 public interface IMicroserviceKafkaConsumer extends ITenantEngineLifecycleComponent {
-
-    /**
-     * Get parent microservice.
-     * 
-     * @return
-     */
-    public IMicroservice getMicroservice();
-
-    /**
-     * Get tenant engine associated with consumer. May be null for global consumers.
-     * 
-     * @return
-     */
-    public IMicroserviceTenantEngine getTenantEngine();
 
     /**
      * Get unique consumer id.

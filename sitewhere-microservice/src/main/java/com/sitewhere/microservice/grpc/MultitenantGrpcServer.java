@@ -7,11 +7,8 @@
  */
 package com.sitewhere.microservice.grpc;
 
-import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-
 import io.grpc.BindableService;
+import io.grpc.Server;
 import io.grpc.ServerBuilder;
 
 /**
@@ -24,30 +21,22 @@ public class MultitenantGrpcServer extends GrpcServer {
     /** Interceptor for tenant token */
     private TenantTokenServerInterceptor tenant;
 
-    public MultitenantGrpcServer(IMicroservice microservice, BindableService serviceImplementation) {
-	super(microservice, serviceImplementation);
-	this.tenant = new TenantTokenServerInterceptor(microservice);
+    public MultitenantGrpcServer(BindableService serviceImplementation, int port) {
+	super(serviceImplementation, port);
     }
 
-    public MultitenantGrpcServer(IMicroservice microservice, BindableService serviceImplementation, int port) {
-	super(microservice, serviceImplementation, port);
-	this.tenant = new TenantTokenServerInterceptor(microservice);
-    }
-
-    /*
-     * (non-Javadoc)
+    /**
+     * Build server component based on configuration.
      * 
-     * @see com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * @return
      */
-    @Override
-    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	try {
-	    ServerBuilder<?> builder = ServerBuilder.forPort(port);
-	    this.server = builder.addService(getServiceImplementation()).intercept(jwt).intercept(tenant)
-		    .intercept(trace).build();
-	} catch (Throwable e) {
-	    throw new SiteWhereException("Unable to initialize GRPC server.", e);
+    protected Server buildServer() {
+	this.tenant = new TenantTokenServerInterceptor(getMicroservice());
+	ServerBuilder<?> builder = ServerBuilder.forPort(getPort());
+	builder.addService(getServiceImplementation()).intercept(getJwtInterceptor()).intercept(tenant);
+	if (isUseTracingInterceptor()) {
+	    builder.intercept(getTracingInterceptor());
 	}
+	return builder.build();
     }
 }

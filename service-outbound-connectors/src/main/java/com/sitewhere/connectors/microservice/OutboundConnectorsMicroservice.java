@@ -29,7 +29,8 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public class OutboundConnectorsMicroservice extends MultitenantMicroservice<IOutboundConnectorsTenantEngine>
+public class OutboundConnectorsMicroservice
+	extends MultitenantMicroservice<MicroserviceIdentifier, IOutboundConnectorsTenantEngine>
 	implements IOutboundConnectorsMicroservice {
 
     /** Microservice name */

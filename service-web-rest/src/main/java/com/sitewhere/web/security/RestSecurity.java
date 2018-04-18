@@ -35,7 +35,7 @@ import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 public class RestSecurity extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    protected IWebRestMicroservice webRestMicroservice;
+    protected IWebRestMicroservice<?> webRestMicroservice;
 
     @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
     @Override
@@ -112,11 +112,11 @@ public class RestSecurity extends WebSecurityConfigurerAdapter {
 	http.addFilterBefore(limitedBasicAuthFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
-    public IWebRestMicroservice getWebRestMicroservice() {
+    public IWebRestMicroservice<?> getWebRestMicroservice() {
 	return webRestMicroservice;
     }
 
-    public void setWebRestMicroservice(IWebRestMicroservice webRestMicroservice) {
+    public void setWebRestMicroservice(IWebRestMicroservice<?> webRestMicroservice) {
 	this.webRestMicroservice = webRestMicroservice;
     }
 }

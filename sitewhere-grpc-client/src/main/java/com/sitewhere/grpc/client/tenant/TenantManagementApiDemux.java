@@ -27,8 +27,8 @@ public class TenantManagementApiDemux extends ApiDemux<ITenantManagementApiChann
      * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
     @Override
-    public MicroserviceIdentifier getTargetIdentifier() {
-	return MicroserviceIdentifier.TenantManagement;
+    public String getTargetIdentifier() {
+	return MicroserviceIdentifier.TenantManagement.getPath();
     }
 
     /*
@@ -37,6 +37,6 @@ public class TenantManagementApiDemux extends ApiDemux<ITenantManagementApiChann
      */
     @Override
     public ITenantManagementApiChannel<?> createApiChannel(String host) throws SiteWhereException {
-	return new CachedTenantManagementApiChannel(this, getMicroservice(), host);
+	return new CachedTenantManagementApiChannel(this, host, getMicroservice().getInstanceSettings().getGrpcPort());
     }
 }

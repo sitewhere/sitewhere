@@ -72,7 +72,7 @@ public class LifecycleComponentDecorator<T extends ILifecycleComponent> implemen
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getMicroservice()
      */
     @Override
-    public IMicroservice getMicroservice() {
+    public IMicroservice<?> getMicroservice() {
 	return getDelegate().getMicroservice();
     }
 
@@ -82,7 +82,7 @@ public class LifecycleComponentDecorator<T extends ILifecycleComponent> implemen
      * sitewhere.spi.microservice.IMicroservice)
      */
     @Override
-    public void setMicroservice(IMicroservice microservice) {
+    public void setMicroservice(IMicroservice<?> microservice) {
 	getDelegate().setMicroservice(microservice);
     }
 

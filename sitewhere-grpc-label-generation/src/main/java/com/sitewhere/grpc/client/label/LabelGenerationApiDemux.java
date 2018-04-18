@@ -27,8 +27,8 @@ public class LabelGenerationApiDemux extends ApiDemux<ILabelGenerationApiChannel
      * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
     @Override
-    public MicroserviceIdentifier getTargetIdentifier() {
-	return MicroserviceIdentifier.LabelGeneration;
+    public String getTargetIdentifier() {
+	return MicroserviceIdentifier.LabelGeneration.getPath();
     }
 
     /*
@@ -37,6 +37,6 @@ public class LabelGenerationApiDemux extends ApiDemux<ILabelGenerationApiChannel
      */
     @Override
     public ILabelGenerationApiChannel createApiChannel(String host) throws SiteWhereException {
-	return new LabelGenerationApiChannel(this, getMicroservice(), host);
+	return new LabelGenerationApiChannel(this, host, getMicroservice().getInstanceSettings().getGrpcPort());
     }
 }

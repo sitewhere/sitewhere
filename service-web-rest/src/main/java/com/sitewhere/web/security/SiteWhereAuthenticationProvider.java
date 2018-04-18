@@ -39,9 +39,9 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
     private static Log LOGGER = LogFactory.getLog(SiteWhereAuthenticationProvider.class);
 
     /** Web rest microservice */
-    private IWebRestMicroservice webRestMicroservice;
+    private IWebRestMicroservice<?> webRestMicroservice;
 
-    public SiteWhereAuthenticationProvider(IWebRestMicroservice webRestMicroservice) {
+    public SiteWhereAuthenticationProvider(IWebRestMicroservice<?> webRestMicroservice) {
 	this.webRestMicroservice = webRestMicroservice;
     }
 
@@ -149,11 +149,11 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
 	return getWebRestMicroservice().getUserManagementApiDemux().getApiChannel();
     }
 
-    public IWebRestMicroservice getWebRestMicroservice() {
+    public IWebRestMicroservice<?> getWebRestMicroservice() {
 	return webRestMicroservice;
     }
 
-    public void setWebRestMicroservice(IWebRestMicroservice webRestMicroservice) {
+    public void setWebRestMicroservice(IWebRestMicroservice<?> webRestMicroservice) {
 	this.webRestMicroservice = webRestMicroservice;
     }
 }

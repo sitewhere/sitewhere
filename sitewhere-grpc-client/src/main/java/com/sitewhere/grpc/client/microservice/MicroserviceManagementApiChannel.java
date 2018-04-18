@@ -27,7 +27,6 @@ import com.sitewhere.grpc.service.GUpdateGlobalConfigurationRequest;
 import com.sitewhere.grpc.service.GUpdateTenantConfigurationRequest;
 import com.sitewhere.grpc.service.MicroserviceManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.tracing.ITracerProvider;
 
@@ -40,8 +39,8 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceManagementGrpcChannel>
 	implements IMicroserviceManagementApiChannel<MicroserviceManagementGrpcChannel> {
 
-    public MicroserviceManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
-	super(demux, microservice, host, microservice.getInstanceSettings().getManagementGrpcPort());
+    public MicroserviceManagementApiChannel(IApiDemux<?> demux, String host, int port) {
+	super(demux, host, port);
     }
 
     /*

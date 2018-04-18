@@ -26,8 +26,7 @@ import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
 import com.sitewhere.grpc.client.spi.cache.INearCacheManager;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.hazelcast.IHazelcastManager;
 import com.sitewhere.spi.microservice.state.IInstanceMicroservice;
 import com.sitewhere.spi.microservice.state.IInstanceTopologyEntry;
@@ -42,11 +41,8 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  */
 public class NearCacheManager extends LifecycleComponent implements INearCacheManager {
 
-    /** Owning microservice */
-    private IMicroservice owner;
-
     /** Type of cache to connect to */
-    private MicroserviceIdentifier target;
+    private IFunctionIdentifier target;
 
     /** Cache providers served by this manager */
     private ICacheProvider<?, ?>[] cacheProviders;
@@ -57,8 +53,7 @@ public class NearCacheManager extends LifecycleComponent implements INearCacheMa
     /** For background threads */
     private ExecutorService executor;
 
-    public NearCacheManager(IMicroservice owner, MicroserviceIdentifier target) {
-	this.owner = owner;
+    public NearCacheManager(IFunctionIdentifier target) {
 	this.target = target;
     }
 
@@ -131,12 +126,11 @@ public class NearCacheManager extends LifecycleComponent implements INearCacheMa
 	@Override
 	public void run() {
 	    while (true) {
-		IInstanceTopologySnapshot topology = getOwner().getTopologyStateAggregator()
+		IInstanceTopologySnapshot topology = getMicroservice().getTopologyStateAggregator()
 			.getInstanceTopologySnapshot();
 		if (topology != null) {
-		    Map<MicroserviceIdentifier, IInstanceTopologyEntry> byIdent = topology
-			    .getTopologyEntriesByIdentifier();
-		    IInstanceTopologyEntry allForTarget = byIdent.get(getTarget());
+		    Map<String, IInstanceTopologyEntry> byIdent = topology.getTopologyEntriesByIdentifier();
+		    IInstanceTopologyEntry allForTarget = byIdent.get(getTarget().getPath());
 		    if (allForTarget != null) {
 			List<String> members = new ArrayList<>();
 			Map<String, IInstanceMicroservice> byHostname = allForTarget.getMicroservicesByHostname();
@@ -171,26 +165,14 @@ public class NearCacheManager extends LifecycleComponent implements INearCacheMa
     }
 
     /*
-     * @see com.sitewhere.grpc.client.spi.cache.INearCacheManager#getOwner()
-     */
-    @Override
-    public IMicroservice getOwner() {
-	return owner;
-    }
-
-    public void setOwner(IMicroservice owner) {
-	this.owner = owner;
-    }
-
-    /*
      * @see com.sitewhere.grpc.client.spi.cache.INearCacheManager#getTarget()
      */
     @Override
-    public MicroserviceIdentifier getTarget() {
+    public IFunctionIdentifier getTarget() {
 	return target;
     }
 
-    public void setTarget(MicroserviceIdentifier target) {
+    public void setTarget(IFunctionIdentifier target) {
 	this.target = target;
     }
 

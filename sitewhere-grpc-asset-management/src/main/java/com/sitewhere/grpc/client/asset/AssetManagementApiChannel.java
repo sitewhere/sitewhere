@@ -45,7 +45,6 @@ import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.asset.request.IAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IAssetTypeCreateRequest;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAssetTypeSearchCritiera;
 import com.sitewhere.spi.search.asset.IAssetSearchCriteria;
@@ -60,8 +59,8 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public class AssetManagementApiChannel extends MultitenantApiChannel<AssetManagementGrpcChannel>
 	implements IAssetManagementApiChannel<AssetManagementGrpcChannel> {
 
-    public AssetManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
-	super(demux, microservice, host);
+    public AssetManagementApiChannel(IApiDemux<?> demux, String host, int port) {
+	super(demux, host, port);
     }
 
     /*

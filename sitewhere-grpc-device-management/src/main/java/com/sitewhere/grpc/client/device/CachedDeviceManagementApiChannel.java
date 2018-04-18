@@ -20,7 +20,6 @@ import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -59,9 +58,9 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
     /** Device assignment by id cache */
     private ICacheProvider<UUID, IDeviceAssignment> deviceAssignmentByIdCache;
 
-    public CachedDeviceManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
-	super(demux, microservice, host);
-	this.nearCacheManager = new NearCacheManager(microservice, MicroserviceIdentifier.DeviceManagement);
+    public CachedDeviceManagementApiChannel(IApiDemux<?> demux, String host, int port) {
+	super(demux, host, port);
+	this.nearCacheManager = new NearCacheManager(MicroserviceIdentifier.DeviceManagement);
 	this.areaCache = new DeviceManagementCacheProviders.AreaByTokenCache(nearCacheManager);
 	this.areaByIdCache = new DeviceManagementCacheProviders.AreaByIdCache(nearCacheManager);
 	this.deviceTypeCache = new DeviceManagementCacheProviders.DeviceTypeByTokenCache(nearCacheManager);
@@ -70,6 +69,19 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
 	this.deviceByIdCache = new DeviceManagementCacheProviders.DeviceByIdCache(nearCacheManager);
 	this.deviceAssignmentCache = new DeviceManagementCacheProviders.DeviceAssignmentByTokenCache(nearCacheManager);
 	this.deviceAssignmentByIdCache = new DeviceManagementCacheProviders.DeviceAssignmentByIdCache(nearCacheManager);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+
+	// Initialize near cache manager.
+	initializeNestedComponent(getNearCacheManager(), monitor, true);
     }
 
     /*

@@ -39,7 +39,7 @@ public abstract class ScriptSynchronizer extends LifecycleComponent implements I
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.initialize(monitor);
-	((IConfigurableMicroservice) getMicroservice()).getConfigurationMonitor().getListeners().add(this);
+	((IConfigurableMicroservice<?>) getMicroservice()).getConfigurationMonitor().getListeners().add(this);
     }
 
     /*
@@ -64,7 +64,7 @@ public abstract class ScriptSynchronizer extends LifecycleComponent implements I
     @Override
     public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.terminate(monitor);
-	((IConfigurableMicroservice) getMicroservice()).getConfigurationMonitor().getListeners().remove(this);
+	((IConfigurableMicroservice<?>) getMicroservice()).getConfigurationMonitor().getListeners().remove(this);
     }
 
     /*

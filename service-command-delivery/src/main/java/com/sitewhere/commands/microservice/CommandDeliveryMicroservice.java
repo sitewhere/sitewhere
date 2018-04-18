@@ -21,7 +21,8 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public class CommandDeliveryMicroservice extends MultitenantMicroservice<ICommandDeliveryTenantEngine>
+public class CommandDeliveryMicroservice
+	extends MultitenantMicroservice<MicroserviceIdentifier, ICommandDeliveryTenantEngine>
 	implements ICommandDeliveryMicroservice {
 
     /** Microservice name */

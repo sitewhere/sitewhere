@@ -44,7 +44,7 @@ public class LifecycleComponent implements ILifecycleComponent {
     private LifecycleComponentType componentType;
 
     /** Owning microservice */
-    private IMicroservice microservice;
+    private IMicroservice<?> microservice;
 
     /** Component logger */
     private LifecycleComponentLogger logger;
@@ -610,7 +610,7 @@ public class LifecycleComponent implements ILifecycleComponent {
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getMicroservice()
      */
     @Override
-    public IMicroservice getMicroservice() {
+    public IMicroservice<?> getMicroservice() {
 	return microservice;
     }
 
@@ -620,7 +620,7 @@ public class LifecycleComponent implements ILifecycleComponent {
      * sitewhere.spi.microservice.IMicroservice)
      */
     @Override
-    public void setMicroservice(IMicroservice microservice) {
+    public void setMicroservice(IMicroservice<?> microservice) {
 	this.microservice = microservice;
     }
 

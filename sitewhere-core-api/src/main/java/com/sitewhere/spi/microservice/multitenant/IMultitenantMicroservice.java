@@ -10,6 +10,7 @@ package com.sitewhere.spi.microservice.multitenant;
 import java.util.UUID;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -18,7 +19,8 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public interface IMultitenantMicroservice<T extends IMicroserviceTenantEngine> extends IConfigurableMicroservice {
+public interface IMultitenantMicroservice<I extends IFunctionIdentifier, T extends IMicroserviceTenantEngine>
+	extends IConfigurableMicroservice<I> {
 
     /**
      * Create tenant engine specific to microservice function.

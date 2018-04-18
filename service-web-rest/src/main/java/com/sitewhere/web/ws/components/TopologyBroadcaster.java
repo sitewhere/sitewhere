@@ -43,7 +43,7 @@ public class TopologyBroadcaster
     private static final String BASE_MICROSERVICES_PATH = BASE_TOPOLOGY_PATH + "microservices/";
 
     @Autowired
-    private IWebRestMicroservice microservice;
+    private IWebRestMicroservice<?> microservice;
 
     @Autowired
     private MessageSendingOperations<String> messagingTemplate;
@@ -158,11 +158,11 @@ public class TopologyBroadcaster
 	getMessagingTemplate().convertAndSend(topic, payload);
     }
 
-    public IWebRestMicroservice getMicroservice() {
+    public IWebRestMicroservice<?> getMicroservice() {
 	return microservice;
     }
 
-    public void setMicroservice(IWebRestMicroservice microservice) {
+    public void setMicroservice(IWebRestMicroservice<?> microservice) {
 	this.microservice = microservice;
     }
 

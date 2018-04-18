@@ -13,7 +13,6 @@ import com.sitewhere.grpc.client.cache.NearCacheManager;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -34,12 +33,25 @@ public class CachedTenantManagementApiChannel extends TenantManagementApiChannel
     /** Tenant by id cache */
     private ICacheProvider<UUID, ITenant> tenantByIdCache;
 
-    public CachedTenantManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
-	super(demux, microservice, host);
-	this.nearCacheManager = new NearCacheManager(microservice, MicroserviceIdentifier.TenantManagement);
+    public CachedTenantManagementApiChannel(IApiDemux<?> demux, String host, int port) {
+	super(demux, host, port);
+	this.nearCacheManager = new NearCacheManager(MicroserviceIdentifier.TenantManagement);
 	this.tenantByTokenCache = new TenantManagementCacheProviders.TenantByTokenCache(nearCacheManager);
 	this.tenantByIdCache = new TenantManagementCacheProviders.TenantByIdCache(nearCacheManager);
 	getNearCacheManager().setCacheProviders(tenantByTokenCache, tenantByIdCache);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+
+	// Initialize near cache manager.
+	initializeNestedComponent(getNearCacheManager(), monitor, true);
     }
 
     /*

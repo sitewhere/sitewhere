@@ -11,6 +11,7 @@ import java.io.File;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.ICachingMicroservice;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.tenant.spi.grpc.ITenantManagementGrpcServer;
@@ -23,7 +24,8 @@ import com.sitewhere.tenant.spi.templates.ITenantTemplateManager;
  * 
  * @author Derek
  */
-public interface ITenantManagementMicroservice extends IGlobalMicroservice, ICachingMicroservice {
+public interface ITenantManagementMicroservice<T extends IFunctionIdentifier>
+	extends IGlobalMicroservice<T>, ICachingMicroservice {
 
     /**
      * Get tenant templates file handle on filesystem.

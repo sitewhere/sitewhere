@@ -20,8 +20,9 @@ import com.sitewhere.tenant.spi.grpc.ITenantManagementGrpcServer;
  */
 public class TenantManagementGrpcServer extends GrpcServer implements ITenantManagementGrpcServer {
 
-    public TenantManagementGrpcServer(IMicroservice microservice, ITenantManagement tenantManagement,
+    public TenantManagementGrpcServer(IMicroservice<?> microservice, ITenantManagement tenantManagement,
 	    ITenantAdministration tenantAdministration) {
-	super(microservice, new TenantManagementImpl(tenantManagement, tenantAdministration));
+	super(new TenantManagementImpl(tenantManagement, tenantAdministration),
+		microservice.getInstanceSettings().getGrpcPort());
     }
 }

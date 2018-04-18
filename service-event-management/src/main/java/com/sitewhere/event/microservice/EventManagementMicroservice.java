@@ -29,7 +29,8 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public class EventManagementMicroservice extends MultitenantMicroservice<IEventManagementTenantEngine>
+public class EventManagementMicroservice
+	extends MultitenantMicroservice<MicroserviceIdentifier, IEventManagementTenantEngine>
 	implements IEventManagementMicroservice {
 
     /** Microservice name */

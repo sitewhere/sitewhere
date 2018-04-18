@@ -27,7 +27,8 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public class DeviceRegistrationMicroservice extends MultitenantMicroservice<IDeviceRegistrationTenantEngine>
+public class DeviceRegistrationMicroservice
+	extends MultitenantMicroservice<MicroserviceIdentifier, IDeviceRegistrationTenantEngine>
 	implements IDeviceRegistrationMicroservice {
 
     /** Microservice name */

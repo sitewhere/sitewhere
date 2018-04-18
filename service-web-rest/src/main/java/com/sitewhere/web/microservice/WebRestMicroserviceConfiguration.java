@@ -16,7 +16,7 @@ import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 public class WebRestMicroserviceConfiguration {
 
     @Bean
-    public IWebRestMicroservice webRestMicroservice() {
+    public IWebRestMicroservice<?> webRestMicroservice() {
 	return new WebRestMicroservice();
     }
 }

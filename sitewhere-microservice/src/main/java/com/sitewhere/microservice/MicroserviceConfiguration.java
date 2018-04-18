@@ -16,6 +16,7 @@ import com.sitewhere.microservice.security.SystemUser;
 import com.sitewhere.microservice.security.TokenManagement;
 import com.sitewhere.microservice.zookeeper.ZookeeperManager;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
@@ -56,7 +57,7 @@ public class MicroserviceConfiguration {
 
     @Bean
     @Autowired
-    public Tracer tracer(IInstanceSettings instanceSettings, IMicroservice microservice) {
+    public Tracer tracer(IInstanceSettings instanceSettings, IMicroservice<MicroserviceIdentifier> microservice) {
 	return new Configuration(microservice.getIdentifier().getPath(),
 		new Configuration.SamplerConfiguration(ProbabilisticSampler.TYPE, 0.01),
 		new Configuration.ReporterConfiguration(null, instanceSettings.getTracerServer(), null, null, null))

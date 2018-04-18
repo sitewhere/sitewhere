@@ -11,6 +11,7 @@ import com.sitewhere.device.spi.grpc.IDeviceManagementGrpcServer;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
 import com.sitewhere.spi.microservice.ICachingMicroservice;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
@@ -19,7 +20,7 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
  * @author Derek
  */
 public interface IDeviceManagementMicroservice
-	extends IMultitenantMicroservice<IDeviceManagementTenantEngine>, ICachingMicroservice {
+	extends IMultitenantMicroservice<MicroserviceIdentifier, IDeviceManagementTenantEngine>, ICachingMicroservice {
 
     /**
      * Get device management GRPC server.

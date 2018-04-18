@@ -41,7 +41,8 @@ import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
  * 
  * @author Derek
  */
-public class WebRestMicroservice extends GlobalMicroservice implements IWebRestMicroservice {
+public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifier>
+	implements IWebRestMicroservice<MicroserviceIdentifier> {
 
     /** Microservice name */
     private static final String NAME = "Web/REST";

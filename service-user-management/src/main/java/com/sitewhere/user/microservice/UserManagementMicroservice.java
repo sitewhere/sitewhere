@@ -34,7 +34,8 @@ import com.sitewhere.user.spi.microservice.IUserManagementMicroservice;
  * 
  * @author Derek
  */
-public class UserManagementMicroservice extends GlobalMicroservice implements IUserManagementMicroservice {
+public class UserManagementMicroservice extends GlobalMicroservice<MicroserviceIdentifier>
+	implements IUserManagementMicroservice<MicroserviceIdentifier> {
 
     /** Microservice name */
     private static final String NAME = "User Management";

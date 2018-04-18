@@ -19,6 +19,6 @@ import com.sitewhere.schedule.spi.microservice.IScheduleManagementMicroservice;
 public class ScheduleManagementGrpcServer extends MultitenantGrpcServer implements IScheduleManagementGrpcServer {
 
     public ScheduleManagementGrpcServer(IScheduleManagementMicroservice microservice) {
-	super(microservice, new ScheduleManagementRouter(microservice));
+	super(new ScheduleManagementRouter(microservice), microservice.getInstanceSettings().getGrpcPort());
     }
 }

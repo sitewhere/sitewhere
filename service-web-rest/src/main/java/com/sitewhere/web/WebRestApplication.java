@@ -21,10 +21,10 @@ import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
  * @author Derek
  */
 @ComponentScan(basePackageClasses = { WebRestMicroservice.class })
-public class WebRestApplication extends MicroserviceApplication<IWebRestMicroservice> {
+public class WebRestApplication extends MicroserviceApplication<IWebRestMicroservice<?>> {
 
     @Autowired
-    private IWebRestMicroservice microservice;
+    private IWebRestMicroservice<?> microservice;
 
     /*
      * (non-Javadoc)
@@ -33,7 +33,7 @@ public class WebRestApplication extends MicroserviceApplication<IWebRestMicroser
      * com.sitewhere.microservice.spi.IMicroserviceApplication#getMicroservice()
      */
     @Override
-    public IWebRestMicroservice getMicroservice() {
+    public IWebRestMicroservice<?> getMicroservice() {
 	return microservice;
     }
 

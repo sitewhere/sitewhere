@@ -20,10 +20,10 @@ import com.sitewhere.user.spi.microservice.IUserManagementMicroservice;
  * @author Derek
  */
 @ComponentScan
-public class UserManagementApplication extends MicroserviceApplication<IUserManagementMicroservice> {
+public class UserManagementApplication extends MicroserviceApplication<IUserManagementMicroservice<?>> {
 
     @Autowired
-    private IUserManagementMicroservice microservice;
+    private IUserManagementMicroservice<?> microservice;
 
     /*
      * (non-Javadoc)
@@ -32,7 +32,7 @@ public class UserManagementApplication extends MicroserviceApplication<IUserMana
      * com.sitewhere.microservice.spi.IMicroserviceApplication#getMicroservice()
      */
     @Override
-    public IUserManagementMicroservice getMicroservice() {
+    public IUserManagementMicroservice<?> getMicroservice() {
 	return microservice;
     }
 

@@ -50,7 +50,7 @@ public class JwtServerInterceptor implements ServerInterceptor {
     private static Log LOGGER = LogFactory.getLog(JwtServerInterceptor.class);
 
     /** Parent microservice */
-    private IMicroservice microservice;
+    private IMicroservice<?> microservice;
 
     /** Service implementation */
     private Class<? extends BindableService> implementation;
@@ -61,7 +61,7 @@ public class JwtServerInterceptor implements ServerInterceptor {
     /** Hashmap of JWT to decoded claims */
     private Map<String, Claims> jwtToClaims = new HashMap<String, Claims>();
 
-    public JwtServerInterceptor(IMicroservice microservice, Class<? extends BindableService> implementation) {
+    public JwtServerInterceptor(IMicroservice<?> microservice, Class<? extends BindableService> implementation) {
 	this.microservice = microservice;
 	this.implementation = implementation;
     }
@@ -182,8 +182,6 @@ public class JwtServerInterceptor implements ServerInterceptor {
 		if (!auths.contains(role.getName())) {
 		    throw new SiteWhereException("User '" + username + "' not authenticated for '" + role
 			    + "' authority.\n\n" + MarshalUtils.marshalJsonAsPrettyString(auths));
-		} else {
-		    LOGGER.info("SECURITY CHECK PASSED FOR " + role);
 		}
 	    }
 	}
@@ -219,11 +217,11 @@ public class JwtServerInterceptor implements ServerInterceptor {
 	}
     }
 
-    public IMicroservice getMicroservice() {
+    public IMicroservice<?> getMicroservice() {
 	return microservice;
     }
 
-    public void setMicroservice(IMicroservice microservice) {
+    public void setMicroservice(IMicroservice<?> microservice) {
 	this.microservice = microservice;
     }
 

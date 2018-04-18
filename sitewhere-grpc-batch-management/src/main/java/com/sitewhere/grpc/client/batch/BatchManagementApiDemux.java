@@ -27,8 +27,8 @@ public class BatchManagementApiDemux extends ApiDemux<IBatchManagementApiChannel
      * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
     @Override
-    public MicroserviceIdentifier getTargetIdentifier() {
-	return MicroserviceIdentifier.BatchOperations;
+    public String getTargetIdentifier() {
+	return MicroserviceIdentifier.BatchOperations.getPath();
     }
 
     /*
@@ -37,6 +37,6 @@ public class BatchManagementApiDemux extends ApiDemux<IBatchManagementApiChannel
      */
     @Override
     public IBatchManagementApiChannel createApiChannel(String host) throws SiteWhereException {
-	return new BatchManagementApiChannel(this, getMicroservice(), host);
+	return new BatchManagementApiChannel(this, host, getMicroservice().getInstanceSettings().getGrpcPort());
     }
 }

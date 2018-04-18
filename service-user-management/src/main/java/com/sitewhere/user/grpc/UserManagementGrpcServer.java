@@ -19,7 +19,7 @@ import com.sitewhere.user.spi.grpc.IUserManagementGrpcServer;
  */
 public class UserManagementGrpcServer extends GrpcServer implements IUserManagementGrpcServer {
 
-    public UserManagementGrpcServer(IMicroservice microservice, IUserManagement userManagement) {
-	super(microservice, new UserManagementImpl(userManagement));
+    public UserManagementGrpcServer(IMicroservice<?> microservice, IUserManagement userManagement) {
+	super(new UserManagementImpl(userManagement), microservice.getInstanceSettings().getGrpcPort());
     }
 }

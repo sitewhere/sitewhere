@@ -21,7 +21,7 @@ import com.sitewhere.user.spi.microservice.IUserManagementMicroservice;
 public class UserManagementMicroserviceConfiguration {
 
     @Bean
-    public IUserManagementMicroservice userManagementMicroservice() {
+    public IUserManagementMicroservice<?> userManagementMicroservice() {
 	return new UserManagementMicroservice();
     }
 }

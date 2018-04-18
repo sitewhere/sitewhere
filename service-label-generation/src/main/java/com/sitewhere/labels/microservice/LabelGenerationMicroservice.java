@@ -31,7 +31,8 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public class LabelGenerationMicroservice extends MultitenantMicroservice<ILabelGenerationTenantEngine>
+public class LabelGenerationMicroservice
+	extends MultitenantMicroservice<MicroserviceIdentifier, ILabelGenerationTenantEngine>
 	implements ILabelGenerationMicroservice {
 
     /** Microservice name */

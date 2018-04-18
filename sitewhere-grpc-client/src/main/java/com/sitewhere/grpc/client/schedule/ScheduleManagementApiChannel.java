@@ -34,7 +34,6 @@ import com.sitewhere.grpc.service.GUpdateScheduledJobRequest;
 import com.sitewhere.grpc.service.GUpdateScheduledJobResponse;
 import com.sitewhere.grpc.service.ScheduleManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
@@ -52,8 +51,8 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public class ScheduleManagementApiChannel extends MultitenantApiChannel<ScheduleManagementGrpcChannel>
 	implements IScheduleManagementApiChannel<ScheduleManagementGrpcChannel> {
 
-    public ScheduleManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
-	super(demux, microservice, host);
+    public ScheduleManagementApiChannel(IApiDemux<?> demux, String host, int port) {
+	super(demux, host, port);
     }
 
     /*

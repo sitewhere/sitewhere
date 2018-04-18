@@ -19,6 +19,6 @@ import com.sitewhere.microservice.grpc.MultitenantGrpcServer;
 public class EventManagementGrpcServer extends MultitenantGrpcServer implements IEventManagementGrpcServer {
 
     public EventManagementGrpcServer(IEventManagementMicroservice microservice) {
-	super(microservice, new EventManagementRouter(microservice));
+	super(new EventManagementRouter(microservice), microservice.getInstanceSettings().getGrpcPort());
     }
 }

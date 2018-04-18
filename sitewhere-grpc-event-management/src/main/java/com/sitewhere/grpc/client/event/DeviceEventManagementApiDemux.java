@@ -28,8 +28,8 @@ public class DeviceEventManagementApiDemux extends ApiDemux<IDeviceEventManageme
      * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
     @Override
-    public MicroserviceIdentifier getTargetIdentifier() {
-	return MicroserviceIdentifier.EventManagement;
+    public String getTargetIdentifier() {
+	return MicroserviceIdentifier.EventManagement.getPath();
     }
 
     /*
@@ -38,6 +38,6 @@ public class DeviceEventManagementApiDemux extends ApiDemux<IDeviceEventManageme
      */
     @Override
     public IDeviceEventManagementApiChannel createApiChannel(String host) throws SiteWhereException {
-	return new DeviceEventManagementApiChannel(this, getMicroservice(), host);
+	return new DeviceEventManagementApiChannel(this, host, getMicroservice().getInstanceSettings().getGrpcPort());
     }
 }

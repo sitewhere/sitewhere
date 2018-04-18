@@ -18,6 +18,7 @@ import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -31,7 +32,7 @@ import com.sitewhere.spi.tenant.ITenant;
  *
  * @param <T>
  */
-public class InitializeTenantEngineOperation<T extends IMicroserviceTenantEngine>
+public class InitializeTenantEngineOperation<I extends IFunctionIdentifier, T extends IMicroserviceTenantEngine>
 	extends CompletableTenantEngineOperation<T> {
 
     /** Static logger instance */
@@ -41,12 +42,12 @@ public class InitializeTenantEngineOperation<T extends IMicroserviceTenantEngine
     private static final long MAX_WAIT_FOR_TENANT_BOOTSTRAPPED = 60 * 1000;
 
     /** Parent microservice */
-    private MultitenantMicroservice<T> microservice;
+    private MultitenantMicroservice<I, T> microservice;
 
     /** Tenant information */
     private ITenant tenant;
 
-    public InitializeTenantEngineOperation(MultitenantMicroservice<T> microservice, ITenant tenant,
+    public InitializeTenantEngineOperation(MultitenantMicroservice<I, T> microservice, ITenant tenant,
 	    CompletableFuture<T> completableFuture) {
 	super(completableFuture);
 	this.microservice = microservice;
@@ -123,11 +124,11 @@ public class InitializeTenantEngineOperation<T extends IMicroserviceTenantEngine
 	}
     }
 
-    public MultitenantMicroservice<T> getMicroservice() {
+    public MultitenantMicroservice<I, T> getMicroservice() {
 	return microservice;
     }
 
-    public void setMicroservice(MultitenantMicroservice<T> microservice) {
+    public void setMicroservice(MultitenantMicroservice<I, T> microservice) {
 	this.microservice = microservice;
     }
 
@@ -139,10 +140,10 @@ public class InitializeTenantEngineOperation<T extends IMicroserviceTenantEngine
 	this.tenant = tenant;
     }
 
-    public static <T extends IMicroserviceTenantEngine> CompletableFuture<T> createCompletableFuture(
-	    MultitenantMicroservice<T> microservice, ITenant tenant, ExecutorService executor) {
+    public static <I extends IFunctionIdentifier, T extends IMicroserviceTenantEngine> CompletableFuture<T> createCompletableFuture(
+	    MultitenantMicroservice<I, T> microservice, ITenant tenant, ExecutorService executor) {
 	CompletableFuture<T> completableFuture = new CompletableFuture<T>();
-	executor.submit(new InitializeTenantEngineOperation<T>(microservice, tenant, completableFuture));
+	executor.submit(new InitializeTenantEngineOperation<I, T>(microservice, tenant, completableFuture));
 	return completableFuture;
     }
 }

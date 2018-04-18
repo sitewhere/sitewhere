@@ -29,12 +29,12 @@ public abstract class SystemUserRunnable implements Runnable {
     private static Log LOGGER = LogFactory.getLog(SystemUserRunnable.class);
 
     /** Tenant engine if tenant operation */
-    private IMicroservice microservice;
+    private IMicroservice<?> microservice;
 
     /** Tenant */
     private ITenant tenant;
 
-    public SystemUserRunnable(IMicroservice microservice, ITenant tenant) {
+    public SystemUserRunnable(IMicroservice<?> microservice, ITenant tenant) {
 	this.microservice = microservice;
 	this.tenant = tenant;
     }
@@ -69,11 +69,11 @@ public abstract class SystemUserRunnable implements Runnable {
 	}
     }
 
-    protected IMicroservice getMicroservice() {
+    protected IMicroservice<?> getMicroservice() {
 	return microservice;
     }
 
-    protected void setMicroservice(IMicroservice microservice) {
+    protected void setMicroservice(IMicroservice<?> microservice) {
 	this.microservice = microservice;
     }
 

@@ -13,7 +13,6 @@ import com.sitewhere.grpc.client.cache.NearCacheManager;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.user.IGrantedAuthority;
@@ -35,12 +34,25 @@ public class CachedUserManagementApiChannel extends UserManagementApiChannel {
     /** Granted authority cache */
     private ICacheProvider<String, List<IGrantedAuthority>> grantedAuthorityCache;
 
-    public CachedUserManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
-	super(demux, microservice, host);
-	this.nearCacheManager = new NearCacheManager(microservice, MicroserviceIdentifier.UserManagement);
+    public CachedUserManagementApiChannel(IApiDemux<?> demux, String host, int port) {
+	super(demux, host, port);
+	this.nearCacheManager = new NearCacheManager(MicroserviceIdentifier.UserManagement);
 	this.userCache = new UserManagementCacheProviders.UserByTokenCache(nearCacheManager);
 	this.grantedAuthorityCache = new UserManagementCacheProviders.GrantedAuthorityByTokenCache(nearCacheManager);
 	getNearCacheManager().setCacheProviders(userCache, grantedAuthorityCache);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+
+	// Initialize near cache manager.
+	initializeNestedComponent(getNearCacheManager(), monitor, true);
     }
 
     /*

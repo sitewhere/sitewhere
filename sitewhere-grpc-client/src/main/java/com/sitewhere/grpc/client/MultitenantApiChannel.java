@@ -13,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 import com.sitewhere.grpc.client.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.multitenant.IMultitenantApiChannel;
-import com.sitewhere.spi.microservice.IMicroservice;
 
 /**
  * Extends {@link ApiChannel} with methods for dealing with multitenant
@@ -26,12 +25,8 @@ import com.sitewhere.spi.microservice.IMicroservice;
 public abstract class MultitenantApiChannel<T extends MultitenantGrpcChannel<?, ?>> extends ApiChannel<T>
 	implements IMultitenantApiChannel<T> {
 
-    public MultitenantApiChannel(IApiDemux<?> demux, IMicroservice microservice, String hostname, int port) {
-	super(demux, microservice, hostname, port);
-    }
-
-    public MultitenantApiChannel(IApiDemux<?> demux, IMicroservice microservice, String hostname) {
-	super(demux, microservice, hostname);
+    public MultitenantApiChannel(IApiDemux<?> demux, String hostname, int port) {
+	super(demux, hostname, port);
     }
 
     /*

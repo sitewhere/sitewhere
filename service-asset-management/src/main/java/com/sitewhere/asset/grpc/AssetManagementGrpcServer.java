@@ -19,6 +19,6 @@ import com.sitewhere.microservice.grpc.MultitenantGrpcServer;
 public class AssetManagementGrpcServer extends MultitenantGrpcServer implements IAssetManagementGrpcServer {
 
     public AssetManagementGrpcServer(IAssetManagementMicroservice microservice) {
-	super(microservice, new AssetManagementRouter(microservice));
+	super(new AssetManagementRouter(microservice), microservice.getInstanceSettings().getGrpcPort());
     }
 }

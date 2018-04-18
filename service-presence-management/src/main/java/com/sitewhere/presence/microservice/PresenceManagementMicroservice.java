@@ -21,7 +21,8 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public class PresenceManagementMicroservice extends MultitenantMicroservice<IPresenceManagementTenantEngine>
+public class PresenceManagementMicroservice
+	extends MultitenantMicroservice<MicroserviceIdentifier, IPresenceManagementTenantEngine>
 	implements IPresenceManagementMicroservice {
 
     /** Microservice name */

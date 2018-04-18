@@ -15,6 +15,7 @@ import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiDemux;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IUserManagementApiDemux;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
 import com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordinator;
 
@@ -23,7 +24,7 @@ import com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordina
  * 
  * @author Derek
  */
-public interface IWebRestMicroservice extends IGlobalMicroservice {
+public interface IWebRestMicroservice<T extends IFunctionIdentifier> extends IGlobalMicroservice<T> {
 
     /**
      * User management API access via GRPC channel.

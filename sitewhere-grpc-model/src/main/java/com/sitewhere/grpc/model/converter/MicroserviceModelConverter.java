@@ -529,7 +529,7 @@ public class MicroserviceModelConverter {
      */
     public static MicroserviceDetails asApiMicroserviceDetails(GMicroserviceDetails grpc) throws SiteWhereException {
 	MicroserviceDetails api = new MicroserviceDetails();
-	api.setIdentifier(MicroserviceModelConverter.asApiMicroserviceIdentifier(grpc.getIdentifier()));
+	api.setIdentifier(grpc.getIdentifier());
 	api.setHostname(grpc.getHostname());
 	api.setName(grpc.getName());
 	api.setIcon(grpc.getIcon());
@@ -547,7 +547,7 @@ public class MicroserviceModelConverter {
      */
     public static GMicroserviceDetails asGrpcMicroserviceDetails(IMicroserviceDetails api) throws SiteWhereException {
 	GMicroserviceDetails.Builder grpc = GMicroserviceDetails.newBuilder();
-	grpc.setIdentifier(MicroserviceModelConverter.asGrpcMicroserviceIdentifier(api.getIdentifier()));
+	grpc.setIdentifier(api.getIdentifier());
 	grpc.setHostname(api.getHostname());
 	grpc.setName(api.getName());
 	grpc.setIcon(api.getIcon());

@@ -65,7 +65,7 @@ public abstract class GroovyComponent extends TenantEngineLifecycleComponent imp
 	if (getScriptId() == null) {
 	    throw new SiteWhereException("Script id was not initialized properly.");
 	}
-	this.scriptMetadata = ((IConfigurableMicroservice) getMicroservice()).getScriptManagement()
+	this.scriptMetadata = ((IConfigurableMicroservice<?>) getMicroservice()).getScriptManagement()
 		.getScriptMetadata(getTenantEngine().getTenant().getId(), getScriptId());
 	if (getScriptMetadata() == null) {
 	    throw new SiteWhereException("Script '" + getScriptId() + "' was not found.");

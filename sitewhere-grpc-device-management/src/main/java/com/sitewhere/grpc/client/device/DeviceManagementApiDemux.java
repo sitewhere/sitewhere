@@ -27,8 +27,8 @@ public class DeviceManagementApiDemux extends ApiDemux<IDeviceManagementApiChann
      * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
     @Override
-    public MicroserviceIdentifier getTargetIdentifier() {
-	return MicroserviceIdentifier.DeviceManagement;
+    public String getTargetIdentifier() {
+	return MicroserviceIdentifier.DeviceManagement.getPath();
     }
 
     /*
@@ -37,6 +37,6 @@ public class DeviceManagementApiDemux extends ApiDemux<IDeviceManagementApiChann
      */
     @Override
     public IDeviceManagementApiChannel createApiChannel(String host) throws SiteWhereException {
-	return new CachedDeviceManagementApiChannel(this, getMicroservice(), host);
+	return new CachedDeviceManagementApiChannel(this, host, getMicroservice().getInstanceSettings().getGrpcPort());
     }
 }

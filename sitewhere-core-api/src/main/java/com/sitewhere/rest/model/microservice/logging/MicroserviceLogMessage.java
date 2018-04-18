@@ -9,7 +9,6 @@ package com.sitewhere.rest.model.microservice.logging;
 
 import java.util.UUID;
 
-import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.logging.ILoggedException;
 import com.sitewhere.spi.microservice.logging.IMicroserviceLogMessage;
 import com.sitewhere.spi.microservice.logging.LogLevel;
@@ -22,7 +21,7 @@ import com.sitewhere.spi.microservice.logging.LogLevel;
 public class MicroserviceLogMessage implements IMicroserviceLogMessage {
 
     /** Microservice identifier */
-    private MicroserviceIdentifier microserviceIdentifier;
+    private String microserviceIdentifier;
 
     /** Microservice container id */
     private String microserviceContainerId;
@@ -47,11 +46,11 @@ public class MicroserviceLogMessage implements IMicroserviceLogMessage {
      * getMicroserviceIdentifier()
      */
     @Override
-    public MicroserviceIdentifier getMicroserviceIdentifier() {
+    public String getMicroserviceIdentifier() {
 	return microserviceIdentifier;
     }
 
-    public void setMicroserviceIdentifier(MicroserviceIdentifier microserviceIdentifier) {
+    public void setMicroserviceIdentifier(String microserviceIdentifier) {
 	this.microserviceIdentifier = microserviceIdentifier;
     }
 

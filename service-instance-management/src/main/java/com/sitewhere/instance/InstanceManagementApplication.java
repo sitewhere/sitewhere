@@ -20,10 +20,10 @@ import com.sitewhere.microservice.MicroserviceApplication;
  * @author Derek
  */
 @ComponentScan
-public class InstanceManagementApplication extends MicroserviceApplication<IInstanceManagementMicroservice> {
+public class InstanceManagementApplication extends MicroserviceApplication<IInstanceManagementMicroservice<?>> {
 
     @Autowired
-    private IInstanceManagementMicroservice microservice;
+    private IInstanceManagementMicroservice<?> microservice;
 
     /*
      * (non-Javadoc)
@@ -32,7 +32,7 @@ public class InstanceManagementApplication extends MicroserviceApplication<IInst
      * com.sitewhere.microservice.spi.IMicroserviceApplication#getMicroservice()
      */
     @Override
-    public IInstanceManagementMicroservice getMicroservice() {
+    public IInstanceManagementMicroservice<?> getMicroservice() {
 	return microservice;
     }
 

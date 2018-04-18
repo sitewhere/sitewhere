@@ -19,6 +19,6 @@ import com.sitewhere.microservice.grpc.MultitenantGrpcServer;
 public class DeviceManagementGrpcServer extends MultitenantGrpcServer implements IDeviceManagementGrpcServer {
 
     public DeviceManagementGrpcServer(IDeviceManagementMicroservice microservice) {
-	super(microservice, new DeviceManagementRouter(microservice));
+	super(new DeviceManagementRouter(microservice), microservice.getInstanceSettings().getGrpcPort());
     }
 }

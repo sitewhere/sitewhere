@@ -31,7 +31,8 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public class BatchOperationsMicroservice extends MultitenantMicroservice<IBatchOperationsTenantEngine>
+public class BatchOperationsMicroservice
+	extends MultitenantMicroservice<MicroserviceIdentifier, IBatchOperationsTenantEngine>
 	implements IBatchOperationsMicroservice {
 
     /** Microservice name */

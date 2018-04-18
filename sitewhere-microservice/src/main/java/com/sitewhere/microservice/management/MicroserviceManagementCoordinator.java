@@ -18,7 +18,6 @@ import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroserviceManagement;
-import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordinator;
 import com.sitewhere.spi.microservice.state.IInstanceMicroservice;
 import com.sitewhere.spi.microservice.state.IInstanceTopologyEntry;
@@ -39,7 +38,7 @@ public class MicroserviceManagementCoordinator extends LifecycleComponent
 	implements IMicroserviceManagementCoordinator, IInstanceTopologyUpdatesListener {
 
     /** API demuxes by service identifier */
-    private Map<MicroserviceIdentifier, IMicroserviceManagementApiDemux> demuxesByServiceIdentifier = new HashMap<>();
+    private Map<String, IMicroserviceManagementApiDemux> demuxesByServiceIdentifier = new HashMap<>();
 
     /*
      * @see
@@ -80,12 +79,10 @@ public class MicroserviceManagementCoordinator extends LifecycleComponent
     /*
      * @see
      * com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordinator#
-     * getMicroserviceManagement(com.sitewhere.spi.microservice.
-     * MicroserviceIdentifier)
+     * getMicroserviceManagement(java.lang.String)
      */
     @Override
-    public IMicroserviceManagement getMicroserviceManagement(MicroserviceIdentifier identifier)
-	    throws SiteWhereException {
+    public IMicroserviceManagement getMicroserviceManagement(String identifier) throws SiteWhereException {
 	IMicroserviceManagementApiDemux demux = getDemuxesByServiceIdentifier().get(identifier);
 	if (demux == null) {
 	    throw new ApiChannelNotAvailableException(
@@ -111,7 +108,7 @@ public class MicroserviceManagementCoordinator extends LifecycleComponent
     protected void onMicroserviceAdded(IMicroserviceDetails microservice) {
 	IMicroserviceManagementApiDemux demux = getDemuxesByServiceIdentifier().get(microservice.getIdentifier());
 	if (demux == null) {
-	    demux = new MicroserviceManagementApiDemux(getMicroservice(), microservice.getIdentifier());
+	    demux = new MicroserviceManagementApiDemux(microservice.getIdentifier());
 	    getDemuxesByServiceIdentifier().put(microservice.getIdentifier(), demux);
 	    startDemux(demux, microservice);
 	}
@@ -133,7 +130,7 @@ public class MicroserviceManagementCoordinator extends LifecycleComponent
      */
     @Override
     public void onMicroserviceRemoved(IMicroserviceState state) {
-	MicroserviceIdentifier identifier = state.getMicroservice().getIdentifier();
+	String identifier = state.getMicroservice().getIdentifier();
 	IMicroserviceManagementApiDemux demux = getDemuxesByServiceIdentifier().get(identifier);
 	if (demux != null) {
 	    getDemuxesByServiceIdentifier().remove(identifier);
@@ -178,7 +175,7 @@ public class MicroserviceManagementCoordinator extends LifecycleComponent
      */
     protected void startDemux(IMicroserviceManagementApiDemux demux, IMicroserviceDetails details) {
 	try {
-	    MicroserviceIdentifier identifier = details.getIdentifier();
+	    String identifier = details.getIdentifier();
 	    ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
 		    new LifecycleProgressContext(2, "Create microservice mangagement demux for '" + identifier + "'."),
 		    getMicroservice());
@@ -200,7 +197,7 @@ public class MicroserviceManagementCoordinator extends LifecycleComponent
      */
     protected void stopDemux(IMicroserviceManagementApiDemux demux, IMicroserviceDetails details) {
 	try {
-	    MicroserviceIdentifier identifier = details.getIdentifier();
+	    String identifier = details.getIdentifier();
 	    ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
 		    new LifecycleProgressContext(2, "Shut down demux for '" + identifier + "'."), getMicroservice());
 	    stopNestedComponent(demux, monitor);
@@ -213,12 +210,11 @@ public class MicroserviceManagementCoordinator extends LifecycleComponent
 	}
     }
 
-    public Map<MicroserviceIdentifier, IMicroserviceManagementApiDemux> getDemuxesByServiceIdentifier() {
+    public Map<String, IMicroserviceManagementApiDemux> getDemuxesByServiceIdentifier() {
 	return demuxesByServiceIdentifier;
     }
 
-    public void setDemuxesByServiceIdentifier(
-	    Map<MicroserviceIdentifier, IMicroserviceManagementApiDemux> demuxesByServiceIdentifier) {
+    public void setDemuxesByServiceIdentifier(Map<String, IMicroserviceManagementApiDemux> demuxesByServiceIdentifier) {
 	this.demuxesByServiceIdentifier = demuxesByServiceIdentifier;
     }
 }

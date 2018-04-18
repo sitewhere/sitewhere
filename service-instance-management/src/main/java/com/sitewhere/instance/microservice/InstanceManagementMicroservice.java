@@ -44,7 +44,8 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
  * 
  * @author Derek
  */
-public class InstanceManagementMicroservice extends GlobalMicroservice implements IInstanceManagementMicroservice {
+public class InstanceManagementMicroservice extends GlobalMicroservice<MicroserviceIdentifier>
+	implements IInstanceManagementMicroservice<MicroserviceIdentifier> {
 
     /** Microservice name */
     private static final String NAME = "Instance Management";

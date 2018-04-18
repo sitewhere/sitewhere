@@ -35,7 +35,7 @@ public class InitializationMarkerUtils {
      * @param microservice
      * @throws SiteWhereException
      */
-    public static void removeExistingInitializationMarker(IMicroservice microservice) throws SiteWhereException {
+    public static void removeExistingInitializationMarker(IMicroservice<?> microservice) throws SiteWhereException {
 	File file = new File(MARKER_PATH);
 	if (file.exists()) {
 	    file.delete();
@@ -48,7 +48,7 @@ public class InitializationMarkerUtils {
      * @param microservice
      * @throws SiteWhereException
      */
-    public static void createInitializationMarker(IMicroservice microservice) throws SiteWhereException {
+    public static void createInitializationMarker(IMicroservice<?> microservice) throws SiteWhereException {
 	try {
 	    FileOutputStream out = new FileOutputStream(MARKER_PATH);
 	    out.write(new String("Initialized " + microservice.getComponentName() + " at " + new Date().toString())

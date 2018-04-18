@@ -7,8 +7,6 @@
  */
 package com.sitewhere.spi.microservice.state;
 
-import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-
 /**
  * Contains details that allow a microservice to be uniquely identified and
  * described.
@@ -22,7 +20,7 @@ public interface IMicroserviceDetails {
      * 
      * @return
      */
-    public MicroserviceIdentifier getIdentifier();
+    public String getIdentifier();
 
     /**
      * Get hostname for microservice.

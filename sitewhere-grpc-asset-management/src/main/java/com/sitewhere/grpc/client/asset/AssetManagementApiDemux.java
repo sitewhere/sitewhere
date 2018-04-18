@@ -27,8 +27,8 @@ public class AssetManagementApiDemux extends ApiDemux<IAssetManagementApiChannel
      * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
     @Override
-    public MicroserviceIdentifier getTargetIdentifier() {
-	return MicroserviceIdentifier.AssetManagement;
+    public String getTargetIdentifier() {
+	return MicroserviceIdentifier.AssetManagement.getPath();
     }
 
     /*
@@ -37,6 +37,6 @@ public class AssetManagementApiDemux extends ApiDemux<IAssetManagementApiChannel
      */
     @Override
     public IAssetManagementApiChannel<?> createApiChannel(String host) throws SiteWhereException {
-	return new CachedAssetManagementApiChannel(this, getMicroservice(), host);
+	return new CachedAssetManagementApiChannel(this, host, getMicroservice().getInstanceSettings().getGrpcPort());
     }
 }

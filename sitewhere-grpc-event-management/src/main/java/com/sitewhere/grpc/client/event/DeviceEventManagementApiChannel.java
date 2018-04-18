@@ -95,7 +95,6 @@ import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.event.streaming.IEventStreamAck;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.tracing.ITracerProvider;
@@ -109,8 +108,8 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public class DeviceEventManagementApiChannel extends MultitenantApiChannel<DeviceEventManagementGrpcChannel>
 	implements IDeviceEventManagementApiChannel<DeviceEventManagementGrpcChannel> {
 
-    public DeviceEventManagementApiChannel(IApiDemux<?> demux, IMicroservice microservice, String host) {
-	super(demux, microservice, host);
+    public DeviceEventManagementApiChannel(IApiDemux<?> demux, String host, int port) {
+	super(demux, host, port);
     }
 
     /*

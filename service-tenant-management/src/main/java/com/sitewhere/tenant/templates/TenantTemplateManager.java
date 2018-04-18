@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.curator.framework.CuratorFramework;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.microservice.zookeeper.ZkUtils;
@@ -45,10 +44,6 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
     /** Folder that contains default content shared by all tenants */
     private static final String DEFAULT_TENANT_CONTENT_FOLDER = "default";
 
-    /** Injected handle to microservice */
-    @Autowired
-    private ITenantManagementMicroservice microservice;
-
     /** Map of templates by template id */
     private Map<String, ITenantTemplate> templatesById = new HashMap<String, ITenantTemplate>();
 
@@ -68,7 +63,7 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
 	Map<String, ITenantTemplate> updated = new HashMap<String, ITenantTemplate>();
 
 	// Loop through tenant folders and pull templates.
-	File root = getMicroservice().getTenantTemplatesRoot();
+	File root = ((ITenantManagementMicroservice<?>) getMicroservice()).getTenantTemplatesRoot();
 	File[] folders = root.listFiles(File::isDirectory);
 	for (File folder : folders) {
 	    File tfile = new File(folder, TEMPLATE_JSON_FILE_NAME);
@@ -132,7 +127,7 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
 	    throw new SiteWhereException("Tenant template not found: " + templateId);
 	}
 
-	File root = getMicroservice().getTenantTemplatesRoot();
+	File root = ((ITenantManagementMicroservice<?>) getMicroservice()).getTenantTemplatesRoot();
 
 	// Copy default content shared by all tenants.
 	File defaultFolder = new File(root, DEFAULT_TENANT_CONTENT_FOLDER);
@@ -155,13 +150,5 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
 
     public void setTemplatesById(Map<String, ITenantTemplate> templatesById) {
 	this.templatesById = templatesById;
-    }
-
-    public ITenantManagementMicroservice getMicroservice() {
-	return microservice;
-    }
-
-    public void setMicroservice(ITenantManagementMicroservice microservice) {
-	this.microservice = microservice;
     }
 }

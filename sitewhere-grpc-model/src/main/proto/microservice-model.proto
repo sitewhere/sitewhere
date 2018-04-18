@@ -36,7 +36,7 @@ enum GMicroserviceIdentifier {
 
 // Microservice details.
 message GMicroserviceDetails {
-	GMicroserviceIdentifier identifier = 1;
+	string identifier = 1;
 	string hostname = 2;
 	string name = 3;
 	string icon = 4;

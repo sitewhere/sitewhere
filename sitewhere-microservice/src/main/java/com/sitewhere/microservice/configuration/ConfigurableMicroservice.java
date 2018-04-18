@@ -30,6 +30,7 @@ import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.configuration.ConfigurationState;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.microservice.configuration.IConfigurationListener;
@@ -46,8 +47,8 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
  * 
  * @author Derek
  */
-public abstract class ConfigurableMicroservice extends Microservice
-	implements IConfigurableMicroservice, IConfigurationListener {
+public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> extends Microservice<T>
+	implements IConfigurableMicroservice<T>, IConfigurationListener {
 
     /** Relative path to instance management configuration file */
     private static final String INSTANCE_MANAGEMENT_CONFIGURATION_PATH = "/instance-management.xml";

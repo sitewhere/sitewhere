@@ -26,7 +26,8 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author Derek
  */
-public class ScheduleManagementMicroservice extends MultitenantMicroservice<IScheduleManagementTenantEngine>
+public class ScheduleManagementMicroservice
+	extends MultitenantMicroservice<MicroserviceIdentifier, IScheduleManagementTenantEngine>
 	implements IScheduleManagementMicroservice {
 
     /** Microservice name */
