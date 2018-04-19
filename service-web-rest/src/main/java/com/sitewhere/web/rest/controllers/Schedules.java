@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +26,7 @@ import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
+import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
 import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
@@ -39,7 +39,7 @@ import io.swagger.annotations.ApiParam;
  * @author Derek Adams
  */
 @RestController
-@CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
+@SiteWhereCrossOrigin
 @RequestMapping(value = "/schedules")
 @Api(value = "schedules")
 public class Schedules extends RestControllerBase {

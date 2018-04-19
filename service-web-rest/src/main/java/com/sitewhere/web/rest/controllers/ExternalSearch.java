@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +25,7 @@ import com.sitewhere.rest.model.search.external.SearchProvider;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.user.SiteWhereRoles;
+import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
 import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
@@ -38,7 +38,7 @@ import io.swagger.annotations.ApiParam;
  * @author Derek
  */
 @RestController
-@CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
+@SiteWhereCrossOrigin
 @RequestMapping(value = "/search")
 @Api(value = "search")
 public class ExternalSearch extends RestControllerBase {

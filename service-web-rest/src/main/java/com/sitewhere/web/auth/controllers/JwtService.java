@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sitewhere.rest.ISiteWhereWebConstants;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.user.IUser;
@@ -37,7 +38,8 @@ import io.swagger.annotations.ApiOperation;
  * @author Derek Adams
  */
 @RestController
-@CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code", TokenAuthenticationFilter.JWT_HEADER })
+@CrossOrigin(exposedHeaders = { ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR,
+	ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR_CODE, TokenAuthenticationFilter.JWT_HEADER })
 @RequestMapping(value = "/jwt")
 @Api(value = "jwt")
 public class JwtService extends RestControllerBase {

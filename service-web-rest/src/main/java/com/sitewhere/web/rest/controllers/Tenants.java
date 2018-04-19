@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +34,7 @@ import com.sitewhere.spi.tenant.ITenantAdministration;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.SiteWhereAuthority;
+import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
 import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
@@ -47,7 +47,7 @@ import io.swagger.annotations.ApiParam;
  * @author Derek Adams
  */
 @RestController
-@CrossOrigin(exposedHeaders = { "X-SiteWhere-Error", "X-SiteWhere-Error-Code" })
+@SiteWhereCrossOrigin
 @RequestMapping(value = "/tenants")
 @Api(value = "tenants")
 public class Tenants extends RestControllerBase {
