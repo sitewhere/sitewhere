@@ -43,6 +43,13 @@ public interface IInstanceSettings {
     public int getZookeeperPort();
 
     /**
+     * Get Zookeeper root path.
+     * 
+     * @return
+     */
+    public String getZookeeperRootPath();
+
+    /**
      * Get Kafka bootstrap servers configuration string.
      * 
      * @return

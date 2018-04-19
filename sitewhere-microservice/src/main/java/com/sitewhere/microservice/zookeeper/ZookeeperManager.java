@@ -28,9 +28,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  */
 public class ZookeeperManager extends LifecycleComponent implements IZookeeperManager {
 
-    /** Base namespace for all SiteWhere Zookeeper artifacts */
-    private static final String SITEWHERE_ZK_NAMESPACE = "sitewhere";
-
     /** Max time in seconds to wait for Zookeeper connection */
     private static final int MAX_ZK_WAIT_SECS = 30;
 
@@ -71,8 +68,8 @@ public class ZookeeperManager extends LifecycleComponent implements IZookeeperMa
     protected void connect() throws SiteWhereException {
 	String zk = getInstanceSettings().getZookeeperHost() + ":" + getInstanceSettings().getZookeeperPort();
 	RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
-	this.curator = CuratorFrameworkFactory.builder().namespace(SITEWHERE_ZK_NAMESPACE).connectString(zk)
-		.retryPolicy(retryPolicy).build();
+	this.curator = CuratorFrameworkFactory.builder().namespace(getInstanceSettings().getZookeeperRootPath())
+		.connectString(zk).retryPolicy(retryPolicy).build();
 	getCurator().start();
 	try {
 	    if (!getCurator().blockUntilConnected(MAX_ZK_WAIT_SECS, TimeUnit.SECONDS)) {
