@@ -27,7 +27,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.web.rest.RestControllerBase;
-import com.sitewhere.web.security.jwt.TokenAuthenticationFilter;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -39,7 +38,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @RestController
 @CrossOrigin(exposedHeaders = { ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR,
-	ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR_CODE, TokenAuthenticationFilter.JWT_HEADER })
+	ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR_CODE, ISiteWhereWebConstants.HEADER_JWT })
 @RequestMapping(value = "/jwt")
 @Api(value = "jwt")
 public class JwtService extends RestControllerBase {
@@ -74,7 +73,7 @@ public class JwtService extends RestControllerBase {
 	} else {
 	    IUser user = (IUser) auth.getPrincipal();
 	    String jwt = getTokenManagement().generateToken(user, TOKEN_EXPIRATION_IN_MINUTES);
-	    return ResponseEntity.ok().header(TokenAuthenticationFilter.JWT_HEADER, jwt).build();
+	    return ResponseEntity.ok().header(ISiteWhereWebConstants.HEADER_JWT, jwt).build();
 	}
     }
 

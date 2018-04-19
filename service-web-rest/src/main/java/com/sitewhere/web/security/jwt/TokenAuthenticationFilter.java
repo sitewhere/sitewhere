@@ -25,13 +25,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.sitewhere.rest.ISiteWhereWebConstants;
+import com.sitewhere.grpc.client.spi.provider.ITenantManagementDemuxProvider;
 import com.sitewhere.security.SitewhereGrantedAuthority;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.security.ITenantAwareAuthentication;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.IGrantedAuthority;
-import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
+import com.sitewhere.web.security.SiteWhereHttpHeaders;
 
 import io.jsonwebtoken.Claims;
 
@@ -46,21 +47,15 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(TokenAuthenticationFilter.class);
 
-    /** Header containing JWT on authentication */
-    public static final String JWT_HEADER = "X-Sitewhere-JWT";
-
-    /** Authentication header */
-    private static final String AUTHORIZATION_HEADER = "Authorization";
-
-    /** Web/REST microservice */
-    private IWebRestMicroservice<?> microservice;
+    /** Tenant management demux provider */
+    private ITenantManagementDemuxProvider<?> tenantManagementDemuxProvider;
 
     /** Authentication manager */
     private AuthenticationManager authenticationManager;
 
-    public TokenAuthenticationFilter(IWebRestMicroservice<?> microservice,
+    public TokenAuthenticationFilter(ITenantManagementDemuxProvider<?> tenantManagementDemuxProvider,
 	    AuthenticationManager authenticationManager) {
-	this.microservice = microservice;
+	this.tenantManagementDemuxProvider = tenantManagementDemuxProvider;
 	this.authenticationManager = authenticationManager;
     }
 
@@ -75,16 +70,16 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 	    throws IOException, ServletException {
 
-	String jwt = getJwtFromHeader(request);
-	String tenantId = getTenantIdFromHeader(request);
-	String tenantAuth = getTenantAuthFromHeader(request);
+	String jwt = SiteWhereHttpHeaders.getJwtFromHeader(request);
+	String tenantId = SiteWhereHttpHeaders.getTenantIdFromHeader(request);
+	String tenantAuth = SiteWhereHttpHeaders.getTenantAuthFromHeader(request);
 	if (jwt != null) {
 	    // Get username from token and load user.
-	    Claims claims = getMicroservice().getTokenManagement().getClaimsForToken(jwt);
-	    String username = getMicroservice().getTokenManagement().getUsernameFromClaims(claims);
+	    ITokenManagement tokenManagement = getTenantManagementDemuxProvider().getTokenManagement();
+	    Claims claims = tokenManagement.getClaimsForToken(jwt);
+	    String username = tokenManagement.getUsernameFromClaims(claims);
 	    LOGGER.debug("JWT decoded for username: " + username);
-	    List<IGrantedAuthority> auths = getMicroservice().getTokenManagement()
-		    .getGrantedAuthoritiesFromClaims(claims);
+	    List<IGrantedAuthority> auths = tokenManagement.getGrantedAuthoritiesFromClaims(claims);
 	    List<GrantedAuthority> springAuths = new ArrayList<GrantedAuthority>();
 	    for (IGrantedAuthority auth : auths) {
 		springAuths.add(new SitewhereGrantedAuthority(auth));
@@ -126,8 +121,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	    Authentication previous = SecurityContextHolder.getContext().getAuthentication();
 	    try {
 		SecurityContextHolder.getContext()
-			.setAuthentication(getMicroservice().getSystemUser().getAuthentication());
-		ITenant tenant = getMicroservice().getTenantManagementApiDemux().getApiChannel()
+			.setAuthentication(getTenantManagementDemuxProvider().getSystemUser().getAuthentication());
+		ITenant tenant = getTenantManagementDemuxProvider().getTenantManagementApiDemux().getApiChannel()
 			.getTenantByToken(tenantToken);
 		if ((tenant == null) || (!tenant.getAuthenticationToken().equals(tenantAuth))) {
 		    throw new SiteWhereException("Auth token passed for tenant id is not correct.");
@@ -140,47 +135,12 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	}
     }
 
-    /**
-     * Load JWT from authentication header.
-     * 
-     * @param request
-     * @return
-     */
-    protected String getJwtFromHeader(HttpServletRequest request) {
-	String authHeader = request.getHeader(AUTHORIZATION_HEADER);
-	LOGGER.debug("Authorization header is: " + authHeader);
-	if (authHeader != null && authHeader.startsWith("Bearer ")) {
-	    return authHeader.substring(7);
-	}
-	return null;
+    public ITenantManagementDemuxProvider<?> getTenantManagementDemuxProvider() {
+	return tenantManagementDemuxProvider;
     }
 
-    /**
-     * Get tenant id from request header.
-     * 
-     * @param request
-     * @return
-     */
-    protected String getTenantIdFromHeader(HttpServletRequest request) {
-	return request.getHeader(ISiteWhereWebConstants.HEADER_TENANT_ID);
-    }
-
-    /**
-     * Get tenant auth token from request header.
-     * 
-     * @param request
-     * @return
-     */
-    protected String getTenantAuthFromHeader(HttpServletRequest request) {
-	return request.getHeader(ISiteWhereWebConstants.HEADER_TENANT_AUTH);
-    }
-
-    public IWebRestMicroservice<?> getMicroservice() {
-	return microservice;
-    }
-
-    public void setMicroservice(IWebRestMicroservice<?> microservice) {
-	this.microservice = microservice;
+    public void setTenantManagementDemuxProvider(ITenantManagementDemuxProvider<?> tenantManagementDemuxProvider) {
+	this.tenantManagementDemuxProvider = tenantManagementDemuxProvider;
     }
 
     public AuthenticationManager getAuthenticationManager() {

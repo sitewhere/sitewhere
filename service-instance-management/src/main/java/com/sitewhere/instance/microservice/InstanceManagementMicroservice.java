@@ -437,7 +437,7 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     }
 
     /*
-     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * @see com.sitewhere.grpc.client.spi.provider.IUserManagementDemuxProvider#
      * getUserManagementApiDemux()
      */
     @Override
@@ -450,7 +450,7 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     }
 
     /*
-     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * @see com.sitewhere.grpc.client.spi.provider.ITenantManagementDemuxProvider#
      * getTenantManagementApiDemux()
      */
     @Override

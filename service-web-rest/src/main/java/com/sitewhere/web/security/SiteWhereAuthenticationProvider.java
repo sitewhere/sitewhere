@@ -19,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.sitewhere.grpc.client.spi.provider.IUserManagementDemuxProvider;
 import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.security.SitewhereUserDetails;
 import com.sitewhere.spi.SiteWhereException;
@@ -26,7 +27,6 @@ import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.web.security.jwt.JwtAuthenticationToken;
-import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
 /**
  * Spring authentication provider using SiteWhere user management APIs.
@@ -39,10 +39,10 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
     private static Log LOGGER = LogFactory.getLog(SiteWhereAuthenticationProvider.class);
 
     /** Web rest microservice */
-    private IWebRestMicroservice<?> webRestMicroservice;
+    private IUserManagementDemuxProvider<?> userManagementDemuxProvider;
 
-    public SiteWhereAuthenticationProvider(IWebRestMicroservice<?> webRestMicroservice) {
-	this.webRestMicroservice = webRestMicroservice;
+    public SiteWhereAuthenticationProvider(IUserManagementDemuxProvider<?> userManagementDemuxProvider) {
+	this.userManagementDemuxProvider = userManagementDemuxProvider;
     }
 
     /*
@@ -81,7 +81,7 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
 	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
 	try {
 	    SecurityContextHolder.getContext()
-		    .setAuthentication(getWebRestMicroservice().getSystemUser().getAuthentication());
+		    .setAuthentication(getUserManagementDemuxProvider().getSystemUser().getAuthentication());
 	    IUser user = validateUserManagement().authenticate(username, password, false);
 	    IUserManagement userManagement = validateUserManagement();
 	    List<IGrantedAuthority> auths = userManagement.getGrantedAuthorities(user.getUsername());
@@ -111,7 +111,7 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
 	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
 	try {
 	    SecurityContextHolder.getContext()
-		    .setAuthentication(getWebRestMicroservice().getSystemUser().getAuthentication());
+		    .setAuthentication(getUserManagementDemuxProvider().getSystemUser().getAuthentication());
 	    IUserManagement userManagement = validateUserManagement();
 	    IUser user = userManagement.getUserByUsername(username);
 	    List<IGrantedAuthority> auths = userManagement.getGrantedAuthorities(username);
@@ -142,18 +142,18 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
      * @throws AuthenticationServiceException
      */
     protected IUserManagement validateUserManagement() throws AuthenticationServiceException {
-	if (getWebRestMicroservice().getUserManagementApiDemux().getApiChannel() == null) {
+	if (getUserManagementDemuxProvider().getUserManagementApiDemux().getApiChannel() == null) {
 	    throw new AuthenticationServiceException(
 		    "User management API channel not initialized. Check logs for details.");
 	}
-	return getWebRestMicroservice().getUserManagementApiDemux().getApiChannel();
+	return getUserManagementDemuxProvider().getUserManagementApiDemux().getApiChannel();
     }
 
-    public IWebRestMicroservice<?> getWebRestMicroservice() {
-	return webRestMicroservice;
+    public IUserManagementDemuxProvider<?> getUserManagementDemuxProvider() {
+	return userManagementDemuxProvider;
     }
 
-    public void setWebRestMicroservice(IWebRestMicroservice<?> webRestMicroservice) {
-	this.webRestMicroservice = webRestMicroservice;
+    public void setUserManagementDemuxProvider(IUserManagementDemuxProvider<?> userManagementDemuxProvider) {
+	this.userManagementDemuxProvider = userManagementDemuxProvider;
     }
 }

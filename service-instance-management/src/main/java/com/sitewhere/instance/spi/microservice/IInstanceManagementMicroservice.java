@@ -7,8 +7,8 @@
  */
 package com.sitewhere.instance.spi.microservice;
 
-import com.sitewhere.grpc.client.spi.client.ITenantManagementApiDemux;
-import com.sitewhere.grpc.client.spi.client.IUserManagementApiDemux;
+import com.sitewhere.grpc.client.spi.provider.ITenantManagementDemuxProvider;
+import com.sitewhere.grpc.client.spi.provider.IUserManagementDemuxProvider;
 import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
@@ -19,7 +19,8 @@ import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
  * 
  * @author Derek
  */
-public interface IInstanceManagementMicroservice<T extends IFunctionIdentifier> extends IGlobalMicroservice<T> {
+public interface IInstanceManagementMicroservice<T extends IFunctionIdentifier>
+	extends IGlobalMicroservice<T>, IUserManagementDemuxProvider<T>, ITenantManagementDemuxProvider<T> {
 
     /**
      * Get instance template manager instance.
@@ -34,18 +35,4 @@ public interface IInstanceManagementMicroservice<T extends IFunctionIdentifier> 
      * @return
      */
     public IScriptSynchronizer getInstanceScriptSynchronizer();
-
-    /**
-     * Get the user management API demux.
-     * 
-     * @return
-     */
-    public IUserManagementApiDemux getUserManagementApiDemux();
-
-    /**
-     * Get the tenant management API demux.
-     * 
-     * @return
-     */
-    public ITenantManagementApiDemux getTenantManagementApiDemux();
 }
