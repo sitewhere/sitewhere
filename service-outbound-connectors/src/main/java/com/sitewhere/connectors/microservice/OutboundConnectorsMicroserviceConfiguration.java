@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsMicroservice;
+import com.sitewhere.microservice.instance.InstanceSettings;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Spring bean configuration for microservice.
@@ -23,5 +25,10 @@ public class OutboundConnectorsMicroserviceConfiguration {
     @Bean
     public IOutboundConnectorsMicroservice outboundConnectorsMicroservice() {
 	return new OutboundConnectorsMicroservice();
+    }
+
+    @Bean
+    public IInstanceSettings instanceSettings() {
+	return new InstanceSettings();
     }
 }

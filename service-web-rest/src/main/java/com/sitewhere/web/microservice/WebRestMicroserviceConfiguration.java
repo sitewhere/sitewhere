@@ -10,6 +10,8 @@ package com.sitewhere.web.microservice;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.sitewhere.microservice.instance.InstanceSettings;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
 @Configuration
@@ -18,5 +20,10 @@ public class WebRestMicroserviceConfiguration {
     @Bean
     public IWebRestMicroservice<?> webRestMicroservice() {
 	return new WebRestMicroservice();
+    }
+
+    @Bean
+    public IInstanceSettings instanceSettings() {
+	return new InstanceSettings();
     }
 }

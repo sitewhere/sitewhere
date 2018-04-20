@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
+import com.sitewhere.microservice.instance.InstanceSettings;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Spring bean configuration for microservice.
@@ -23,5 +25,10 @@ public class BatchOperationsMicroserviceConfiguration {
     @Bean
     public IBatchOperationsMicroservice batchOperationsMicroservice() {
 	return new BatchOperationsMicroservice();
+    }
+
+    @Bean
+    public IInstanceSettings instanceSettings() {
+	return new InstanceSettings();
     }
 }

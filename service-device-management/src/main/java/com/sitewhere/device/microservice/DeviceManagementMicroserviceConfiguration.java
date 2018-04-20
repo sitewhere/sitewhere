@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
+import com.sitewhere.microservice.instance.InstanceSettings;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Spring bean configuration for microservice.
@@ -23,5 +25,10 @@ public class DeviceManagementMicroserviceConfiguration {
     @Bean
     public IDeviceManagementMicroservice deviceManagementMicroservice() {
 	return new DeviceManagementMicroservice();
+    }
+
+    @Bean
+    public IInstanceSettings instanceSettings() {
+	return new InstanceSettings();
     }
 }
