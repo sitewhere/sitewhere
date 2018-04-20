@@ -9,6 +9,8 @@ package com.sitewhere.spi.server.lifecycle;
 
 import org.apache.commons.logging.Log;
 
+import com.sitewhere.spi.microservice.logging.LogLevel;
+
 /**
  * Logging interface which allows lifecycle component metadata to be captured
  * along with other logging information.
@@ -23,4 +25,12 @@ public interface ILifecycleComponentLogger extends Log {
      * @return
      */
     public ILifecycleComponent getLifecycleComponent();
+
+    /**
+     * Any log output below this level for the lifecycle component will be elevated
+     * to this level.
+     * 
+     * @param level
+     */
+    public void setLogLevelOverride(LogLevel level);
 }

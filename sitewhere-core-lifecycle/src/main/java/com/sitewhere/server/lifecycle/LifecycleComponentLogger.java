@@ -36,6 +36,9 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
     /** Lifecycle component for logger */
     private ILifecycleComponent lifecycleComponent;
 
+    /** Log level override */
+    private LogLevel logLevelOverride = null;
+
     public LifecycleComponentLogger(ILifecycleComponent lifecycleComponent) {
 	this.lifecycleComponent = lifecycleComponent;
 	this.logger = LogFactory.getLog(lifecycleComponent.getClass());
@@ -49,6 +52,13 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      * @param e
      */
     protected void log(LogLevel level, Object message, Throwable e) {
+	// Elevate log level if requested.
+	if ((getLogLevelOverride() != null) && (level.getLevel() < getLogLevelOverride().getLevel())) {
+	    level = getLogLevelOverride();
+	    message = "[Elevated] " + message;
+	}
+	forwardToLogImpl(level, message, e);
+
 	MicroserviceLogMessage log = new MicroserviceLogMessage();
 	IMicroservice<?> microservice = getLifecycleComponent().getMicroservice();
 	if (microservice == null) {
@@ -82,12 +92,71 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
 	}
     }
 
+    /**
+     * Forward log to underlying implementation.
+     * 
+     * @param level
+     * @param message
+     * @param t
+     */
+    protected void forwardToLogImpl(LogLevel level, Object message, Throwable t) {
+	switch (level) {
+	case Trace: {
+	    if (t != null) {
+		getLogger().trace(message, t);
+	    } else {
+		getLogger().trace(message);
+	    }
+	    break;
+	}
+	case Debug: {
+	    if (t != null) {
+		getLogger().debug(message, t);
+	    } else {
+		getLogger().debug(message);
+	    }
+	    break;
+	}
+	case Information: {
+	    if (t != null) {
+		getLogger().info(message, t);
+	    } else {
+		getLogger().info(message);
+	    }
+	    break;
+	}
+	case Warning: {
+	    if (t != null) {
+		getLogger().warn(message, t);
+	    } else {
+		getLogger().warn(message);
+	    }
+	    break;
+	}
+	case Error: {
+	    if (t != null) {
+		getLogger().error(message, t);
+	    } else {
+		getLogger().error(message);
+	    }
+	    break;
+	}
+	case Fatal: {
+	    if (t != null) {
+		getLogger().fatal(message, t);
+	    } else {
+		getLogger().fatal(message);
+	    }
+	    break;
+	}
+	}
+    }
+
     /*
      * @see org.apache.commons.logging.Log#debug(java.lang.Object)
      */
     @Override
     public void debug(Object message) {
-	getLogger().debug(message);
 	log(LogLevel.Debug, message, null);
     }
 
@@ -97,7 +166,6 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      */
     @Override
     public void debug(Object message, Throwable t) {
-	getLogger().debug(message, t);
 	log(LogLevel.Debug, message, t);
     }
 
@@ -106,7 +174,6 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      */
     @Override
     public void error(Object message) {
-	getLogger().error(message);
 	log(LogLevel.Error, message, null);
     }
 
@@ -116,7 +183,6 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      */
     @Override
     public void error(Object message, Throwable t) {
-	getLogger().error(message, t);
 	log(LogLevel.Error, message, t);
     }
 
@@ -125,7 +191,6 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      */
     @Override
     public void fatal(Object message) {
-	getLogger().fatal(message);
 	log(LogLevel.Fatal, message, null);
     }
 
@@ -135,7 +200,6 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      */
     @Override
     public void fatal(Object message, Throwable t) {
-	getLogger().fatal(message, t);
 	log(LogLevel.Fatal, message, t);
     }
 
@@ -144,7 +208,6 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      */
     @Override
     public void info(Object message) {
-	getLogger().info(message);
 	log(LogLevel.Information, message, null);
     }
 
@@ -154,7 +217,6 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      */
     @Override
     public void info(Object message, Throwable t) {
-	getLogger().info(message, t);
 	log(LogLevel.Information, message, t);
     }
 
@@ -211,7 +273,6 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      */
     @Override
     public void trace(Object message) {
-	getLogger().trace(message);
 	log(LogLevel.Trace, message, null);
     }
 
@@ -221,7 +282,6 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      */
     @Override
     public void trace(Object message, Throwable t) {
-	getLogger().trace(message, t);
 	log(LogLevel.Trace, message, t);
     }
 
@@ -230,7 +290,6 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      */
     @Override
     public void warn(Object message) {
-	getLogger().warn(message);
 	log(LogLevel.Warning, message, null);
     }
 
@@ -240,7 +299,6 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      */
     @Override
     public void warn(Object message, Throwable t) {
-	getLogger().warn(message, t);
 	log(LogLevel.Warning, message, t);
     }
 
@@ -251,6 +309,19 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
     @Override
     public ILifecycleComponent getLifecycleComponent() {
 	return lifecycleComponent;
+    }
+
+    public LogLevel getLogLevelOverride() {
+	return logLevelOverride;
+    }
+
+    /*
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponentLogger#
+     * setLogLevelOverride(com.sitewhere.spi.microservice.logging.LogLevel)
+     */
+    @Override
+    public void setLogLevelOverride(LogLevel logLevelOverride) {
+	this.logLevelOverride = logLevelOverride;
     }
 
     public void setLifecycleComponent(ILifecycleComponent lifecycleComponent) {

@@ -13,5 +13,25 @@ package com.sitewhere.spi.microservice.logging;
  * @author Derek
  */
 public enum LogLevel {
-    Trace, Debug, Information, Warning, Error, Fatal;
+    Trace(0), Debug(1), Information(2), Warning(3), Error(4), Fatal(5);
+
+    /** Path */
+    private int level;
+
+    private LogLevel(int level) {
+	this.level = level;
+    }
+
+    public static LogLevel getByLevel(int level) {
+	for (LogLevel value : LogLevel.values()) {
+	    if (value.getLevel() == level) {
+		return value;
+	    }
+	}
+	return null;
+    }
+
+    public int getLevel() {
+	return level;
+    }
 }
