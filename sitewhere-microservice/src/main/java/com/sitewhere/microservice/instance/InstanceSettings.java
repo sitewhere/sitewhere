@@ -18,6 +18,10 @@ import com.sitewhere.spi.microservice.instance.IInstanceSettings;
  */
 public class InstanceSettings implements IInstanceSettings {
 
+    /** Product id */
+    @Value("${sitewhere.product.id:sitewhere}")
+    private String productId;
+
     /** Instance id service belongs to */
     @Value("${sitewhere.instance.id:default}")
     private String instanceId;
@@ -33,10 +37,6 @@ public class InstanceSettings implements IInstanceSettings {
     /** Zookeeper port info for microservices */
     @Value("${sitewhere.zookeeper.port:2181}")
     private int zookeeperPort;
-
-    /** Zookeeper root path */
-    @Value("${sitewhere.zookeeper.root.path:sitewhere}")
-    private String zookeeperRootPath;
 
     /** Kafka bootstrap services configuration for microservices */
     @Value("${sitewhere.kafka.bootstrap.servers:kafka:9092}")
@@ -57,6 +57,18 @@ public class InstanceSettings implements IInstanceSettings {
     /** Tracer server information */
     @Value("${sitewhere.tracer.server:jaeger}")
     private String tracerServer;
+
+    /*
+     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#getProductId()
+     */
+    @Override
+    public String getProductId() {
+	return productId;
+    }
+
+    public void setProductId(String productId) {
+	this.productId = productId;
+    }
 
     /*
      * (non-Javadoc)
@@ -116,19 +128,6 @@ public class InstanceSettings implements IInstanceSettings {
 
     public void setZookeeperPort(int zookeeperPort) {
 	this.zookeeperPort = zookeeperPort;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
-     * getZookeeperRootPath()
-     */
-    @Override
-    public String getZookeeperRootPath() {
-	return zookeeperRootPath;
-    }
-
-    public void setZookeeperRootPath(String zookeeperRootPath) {
-	this.zookeeperRootPath = zookeeperRootPath;
     }
 
     /*

@@ -23,9 +23,6 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     /** Separator used to partition topic name */
     protected static final String SEPARATOR = ".";
 
-    /** Base name prepended to all SiteWhere topics */
-    protected static final String BASE_NAME = "sitewhere";
-
     /** Global topic indicator */
     protected static final String GLOBAL_INDICATOR = "global";
 
@@ -76,7 +73,7 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
      */
     @Override
     public String getInstancePrefix() {
-	return BASE_NAME + SEPARATOR + getInstanceSettings().getInstanceId();
+	return getInstanceSettings().getProductId() + SEPARATOR + getInstanceSettings().getInstanceId();
     }
 
     /*

@@ -15,6 +15,13 @@ package com.sitewhere.spi.microservice.instance;
 public interface IInstanceSettings {
 
     /**
+     * Get product identifier.
+     * 
+     * @return
+     */
+    public String getProductId();
+
+    /**
      * Get unique id for instance.
      * 
      * @return
@@ -41,13 +48,6 @@ public interface IInstanceSettings {
      * @return
      */
     public int getZookeeperPort();
-
-    /**
-     * Get Zookeeper root path.
-     * 
-     * @return
-     */
-    public String getZookeeperRootPath();
 
     /**
      * Get Kafka bootstrap servers configuration string.

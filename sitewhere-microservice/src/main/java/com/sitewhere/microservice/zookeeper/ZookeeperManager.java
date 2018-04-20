@@ -68,7 +68,7 @@ public class ZookeeperManager extends LifecycleComponent implements IZookeeperMa
     protected void connect() throws SiteWhereException {
 	String zk = getInstanceSettings().getZookeeperHost() + ":" + getInstanceSettings().getZookeeperPort();
 	RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
-	this.curator = CuratorFrameworkFactory.builder().namespace(getInstanceSettings().getZookeeperRootPath())
+	this.curator = CuratorFrameworkFactory.builder().namespace(getInstanceSettings().getProductId())
 		.connectString(zk).retryPolicy(retryPolicy).build();
 	getCurator().start();
 	try {
