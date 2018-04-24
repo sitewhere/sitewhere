@@ -7,8 +7,6 @@
  */
 package com.sitewhere.cassandra;
 
-import java.util.Date;
-
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.HostDistance;
 import com.datastax.driver.core.PoolingOptions;
@@ -56,11 +54,17 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
     /** Prepared statement for inserting a device location by asset */
     private PreparedStatement insertDeviceEventByAsset;
 
+    /** Prepared statement for selecting device events by type for an assignment */
+    private PreparedStatement selectEventsByAssignmentForType;
+
     /** Contact points parameter */
     private ILifecycleComponentParameter<String> contactPoints;
 
     /** Keyspace parameter */
     private ILifecycleComponentParameter<String> keyspace;
+
+    /** Bucket length in milliseconds */
+    private long bucketLengthInMs = 60 * 60 * 1000;
 
     public CassandraClient(CassandraConfiguration configuration) {
 	this.configuration = configuration;
@@ -170,6 +174,8 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
 		+ ".events_by_area (deviceId, bucket, eventId, alternateId, eventType, assignmentId, areaId, assetId, eventDate, receivedDate, location, measurements, alert) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	this.insertDeviceEventByAsset = getSession().prepare("insert into " + getKeyspace().getValue()
 		+ ".events_by_asset (deviceId, bucket, eventId, alternateId, eventType, assignmentId, areaId, assetId, eventDate, receivedDate, location, measurements, alert) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	this.selectEventsByAssignmentForType = getSession().prepare("select * from " + getKeyspace().getValue()
+		+ ".events_by_assignment where assignmentId=? and eventType=? and bucket=? and eventDate < ?");
     }
 
     /**
@@ -189,11 +195,11 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
     /**
      * Get value that allows events to be grouped into buckets based on date.
      * 
-     * @param date
+     * @param dateInMs
      * @return
      */
-    public int getBucketValue(Date date) {
-	return (int) (date.getTime() / (60 * 60 * 1000));
+    public int getBucketValue(long dateInMs) {
+	return (int) (dateInMs / getBucketLengthInMs());
     }
 
     /*
@@ -228,6 +234,14 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
 
     public void setKeyspace(ILifecycleComponentParameter<String> keyspace) {
 	this.keyspace = keyspace;
+    }
+
+    public long getBucketLengthInMs() {
+	return bucketLengthInMs;
+    }
+
+    public void setBucketLengthInMs(long bucketLengthInMs) {
+	this.bucketLengthInMs = bucketLengthInMs;
     }
 
     public Cluster getCluster() {
@@ -284,5 +298,13 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
 
     public void setInsertDeviceEventByAsset(PreparedStatement insertDeviceEventByAsset) {
 	this.insertDeviceEventByAsset = insertDeviceEventByAsset;
+    }
+
+    public PreparedStatement getSelectEventsByAssignmentForType() {
+	return selectEventsByAssignmentForType;
+    }
+
+    public void setSelectEventsByAssignmentForType(PreparedStatement selectEventsByAssignmentForType) {
+	this.selectEventsByAssignmentForType = selectEventsByAssignmentForType;
     }
 }

@@ -311,11 +311,14 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletResponse response) throws SiteWhereException {
-	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
-	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
-	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
-	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return getDeviceEventManagement().listDeviceEvents(assignment.getId(), criteria);
+	// Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
+	// Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
+	// DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page,
+	// pageSize, parsedStartDate, parsedEndDate);
+	// IDeviceAssignment assignment = assertDeviceAssignment(token);
+	// return getDeviceEventManagement().listDeviceEvents(assignment.getId(),
+	// criteria);
+	return null;
     }
 
     /**
@@ -339,7 +342,8 @@ public class Assignments extends RestControllerBase {
 	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return getDeviceEventManagement().listDeviceMeasurementsForAssignment(assignment.getId(), criteria);
+	return getDeviceEventManagement()
+		.listDeviceMeasurementsForAssignments(Collections.singletonList(assignment.getId()), criteria);
     }
 
     /**
@@ -365,7 +369,7 @@ public class Assignments extends RestControllerBase {
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	ISearchResults<IDeviceMeasurements> measurements = getDeviceEventManagement()
-		.listDeviceMeasurementsForAssignment(assignment.getId(), criteria);
+		.listDeviceMeasurementsForAssignments(Collections.singletonList(assignment.getId()), criteria);
 	ChartBuilder builder = new ChartBuilder();
 	return builder.process(measurements.getResults(), measurementIds);
     }
@@ -411,7 +415,8 @@ public class Assignments extends RestControllerBase {
 	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return getDeviceEventManagement().listDeviceLocationsForAssignment(assignment.getId(), criteria);
+	return getDeviceEventManagement()
+		.listDeviceLocationsForAssignments(Collections.singletonList(assignment.getId()), criteria);
     }
 
     /**
@@ -454,7 +459,8 @@ public class Assignments extends RestControllerBase {
 	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return getDeviceEventManagement().listDeviceAlertsForAssignment(assignment.getId(), criteria);
+	return getDeviceEventManagement().listDeviceAlertsForAssignments(Collections.singletonList(assignment.getId()),
+		criteria);
     }
 
     /**
@@ -721,7 +727,7 @@ public class Assignments extends RestControllerBase {
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	ISearchResults<IDeviceCommandInvocation> matches = getDeviceEventManagement()
-		.listDeviceCommandInvocationsForAssignment(assignment.getId(), criteria);
+		.listDeviceCommandInvocationsForAssignments(Collections.singletonList(assignment.getId()), criteria);
 	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(getDeviceManagement());
 	helper.setIncludeCommand(includeCommand);
 	List<IDeviceCommandInvocation> converted = new ArrayList<IDeviceCommandInvocation>();
@@ -771,7 +777,8 @@ public class Assignments extends RestControllerBase {
 	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return getDeviceEventManagement().listDeviceStateChangesForAssignment(assignment.getId(), criteria);
+	return getDeviceEventManagement()
+		.listDeviceStateChangesForAssignments(Collections.singletonList(assignment.getId()), criteria);
     }
 
     /**
@@ -814,7 +821,8 @@ public class Assignments extends RestControllerBase {
 	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return getDeviceEventManagement().listDeviceCommandResponsesForAssignment(assignment.getId(), criteria);
+	return getDeviceEventManagement()
+		.listDeviceCommandResponsesForAssignments(Collections.singletonList(assignment.getId()), criteria);
     }
 
     /**

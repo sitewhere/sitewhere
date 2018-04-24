@@ -7,6 +7,7 @@
  */
 package com.sitewhere.event.persistence.cassandra;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,6 +16,7 @@ import org.reactivestreams.Processor;
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
+import com.datastax.driver.core.Row;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -30,6 +32,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -118,17 +121,6 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceEvents(java.
-     * util.UUID, com.sitewhere.spi.search.IDateRangeSearchCriteria)
-     */
-    @Override
-    public ISearchResults<IDeviceEvent> listDeviceEvents(UUID deviceAssignmentId, IDateRangeSearchCriteria criteria)
-	    throws SiteWhereException {
-	throw new SiteWhereException("Not implemented.");
-    }
-
-    /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
      * streamDeviceAssignmentCreateEvents()
      */
@@ -153,11 +145,11 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceMeasurementsForAssignment(java.util.UUID,
+     * listDeviceMeasurementsForAssignments(java.util.List,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForAssignment(UUID assignmentId,
+    public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForAssignments(List<UUID> assignmentIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented.");
     }
@@ -193,33 +185,53 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	// Build insert for event by assignment.
 	BoundStatement eventByAssn = getClient().getInsertDeviceEventByAssignment().bind();
 	CassandraDeviceLocation.bindFields(getClient(), eventByAssn, location);
-	eventByAssn.setInt("bucket", getClient().getBucketValue(location.getEventDate()));
+	eventByAssn.setInt("bucket", getClient().getBucketValue(location.getEventDate().getTime()));
 	process(eventByAssn, location);
 
 	// Build insert for event by area.
-	BoundStatement eventByArea = getClient().getInsertDeviceEventByArea().bind();
-	CassandraDeviceLocation.bindFields(getClient(), eventByArea, location);
-	eventByArea.setInt("bucket", getClient().getBucketValue(location.getEventDate()));
-	process(eventByArea, location);
+	if (assignment.getAreaId() != null) {
+	    BoundStatement eventByArea = getClient().getInsertDeviceEventByArea().bind();
+	    CassandraDeviceLocation.bindFields(getClient(), eventByArea, location);
+	    eventByArea.setInt("bucket", getClient().getBucketValue(location.getEventDate().getTime()));
+	    process(eventByArea, location);
+	}
 
 	// Build insert for event by asset.
-	BoundStatement eventByAsset = getClient().getInsertDeviceEventByAsset().bind();
-	CassandraDeviceLocation.bindFields(getClient(), eventByAsset, location);
-	eventByAsset.setInt("bucket", getClient().getBucketValue(location.getEventDate()));
-	process(eventByAsset, location);
+	if (assignment.getAssetId() != null) {
+	    BoundStatement eventByAsset = getClient().getInsertDeviceEventByAsset().bind();
+	    CassandraDeviceLocation.bindFields(getClient(), eventByAsset, location);
+	    eventByAsset.setInt("bucket", getClient().getBucketValue(location.getEventDate().getTime()));
+	    process(eventByAsset, location);
+	}
 
 	return location;
     }
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceLocationsForAssignment(java.util.UUID,
+     * listDeviceLocationsForAssignments(java.util.List,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceLocation> listDeviceLocationsForAssignment(UUID assignmentId,
+    public ISearchResults<IDeviceLocation> listDeviceLocationsForAssignments(List<UUID> assignmentIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	throw new SiteWhereException("Not implemented.");
+	List<ResultSetFuture> futures = new ArrayList<>();
+	List<Integer> buckets = getBucketsForDateRange(criteria);
+	for (int bucket : buckets) {
+	    BoundStatement query = getClient().getSelectEventsByAssignmentForType().bind();
+	    query.setUUID("assignmentId", null);
+	    query.setByte("eventType", CassandraDeviceEvent.getIndicatorForEventType(DeviceEventType.Location));
+	    query.setInt("bucket", bucket);
+	    ResultSetFuture resultSetFuture = getClient().getSession().executeAsync(query);
+	    futures.add(resultSetFuture);
+	}
+	List<String> results = new ArrayList<>();
+	for (ResultSetFuture future : futures) {
+	    ResultSet rows = future.getUninterruptibly();
+	    Row row = rows.one();
+	    results.add(row.getString("name"));
+	}
+	return null;
     }
 
     /*
@@ -248,11 +260,11 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceAlertsForAssignment(java.util.UUID,
+     * listDeviceAlertsForAssignments(java.util.List,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceAlert> listDeviceAlertsForAssignment(UUID assignmentId,
+    public ISearchResults<IDeviceAlert> listDeviceAlertsForAssignments(List<UUID> assignmentIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented.");
     }
@@ -315,11 +327,11 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandInvocationsForAssignment(java.util.UUID,
+     * listDeviceCommandInvocationsForAssignments(java.util.List,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForAssignment(UUID assignmentId,
+    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForAssignments(List<UUID> assignmentIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented.");
     }
@@ -358,11 +370,11 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandResponsesForAssignment(java.util.UUID,
+     * listDeviceCommandResponsesForAssignments(java.util.List,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForAssignment(UUID assignmentId,
+    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForAssignments(List<UUID> assignmentIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented.");
     }
@@ -392,11 +404,11 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceStateChangesForAssignment(java.util.UUID,
+     * listDeviceStateChangesForAssignments(java.util.List,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceStateChange> listDeviceStateChangesForAssignment(UUID assignmentId,
+    public ISearchResults<IDeviceStateChange> listDeviceStateChangesForAssignments(List<UUID> assignmentIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented.");
     }
@@ -439,6 +451,25 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 		getLogger().error("Failed to persist Cassandra event: " + event.getId(), t);
 	    }
 	}, MoreExecutors.directExecutor());
+    }
+
+    /**
+     * Find the list of buckets required to cover a given date range.
+     * 
+     * @param client
+     * @param criteria
+     * @return
+     */
+    protected List<Integer> getBucketsForDateRange(IDateRangeSearchCriteria criteria) {
+	long bucket = getClient().getBucketLengthInMs();
+	long current = criteria.getEndDate() != null ? criteria.getEndDate().getTime() : System.currentTimeMillis();
+	long start = criteria.getStartDate() != null ? criteria.getStartDate().getTime() : current - 1;
+	List<Integer> buckets = new ArrayList<>();
+	while (current >= start) {
+	    buckets.add(getClient().getBucketValue(current));
+	    current -= bucket;
+	}
+	return buckets;
     }
 
     /**

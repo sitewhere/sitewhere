@@ -106,9 +106,9 @@ public class InfluxDbDeviceEvent {
     }
 
     /**
-     * Search for of events of a given type associated with an assignment.
+     * Search for of events of a given type associated with one or more assignments.
      * 
-     * @param assignmentId
+     * @param assignmentIds
      * @param type
      * @param criteria
      * @param client
@@ -116,15 +116,15 @@ public class InfluxDbDeviceEvent {
      * @return
      * @throws SiteWhereException
      */
-    public static <T> SearchResults<T> searchByAssignment(UUID assignmentId, DeviceEventType type,
+    public static <T> SearchResults<T> searchByAssignments(List<UUID> assignmentIds, DeviceEventType type,
 	    ISearchCriteria criteria, InfluxDbClient client, Class<T> clazz) throws SiteWhereException {
-	Query query = InfluxDbDeviceEvent.queryEventsOfTypeForAssignment(type, assignmentId, criteria,
+	Query query = InfluxDbDeviceEvent.queryEventsOfTypeForAssignments(type, assignmentIds, criteria,
 		client.getDatabase().getValue());
 	LOGGER.debug("Query: " + query.getCommand());
 	QueryResult response = client.getInflux().query(query, TimeUnit.MILLISECONDS);
 	List<T> results = InfluxDbDeviceEvent.eventsOfType(response, clazz);
 
-	Query countQuery = InfluxDbDeviceEvent.queryEventsOfTypeForAssignmentCount(type, assignmentId, criteria,
+	Query countQuery = InfluxDbDeviceEvent.queryEventsOfTypeForAssignmentsCount(type, assignmentIds, criteria,
 		client.getDatabase().getValue());
 	LOGGER.debug("Count: " + countQuery.getCommand());
 	QueryResult countResponse = client.getInflux().query(countQuery);
@@ -160,40 +160,39 @@ public class InfluxDbDeviceEvent {
     }
 
     /**
-     * Get a query for events of a given type associated with an assignment and that
-     * meet the search criteria.
+     * Get a query for events of a given type associated with one or more
+     * assignments and that meet the search criteria.
      * 
      * @param type
-     * @param assignmentId
+     * @param assignmentIds
      * @param criteria
      * @param database
      * @return
      * @throws SiteWhereException
      */
-    protected static Query queryEventsOfTypeForAssignment(DeviceEventType type, UUID assignmentId,
+    protected static Query queryEventsOfTypeForAssignments(DeviceEventType type, List<UUID> assignmentIds,
 	    ISearchCriteria criteria, String database) throws SiteWhereException {
 	return new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where type='" + type.name()
-		+ "' and " + InfluxDbDeviceEvent.EVENT_ASSIGNMENT + "='" + assignmentId + "'"
-		+ buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_ASSIGNMENT + " ORDER BY time DESC"
-		+ buildPagingCriteria(criteria), database);
+		+ "' and " + buildAssignmentsClause(assignmentIds) + buildDateRangeCriteria(criteria) + " GROUP BY "
+		+ EVENT_ASSIGNMENT + " ORDER BY time DESC" + buildPagingCriteria(criteria), database);
     }
 
     /**
-     * Get a query for counting events of a given type associated with an assignment
-     * and that meet the search criteria.
+     * Get a query for counting events of a given type associated with one or more
+     * assignments and that meet the search criteria.
      * 
      * @param type
-     * @param assignmentId
+     * @param assignmentIds
      * @param criteria
      * @param database
      * @return
      * @throws SiteWhereException
      */
-    protected static Query queryEventsOfTypeForAssignmentCount(DeviceEventType type, UUID assignmentId,
+    protected static Query queryEventsOfTypeForAssignmentsCount(DeviceEventType type, List<UUID> assignmentIds,
 	    ISearchCriteria criteria, String database) throws SiteWhereException {
 	return new Query("SELECT count(" + EVENT_ID + ") FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS
-		+ " where type='" + type.name() + "' and " + InfluxDbDeviceEvent.EVENT_ASSIGNMENT + "='" + assignmentId
-		+ "'" + buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_ASSIGNMENT, database);
+		+ " where type='" + type.name() + "' and " + buildAssignmentsClause(assignmentIds)
+		+ buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_ASSIGNMENT, database);
     }
 
     /**
@@ -541,6 +540,20 @@ public class InfluxDbDeviceEvent {
 	for (String key : event.getMetadata().keySet()) {
 	    builder.addField(EVENT_METADATA_PREFIX + key, event.getMetadata(key));
 	}
+    }
+
+    /**
+     * Get clause that includes assignments list.
+     * 
+     * @param areas
+     * @return
+     */
+    protected static String buildAssignmentsClause(List<UUID> assignmentIds) {
+	List<String> clauses = new ArrayList<>();
+	for (UUID assignmentId : assignmentIds) {
+	    clauses.add(EVENT_ASSIGNMENT + "='" + assignmentId.toString() + "'");
+	}
+	return String.join(" or ", clauses);
     }
 
     /**

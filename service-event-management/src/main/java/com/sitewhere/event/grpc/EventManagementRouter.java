@@ -43,32 +43,30 @@ import com.sitewhere.grpc.service.GGetStreamDataForAssignmentRequest;
 import com.sitewhere.grpc.service.GGetStreamDataForAssignmentResponse;
 import com.sitewhere.grpc.service.GListAlertsForAreasRequest;
 import com.sitewhere.grpc.service.GListAlertsForAreasResponse;
-import com.sitewhere.grpc.service.GListAlertsForAssignmentRequest;
-import com.sitewhere.grpc.service.GListAlertsForAssignmentResponse;
+import com.sitewhere.grpc.service.GListAlertsForAssignmentsRequest;
+import com.sitewhere.grpc.service.GListAlertsForAssignmentsResponse;
 import com.sitewhere.grpc.service.GListCommandInvocationsForAreasRequest;
 import com.sitewhere.grpc.service.GListCommandInvocationsForAreasResponse;
-import com.sitewhere.grpc.service.GListCommandInvocationsForAssignmentRequest;
-import com.sitewhere.grpc.service.GListCommandInvocationsForAssignmentResponse;
+import com.sitewhere.grpc.service.GListCommandInvocationsForAssignmentsRequest;
+import com.sitewhere.grpc.service.GListCommandInvocationsForAssignmentsResponse;
 import com.sitewhere.grpc.service.GListCommandResponsesForAreasRequest;
 import com.sitewhere.grpc.service.GListCommandResponsesForAreasResponse;
-import com.sitewhere.grpc.service.GListCommandResponsesForAssignmentRequest;
-import com.sitewhere.grpc.service.GListCommandResponsesForAssignmentResponse;
+import com.sitewhere.grpc.service.GListCommandResponsesForAssignmentsRequest;
+import com.sitewhere.grpc.service.GListCommandResponsesForAssignmentsResponse;
 import com.sitewhere.grpc.service.GListCommandResponsesForInvocationRequest;
 import com.sitewhere.grpc.service.GListCommandResponsesForInvocationResponse;
-import com.sitewhere.grpc.service.GListDeviceEventsRequest;
-import com.sitewhere.grpc.service.GListDeviceEventsResponse;
 import com.sitewhere.grpc.service.GListLocationsForAreasRequest;
 import com.sitewhere.grpc.service.GListLocationsForAreasResponse;
-import com.sitewhere.grpc.service.GListLocationsForAssignmentRequest;
-import com.sitewhere.grpc.service.GListLocationsForAssignmentResponse;
+import com.sitewhere.grpc.service.GListLocationsForAssignmentsRequest;
+import com.sitewhere.grpc.service.GListLocationsForAssignmentsResponse;
 import com.sitewhere.grpc.service.GListMeasurementsForAreasRequest;
 import com.sitewhere.grpc.service.GListMeasurementsForAreasResponse;
-import com.sitewhere.grpc.service.GListMeasurementsForAssignmentRequest;
-import com.sitewhere.grpc.service.GListMeasurementsForAssignmentResponse;
+import com.sitewhere.grpc.service.GListMeasurementsForAssignmentsRequest;
+import com.sitewhere.grpc.service.GListMeasurementsForAssignmentsResponse;
 import com.sitewhere.grpc.service.GListStateChangesForAreasRequest;
 import com.sitewhere.grpc.service.GListStateChangesForAreasResponse;
-import com.sitewhere.grpc.service.GListStateChangesForAssignmentRequest;
-import com.sitewhere.grpc.service.GListStateChangesForAssignmentResponse;
+import com.sitewhere.grpc.service.GListStateChangesForAssignmentsRequest;
+import com.sitewhere.grpc.service.GListStateChangesForAssignmentsResponse;
 import com.sitewhere.grpc.service.GListStreamDataForAssignmentRequest;
 import com.sitewhere.grpc.service.GListStreamDataForAssignmentResponse;
 import com.sitewhere.microservice.grpc.TenantTokenServerInterceptor;
@@ -166,22 +164,6 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listDeviceEvents(com.sitewhere.grpc.service
-     * .GListDeviceEventsRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void listDeviceEvents(GListDeviceEventsRequest request,
-	    StreamObserver<GListDeviceEventsResponse> responseObserver) {
-	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listDeviceEvents(request, responseObserver);
-	}
-    }
-
-    /*
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
      * DeviceEventManagementImplBase#streamDeviceAssignmentEventCreateRequests(io.
      * grpc.stub.StreamObserver)
@@ -214,19 +196,17 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listMeasurementsForAssignment(com.sitewhere
-     * .grpc.service.GListMeasurementsForAssignmentRequest,
+     * DeviceEventManagementImplBase#listMeasurementsForAssignments(com.sitewhere.
+     * grpc.service.GListMeasurementsForAssignmentsRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listMeasurementsForAssignment(GListMeasurementsForAssignmentRequest request,
-	    StreamObserver<GListMeasurementsForAssignmentResponse> responseObserver) {
+    public void listMeasurementsForAssignments(GListMeasurementsForAssignmentsRequest request,
+	    StreamObserver<GListMeasurementsForAssignmentsResponse> responseObserver) {
 	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
 	if (engine != null) {
-	    engine.listMeasurementsForAssignment(request, responseObserver);
+	    engine.listMeasurementsForAssignments(request, responseObserver);
 	}
     }
 
@@ -261,18 +241,16 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listLocationsForAssignment(com.sitewhere.
-     * grpc.service.GListLocationsForAssignmentRequest, io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#listLocationsForAssignments(com.sitewhere.grpc.
+     * service.GListLocationsForAssignmentsRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listLocationsForAssignment(GListLocationsForAssignmentRequest request,
-	    StreamObserver<GListLocationsForAssignmentResponse> responseObserver) {
+    public void listLocationsForAssignments(GListLocationsForAssignmentsRequest request,
+	    StreamObserver<GListLocationsForAssignmentsResponse> responseObserver) {
 	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
 	if (engine != null) {
-	    engine.listLocationsForAssignment(request, responseObserver);
+	    engine.listLocationsForAssignments(request, responseObserver);
 	}
     }
 
@@ -307,18 +285,16 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listAlertsForAssignment(com.sitewhere.grpc.
-     * service.GListAlertsForAssignmentRequest, io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#listAlertsForAssignments(com.sitewhere.grpc.
+     * service.GListAlertsForAssignmentsRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listAlertsForAssignment(GListAlertsForAssignmentRequest request,
-	    StreamObserver<GListAlertsForAssignmentResponse> responseObserver) {
+    public void listAlertsForAssignments(GListAlertsForAssignmentsRequest request,
+	    StreamObserver<GListAlertsForAssignmentsResponse> responseObserver) {
 	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
 	if (engine != null) {
-	    engine.listAlertsForAssignment(request, responseObserver);
+	    engine.listAlertsForAssignments(request, responseObserver);
 	}
     }
 
@@ -403,19 +379,17 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listCommandInvocationsForAssignment(com.
-     * sitewhere.grpc.service.GListCommandInvocationsForAssignmentRequest,
+     * DeviceEventManagementImplBase#listCommandInvocationsForAssignments(com.
+     * sitewhere.grpc.service.GListCommandInvocationsForAssignmentsRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listCommandInvocationsForAssignment(GListCommandInvocationsForAssignmentRequest request,
-	    StreamObserver<GListCommandInvocationsForAssignmentResponse> responseObserver) {
+    public void listCommandInvocationsForAssignments(GListCommandInvocationsForAssignmentsRequest request,
+	    StreamObserver<GListCommandInvocationsForAssignmentsResponse> responseObserver) {
 	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
 	if (engine != null) {
-	    engine.listCommandInvocationsForAssignment(request, responseObserver);
+	    engine.listCommandInvocationsForAssignments(request, responseObserver);
 	}
     }
 
@@ -469,19 +443,17 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listCommandResponsesForAssignment(com.
-     * sitewhere.grpc.service.GListCommandResponsesForAssignmentRequest,
+     * DeviceEventManagementImplBase#listCommandResponsesForAssignments(com.
+     * sitewhere.grpc.service.GListCommandResponsesForAssignmentsRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listCommandResponsesForAssignment(GListCommandResponsesForAssignmentRequest request,
-	    StreamObserver<GListCommandResponsesForAssignmentResponse> responseObserver) {
+    public void listCommandResponsesForAssignments(GListCommandResponsesForAssignmentsRequest request,
+	    StreamObserver<GListCommandResponsesForAssignmentsResponse> responseObserver) {
 	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
 	if (engine != null) {
-	    engine.listCommandResponsesForAssignment(request, responseObserver);
+	    engine.listCommandResponsesForAssignments(request, responseObserver);
 	}
     }
 
@@ -517,19 +489,17 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listStateChangesForAssignment(com.sitewhere
-     * .grpc.service.GListStateChangesForAssignmentRequest,
+     * DeviceEventManagementImplBase#listStateChangesForAssignments(com.sitewhere.
+     * grpc.service.GListStateChangesForAssignmentsRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listStateChangesForAssignment(GListStateChangesForAssignmentRequest request,
-	    StreamObserver<GListStateChangesForAssignmentResponse> responseObserver) {
+    public void listStateChangesForAssignments(GListStateChangesForAssignmentsRequest request,
+	    StreamObserver<GListStateChangesForAssignmentsResponse> responseObserver) {
 	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
 	if (engine != null) {
-	    engine.listStateChangesForAssignment(request, responseObserver);
+	    engine.listStateChangesForAssignments(request, responseObserver);
 	}
     }
 
