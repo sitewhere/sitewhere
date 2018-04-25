@@ -8,12 +8,16 @@
 package com.sitewhere.event.persistence.cassandra;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import org.reactivestreams.Processor;
 
 import com.datastax.driver.core.BoundStatement;
+import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Row;
@@ -27,6 +31,8 @@ import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.rest.model.search.Pager;
+import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -215,23 +221,22 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     @Override
     public ISearchResults<IDeviceLocation> listDeviceLocationsForAssignments(List<UUID> assignmentIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	List<ResultSetFuture> futures = new ArrayList<>();
+	Pager<IDeviceLocation> pager = new Pager<>(criteria);
 	List<Integer> buckets = getBucketsForDateRange(criteria);
 	for (int bucket : buckets) {
-	    BoundStatement query = getClient().getSelectEventsByAssignmentForType().bind();
-	    query.setUUID("assignmentId", null);
-	    query.setByte("eventType", CassandraDeviceEvent.getIndicatorForEventType(DeviceEventType.Location));
-	    query.setInt("bucket", bucket);
-	    ResultSetFuture resultSetFuture = getClient().getSession().executeAsync(query);
-	    futures.add(resultSetFuture);
+	    List<ResultSet> perBucket = listResultsForBucket(getClient().getSelectEventsByAssignmentForType(),
+		    "assignmentId", assignmentIds, criteria, DeviceEventType.Location, bucket);
+	    List<IDeviceLocation> bucketEvents = new ArrayList<>();
+	    for (ResultSet perKey : perBucket) {
+		for (Row row : perKey) {
+		    DeviceLocation location = new DeviceLocation();
+		    CassandraDeviceLocation.loadFields(getClient(), location, row);
+		    bucketEvents.add(location);
+		}
+	    }
+	    addSortedEventsToPager(pager, bucketEvents, bucket);
 	}
-	List<String> results = new ArrayList<>();
-	for (ResultSetFuture future : futures) {
-	    ResultSet rows = future.getUninterruptibly();
-	    Row row = rows.one();
-	    results.add(row.getString("name"));
-	}
-	return null;
+	return new SearchResults<IDeviceLocation>(pager.getResults(), pager.getTotal());
     }
 
     /*
@@ -242,7 +247,22 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     @Override
     public ISearchResults<IDeviceLocation> listDeviceLocationsForAreas(List<UUID> areaIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	throw new SiteWhereException("Not implemented.");
+	Pager<IDeviceLocation> pager = new Pager<>(criteria);
+	List<Integer> buckets = getBucketsForDateRange(criteria);
+	for (int bucket : buckets) {
+	    List<ResultSet> perBucket = listResultsForBucket(getClient().getSelectEventsByAreaForType(), "areaId",
+		    areaIds, criteria, DeviceEventType.Location, bucket);
+	    List<IDeviceLocation> bucketEvents = new ArrayList<>();
+	    for (ResultSet perKey : perBucket) {
+		for (Row row : perKey) {
+		    DeviceLocation location = new DeviceLocation();
+		    CassandraDeviceLocation.loadFields(getClient(), location, row);
+		    bucketEvents.add(location);
+		}
+	    }
+	    addSortedEventsToPager(pager, bucketEvents, bucket);
+	}
+	return new SearchResults<IDeviceLocation>(pager.getResults(), pager.getTotal());
     }
 
     /*
@@ -464,12 +484,65 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	long bucket = getClient().getBucketLengthInMs();
 	long current = criteria.getEndDate() != null ? criteria.getEndDate().getTime() : System.currentTimeMillis();
 	long start = criteria.getStartDate() != null ? criteria.getStartDate().getTime() : current - 1;
+	getLogger().info("Buckets in range " + new Date(start) + " to " + new Date(current));
 	List<Integer> buckets = new ArrayList<>();
 	while (current >= start) {
 	    buckets.add(getClient().getBucketValue(current));
 	    current -= bucket;
 	}
+	getLogger().info("Processing " + buckets.size() + " buckets.");
 	return buckets;
+    }
+
+    /**
+     * Perform parallel queries to get results for a single bucket.
+     * 
+     * @param keyField
+     * @param keys
+     * @param criteria
+     * @param eventType
+     * @param bucket
+     * @return
+     * @throws SiteWhereException
+     */
+    protected List<ResultSet> listResultsForBucket(PreparedStatement statement, String keyField, List<UUID> keys,
+	    IDateRangeSearchCriteria criteria, DeviceEventType eventType, int bucket) throws SiteWhereException {
+	List<ResultSetFuture> futures = new ArrayList<>();
+	for (UUID key : keys) {
+	    BoundStatement query = statement.bind();
+	    query.setUUID(0, key);
+	    query.setByte(1, CassandraDeviceEvent.getIndicatorForEventType(eventType));
+	    query.setInt(2, bucket);
+	    query.setTimestamp(3, criteria.getStartDate());
+	    query.setTimestamp(4, criteria.getEndDate());
+	    ResultSetFuture resultSetFuture = getClient().getSession().executeAsync(query);
+	    futures.add(resultSetFuture);
+	}
+	List<ResultSet> results = new ArrayList<>();
+	for (ResultSetFuture future : futures) {
+	    results.add(future.getUninterruptibly());
+	}
+	return results;
+    }
+
+    /**
+     * Sort the list of device events, then add them to the pager.
+     * 
+     * @param pager
+     * @param events
+     */
+    protected <T extends IDeviceEvent> void addSortedEventsToPager(Pager<T> pager, List<T> events, int bucket) {
+	Collections.sort(events, new Comparator<T>() {
+
+	    @Override
+	    public int compare(IDeviceEvent o1, IDeviceEvent o2) {
+		return 1 - (o1.getEventDate().compareTo(o2.getEventDate()));
+	    }
+	});
+	for (T event : events) {
+	    pager.process(event);
+	}
+	getLogger().info("Processed " + events.size() + " events for bucket " + bucket + ".");
     }
 
     /**

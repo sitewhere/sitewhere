@@ -44,6 +44,10 @@ public class RestControllerBase {
 	return microservice;
     }
 
+    public static Log getLogger() {
+	return LOGGER;
+    }
+
     /**
      * Verifies that requestor has all of the given authorities or throws a
      * "forbidden" error.

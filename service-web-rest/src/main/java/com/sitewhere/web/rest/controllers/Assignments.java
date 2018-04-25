@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -86,6 +87,7 @@ import com.sitewhere.spi.label.ILabelGeneration;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
+import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
@@ -338,10 +340,8 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
-	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
-	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
-	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
+	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	return getDeviceEventManagement()
 		.listDeviceMeasurementsForAssignments(Collections.singletonList(assignment.getId()), criteria);
     }
@@ -364,9 +364,7 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    @ApiParam(value = "Measurement Ids", required = false) @RequestParam(required = false) String[] measurementIds,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
-	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
-	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
-	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
+	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	ISearchResults<IDeviceMeasurements> measurements = getDeviceEventManagement()
 		.listDeviceMeasurementsForAssignments(Collections.singletonList(assignment.getId()), criteria);
@@ -411,9 +409,7 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
-	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
-	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
-	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
+	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	return getDeviceEventManagement()
 		.listDeviceLocationsForAssignments(Collections.singletonList(assignment.getId()), criteria);
@@ -455,9 +451,7 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
-	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
-	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
-	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
+	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	return getDeviceEventManagement().listDeviceAlertsForAssignments(Collections.singletonList(assignment.getId()),
 		criteria);
@@ -524,9 +518,7 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
-	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
-	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
-	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
+	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment existing = assertDeviceAssignment(token);
 	ISearchResults<IDeviceStream> matches = getDeviceManagement().listDeviceStreams(existing.getId(), criteria);
 	List<IDeviceStream> converted = new ArrayList<IDeviceStream>();
@@ -722,9 +714,7 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
-	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
-	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
-	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
+	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	ISearchResults<IDeviceCommandInvocation> matches = getDeviceEventManagement()
 		.listDeviceCommandInvocationsForAssignments(Collections.singletonList(assignment.getId()), criteria);
@@ -773,9 +763,7 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
-	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
-	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
-	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
+	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	return getDeviceEventManagement()
 		.listDeviceStateChangesForAssignments(Collections.singletonList(assignment.getId()), criteria);
@@ -817,9 +805,7 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
-	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
-	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
-	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
+	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	return getDeviceEventManagement()
 		.listDeviceCommandResponsesForAssignments(Collections.singletonList(assignment.getId()), criteria);
@@ -988,6 +974,26 @@ public class Assignments extends RestControllerBase {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidStreamId, ErrorLevel.ERROR);
 	}
 	return stream;
+    }
+
+    protected static IDateRangeSearchCriteria createDateRangeSearchCriteria(int page, int pageSize, String startDate,
+	    String endDate, HttpServletResponse response) {
+	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
+	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
+
+	Calendar current = Calendar.getInstance();
+	if (parsedEndDate == null) {
+	    parsedEndDate = current.getTime();
+	    getLogger().info("No end date for search. Using " + parsedEndDate + ".");
+	}
+
+	if (parsedStartDate == null) {
+	    current.add(Calendar.HOUR, -6);
+	    parsedStartDate = current.getTime();
+	    getLogger().info("No start date for search. Using " + parsedStartDate + ".");
+	}
+
+	return new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
     }
 
     /**

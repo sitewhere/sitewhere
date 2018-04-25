@@ -8,12 +8,26 @@
 package com.sitewhere.event.persistence.cassandra;
 
 import com.datastax.driver.core.BoundStatement;
+import com.datastax.driver.core.Row;
 import com.datastax.driver.core.UDTValue;
 import com.sitewhere.cassandra.CassandraClient;
+import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 
 public class CassandraDeviceLocation {
+
+    // Location field.
+    public static final String FIELD_LOCATION = "location";
+
+    // Latitude field.
+    public static final String FIELD_LATITUDE = "latitude";
+
+    // Longitude field.
+    public static final String FIELD_LONGITUDE = "longitude";
+
+    // Elevation field.
+    public static final String FIELD_ELEVATION = "elevation";
 
     /**
      * Bind fields from a device location to an existing {@link BoundStatement}.
@@ -28,9 +42,26 @@ public class CassandraDeviceLocation {
 	CassandraDeviceEvent.bindEventFields(bound, location);
 
 	UDTValue udt = client.getLocationType().newValue();
-	udt.setDouble("latitude", location.getLatitude());
-	udt.setDouble("longitude", location.getLongitude());
-	udt.setDouble("elevation", location.getElevation());
-	bound.setUDTValue("location", udt);
+	udt.setDouble(FIELD_LATITUDE, location.getLatitude());
+	udt.setDouble(FIELD_LONGITUDE, location.getLongitude());
+	udt.setDouble(FIELD_ELEVATION, location.getElevation());
+	bound.setUDTValue(FIELD_LOCATION, udt);
+    }
+
+    /**
+     * Load fields from a row into a device location.
+     * 
+     * @param client
+     * @param location
+     * @param row
+     * @throws SiteWhereException
+     */
+    public static void loadFields(CassandraClient client, DeviceLocation location, Row row) throws SiteWhereException {
+	CassandraDeviceEvent.loadEventFields(location, row);
+
+	UDTValue udt = row.getUDTValue(FIELD_LOCATION);
+	location.setLatitude(udt.getDouble(FIELD_LATITUDE));
+	location.setLongitude(udt.getDouble(FIELD_LONGITUDE));
+	location.setElevation(udt.getDouble(FIELD_ELEVATION));
     }
 }

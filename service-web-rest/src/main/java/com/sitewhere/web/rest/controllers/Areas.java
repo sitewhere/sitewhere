@@ -44,7 +44,6 @@ import com.sitewhere.rest.model.device.asset.DeviceCommandResponseWithAsset;
 import com.sitewhere.rest.model.device.asset.DeviceLocationWithAsset;
 import com.sitewhere.rest.model.device.asset.DeviceMeasurementsWithAsset;
 import com.sitewhere.rest.model.device.asset.DeviceStateChangeWithAsset;
-import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.area.AreaSearchCriteria;
@@ -69,6 +68,7 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.label.ILabel;
 import com.sitewhere.spi.label.ILabelGeneration;
+import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
@@ -278,11 +278,12 @@ public class Areas extends RestControllerBase {
 	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
-	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
-	    throws SiteWhereException {
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    HttpServletResponse response) throws SiteWhereException {
 	List<UUID> areas = resolveAreaIds(areaToken, true, getDeviceManagement());
-	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
+		endDate, response);
 	ISearchResults<IDeviceMeasurements> results = getDeviceEventManagement().listDeviceMeasurementsForAreas(areas,
 		criteria);
 
@@ -309,11 +310,12 @@ public class Areas extends RestControllerBase {
 	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
-	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
-	    throws SiteWhereException {
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    HttpServletResponse response) throws SiteWhereException {
 	List<UUID> areas = resolveAreaIds(areaToken, true, getDeviceManagement());
-	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
+		endDate, response);
 	ISearchResults<IDeviceLocation> results = getDeviceEventManagement().listDeviceLocationsForAreas(areas,
 		criteria);
 
@@ -340,10 +342,11 @@ public class Areas extends RestControllerBase {
 	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
-	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
-	    throws SiteWhereException {
-	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    HttpServletResponse response) throws SiteWhereException {
+	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
+		endDate, response);
 	List<UUID> areas = resolveAreaIds(areaToken, true, getDeviceManagement());
 	ISearchResults<IDeviceAlert> results = getDeviceEventManagement().listDeviceAlertsForAreas(areas, criteria);
 
@@ -370,11 +373,12 @@ public class Areas extends RestControllerBase {
 	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
-	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
-	    throws SiteWhereException {
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    HttpServletResponse response) throws SiteWhereException {
 	List<UUID> areas = resolveAreaIds(areaToken, true, getDeviceManagement());
-	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
+		endDate, response);
 	ISearchResults<IDeviceCommandInvocation> results = getDeviceEventManagement()
 		.listDeviceCommandInvocationsForAreas(areas, criteria);
 
@@ -401,11 +405,12 @@ public class Areas extends RestControllerBase {
 	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
-	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
-	    throws SiteWhereException {
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    HttpServletResponse response) throws SiteWhereException {
 	List<UUID> areas = resolveAreaIds(areaToken, true, getDeviceManagement());
-	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
+		endDate, response);
 	ISearchResults<IDeviceCommandResponse> results = getDeviceEventManagement()
 		.listDeviceCommandResponsesForAreas(areas, criteria);
 
@@ -432,11 +437,12 @@ public class Areas extends RestControllerBase {
 	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
-	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
-	    throws SiteWhereException {
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    HttpServletResponse response) throws SiteWhereException {
 	List<UUID> areas = resolveAreaIds(areaToken, true, getDeviceManagement());
-	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
+		endDate, response);
 	ISearchResults<IDeviceStateChange> results = getDeviceEventManagement().listDeviceStateChangesForAreas(areas,
 		criteria);
 

@@ -57,6 +57,9 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
     /** Prepared statement for selecting device events by type for an assignment */
     private PreparedStatement selectEventsByAssignmentForType;
 
+    /** Prepared statement for selecting device events by type for an area */
+    private PreparedStatement selectEventsByAreaForType;
+
     /** Contact points parameter */
     private ILifecycleComponentParameter<String> contactPoints;
 
@@ -175,7 +178,9 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
 	this.insertDeviceEventByAsset = getSession().prepare("insert into " + getKeyspace().getValue()
 		+ ".events_by_asset (deviceId, bucket, eventId, alternateId, eventType, assignmentId, areaId, assetId, eventDate, receivedDate, location, measurements, alert) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	this.selectEventsByAssignmentForType = getSession().prepare("select * from " + getKeyspace().getValue()
-		+ ".events_by_assignment where assignmentId=? and eventType=? and bucket=? and eventDate < ?");
+		+ ".events_by_assignment where assignmentId=? and eventType=? and bucket=? and eventDate >= ? and eventDate <= ?");
+	this.selectEventsByAreaForType = getSession().prepare("select * from " + getKeyspace().getValue()
+		+ ".events_by_area where areaId=? and eventType=? and bucket=? and eventDate >= ? and eventDate <= ?");
     }
 
     /**
@@ -306,5 +311,13 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
 
     public void setSelectEventsByAssignmentForType(PreparedStatement selectEventsByAssignmentForType) {
 	this.selectEventsByAssignmentForType = selectEventsByAssignmentForType;
+    }
+
+    public PreparedStatement getSelectEventsByAreaForType() {
+	return selectEventsByAreaForType;
+    }
+
+    public void setSelectEventsByAreaForType(PreparedStatement selectEventsByAreaForType) {
+	this.selectEventsByAreaForType = selectEventsByAreaForType;
     }
 }
