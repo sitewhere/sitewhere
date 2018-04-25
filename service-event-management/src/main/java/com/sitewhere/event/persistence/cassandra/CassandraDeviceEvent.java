@@ -17,31 +17,31 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 public class CassandraDeviceEvent {
 
     // Device id field.
-    public static final String FIELD_DEVICE_ID = "deviceId";
+    public static final String FIELD_DEVICE_ID = "device_id";
 
     // Event id field.
-    public static final String FIELD_EVENT_ID = "eventId";
+    public static final String FIELD_EVENT_ID = "event_id";
 
     // Alternate id field.
-    public static final String FIELD_ALTERNATE_ID = "alternateId";
+    public static final String FIELD_ALTERNATE_ID = "alt_id";
 
     // Event type field.
-    public static final String FIELD_EVENT_TYPE = "eventType";
+    public static final String FIELD_EVENT_TYPE = "event_type";
 
     // Assignment id field.
-    public static final String FIELD_ASSIGNMENT_ID = "assignmentId";
+    public static final String FIELD_ASSIGNMENT_ID = "assignment_id";
 
     // Area id field.
-    public static final String FIELD_AREA_ID = "areaId";
+    public static final String FIELD_AREA_ID = "area_id";
 
     // Asset id field.
-    public static final String FIELD_ASSET_ID = "assetId";
+    public static final String FIELD_ASSET_ID = "asset_id";
 
     // Event date field.
-    public static final String FIELD_EVENT_DATE = "eventDate";
+    public static final String FIELD_EVENT_DATE = "event_date";
 
     // Received date field.
-    public static final String FIELD_RECEIVED_DATE = "receivedDate";
+    public static final String FIELD_RECEIVED_DATE = "received_date";
 
     /**
      * Bind fields from a device event to an existing {@link BoundStatement}.
@@ -105,6 +105,9 @@ public class CassandraDeviceEvent {
 	case Alert: {
 	    return 2;
 	}
+	case CommandInvocation: {
+	    return 3;
+	}
 	default: {
 	    throw new SiteWhereException("Unsupported event type: " + type.name());
 	}
@@ -125,6 +128,8 @@ public class CassandraDeviceEvent {
 	    return DeviceEventType.Location;
 	} else if (value == 2) {
 	    return DeviceEventType.Alert;
+	} else if (value == 3) {
+	    return DeviceEventType.CommandInvocation;
 	}
 	throw new SiteWhereException("Unsupported event type: " + value);
     }

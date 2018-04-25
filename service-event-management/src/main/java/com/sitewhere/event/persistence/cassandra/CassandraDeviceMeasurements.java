@@ -26,7 +26,7 @@ public class CassandraDeviceMeasurements {
     public static final String FIELD_MEASUREMENTS = "measurements";
 
     // Measurement values field.
-    public static final String FIELD_MXVALUES = "mxvalues";
+    public static final String FIELD_MXVALUES = "mx_values";
 
     /**
      * Bind fields from a device measurements event to an existing

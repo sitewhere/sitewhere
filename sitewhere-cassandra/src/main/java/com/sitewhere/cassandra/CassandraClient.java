@@ -48,6 +48,9 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
     /** User type for device alert */
     private UserType alertType;
 
+    /** User type for device command invocation */
+    private UserType invocationType;
+
     /** Prepared statement for inserting a device location by id */
     private PreparedStatement insertDeviceEventById;
 
@@ -141,36 +144,42 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
 	// Create location type.
 	execute("CREATE TYPE IF NOT EXISTS " + getKeyspace().getValue()
 		+ ".sw_location (latitude double, longitude double, elevation double);");
-	this.locationType = session.getCluster().getMetadata().getKeyspace(getKeyspace().getValue())
+	this.locationType = getSession().getCluster().getMetadata().getKeyspace(getKeyspace().getValue())
 		.getUserType("sw_location");
 
 	// Create measurements type.
 	execute("CREATE TYPE IF NOT EXISTS " + getKeyspace().getValue()
-		+ ".sw_measurements (mxvalues map<text, double>);");
-	this.measurementsType = session.getCluster().getMetadata().getKeyspace(getKeyspace().getValue())
+		+ ".sw_measurements (mx_values map<text, double>);");
+	this.measurementsType = getSession().getCluster().getMetadata().getKeyspace(getKeyspace().getValue())
 		.getUserType("sw_measurements");
 
 	// Create alerts type.
 	execute("CREATE TYPE IF NOT EXISTS " + getKeyspace().getValue()
 		+ ".sw_alert (source tinyint, level tinyint, type text, message text);");
-	this.alertType = session.getCluster().getMetadata().getKeyspace(getKeyspace().getValue())
+	this.alertType = getSession().getCluster().getMetadata().getKeyspace(getKeyspace().getValue())
 		.getUserType("sw_alert");
+
+	// Create command invocation type.
+	execute("CREATE TYPE IF NOT EXISTS " + getKeyspace().getValue()
+		+ ".sw_invocation (initiator tinyint, initiator_id text, target tinyint, target_id text, command_token text, command_params map<text, text>);");
+	this.invocationType = getSession().getCluster().getMetadata().getKeyspace(getKeyspace().getValue())
+		.getUserType("sw_invocation");
 
 	// Create events_by_id table.
 	execute("CREATE TABLE IF NOT EXISTS " + getKeyspace().getValue()
-		+ ".events_by_id (deviceId uuid, eventId uuid, alternateId text, eventType tinyint, assignmentId uuid, areaId uuid, assetId uuid, eventDate timestamp, receivedDate timestamp, location frozen<sw_location>, measurements frozen<sw_measurements>, alert frozen<sw_alert>, PRIMARY KEY (eventId));");
+		+ ".events_by_id (device_id uuid, event_id uuid, alt_id text, event_type tinyint, assignment_id uuid, area_id uuid, asset_id uuid, event_date timestamp, received_date timestamp, location frozen<sw_location>, measurements frozen<sw_measurements>, alert frozen<sw_alert>, invocation frozen<sw_invocation>, PRIMARY KEY (event_id));");
 
 	// Create events_by_assignment table.
 	execute("CREATE TABLE IF NOT EXISTS " + getKeyspace().getValue()
-		+ ".events_by_assignment (deviceId uuid, bucket int, eventId uuid, alternateId text, eventType tinyint, assignmentId uuid, areaId uuid, assetId uuid, eventDate timestamp, receivedDate timestamp, location frozen<sw_location>, measurements frozen<sw_measurements>, alert frozen<sw_alert>, PRIMARY KEY ((assignmentId, eventType, bucket), eventDate, eventId)) WITH CLUSTERING ORDER BY (eventDate desc, eventId asc);");
+		+ ".events_by_assignment (device_id uuid, bucket int, event_id uuid, alt_id text, event_type tinyint, assignment_id uuid, area_id uuid, asset_id uuid, event_date timestamp, received_date timestamp, location frozen<sw_location>, measurements frozen<sw_measurements>, alert frozen<sw_alert>, invocation frozen<sw_invocation>, PRIMARY KEY ((assignment_id, event_type, bucket), event_date, event_id)) WITH CLUSTERING ORDER BY (event_date desc, event_id asc);");
 
 	// Create events_by_area table.
 	execute("CREATE TABLE IF NOT EXISTS " + getKeyspace().getValue()
-		+ ".events_by_area (deviceId uuid, bucket int, eventId uuid, alternateId text, eventType tinyint, assignmentId uuid, areaId uuid, assetId uuid, eventDate timestamp, receivedDate timestamp, location frozen<sw_location>, measurements frozen<sw_measurements>, alert frozen<sw_alert>, PRIMARY KEY ((areaId, eventType, bucket), eventDate, eventId)) WITH CLUSTERING ORDER BY (eventDate desc, eventId asc);");
+		+ ".events_by_area (device_id uuid, bucket int, event_id uuid, alt_id text, event_type tinyint, assignment_id uuid, area_id uuid, asset_id uuid, event_date timestamp, received_date timestamp, location frozen<sw_location>, measurements frozen<sw_measurements>, alert frozen<sw_alert>, invocation frozen<sw_invocation>, PRIMARY KEY ((area_id, event_type, bucket), event_date, event_id)) WITH CLUSTERING ORDER BY (event_date desc, event_id asc);");
 
 	// Create events_by_asset table.
 	execute("CREATE TABLE IF NOT EXISTS " + getKeyspace().getValue()
-		+ ".events_by_asset (deviceId uuid, bucket int, eventId uuid, alternateId text, eventType tinyint, assignmentId uuid, areaId uuid, assetId uuid, eventDate timestamp, receivedDate timestamp, location frozen<sw_location>, measurements frozen<sw_measurements>, alert frozen<sw_alert>, PRIMARY KEY ((assetId, eventType, bucket), eventDate, eventId)) WITH CLUSTERING ORDER BY (eventDate desc, eventId asc);");
+		+ ".events_by_asset (device_id uuid, bucket int, event_id uuid, alt_id text, event_type tinyint, assignment_id uuid, area_id uuid, asset_id uuid, event_date timestamp, received_date timestamp, location frozen<sw_location>, measurements frozen<sw_measurements>, alert frozen<sw_alert>, invocation frozen<sw_invocation>, PRIMARY KEY ((asset_id, event_type, bucket), event_date, event_id)) WITH CLUSTERING ORDER BY (event_date desc, event_id asc);");
     }
 
     /**
@@ -180,17 +189,17 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
      */
     protected void initializePreparedStatements() throws SiteWhereException {
 	this.insertDeviceEventById = getSession().prepare("insert into " + getKeyspace().getValue()
-		+ ".events_by_id (deviceId, eventId, alternateId, eventType, assignmentId, areaId, assetId, eventDate, receivedDate, location, measurements, alert) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		+ ".events_by_id (device_id, event_id, alt_id, event_type, assignment_id, area_id, asset_id, event_date, received_date, location, measurements, alert, invocation) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	this.insertDeviceEventByAssignment = getSession().prepare("insert into " + getKeyspace().getValue()
-		+ ".events_by_assignment (deviceId, bucket, eventId, alternateId, eventType, assignmentId, areaId, assetId, eventDate, receivedDate, location, measurements, alert) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		+ ".events_by_assignment (device_id, bucket, event_id, alt_id, event_type, assignment_id, area_id, asset_id, event_date, received_date, location, measurements, alert, invocation) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	this.insertDeviceEventByArea = getSession().prepare("insert into " + getKeyspace().getValue()
-		+ ".events_by_area (deviceId, bucket, eventId, alternateId, eventType, assignmentId, areaId, assetId, eventDate, receivedDate, location, measurements, alert) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		+ ".events_by_area (device_id, bucket, event_id, alt_id, event_type, assignment_id, area_id, asset_id, event_date, received_date, location, measurements, alert, invocation) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	this.insertDeviceEventByAsset = getSession().prepare("insert into " + getKeyspace().getValue()
-		+ ".events_by_asset (deviceId, bucket, eventId, alternateId, eventType, assignmentId, areaId, assetId, eventDate, receivedDate, location, measurements, alert) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		+ ".events_by_asset (device_id, bucket, event_id, alt_id, event_type, assignment_id, area_id, asset_id, event_date, received_date, location, measurements, alert, invocation) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	this.selectEventsByAssignmentForType = getSession().prepare("select * from " + getKeyspace().getValue()
-		+ ".events_by_assignment where assignmentId=? and eventType=? and bucket=? and eventDate >= ? and eventDate <= ?");
+		+ ".events_by_assignment where assignment_id=? and event_type=? and bucket=? and event_date >= ? and event_date <= ?");
 	this.selectEventsByAreaForType = getSession().prepare("select * from " + getKeyspace().getValue()
-		+ ".events_by_area where areaId=? and eventType=? and bucket=? and eventDate >= ? and eventDate <= ?");
+		+ ".events_by_area where area_id=? and event_type=? and bucket=? and event_date >= ? and event_date <= ?");
     }
 
     /**
@@ -297,6 +306,14 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
 
     public void setAlertType(UserType alertType) {
 	this.alertType = alertType;
+    }
+
+    public UserType getInvocationType() {
+	return invocationType;
+    }
+
+    public void setInvocationType(UserType invocationType) {
+	this.invocationType = invocationType;
     }
 
     public PreparedStatement getInsertDeviceEventById() {

@@ -13,9 +13,9 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
-import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceCommandInvocation;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -62,13 +62,25 @@ public class DeviceCommandInvocationMarshalHelper {
      */
     public MarshaledDeviceCommandInvocation convert(IDeviceCommandInvocation source) throws SiteWhereException {
 	MarshaledDeviceCommandInvocation result = new MarshaledDeviceCommandInvocation();
-	DeviceEvent.copy(source, result);
 	result.setInitiator(source.getInitiator());
 	result.setInitiatorId(source.getInitiatorId());
 	result.setTarget(source.getTarget());
 	result.setTargetId(source.getTargetId());
 	result.setCommandToken(source.getCommandToken());
 	result.setParameterValues(source.getParameterValues());
+
+	// Copy event fields.
+	result.setId(source.getId());
+	result.setAlternateId(source.getAlternateId());
+	result.setEventType(source.getEventType());
+	result.setDeviceId(source.getDeviceId());
+	result.setDeviceAssignmentId(source.getDeviceAssignmentId());
+	result.setAreaId(source.getAreaId());
+	result.setAssetId(source.getAssetId());
+	result.setEventDate(source.getEventDate());
+	result.setReceivedDate(source.getReceivedDate());
+	MetadataProvider.copy(source, result);
+
 	if (isIncludeCommand()) {
 	    if ((source.getCommandToken() == null) || (source.getCommandToken().isEmpty())) {
 		LOGGER.warn("Device invocation is missing command token.");

@@ -984,13 +984,11 @@ public class Assignments extends RestControllerBase {
 	Calendar current = Calendar.getInstance();
 	if (parsedEndDate == null) {
 	    parsedEndDate = current.getTime();
-	    getLogger().info("No end date for search. Using " + parsedEndDate + ".");
 	}
 
 	if (parsedStartDate == null) {
 	    current.add(Calendar.HOUR, -6);
 	    parsedStartDate = current.getTime();
-	    getLogger().info("No start date for search. Using " + parsedStartDate + ".");
 	}
 
 	return new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
