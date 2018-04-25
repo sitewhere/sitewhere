@@ -15,6 +15,11 @@ import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 
+/**
+ * Handles mapping of device location event fields to Cassandra records.
+ * 
+ * @author Derek
+ */
 public class CassandraDeviceLocation {
 
     // Location field.

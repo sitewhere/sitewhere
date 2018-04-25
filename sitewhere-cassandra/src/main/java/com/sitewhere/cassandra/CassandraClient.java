@@ -39,8 +39,14 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
     /** Cassandra session */
     private Session session;
 
-    /** User type for location */
+    /** User type for device location */
     private UserType locationType;
+
+    /** User type for device measurements */
+    private UserType measurementsType;
+
+    /** User type for device alert */
+    private UserType alertType;
 
     /** Prepared statement for inserting a device location by id */
     private PreparedStatement insertDeviceEventById;
@@ -141,10 +147,14 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
 	// Create measurements type.
 	execute("CREATE TYPE IF NOT EXISTS " + getKeyspace().getValue()
 		+ ".sw_measurements (measurements map<text, double>);");
+	this.measurementsType = session.getCluster().getMetadata().getKeyspace(getKeyspace().getValue())
+		.getUserType("sw_measurements");
 
 	// Create alerts type.
 	execute("CREATE TYPE IF NOT EXISTS " + getKeyspace().getValue()
-		+ ".sw_alert (source text, level text, type text, message text);");
+		+ ".sw_alert (source tinyint, level tinyint, type text, message text);");
+	this.alertType = session.getCluster().getMetadata().getKeyspace(getKeyspace().getValue())
+		.getUserType("sw_alert");
 
 	// Create events_by_id table.
 	execute("CREATE TABLE IF NOT EXISTS " + getKeyspace().getValue()
@@ -271,6 +281,22 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
 
     public void setLocationType(UserType locationType) {
 	this.locationType = locationType;
+    }
+
+    public UserType getMeasurementsType() {
+	return measurementsType;
+    }
+
+    public void setMeasurementsType(UserType measurementsType) {
+	this.measurementsType = measurementsType;
+    }
+
+    public UserType getAlertType() {
+	return alertType;
+    }
+
+    public void setAlertType(UserType alertType) {
+	this.alertType = alertType;
     }
 
     public PreparedStatement getInsertDeviceEventById() {
