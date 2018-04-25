@@ -12,7 +12,6 @@ import java.util.Map;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.event.CommandInitiator;
-import com.sitewhere.spi.device.event.CommandStatus;
 import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 
@@ -86,15 +85,5 @@ public class DeviceCommandInvocationWithAsset extends DeviceEventWithAsset imple
     @Override
     public Map<String, String> getParameterValues() {
 	return ((IDeviceCommandInvocation) getWrapped()).getParameterValues();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getStatus()
-     */
-    @Override
-    public CommandStatus getStatus() {
-	return ((IDeviceCommandInvocation) getWrapped()).getStatus();
     }
 }

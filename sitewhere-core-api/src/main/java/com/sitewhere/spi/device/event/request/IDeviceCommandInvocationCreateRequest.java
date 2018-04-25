@@ -10,7 +10,6 @@ package com.sitewhere.spi.device.event.request;
 import java.util.Map;
 
 import com.sitewhere.spi.device.event.CommandInitiator;
-import com.sitewhere.spi.device.event.CommandStatus;
 import com.sitewhere.spi.device.event.CommandTarget;
 
 /**
@@ -61,11 +60,4 @@ public interface IDeviceCommandInvocationCreateRequest extends IDeviceEventCreat
      * @return
      */
     public Map<String, String> getParameterValues();
-
-    /**
-     * Get status of command.
-     * 
-     * @return
-     */
-    public CommandStatus getStatus();
 }

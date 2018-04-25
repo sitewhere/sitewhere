@@ -28,7 +28,6 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
-import com.sitewhere.spi.device.event.CommandStatus;
 import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
@@ -228,11 +227,6 @@ public class DeviceEventManagementPersistence extends Persistence {
 	ci.setTarget(request.getTarget());
 	ci.setTargetId(request.getTargetId());
 	ci.setParameterValues(request.getParameterValues());
-	if (request.getStatus() != null) {
-	    ci.setStatus(request.getStatus());
-	} else {
-	    ci.setStatus(CommandStatus.Pending);
-	}
 	return ci;
     }
 

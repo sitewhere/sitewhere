@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
-import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.view.DeviceCommandInvocationSummary;
+import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceCommandInvocation;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDevice;
@@ -102,7 +102,7 @@ public class CommandInvocations extends RestControllerBase {
 	IDeviceCommandInvocation invocation = (IDeviceCommandInvocation) found;
 	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(getDeviceManagement());
 	helper.setIncludeCommand(true);
-	DeviceCommandInvocation converted = helper.convert(invocation);
+	MarshaledDeviceCommandInvocation converted = helper.convert(invocation);
 	ISearchResults<IDeviceCommandResponse> responses = getDeviceEventManagement()
 		.listDeviceCommandInvocationResponses(device.getId(), found.getId());
 	return DeviceInvocationSummaryBuilder.build(converted, responses.getResults(), getDeviceManagement(),

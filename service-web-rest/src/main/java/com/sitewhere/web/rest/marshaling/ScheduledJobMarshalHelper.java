@@ -19,7 +19,7 @@ import com.sitewhere.device.marshaling.DeviceTypeMarshalHelper;
 import com.sitewhere.rest.model.batch.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
-import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
+import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceCommandInvocation;
 import com.sitewhere.rest.model.scheduling.ScheduledJob;
 import com.sitewhere.schedule.BatchCommandInvocationJobParser;
 import com.sitewhere.spi.SiteWhereException;
@@ -147,7 +147,7 @@ public class ScheduledJobMarshalHelper {
 		}
 
 		// Emulate an invocation to produce sample html.
-		DeviceCommandInvocation invocation = new DeviceCommandInvocation();
+		MarshaledDeviceCommandInvocation invocation = new MarshaledDeviceCommandInvocation();
 		invocation.setCommand(DeviceCommand.copy(command));
 		invocation.setParameterValues(paramValues);
 		String html = CommandHtmlHelper.getHtml(invocation);
@@ -189,7 +189,7 @@ public class ScheduledJobMarshalHelper {
 		}
 
 		// Emulate an invocation to produce sample html.
-		DeviceCommandInvocation invocation = new DeviceCommandInvocation();
+		MarshaledDeviceCommandInvocation invocation = new MarshaledDeviceCommandInvocation();
 		invocation.setCommand(DeviceCommand.copy(command));
 		invocation.setParameterValues(paramValues);
 		String html = CommandHtmlHelper.getHtml(invocation);

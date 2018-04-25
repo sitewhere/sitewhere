@@ -15,7 +15,6 @@ import org.bson.Document;
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.spi.device.event.CommandInitiator;
-import com.sitewhere.spi.device.event.CommandStatus;
 import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 
@@ -43,9 +42,6 @@ public class MongoDeviceCommandInvocation implements MongoConverter<IDeviceComma
 
     /** Property for parameter values */
     public static final String PROP_PARAMETER_VALUES = "pmvl";
-
-    /** Property for status */
-    public static final String PROP_STATUS = "stat";
 
     /*
      * (non-Javadoc)
@@ -81,7 +77,6 @@ public class MongoDeviceCommandInvocation implements MongoConverter<IDeviceComma
 	target.append(PROP_TARGET, source.getTarget().name());
 	target.append(PROP_TARGET_ID, source.getTargetId());
 	target.append(PROP_COMMAND_TOKEN, source.getCommandToken());
-	target.append(PROP_STATUS, source.getStatus().name());
 
 	Document params = new Document();
 	for (String key : source.getParameterValues().keySet()) {
@@ -104,16 +99,12 @@ public class MongoDeviceCommandInvocation implements MongoConverter<IDeviceComma
 	String targetName = (String) source.get(PROP_TARGET);
 	String targetId = (String) source.get(PROP_TARGET_ID);
 	String commandToken = (String) source.get(PROP_COMMAND_TOKEN);
-	String statusName = (String) source.get(PROP_STATUS);
 
 	if (initiatorName != null) {
 	    target.setInitiator(CommandInitiator.valueOf(initiatorName));
 	}
 	if (targetName != null) {
 	    target.setTarget(CommandTarget.valueOf(targetName));
-	}
-	if (statusName != null) {
-	    target.setStatus(CommandStatus.valueOf(statusName));
 	}
 	target.setInitiatorId(initiatorId);
 	target.setTargetId(targetId);

@@ -1104,9 +1104,6 @@ public class EventModelConverter {
 	}
 	api.setCommandToken(grpc.getCommandToken());
 	api.setParameterValues(grpc.getParameterValuesMap());
-	if (grpc.getStatus() != null) {
-	    api.setStatus(EventModelConverter.asApiCommandStatus(grpc.getStatus()));
-	}
 	EventModelConverter.copyApiDeviceEventCreateRequest(grpc.getEvent(), api);
 	return api;
     }
@@ -1129,9 +1126,6 @@ public class EventModelConverter {
 	}
 	grpc.setCommandToken(api.getCommandToken());
 	grpc.putAllParameterValues(api.getParameterValues());
-	if (api.getStatus() != null) {
-	    grpc.setStatus(EventModelConverter.asGrpcCommandStatus(api.getStatus()));
-	}
 	grpc.setEvent(EventModelConverter.createGrpcDeviceEventCreateRequest(api));
 	return grpc.build();
     }
@@ -1202,9 +1196,6 @@ public class EventModelConverter {
 	}
 	api.setCommandToken(grpc.getCommandToken());
 	api.setParameterValues(grpc.getParameterValuesMap());
-	if (grpc.getStatus() != null) {
-	    api.setStatus(EventModelConverter.asApiCommandStatus(grpc.getStatus()));
-	}
 	EventModelConverter.copyApiDeviceEvent(grpc.getEvent(), api);
 	return api;
     }
@@ -1227,9 +1218,6 @@ public class EventModelConverter {
 	}
 	grpc.setCommandToken(api.getCommandToken());
 	grpc.putAllParameterValues(api.getParameterValues());
-	if (api.getStatus() != null) {
-	    grpc.setStatus(EventModelConverter.asGrpcCommandStatus(api.getStatus()));
-	}
 	grpc.setEvent(EventModelConverter.createGrpcDeviceEvent(api));
 	return grpc.build();
     }

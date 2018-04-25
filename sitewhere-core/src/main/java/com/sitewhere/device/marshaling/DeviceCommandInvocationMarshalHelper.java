@@ -16,6 +16,7 @@ import org.apache.commons.logging.LogFactory;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
+import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceCommandInvocation;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.command.IDeviceCommand;
@@ -59,15 +60,14 @@ public class DeviceCommandInvocationMarshalHelper {
      * @return
      * @throws SiteWhereException
      */
-    public DeviceCommandInvocation convert(IDeviceCommandInvocation source) throws SiteWhereException {
-	DeviceCommandInvocation result = new DeviceCommandInvocation();
+    public MarshaledDeviceCommandInvocation convert(IDeviceCommandInvocation source) throws SiteWhereException {
+	MarshaledDeviceCommandInvocation result = new MarshaledDeviceCommandInvocation();
 	DeviceEvent.copy(source, result);
 	result.setInitiator(source.getInitiator());
 	result.setInitiatorId(source.getInitiatorId());
 	result.setTarget(source.getTarget());
 	result.setTargetId(source.getTargetId());
 	result.setCommandToken(source.getCommandToken());
-	result.setStatus(source.getStatus());
 	result.setParameterValues(source.getParameterValues());
 	if (isIncludeCommand()) {
 	    if ((source.getCommandToken() == null) || (source.getCommandToken().isEmpty())) {

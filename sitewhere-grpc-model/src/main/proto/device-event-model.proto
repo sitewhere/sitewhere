@@ -74,7 +74,6 @@ message GDeviceCommandInvocationCreateRequest {
 	GOptionalString targetId = 4;
 	string commandToken = 5;
 	map<string, string> parameterValues = 6;
-	GDeviceCommandStatus status = 7;
 	GDeviceEventCreateRequest event = 8;
 }
 
@@ -185,7 +184,6 @@ message GDeviceCommandInvocation {
 	GOptionalString targetId = 4;
 	string commandToken = 5;
 	map<string, string> parameterValues = 6;
-	GDeviceCommandStatus status = 7;
 	GDeviceEvent event = 8;
 }
 

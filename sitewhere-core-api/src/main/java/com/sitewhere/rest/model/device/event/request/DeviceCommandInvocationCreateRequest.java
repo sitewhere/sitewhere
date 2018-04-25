@@ -16,7 +16,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.CommandInitiator;
-import com.sitewhere.spi.device.event.CommandStatus;
 import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
@@ -51,9 +50,6 @@ public class DeviceCommandInvocationCreateRequest extends DeviceEventCreateReque
 
     /** Values to use for command parameters */
     private Map<String, String> parameterValues = new HashMap<String, String>();
-
-    /** Current invocation status */
-    private CommandStatus status;
 
     public DeviceCommandInvocationCreateRequest() {
 	setEventType(DeviceEventType.CommandInvocation);
@@ -141,20 +137,6 @@ public class DeviceCommandInvocationCreateRequest extends DeviceEventCreateReque
 
     public void setParameterValues(Map<String, String> parameterValues) {
 	this.parameterValues = parameterValues;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.event.request.
-     * IDeviceCommandInvocationCreateRequest# getStatus ()
-     */
-    public CommandStatus getStatus() {
-	return status;
-    }
-
-    public void setStatus(CommandStatus status) {
-	this.status = status;
     }
 
     public static class Builder extends DeviceEventCreateRequest.Builder<DeviceCommandInvocationCreateRequest> {

@@ -14,7 +14,6 @@ import org.influxdb.dto.Point;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.CommandInitiator;
-import com.sitewhere.spi.device.event.CommandStatus;
 import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.DeviceEventType;
 
@@ -42,9 +41,6 @@ public class InfluxDbDeviceCommandInvocation {
 
     /** Field prefix for parameter values */
     public static final String CMD_PARAMETER_VALUE_PREFIX = "param:";
-
-    /** Tag for status */
-    public static final String CMD_STATUS = "status";
 
     /**
      * Parse domain object from a value map.
@@ -74,7 +70,6 @@ public class InfluxDbDeviceCommandInvocation {
 	event.setTarget(CommandTarget.valueOf(InfluxDbDeviceEvent.find(values, CMD_TARGET)));
 	event.setTargetId(InfluxDbDeviceEvent.find(values, CMD_TARGET_ID, true));
 	event.setCommandToken(InfluxDbDeviceEvent.find(values, CMD_COMMAND_TOKEN));
-	event.setStatus(CommandStatus.valueOf(InfluxDbDeviceEvent.find(values, CMD_STATUS)));
 
 	// Copy parameter values.
 	for (String key : values.keySet()) {
@@ -105,7 +100,6 @@ public class InfluxDbDeviceCommandInvocation {
 	    builder.tag(CMD_TARGET_ID, event.getTargetId());
 	}
 	builder.tag(CMD_COMMAND_TOKEN, event.getCommandToken());
-	builder.tag(CMD_STATUS, event.getStatus().name());
 
 	for (String key : event.getParameterValues().keySet()) {
 	    String value = event.getParameterValues().get(key);

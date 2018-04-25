@@ -57,11 +57,4 @@ public interface IDeviceCommandInvocation extends IDeviceEvent {
      * @return
      */
     public Map<String, String> getParameterValues();
-
-    /**
-     * Get status of command.
-     * 
-     * @return
-     */
-    public CommandStatus getStatus();
 }

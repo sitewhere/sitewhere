@@ -11,7 +11,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.sitewhere.rest.model.batch.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
-import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
+import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceCommandInvocation;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -36,7 +36,7 @@ public class CommandHtmlHelper {
      * @return
      * @throws SiteWhereException
      */
-    public static String getHtml(DeviceCommandInvocation invocation) throws SiteWhereException {
+    public static String getHtml(MarshaledDeviceCommandInvocation invocation) throws SiteWhereException {
 	DeviceCommand command = invocation.getCommand();
 	if (command == null) {
 	    throw new SiteWhereException("Command information must be populated to generate HTML.");

@@ -12,6 +12,7 @@ import java.util.List;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.view.DeviceCommandInvocationSummary;
+import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceCommandInvocation;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -41,7 +42,7 @@ public class DeviceInvocationSummaryBuilder {
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceCommandInvocationSummary build(DeviceCommandInvocation invocation,
+    public static DeviceCommandInvocationSummary build(MarshaledDeviceCommandInvocation invocation,
 	    List<IDeviceCommandResponse> responses, IDeviceManagement deviceManagement,
 	    IDeviceEventManagement deviceEventManagement) throws SiteWhereException {
 	DeviceCommandInvocationSummary summary = new DeviceCommandInvocationSummary();
