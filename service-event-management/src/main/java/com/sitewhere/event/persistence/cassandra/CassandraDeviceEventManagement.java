@@ -30,6 +30,7 @@ import com.sitewhere.event.persistence.streaming.DeviceAssignmentEventCreateProc
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
+import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.search.Pager;
@@ -563,7 +564,38 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     @Override
     public IDeviceCommandResponse addDeviceCommandResponse(UUID deviceAssignmentId,
 	    IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
-	throw new SiteWhereException("Not implemented.");
+	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
+	DeviceCommandResponse response = DeviceEventManagementPersistence.deviceCommandResponseCreateLogic(assignment,
+		request);
+
+	// Build insert for event by id.
+	BoundStatement eventById = getClient().getInsertDeviceEventById().bind();
+	CassandraDeviceCommandResponse.bindFields(getClient(), eventById, response);
+	process(eventById, response);
+
+	// Build insert for event by assignment.
+	BoundStatement eventByAssn = getClient().getInsertDeviceEventByAssignment().bind();
+	CassandraDeviceCommandResponse.bindFields(getClient(), eventByAssn, response);
+	eventByAssn.setInt("bucket", getClient().getBucketValue(response.getEventDate().getTime()));
+	process(eventByAssn, response);
+
+	// Build insert for event by area.
+	if (assignment.getAreaId() != null) {
+	    BoundStatement eventByArea = getClient().getInsertDeviceEventByArea().bind();
+	    CassandraDeviceCommandResponse.bindFields(getClient(), eventByArea, response);
+	    eventByArea.setInt("bucket", getClient().getBucketValue(response.getEventDate().getTime()));
+	    process(eventByArea, response);
+	}
+
+	// Build insert for event by asset.
+	if (assignment.getAssetId() != null) {
+	    BoundStatement eventByAsset = getClient().getInsertDeviceEventByAsset().bind();
+	    CassandraDeviceCommandResponse.bindFields(getClient(), eventByAsset, response);
+	    eventByAsset.setInt("bucket", getClient().getBucketValue(response.getEventDate().getTime()));
+	    process(eventByAsset, response);
+	}
+
+	return response;
     }
 
     /*
@@ -574,7 +606,22 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     @Override
     public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForAssignments(List<UUID> assignmentIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	throw new SiteWhereException("Not implemented.");
+	Pager<IDeviceCommandResponse> pager = new Pager<>(criteria);
+	List<Integer> buckets = getBucketsForDateRange(criteria);
+	for (int bucket : buckets) {
+	    List<ResultSet> perBucket = listResultsForBucket(getClient().getSelectEventsByAssignmentForType(),
+		    "assignmentId", assignmentIds, criteria, DeviceEventType.CommandResponse, bucket);
+	    List<IDeviceCommandResponse> bucketEvents = new ArrayList<>();
+	    for (ResultSet perKey : perBucket) {
+		for (Row row : perKey) {
+		    DeviceCommandResponse response = new DeviceCommandResponse();
+		    CassandraDeviceCommandResponse.loadFields(getClient(), response, row);
+		    bucketEvents.add(response);
+		}
+	    }
+	    addSortedEventsToPager(pager, bucketEvents, bucket);
+	}
+	return new SearchResults<IDeviceCommandResponse>(pager.getResults(), pager.getTotal());
     }
 
     /*
@@ -585,7 +632,22 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     @Override
     public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForAreas(List<UUID> areaIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	throw new SiteWhereException("Not implemented.");
+	Pager<IDeviceCommandResponse> pager = new Pager<>(criteria);
+	List<Integer> buckets = getBucketsForDateRange(criteria);
+	for (int bucket : buckets) {
+	    List<ResultSet> perBucket = listResultsForBucket(getClient().getSelectEventsByAreaForType(), "areaId",
+		    areaIds, criteria, DeviceEventType.CommandResponse, bucket);
+	    List<IDeviceCommandResponse> bucketEvents = new ArrayList<>();
+	    for (ResultSet perKey : perBucket) {
+		for (Row row : perKey) {
+		    DeviceCommandResponse response = new DeviceCommandResponse();
+		    CassandraDeviceCommandResponse.loadFields(getClient(), response, row);
+		    bucketEvents.add(response);
+		}
+	    }
+	    addSortedEventsToPager(pager, bucketEvents, bucket);
+	}
+	return new SearchResults<IDeviceCommandResponse>(pager.getResults(), pager.getTotal());
     }
 
     /*

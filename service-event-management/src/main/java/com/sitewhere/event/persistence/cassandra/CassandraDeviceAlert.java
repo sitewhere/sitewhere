@@ -44,7 +44,7 @@ public class CassandraDeviceAlert {
      * 
      * @param client
      * @param bound
-     * @param location
+     * @param alert
      * @throws SiteWhereException
      */
     public static void bindFields(CassandraClient client, BoundStatement bound, IDeviceAlert alert)

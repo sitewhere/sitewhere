@@ -108,6 +108,9 @@ public class CassandraDeviceEvent {
 	case CommandInvocation: {
 	    return 3;
 	}
+	case CommandResponse: {
+	    return 4;
+	}
 	default: {
 	    throw new SiteWhereException("Unsupported event type: " + type.name());
 	}
@@ -130,6 +133,8 @@ public class CassandraDeviceEvent {
 	    return DeviceEventType.Alert;
 	} else if (value == 3) {
 	    return DeviceEventType.CommandInvocation;
+	} else if (value == 4) {
+	    return DeviceEventType.CommandResponse;
 	}
 	throw new SiteWhereException("Unsupported event type: " + value);
     }

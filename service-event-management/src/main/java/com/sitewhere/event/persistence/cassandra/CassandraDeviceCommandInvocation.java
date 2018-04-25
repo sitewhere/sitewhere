@@ -47,11 +47,12 @@ public class CassandraDeviceCommandInvocation {
     public static final String FIELD_COMMAND_PARAMS = "command_params";
 
     /**
-     * Bind fields from a device alert to an existing {@link BoundStatement}.
+     * Bind fields from a device command invocation to an existing
+     * {@link BoundStatement}.
      * 
      * @param client
      * @param bound
-     * @param location
+     * @param invocation
      * @throws SiteWhereException
      */
     public static void bindFields(CassandraClient client, BoundStatement bound, IDeviceCommandInvocation invocation)
