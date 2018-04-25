@@ -146,7 +146,7 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
 
 	// Create measurements type.
 	execute("CREATE TYPE IF NOT EXISTS " + getKeyspace().getValue()
-		+ ".sw_measurements (measurements map<text, double>);");
+		+ ".sw_measurements (mxvalues map<text, double>);");
 	this.measurementsType = session.getCluster().getMetadata().getKeyspace(getKeyspace().getValue())
 		.getUserType("sw_measurements");
 
