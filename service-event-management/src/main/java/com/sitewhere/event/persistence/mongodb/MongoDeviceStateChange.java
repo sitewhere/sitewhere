@@ -7,16 +7,11 @@
  */
 package com.sitewhere.event.persistence.mongodb;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
-import com.sitewhere.spi.device.event.state.StateChangeCategory;
-import com.sitewhere.spi.device.event.state.StateChangeType;
 
 /**
  * Used to load or save device state change data to MongoDB.
@@ -36,9 +31,6 @@ public class MongoDeviceStateChange implements MongoConverter<IDeviceStateChange
 
     /** Property for new state value */
     public static final String PROP_NEW_STATE = "news";
-
-    /** Property for supporting data map */
-    public static final String PROP_DATA = "data";
 
     /*
      * (non-Javadoc)
@@ -69,16 +61,10 @@ public class MongoDeviceStateChange implements MongoConverter<IDeviceStateChange
     public static void toDocument(IDeviceStateChange source, Document target) {
 	MongoDeviceEvent.toDocument(source, target, false);
 
-	target.append(PROP_CATEGORY, source.getCategory().name());
-	target.append(PROP_TYPE, source.getType().name());
+	target.append(PROP_CATEGORY, source.getCategory());
+	target.append(PROP_TYPE, source.getType());
 	target.append(PROP_PREVIOUS_STATE, source.getPreviousState());
 	target.append(PROP_NEW_STATE, source.getNewState());
-
-	Document params = new Document();
-	for (String key : source.getData().keySet()) {
-	    params.append(key, source.getData().get(key));
-	}
-	target.append(PROP_DATA, params);
     }
 
     /**
@@ -95,23 +81,10 @@ public class MongoDeviceStateChange implements MongoConverter<IDeviceStateChange
 	String previousState = (String) source.get(PROP_PREVIOUS_STATE);
 	String newState = (String) source.get(PROP_NEW_STATE);
 
-	if (category != null) {
-	    target.setCategory(StateChangeCategory.valueOf(category));
-	}
-	if (type != null) {
-	    target.setType(StateChangeType.valueOf(type));
-	}
+	target.setCategory(category);
+	target.setType(type);
 	target.setPreviousState(previousState);
 	target.setNewState(newState);
-
-	Map<String, String> data = new HashMap<String, String>();
-	Document dbdata = (Document) source.get(PROP_DATA);
-	if (dbdata != null) {
-	    for (String key : dbdata.keySet()) {
-		data.put(key, (String) dbdata.get(key));
-	    }
-	}
-	target.setData(data);
     }
 
     /**

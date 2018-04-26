@@ -7,11 +7,6 @@
  */
 package com.sitewhere.spi.device.event.request;
 
-import java.util.Map;
-
-import com.sitewhere.spi.device.event.state.StateChangeCategory;
-import com.sitewhere.spi.device.event.state.StateChangeType;
-
 /**
  * Request from a device to update its state in SiteWhere.
  * 
@@ -19,19 +14,28 @@ import com.sitewhere.spi.device.event.state.StateChangeType;
  */
 public interface IDeviceStateChangeCreateRequest extends IDeviceEventCreateRequest {
 
+    /** State change category for registration */
+    public static final String CATEGORY_REGISTRATION = "registration";
+
+    /** State change category for device assignment */
+    public static final String CATEGORY_ASSIGNMENT = "assignment";
+
+    /** State change category for presence management */
+    public static final String CATEGORY_PRESENCE = "presence";
+
     /**
      * Get category of state change.
      * 
      * @return
      */
-    public StateChangeCategory getCategory();
+    public String getCategory();
 
     /**
      * Get type of state change.
      * 
      * @return
      */
-    public StateChangeType getType();
+    public String getType();
 
     /**
      * Get the previous (or assumed previous) state.
@@ -46,11 +50,4 @@ public interface IDeviceStateChangeCreateRequest extends IDeviceEventCreateReque
      * @return
      */
     public String getNewState();
-
-    /**
-     * Get data associated with the state change.
-     * 
-     * @return
-     */
-    public Map<String, String> getData();
 }

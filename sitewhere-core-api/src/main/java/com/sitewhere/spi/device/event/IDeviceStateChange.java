@@ -7,10 +7,7 @@
  */
 package com.sitewhere.spi.device.event;
 
-import java.util.Map;
-
-import com.sitewhere.spi.device.event.state.StateChangeCategory;
-import com.sitewhere.spi.device.event.state.StateChangeType;
+import java.io.Serializable;
 
 /**
  * Event that captures a change of state (either requested or after the fact)
@@ -18,21 +15,21 @@ import com.sitewhere.spi.device.event.state.StateChangeType;
  * 
  * @author Derek
  */
-public interface IDeviceStateChange extends IDeviceEvent {
+public interface IDeviceStateChange extends IDeviceEvent, Serializable {
 
     /**
      * Get category of state change.
      * 
      * @return
      */
-    public StateChangeCategory getCategory();
+    public String getCategory();
 
     /**
      * Get type of state change.
      * 
      * @return
      */
-    public StateChangeType getType();
+    public String getType();
 
     /**
      * Get the previous (or assumed previous) state.
@@ -47,11 +44,4 @@ public interface IDeviceStateChange extends IDeviceEvent {
      * @return
      */
     public String getNewState();
-
-    /**
-     * Get data associated with the state change.
-     * 
-     * @return
-     */
-    public Map<String, String> getData();
 }

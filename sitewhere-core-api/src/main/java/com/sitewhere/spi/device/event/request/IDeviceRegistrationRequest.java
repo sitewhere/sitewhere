@@ -7,12 +7,16 @@
  */
 package com.sitewhere.spi.device.event.request;
 
+import java.io.Serializable;
+
+import com.sitewhere.spi.common.IMetadataProvider;
+
 /**
  * Interface for arguments needed to register a device.
  * 
  * @author Derek
  */
-public interface IDeviceRegistrationRequest extends IDeviceStateChangeCreateRequest {
+public interface IDeviceRegistrationRequest extends IMetadataProvider, Serializable {
 
     /**
      * Get device token to be registered.

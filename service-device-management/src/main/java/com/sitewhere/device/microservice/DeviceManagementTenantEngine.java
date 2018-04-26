@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.sitewhere.device.DeviceManagementTriggers;
 import com.sitewhere.device.cache.CacheAwareDeviceManagement;
 import com.sitewhere.device.grpc.DeviceManagementImpl;
 import com.sitewhere.device.initializer.GroovyDeviceModelInitializer;
@@ -67,8 +68,9 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	// Create management interfaces.
 	IDeviceManagement implementation = (IDeviceManagement) getModuleContext()
 		.getBean(DeviceManagementBeans.BEAN_DEVICE_MANAGEMENT);
-	this.deviceManagement = new CacheAwareDeviceManagement(implementation,
-		(ICachingMicroservice) getMicroservice());
+	this.deviceManagement = new DeviceManagementTriggers(
+		new CacheAwareDeviceManagement(implementation, (ICachingMicroservice) getMicroservice()),
+		getEventManagementApiChannel());
 	this.deviceManagementImpl = new DeviceManagementImpl(getDeviceManagement());
 
 	// Create step that will initialize components.

@@ -54,6 +54,9 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
     /** User type for device command response */
     private UserType responseType;
 
+    /** User type for device state change */
+    private UserType stateChangeType;
+
     /** Prepared statement for inserting a device location by id */
     private PreparedStatement insertDeviceEventById;
 
@@ -174,21 +177,27 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
 	this.responseType = getSession().getCluster().getMetadata().getKeyspace(getKeyspace().getValue())
 		.getUserType("sw_response");
 
+	// Create state change type.
+	execute("CREATE TYPE IF NOT EXISTS " + getKeyspace().getValue()
+		+ ".sw_state_change (category text, type text, previous_state text, new_state text);");
+	this.stateChangeType = getSession().getCluster().getMetadata().getKeyspace(getKeyspace().getValue())
+		.getUserType("sw_state_change");
+
 	// Create events_by_id table.
 	execute("CREATE TABLE IF NOT EXISTS " + getKeyspace().getValue()
-		+ ".events_by_id (device_id uuid, event_id uuid, alt_id text, event_type tinyint, assignment_id uuid, area_id uuid, asset_id uuid, event_date timestamp, received_date timestamp, location frozen<sw_location>, measurements frozen<sw_measurements>, alert frozen<sw_alert>, invocation frozen<sw_invocation>, response frozen<sw_response>, PRIMARY KEY (event_id));");
+		+ ".events_by_id (device_id uuid, event_id uuid, alt_id text, event_type tinyint, assignment_id uuid, area_id uuid, asset_id uuid, event_date timestamp, received_date timestamp, location frozen<sw_location>, measurements frozen<sw_measurements>, alert frozen<sw_alert>, invocation frozen<sw_invocation>, response frozen<sw_response>, state_change frozen<sw_state_change>, PRIMARY KEY (event_id));");
 
 	// Create events_by_assignment table.
 	execute("CREATE TABLE IF NOT EXISTS " + getKeyspace().getValue()
-		+ ".events_by_assignment (device_id uuid, bucket int, event_id uuid, alt_id text, event_type tinyint, assignment_id uuid, area_id uuid, asset_id uuid, event_date timestamp, received_date timestamp, location frozen<sw_location>, measurements frozen<sw_measurements>, alert frozen<sw_alert>, invocation frozen<sw_invocation>, response frozen<sw_response>, PRIMARY KEY ((assignment_id, event_type, bucket), event_date, event_id)) WITH CLUSTERING ORDER BY (event_date desc, event_id asc);");
+		+ ".events_by_assignment (device_id uuid, bucket int, event_id uuid, alt_id text, event_type tinyint, assignment_id uuid, area_id uuid, asset_id uuid, event_date timestamp, received_date timestamp, location frozen<sw_location>, measurements frozen<sw_measurements>, alert frozen<sw_alert>, invocation frozen<sw_invocation>, response frozen<sw_response>, state_change frozen<sw_state_change>, PRIMARY KEY ((assignment_id, event_type, bucket), event_date, event_id)) WITH CLUSTERING ORDER BY (event_date desc, event_id asc);");
 
 	// Create events_by_area table.
 	execute("CREATE TABLE IF NOT EXISTS " + getKeyspace().getValue()
-		+ ".events_by_area (device_id uuid, bucket int, event_id uuid, alt_id text, event_type tinyint, assignment_id uuid, area_id uuid, asset_id uuid, event_date timestamp, received_date timestamp, location frozen<sw_location>, measurements frozen<sw_measurements>, alert frozen<sw_alert>, invocation frozen<sw_invocation>, response frozen<sw_response>, PRIMARY KEY ((area_id, event_type, bucket), event_date, event_id)) WITH CLUSTERING ORDER BY (event_date desc, event_id asc);");
+		+ ".events_by_area (device_id uuid, bucket int, event_id uuid, alt_id text, event_type tinyint, assignment_id uuid, area_id uuid, asset_id uuid, event_date timestamp, received_date timestamp, location frozen<sw_location>, measurements frozen<sw_measurements>, alert frozen<sw_alert>, invocation frozen<sw_invocation>, response frozen<sw_response>, state_change frozen<sw_state_change>, PRIMARY KEY ((area_id, event_type, bucket), event_date, event_id)) WITH CLUSTERING ORDER BY (event_date desc, event_id asc);");
 
 	// Create events_by_asset table.
 	execute("CREATE TABLE IF NOT EXISTS " + getKeyspace().getValue()
-		+ ".events_by_asset (device_id uuid, bucket int, event_id uuid, alt_id text, event_type tinyint, assignment_id uuid, area_id uuid, asset_id uuid, event_date timestamp, received_date timestamp, location frozen<sw_location>, measurements frozen<sw_measurements>, alert frozen<sw_alert>, invocation frozen<sw_invocation>, response frozen<sw_response>, PRIMARY KEY ((asset_id, event_type, bucket), event_date, event_id)) WITH CLUSTERING ORDER BY (event_date desc, event_id asc);");
+		+ ".events_by_asset (device_id uuid, bucket int, event_id uuid, alt_id text, event_type tinyint, assignment_id uuid, area_id uuid, asset_id uuid, event_date timestamp, received_date timestamp, location frozen<sw_location>, measurements frozen<sw_measurements>, alert frozen<sw_alert>, invocation frozen<sw_invocation>, response frozen<sw_response>, state_change frozen<sw_state_change>, PRIMARY KEY ((asset_id, event_type, bucket), event_date, event_id)) WITH CLUSTERING ORDER BY (event_date desc, event_id asc);");
     }
 
     /**
@@ -198,13 +207,13 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
      */
     protected void initializePreparedStatements() throws SiteWhereException {
 	this.insertDeviceEventById = getSession().prepare("insert into " + getKeyspace().getValue()
-		+ ".events_by_id (device_id, event_id, alt_id, event_type, assignment_id, area_id, asset_id, event_date, received_date, location, measurements, alert, invocation, response) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		+ ".events_by_id (device_id, event_id, alt_id, event_type, assignment_id, area_id, asset_id, event_date, received_date, location, measurements, alert, invocation, response, state_change) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	this.insertDeviceEventByAssignment = getSession().prepare("insert into " + getKeyspace().getValue()
-		+ ".events_by_assignment (device_id, bucket, event_id, alt_id, event_type, assignment_id, area_id, asset_id, event_date, received_date, location, measurements, alert, invocation, response) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		+ ".events_by_assignment (device_id, bucket, event_id, alt_id, event_type, assignment_id, area_id, asset_id, event_date, received_date, location, measurements, alert, invocation, response, state_change) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	this.insertDeviceEventByArea = getSession().prepare("insert into " + getKeyspace().getValue()
-		+ ".events_by_area (device_id, bucket, event_id, alt_id, event_type, assignment_id, area_id, asset_id, event_date, received_date, location, measurements, alert, invocation, response) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		+ ".events_by_area (device_id, bucket, event_id, alt_id, event_type, assignment_id, area_id, asset_id, event_date, received_date, location, measurements, alert, invocation, response, state_change) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	this.insertDeviceEventByAsset = getSession().prepare("insert into " + getKeyspace().getValue()
-		+ ".events_by_asset (device_id, bucket, event_id, alt_id, event_type, assignment_id, area_id, asset_id, event_date, received_date, location, measurements, alert, invocation, response) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		+ ".events_by_asset (device_id, bucket, event_id, alt_id, event_type, assignment_id, area_id, asset_id, event_date, received_date, location, measurements, alert, invocation, response, state_change) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	this.selectEventsByAssignmentForType = getSession().prepare("select * from " + getKeyspace().getValue()
 		+ ".events_by_assignment where assignment_id=? and event_type=? and bucket=? and event_date >= ? and event_date <= ?");
 	this.selectEventsByAreaForType = getSession().prepare("select * from " + getKeyspace().getValue()
@@ -327,6 +336,14 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
 
     public UserType getResponseType() {
 	return responseType;
+    }
+
+    public UserType getStateChangeType() {
+	return stateChangeType;
+    }
+
+    public void setStateChangeType(UserType stateChangeType) {
+	this.stateChangeType = stateChangeType;
     }
 
     public void setResponseType(UserType responseType) {

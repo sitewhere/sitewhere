@@ -45,7 +45,6 @@ import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
-import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
@@ -738,12 +737,11 @@ public class Assignments extends RestControllerBase {
     @RequestMapping(value = "/{token}/statechanges", method = RequestMethod.POST)
     @ApiOperation(value = "Create an state change event for a device assignment")
     @Secured({ SiteWhereRoles.REST })
-    public DeviceStateChange createStateChange(@RequestBody DeviceStateChangeCreateRequest input,
+    public IDeviceStateChange createStateChange(@RequestBody DeviceStateChangeCreateRequest input,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	IDeviceStateChange result = getDeviceEventManagement().addDeviceStateChange(assignment.getId(), input);
-	return DeviceStateChange.copy(result);
+	return getDeviceEventManagement().addDeviceStateChange(assignment.getId(), input);
     }
 
     /**

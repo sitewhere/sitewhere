@@ -56,7 +56,6 @@ public class EventsHelper {
 	mx.setDeviceToken("e5cd9ed7-f974-400f-bfa7-bf2df17211b2");
 	mx.setAreaToken("bb105f8d-3150-41f5-b9d1-db04965668d3");
 	mx.setDeviceTypeToken("d2604433-e4eb-419b-97c7-88efe9b2cd41");
-	mx.setEventDate(new Date());
 	request.setRequest(mx);
 
 	return (new ProtobufDeviceEventEncoder()).encode(request);

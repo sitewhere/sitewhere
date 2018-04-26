@@ -87,12 +87,11 @@ message GDeviceCommandResponseCreateRequest {
 
 // Request data for a device state change.
 message GDeviceStateChangeCreateRequest {
-	GStateChangeCategory category = 1;
-	GStateChangeType type = 2;
-	string previousState = 3;
-	string newState = 4;
-	map<string, string> data = 5;
-	GDeviceEventCreateRequest event = 6;
+	string category = 1;
+	string type = 2;
+	GOptionalString previousState = 3;
+	GOptionalString newState = 4;
+	GDeviceEventCreateRequest event = 5;
 }
 
 // Message that can contain any type of event create request.
@@ -197,12 +196,11 @@ message GDeviceCommandResponse {
 
 // State change event.
 message GDeviceStateChange {
-	GStateChangeCategory category = 1;
-	GStateChangeType type = 2;
-	string previousState = 3;
-	string newState = 4;
-	map<string, string> data = 5;
-	GDeviceEvent event = 6;
+	string category = 1;
+	string type = 2;
+	GOptionalString previousState = 3;
+	GOptionalString newState = 4;
+	GDeviceEvent event = 5;
 }
 
 // Message that can contain any type of event.

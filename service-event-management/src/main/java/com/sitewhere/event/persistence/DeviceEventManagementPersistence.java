@@ -23,7 +23,6 @@ import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.device.event.DeviceStreamData;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.event.AlertLevel;
@@ -38,8 +37,6 @@ import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
-import com.sitewhere.spi.error.ErrorCode;
-import com.sitewhere.spi.error.ErrorLevel;
 
 /**
  * Common methods needed by device service provider implementations.
@@ -309,9 +306,8 @@ public class DeviceEventManagementPersistence extends Persistence {
      */
     public static DeviceCommandResponse deviceCommandResponseCreateLogic(IDeviceAssignment assignment,
 	    IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
-	if (request.getOriginatingEventId() == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
-	}
+	requireNotNull("Originating Event Id", request.getOriginatingEventId());
+
 	DeviceCommandResponse response = new DeviceCommandResponse();
 	deviceEventCreateLogic(request, assignment, response);
 	response.setOriginatingEventId(request.getOriginatingEventId());
@@ -331,21 +327,16 @@ public class DeviceEventManagementPersistence extends Persistence {
      */
     public static DeviceStateChange deviceStateChangeCreateLogic(IDeviceAssignment assignment,
 	    IDeviceStateChangeCreateRequest request) throws SiteWhereException {
-	if (request.getCategory() == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
-	}
-	if (request.getType() == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
-	}
+	require("Category", request.getCategory());
+	require("Type", request.getType());
+
 	DeviceStateChange state = new DeviceStateChange();
 	deviceEventCreateLogic(request, assignment, state);
 	state.setCategory(request.getCategory());
 	state.setType(request.getType());
 	state.setPreviousState(request.getPreviousState());
 	state.setNewState(request.getNewState());
-	if (request.getData() != null) {
-	    state.getData().putAll(request.getData());
-	}
+
 	return state;
     }
 }

@@ -14,8 +14,6 @@ import org.influxdb.dto.Point;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.DeviceEventType;
-import com.sitewhere.spi.device.event.state.StateChangeCategory;
-import com.sitewhere.spi.device.event.state.StateChangeType;
 
 /**
  * Class for saving device state change data to InfluxDB.
@@ -58,8 +56,8 @@ public class InfluxDbDeviceStateChange {
      */
     public static void loadFromMap(DeviceStateChange event, Map<String, Object> values) throws SiteWhereException {
 	event.setEventType(DeviceEventType.StateChange);
-	event.setCategory(StateChangeCategory.valueOf((String) values.get(STATE_CHANGE_CATEGORY)));
-	event.setType(StateChangeType.valueOf((String) values.get(STATE_CHANGE_TYPE)));
+	event.setCategory((String) values.get(STATE_CHANGE_CATEGORY));
+	event.setType((String) values.get(STATE_CHANGE_TYPE));
 	event.setPreviousState((String) values.get(PREVIOUS_VALUE));
 	event.setNewState((String) values.get(UPDATED_VALUE));
 	InfluxDbDeviceEvent.loadFromMap(event, values);
@@ -73,8 +71,8 @@ public class InfluxDbDeviceStateChange {
      * @throws SiteWhereException
      */
     public static void saveToBuilder(DeviceStateChange event, Point.Builder builder) throws SiteWhereException {
-	builder.tag(STATE_CHANGE_CATEGORY, event.getCategory().name());
-	builder.tag(STATE_CHANGE_TYPE, event.getType().name());
+	builder.tag(STATE_CHANGE_CATEGORY, event.getCategory());
+	builder.tag(STATE_CHANGE_TYPE, event.getType());
 	if (event.getPreviousState() != null) {
 	    builder.addField(PREVIOUS_VALUE, event.getPreviousState());
 	}

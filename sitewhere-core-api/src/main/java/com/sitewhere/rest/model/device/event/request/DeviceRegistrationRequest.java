@@ -7,42 +7,30 @@
  */
 package com.sitewhere.rest.model.device.event.request;
 
-import java.io.Serializable;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
-import com.sitewhere.spi.device.event.state.RegistrationState;
-import com.sitewhere.spi.device.event.state.StateChangeCategory;
-import com.sitewhere.spi.device.event.state.StateChangeType;
 
 /**
  * Default model implementation of {@link IDeviceRegistrationRequest}.
  * 
  * @author Derek
  */
-@JsonIgnoreProperties
 @JsonInclude(Include.NON_NULL)
-public class DeviceRegistrationRequest extends DeviceStateChangeCreateRequest
-	implements IDeviceRegistrationRequest, Serializable {
+public class DeviceRegistrationRequest extends MetadataProvider implements IDeviceRegistrationRequest {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = -6396459122879336428L;
 
-    /** Data map identifier for hardware id */
-    public static final String DATA_DEVICE_TOKEN = "deviceToken";
+    /** Device token */
+    private String deviceToken;
 
-    /** Data map identifier for device type token */
-    public static final String DATA_DEVICE_TYPE_TOKEN = "deviceTypeToken";
+    /** Device type token */
+    private String deviceTypeToken;
 
-    /** Data map identifier for area token */
-    public static final String DATA_AREA_TOKEN = "areaToken";
-
-    public DeviceRegistrationRequest() {
-	super(StateChangeCategory.Registration, StateChangeType.Registration_Requested,
-		RegistrationState.Unregistered.name(), RegistrationState.Registered.name());
-    }
+    /** Area token */
+    private String areaToken;
 
     /*
      * @see com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest#
@@ -50,11 +38,11 @@ public class DeviceRegistrationRequest extends DeviceStateChangeCreateRequest
      */
     @Override
     public String getDeviceToken() {
-	return getData().get(DATA_DEVICE_TOKEN);
+	return deviceToken;
     }
 
     public void setDeviceToken(String deviceToken) {
-	getData().put(DATA_DEVICE_TOKEN, deviceToken);
+	this.deviceToken = deviceToken;
     }
 
     /*
@@ -63,11 +51,11 @@ public class DeviceRegistrationRequest extends DeviceStateChangeCreateRequest
      */
     @Override
     public String getDeviceTypeToken() {
-	return getData().get(DATA_DEVICE_TYPE_TOKEN);
+	return deviceTypeToken;
     }
 
-    public void setDeviceTypeToken(String specificationToken) {
-	getData().put(DATA_DEVICE_TYPE_TOKEN, specificationToken);
+    public void setDeviceTypeToken(String deviceTypeToken) {
+	this.deviceTypeToken = deviceTypeToken;
     }
 
     /*
@@ -76,10 +64,10 @@ public class DeviceRegistrationRequest extends DeviceStateChangeCreateRequest
      */
     @Override
     public String getAreaToken() {
-	return getData().get(DATA_AREA_TOKEN);
+	return areaToken;
     }
 
-    public void setAreaToken(String token) {
-	getData().put(DATA_AREA_TOKEN, token);
+    public void setAreaToken(String areaToken) {
+	this.areaToken = areaToken;
     }
 }

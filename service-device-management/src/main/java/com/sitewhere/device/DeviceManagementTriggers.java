@@ -14,8 +14,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
-import com.sitewhere.spi.device.event.state.StateChangeCategory;
-import com.sitewhere.spi.device.event.state.StateChangeType;
+import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 
 /**
@@ -43,8 +42,9 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
     @Override
     public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request) throws SiteWhereException {
 	IDeviceAssignment created = super.createDeviceAssignment(request);
-	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest(StateChangeCategory.Assignment,
-		StateChangeType.Assignment_Created, null, null);
+	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest();
+	state.setCategory(IDeviceStateChangeCreateRequest.CATEGORY_ASSIGNMENT);
+	state.setType("create");
 	getDeviceEventManangement().addDeviceStateChange(created.getId(), state);
 	return created;
     }
@@ -58,8 +58,9 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
     public IDeviceAssignment updateDeviceAssignment(UUID id, IDeviceAssignmentCreateRequest request)
 	    throws SiteWhereException {
 	IDeviceAssignment updated = super.updateDeviceAssignment(id, request);
-	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest(StateChangeCategory.Assignment,
-		StateChangeType.Assignment_Updated, null, null);
+	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest();
+	state.setCategory(IDeviceStateChangeCreateRequest.CATEGORY_ASSIGNMENT);
+	state.setType("update");
 	getDeviceEventManangement().addDeviceStateChange(updated.getId(), state);
 	return updated;
     }
@@ -72,8 +73,9 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
     @Override
     public IDeviceAssignment endDeviceAssignment(UUID id) throws SiteWhereException {
 	IDeviceAssignment updated = super.endDeviceAssignment(id);
-	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest(StateChangeCategory.Assignment,
-		StateChangeType.Assignment_Released, null, null);
+	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest();
+	state.setCategory(IDeviceStateChangeCreateRequest.CATEGORY_ASSIGNMENT);
+	state.setType("end");
 	getDeviceEventManangement().addDeviceStateChange(updated.getId(), state);
 	return updated;
     }

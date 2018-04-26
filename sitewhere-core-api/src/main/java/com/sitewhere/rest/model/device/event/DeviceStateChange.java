@@ -7,31 +7,24 @@
  */
 package com.sitewhere.rest.model.device.event;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
-import com.sitewhere.spi.device.event.state.StateChangeCategory;
-import com.sitewhere.spi.device.event.state.StateChangeType;
 
 /**
  * Model object for a state change reported by a remote device.
  * 
  * @author Derek
  */
-public class DeviceStateChange extends DeviceEvent implements IDeviceStateChange, Serializable {
+public class DeviceStateChange extends DeviceEvent implements IDeviceStateChange {
 
-    /** For Java serialization */
-    private static final long serialVersionUID = 7904836116060730355L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 7635022335783458408L;
 
     /** State change category */
-    private StateChangeCategory category;
+    private String category;
 
     /** State change type */
-    private StateChangeType type;
+    private String type;
 
     /** Previous or expected state */
     private String previousState;
@@ -43,40 +36,34 @@ public class DeviceStateChange extends DeviceEvent implements IDeviceStateChange
 	super(DeviceEventType.StateChange);
     }
 
-    /** Data associated with the state change */
-    private Map<String, String> data = new HashMap<String, String>();
-
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.event.IDeviceStateChange#getCategory()
      */
-    public StateChangeCategory getCategory() {
+    @Override
+    public String getCategory() {
 	return category;
     }
 
-    public void setCategory(StateChangeCategory category) {
+    public void setCategory(String category) {
 	this.category = category;
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.event.IDeviceStateChange#getType()
      */
-    public StateChangeType getType() {
+    @Override
+    public String getType() {
 	return type;
     }
 
-    public void setType(StateChangeType type) {
+    public void setType(String type) {
 	this.type = type;
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.event.IDeviceStateChange#getPreviousState()
      */
+    @Override
     public String getPreviousState() {
 	return previousState;
     }
@@ -86,45 +73,14 @@ public class DeviceStateChange extends DeviceEvent implements IDeviceStateChange
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.event.IDeviceStateChange#getNewState()
      */
+    @Override
     public String getNewState() {
 	return newState;
     }
 
     public void setNewState(String newState) {
 	this.newState = newState;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.event.IDeviceStateChange#getData()
-     */
-    public Map<String, String> getData() {
-	return data;
-    }
-
-    public void setData(Map<String, String> data) {
-	this.data = data;
-    }
-
-    /**
-     * Create a copy of an SPI object. Used by web services for marshaling.
-     * 
-     * @param input
-     * @return
-     */
-    public static DeviceStateChange copy(IDeviceStateChange input) throws SiteWhereException {
-	DeviceStateChange result = new DeviceStateChange();
-	DeviceEvent.copy(input, result);
-	result.setCategory(input.getCategory());
-	result.setType(input.getType());
-	result.setPreviousState(input.getPreviousState());
-	result.setNewState(input.getNewState());
-	result.getData().putAll(input.getData());
-	return result;
     }
 }
