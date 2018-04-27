@@ -458,11 +458,11 @@ public class InfluxDbDeviceEvent {
      * @throws SiteWhereException
      */
     protected static void loadFromMap(DeviceEvent event, Map<String, Object> values) throws SiteWhereException {
-	event.setId(validateUUID((String) values.get(EVENT_ID)));
-	event.setDeviceId(validateUUID((String) values.get(EVENT_DEVICE)));
-	event.setDeviceAssignmentId(validateUUID((String) values.get(EVENT_ASSIGNMENT)));
-	event.setAreaId(validateUUID((String) values.get(EVENT_AREA)));
-	event.setAssetId(validateUUID((String) values.get(EVENT_ASSET)));
+	event.setId(convertUUID((String) values.get(EVENT_ID)));
+	event.setDeviceId(convertUUID((String) values.get(EVENT_DEVICE)));
+	event.setDeviceAssignmentId(convertUUID((String) values.get(EVENT_ASSIGNMENT)));
+	event.setAreaId(convertUUID((String) values.get(EVENT_AREA)));
+	event.setAssetId(convertUUID((String) values.get(EVENT_ASSET)));
 	event.setReceivedDate(parseDateField(values, RECEIVED_DATE));
 	event.setEventDate(parseDateField(values, "time"));
 
@@ -476,9 +476,9 @@ public class InfluxDbDeviceEvent {
 	}
     }
 
-    public static UUID validateUUID(String value) throws SiteWhereException {
+    public static UUID convertUUID(String value) throws SiteWhereException {
 	if (value == null) {
-	    throw new SiteWhereException("Invalid UUID in map.");
+	    return null;
 	}
 	return UUID.fromString(value);
     }

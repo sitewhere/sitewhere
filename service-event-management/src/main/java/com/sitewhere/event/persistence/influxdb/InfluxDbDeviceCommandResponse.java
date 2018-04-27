@@ -61,8 +61,8 @@ public class InfluxDbDeviceCommandResponse {
      */
     public static void loadFromMap(DeviceCommandResponse event, Map<String, Object> values) throws SiteWhereException {
 	event.setEventType(DeviceEventType.CommandResponse);
-	event.setOriginatingEventId(InfluxDbDeviceEvent.validateUUID((String) values.get(RSP_ORIGINATING_EVENT_ID)));
-	event.setResponseEventId(InfluxDbDeviceEvent.validateUUID((String) values.get(RSP_RESPONSE_EVENT_ID)));
+	event.setOriginatingEventId(InfluxDbDeviceEvent.convertUUID((String) values.get(RSP_ORIGINATING_EVENT_ID)));
+	event.setResponseEventId(InfluxDbDeviceEvent.convertUUID((String) values.get(RSP_RESPONSE_EVENT_ID)));
 	event.setResponse(InfluxDbDeviceEvent.find(values, RSP_RESPONSE, true));
 
 	InfluxDbDeviceEvent.loadFromMap(event, values);
@@ -78,10 +78,10 @@ public class InfluxDbDeviceCommandResponse {
     public static void saveToBuilder(DeviceCommandResponse event, Point.Builder builder) throws SiteWhereException {
 	builder.tag(RSP_ORIGINATING_EVENT_ID, event.getOriginatingEventId().toString());
 	if (event.getResponseEventId() != null) {
-	    builder.tag(RSP_RESPONSE_EVENT_ID, event.getResponseEventId().toString());
+	    builder.addField(RSP_RESPONSE_EVENT_ID, event.getResponseEventId().toString());
 	}
 	if (event.getResponse() != null) {
-	    builder.tag(RSP_RESPONSE, event.getResponse());
+	    builder.addField(RSP_RESPONSE, event.getResponse());
 	}
 
 	InfluxDbDeviceEvent.saveToBuilder(event, builder);
