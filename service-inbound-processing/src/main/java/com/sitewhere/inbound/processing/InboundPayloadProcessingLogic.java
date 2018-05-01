@@ -112,7 +112,7 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	    @Override
 	    protected void hookOnNext(IEventStreamAck value) {
 		getLogger()
-			.info("Ack indicates " + value.getProcessedEventCount() + " events processed in microbatch.");
+			.debug("Ack indicates " + value.getProcessedEventCount() + " events processed in microbatch.");
 	    }
 
 	    /*
@@ -128,7 +128,7 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	     */
 	    @Override
 	    protected void hookOnError(Throwable e) {
-		getLogger().error("Error bubbled to subscriber.", e);
+		getLogger().warn("Error bubbled to subscriber.", e);
 		latch.countDown();
 	    }
 	});

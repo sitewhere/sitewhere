@@ -55,6 +55,8 @@ public class DeviceAssignmentEventCreateStreamObserver implements StreamObserver
 		    getResponseObserver().onNext(EventModelConverter.asGrpcEventStreamAck(value));
 		} catch (SiteWhereException e) {
 		    throw new RuntimeException(e);
+		} catch (IllegalStateException e) {
+		    // Ignore GRPC exception for closed call.
 		}
 	    }
 

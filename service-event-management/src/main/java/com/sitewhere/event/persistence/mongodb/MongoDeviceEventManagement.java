@@ -138,9 +138,9 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 		new IndexOptions().unique(true).sparse(true));
 	getMongoClient().getEventsCollection()
 		.createIndex(new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_ID, 1)
-			.append(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_EVENT_TYPE, 1));
+			.append(MongoDeviceEvent.PROP_EVENT_TYPE, 1).append(MongoDeviceEvent.PROP_EVENT_DATE, -1));
 	getMongoClient().getEventsCollection().createIndex(new BasicDBObject(MongoDeviceEvent.PROP_AREA_ID, 1)
-		.append(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_EVENT_TYPE, 1));
+		.append(MongoDeviceEvent.PROP_EVENT_TYPE, 1).append(MongoDeviceEvent.PROP_EVENT_DATE, -1));
     }
 
     /*
@@ -227,8 +227,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 		createAssignmentsInClause(assignmentIds)).append(MongoDeviceEvent.PROP_EVENT_TYPE,
 			DeviceEventType.Measurements.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
-	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
-		-1);
+	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1);
 	return MongoPersistence.search(IDeviceMeasurements.class, events, query, sort, criteria, LOOKUP);
     }
 
@@ -244,8 +243,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 	Document query = new Document(MongoDeviceEvent.PROP_AREA_ID, createAreasInClause(areaIds))
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Measurements.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
-	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
-		-1);
+	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1);
 	return MongoPersistence.search(IDeviceMeasurements.class, events, query, sort, criteria, LOOKUP);
     }
 
@@ -280,8 +278,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 		createAssignmentsInClause(assignmentIds)).append(MongoDeviceEvent.PROP_EVENT_TYPE,
 			DeviceEventType.Location.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
-	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
-		-1);
+	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1);
 	return MongoPersistence.search(IDeviceLocation.class, events, query, sort, criteria, LOOKUP);
     }
 
@@ -297,8 +294,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 	Document query = new Document(MongoDeviceEvent.PROP_AREA_ID, createAreasInClause(areaIds))
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Location.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
-	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
-		-1);
+	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1);
 	return MongoPersistence.search(IDeviceLocation.class, events, query, sort, criteria, LOOKUP);
     }
 
@@ -333,8 +329,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 		createAssignmentsInClause(assignmentIds)).append(MongoDeviceEvent.PROP_EVENT_TYPE,
 			DeviceEventType.Alert.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
-	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
-		-1);
+	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1);
 	return MongoPersistence.search(IDeviceAlert.class, events, query, sort, criteria, LOOKUP);
     }
 
@@ -350,8 +345,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 	Document query = new Document(MongoDeviceEvent.PROP_AREA_ID, createAreasInClause(areaIds))
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Alert.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
-	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
-		-1);
+	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1);
 	return MongoPersistence.search(IDeviceAlert.class, events, query, sort, criteria, LOOKUP);
     }
 
@@ -440,8 +434,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 		createAssignmentsInClause(assignmentIds)).append(MongoDeviceEvent.PROP_EVENT_TYPE,
 			DeviceEventType.CommandInvocation.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
-	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
-		-1);
+	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1);
 	return MongoPersistence.search(IDeviceCommandInvocation.class, events, query, sort, criteria, LOOKUP);
     }
 
@@ -457,8 +450,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 	Document query = new Document(MongoDeviceEvent.PROP_AREA_ID, createAreasInClause(areaIds))
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandInvocation.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
-	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
-		-1);
+	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1);
 	return MongoPersistence.search(IDeviceCommandInvocation.class, events, query, sort, criteria, LOOKUP);
     }
 
@@ -473,8 +465,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 	Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ID, deviceId)
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandResponse.name())
 		.append(MongoDeviceCommandResponse.PROP_ORIGINATING_EVENT_ID, invocationId);
-	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
-		-1);
+	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1);
 	return MongoPersistence.search(IDeviceCommandResponse.class, events, query, sort, LOOKUP);
     }
 
@@ -511,8 +502,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 		createAssignmentsInClause(assignmentIds)).append(MongoDeviceEvent.PROP_EVENT_TYPE,
 			DeviceEventType.CommandResponse.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
-	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
-		-1);
+	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1);
 	return MongoPersistence.search(IDeviceCommandResponse.class, events, query, sort, criteria, LOOKUP);
     }
 
@@ -528,8 +518,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 	Document query = new Document(MongoDeviceEvent.PROP_AREA_ID, createAreasInClause(areaIds))
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandResponse.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
-	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
-		-1);
+	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1);
 	return MongoPersistence.search(IDeviceCommandResponse.class, events, query, sort, criteria, LOOKUP);
     }
 
@@ -564,8 +553,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 		createAssignmentsInClause(assignmentIds)).append(MongoDeviceEvent.PROP_EVENT_TYPE,
 			DeviceEventType.StateChange.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
-	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
-		-1);
+	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1);
 	return MongoPersistence.search(IDeviceStateChange.class, events, query, sort, criteria, LOOKUP);
     }
 
@@ -581,8 +569,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 	Document query = new Document(MongoDeviceEvent.PROP_AREA_ID, createAreasInClause(areaIds))
 		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.StateChange.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
-	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_RECEIVED_DATE,
-		-1);
+	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1);
 	return MongoPersistence.search(IDeviceStateChange.class, events, query, sort, criteria, LOOKUP);
     }
 

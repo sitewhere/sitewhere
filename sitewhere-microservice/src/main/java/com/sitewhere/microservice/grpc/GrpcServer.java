@@ -36,7 +36,7 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
     private BindableService serviceImplementation;
 
     /** Indicates whether to use tracing interceptor */
-    private boolean useTracingInterceptor = true;
+    private boolean useTracingInterceptor = false;
 
     /** Interceptor for JWT authentication */
     private JwtServerInterceptor jwtInterceptor;

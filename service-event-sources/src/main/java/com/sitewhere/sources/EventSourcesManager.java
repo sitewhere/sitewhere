@@ -9,7 +9,6 @@ package com.sitewhere.sources;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
 import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
@@ -33,12 +32,6 @@ import io.opentracing.ActiveSpan;
  * @author Derek
  */
 public class EventSourcesManager extends TenantEngineLifecycleComponent implements IEventSourcesManager {
-
-    /** Count of decoded events */
-    private AtomicInteger decodedCount = new AtomicInteger();
-
-    /** Count of events that could not be decoded */
-    private AtomicInteger decodeFailedCount = new AtomicInteger();
 
     /** List of event sources */
     private List<IInboundEventSource<?>> eventSources;
@@ -208,10 +201,6 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
     @Override
     public void handleDecodedEvent(String sourceId, byte[] encoded, Map<String, Object> metadata,
 	    IDecodedDeviceRequest<?> decoded) throws SiteWhereException {
-	int count = decodedCount.incrementAndGet();
-	if ((count % 100) == 0) {
-	    getLogger().info("Total decoded events: " + count);
-	}
 	if (getDecodedEventsProducer().getLifecycleStatus() == LifecycleStatus.Started) {
 	    if (decoded.getRequest() instanceof IDeviceEventCreateRequest) {
 		// Build payload message.
@@ -237,10 +226,6 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
     @Override
     public void handleFailedDecode(String sourceId, byte[] encoded, Map<String, Object> metadata, Throwable t)
 	    throws SiteWhereException {
-	int count = decodeFailedCount.incrementAndGet();
-	if ((count % 10) == 0) {
-	    getLogger().info("Total events unable to be decoded: " + count);
-	}
 	getLogger().warn("Event could not be decoded. Adding to failed decode topic.", t);
 	if (getFailedDecodeEventsProducer().getLifecycleStatus() == LifecycleStatus.Started) {
 	    getFailedDecodeEventsProducer().send(sourceId, encoded);

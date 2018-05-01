@@ -50,18 +50,18 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
     protected A asyncStub;
 
     /** Client interceptor for adding JWT from Spring Security context */
-    protected JwtClientInterceptor jwt;
+    private JwtClientInterceptor jwtInterceptor;
 
     /** Client interceptor for GRPC tracing */
-    protected ClientTracingInterceptor trace;
+    private ClientTracingInterceptor tracingInterceptor;
 
     public GrpcChannel(ITracerProvider tracerProvider, String hostname, int port) {
 	this.tracerProvider = tracerProvider;
 	this.hostname = hostname;
 	this.port = port;
 
-	this.jwt = new JwtClientInterceptor();
-	this.trace = new ClientTracingInterceptor(tracerProvider.getTracer());
+	this.jwtInterceptor = new JwtClientInterceptor();
+	this.tracingInterceptor = new ClientTracingInterceptor(tracerProvider.getTracer());
     }
 
     /*
@@ -72,9 +72,9 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	ManagedChannelBuilder<?> builder = ManagedChannelBuilder.forAddress(getHostname(), getPort()).usePlaintext(true)
-		.intercept(jwt);
+		.intercept(getJwtInterceptor());
 	if (isUseTracingInterceptor()) {
-	    builder.intercept(trace);
+	    builder.intercept(getTracingInterceptor());
 	}
 	this.channel = builder.build();
 	this.blockingStub = createBlockingStub();
@@ -147,6 +147,22 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
     @Override
     public Tracer getTracer() {
 	return getTracerProvider().getTracer();
+    }
+
+    public JwtClientInterceptor getJwtInterceptor() {
+	return jwtInterceptor;
+    }
+
+    public void setJwtInterceptor(JwtClientInterceptor jwtInterceptor) {
+	this.jwtInterceptor = jwtInterceptor;
+    }
+
+    public ClientTracingInterceptor getTracingInterceptor() {
+	return tracingInterceptor;
+    }
+
+    public void setTracingInterceptor(ClientTracingInterceptor tracingInterceptor) {
+	this.tracingInterceptor = tracingInterceptor;
     }
 
     public ITracerProvider getTracerProvider() {

@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -109,6 +108,9 @@ public class Assignments extends RestControllerBase {
 
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(Assignments.class);
+
+    /** Default date range for event queries */
+    private static final long DEFAULT_EVENT_QUERY_DATE_RANGE = 24 * 60 * 60 * 1000;
 
     /**
      * Used by AJAX calls to create a device assignment.
@@ -979,14 +981,12 @@ public class Assignments extends RestControllerBase {
 	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
 	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
 
-	Calendar current = Calendar.getInstance();
 	if (parsedEndDate == null) {
-	    parsedEndDate = current.getTime();
+	    parsedEndDate = new Date();
 	}
 
 	if (parsedStartDate == null) {
-	    current.add(Calendar.HOUR, -6);
-	    parsedStartDate = current.getTime();
+	    parsedStartDate = new Date(java.lang.System.currentTimeMillis() - DEFAULT_EVENT_QUERY_DATE_RANGE);
 	}
 
 	return new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
