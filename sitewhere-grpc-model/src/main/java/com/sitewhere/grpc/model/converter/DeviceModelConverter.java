@@ -20,7 +20,6 @@ import com.sitewhere.grpc.model.CommonModel.GOptionalString;
 import com.sitewhere.grpc.model.CommonModel.GParameterType;
 import com.sitewhere.grpc.model.DeviceModel.GArea;
 import com.sitewhere.grpc.model.DeviceModel.GAreaCreateRequest;
-import com.sitewhere.grpc.model.DeviceModel.GAreaMapData;
 import com.sitewhere.grpc.model.DeviceModel.GAreaSearchCriteria;
 import com.sitewhere.grpc.model.DeviceModel.GAreaSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GAreaType;
@@ -69,7 +68,6 @@ import com.sitewhere.grpc.model.DeviceModel.GZoneCreateRequest;
 import com.sitewhere.grpc.model.DeviceModel.GZoneSearchCriteria;
 import com.sitewhere.grpc.model.DeviceModel.GZoneSearchResults;
 import com.sitewhere.rest.model.area.Area;
-import com.sitewhere.rest.model.area.AreaMapData;
 import com.sitewhere.rest.model.area.AreaType;
 import com.sitewhere.rest.model.area.Zone;
 import com.sitewhere.rest.model.area.request.AreaCreateRequest;
@@ -102,7 +100,6 @@ import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
-import com.sitewhere.spi.area.IAreaMapData;
 import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.area.request.IAreaCreateRequest;
@@ -1808,38 +1805,6 @@ public class DeviceModelConverter {
     }
 
     /**
-     * Convert area map data from GRPC to API.
-     * 
-     * @param grpc
-     * @return
-     * @throws SiteWhereException
-     */
-    public static AreaMapData asApiAreaMapData(GAreaMapData grpc) throws SiteWhereException {
-	AreaMapData api = new AreaMapData();
-	api.setType(grpc.getType());
-	api.setMetadata(grpc.getMetadataMap());
-	return api;
-    }
-
-    /**
-     * Convert area map data from API to GRPC.
-     * 
-     * @param api
-     * @return
-     * @throws SiteWhereException
-     */
-    public static GAreaMapData asGrpcAreaMapData(IAreaMapData api) throws SiteWhereException {
-	GAreaMapData.Builder grpc = GAreaMapData.newBuilder();
-	if (api.getType() != null) {
-	    grpc.setType(api.getType());
-	}
-	if (api.getMetadata() != null) {
-	    grpc.putAllMetadata(api.getMetadata());
-	}
-	return grpc.build();
-    }
-
-    /**
      * Convert area create request from GRPC to API.
      * 
      * @param grpc
@@ -1854,7 +1819,7 @@ public class DeviceModelConverter {
 	api.setName(grpc.getName());
 	api.setDescription(grpc.getDescription());
 	api.setImageUrl(grpc.getImageUrl());
-	api.setMap(grpc.hasMapData() ? DeviceModelConverter.asApiAreaMapData(grpc.getMapData()) : null);
+	api.setCoordinates(CommonModelConverter.asApiLocations(grpc.getCoordinatesList()));
 	api.setMetadata(grpc.getMetadataMap());
 	return api;
     }
@@ -1878,9 +1843,7 @@ public class DeviceModelConverter {
 	grpc.setName(api.getName());
 	grpc.setDescription(api.getDescription());
 	grpc.setImageUrl(api.getImageUrl());
-	if (api.getMap() != null) {
-	    grpc.setMapData(DeviceModelConverter.asGrpcAreaMapData(api.getMap()));
-	}
+	grpc.addAllCoordinates(CommonModelConverter.asGrpcLocations(api.getCoordinates()));
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
 	}
@@ -1956,7 +1919,7 @@ public class DeviceModelConverter {
 	api.setName(grpc.getName());
 	api.setDescription(grpc.getDescription());
 	api.setImageUrl(grpc.getImageUrl());
-	api.setMap(DeviceModelConverter.asApiAreaMapData(grpc.getMapData()));
+	api.setCoordinates(CommonModelConverter.asApiLocations(grpc.getCoordinatesList()));
 	api.setMetadata(grpc.getMetadataMap());
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
 	return api;
@@ -1995,7 +1958,7 @@ public class DeviceModelConverter {
 	grpc.setName(api.getName());
 	grpc.setDescription(api.getDescription());
 	grpc.setImageUrl(api.getImageUrl());
-	grpc.setMapData(DeviceModelConverter.asGrpcAreaMapData(api.getMap()));
+	grpc.addAllCoordinates(CommonModelConverter.asGrpcLocations(api.getCoordinates()));
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
 	}

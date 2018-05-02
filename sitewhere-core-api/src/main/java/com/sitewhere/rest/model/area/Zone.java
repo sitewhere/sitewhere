@@ -28,8 +28,8 @@ import com.sitewhere.spi.common.ILocation;
 @JsonInclude(Include.NON_NULL)
 public class Zone extends MetadataProviderEntity implements IZone, Serializable {
 
-    /** Serialization version identifier */
-    private static final long serialVersionUID = -5108019932881896046L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 7526239754356991844L;
 
     /** Unique zone id */
     private UUID id;
@@ -104,12 +104,11 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
     }
 
     /*
-     * @see com.sitewhere.spi.area.IZone#getCoordinates()
+     * @see com.sitewhere.spi.area.IBoundedEntity#getCoordinates()
      */
     @Override
-    @SuppressWarnings("unchecked")
-    public List<ILocation> getCoordinates() {
-	return (List<ILocation>) (List<? extends ILocation>) coordinates;
+    public List<? extends ILocation> getCoordinates() {
+	return coordinates;
     }
 
     public void setCoordinates(List<Location> coordinates) {
@@ -168,12 +167,7 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
 	result.setBorderColor(input.getBorderColor());
 	result.setFillColor(input.getFillColor());
 	result.setOpacity(input.getOpacity());
-
-	List<Location> coords = new ArrayList<Location>();
-	for (ILocation location : input.getCoordinates()) {
-	    coords.add(Location.copy(location));
-	}
-	result.setCoordinates(coords);
+	result.setCoordinates(Location.copy(input.getCoordinates()));
 
 	MetadataProviderEntity.copy(input, result);
 	return result;

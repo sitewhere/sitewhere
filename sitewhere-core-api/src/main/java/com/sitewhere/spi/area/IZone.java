@@ -7,10 +7,8 @@
  */
 package com.sitewhere.spi.area;
 
-import java.util.List;
 import java.util.UUID;
 
-import com.sitewhere.spi.common.ILocation;
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 
 /**
@@ -18,7 +16,7 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
  * 
  * @author dadams
  */
-public interface IZone extends IMetadataProviderEntity {
+public interface IZone extends IBoundedEntity, IMetadataProviderEntity {
 
     /**
      * Get id for associated area.
@@ -33,13 +31,6 @@ public interface IZone extends IMetadataProviderEntity {
      * @return
      */
     public String getName();
-
-    /**
-     * Get list of coordinates that defines the zone.
-     * 
-     * @return
-     */
-    public List<ILocation> getCoordinates();
 
     /**
      * Get the border color.

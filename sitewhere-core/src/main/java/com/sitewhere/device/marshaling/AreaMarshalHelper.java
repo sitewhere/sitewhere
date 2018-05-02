@@ -17,8 +17,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.rest.model.area.Area;
-import com.sitewhere.rest.model.area.AreaMapData;
 import com.sitewhere.rest.model.area.Zone;
+import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.marshaling.MarshaledArea;
@@ -95,7 +95,7 @@ public class AreaMarshalHelper {
 	area.setName(source.getName());
 	area.setDescription(source.getDescription());
 	area.setImageUrl(source.getImageUrl());
-	area.setMap(AreaMapData.copy(source.getMap()));
+	area.setCoordinates(Location.copy(source.getCoordinates()));
 	MetadataProviderEntity.copy(source, area);
 	if (isIncludeAreaType()) {
 	    area.setAreaType(getDeviceManagement().getAreaType(source.getAreaTypeId()));

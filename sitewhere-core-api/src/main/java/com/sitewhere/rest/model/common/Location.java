@@ -7,6 +7,9 @@
  */
 package com.sitewhere.rest.model.common;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.sitewhere.spi.common.ILocation;
 
 /**
@@ -87,6 +90,20 @@ public class Location implements ILocation {
 	result.setLatitude(input.getLatitude());
 	result.setLongitude(input.getLongitude());
 	result.setElevation(input.getElevation());
+	return result;
+    }
+
+    /**
+     * Copy a list of locations from SPI to model.
+     * 
+     * @param input
+     * @return
+     */
+    public static List<Location> copy(List<? extends ILocation> input) {
+	List<Location> result = new ArrayList<>();
+	for (ILocation location : input) {
+	    result.add(Location.copy(location));
+	}
 	return result;
     }
 }

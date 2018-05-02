@@ -43,7 +43,11 @@ logger.info "[Create Area Type] ${regionType.name}"
 def seRegion = deviceBuilder.newArea regionType.token, null, 'southeast', 'Southeast Region'
 seRegion.withDescription 'Region including the southeastern portion of the United States.'
 seRegion.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/areas/region-se.jpg'
-seRegion.openStreetMap 34.10469794977326, -84.23966646194458, 15
+seRegion.coord(34.10260138703638, -84.24412965774536) coord(34.101837372446774, -84.24243450164795)
+seRegion.coord(34.101517550337825, -84.24091100692749) coord(34.10154953265732, -84.23856675624847)
+seRegion.coord(34.10153176473365, -84.23575580120087) coord(34.10409030732968, -84.23689305782318)
+seRegion.coord(34.104996439280704, -84.23700034618376) coord(34.10606246444614, -84.23700034618376)
+seRegion.coord(34.107691680235604, -84.23690915107727)
 seRegion = deviceBuilder.persist seRegion
 logger.info "[Create Area] ${seRegion.name}"
 
@@ -53,7 +57,11 @@ ptreeSite.withDescription '''A construction site with many high-value assets tha
 The system provides location tracking for the assets and notifies administrators if any of the assets move 
 outside of the general site area or into areas where they are not allowed.'''
 ptreeSite.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/construction.jpg'
-ptreeSite.openStreetMap 34.10469794977326, -84.23966646194458, 15
+ptreeSite.coord(34.10260138703638, -84.24412965774536) coord(34.101837372446774, -84.24243450164795)
+ptreeSite.coord(34.101517550337825, -84.24091100692749) coord(34.10154953265732, -84.23856675624847)
+ptreeSite.coord(34.10153176473365, -84.23575580120087) coord(34.10409030732968, -84.23689305782318)
+ptreeSite.coord(34.104996439280704, -84.23700034618376) coord(34.10606246444614, -84.23700034618376)
+ptreeSite.coord(34.107691680235604, -84.23690915107727)
 ptreeSite = deviceBuilder.persist ptreeSite
 logger.info "[Create Area] ${ptreeSite.name}"
 

@@ -7,7 +7,6 @@
  */
 package com.sitewhere.rest.model.area.request;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +16,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
-import com.sitewhere.spi.common.ILocation;
 
 /**
  * Provides parameters needed to create a new zone.
@@ -25,10 +23,10 @@ import com.sitewhere.spi.common.ILocation;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class ZoneCreateRequest implements IZoneCreateRequest, Serializable {
+public class ZoneCreateRequest implements IZoneCreateRequest {
 
-    /** Serialization version identifier */
-    private static final long serialVersionUID = 5490633726915797290L;
+    /** Serial version UID */
+    private static final long serialVersionUID = -2226478978161539653L;
 
     /** Zone name */
     private String name;
@@ -64,9 +62,8 @@ public class ZoneCreateRequest implements IZoneCreateRequest, Serializable {
      * @see com.sitewhere.spi.area.request.IZoneCreateRequest#getCoordinates()
      */
     @Override
-    @SuppressWarnings("unchecked")
-    public List<ILocation> getCoordinates() {
-	return (List<ILocation>) (List<? extends ILocation>) coordinates;
+    public List<Location> getCoordinates() {
+	return coordinates;
     }
 
     public void setCoordinates(List<Location> coordinates) {

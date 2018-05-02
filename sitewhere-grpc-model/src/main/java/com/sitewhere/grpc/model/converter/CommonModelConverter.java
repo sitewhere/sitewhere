@@ -127,7 +127,7 @@ public class CommonModelConverter {
      * @return
      * @throws SiteWhereException
      */
-    public static List<GLocation> asGrpcLocations(List<ILocation> apis) throws SiteWhereException {
+    public static List<GLocation> asGrpcLocations(List<? extends ILocation> apis) throws SiteWhereException {
 	List<GLocation> grpcs = new ArrayList<GLocation>();
 	for (ILocation api : apis) {
 	    grpcs.add(CommonModelConverter.asGrpcLocation(api));

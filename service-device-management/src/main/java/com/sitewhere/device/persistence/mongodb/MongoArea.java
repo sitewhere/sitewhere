@@ -15,7 +15,6 @@ import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.area.Area;
-import com.sitewhere.rest.model.area.AreaMapData;
 import com.sitewhere.spi.area.IArea;
 
 /**
@@ -46,14 +45,17 @@ public class MongoArea implements MongoConverter<IArea> {
     /** Property for token */
     public static final String PROP_TOKEN = "tokn";
 
-    /** Property for map data */
-    public static final String PROP_MAP_DATA = "mpdt";
+    /** Property for coordinates */
+    public static final String PROP_COORDINATES = "coor";
 
-    /** Property for map type */
-    public static final String PROP_MAP_TYPE = "mpty";
+    /** Property for latitude */
+    public static final String PROP_LATITUDE = "lati";
 
-    /** Property for map metadata */
-    public static final String PROP_MAP_METADATA = "mpmd";
+    /** Property for longitude */
+    public static final String PROP_LONGITUDE = "long";
+
+    /** Property for elevation */
+    public static final String PROP_ELEVATION = "elev";
 
     /*
      * (non-Javadoc)
@@ -90,11 +92,7 @@ public class MongoArea implements MongoConverter<IArea> {
 	target.append(PROP_IMAGE_URL, source.getImageUrl());
 	target.append(PROP_TOKEN, source.getToken());
 
-	Document mapData = new Document();
-	mapData.append(PROP_MAP_TYPE, source.getMap().getType());
-	MongoMetadataProvider.toDocument(PROP_MAP_METADATA, source.getMap(), mapData);
-	target.append(PROP_MAP_DATA, mapData);
-
+	MongoBoundedEntity.saveCoordinates(source, target);
 	MongoSiteWhereEntity.toDocument(source, target);
 	MongoMetadataProvider.toDocument(source, target);
     }
@@ -114,15 +112,6 @@ public class MongoArea implements MongoConverter<IArea> {
 	String imageUrl = (String) source.get(PROP_IMAGE_URL);
 	String token = (String) source.get(PROP_TOKEN);
 
-	Document mdo = (Document) source.get(PROP_MAP_DATA);
-	if (mdo != null) {
-	    AreaMapData mapData = new AreaMapData();
-	    MongoMetadataProvider.fromDocument(PROP_MAP_METADATA, mdo, mapData);
-	    String type = (String) mdo.get(PROP_MAP_TYPE);
-	    mapData.setType(type);
-	    target.setMap(mapData);
-	}
-
 	target.setId(id);
 	target.setAreaTypeId(areaTypeId);
 	target.setParentAreaId(parentAreaId);
@@ -130,6 +119,7 @@ public class MongoArea implements MongoConverter<IArea> {
 	target.setDescription(description);
 	target.setImageUrl(imageUrl);
 	target.setToken(token);
+	target.setCoordinates(MongoBoundedEntity.getCoordinates(source));
 
 	MongoSiteWhereEntity.fromDocument(source, target);
 	MongoMetadataProvider.fromDocument(source, target);

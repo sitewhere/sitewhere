@@ -18,7 +18,7 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
  * 
  * @author Derek
  */
-public interface IArea extends IMetadataProviderEntity, Serializable {
+public interface IArea extends IBoundedEntity, IMetadataProviderEntity, Serializable {
 
     /**
      * Get id of corresponding area type.
@@ -54,11 +54,4 @@ public interface IArea extends IMetadataProviderEntity, Serializable {
      * @return
      */
     public String getImageUrl();
-
-    /**
-     * Get map information.
-     * 
-     * @return
-     */
-    public IAreaMapData getMap();
 }

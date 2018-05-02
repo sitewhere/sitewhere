@@ -7,12 +7,16 @@
  */
 package com.sitewhere.rest.model.area;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.spi.area.IArea;
+import com.sitewhere.spi.common.ILocation;
 
 /**
  * Model object for area information.
@@ -46,8 +50,8 @@ public class Area extends MetadataProviderEntity implements IArea {
     /** Image URL */
     private String imageUrl;
 
-    /** Map data */
-    private AreaMapData map = new AreaMapData();
+    /** Area boundary coordinates */
+    private List<Location> coordinates = new ArrayList<Location>();
 
     /*
      * @see com.sitewhere.spi.area.IArea#getId()
@@ -134,14 +138,14 @@ public class Area extends MetadataProviderEntity implements IArea {
     }
 
     /*
-     * @see com.sitewhere.spi.area.IArea#getMap()
+     * @see com.sitewhere.spi.area.IBoundedEntity#getCoordinates()
      */
     @Override
-    public AreaMapData getMap() {
-	return map;
+    public List<? extends ILocation> getCoordinates() {
+	return coordinates;
     }
 
-    public void setMap(AreaMapData map) {
-	this.map = map;
+    public void setCoordinates(List<Location> coordinates) {
+	this.coordinates = coordinates;
     }
 }

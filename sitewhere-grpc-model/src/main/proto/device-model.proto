@@ -385,12 +385,6 @@ message GAreaType {
 // ### AREAS ###
 // #############
 
-// Map data associated with an area.
-message GAreaMapData {
-	string type = 1;
-	map<string, string> metadata = 2;
-}
-
 // Request data for creating an area.
 message GAreaCreateRequest {
 	GOptionalString token = 1;
@@ -399,7 +393,7 @@ message GAreaCreateRequest {
 	string name = 4;
 	string description = 5;
 	string imageUrl = 6;
-	GAreaMapData mapData = 7;
+	repeated GLocation coordinates = 7;
 	map<string, string> metadata = 8;
 }
 
@@ -426,7 +420,7 @@ message GArea {
 	string name = 5;
 	string description = 6;
 	string imageUrl = 7;
-	GAreaMapData mapData = 8;
+	repeated GLocation coordinates = 8;
 	map<string, string> metadata = 9;
 	GEntityInformation entityInformation = 10;
 }

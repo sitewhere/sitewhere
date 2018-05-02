@@ -7,6 +7,7 @@
  */
 package com.sitewhere.spi.area.request;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ import com.sitewhere.spi.common.ILocation;
  * 
  * @author Derek
  */
-public interface IZoneCreateRequest {
+public interface IZoneCreateRequest extends Serializable {
 
     /**
      * Get zone name.
@@ -31,7 +32,7 @@ public interface IZoneCreateRequest {
      * 
      * @return
      */
-    public List<ILocation> getCoordinates();
+    public List<? extends ILocation> getCoordinates();
 
     /**
      * Get border color for UI.

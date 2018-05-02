@@ -17,9 +17,9 @@ import java.util.regex.Pattern;
 
 import com.sitewhere.persistence.Persistence;
 import com.sitewhere.rest.model.area.Area;
-import com.sitewhere.rest.model.area.AreaMapData;
 import com.sitewhere.rest.model.area.AreaType;
 import com.sitewhere.rest.model.area.Zone;
+import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
@@ -42,7 +42,6 @@ import com.sitewhere.spi.area.request.IAreaCreateRequest;
 import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
 import com.sitewhere.spi.asset.IAsset;
-import com.sitewhere.spi.common.ILocation;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.IDevice;
@@ -456,7 +455,7 @@ public class DeviceManagementPersistence extends Persistence {
 	if (device.getDeviceAssignmentId() != null) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceCanNotBeDeletedIfAssigned, ErrorLevel.ERROR);
 	}
-	
+
 	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(1, 1);
 	criteria.setDeviceId(device.getId());
 	ISearchResults<IDeviceAssignment> assignments = deviceManagement.listDeviceAssignments(criteria);
@@ -652,7 +651,7 @@ public class DeviceManagementPersistence extends Persistence {
 	area.setName(request.getName());
 	area.setDescription(request.getDescription());
 	area.setImageUrl(request.getImageUrl());
-	area.setMap(AreaMapData.copy(request.getMap()));
+	area.setCoordinates(Location.copy(request.getCoordinates()));
 
 	DeviceManagementPersistence.initializeEntityMetadata(area);
 	MetadataProvider.copy(request.getMetadata(), area);
@@ -679,8 +678,8 @@ public class DeviceManagementPersistence extends Persistence {
 	if (request.getImageUrl() != null) {
 	    target.setImageUrl(request.getImageUrl());
 	}
-	if (request.getMap() != null) {
-	    target.setMap(AreaMapData.copy(request.getMap()));
+	if (request.getCoordinates() != null) {
+	    target.setCoordinates(Location.copy(request.getCoordinates()));
 	}
 	if (request.getMetadata() != null) {
 	    target.getMetadata().clear();
@@ -874,13 +873,11 @@ public class DeviceManagementPersistence extends Persistence {
 	zone.setBorderColor(source.getBorderColor());
 	zone.setFillColor(source.getFillColor());
 	zone.setOpacity(source.getOpacity());
+	zone.setCoordinates(Location.copy(source.getCoordinates()));
 
 	DeviceManagementPersistence.initializeEntityMetadata(zone);
 	MetadataProvider.copy(source.getMetadata(), zone);
 
-	for (ILocation coordinate : source.getCoordinates()) {
-	    zone.getCoordinates().add(coordinate);
-	}
 	return zone;
     }
 
@@ -893,16 +890,21 @@ public class DeviceManagementPersistence extends Persistence {
      * @throws SiteWhereException
      */
     public static void zoneUpdateLogic(IZoneCreateRequest request, Zone target) throws SiteWhereException {
-	target.setName(request.getName());
-	target.setBorderColor(request.getBorderColor());
-	target.setFillColor(request.getFillColor());
-	target.setOpacity(request.getOpacity());
-
-	target.getCoordinates().clear();
-	for (ILocation coordinate : request.getCoordinates()) {
-	    target.getCoordinates().add(coordinate);
+	if (request.getName() != null) {
+	    target.setName(request.getName());
 	}
-
+	if (request.getBorderColor() != null) {
+	    target.setBorderColor(request.getBorderColor());
+	}
+	if (request.getFillColor() != null) {
+	    target.setFillColor(request.getFillColor());
+	}
+	if (request.getOpacity() != null) {
+	    target.setOpacity(request.getOpacity());
+	}
+	if (request.getCoordinates() != null) {
+	    target.setCoordinates(Location.copy(request.getCoordinates()));
+	}
 	if (request.getMetadata() != null) {
 	    target.getMetadata().clear();
 	    MetadataProvider.copy(request.getMetadata(), target);

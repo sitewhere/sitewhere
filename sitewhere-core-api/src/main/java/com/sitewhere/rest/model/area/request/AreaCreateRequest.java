@@ -7,14 +7,14 @@
  */
 package com.sitewhere.rest.model.area.request;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.area.AreaMapData;
-import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.area.IAreaMapMetadata;
+import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.spi.area.request.IAreaCreateRequest;
 
 /**
@@ -25,8 +25,8 @@ import com.sitewhere.spi.area.request.IAreaCreateRequest;
 @JsonInclude(Include.NON_NULL)
 public class AreaCreateRequest implements IAreaCreateRequest {
 
-    /** Serialization version identifier */
-    private static final long serialVersionUID = 574323736888872612L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 2232101100201358496L;
 
     /** Unique token */
     private String token;
@@ -46,8 +46,8 @@ public class AreaCreateRequest implements IAreaCreateRequest {
     /** Logo image URL */
     private String imageUrl;
 
-    /** Map data */
-    private AreaMapData map;
+    /** Locations that define area boundaries */
+    private List<Location> coordinates = new ArrayList<Location>();
 
     /** Metadata values */
     private Map<String, String> metadata;
@@ -125,15 +125,15 @@ public class AreaCreateRequest implements IAreaCreateRequest {
     }
 
     /*
-     * @see com.sitewhere.spi.area.request.IAreaCreateRequest#getMap()
+     * @see com.sitewhere.spi.area.request.IAreaCreateRequest#getCoordinates()
      */
     @Override
-    public AreaMapData getMap() {
-	return map;
+    public List<Location> getCoordinates() {
+	return coordinates;
     }
 
-    public void setMap(AreaMapData map) {
-	this.map = map;
+    public void setCoordinates(List<Location> coordinates) {
+	this.coordinates = coordinates;
     }
 
     /*
@@ -172,31 +172,8 @@ public class AreaCreateRequest implements IAreaCreateRequest {
 	    return this;
 	}
 
-	public Builder openStreetMap(double latitude, double longitude, int zoomLevel) {
-	    AreaMapData map = new AreaMapData();
-	    try {
-		map.setType("openstreetmap");
-		map.addOrReplaceMetadata(IAreaMapMetadata.MAP_CENTER_LATITUDE, String.valueOf(latitude));
-		map.addOrReplaceMetadata(IAreaMapMetadata.MAP_CENTER_LONGITUDE, String.valueOf(longitude));
-		map.addOrReplaceMetadata(IAreaMapMetadata.MAP_ZOOM_LEVEL, String.valueOf(zoomLevel));
-		request.setMap(map);
-	    } catch (SiteWhereException e) {
-		throw new RuntimeException(e);
-	    }
-	    return this;
-	}
-
-	public Builder mapquestMap(double latitude, double longitude, int zoomLevel) {
-	    AreaMapData map = new AreaMapData();
-	    try {
-		map.setType("mapquest");
-		map.addOrReplaceMetadata(IAreaMapMetadata.MAP_CENTER_LATITUDE, String.valueOf(latitude));
-		map.addOrReplaceMetadata(IAreaMapMetadata.MAP_CENTER_LONGITUDE, String.valueOf(longitude));
-		map.addOrReplaceMetadata(IAreaMapMetadata.MAP_ZOOM_LEVEL, String.valueOf(zoomLevel));
-		request.setMap(map);
-	    } catch (SiteWhereException e) {
-		throw new RuntimeException(e);
-	    }
+	public Builder coord(double latitude, double longitude) {
+	    request.getCoordinates().add(new Location(latitude, longitude));
 	    return this;
 	}
 

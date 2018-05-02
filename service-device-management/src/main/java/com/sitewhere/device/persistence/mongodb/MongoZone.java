@@ -7,8 +7,6 @@
  */
 package com.sitewhere.device.persistence.mongodb;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import org.bson.Document;
@@ -17,9 +15,7 @@ import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.area.Zone;
-import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.spi.area.IZone;
-import com.sitewhere.spi.common.ILocation;
 
 /**
  * Used to load or save zone data to MongoDB.
@@ -48,18 +44,6 @@ public class MongoZone implements MongoConverter<IZone> {
 
     /** Property for opacity */
     public static final String PROP_OPACITY = "opac";
-
-    /** Property for coordinates */
-    public static final String PROP_COORDINATES = "coor";
-
-    /** Property for latitude */
-    public static final String PROP_LATITUDE = "lati";
-
-    /** Property for longitude */
-    public static final String PROP_LONGITUDE = "long";
-
-    /** Property for elevation */
-    public static final String PROP_ELEVATION = "elev";
 
     /*
      * (non-Javadoc)
@@ -96,20 +80,7 @@ public class MongoZone implements MongoConverter<IZone> {
 	target.append(PROP_FILL_COLOR, source.getFillColor());
 	target.append(PROP_OPACITY, source.getOpacity());
 
-	ArrayList<Document> coords = new ArrayList<Document>();
-	if (source.getCoordinates() != null) {
-	    for (ILocation location : source.getCoordinates()) {
-		Document coord = new Document();
-		coord.put(PROP_LATITUDE, location.getLatitude());
-		coord.put(PROP_LONGITUDE, location.getLongitude());
-		if (location.getElevation() != null) {
-		    coord.put(PROP_ELEVATION, location.getElevation());
-		}
-		coords.add(coord);
-	    }
-	}
-	target.append(PROP_COORDINATES, coords);
-
+	MongoBoundedEntity.saveCoordinates(source, target);
 	MongoSiteWhereEntity.toDocument(source, target);
 	MongoMetadataProvider.toDocument(source, target);
     }
@@ -120,7 +91,6 @@ public class MongoZone implements MongoConverter<IZone> {
      * @param source
      * @param target
      */
-    @SuppressWarnings("unchecked")
     public static void fromDocument(Document source, Zone target) {
 	UUID id = (UUID) source.get(PROP_ID);
 	String token = (String) source.get(PROP_TOKEN);
@@ -137,18 +107,7 @@ public class MongoZone implements MongoConverter<IZone> {
 	target.setBorderColor(borderColor);
 	target.setFillColor(fillColor);
 	target.setOpacity(opacity);
-
-	List<Location> locs = new ArrayList<Location>();
-	ArrayList<Document> coords = (ArrayList<Document>) source.get(PROP_COORDINATES);
-	for (int i = 0; i < coords.size(); i++) {
-	    Document coord = coords.get(i);
-	    Location loc = new Location();
-	    loc.setLatitude((Double) coord.get(PROP_LATITUDE));
-	    loc.setLongitude((Double) coord.get(PROP_LONGITUDE));
-	    loc.setElevation((Double) coord.get(PROP_ELEVATION));
-	    locs.add(loc);
-	}
-	target.setCoordinates(locs);
+	target.setCoordinates(MongoBoundedEntity.getCoordinates(source));
 
 	MongoSiteWhereEntity.fromDocument(source, target);
 	MongoMetadataProvider.fromDocument(source, target);

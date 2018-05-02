@@ -8,9 +8,10 @@
 package com.sitewhere.spi.area.request;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.spi.area.IAreaMapData;
+import com.sitewhere.spi.common.ILocation;
 
 /**
  * Interface for arguments needed to create an area.
@@ -62,11 +63,11 @@ public interface IAreaCreateRequest extends Serializable {
     public String getImageUrl();
 
     /**
-     * Get map information.
+     * Get list of coordinates that defines the area bounds.
      * 
      * @return
      */
-    public IAreaMapData getMap();
+    public List<? extends ILocation> getCoordinates();
 
     /**
      * Get metadata values.
