@@ -28,7 +28,7 @@ public interface IArea extends IBoundedEntity, IMetadataProviderEntity, Serializ
     public UUID getAreaTypeId();
 
     /**
-     * Get id of parent id (null if none).
+     * Get id of parent area (null if none).
      * 
      * @return
      */

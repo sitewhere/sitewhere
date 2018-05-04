@@ -34,8 +34,8 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.search.area.IAssetTypeSearchCritiera;
 import com.sitewhere.spi.search.asset.IAssetSearchCriteria;
+import com.sitewhere.spi.search.asset.IAssetTypeSearchCritiera;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 

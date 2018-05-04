@@ -21,6 +21,8 @@ import com.sitewhere.rest.model.area.AreaType;
 import com.sitewhere.rest.model.area.Zone;
 import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.common.MetadataProvider;
+import com.sitewhere.rest.model.customer.Customer;
+import com.sitewhere.rest.model.customer.CustomerType;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
@@ -42,6 +44,10 @@ import com.sitewhere.spi.area.request.IAreaCreateRequest;
 import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
 import com.sitewhere.spi.asset.IAsset;
+import com.sitewhere.spi.customer.ICustomer;
+import com.sitewhere.spi.customer.ICustomerType;
+import com.sitewhere.spi.customer.request.ICustomerCreateRequest;
+import com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.IDevice;
@@ -76,6 +82,257 @@ public class DeviceManagementPersistence extends Persistence {
 
     /** Regular expression used to validate hardware ids */
     private static final Pattern HARDWARE_ID_REGEX = Pattern.compile("^[\\w-]+$");
+
+    /**
+     * Common logic for creating new customer type object and populating it from
+     * request.
+     * 
+     * @param request
+     * @param containedCustomerTypeIds
+     * @return
+     * @throws SiteWhereException
+     */
+    public static CustomerType customerTypeCreateLogic(ICustomerTypeCreateRequest request,
+	    List<UUID> containedCustomerTypeIds) throws SiteWhereException {
+	CustomerType type = new CustomerType();
+	type.setId(UUID.randomUUID());
+
+	// Use token if provided, otherwise generate one.
+	if (request.getToken() != null) {
+	    type.setToken(request.getToken());
+	} else {
+	    type.setToken(UUID.randomUUID().toString());
+	}
+
+	type.setName(request.getName());
+	type.setDescription(request.getDescription());
+	type.setIcon(request.getIcon());
+	type.setContainedCustomerTypeIds(containedCustomerTypeIds);
+
+	DeviceManagementPersistence.initializeEntityMetadata(type);
+	MetadataProvider.copy(request.getMetadata(), type);
+	return type;
+    }
+
+    /**
+     * Common logic for copying data from customer type update request to existing
+     * customer type.
+     * 
+     * @param request
+     * @param containedCustomerTypeIds
+     * @param target
+     * @throws SiteWhereException
+     */
+    public static void customerTypeUpdateLogic(ICustomerTypeCreateRequest request, List<UUID> containedCustomerTypeIds,
+	    CustomerType target) throws SiteWhereException {
+	if (request.getToken() != null) {
+	    target.setToken(request.getToken());
+	}
+	if (request.getName() != null) {
+	    target.setName(request.getName());
+	}
+	if (request.getDescription() != null) {
+	    target.setDescription(request.getDescription());
+	}
+	if (request.getIcon() != null) {
+	    target.setIcon(request.getIcon());
+	}
+	if (request.getContainedCustomerTypeTokens() != null) {
+	    target.setContainedCustomerTypeIds(containedCustomerTypeIds);
+	}
+	if (request.getMetadata() != null) {
+	    target.getMetadata().clear();
+	    MetadataProvider.copy(request.getMetadata(), target);
+	}
+	DeviceManagementPersistence.setUpdatedEntityMetadata(target);
+    }
+
+    /**
+     * Common logic for creating new customer object and populating it from request.
+     * 
+     * @param request
+     * @param customerType
+     * @param parentCustomer
+     * @return
+     * @throws SiteWhereException
+     */
+    public static Customer customerCreateLogic(ICustomerCreateRequest request, ICustomerType customerType,
+	    ICustomer parentCustomer) throws SiteWhereException {
+	Customer area = new Customer();
+	area.setId(UUID.randomUUID());
+
+	// Use token if provided, otherwise generate one.
+	if (request.getToken() != null) {
+	    area.setToken(request.getToken());
+	} else {
+	    area.setToken(UUID.randomUUID().toString());
+	}
+
+	area.setCustomerTypeId(customerType.getId());
+	area.setParentCustomerId(parentCustomer != null ? parentCustomer.getId() : null);
+	area.setName(request.getName());
+	area.setDescription(request.getDescription());
+	area.setImageUrl(request.getImageUrl());
+
+	DeviceManagementPersistence.initializeEntityMetadata(area);
+	MetadataProvider.copy(request.getMetadata(), area);
+	return area;
+    }
+
+    /**
+     * Common logic for copying data from customer update request to existing
+     * customer.
+     * 
+     * @param request
+     * @param target
+     * @throws SiteWhereException
+     */
+    public static void customerUpdateLogic(ICustomerCreateRequest request, Customer target) throws SiteWhereException {
+	if (request.getToken() != null) {
+	    target.setToken(request.getToken());
+	}
+	if (request.getName() != null) {
+	    target.setName(request.getName());
+	}
+	if (request.getDescription() != null) {
+	    target.setDescription(request.getDescription());
+	}
+	if (request.getImageUrl() != null) {
+	    target.setImageUrl(request.getImageUrl());
+	}
+	if (request.getMetadata() != null) {
+	    target.getMetadata().clear();
+	    MetadataProvider.copy(request.getMetadata(), target);
+	}
+	DeviceManagementPersistence.setUpdatedEntityMetadata(target);
+    }
+
+    /**
+     * Common logic for creating new area type object and populating it from
+     * request.
+     * 
+     * @param request
+     * @param containedAreaTypeIds
+     * @return
+     * @throws SiteWhereException
+     */
+    public static AreaType areaTypeCreateLogic(IAreaTypeCreateRequest request, List<UUID> containedAreaTypeIds)
+	    throws SiteWhereException {
+	AreaType type = new AreaType();
+	type.setId(UUID.randomUUID());
+
+	// Use token if provided, otherwise generate one.
+	if (request.getToken() != null) {
+	    type.setToken(request.getToken());
+	} else {
+	    type.setToken(UUID.randomUUID().toString());
+	}
+
+	type.setName(request.getName());
+	type.setDescription(request.getDescription());
+	type.setIcon(request.getIcon());
+	type.setContainedAreaTypeIds(containedAreaTypeIds);
+
+	DeviceManagementPersistence.initializeEntityMetadata(type);
+	MetadataProvider.copy(request.getMetadata(), type);
+	return type;
+    }
+
+    /**
+     * Common logic for copying data from area type update request to existing area
+     * type.
+     * 
+     * @param request
+     * @param containedAreaTypeIds
+     * @param target
+     * @throws SiteWhereException
+     */
+    public static void areaTypeUpdateLogic(IAreaTypeCreateRequest request, List<UUID> containedAreaTypeIds,
+	    AreaType target) throws SiteWhereException {
+	if (request.getToken() != null) {
+	    target.setToken(request.getToken());
+	}
+	if (request.getName() != null) {
+	    target.setName(request.getName());
+	}
+	if (request.getDescription() != null) {
+	    target.setDescription(request.getDescription());
+	}
+	if (request.getIcon() != null) {
+	    target.setIcon(request.getIcon());
+	}
+	if (request.getContainedAreaTypeTokens() != null) {
+	    target.setContainedAreaTypeIds(containedAreaTypeIds);
+	}
+	if (request.getMetadata() != null) {
+	    target.getMetadata().clear();
+	    MetadataProvider.copy(request.getMetadata(), target);
+	}
+	DeviceManagementPersistence.setUpdatedEntityMetadata(target);
+    }
+
+    /**
+     * Common logic for creating new area object and populating it from request.
+     * 
+     * @param request
+     * @param areaType
+     * @param parentArea
+     * @return
+     * @throws SiteWhereException
+     */
+    public static Area areaCreateLogic(IAreaCreateRequest request, IAreaType areaType, IArea parentArea)
+	    throws SiteWhereException {
+	Area area = new Area();
+	area.setId(UUID.randomUUID());
+
+	// Use token if provided, otherwise generate one.
+	if (request.getToken() != null) {
+	    area.setToken(request.getToken());
+	} else {
+	    area.setToken(UUID.randomUUID().toString());
+	}
+
+	area.setAreaTypeId(areaType.getId());
+	area.setParentAreaId(parentArea != null ? parentArea.getId() : null);
+	area.setName(request.getName());
+	area.setDescription(request.getDescription());
+	area.setImageUrl(request.getImageUrl());
+	area.setCoordinates(Location.copy(request.getCoordinates()));
+
+	DeviceManagementPersistence.initializeEntityMetadata(area);
+	MetadataProvider.copy(request.getMetadata(), area);
+	return area;
+    }
+
+    /**
+     * Common logic for copying data from area update request to existing area.
+     * 
+     * @param request
+     * @param target
+     * @throws SiteWhereException
+     */
+    public static void areaUpdateLogic(IAreaCreateRequest request, Area target) throws SiteWhereException {
+	if (request.getToken() != null) {
+	    target.setToken(request.getToken());
+	}
+	if (request.getName() != null) {
+	    target.setName(request.getName());
+	}
+	if (request.getDescription() != null) {
+	    target.setDescription(request.getDescription());
+	}
+	if (request.getImageUrl() != null) {
+	    target.setImageUrl(request.getImageUrl());
+	}
+	if (request.getCoordinates() != null) {
+	    target.setCoordinates(Location.copy(request.getCoordinates()));
+	}
+	if (request.getMetadata() != null) {
+	    target.getMetadata().clear();
+	    MetadataProvider.copy(request.getMetadata(), target);
+	}
+	DeviceManagementPersistence.setUpdatedEntityMetadata(target);
+    }
 
     /**
      * Common logic for creating new device type and populating it from request.
@@ -559,133 +816,6 @@ public class DeviceManagementPersistence extends Persistence {
 	update.setDeviceElementMappings(newMappings);
 	IDevice updated = management.updateDevice(device.getId(), update);
 	return updated;
-    }
-
-    /**
-     * Common logic for creating new area type object and populating it from
-     * request.
-     * 
-     * @param request
-     * @param containedAreaTypeIds
-     * @return
-     * @throws SiteWhereException
-     */
-    public static AreaType areaTypeCreateLogic(IAreaTypeCreateRequest request, List<UUID> containedAreaTypeIds)
-	    throws SiteWhereException {
-	AreaType type = new AreaType();
-	type.setId(UUID.randomUUID());
-
-	// Use token if provided, otherwise generate one.
-	if (request.getToken() != null) {
-	    type.setToken(request.getToken());
-	} else {
-	    type.setToken(UUID.randomUUID().toString());
-	}
-
-	type.setName(request.getName());
-	type.setDescription(request.getDescription());
-	type.setIcon(request.getIcon());
-	type.setContainedAreaTypeIds(containedAreaTypeIds);
-
-	DeviceManagementPersistence.initializeEntityMetadata(type);
-	MetadataProvider.copy(request.getMetadata(), type);
-	return type;
-    }
-
-    /**
-     * Common logic for copying data from area type update request to existing area
-     * type.
-     * 
-     * @param request
-     * @param containedAreaTypeIds
-     * @param target
-     * @throws SiteWhereException
-     */
-    public static void areaTypeUpdateLogic(IAreaTypeCreateRequest request, List<UUID> containedAreaTypeIds,
-	    AreaType target) throws SiteWhereException {
-	if (request.getToken() != null) {
-	    target.setToken(request.getToken());
-	}
-	if (request.getName() != null) {
-	    target.setName(request.getName());
-	}
-	if (request.getDescription() != null) {
-	    target.setDescription(request.getDescription());
-	}
-	if (request.getIcon() != null) {
-	    target.setIcon(request.getIcon());
-	}
-	if (request.getContainedAreaTypeTokens() != null) {
-	    target.setContainedAreaTypeIds(containedAreaTypeIds);
-	}
-	if (request.getMetadata() != null) {
-	    target.getMetadata().clear();
-	    MetadataProvider.copy(request.getMetadata(), target);
-	}
-	DeviceManagementPersistence.setUpdatedEntityMetadata(target);
-    }
-
-    /**
-     * Common logic for creating new area object and populating it from request.
-     * 
-     * @param request
-     * @param areaType
-     * @param parentArea
-     * @return
-     * @throws SiteWhereException
-     */
-    public static Area areaCreateLogic(IAreaCreateRequest request, IAreaType areaType, IArea parentArea)
-	    throws SiteWhereException {
-	Area area = new Area();
-	area.setId(UUID.randomUUID());
-
-	// Use token if provided, otherwise generate one.
-	if (request.getToken() != null) {
-	    area.setToken(request.getToken());
-	} else {
-	    area.setToken(UUID.randomUUID().toString());
-	}
-
-	area.setAreaTypeId(areaType.getId());
-	area.setParentAreaId(parentArea != null ? parentArea.getId() : null);
-	area.setName(request.getName());
-	area.setDescription(request.getDescription());
-	area.setImageUrl(request.getImageUrl());
-	area.setCoordinates(Location.copy(request.getCoordinates()));
-
-	DeviceManagementPersistence.initializeEntityMetadata(area);
-	MetadataProvider.copy(request.getMetadata(), area);
-	return area;
-    }
-
-    /**
-     * Common logic for copying data from area update request to existing area.
-     * 
-     * @param request
-     * @param target
-     * @throws SiteWhereException
-     */
-    public static void areaUpdateLogic(IAreaCreateRequest request, Area target) throws SiteWhereException {
-	if (request.getToken() != null) {
-	    target.setToken(request.getToken());
-	}
-	if (request.getName() != null) {
-	    target.setName(request.getName());
-	}
-	if (request.getDescription() != null) {
-	    target.setDescription(request.getDescription());
-	}
-	if (request.getImageUrl() != null) {
-	    target.setImageUrl(request.getImageUrl());
-	}
-	if (request.getCoordinates() != null) {
-	    target.setCoordinates(Location.copy(request.getCoordinates()));
-	}
-	if (request.getMetadata() != null) {
-	    target.getMetadata().clear();
-	    MetadataProvider.copy(request.getMetadata(), target);
-	}
-	DeviceManagementPersistence.setUpdatedEntityMetadata(target);
     }
 
     /**

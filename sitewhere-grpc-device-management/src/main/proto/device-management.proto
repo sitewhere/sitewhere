@@ -12,6 +12,122 @@ import "sitewhere-common.proto";
 // Device management APIs.
 service DeviceManagement {
 
+	// ######################
+	// ### CUSTOMER TYPES ###
+	// ######################
+	
+	// Create a new customer type.
+	rpc CreateCustomerType (GCreateCustomerTypeRequest) returns (GCreateCustomerTypeResponse) {}
+		
+	// Get customer type by id.
+	rpc GetCustomerType (GGetCustomerTypeRequest) returns (GGetCustomerTypeResponse) {}
+	
+	// Get customer type by unique token.
+	rpc GetCustomerTypeByToken (GGetCustomerTypeByTokenRequest) returns (GGetCustomerTypeByTokenResponse) {}
+	
+	// Update an existing customer type.
+	rpc UpdateCustomerType (GUpdateCustomerTypeRequest) returns (GUpdateCustomerTypeResponse) {}
+	
+	// List customer types that meet criteria.
+	rpc ListCustomerTypes (GListCustomerTypesRequest) returns (GListCustomerTypesResponse) {}
+	
+	// Delete an existing customer type.
+	rpc DeleteCustomerType (GDeleteCustomerTypeRequest) returns (GDeleteCustomerTypeResponse) {}
+
+	// #################
+	// ### CUSTOMERS ###
+	// #################
+	
+	// Create a new customer.
+	rpc CreateCustomer (GCreateCustomerRequest) returns (GCreateCustomerResponse) {}
+		
+	// Get customer by id.
+	rpc GetCustomer (GGetCustomerRequest) returns (GGetCustomerResponse) {}
+	
+	// Get customer by unique token.
+	rpc GetCustomerByToken (GGetCustomerByTokenRequest) returns (GGetCustomerByTokenResponse) {}
+	
+	// Get children of a customer.
+	rpc GetCustomerChildren (GGetCustomerChildrenRequest) returns (GGetCustomerChildrenResponse) {}
+	
+	// Update an existing customer.
+	rpc UpdateCustomer (GUpdateCustomerRequest) returns (GUpdateCustomerResponse) {}
+	
+	// List customers that meet criteria.
+	rpc ListCustomers (GListCustomersRequest) returns (GListCustomersResponse) {}
+	
+	// Delete an existing customer.
+	rpc DeleteCustomer (GDeleteCustomerRequest) returns (GDeleteCustomerResponse) {}
+
+	// ##################
+	// ### AREA TYPES ###
+	// ##################
+	
+	// Create a new area type.
+	rpc CreateAreaType (GCreateAreaTypeRequest) returns (GCreateAreaTypeResponse) {}
+		
+	// Get area type by id.
+	rpc GetAreaType (GGetAreaTypeRequest) returns (GGetAreaTypeResponse) {}
+	
+	// Get area type by unique token.
+	rpc GetAreaTypeByToken (GGetAreaTypeByTokenRequest) returns (GGetAreaTypeByTokenResponse) {}
+	
+	// Update an existing area type.
+	rpc UpdateAreaType (GUpdateAreaTypeRequest) returns (GUpdateAreaTypeResponse) {}
+	
+	// List area types that meet criteria.
+	rpc ListAreaTypes (GListAreaTypesRequest) returns (GListAreaTypesResponse) {}
+	
+	// Delete an existing area type.
+	rpc DeleteAreaType (GDeleteAreaTypeRequest) returns (GDeleteAreaTypeResponse) {}
+
+	// #############
+	// ### AREAS ###
+	// #############
+	
+	// Create a new area.
+	rpc CreateArea (GCreateAreaRequest) returns (GCreateAreaResponse) {}
+		
+	// Get area by id.
+	rpc GetArea (GGetAreaRequest) returns (GGetAreaResponse) {}
+	
+	// Get area by unique token.
+	rpc GetAreaByToken (GGetAreaByTokenRequest) returns (GGetAreaByTokenResponse) {}
+	
+	// Get children of an area.
+	rpc GetAreaChildren (GGetAreaChildrenRequest) returns (GGetAreaChildrenResponse) {}
+	
+	// Update an existing area.
+	rpc UpdateArea (GUpdateAreaRequest) returns (GUpdateAreaResponse) {}
+	
+	// List areas that meet criteria.
+	rpc ListAreas (GListAreasRequest) returns (GListAreasResponse) {}
+	
+	// Delete an existing area.
+	rpc DeleteArea (GDeleteAreaRequest) returns (GDeleteAreaResponse) {}
+	
+	// #############
+	// ### ZONES ###
+	// #############
+	
+	// Create a new zone.
+	rpc CreateZone (GCreateZoneRequest) returns (GCreateZoneResponse) {}
+	
+	// Get zone by id.
+	rpc GetZone (GGetZoneRequest) returns (GGetZoneResponse) {}
+	
+	// Get zone by unique token.
+	rpc GetZoneByToken (GGetZoneByTokenRequest) returns (GGetZoneByTokenResponse) {}
+	
+	// Update an existing zone.
+	rpc UpdateZone (GUpdateZoneRequest) returns (GUpdateZoneResponse) {}
+	
+	// List zones that meet criteria.
+	rpc ListZones (GListZonesRequest) returns (GListZonesResponse) {}
+	
+	// Delete an existing zone.
+	rpc DeleteZone (GDeleteZoneRequest) returns (GDeleteZoneResponse) {}
+
 	// ####################
 	// ### DEVICE TYPES ###
 	// ####################
@@ -177,80 +293,365 @@ service DeviceManagement {
 
 	// List devices streams that meet criteria.
 	rpc ListDeviceStreams (GListDeviceStreamsRequest) returns (GListDeviceStreamsResponse) {}
-
-	// ##################
-	// ### AREA TYPES ###
-	// ##################
-	
-	// Create a new area type.
-	rpc CreateAreaType (GCreateAreaTypeRequest) returns (GCreateAreaTypeResponse) {}
-		
-	// Get area type by id.
-	rpc GetAreaType (GGetAreaTypeRequest) returns (GGetAreaTypeResponse) {}
-	
-	// Get area type by unique token.
-	rpc GetAreaTypeByToken (GGetAreaTypeByTokenRequest) returns (GGetAreaTypeByTokenResponse) {}
-	
-	// Update an existing area type.
-	rpc UpdateAreaType (GUpdateAreaTypeRequest) returns (GUpdateAreaTypeResponse) {}
-	
-	// List area types that meet criteria.
-	rpc ListAreaTypes (GListAreaTypesRequest) returns (GListAreaTypesResponse) {}
-	
-	// Delete an existing area type.
-	rpc DeleteAreaType (GDeleteAreaTypeRequest) returns (GDeleteAreaTypeResponse) {}
-
-	// #############
-	// ### AREAS ###
-	// #############
-	
-	// Create a new area.
-	rpc CreateArea (GCreateAreaRequest) returns (GCreateAreaResponse) {}
-		
-	// Get area by id.
-	rpc GetArea (GGetAreaRequest) returns (GGetAreaResponse) {}
-	
-	// Get area by unique token.
-	rpc GetAreaByToken (GGetAreaByTokenRequest) returns (GGetAreaByTokenResponse) {}
-	
-	// Get children of an area.
-	rpc GetAreaChildren (GGetAreaChildrenRequest) returns (GGetAreaChildrenResponse) {}
-	
-	// Update an existing area.
-	rpc UpdateArea (GUpdateAreaRequest) returns (GUpdateAreaResponse) {}
-	
-	// List areas that meet criteria.
-	rpc ListAreas (GListAreasRequest) returns (GListAreasResponse) {}
-	
-	// Delete an existing area.
-	rpc DeleteArea (GDeleteAreaRequest) returns (GDeleteAreaResponse) {}
-	
-	// #############
-	// ### ZONES ###
-	// #############
-	
-	// Create a new zone.
-	rpc CreateZone (GCreateZoneRequest) returns (GCreateZoneResponse) {}
-	
-	// Get zone by id.
-	rpc GetZone (GGetZoneRequest) returns (GGetZoneResponse) {}
-	
-	// Get zone by unique token.
-	rpc GetZoneByToken (GGetZoneByTokenRequest) returns (GGetZoneByTokenResponse) {}
-	
-	// Update an existing zone.
-	rpc UpdateZone (GUpdateZoneRequest) returns (GUpdateZoneResponse) {}
-	
-	// List zones that meet criteria.
-	rpc ListZones (GListZonesRequest) returns (GListZonesResponse) {}
-	
-	// Delete an existing zone.
-	rpc DeleteZone (GDeleteZoneRequest) returns (GDeleteZoneResponse) {}
 }
 
-// #############################
-// ### DEVICE SPECIFICATIONS ###
-// #############################
+// ######################
+// ### CUSTOMER TYPES ###
+// ######################
+
+// Request for creating a customer type.
+message GCreateCustomerTypeRequest {
+	com.sitewhere.grpc.model.GCustomerTypeCreateRequest request = 1;
+}
+
+// Response from creating a customer type.
+message GCreateCustomerTypeResponse {
+	com.sitewhere.grpc.model.GCustomerType customerType = 1;
+}
+	
+// Request for getting a customer type by id.
+message GGetCustomerTypeRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+}
+	
+// Response for getting an area type by id.
+message GGetCustomerTypeResponse {
+	com.sitewhere.grpc.model.GCustomerType customerType = 1;
+}
+	
+// Request for getting a customer type by token.
+message GGetCustomerTypeByTokenRequest {
+	string token = 1;
+}
+	
+// Response for getting a customer type by token.
+message GGetCustomerTypeByTokenResponse {
+	com.sitewhere.grpc.model.GCustomerType customerType = 1;
+}
+	
+// Request for updating an existing customer type.
+message GUpdateCustomerTypeRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	com.sitewhere.grpc.model.GCustomerTypeCreateRequest request = 2;
+}
+	
+// Response for updating an existing customer type.
+message GUpdateCustomerTypeResponse {
+	com.sitewhere.grpc.model.GCustomerType customerType = 1;
+}
+	
+// Request for listing customer types that meet criteria.
+message GListCustomerTypesRequest {
+	com.sitewhere.grpc.model.GCustomerTypeSearchCriteria criteria = 1;
+}
+	
+// Response for listing customer types that meet criteria.
+message GListCustomerTypesResponse {
+	com.sitewhere.grpc.model.GCustomerTypeSearchResults results = 1;
+}
+	
+// Request for deleting a customer type.
+message GDeleteCustomerTypeRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	bool force = 2;
+}
+	
+// Response for deleting a customer type.
+message GDeleteCustomerTypeResponse {
+	com.sitewhere.grpc.model.GCustomerType customerType = 1;
+}
+
+// #################
+// ### CUSTOMERS ###
+// #################
+
+// Request for creating a customer.
+message GCreateCustomerRequest {
+	com.sitewhere.grpc.model.GCustomerCreateRequest request = 1;
+}
+
+// Response from creating a customer.
+message GCreateCustomerResponse {
+	com.sitewhere.grpc.model.GCustomer customer = 1;
+}
+	
+// Request for getting a customer by id.
+message GGetCustomerRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+}
+	
+// Response for getting a customer by id.
+message GGetCustomerResponse {
+	com.sitewhere.grpc.model.GCustomer customer = 1;
+}
+	
+// Request for getting a customer by token.
+message GGetCustomerByTokenRequest {
+	string token = 1;
+}
+	
+// Response for getting a customer by token.
+message GGetCustomerByTokenResponse {
+	com.sitewhere.grpc.model.GCustomer customer = 1;
+}
+
+// Request for getting customer children.
+message GGetCustomerChildrenRequest {
+	string token = 1;
+}
+
+// Response for getting customer children.
+message GGetCustomerChildrenResponse {
+	repeated com.sitewhere.grpc.model.GCustomer customers = 1;
+}
+	
+// Request for updating an existing customer.
+message GUpdateCustomerRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	com.sitewhere.grpc.model.GCustomerCreateRequest request = 2;
+}
+	
+// Response for updating an existing customer.
+message GUpdateCustomerResponse {
+	com.sitewhere.grpc.model.GCustomer customer = 1;
+}
+	
+// Request for listing customers that meet criteria.
+message GListCustomersRequest {
+	com.sitewhere.grpc.model.GCustomerSearchCriteria criteria = 1;
+}
+	
+// Response for listing customers that meet criteria.
+message GListCustomersResponse {
+	com.sitewhere.grpc.model.GCustomerSearchResults results = 1;
+}
+	
+// Request for deleting a customer.
+message GDeleteCustomerRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	bool force = 2;
+}
+	
+// Response for deleting a customer.
+message GDeleteCustomerResponse {
+	com.sitewhere.grpc.model.GCustomer customer = 1;
+}
+
+// ##################
+// ### AREA TYPES ###
+// ##################
+
+// Request for creating an area type.
+message GCreateAreaTypeRequest {
+	com.sitewhere.grpc.model.GAreaTypeCreateRequest request = 1;
+}
+
+// Response from creating an area type.
+message GCreateAreaTypeResponse {
+	com.sitewhere.grpc.model.GAreaType areaType = 1;
+}
+	
+// Request for getting an area type by id.
+message GGetAreaTypeRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+}
+	
+// Response for getting an area type by id.
+message GGetAreaTypeResponse {
+	com.sitewhere.grpc.model.GAreaType areaType = 1;
+}
+	
+// Request for getting an area type by token.
+message GGetAreaTypeByTokenRequest {
+	string token = 1;
+}
+	
+// Response for getting an area type by token.
+message GGetAreaTypeByTokenResponse {
+	com.sitewhere.grpc.model.GAreaType areaType = 1;
+}
+	
+// Request for updating an existing area type.
+message GUpdateAreaTypeRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	com.sitewhere.grpc.model.GAreaTypeCreateRequest request = 2;
+}
+	
+// Response for updating an existing area type.
+message GUpdateAreaTypeResponse {
+	com.sitewhere.grpc.model.GAreaType areaType = 1;
+}
+	
+// Request for listing area types that meet criteria.
+message GListAreaTypesRequest {
+	com.sitewhere.grpc.model.GAreaTypeSearchCriteria criteria = 1;
+}
+	
+// Response for listing area types that meet criteria.
+message GListAreaTypesResponse {
+	com.sitewhere.grpc.model.GAreaTypeSearchResults results = 1;
+}
+	
+// Request for deleting an area type.
+message GDeleteAreaTypeRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	bool force = 2;
+}
+	
+// Response for deleting an area type.
+message GDeleteAreaTypeResponse {
+	com.sitewhere.grpc.model.GAreaType areaType = 1;
+}
+
+// #############
+// ### AREAS ###
+// #############
+
+// Request for creating an area.
+message GCreateAreaRequest {
+	com.sitewhere.grpc.model.GAreaCreateRequest request = 1;
+}
+
+// Response from creating an area.
+message GCreateAreaResponse {
+	com.sitewhere.grpc.model.GArea area = 1;
+}
+	
+// Request for getting an area by id.
+message GGetAreaRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+}
+	
+// Response for getting an area by id.
+message GGetAreaResponse {
+	com.sitewhere.grpc.model.GArea area = 1;
+}
+	
+// Request for getting an area by token.
+message GGetAreaByTokenRequest {
+	string token = 1;
+}
+	
+// Response for getting an area by token.
+message GGetAreaByTokenResponse {
+	com.sitewhere.grpc.model.GArea area = 1;
+}
+
+// Request for getting area children.
+message GGetAreaChildrenRequest {
+	string token = 1;
+}
+
+// Response for getting area children.
+message GGetAreaChildrenResponse {
+	repeated com.sitewhere.grpc.model.GArea areas = 1;
+}
+	
+// Request for updating an existing area.
+message GUpdateAreaRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	com.sitewhere.grpc.model.GAreaCreateRequest request = 2;
+}
+	
+// Response for updating an existing area.
+message GUpdateAreaResponse {
+	com.sitewhere.grpc.model.GArea area = 1;
+}
+	
+// Request for listing areas that meet criteria.
+message GListAreasRequest {
+	com.sitewhere.grpc.model.GAreaSearchCriteria criteria = 1;
+}
+	
+// Response for listing areas that meet criteria.
+message GListAreasResponse {
+	com.sitewhere.grpc.model.GAreaSearchResults results = 1;
+}
+	
+// Request for deleting an area.
+message GDeleteAreaRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	bool force = 2;
+}
+	
+// Response for deleting an area.
+message GDeleteAreaResponse {
+	com.sitewhere.grpc.model.GArea area = 1;
+}
+
+// #############
+// ### ZONES ###
+// #############
+
+// Request for creating a zone.
+message GCreateZoneRequest {
+	com.sitewhere.grpc.model.GUUID siteId = 1;
+	com.sitewhere.grpc.model.GZoneCreateRequest request = 2;
+}
+
+// Response from creating a zone.
+message GCreateZoneResponse {
+	com.sitewhere.grpc.model.GZone zone = 1;
+}
+	
+// Request for getting a zone by id.
+message GGetZoneRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+}
+	
+// Response for getting a zone by id.
+message GGetZoneResponse {
+	com.sitewhere.grpc.model.GZone zone = 1;
+}
+	
+// Request for getting a zone by token.
+message GGetZoneByTokenRequest {
+	string token = 1;
+}
+	
+// Response for getting a zone by token.
+message GGetZoneByTokenResponse {
+	com.sitewhere.grpc.model.GZone zone = 1;
+}
+	
+// Request for updating an existing zone.
+message GUpdateZoneRequest {
+	com.sitewhere.grpc.model.GUUID siteId = 1;
+	com.sitewhere.grpc.model.GUUID id = 2;
+	com.sitewhere.grpc.model.GZoneCreateRequest request = 3;
+}
+	
+// Response for updating an existing zone.
+message GUpdateZoneResponse {
+	com.sitewhere.grpc.model.GZone zone = 1;
+}
+	
+// Request for listing zones that meet criteria.
+message GListZonesRequest {
+	com.sitewhere.grpc.model.GUUID siteId = 1;
+	com.sitewhere.grpc.model.GZoneSearchCriteria criteria = 2;
+}
+	
+// Response for listing zones that meet criteria.
+message GListZonesResponse {
+	com.sitewhere.grpc.model.GZoneSearchResults results = 1;
+}
+	
+// Request for deleting a zone.
+message GDeleteZoneRequest {
+	com.sitewhere.grpc.model.GUUID siteId = 1;
+	com.sitewhere.grpc.model.GUUID id = 2;
+	bool force = 3;
+}
+	
+// Response for deleting a zone.
+message GDeleteZoneResponse {
+	com.sitewhere.grpc.model.GZone zone = 1;
+}
+
+// ####################
+// ### DEVICE TYPES ###
+// ####################
 	
 // Request for creating a device type.
 message GCreateDeviceTypeRequest {
@@ -649,218 +1050,6 @@ message GListDeviceStreamsRequest {
 // Response for listing device streams that meet criteria.
 message GListDeviceStreamsResponse {
 	com.sitewhere.grpc.model.GDeviceStreamSearchResults results = 1;
-}
-
-// ##################
-// ### AREA TYPES ###
-// ##################
-
-// Request for creating an area type.
-message GCreateAreaTypeRequest {
-	com.sitewhere.grpc.model.GAreaTypeCreateRequest request = 1;
-}
-
-// Response from creating an area type.
-message GCreateAreaTypeResponse {
-	com.sitewhere.grpc.model.GAreaType areaType = 1;
-}
-	
-// Request for getting an area type by id.
-message GGetAreaTypeRequest {
-	com.sitewhere.grpc.model.GUUID id = 1;
-}
-	
-// Response for getting an area type by id.
-message GGetAreaTypeResponse {
-	com.sitewhere.grpc.model.GAreaType areaType = 1;
-}
-	
-// Request for getting an area type by token.
-message GGetAreaTypeByTokenRequest {
-	string token = 1;
-}
-	
-// Response for getting an area type by token.
-message GGetAreaTypeByTokenResponse {
-	com.sitewhere.grpc.model.GAreaType areaType = 1;
-}
-	
-// Request for updating an existing area type.
-message GUpdateAreaTypeRequest {
-	com.sitewhere.grpc.model.GUUID id = 1;
-	com.sitewhere.grpc.model.GAreaTypeCreateRequest request = 2;
-}
-	
-// Response for updating an existing area type.
-message GUpdateAreaTypeResponse {
-	com.sitewhere.grpc.model.GAreaType areaType = 1;
-}
-	
-// Request for listing area types that meet criteria.
-message GListAreaTypesRequest {
-	com.sitewhere.grpc.model.GAreaTypeSearchCriteria criteria = 1;
-}
-	
-// Response for listing area types that meet criteria.
-message GListAreaTypesResponse {
-	com.sitewhere.grpc.model.GAreaTypeSearchResults results = 1;
-}
-	
-// Request for deleting an area type.
-message GDeleteAreaTypeRequest {
-	com.sitewhere.grpc.model.GUUID id = 1;
-	bool force = 2;
-}
-	
-// Response for deleting an area type.
-message GDeleteAreaTypeResponse {
-	com.sitewhere.grpc.model.GAreaType areaType = 1;
-}
-
-// #############
-// ### AREAS ###
-// #############
-
-// Request for creating an area.
-message GCreateAreaRequest {
-	com.sitewhere.grpc.model.GAreaCreateRequest request = 1;
-}
-
-// Response from creating an area.
-message GCreateAreaResponse {
-	com.sitewhere.grpc.model.GArea area = 1;
-}
-	
-// Request for getting an area by id.
-message GGetAreaRequest {
-	com.sitewhere.grpc.model.GUUID id = 1;
-}
-	
-// Response for getting an area by id.
-message GGetAreaResponse {
-	com.sitewhere.grpc.model.GArea area = 1;
-}
-	
-// Request for getting an area by token.
-message GGetAreaByTokenRequest {
-	string token = 1;
-}
-	
-// Response for getting an area by token.
-message GGetAreaByTokenResponse {
-	com.sitewhere.grpc.model.GArea area = 1;
-}
-
-// Request for getting area children.
-message GGetAreaChildrenRequest {
-	string token = 1;
-}
-
-// Response for getting area children.
-message GGetAreaChildrenResponse {
-	repeated com.sitewhere.grpc.model.GArea areas = 1;
-}
-	
-// Request for updating an existing area.
-message GUpdateAreaRequest {
-	com.sitewhere.grpc.model.GUUID id = 1;
-	com.sitewhere.grpc.model.GAreaCreateRequest request = 2;
-}
-	
-// Response for updating an existing area.
-message GUpdateAreaResponse {
-	com.sitewhere.grpc.model.GArea area = 1;
-}
-	
-// Request for listing areas that meet criteria.
-message GListAreasRequest {
-	com.sitewhere.grpc.model.GAreaSearchCriteria criteria = 1;
-}
-	
-// Response for listing areas that meet criteria.
-message GListAreasResponse {
-	com.sitewhere.grpc.model.GAreaSearchResults results = 1;
-}
-	
-// Request for deleting an area.
-message GDeleteAreaRequest {
-	com.sitewhere.grpc.model.GUUID id = 1;
-	bool force = 2;
-}
-	
-// Response for deleting an area.
-message GDeleteAreaResponse {
-	com.sitewhere.grpc.model.GArea area = 1;
-}
-
-// #############
-// ### ZONES ###
-// #############
-
-// Request for creating a zone.
-message GCreateZoneRequest {
-	com.sitewhere.grpc.model.GUUID siteId = 1;
-	com.sitewhere.grpc.model.GZoneCreateRequest request = 2;
-}
-
-// Response from creating a zone.
-message GCreateZoneResponse {
-	com.sitewhere.grpc.model.GZone zone = 1;
-}
-	
-// Request for getting a zone by id.
-message GGetZoneRequest {
-	com.sitewhere.grpc.model.GUUID id = 1;
-}
-	
-// Response for getting a zone by id.
-message GGetZoneResponse {
-	com.sitewhere.grpc.model.GZone zone = 1;
-}
-	
-// Request for getting a zone by token.
-message GGetZoneByTokenRequest {
-	string token = 1;
-}
-	
-// Response for getting a zone by token.
-message GGetZoneByTokenResponse {
-	com.sitewhere.grpc.model.GZone zone = 1;
-}
-	
-// Request for updating an existing zone.
-message GUpdateZoneRequest {
-	com.sitewhere.grpc.model.GUUID siteId = 1;
-	com.sitewhere.grpc.model.GUUID id = 2;
-	com.sitewhere.grpc.model.GZoneCreateRequest request = 3;
-}
-	
-// Response for updating an existing zone.
-message GUpdateZoneResponse {
-	com.sitewhere.grpc.model.GZone zone = 1;
-}
-	
-// Request for listing zones that meet criteria.
-message GListZonesRequest {
-	com.sitewhere.grpc.model.GUUID siteId = 1;
-	com.sitewhere.grpc.model.GZoneSearchCriteria criteria = 2;
-}
-	
-// Response for listing zones that meet criteria.
-message GListZonesResponse {
-	com.sitewhere.grpc.model.GZoneSearchResults results = 1;
-}
-	
-// Request for deleting a zone.
-message GDeleteZoneRequest {
-	com.sitewhere.grpc.model.GUUID siteId = 1;
-	com.sitewhere.grpc.model.GUUID id = 2;
-	bool force = 3;
-}
-	
-// Response for deleting a zone.
-message GDeleteZoneResponse {
-	com.sitewhere.grpc.model.GZone zone = 1;
 }
 	
 // #####################

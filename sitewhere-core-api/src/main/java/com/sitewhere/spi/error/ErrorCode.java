@@ -98,6 +98,18 @@ public enum ErrorCode {
      * INVALID OR DUPLICATE ID *
      ***************************/
 
+    /** Duplicate customer type token */
+    DuplicateCustomerTypeToken(4000, "Customer type token already in use."),
+
+    /** Invalid customer type token */
+    InvalidCustomerTypeToken(4002, "Customer type not found."),
+
+    /** Duplicate customer token */
+    DuplicateCustomerToken(4005, "Customer token already in use."),
+
+    /** Invalid customer token */
+    InvalidCustomerToken(4007, "Customer not found."),
+
     /** Malformed device hardware id */
     MalformedHardwareId(4010,
 	    "Hardware id must consist of alphanumeric values with dashes, underscores, and no spaces."),

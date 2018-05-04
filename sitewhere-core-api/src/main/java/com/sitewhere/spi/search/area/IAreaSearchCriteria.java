@@ -12,7 +12,7 @@ import java.util.UUID;
 import com.sitewhere.spi.search.ISearchCriteria;
 
 /**
- * Specifies criteria for searching a list of assets.
+ * Specifies criteria used to find matching areas.
  * 
  * @author Derek
  */

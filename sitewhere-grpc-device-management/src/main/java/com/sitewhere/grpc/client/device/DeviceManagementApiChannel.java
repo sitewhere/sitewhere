@@ -24,6 +24,10 @@ import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.area.request.IAreaCreateRequest;
 import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
+import com.sitewhere.spi.customer.ICustomer;
+import com.sitewhere.spi.customer.ICustomerType;
+import com.sitewhere.spi.customer.request.ICustomerCreateRequest;
+import com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
@@ -44,6 +48,7 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
+import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.tracing.ITracerProvider;
@@ -69,6 +74,667 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public DeviceManagementGrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
 	return new DeviceManagementGrpcChannel(tracerProvider, host, port);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createCustomerType(com.sitewhere.
+     * spi.customer.request.ICustomerTypeCreateRequest)
+     */
+    @Override
+    public ICustomerType createCustomerType(ICustomerTypeCreateRequest request) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_CREATE_CUSTOMER_TYPE);
+	    GCreateCustomerTypeRequest.Builder grequest = GCreateCustomerTypeRequest.newBuilder();
+	    grequest.setRequest(DeviceModelConverter.asGrpcCustomerTypeCreateRequest(request));
+	    GCreateCustomerTypeResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .createCustomerType(grequest.build());
+	    ICustomerType response = (gresponse.hasCustomerType())
+		    ? DeviceModelConverter.asApiCustomerType(gresponse.getCustomerType())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_CUSTOMER_TYPE, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_CUSTOMER_TYPE, t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getCustomerType(java.util.UUID)
+     */
+    @Override
+    public ICustomerType getCustomerType(UUID id) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_CUSTOMER_TYPE);
+	    GGetCustomerTypeRequest.Builder grequest = GGetCustomerTypeRequest.newBuilder();
+	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
+	    GGetCustomerTypeResponse gresponse = getGrpcChannel().getBlockingStub().getCustomerType(grequest.build());
+	    ICustomerType response = (gresponse.hasCustomerType())
+		    ? DeviceModelConverter.asApiCustomerType(gresponse.getCustomerType())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_CUSTOMER_TYPE, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_CUSTOMER_TYPE, t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getCustomerTypeByToken(java.lang.
+     * String)
+     */
+    @Override
+    public ICustomerType getCustomerTypeByToken(String token) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_CUSTOMER_TYPE_BY_TOKEN);
+	    GGetCustomerTypeByTokenRequest.Builder grequest = GGetCustomerTypeByTokenRequest.newBuilder();
+	    grequest.setToken(token);
+	    GGetCustomerTypeByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .getCustomerTypeByToken(grequest.build());
+	    ICustomerType response = (gresponse.hasCustomerType())
+		    ? DeviceModelConverter.asApiCustomerType(gresponse.getCustomerType())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_CUSTOMER_TYPE_BY_TOKEN, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_CUSTOMER_TYPE_BY_TOKEN, t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#updateCustomerType(java.util.UUID,
+     * com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest)
+     */
+    @Override
+    public ICustomerType updateCustomerType(UUID id, ICustomerTypeCreateRequest request) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_UPDATE_CUSTOMER_TYPE);
+	    GUpdateCustomerTypeRequest.Builder grequest = GUpdateCustomerTypeRequest.newBuilder();
+	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
+	    grequest.setRequest(DeviceModelConverter.asGrpcCustomerTypeCreateRequest(request));
+	    GUpdateCustomerTypeResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .updateCustomerType(grequest.build());
+	    ICustomerType response = (gresponse.hasCustomerType())
+		    ? DeviceModelConverter.asApiCustomerType(gresponse.getCustomerType())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_CUSTOMER_TYPE, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_CUSTOMER_TYPE, t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listCustomerTypes(com.sitewhere.
+     * spi.search.ISearchCriteria)
+     */
+    @Override
+    public ISearchResults<ICustomerType> listCustomerTypes(ISearchCriteria criteria) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_CUSTOMER_TYPES);
+	    GListCustomerTypesRequest.Builder grequest = GListCustomerTypesRequest.newBuilder();
+	    grequest.setCriteria(DeviceModelConverter.asApiCustomerTypeSearchCriteria(criteria));
+	    GListCustomerTypesResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .listCustomerTypes(grequest.build());
+	    ISearchResults<ICustomerType> results = DeviceModelConverter
+		    .asApiCustomerTypeSearchResults(gresponse.getResults());
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_CUSTOMER_TYPES, results);
+	    return results;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_CUSTOMER_TYPES, t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#deleteCustomerType(java.util.UUID,
+     * boolean)
+     */
+    @Override
+    public ICustomerType deleteCustomerType(UUID id, boolean force) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_DELETE_CUSTOMER_TYPE);
+	    GDeleteCustomerTypeRequest.Builder grequest = GDeleteCustomerTypeRequest.newBuilder();
+	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
+	    grequest.setForce(force);
+	    GDeleteCustomerTypeResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .deleteCustomerType(grequest.build());
+	    ICustomerType response = (gresponse.hasCustomerType())
+		    ? DeviceModelConverter.asApiCustomerType(gresponse.getCustomerType())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_CUSTOMER_TYPE, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_CUSTOMER_TYPE, t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createCustomer(com.sitewhere.spi.
+     * customer.request.ICustomerCreateRequest)
+     */
+    @Override
+    public ICustomer createCustomer(ICustomerCreateRequest request) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_CREATE_CUSTOMER);
+	    GCreateCustomerRequest.Builder grequest = GCreateCustomerRequest.newBuilder();
+	    grequest.setRequest(DeviceModelConverter.asGrpcCustomerCreateRequest(request));
+	    GCreateCustomerResponse gresponse = getGrpcChannel().getBlockingStub().createCustomer(grequest.build());
+	    ICustomer response = (gresponse.hasCustomer()) ? DeviceModelConverter.asApiCustomer(gresponse.getCustomer())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_CUSTOMER, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_CUSTOMER, t);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getCustomer(java.util.UUID)
+     */
+    @Override
+    public ICustomer getCustomer(UUID id) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_CUSTOMER);
+	    GGetCustomerRequest.Builder grequest = GGetCustomerRequest.newBuilder();
+	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
+	    GGetCustomerResponse gresponse = getGrpcChannel().getBlockingStub().getCustomer(grequest.build());
+	    ICustomer response = (gresponse.hasCustomer()) ? DeviceModelConverter.asApiCustomer(gresponse.getCustomer())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_CUSTOMER, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_CUSTOMER, t);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getCustomerByToken(java.lang.
+     * String)
+     */
+    @Override
+    public ICustomer getCustomerByToken(String token) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_CUSTOMER_BY_TOKEN);
+	    GGetCustomerByTokenRequest.Builder grequest = GGetCustomerByTokenRequest.newBuilder();
+	    grequest.setToken(token);
+	    GGetCustomerByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .getCustomerByToken(grequest.build());
+	    ICustomer response = (gresponse.hasCustomer()) ? DeviceModelConverter.asApiCustomer(gresponse.getCustomer())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_CUSTOMER_BY_TOKEN, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_CUSTOMER_BY_TOKEN, t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getCustomerChildren(java.lang.
+     * String)
+     */
+    @Override
+    public List<ICustomer> getCustomerChildren(String token) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_CUSTOMER_CHILDREN);
+	    GGetCustomerChildrenRequest.Builder grequest = GGetCustomerChildrenRequest.newBuilder();
+	    grequest.setToken(token);
+	    GGetCustomerChildrenResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .getCustomerChildren(grequest.build());
+	    List<ICustomer> response = DeviceModelConverter.asApiCustomers(gresponse.getCustomersList());
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_CUSTOMER_CHILDREN, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_CUSTOMER_CHILDREN, t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#updateCustomer(java.util.UUID,
+     * com.sitewhere.spi.customer.request.ICustomerCreateRequest)
+     */
+    @Override
+    public ICustomer updateCustomer(UUID id, ICustomerCreateRequest request) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_UPDATE_CUSTOMER);
+	    GUpdateCustomerRequest.Builder grequest = GUpdateCustomerRequest.newBuilder();
+	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
+	    grequest.setRequest(DeviceModelConverter.asGrpcCustomerCreateRequest(request));
+	    GUpdateCustomerResponse gresponse = getGrpcChannel().getBlockingStub().updateCustomer(grequest.build());
+	    ICustomer response = (gresponse.hasCustomer()) ? DeviceModelConverter.asApiCustomer(gresponse.getCustomer())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_CUSTOMER, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_CUSTOMER, t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listCustomers(com.sitewhere.spi.
+     * search.customer.ICustomerSearchCriteria)
+     */
+    @Override
+    public ISearchResults<ICustomer> listCustomers(ICustomerSearchCriteria criteria) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_CUSTOMERS);
+	    GListCustomersRequest.Builder grequest = GListCustomersRequest.newBuilder();
+	    grequest.setCriteria(DeviceModelConverter.asGrpcCustomerSearchCriteria(criteria));
+	    GListCustomersResponse gresponse = getGrpcChannel().getBlockingStub().listCustomers(grequest.build());
+	    ISearchResults<ICustomer> results = DeviceModelConverter.asApiCustomerSearchResults(gresponse.getResults());
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_CUSTOMERS, results);
+	    return results;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_CUSTOMERS, t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#deleteCustomer(java.util.UUID,
+     * boolean)
+     */
+    @Override
+    public ICustomer deleteCustomer(UUID id, boolean force) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_DELETE_CUSTOMER);
+	    GDeleteCustomerRequest.Builder grequest = GDeleteCustomerRequest.newBuilder();
+	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
+	    grequest.setForce(force);
+	    GDeleteCustomerResponse gresponse = getGrpcChannel().getBlockingStub().deleteCustomer(grequest.build());
+	    ICustomer response = (gresponse.hasCustomer()) ? DeviceModelConverter.asApiCustomer(gresponse.getCustomer())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_CUSTOMER, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_CUSTOMER, t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createAreaType(com.sitewhere.spi.
+     * area.request.IAreaTypeCreateRequest)
+     */
+    @Override
+    public IAreaType createAreaType(IAreaTypeCreateRequest request) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_CREATE_AREA_TYPE);
+	    GCreateAreaTypeRequest.Builder grequest = GCreateAreaTypeRequest.newBuilder();
+	    grequest.setRequest(DeviceModelConverter.asGrpcAreaTypeCreateRequest(request));
+	    GCreateAreaTypeResponse gresponse = getGrpcChannel().getBlockingStub().createAreaType(grequest.build());
+	    IAreaType response = (gresponse.hasAreaType()) ? DeviceModelConverter.asApiAreaType(gresponse.getAreaType())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_AREA_TYPE, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_AREA_TYPE, t);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getAreaType(java.util.UUID)
+     */
+    @Override
+    public IAreaType getAreaType(UUID id) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_AREA_TYPE);
+	    GGetAreaTypeRequest.Builder grequest = GGetAreaTypeRequest.newBuilder();
+	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
+	    GGetAreaTypeResponse gresponse = getGrpcChannel().getBlockingStub().getAreaType(grequest.build());
+	    IAreaType response = (gresponse.hasAreaType()) ? DeviceModelConverter.asApiAreaType(gresponse.getAreaType())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_AREA_TYPE, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_AREA_TYPE, t);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getAreaTypeByToken(java.lang.
+     * String)
+     */
+    @Override
+    public IAreaType getAreaTypeByToken(String token) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_AREA_TYPE_BY_TOKEN);
+	    GGetAreaTypeByTokenRequest.Builder grequest = GGetAreaTypeByTokenRequest.newBuilder();
+	    grequest.setToken(token);
+	    GGetAreaTypeByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .getAreaTypeByToken(grequest.build());
+	    IAreaType response = (gresponse.hasAreaType()) ? DeviceModelConverter.asApiAreaType(gresponse.getAreaType())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_AREA_TYPE_BY_TOKEN, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_AREA_TYPE_BY_TOKEN, t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#updateAreaType(java.util.UUID,
+     * com.sitewhere.spi.area.request.IAreaTypeCreateRequest)
+     */
+    @Override
+    public IAreaType updateAreaType(UUID id, IAreaTypeCreateRequest request) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_UPDATE_AREA_TYPE);
+	    GUpdateAreaTypeRequest.Builder grequest = GUpdateAreaTypeRequest.newBuilder();
+	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
+	    grequest.setRequest(DeviceModelConverter.asGrpcAreaTypeCreateRequest(request));
+	    GUpdateAreaTypeResponse gresponse = getGrpcChannel().getBlockingStub().updateAreaType(grequest.build());
+	    IAreaType response = (gresponse.hasAreaType()) ? DeviceModelConverter.asApiAreaType(gresponse.getAreaType())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_AREA_TYPE, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_AREA_TYPE, t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listAreaTypes(com.sitewhere.spi.
+     * search.ISearchCriteria)
+     */
+    @Override
+    public ISearchResults<IAreaType> listAreaTypes(ISearchCriteria criteria) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_AREA_TYPES);
+	    GListAreaTypesRequest.Builder grequest = GListAreaTypesRequest.newBuilder();
+	    grequest.setCriteria(DeviceModelConverter.asApiAreaTypeSearchCriteria(criteria));
+	    GListAreaTypesResponse gresponse = getGrpcChannel().getBlockingStub().listAreaTypes(grequest.build());
+	    ISearchResults<IAreaType> results = DeviceModelConverter.asApiAreaTypeSearchResults(gresponse.getResults());
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_AREA_TYPES, results);
+	    return results;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_AREA_TYPES, t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#deleteAreaType(java.util.UUID,
+     * boolean)
+     */
+    @Override
+    public IAreaType deleteAreaType(UUID id, boolean force) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_DELETE_AREA_TYPE);
+	    GDeleteAreaTypeRequest.Builder grequest = GDeleteAreaTypeRequest.newBuilder();
+	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
+	    grequest.setForce(force);
+	    GDeleteAreaTypeResponse gresponse = getGrpcChannel().getBlockingStub().deleteAreaType(grequest.build());
+	    IAreaType response = (gresponse.hasAreaType()) ? DeviceModelConverter.asApiAreaType(gresponse.getAreaType())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_AREA_TYPE, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_AREA_TYPE, t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createArea(com.sitewhere.spi.area.
+     * request.IAreaCreateRequest)
+     */
+    @Override
+    public IArea createArea(IAreaCreateRequest request) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_CREATE_AREA);
+	    GCreateAreaRequest.Builder grequest = GCreateAreaRequest.newBuilder();
+	    grequest.setRequest(DeviceModelConverter.asGrpcAreaCreateRequest(request));
+	    GCreateAreaResponse gresponse = getGrpcChannel().getBlockingStub().createArea(grequest.build());
+	    IArea response = (gresponse.hasArea()) ? DeviceModelConverter.asApiArea(gresponse.getArea()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_AREA, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_AREA, t);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getArea(java.util.UUID)
+     */
+    @Override
+    public IArea getArea(UUID id) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_AREA);
+	    GGetAreaRequest.Builder grequest = GGetAreaRequest.newBuilder();
+	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
+	    GGetAreaResponse gresponse = getGrpcChannel().getBlockingStub().getArea(grequest.build());
+	    IArea response = (gresponse.hasArea()) ? DeviceModelConverter.asApiArea(gresponse.getArea()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_AREA, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_AREA, t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getAreaByToken(java.lang.String)
+     */
+    @Override
+    public IArea getAreaByToken(String token) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_AREA_BY_TOKEN);
+	    GGetAreaByTokenRequest.Builder grequest = GGetAreaByTokenRequest.newBuilder();
+	    grequest.setToken(token);
+	    GGetAreaByTokenResponse gresponse = getGrpcChannel().getBlockingStub().getAreaByToken(grequest.build());
+	    IArea response = (gresponse.hasArea()) ? DeviceModelConverter.asApiArea(gresponse.getArea()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_AREA_BY_TOKEN, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_AREA_BY_TOKEN, t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getAreaChildren(java.lang.String)
+     */
+    @Override
+    public List<IArea> getAreaChildren(String token) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_AREA_CHILDREN);
+	    GGetAreaChildrenRequest.Builder grequest = GGetAreaChildrenRequest.newBuilder();
+	    grequest.setToken(token);
+	    GGetAreaChildrenResponse gresponse = getGrpcChannel().getBlockingStub().getAreaChildren(grequest.build());
+	    List<IArea> response = DeviceModelConverter.asApiAreas(gresponse.getAreasList());
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_AREA_CHILDREN, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_AREA_CHILDREN, t);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#updateArea(java.util.UUID,
+     * com.sitewhere.spi.area.request.IAreaCreateRequest)
+     */
+    @Override
+    public IArea updateArea(UUID id, IAreaCreateRequest request) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_UPDATE_AREA);
+	    GUpdateAreaRequest.Builder grequest = GUpdateAreaRequest.newBuilder();
+	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
+	    grequest.setRequest(DeviceModelConverter.asGrpcAreaCreateRequest(request));
+	    GUpdateAreaResponse gresponse = getGrpcChannel().getBlockingStub().updateArea(grequest.build());
+	    IArea response = (gresponse.hasArea()) ? DeviceModelConverter.asApiArea(gresponse.getArea()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_AREA, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_AREA, t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listAreas(com.sitewhere.spi.search
+     * .area.IAreaSearchCriteria)
+     */
+    @Override
+    public ISearchResults<IArea> listAreas(IAreaSearchCriteria criteria) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_AREAS);
+	    GListAreasRequest.Builder grequest = GListAreasRequest.newBuilder();
+	    grequest.setCriteria(DeviceModelConverter.asGrpcAreaSearchCriteria(criteria));
+	    GListAreasResponse gresponse = getGrpcChannel().getBlockingStub().listAreas(grequest.build());
+	    ISearchResults<IArea> results = DeviceModelConverter.asApiAreaSearchResults(gresponse.getResults());
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_AREAS, results);
+	    return results;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_AREAS, t);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteArea(java.util.UUID,
+     * boolean)
+     */
+    @Override
+    public IArea deleteArea(UUID id, boolean force) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_DELETE_AREA);
+	    GDeleteAreaRequest.Builder grequest = GDeleteAreaRequest.newBuilder();
+	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
+	    grequest.setForce(force);
+	    GDeleteAreaResponse gresponse = getGrpcChannel().getBlockingStub().deleteArea(grequest.build());
+	    IArea response = (gresponse.hasArea()) ? DeviceModelConverter.asApiArea(gresponse.getArea()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_AREA, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_AREA, t);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#createZone(java.util.UUID,
+     * com.sitewhere.spi.area.request.IZoneCreateRequest)
+     */
+    @Override
+    public IZone createZone(UUID siteId, IZoneCreateRequest request) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_CREATE_ZONE);
+	    GCreateZoneRequest.Builder grequest = GCreateZoneRequest.newBuilder();
+	    grequest.setSiteId(CommonModelConverter.asGrpcUuid(siteId));
+	    grequest.setRequest(DeviceModelConverter.asGrpcZoneCreateRequest(request));
+	    GCreateZoneResponse gresponse = getGrpcChannel().getBlockingStub().createZone(grequest.build());
+	    IZone response = (gresponse.hasZone()) ? DeviceModelConverter.asApiZone(gresponse.getZone()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_ZONE, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_ZONE, t);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getZone(java.util.UUID)
+     */
+    @Override
+    public IZone getZone(UUID id) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_ZONE);
+	    GGetZoneRequest.Builder grequest = GGetZoneRequest.newBuilder();
+	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
+	    GGetZoneResponse gresponse = getGrpcChannel().getBlockingStub().getZone(grequest.build());
+	    IZone response = (gresponse.hasZone()) ? DeviceModelConverter.asApiZone(gresponse.getZone()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_ZONE, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_ZONE, t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getZoneByToken(java.lang.String)
+     */
+    @Override
+    public IZone getZoneByToken(String zoneToken) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_ZONE_BY_TOKEN);
+	    GGetZoneByTokenRequest.Builder grequest = GGetZoneByTokenRequest.newBuilder();
+	    grequest.setToken(zoneToken);
+	    GGetZoneByTokenResponse gresponse = getGrpcChannel().getBlockingStub().getZoneByToken(grequest.build());
+	    IZone response = (gresponse.hasZone()) ? DeviceModelConverter.asApiZone(gresponse.getZone()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_ZONE_BY_TOKEN, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_ZONE_BY_TOKEN, t);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#updateZone(java.util.UUID,
+     * com.sitewhere.spi.area.request.IZoneCreateRequest)
+     */
+    @Override
+    public IZone updateZone(UUID id, IZoneCreateRequest request) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_UPDATE_ZONE);
+	    GUpdateZoneRequest.Builder grequest = GUpdateZoneRequest.newBuilder();
+	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
+	    grequest.setRequest(DeviceModelConverter.asGrpcZoneCreateRequest(request));
+	    GUpdateZoneResponse gresponse = getGrpcChannel().getBlockingStub().updateZone(grequest.build());
+	    IZone response = (gresponse.hasZone()) ? DeviceModelConverter.asApiZone(gresponse.getZone()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_ZONE, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_ZONE, t);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#listZones(java.util.UUID,
+     * com.sitewhere.spi.search.ISearchCriteria)
+     */
+    @Override
+    public ISearchResults<IZone> listZones(UUID siteId, ISearchCriteria criteria) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_ZONES);
+	    GListZonesRequest.Builder grequest = GListZonesRequest.newBuilder();
+	    grequest.setSiteId(CommonModelConverter.asGrpcUuid(siteId));
+	    grequest.setCriteria(DeviceModelConverter.asApiZoneSearchCriteria(criteria));
+	    GListZonesResponse gresponse = getGrpcChannel().getBlockingStub().listZones(grequest.build());
+	    ISearchResults<IZone> results = DeviceModelConverter.asApiZoneSearchResults(gresponse.getResults());
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_ZONES, results);
+	    return results;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_ZONES, t);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteZone(java.util.UUID,
+     * boolean)
+     */
+    @Override
+    public IZone deleteZone(UUID id, boolean force) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_DELETE_ZONE);
+	    GDeleteZoneRequest.Builder grequest = GDeleteZoneRequest.newBuilder();
+	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
+	    grequest.setForce(force);
+	    GDeleteZoneResponse gresponse = getGrpcChannel().getBlockingStub().deleteZone(grequest.build());
+	    IZone response = (gresponse.hasZone()) ? DeviceModelConverter.asApiZone(gresponse.getZone()) : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_ZONE, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_ZONE, t);
+	}
     }
 
     /*
@@ -889,384 +1555,6 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    return results;
 	} catch (Throwable t) {
 	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_STREAMS, t);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createAreaType(com.sitewhere.spi.
-     * area.request.IAreaTypeCreateRequest)
-     */
-    @Override
-    public IAreaType createAreaType(IAreaTypeCreateRequest request) throws SiteWhereException {
-	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_CREATE_AREA_TYPE);
-	    GCreateAreaTypeRequest.Builder grequest = GCreateAreaTypeRequest.newBuilder();
-	    grequest.setRequest(DeviceModelConverter.asGrpcAreaTypeCreateRequest(request));
-	    GCreateAreaTypeResponse gresponse = getGrpcChannel().getBlockingStub().createAreaType(grequest.build());
-	    IAreaType response = (gresponse.hasAreaType()) ? DeviceModelConverter.asApiAreaType(gresponse.getAreaType())
-		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_AREA_TYPE, response);
-	    return response;
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_AREA_TYPE, t);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#getAreaType(java.util.UUID)
-     */
-    @Override
-    public IAreaType getAreaType(UUID id) throws SiteWhereException {
-	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_AREA_TYPE);
-	    GGetAreaTypeRequest.Builder grequest = GGetAreaTypeRequest.newBuilder();
-	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
-	    GGetAreaTypeResponse gresponse = getGrpcChannel().getBlockingStub().getAreaType(grequest.build());
-	    IAreaType response = (gresponse.hasAreaType()) ? DeviceModelConverter.asApiAreaType(gresponse.getAreaType())
-		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_AREA_TYPE, response);
-	    return response;
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_AREA_TYPE, t);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#getAreaTypeByToken(java.lang.
-     * String)
-     */
-    @Override
-    public IAreaType getAreaTypeByToken(String token) throws SiteWhereException {
-	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_AREA_TYPE_BY_TOKEN);
-	    GGetAreaTypeByTokenRequest.Builder grequest = GGetAreaTypeByTokenRequest.newBuilder();
-	    grequest.setToken(token);
-	    GGetAreaTypeByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .getAreaTypeByToken(grequest.build());
-	    IAreaType response = (gresponse.hasAreaType()) ? DeviceModelConverter.asApiAreaType(gresponse.getAreaType())
-		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_AREA_TYPE_BY_TOKEN, response);
-	    return response;
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_AREA_TYPE_BY_TOKEN, t);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#updateAreaType(java.util.UUID,
-     * com.sitewhere.spi.area.request.IAreaTypeCreateRequest)
-     */
-    @Override
-    public IAreaType updateAreaType(UUID id, IAreaTypeCreateRequest request) throws SiteWhereException {
-	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_UPDATE_AREA_TYPE);
-	    GUpdateAreaTypeRequest.Builder grequest = GUpdateAreaTypeRequest.newBuilder();
-	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
-	    grequest.setRequest(DeviceModelConverter.asGrpcAreaTypeCreateRequest(request));
-	    GUpdateAreaTypeResponse gresponse = getGrpcChannel().getBlockingStub().updateAreaType(grequest.build());
-	    IAreaType response = (gresponse.hasAreaType()) ? DeviceModelConverter.asApiAreaType(gresponse.getAreaType())
-		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_AREA_TYPE, response);
-	    return response;
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_AREA_TYPE, t);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listAreaTypes(com.sitewhere.spi.
-     * search.ISearchCriteria)
-     */
-    @Override
-    public ISearchResults<IAreaType> listAreaTypes(ISearchCriteria criteria) throws SiteWhereException {
-	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_AREA_TYPES);
-	    GListAreaTypesRequest.Builder grequest = GListAreaTypesRequest.newBuilder();
-	    grequest.setCriteria(DeviceModelConverter.asApiAreaTypeSearchCriteria(criteria));
-	    GListAreaTypesResponse gresponse = getGrpcChannel().getBlockingStub().listAreaTypes(grequest.build());
-	    ISearchResults<IAreaType> results = DeviceModelConverter.asApiAreaTypeSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_AREA_TYPES, results);
-	    return results;
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_AREA_TYPES, t);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteAreaType(java.util.UUID,
-     * boolean)
-     */
-    @Override
-    public IAreaType deleteAreaType(UUID id, boolean force) throws SiteWhereException {
-	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_DELETE_AREA_TYPE);
-	    GDeleteAreaTypeRequest.Builder grequest = GDeleteAreaTypeRequest.newBuilder();
-	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
-	    grequest.setForce(force);
-	    GDeleteAreaTypeResponse gresponse = getGrpcChannel().getBlockingStub().deleteAreaType(grequest.build());
-	    IAreaType response = (gresponse.hasAreaType()) ? DeviceModelConverter.asApiAreaType(gresponse.getAreaType())
-		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_AREA_TYPE, response);
-	    return response;
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_AREA_TYPE, t);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createArea(com.sitewhere.spi.area.
-     * request.IAreaCreateRequest)
-     */
-    @Override
-    public IArea createArea(IAreaCreateRequest request) throws SiteWhereException {
-	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_CREATE_AREA);
-	    GCreateAreaRequest.Builder grequest = GCreateAreaRequest.newBuilder();
-	    grequest.setRequest(DeviceModelConverter.asGrpcAreaCreateRequest(request));
-	    GCreateAreaResponse gresponse = getGrpcChannel().getBlockingStub().createArea(grequest.build());
-	    IArea response = (gresponse.hasArea()) ? DeviceModelConverter.asApiArea(gresponse.getArea()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_AREA, response);
-	    return response;
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_AREA, t);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#getArea(java.util.UUID)
-     */
-    @Override
-    public IArea getArea(UUID id) throws SiteWhereException {
-	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_AREA);
-	    GGetAreaRequest.Builder grequest = GGetAreaRequest.newBuilder();
-	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
-	    GGetAreaResponse gresponse = getGrpcChannel().getBlockingStub().getArea(grequest.build());
-	    IArea response = (gresponse.hasArea()) ? DeviceModelConverter.asApiArea(gresponse.getArea()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_AREA, response);
-	    return response;
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_AREA, t);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getAreaByToken(java.lang.String)
-     */
-    @Override
-    public IArea getAreaByToken(String token) throws SiteWhereException {
-	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_AREA_BY_TOKEN);
-	    GGetAreaByTokenRequest.Builder grequest = GGetAreaByTokenRequest.newBuilder();
-	    grequest.setToken(token);
-	    GGetAreaByTokenResponse gresponse = getGrpcChannel().getBlockingStub().getAreaByToken(grequest.build());
-	    IArea response = (gresponse.hasArea()) ? DeviceModelConverter.asApiArea(gresponse.getArea()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_AREA_BY_TOKEN, response);
-	    return response;
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_AREA_BY_TOKEN, t);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getAreaChildren(java.lang.String)
-     */
-    @Override
-    public List<IArea> getAreaChildren(String token) throws SiteWhereException {
-	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_AREA_CHILDREN);
-	    GGetAreaChildrenRequest.Builder grequest = GGetAreaChildrenRequest.newBuilder();
-	    grequest.setToken(token);
-	    GGetAreaChildrenResponse gresponse = getGrpcChannel().getBlockingStub().getAreaChildren(grequest.build());
-	    List<IArea> response = DeviceModelConverter.asApiAreas(gresponse.getAreasList());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_AREA_CHILDREN, response);
-	    return response;
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_AREA_CHILDREN, t);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#updateArea(java.util.UUID,
-     * com.sitewhere.spi.area.request.IAreaCreateRequest)
-     */
-    @Override
-    public IArea updateArea(UUID id, IAreaCreateRequest request) throws SiteWhereException {
-	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_UPDATE_AREA);
-	    GUpdateAreaRequest.Builder grequest = GUpdateAreaRequest.newBuilder();
-	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
-	    grequest.setRequest(DeviceModelConverter.asGrpcAreaCreateRequest(request));
-	    GUpdateAreaResponse gresponse = getGrpcChannel().getBlockingStub().updateArea(grequest.build());
-	    IArea response = (gresponse.hasArea()) ? DeviceModelConverter.asApiArea(gresponse.getArea()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_AREA, response);
-	    return response;
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_AREA, t);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listAreas(com.sitewhere.spi.search
-     * .area.IAreaSearchCriteria)
-     */
-    @Override
-    public ISearchResults<IArea> listAreas(IAreaSearchCriteria criteria) throws SiteWhereException {
-	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_AREAS);
-	    GListAreasRequest.Builder grequest = GListAreasRequest.newBuilder();
-	    grequest.setCriteria(DeviceModelConverter.asGrpcAreaSearchCriteria(criteria));
-	    GListAreasResponse gresponse = getGrpcChannel().getBlockingStub().listAreas(grequest.build());
-	    ISearchResults<IArea> results = DeviceModelConverter.asApiAreaSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_AREAS, results);
-	    return results;
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_AREAS, t);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#deleteArea(java.util.UUID,
-     * boolean)
-     */
-    @Override
-    public IArea deleteArea(UUID id, boolean force) throws SiteWhereException {
-	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_DELETE_AREA);
-	    GDeleteAreaRequest.Builder grequest = GDeleteAreaRequest.newBuilder();
-	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
-	    grequest.setForce(force);
-	    GDeleteAreaResponse gresponse = getGrpcChannel().getBlockingStub().deleteArea(grequest.build());
-	    IArea response = (gresponse.hasArea()) ? DeviceModelConverter.asApiArea(gresponse.getArea()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_AREA, response);
-	    return response;
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_AREA, t);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#createZone(java.util.UUID,
-     * com.sitewhere.spi.area.request.IZoneCreateRequest)
-     */
-    @Override
-    public IZone createZone(UUID siteId, IZoneCreateRequest request) throws SiteWhereException {
-	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_CREATE_ZONE);
-	    GCreateZoneRequest.Builder grequest = GCreateZoneRequest.newBuilder();
-	    grequest.setSiteId(CommonModelConverter.asGrpcUuid(siteId));
-	    grequest.setRequest(DeviceModelConverter.asGrpcZoneCreateRequest(request));
-	    GCreateZoneResponse gresponse = getGrpcChannel().getBlockingStub().createZone(grequest.build());
-	    IZone response = (gresponse.hasZone()) ? DeviceModelConverter.asApiZone(gresponse.getZone()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_ZONE, response);
-	    return response;
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_ZONE, t);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#getZone(java.util.UUID)
-     */
-    @Override
-    public IZone getZone(UUID id) throws SiteWhereException {
-	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_ZONE);
-	    GGetZoneRequest.Builder grequest = GGetZoneRequest.newBuilder();
-	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
-	    GGetZoneResponse gresponse = getGrpcChannel().getBlockingStub().getZone(grequest.build());
-	    IZone response = (gresponse.hasZone()) ? DeviceModelConverter.asApiZone(gresponse.getZone()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_ZONE, response);
-	    return response;
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_ZONE, t);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getZoneByToken(java.lang.String)
-     */
-    @Override
-    public IZone getZoneByToken(String zoneToken) throws SiteWhereException {
-	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_ZONE_BY_TOKEN);
-	    GGetZoneByTokenRequest.Builder grequest = GGetZoneByTokenRequest.newBuilder();
-	    grequest.setToken(zoneToken);
-	    GGetZoneByTokenResponse gresponse = getGrpcChannel().getBlockingStub().getZoneByToken(grequest.build());
-	    IZone response = (gresponse.hasZone()) ? DeviceModelConverter.asApiZone(gresponse.getZone()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_ZONE_BY_TOKEN, response);
-	    return response;
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_ZONE_BY_TOKEN, t);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#updateZone(java.util.UUID,
-     * com.sitewhere.spi.area.request.IZoneCreateRequest)
-     */
-    @Override
-    public IZone updateZone(UUID id, IZoneCreateRequest request) throws SiteWhereException {
-	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_UPDATE_ZONE);
-	    GUpdateZoneRequest.Builder grequest = GUpdateZoneRequest.newBuilder();
-	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
-	    grequest.setRequest(DeviceModelConverter.asGrpcZoneCreateRequest(request));
-	    GUpdateZoneResponse gresponse = getGrpcChannel().getBlockingStub().updateZone(grequest.build());
-	    IZone response = (gresponse.hasZone()) ? DeviceModelConverter.asApiZone(gresponse.getZone()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_ZONE, response);
-	    return response;
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_ZONE, t);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#listZones(java.util.UUID,
-     * com.sitewhere.spi.search.ISearchCriteria)
-     */
-    @Override
-    public ISearchResults<IZone> listZones(UUID siteId, ISearchCriteria criteria) throws SiteWhereException {
-	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_ZONES);
-	    GListZonesRequest.Builder grequest = GListZonesRequest.newBuilder();
-	    grequest.setSiteId(CommonModelConverter.asGrpcUuid(siteId));
-	    grequest.setCriteria(DeviceModelConverter.asApiZoneSearchCriteria(criteria));
-	    GListZonesResponse gresponse = getGrpcChannel().getBlockingStub().listZones(grequest.build());
-	    ISearchResults<IZone> results = DeviceModelConverter.asApiZoneSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_ZONES, results);
-	    return results;
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_ZONES, t);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#deleteZone(java.util.UUID,
-     * boolean)
-     */
-    @Override
-    public IZone deleteZone(UUID id, boolean force) throws SiteWhereException {
-	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_DELETE_ZONE);
-	    GDeleteZoneRequest.Builder grequest = GDeleteZoneRequest.newBuilder();
-	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
-	    grequest.setForce(force);
-	    GDeleteZoneResponse gresponse = getGrpcChannel().getBlockingStub().deleteZone(grequest.build());
-	    IZone response = (gresponse.hasZone()) ? DeviceModelConverter.asApiZone(gresponse.getZone()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_ZONE, response);
-	    return response;
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_ZONE, t);
 	}
     }
 

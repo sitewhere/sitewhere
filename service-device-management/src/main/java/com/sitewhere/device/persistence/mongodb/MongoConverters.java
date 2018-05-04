@@ -15,6 +15,8 @@ import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.area.IZone;
+import com.sitewhere.spi.customer.ICustomer;
+import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceStatus;
@@ -37,15 +39,17 @@ public class MongoConverters implements IMongoConverterLookup {
     /** Create a list of converters for various types */
     static {
 	// Converters for device management.
+	CONVERTERS.put(ICustomerType.class, new MongoCustomerType());
+	CONVERTERS.put(ICustomer.class, new MongoCustomer());
+	CONVERTERS.put(IAreaType.class, new MongoAreaType());
+	CONVERTERS.put(IArea.class, new MongoArea());
+	CONVERTERS.put(IZone.class, new MongoZone());
 	CONVERTERS.put(IDeviceType.class, new MongoDeviceType());
 	CONVERTERS.put(IDeviceCommand.class, new MongoDeviceCommand());
 	CONVERTERS.put(IDeviceStatus.class, new MongoDeviceStatus());
 	CONVERTERS.put(IDevice.class, new MongoDevice());
 	CONVERTERS.put(IDeviceAssignment.class, new MongoDeviceAssignment());
 	CONVERTERS.put(IDeviceStream.class, new MongoDeviceStream());
-	CONVERTERS.put(IAreaType.class, new MongoAreaType());
-	CONVERTERS.put(IArea.class, new MongoArea());
-	CONVERTERS.put(IZone.class, new MongoZone());
 	CONVERTERS.put(IDeviceGroup.class, new MongoDeviceGroup());
 	CONVERTERS.put(IDeviceGroupElement.class, new MongoDeviceGroupElement());
     }

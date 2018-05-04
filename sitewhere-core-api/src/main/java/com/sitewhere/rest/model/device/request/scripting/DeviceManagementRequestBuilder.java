@@ -13,6 +13,8 @@ import java.util.List;
 import com.sitewhere.rest.model.area.request.AreaCreateRequest;
 import com.sitewhere.rest.model.area.request.AreaTypeCreateRequest;
 import com.sitewhere.rest.model.area.request.ZoneCreateRequest;
+import com.sitewhere.rest.model.customer.request.CustomerCreateRequest;
+import com.sitewhere.rest.model.customer.request.CustomerTypeCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
@@ -23,6 +25,8 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.area.IZone;
+import com.sitewhere.spi.customer.ICustomer;
+import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -44,6 +48,53 @@ public class DeviceManagementRequestBuilder {
 
     public DeviceManagementRequestBuilder(IDeviceManagement deviceManagement) {
 	this.deviceManagement = deviceManagement;
+    }
+
+    /**
+     * Create a new customer type.
+     * 
+     * @param token
+     * @param name
+     * @return
+     */
+    public CustomerTypeCreateRequest.Builder newCustomerType(String token, String name) {
+	return new CustomerTypeCreateRequest.Builder(token, name);
+    }
+
+    /**
+     * Persist a previously created customer type.
+     * 
+     * @param builder
+     * @return
+     * @throws SiteWhereException
+     */
+    public ICustomerType persist(CustomerTypeCreateRequest.Builder builder) throws SiteWhereException {
+	return getDeviceManagement().createCustomerType(builder.build());
+    }
+
+    /**
+     * Create a new customer.
+     * 
+     * @param customerTypeToken
+     * @param parentCustomerToken
+     * @param token
+     * @param name
+     * @return
+     */
+    public CustomerCreateRequest.Builder newCustomer(String customerTypeToken, String parentCustomerToken, String token,
+	    String name) {
+	return new CustomerCreateRequest.Builder(customerTypeToken, parentCustomerToken, token, name);
+    }
+
+    /**
+     * Persist previously created customer.
+     * 
+     * @param builder
+     * @return
+     * @throws SiteWhereException
+     */
+    public ICustomer persist(CustomerCreateRequest.Builder builder) throws SiteWhereException {
+	return getDeviceManagement().createCustomer(builder.build());
     }
 
     /**

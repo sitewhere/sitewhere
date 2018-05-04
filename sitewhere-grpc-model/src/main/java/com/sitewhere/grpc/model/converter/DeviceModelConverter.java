@@ -27,6 +27,14 @@ import com.sitewhere.grpc.model.DeviceModel.GAreaTypeCreateRequest;
 import com.sitewhere.grpc.model.DeviceModel.GAreaTypeSearchCriteria;
 import com.sitewhere.grpc.model.DeviceModel.GAreaTypeSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GCommandParameter;
+import com.sitewhere.grpc.model.DeviceModel.GCustomer;
+import com.sitewhere.grpc.model.DeviceModel.GCustomerCreateRequest;
+import com.sitewhere.grpc.model.DeviceModel.GCustomerSearchCriteria;
+import com.sitewhere.grpc.model.DeviceModel.GCustomerSearchResults;
+import com.sitewhere.grpc.model.DeviceModel.GCustomerType;
+import com.sitewhere.grpc.model.DeviceModel.GCustomerTypeCreateRequest;
+import com.sitewhere.grpc.model.DeviceModel.GCustomerTypeSearchCriteria;
+import com.sitewhere.grpc.model.DeviceModel.GCustomerTypeSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDevice;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceAssignment;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceAssignmentCreateRequest;
@@ -73,6 +81,10 @@ import com.sitewhere.rest.model.area.Zone;
 import com.sitewhere.rest.model.area.request.AreaCreateRequest;
 import com.sitewhere.rest.model.area.request.AreaTypeCreateRequest;
 import com.sitewhere.rest.model.area.request.ZoneCreateRequest;
+import com.sitewhere.rest.model.customer.Customer;
+import com.sitewhere.rest.model.customer.CustomerType;
+import com.sitewhere.rest.model.customer.request.CustomerCreateRequest;
+import com.sitewhere.rest.model.customer.request.CustomerTypeCreateRequest;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
@@ -96,6 +108,7 @@ import com.sitewhere.rest.model.device.request.DeviceTypeCreateRequest;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.area.AreaSearchCriteria;
+import com.sitewhere.rest.model.search.customer.CustomerSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
@@ -105,6 +118,10 @@ import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.area.request.IAreaCreateRequest;
 import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
+import com.sitewhere.spi.customer.ICustomer;
+import com.sitewhere.spi.customer.ICustomerType;
+import com.sitewhere.spi.customer.request.ICustomerCreateRequest;
+import com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.IDevice;
@@ -132,6 +149,7 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
+import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 
@@ -1684,6 +1702,305 @@ public class DeviceModelConverter {
 	}
 	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
 	return grpc.build();
+    }
+
+    /**
+     * Convert customer type create request from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static CustomerTypeCreateRequest asApiCustomerTypeCreateRequest(GCustomerTypeCreateRequest grpc)
+	    throws SiteWhereException {
+	CustomerTypeCreateRequest api = new CustomerTypeCreateRequest();
+	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
+	api.setName(grpc.getName());
+	api.setDescription(grpc.getDescription());
+	api.setIcon(grpc.getIcon());
+	api.setContainedCustomerTypeTokens(grpc.getContainedCustomerTypeTokensList());
+	api.setMetadata(grpc.getMetadataMap());
+	return api;
+    }
+
+    /**
+     * Convert customer type create request from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GCustomerTypeCreateRequest asGrpcCustomerTypeCreateRequest(ICustomerTypeCreateRequest api)
+	    throws SiteWhereException {
+	GCustomerTypeCreateRequest.Builder grpc = GCustomerTypeCreateRequest.newBuilder();
+	if (api.getToken() != null) {
+	    grpc.setToken(GOptionalString.newBuilder().setValue(api.getToken()));
+	}
+	grpc.setName(api.getName());
+	grpc.setDescription(api.getDescription());
+	grpc.setIcon(api.getIcon());
+	if (api.getContainedCustomerTypeTokens() != null) {
+	    grpc.addAllContainedCustomerTypeTokens(api.getContainedCustomerTypeTokens());
+	}
+	if (api.getMetadata() != null) {
+	    grpc.putAllMetadata(api.getMetadata());
+	}
+	return grpc.build();
+    }
+
+    /**
+     * Convert customer type search criteria from API to GRPC.
+     * 
+     * @param code
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GCustomerTypeSearchCriteria asApiCustomerTypeSearchCriteria(ISearchCriteria criteria)
+	    throws SiteWhereException {
+	GCustomerTypeSearchCriteria.Builder gcriteria = GCustomerTypeSearchCriteria.newBuilder();
+	gcriteria.setPaging(CommonModelConverter.asGrpcPaging(criteria));
+	return gcriteria.build();
+    }
+
+    /**
+     * Convert area type search results from GRPC to API.
+     * 
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ISearchResults<ICustomerType> asApiCustomerTypeSearchResults(GCustomerTypeSearchResults response)
+	    throws SiteWhereException {
+	List<ICustomerType> results = new ArrayList<ICustomerType>();
+	for (GCustomerType grpc : response.getCustomerTypesList()) {
+	    results.add(DeviceModelConverter.asApiCustomerType(grpc));
+	}
+	return new SearchResults<ICustomerType>(results, response.getCount());
+    }
+
+    /**
+     * Convert customer type from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static CustomerType asApiCustomerType(GCustomerType grpc) throws SiteWhereException {
+	CustomerType api = new CustomerType();
+	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
+	api.setToken(grpc.getToken());
+	api.setName(grpc.getName());
+	api.setDescription(grpc.getDescription());
+	api.setIcon(grpc.getIcon());
+	api.setContainedCustomerTypeIds(CommonModelConverter.asApiUuids(grpc.getContainedCustomerTypeIdsList()));
+	api.setMetadata(grpc.getMetadataMap());
+	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
+	return api;
+    }
+
+    /**
+     * Convert customer type from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GCustomerType asGrpcCustomerType(ICustomerType api) throws SiteWhereException {
+	GCustomerType.Builder grpc = GCustomerType.newBuilder();
+	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
+	grpc.setToken(api.getToken());
+	grpc.setName(api.getName());
+	grpc.setDescription(api.getDescription());
+	grpc.setIcon(api.getIcon());
+	if (api.getContainedCustomerTypeIds() != null) {
+	    grpc.addAllContainedCustomerTypeIds(CommonModelConverter.asGrpcUuids(api.getContainedCustomerTypeIds()));
+	}
+	if (api.getMetadata() != null) {
+	    grpc.putAllMetadata(api.getMetadata());
+	}
+	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
+	return grpc.build();
+    }
+
+    /**
+     * Convert customer create request from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static CustomerCreateRequest asApiCustomerCreateRequest(GCustomerCreateRequest grpc)
+	    throws SiteWhereException {
+	CustomerCreateRequest api = new CustomerCreateRequest();
+	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
+	api.setCustomerTypeToken(grpc.getCustomerTypeToken());
+	api.setParentCustomerToken(grpc.hasParentCustomerToken() ? grpc.getParentCustomerToken().getValue() : null);
+	api.setName(grpc.getName());
+	api.setDescription(grpc.getDescription());
+	api.setImageUrl(grpc.getImageUrl());
+	api.setMetadata(grpc.getMetadataMap());
+	return api;
+    }
+
+    /**
+     * Convert customer create request from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GCustomerCreateRequest asGrpcCustomerCreateRequest(ICustomerCreateRequest api)
+	    throws SiteWhereException {
+	GCustomerCreateRequest.Builder grpc = GCustomerCreateRequest.newBuilder();
+	if (api.getToken() != null) {
+	    grpc.setToken(GOptionalString.newBuilder().setValue(api.getToken()));
+	}
+	grpc.setCustomerTypeToken(api.getCustomerTypeToken());
+	if (api.getParentCustomerToken() != null) {
+	    grpc.setParentCustomerToken(GOptionalString.newBuilder().setValue(api.getParentCustomerToken()));
+	}
+	grpc.setName(api.getName());
+	grpc.setDescription(api.getDescription());
+	grpc.setImageUrl(api.getImageUrl());
+	if (api.getMetadata() != null) {
+	    grpc.putAllMetadata(api.getMetadata());
+	}
+	return grpc.build();
+    }
+
+    /**
+     * Convert customer search criteria from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static CustomerSearchCriteria asApiCustomerSearchCriteria(GCustomerSearchCriteria grpc)
+	    throws SiteWhereException {
+	CustomerSearchCriteria api = new CustomerSearchCriteria(grpc.getPaging().getPageNumber(),
+		grpc.getPaging().getPageSize());
+	api.setRootOnly(grpc.hasRootOnly() ? grpc.getRootOnly().getValue() : null);
+	api.setParentCustomerId(
+		grpc.hasParentCustomerId() ? CommonModelConverter.asApiUuid(grpc.getParentCustomerId()) : null);
+	api.setCustomerTypeId(
+		grpc.hasCustomerTypeId() ? CommonModelConverter.asApiUuid(grpc.getCustomerTypeId()) : null);
+	return api;
+    }
+
+    /**
+     * Convert customer search criteria from API to GRPC.
+     * 
+     * @param code
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GCustomerSearchCriteria asGrpcCustomerSearchCriteria(ICustomerSearchCriteria api)
+	    throws SiteWhereException {
+	GCustomerSearchCriteria.Builder grpc = GCustomerSearchCriteria.newBuilder();
+	if (api.getRootOnly() != null) {
+	    grpc.setRootOnly(GOptionalBoolean.newBuilder().setValue(api.getRootOnly()));
+	}
+	if (api.getParentCustomerId() != null) {
+	    grpc.setParentCustomerId(CommonModelConverter.asGrpcUuid(api.getParentCustomerId()));
+	}
+	if (api.getCustomerTypeId() != null) {
+	    grpc.setCustomerTypeId(CommonModelConverter.asGrpcUuid(api.getCustomerTypeId()));
+	}
+	grpc.setPaging(CommonModelConverter.asGrpcPaging(api));
+	return grpc.build();
+    }
+
+    /**
+     * Convert customer search results from GRPC to API.
+     * 
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ISearchResults<ICustomer> asApiCustomerSearchResults(GCustomerSearchResults response)
+	    throws SiteWhereException {
+	List<ICustomer> results = new ArrayList<ICustomer>();
+	for (GCustomer grpc : response.getCustomersList()) {
+	    results.add(DeviceModelConverter.asApiCustomer(grpc));
+	}
+	return new SearchResults<ICustomer>(results, response.getCount());
+    }
+
+    /**
+     * Convert customer from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static Customer asApiCustomer(GCustomer grpc) throws SiteWhereException {
+	Customer api = new Customer();
+	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
+	api.setToken(grpc.getToken());
+	api.setCustomerTypeId(CommonModelConverter.asApiUuid(grpc.getCustomerTypeId()));
+	api.setParentCustomerId(
+		grpc.hasParentCustomerId() ? CommonModelConverter.asApiUuid(grpc.getParentCustomerId()) : null);
+	api.setName(grpc.getName());
+	api.setDescription(grpc.getDescription());
+	api.setImageUrl(grpc.getImageUrl());
+	api.setMetadata(grpc.getMetadataMap());
+	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
+	return api;
+    }
+
+    /**
+     * Convert list of customers from GRPC to API.
+     * 
+     * @param grpcs
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<ICustomer> asApiCustomers(Collection<GCustomer> grpcs) throws SiteWhereException {
+	List<ICustomer> apis = new ArrayList<>();
+	for (GCustomer grpc : grpcs) {
+	    apis.add(DeviceModelConverter.asApiCustomer(grpc));
+	}
+	return apis;
+    }
+
+    /**
+     * Convert customer from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GCustomer asGrpcCustomer(ICustomer api) throws SiteWhereException {
+	GCustomer.Builder grpc = GCustomer.newBuilder();
+	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
+	grpc.setToken(api.getToken());
+	grpc.setCustomerTypeId(CommonModelConverter.asGrpcUuid(api.getCustomerTypeId()));
+	if (api.getParentCustomerId() != null) {
+	    grpc.setParentCustomerId(CommonModelConverter.asGrpcUuid(api.getParentCustomerId()));
+	}
+	grpc.setName(api.getName());
+	grpc.setDescription(api.getDescription());
+	grpc.setImageUrl(api.getImageUrl());
+	if (api.getMetadata() != null) {
+	    grpc.putAllMetadata(api.getMetadata());
+	}
+	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
+	return grpc.build();
+    }
+
+    /**
+     * Convert list of customers from API to GRPC.
+     * 
+     * @param apis
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<GCustomer> asGrpcCustomers(List<ICustomer> apis) throws SiteWhereException {
+	List<GCustomer> grpcs = new ArrayList<>();
+	for (ICustomer api : apis) {
+	    grpcs.add(DeviceModelConverter.asGrpcCustomer(api));
+	}
+	return grpcs;
     }
 
     /**

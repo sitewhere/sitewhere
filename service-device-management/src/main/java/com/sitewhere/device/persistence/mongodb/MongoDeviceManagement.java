@@ -29,6 +29,8 @@ import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.area.Area;
 import com.sitewhere.rest.model.area.AreaType;
 import com.sitewhere.rest.model.area.Zone;
+import com.sitewhere.rest.model.customer.Customer;
+import com.sitewhere.rest.model.customer.CustomerType;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceStatus;
@@ -50,6 +52,10 @@ import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.customer.ICustomer;
+import com.sitewhere.spi.customer.ICustomerType;
+import com.sitewhere.spi.customer.request.ICustomerCreateRequest;
+import com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -75,6 +81,7 @@ import com.sitewhere.spi.error.ResourceExistsException;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
+import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -1090,6 +1097,247 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 
     /*
      * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createCustomerType(com.sitewhere.
+     * spi.customer.request.ICustomerTypeCreateRequest)
+     */
+    @Override
+    public ICustomerType createCustomerType(ICustomerTypeCreateRequest request) throws SiteWhereException {
+	// Convert contained customer type tokens to ids.
+	List<UUID> cctids = convertCustomerTypeTokensToIds(request.getContainedCustomerTypeTokens());
+
+	// Use common logic so all backend implementations work the same.
+	CustomerType type = DeviceManagementPersistence.customerTypeCreateLogic(request, cctids);
+
+	MongoCollection<Document> types = getMongoClient().getCustomerTypesCollection();
+	Document created = MongoCustomerType.toDocument(type);
+	MongoPersistence.insert(types, created, ErrorCode.DuplicateCustomerTypeToken);
+	return MongoCustomerType.fromDocument(created);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getCustomerType(java.util.UUID)
+     */
+    @Override
+    public ICustomerType getCustomerType(UUID id) throws SiteWhereException {
+	Document document = getCustomerTypeDocumentById(id);
+	if (document != null) {
+	    return MongoCustomerType.fromDocument(document);
+	}
+	return null;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getCustomerTypeByToken(java.lang.
+     * String)
+     */
+    @Override
+    public ICustomerType getCustomerTypeByToken(String token) throws SiteWhereException {
+	Document document = getCustomerTypeDocumentByToken(token);
+	if (document != null) {
+	    return MongoCustomerType.fromDocument(document);
+	}
+	return null;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#updateCustomerType(java.util.UUID,
+     * com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest)
+     */
+    @Override
+    public ICustomerType updateCustomerType(UUID id, ICustomerTypeCreateRequest request) throws SiteWhereException {
+	ICustomerType type = getApiCustomerTypeById(id);
+
+	// Convert contained customer type tokens to ids.
+	List<UUID> cctids = convertCustomerTypeTokensToIds(request.getContainedCustomerTypeTokens());
+
+	// Use common update logic.
+	DeviceManagementPersistence.customerTypeUpdateLogic(request, cctids, (CustomerType) type);
+
+	Document updated = MongoCustomerType.toDocument(type);
+
+	MongoCollection<Document> types = getMongoClient().getCustomerTypesCollection();
+	Document query = new Document(MongoCustomerType.PROP_ID, id);
+	MongoPersistence.update(types, query, updated);
+	return MongoCustomerType.fromDocument(updated);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listCustomerTypes(com.sitewhere.
+     * spi.search.ISearchCriteria)
+     */
+    @Override
+    public ISearchResults<ICustomerType> listCustomerTypes(ISearchCriteria criteria) throws SiteWhereException {
+	MongoCollection<Document> types = getMongoClient().getCustomerTypesCollection();
+	Document query = new Document();
+	Document sort = new Document(MongoCustomerType.PROP_NAME, 1);
+	return MongoPersistence.search(ICustomerType.class, types, query, sort, criteria, LOOKUP);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#deleteCustomerType(java.util.UUID,
+     * boolean)
+     */
+    @Override
+    public ICustomerType deleteCustomerType(UUID id, boolean force) throws SiteWhereException {
+	Document existing = getCustomerTypeDocumentById(id);
+	if (existing == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidCustomerTypeToken, ErrorLevel.ERROR);
+	}
+	MongoCollection<Document> types = getMongoClient().getCustomerTypesCollection();
+	if (force) {
+	    MongoPersistence.delete(types, existing);
+	    return MongoCustomerType.fromDocument(existing);
+	} else {
+	    MongoSiteWhereEntity.setDeleted(existing, true);
+	    Document query = new Document(MongoCustomerType.PROP_ID, id);
+	    MongoPersistence.update(types, query, existing);
+	    return MongoCustomerType.fromDocument(existing);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createCustomer(com.sitewhere.spi.
+     * customer.request.ICustomerCreateRequest)
+     */
+    @Override
+    public ICustomer createCustomer(ICustomerCreateRequest request) throws SiteWhereException {
+	// Look up customer type.
+	ICustomerType customerType = getCustomerTypeByToken(request.getCustomerTypeToken());
+	if (customerType == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidCustomerTypeToken, ErrorLevel.ERROR);
+	}
+
+	// Look up parent customer.
+	ICustomer parentCustomer = (request.getParentCustomerToken() != null)
+		? getCustomerByToken(request.getParentCustomerToken())
+		: null;
+
+	// Use common logic so all backend implementations work the same.
+	Customer customer = DeviceManagementPersistence.customerCreateLogic(request, customerType, parentCustomer);
+
+	MongoCollection<Document> customers = getMongoClient().getCustomersCollection();
+	Document created = MongoCustomer.toDocument(customer);
+	MongoPersistence.insert(customers, created, ErrorCode.DuplicateCustomerToken);
+	return MongoCustomer.fromDocument(created);
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getCustomer(java.util.UUID)
+     */
+    @Override
+    public ICustomer getCustomer(UUID id) throws SiteWhereException {
+	Document document = getCustomerDocumentById(id);
+	if (document != null) {
+	    return MongoCustomer.fromDocument(document);
+	}
+	return null;
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getCustomerByToken(java.lang.
+     * String)
+     */
+    @Override
+    public ICustomer getCustomerByToken(String token) throws SiteWhereException {
+	Document document = getCustomerDocumentByToken(token);
+	if (document != null) {
+	    return MongoCustomer.fromDocument(document);
+	}
+	return null;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getCustomerChildren(java.lang.
+     * String)
+     */
+    @Override
+    public List<ICustomer> getCustomerChildren(String token) throws SiteWhereException {
+	ICustomer existing = getCustomerByToken(token);
+	if (existing == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidCustomerToken, ErrorLevel.ERROR);
+	}
+
+	MongoCollection<Document> customers = getMongoClient().getCustomersCollection();
+	Document query = new Document(MongoCustomer.PROP_PARENT_CUSTOMER_ID, existing.getId());
+	Document sort = new Document(MongoCustomer.PROP_NAME, 1);
+	SearchResults<ICustomer> matches = MongoPersistence.search(ICustomer.class, customers, query, sort,
+		SearchCriteria.ALL, LOOKUP);
+	return matches.getResults();
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#updateCustomer(java.util.UUID,
+     * com.sitewhere.spi.customer.request.ICustomerCreateRequest)
+     */
+    @Override
+    public ICustomer updateCustomer(UUID id, ICustomerCreateRequest request) throws SiteWhereException {
+	ICustomer customer = assertApiCustomer(id);
+
+	// Use common update logic.
+	DeviceManagementPersistence.customerUpdateLogic(request, (Customer) customer);
+
+	Document updated = MongoCustomer.toDocument(customer);
+
+	MongoCollection<Document> customers = getMongoClient().getCustomersCollection();
+	Document query = new Document(MongoCustomer.PROP_ID, id);
+	MongoPersistence.update(customers, query, updated);
+	return MongoCustomer.fromDocument(updated);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listCustomers(com.sitewhere.spi.
+     * search.customer.ICustomerSearchCriteria)
+     */
+    @Override
+    public ISearchResults<ICustomer> listCustomers(ICustomerSearchCriteria criteria) throws SiteWhereException {
+	MongoCollection<Document> customers = getMongoClient().getCustomersCollection();
+	Document query = new Document();
+	if ((criteria.getRootOnly() != null) && (criteria.getRootOnly().booleanValue() == true)) {
+	    query.append(MongoCustomer.PROP_PARENT_CUSTOMER_ID, null);
+	} else if (criteria.getParentCustomerId() != null) {
+	    query.append(MongoCustomer.PROP_PARENT_CUSTOMER_ID, criteria.getParentCustomerId());
+	}
+	if (criteria.getCustomerTypeId() != null) {
+	    query.append(MongoCustomer.PROP_CUSTOMER_TYPE_ID, criteria.getCustomerTypeId());
+	}
+	Document sort = new Document(MongoArea.PROP_NAME, 1);
+	return MongoPersistence.search(ICustomer.class, customers, query, sort, criteria, LOOKUP);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#deleteCustomer(java.util.UUID,
+     * boolean)
+     */
+    @Override
+    public ICustomer deleteCustomer(UUID id, boolean force) throws SiteWhereException {
+	Document existing = getCustomerDocumentById(id);
+	if (existing == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidCustomerToken, ErrorLevel.ERROR);
+	}
+	MongoCollection<Document> customers = getMongoClient().getCustomersCollection();
+	if (force) {
+	    MongoPersistence.delete(customers, existing);
+	    return MongoCustomer.fromDocument(existing);
+	} else {
+	    MongoSiteWhereEntity.setDeleted(existing, true);
+	    Document query = new Document(MongoCustomer.PROP_ID, id);
+	    MongoPersistence.update(customers, query, existing);
+	    return MongoCustomer.fromDocument(existing);
+	}
+    }
+
+    /*
+     * @see
      * com.sitewhere.spi.device.IDeviceManagement#createAreaType(com.sitewhere.spi.
      * area.request.IAreaTypeCreateRequest)
      */
@@ -1105,26 +1353,6 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	Document created = MongoAreaType.toDocument(type);
 	MongoPersistence.insert(types, created, ErrorCode.DuplicateAreaTypeToken);
 	return MongoAreaType.fromDocument(created);
-    }
-
-    /**
-     * Convert a list of area type tokens to ids.
-     * 
-     * @param tokens
-     * @return
-     * @throws SiteWhereException
-     */
-    protected List<UUID> convertAreaTypeTokensToIds(List<String> tokens) throws SiteWhereException {
-	List<UUID> catids = new ArrayList<>();
-	if (tokens != null) {
-	    for (String token : tokens) {
-		IAreaType contained = getAreaTypeByToken(token);
-		if (contained != null) {
-		    catids.add(contained.getId());
-		}
-	    }
-	}
-	return catids;
     }
 
     /*
@@ -1230,9 +1458,9 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	// Use common logic so all backend implementations work the same.
 	Area area = DeviceManagementPersistence.areaCreateLogic(request, areaType, parentArea);
 
-	MongoCollection<Document> sites = getMongoClient().getAreasCollection();
+	MongoCollection<Document> areas = getMongoClient().getAreasCollection();
 	Document created = MongoArea.toDocument(area);
-	MongoPersistence.insert(sites, created, ErrorCode.DuplicateAreaToken);
+	MongoPersistence.insert(areas, created, ErrorCode.DuplicateAreaToken);
 	return MongoArea.fromDocument(created);
     }
 
@@ -1241,9 +1469,9 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     @Override
     public IArea getArea(UUID id) throws SiteWhereException {
-	Document dbSite = getAreaDocumentById(id);
-	if (dbSite != null) {
-	    return MongoArea.fromDocument(dbSite);
+	Document dbArea = getAreaDocumentById(id);
+	if (dbArea != null) {
+	    return MongoArea.fromDocument(dbArea);
 	}
 	return null;
     }
@@ -1286,7 +1514,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     @Override
     public IArea updateArea(UUID id, IAreaCreateRequest request) throws SiteWhereException {
-	IArea area = getApiAreaById(id);
+	IArea area = assertApiArea(id);
 
 	// Use common update logic.
 	DeviceManagementPersistence.areaUpdateLogic(request, (Area) area);
@@ -1330,14 +1558,13 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	if (existing == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
 	}
+	MongoCollection<Document> areas = getMongoClient().getAreasCollection();
 	if (force) {
-	    MongoCollection<Document> areas = getMongoClient().getAreasCollection();
 	    MongoPersistence.delete(areas, existing);
 	    return MongoArea.fromDocument(existing);
 	} else {
 	    MongoSiteWhereEntity.setDeleted(existing, true);
 	    Document query = new Document(MongoArea.PROP_ID, id);
-	    MongoCollection<Document> areas = getMongoClient().getAreasCollection();
 	    MongoPersistence.update(areas, query, existing);
 	    return MongoArea.fromDocument(existing);
 	}
@@ -1650,37 +1877,6 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /**
-     * Return the {@link Document} for the area with the given token. Throws an
-     * exception if the token is not found.
-     * 
-     * @param hardwareId
-     * @return
-     * @throws SiteWhereException
-     */
-    protected Document assertArea(String token) throws SiteWhereException {
-	Document match = getAreaDocumentByToken(token);
-	if (match == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.INFO);
-	}
-	return match;
-    }
-
-    /**
-     * Return the API area if found. Throw an exception if not.
-     * 
-     * @param id
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IArea assertApiArea(UUID id) throws SiteWhereException {
-	Document match = getAreaDocumentById(id);
-	if (match == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.INFO);
-	}
-	return MongoArea.fromDocument(match);
-    }
-
-    /**
      * Return the {@link Document} for the device with the given hardware id. Throws
      * an exception if the hardware id is not found.
      * 
@@ -1726,6 +1922,111 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /**
+     * Get the DBObject containing customer type information that matches the given
+     * id.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    protected Document getCustomerTypeDocumentById(UUID id) throws SiteWhereException {
+	MongoCollection<Document> types = getMongoClient().getCustomerTypesCollection();
+	Document query = new Document(MongoCustomerType.PROP_ID, id);
+	return types.find(query).first();
+    }
+
+    /**
+     * Get the DBObject containing customer type information that matches the given
+     * token.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    protected Document getCustomerTypeDocumentByToken(String token) throws SiteWhereException {
+	MongoCollection<Document> types = getMongoClient().getCustomerTypesCollection();
+	Document query = new Document(MongoCustomerType.PROP_TOKEN, token);
+	return types.find(query).first();
+    }
+
+    /**
+     * Get API customer type based on unique id.
+     * 
+     * @param id
+     * @return
+     * @throws SiteWhereException
+     */
+    protected ICustomerType getApiCustomerTypeById(UUID id) throws SiteWhereException {
+	Document match = getCustomerTypeDocumentById(id);
+	if (match == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidCustomerTypeToken, ErrorLevel.ERROR);
+	}
+	return MongoCustomerType.fromDocument(match);
+    }
+
+    /**
+     * Convert a list of area type tokens to ids.
+     * 
+     * @param tokens
+     * @return
+     * @throws SiteWhereException
+     */
+    protected List<UUID> convertCustomerTypeTokensToIds(List<String> tokens) throws SiteWhereException {
+	List<UUID> cctids = new ArrayList<>();
+	if (tokens != null) {
+	    for (String token : tokens) {
+		ICustomerType contained = getCustomerTypeByToken(token);
+		if (contained != null) {
+		    cctids.add(contained.getId());
+		}
+	    }
+	}
+	return cctids;
+    }
+
+    /**
+     * Get the DBObject containing customer information that matches the given id.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    protected Document getCustomerDocumentById(UUID id) throws SiteWhereException {
+	MongoCollection<Document> customers = getMongoClient().getCustomersCollection();
+	Document query = new Document(MongoCustomer.PROP_ID, id);
+	return customers.find(query).first();
+    }
+
+    /**
+     * Get the DBObject containing customer information that matches the given
+     * token.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    protected Document getCustomerDocumentByToken(String token) throws SiteWhereException {
+	MongoCollection<Document> customers = getMongoClient().getCustomersCollection();
+	Document query = new Document(MongoCustomer.PROP_TOKEN, token);
+	return customers.find(query).first();
+    }
+
+    /**
+     * Get API customer based on unique id.
+     * 
+     * @param id
+     * @return
+     * @throws SiteWhereException
+     */
+    protected ICustomer assertApiCustomer(UUID id) throws SiteWhereException {
+	Document match = getCustomerDocumentById(id);
+	if (match == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidCustomerToken, ErrorLevel.ERROR);
+	}
+	return MongoCustomer.fromDocument(match);
+    }
+
+    /**
      * Get the DBObject containing area type information that matches the given
      * token.
      * 
@@ -1768,6 +2069,26 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /**
+     * Convert a list of area type tokens to ids.
+     * 
+     * @param tokens
+     * @return
+     * @throws SiteWhereException
+     */
+    protected List<UUID> convertAreaTypeTokensToIds(List<String> tokens) throws SiteWhereException {
+	List<UUID> catids = new ArrayList<>();
+	if (tokens != null) {
+	    for (String token : tokens) {
+		IAreaType contained = getAreaTypeByToken(token);
+		if (contained != null) {
+		    catids.add(contained.getId());
+		}
+	    }
+	}
+	return catids;
+    }
+
+    /**
      * Get the DBObject containing area information that matches the given token.
      * 
      * @param token
@@ -1775,9 +2096,9 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      * @throws SiteWhereException
      */
     protected Document getAreaDocumentByToken(String token) throws SiteWhereException {
-	MongoCollection<Document> sites = getMongoClient().getAreasCollection();
+	MongoCollection<Document> areas = getMongoClient().getAreasCollection();
 	Document query = new Document(MongoArea.PROP_TOKEN, token);
-	return sites.find(query).first();
+	return areas.find(query).first();
     }
 
     /**
@@ -1794,13 +2115,29 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /**
+     * Return the {@link Document} for the area with the given token. Throws an
+     * exception if the token is not found.
+     * 
+     * @param hardwareId
+     * @return
+     * @throws SiteWhereException
+     */
+    protected Document assertArea(String token) throws SiteWhereException {
+	Document match = getAreaDocumentByToken(token);
+	if (match == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.INFO);
+	}
+	return match;
+    }
+
+    /**
      * Get API area based on unique id.
      * 
      * @param id
      * @return
      * @throws SiteWhereException
      */
-    protected IArea getApiAreaById(UUID id) throws SiteWhereException {
+    protected IArea assertApiArea(UUID id) throws SiteWhereException {
 	Document match = getAreaDocumentById(id);
 	if (match == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);

@@ -17,6 +17,10 @@ import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.area.request.IAreaCreateRequest;
 import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
+import com.sitewhere.spi.customer.ICustomer;
+import com.sitewhere.spi.customer.ICustomerType;
+import com.sitewhere.spi.customer.request.ICustomerCreateRequest;
+import com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
@@ -32,6 +36,7 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
+import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
@@ -411,6 +416,130 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
      */
     public ISearchResults<IDeviceStream> listDeviceStreams(UUID assignmentId, ISearchCriteria criteria)
 	    throws SiteWhereException;
+
+    /**
+     * Create a customer type based on the given input.
+     * 
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public ICustomerType createCustomerType(ICustomerTypeCreateRequest request) throws SiteWhereException;
+
+    /**
+     * Get customer type by unique id.
+     * 
+     * @param id
+     * @return
+     * @throws SiteWhereException
+     */
+    public ICustomerType getCustomerType(UUID id) throws SiteWhereException;
+
+    /**
+     * Get a customer type by alias token.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    public ICustomerType getCustomerTypeByToken(String token) throws SiteWhereException;
+
+    /**
+     * Update information for a customer type.
+     * 
+     * @param id
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public ICustomerType updateCustomerType(UUID id, ICustomerTypeCreateRequest request) throws SiteWhereException;
+
+    /**
+     * Get a list of customer types matching search criteria.
+     * 
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    public ISearchResults<ICustomerType> listCustomerTypes(ISearchCriteria criteria) throws SiteWhereException;
+
+    /**
+     * Delete a customer type based on unique id. If 'force' is specified, the
+     * database object will be deleted, otherwise the deleted flag will be set to
+     * true.
+     * 
+     * @param id
+     * @param force
+     * @return
+     * @throws SiteWhereException
+     */
+    public ICustomerType deleteCustomerType(UUID id, boolean force) throws SiteWhereException;
+
+    /**
+     * Create a customer based on the given input.
+     * 
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public ICustomer createCustomer(ICustomerCreateRequest request) throws SiteWhereException;
+
+    /**
+     * Get customer by unique id.
+     * 
+     * @param id
+     * @return
+     * @throws SiteWhereException
+     */
+    public ICustomer getCustomer(UUID id) throws SiteWhereException;
+
+    /**
+     * Get a customer by alias token.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    public ICustomer getCustomerByToken(String token) throws SiteWhereException;
+
+    /**
+     * Get list of customers that are children of the given area.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    public List<ICustomer> getCustomerChildren(String token) throws SiteWhereException;
+
+    /**
+     * Update information for a customer.
+     * 
+     * @param id
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public ICustomer updateCustomer(UUID id, ICustomerCreateRequest request) throws SiteWhereException;
+
+    /**
+     * Get a list of customers matching search criteria.
+     * 
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    public ISearchResults<ICustomer> listCustomers(ICustomerSearchCriteria criteria) throws SiteWhereException;
+
+    /**
+     * Delete a customer based on unique id. If 'force' is specified, the database
+     * object will be deleted, otherwise the deleted flag will be set to true.
+     * 
+     * @param id
+     * @param force
+     * @return
+     * @throws SiteWhereException
+     */
+    public ICustomer deleteCustomer(UUID id, boolean force) throws SiteWhereException;
 
     /**
      * Create an area type based on the given input.

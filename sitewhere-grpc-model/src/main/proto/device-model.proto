@@ -344,6 +344,85 @@ message GDeviceStream {
 	GEntityInformation entityInformation = 6;
 }
 
+// ######################
+// ### CUSTOMER TYPES ###
+// ######################
+
+// Request data for creating a customer type.
+message GCustomerTypeCreateRequest {
+	GOptionalString token = 1;
+	string name = 2;
+	string description = 3;
+	string icon = 4;
+	repeated string containedCustomerTypeTokens = 5;
+	map<string, string> metadata = 6;
+}
+
+// Criteria for searching customer types.
+message GCustomerTypeSearchCriteria {
+	GPaging paging = 1;
+}
+
+// Results for area type search.
+message GCustomerTypeSearchResults {
+	int64 count = 1;
+	repeated GCustomerType customerTypes = 2;
+}
+
+// Customer type.
+message GCustomerType {
+	GUUID id = 1;
+	string token = 2;
+	string name = 3;
+	string description = 4;
+	string icon = 5;
+	repeated GUUID containedCustomerTypeIds = 6;
+	map<string, string> metadata = 7;
+	GEntityInformation entityInformation = 8;
+}
+
+// #################
+// ### CUSTOMERS ###
+// #################
+
+// Request data for creating a customer.
+message GCustomerCreateRequest {
+	GOptionalString token = 1;
+	string customerTypeToken = 2;
+	GOptionalString parentCustomerToken = 3;
+	string name = 4;
+	string description = 5;
+	string imageUrl = 6;
+	map<string, string> metadata = 8;
+}
+
+// Criteria for searching customers.
+message GCustomerSearchCriteria {
+	GOptionalBoolean rootOnly = 1;
+	GUUID parentCustomerId = 2;
+	GUUID customerTypeId = 3;
+	GPaging paging = 4;
+}
+
+// Results for customer search.
+message GCustomerSearchResults {
+	int64 count = 1;
+	repeated GCustomer customers = 2;
+}
+
+// Customer.
+message GCustomer {
+	GUUID id = 1;
+	string token = 2;
+	GUUID customerTypeId = 3;
+	GUUID parentCustomerId = 4;
+	string name = 5;
+	string description = 6;
+	string imageUrl = 7;
+	map<string, string> metadata = 9;
+	GEntityInformation entityInformation = 10;
+}
+
 // ##################
 // ### AREA TYPES ###
 // ##################

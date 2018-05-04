@@ -13,8 +13,8 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.request.IAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IAssetTypeCreateRequest;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.search.area.IAssetTypeSearchCritiera;
 import com.sitewhere.spi.search.asset.IAssetSearchCriteria;
+import com.sitewhere.spi.search.asset.IAssetTypeSearchCritiera;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**

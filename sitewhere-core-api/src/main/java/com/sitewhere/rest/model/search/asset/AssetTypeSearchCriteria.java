@@ -8,7 +8,7 @@
 package com.sitewhere.rest.model.search.asset;
 
 import com.sitewhere.rest.model.search.SearchCriteria;
-import com.sitewhere.spi.search.area.IAssetTypeSearchCritiera;
+import com.sitewhere.spi.search.asset.IAssetTypeSearchCritiera;
 
 /**
  * Model object for properties used in asset type searches.

@@ -21,7 +21,7 @@ import com.sitewhere.spi.common.ILocation;
 public interface IAreaCreateRequest extends Serializable {
 
     /**
-     * Site token. Can be set to null if token should be auto-generated.
+     * Area token. Can be set to null if token should be auto-generated.
      * 
      * @return
      */
@@ -35,7 +35,7 @@ public interface IAreaCreateRequest extends Serializable {
     public String getAreaTypeToken();
 
     /**
-     * Get token for parent id (null if none).
+     * Get token for parent area (null if none).
      * 
      * @return
      */

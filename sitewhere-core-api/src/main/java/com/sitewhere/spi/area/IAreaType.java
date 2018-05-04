@@ -14,7 +14,7 @@ import java.util.UUID;
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 
 /**
- * Represents an domain-specific area type that can be used for building a
+ * Represents a domain-specific area type that can be used for building a
  * hierarchical area model.
  * 
  * @author Derek

@@ -45,18 +45,6 @@ public class MongoArea implements MongoConverter<IArea> {
     /** Property for token */
     public static final String PROP_TOKEN = "tokn";
 
-    /** Property for coordinates */
-    public static final String PROP_COORDINATES = "coor";
-
-    /** Property for latitude */
-    public static final String PROP_LATITUDE = "lati";
-
-    /** Property for longitude */
-    public static final String PROP_LONGITUDE = "long";
-
-    /** Property for elevation */
-    public static final String PROP_ELEVATION = "elev";
-
     /*
      * (non-Javadoc)
      * 

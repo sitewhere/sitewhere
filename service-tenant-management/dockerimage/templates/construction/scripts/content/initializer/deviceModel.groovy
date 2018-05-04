@@ -22,6 +22,43 @@ def randomItem = { items ->
 	items.get((int)(Math.random() * items.size()))
 }
 
+// ################################### //
+// Create Customer Types and Customers //
+// ################################### //
+
+// Construction company type.
+def companyCustomerType = deviceBuilder.newCustomerType 'construction', 'Construction Company'
+companyCustomerType.withDescription 'A company that manages one or more construction areas.' withIcon 'fa-building'
+companyCustomerType = deviceBuilder.persist companyCustomerType
+logger.info "[Create Customer Type] ${companyCustomerType.name}"
+
+// Subcontractor company type.
+def subCustomerType = deviceBuilder.newCustomerType 'subcontractor', 'Subcontractor'
+subCustomerType.withDescription 'A subcontractor that works for a company.' withIcon 'fa-truck'
+subCustomerType = deviceBuilder.persist subCustomerType
+logger.info "[Create Customer Type] ${subCustomerType.name}"
+
+// Acme Construction Company.
+def acmeCustomer = deviceBuilder.newCustomer companyCustomerType.token, null, 'acme', 'ACME Construction Company'
+acmeCustomer.withDescription 'ACME construction company manages many subcontractors and construction sites.'
+acmeCustomer.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/construction.jpg'
+acmeCustomer = deviceBuilder.persist acmeCustomer
+logger.info "[Create Customer] ${acmeCustomer.name}"
+
+// Subcontractor A.
+def subACustomer = deviceBuilder.newCustomer subCustomerType.token, 'acme', 'subA', 'Subcontractor A'
+subACustomer.withDescription 'Subcontractor A manages multiple construction sites.'
+subACustomer.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/construction.jpg'
+subACustomer = deviceBuilder.persist subACustomer
+logger.info "[Create Customer] ${subACustomer.name}"
+
+// Subcontractor B.
+def subBCustomer = deviceBuilder.newCustomer subCustomerType.token, 'acme', 'subB', 'Subcontractor B'
+subBCustomer.withDescription 'Subcontractor B manages multiple construction sites.'
+subBCustomer.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/construction.jpg'
+subBCustomer = deviceBuilder.persist subBCustomer
+logger.info "[Create Customer] ${subBCustomer.name}"
+
 // ################################# //
 // Create Area Types, Areas and Zone //
 // ################################# //

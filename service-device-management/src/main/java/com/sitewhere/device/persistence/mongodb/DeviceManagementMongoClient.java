@@ -21,6 +21,21 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public class DeviceManagementMongoClient extends MongoDbClient implements IDeviceManagementMongoClient {
 
+    /** Injected name used for customers collection */
+    private String customersCollectionName = IDeviceManagementMongoClient.DEFAULT_CUSTOMERS_COLLECTION_NAME;
+
+    /** Injected name used for customer types collection */
+    private String customerTypesCollectionName = IDeviceManagementMongoClient.DEFAULT_CUSTOMER_TYPES_COLLECTION_NAME;
+
+    /** Injected name used for areas collection */
+    private String areasCollectionName = IDeviceManagementMongoClient.DEFAULT_AREAS_COLLECTION_NAME;
+
+    /** Injected name used for area types collection */
+    private String areaTypesCollectionName = IDeviceManagementMongoClient.DEFAULT_AREA_TYPES_COLLECTION_NAME;
+
+    /** Injected name used for zones collection */
+    private String zonesCollectionName = IDeviceManagementMongoClient.DEFAULT_ZONES_COLLECTION_NAME;
+
     /** Injected name used for device types collection */
     private String deviceTypesCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICE_TYPES_COLLECTION_NAME;
 
@@ -36,15 +51,6 @@ public class DeviceManagementMongoClient extends MongoDbClient implements IDevic
     /** Injected name used for device assignments collection */
     private String deviceAssignmentsCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICE_ASSIGNMENTS_COLLECTION_NAME;
 
-    /** Injected name used for areas collection */
-    private String areasCollectionName = IDeviceManagementMongoClient.DEFAULT_AREAS_COLLECTION_NAME;
-
-    /** Injected name used for area types collection */
-    private String areaTypesCollectionName = IDeviceManagementMongoClient.DEFAULT_AREA_TYPES_COLLECTION_NAME;
-
-    /** Injected name used for zones collection */
-    private String zonesCollectionName = IDeviceManagementMongoClient.DEFAULT_ZONES_COLLECTION_NAME;
-
     /** Injected name used for device groups collection */
     private String deviceGroupsCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICE_GROUPS_COLLECTION_NAME;
 
@@ -59,6 +65,42 @@ public class DeviceManagementMongoClient extends MongoDbClient implements IDevic
 
     public DeviceManagementMongoClient(MongoConfiguration configuration) {
 	super(configuration);
+    }
+
+    /*
+     * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
+     * getCustomersCollection()
+     */
+    @Override
+    public MongoCollection<Document> getCustomersCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getCustomersCollectionName());
+    }
+
+    /*
+     * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
+     * getCustomerTypesCollection()
+     */
+    @Override
+    public MongoCollection<Document> getCustomerTypesCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getCustomerTypesCollectionName());
+    }
+
+    /*
+     * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
+     * getAreasCollection()
+     */
+    @Override
+    public MongoCollection<Document> getAreasCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getAreasCollectionName());
+    }
+
+    /*
+     * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
+     * getAreaTypesCollection()
+     */
+    @Override
+    public MongoCollection<Document> getAreaTypesCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getAreaTypesCollectionName());
     }
 
     /*
@@ -108,24 +150,6 @@ public class DeviceManagementMongoClient extends MongoDbClient implements IDevic
 
     /*
      * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
-     * getAreasCollection()
-     */
-    @Override
-    public MongoCollection<Document> getAreasCollection() throws SiteWhereException {
-	return getDatabase().getCollection(getAreasCollectionName());
-    }
-
-    /*
-     * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
-     * getAreaTypesCollection()
-     */
-    @Override
-    public MongoCollection<Document> getAreaTypesCollection() throws SiteWhereException {
-	return getDatabase().getCollection(getAreaTypesCollectionName());
-    }
-
-    /*
-     * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
      * getZonesCollection()
      */
     @Override
@@ -166,6 +190,46 @@ public class DeviceManagementMongoClient extends MongoDbClient implements IDevic
     @Override
     public MongoCollection<Document> getStreamDataCollection() throws SiteWhereException {
 	return getDatabase().getCollection(getStreamDataCollectionName());
+    }
+
+    public String getCustomersCollectionName() {
+	return customersCollectionName;
+    }
+
+    public void setCustomersCollectionName(String customersCollectionName) {
+	this.customersCollectionName = customersCollectionName;
+    }
+
+    public String getCustomerTypesCollectionName() {
+	return customerTypesCollectionName;
+    }
+
+    public void setCustomerTypesCollectionName(String customerTypesCollectionName) {
+	this.customerTypesCollectionName = customerTypesCollectionName;
+    }
+
+    public String getAreasCollectionName() {
+	return areasCollectionName;
+    }
+
+    public void setAreasCollectionName(String areasCollectionName) {
+	this.areasCollectionName = areasCollectionName;
+    }
+
+    public String getAreaTypesCollectionName() {
+	return areaTypesCollectionName;
+    }
+
+    public void setAreaTypesCollectionName(String areaTypesCollectionName) {
+	this.areaTypesCollectionName = areaTypesCollectionName;
+    }
+
+    public String getZonesCollectionName() {
+	return zonesCollectionName;
+    }
+
+    public void setZonesCollectionName(String zonesCollectionName) {
+	this.zonesCollectionName = zonesCollectionName;
     }
 
     public String getDeviceTypesCollectionName() {
@@ -222,30 +286,6 @@ public class DeviceManagementMongoClient extends MongoDbClient implements IDevic
 
     public void setDeviceAssignmentsCollectionName(String deviceAssignmentsCollectionName) {
 	this.deviceAssignmentsCollectionName = deviceAssignmentsCollectionName;
-    }
-
-    public String getAreasCollectionName() {
-	return areasCollectionName;
-    }
-
-    public void setAreasCollectionName(String areasCollectionName) {
-	this.areasCollectionName = areasCollectionName;
-    }
-
-    public String getAreaTypesCollectionName() {
-	return areaTypesCollectionName;
-    }
-
-    public void setAreaTypesCollectionName(String areaTypesCollectionName) {
-	this.areaTypesCollectionName = areaTypesCollectionName;
-    }
-
-    public String getZonesCollectionName() {
-	return zonesCollectionName;
-    }
-
-    public void setZonesCollectionName(String zonesCollectionName) {
-	this.zonesCollectionName = zonesCollectionName;
     }
 
     public String getStreamsCollectionName() {

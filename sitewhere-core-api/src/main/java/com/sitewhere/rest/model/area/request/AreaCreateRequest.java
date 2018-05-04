@@ -159,7 +159,7 @@ public class AreaCreateRequest implements IAreaCreateRequest {
 	    request.setToken(token);
 	    request.setName(name);
 	    request.setDescription("");
-	    request.setImageUrl("https://s3.amazonaws.com/sitewhere-demo/construction/construction.jpg");
+	    request.setImageUrl("https://s3.amazonaws.com/sitewhere-demo/broken-link.png");
 	}
 
 	public Builder withDescription(String description) {

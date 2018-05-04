@@ -19,6 +19,12 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public interface IDeviceManagementMongoClient {
 
+    /** Default collection name for SiteWhere customers */
+    public static final String DEFAULT_CUSTOMERS_COLLECTION_NAME = "customers";
+
+    /** Default collection name for SiteWhere customer types */
+    public static final String DEFAULT_CUSTOMER_TYPES_COLLECTION_NAME = "customertypes";
+
     /** Default collection name for SiteWhere areas */
     public static final String DEFAULT_AREAS_COLLECTION_NAME = "areas";
 
@@ -54,6 +60,46 @@ public interface IDeviceManagementMongoClient {
 
     /** Default collection name for SiteWhere device streams data */
     public static final String DEFAULT_DEVICE_STREAM_DATA_COLLECTION_NAME = "streamdata";
+
+    /**
+     * Collection for customers.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public MongoCollection<Document> getCustomersCollection() throws SiteWhereException;
+
+    /**
+     * Collection for customer types.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public MongoCollection<Document> getCustomerTypesCollection() throws SiteWhereException;
+
+    /**
+     * Collection for areas.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public MongoCollection<Document> getAreasCollection() throws SiteWhereException;
+
+    /**
+     * Collection for area types.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public MongoCollection<Document> getAreaTypesCollection() throws SiteWhereException;
+
+    /**
+     * Collection for zones.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public MongoCollection<Document> getZonesCollection() throws SiteWhereException;
 
     /**
      * Collection for device types.
@@ -94,30 +140,6 @@ public interface IDeviceManagementMongoClient {
      * @throws SiteWhereException
      */
     public MongoCollection<Document> getDeviceAssignmentsCollection() throws SiteWhereException;
-
-    /**
-     * Collection for areas.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public MongoCollection<Document> getAreasCollection() throws SiteWhereException;
-
-    /**
-     * Collection for area types.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public MongoCollection<Document> getAreaTypesCollection() throws SiteWhereException;
-
-    /**
-     * Collection for zones.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public MongoCollection<Document> getZonesCollection() throws SiteWhereException;
 
     /**
      * Collection for device groups.

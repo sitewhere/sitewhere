@@ -18,6 +18,10 @@ import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.area.request.IAreaCreateRequest;
 import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
+import com.sitewhere.spi.customer.ICustomer;
+import com.sitewhere.spi.customer.ICustomerType;
+import com.sitewhere.spi.customer.request.ICustomerCreateRequest;
+import com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
@@ -39,6 +43,7 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
+import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 
@@ -412,6 +417,132 @@ public class DeviceManagementDecorator extends TenantEngineLifecycleComponentDec
     public ISearchResults<IDeviceStream> listDeviceStreams(UUID assignmentId, ISearchCriteria criteria)
 	    throws SiteWhereException {
 	return getDelegate().listDeviceStreams(assignmentId, criteria);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createCustomerType(com.sitewhere.
+     * spi.customer.request.ICustomerTypeCreateRequest)
+     */
+    @Override
+    public ICustomerType createCustomerType(ICustomerTypeCreateRequest request) throws SiteWhereException {
+	return getDelegate().createCustomerType(request);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getCustomerType(java.util.UUID)
+     */
+    @Override
+    public ICustomerType getCustomerType(UUID id) throws SiteWhereException {
+	return getDelegate().getCustomerType(id);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getCustomerTypeByToken(java.lang.
+     * String)
+     */
+    @Override
+    public ICustomerType getCustomerTypeByToken(String token) throws SiteWhereException {
+	return getDelegate().getCustomerTypeByToken(token);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#updateCustomerType(java.util.UUID,
+     * com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest)
+     */
+    @Override
+    public ICustomerType updateCustomerType(UUID id, ICustomerTypeCreateRequest request) throws SiteWhereException {
+	return getDelegate().updateCustomerType(id, request);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listCustomerTypes(com.sitewhere.
+     * spi.search.ISearchCriteria)
+     */
+    @Override
+    public ISearchResults<ICustomerType> listCustomerTypes(ISearchCriteria criteria) throws SiteWhereException {
+	return getDelegate().listCustomerTypes(criteria);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#deleteCustomerType(java.util.UUID,
+     * boolean)
+     */
+    @Override
+    public ICustomerType deleteCustomerType(UUID id, boolean force) throws SiteWhereException {
+	return getDelegate().deleteCustomerType(id, force);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createCustomer(com.sitewhere.spi.
+     * customer.request.ICustomerCreateRequest)
+     */
+    @Override
+    public ICustomer createCustomer(ICustomerCreateRequest request) throws SiteWhereException {
+	return getDelegate().createCustomer(request);
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getCustomer(java.util.UUID)
+     */
+    @Override
+    public ICustomer getCustomer(UUID id) throws SiteWhereException {
+	return getDelegate().getCustomer(id);
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getCustomerByToken(java.lang.
+     * String)
+     */
+    @Override
+    public ICustomer getCustomerByToken(String token) throws SiteWhereException {
+	return getDelegate().getCustomerByToken(token);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getCustomerChildren(java.lang.
+     * String)
+     */
+    @Override
+    public List<ICustomer> getCustomerChildren(String token) throws SiteWhereException {
+	return getDelegate().getCustomerChildren(token);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#updateCustomer(java.util.UUID,
+     * com.sitewhere.spi.customer.request.ICustomerCreateRequest)
+     */
+    @Override
+    public ICustomer updateCustomer(UUID id, ICustomerCreateRequest request) throws SiteWhereException {
+	return getDelegate().updateCustomer(id, request);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listCustomers(com.sitewhere.spi.
+     * search.customer.ICustomerSearchCriteria)
+     */
+    @Override
+    public ISearchResults<ICustomer> listCustomers(ICustomerSearchCriteria criteria) throws SiteWhereException {
+	return getDelegate().listCustomers(criteria);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#deleteCustomer(java.util.UUID,
+     * boolean)
+     */
+    @Override
+    public ICustomer deleteCustomer(UUID id, boolean force) throws SiteWhereException {
+	return getDelegate().deleteCustomer(id, force);
     }
 
     /*
