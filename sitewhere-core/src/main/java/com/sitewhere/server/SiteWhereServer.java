@@ -219,8 +219,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.server.ISiteWhereServer#getConfigurationParserClassname
-     * ()
+     * com.sitewhere.spi.server.ISiteWhereServer#getConfigurationParserClassname ()
      */
     @Override
     public String getConfigurationParserClassname() {
@@ -289,8 +288,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.ISiteWhereServer#getHazelcastConfiguration()
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getHazelcastConfiguration()
      */
     @Override
     public IHazelcastConfiguration getHazelcastConfiguration() {
@@ -310,8 +308,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.ISiteWhereServer#getBootstrapResourceManager()
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getBootstrapResourceManager()
      */
     @Override
     public IResourceManager getBootstrapResourceManager() {
@@ -321,8 +318,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.ISiteWhereServer#getRuntimeResourceManager()
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getRuntimeResourceManager()
      */
     @Override
     public IResourceManager getRuntimeResourceManager() {
@@ -415,7 +411,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     protected void removeTenantForAuthToken(ITenant tenant) {
 	for (ITenant current : tenantsByAuthToken.values()) {
 	    if (current.getId().equals(tenant.getId())) {
-		tenantsByAuthToken.remove(current);
+		tenantsByAuthToken.remove(current.getId());
 	    }
 	}
     }
@@ -423,8 +419,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.ISiteWhereServer#onTenantUpdated(com.sitewhere.
+     * @see com.sitewhere.spi.server.ISiteWhereServer#onTenantUpdated(com.sitewhere.
      * spi.tenant.ITenant)
      */
     @Override
@@ -443,8 +438,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.ISiteWhereServer#onTenantDeleted(com.sitewhere.
+     * @see com.sitewhere.spi.server.ISiteWhereServer#onTenantDeleted(com.sitewhere.
      * spi.tenant.ITenant)
      */
     @Override
@@ -497,8 +491,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.ISiteWhereServer#getDeviceEventManagement(com.
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getDeviceEventManagement(com.
      * sitewhere .spi.user.ITenant)
      */
     @Override
@@ -546,8 +539,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.ISiteWhereServer#getDeviceCommunication(com.
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getDeviceCommunication(com.
      * sitewhere. spi.user.ITenant)
      */
     @Override
@@ -583,8 +575,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.ISiteWhereServer#getSearchProviderManager(com.
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getSearchProviderManager(com.
      * sitewhere .spi.user.ITenant)
      */
     @Override
@@ -608,8 +599,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.ISiteWhereServer#getTenantGroovyConfiguration(
+     * @see com.sitewhere.spi.server.ISiteWhereServer#getTenantGroovyConfiguration(
      * com.sitewhere.spi.tenant.ITenant)
      */
     @Override
@@ -724,8 +714,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.ISiteWhereServer#initialize(com.sitewhere.spi.
+     * @see com.sitewhere.spi.server.ISiteWhereServer#initialize(com.sitewhere.spi.
      * server.lifecycle.ILifecycleProgressMonitor)
      */
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -856,9 +845,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     }
 
     /**
-     * Initialize beans marked with
-     * {@link IDiscoverableTenantLifecycleComponent} interface and add them as
-     * registered components.
+     * Initialize beans marked with {@link IDiscoverableTenantLifecycleComponent}
+     * interface and add them as registered components.
      * 
      * @param monitor
      * @throws SiteWhereException
@@ -968,8 +956,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     }
 
     /**
-     * Initialize runtime resource manager and swap configuration resolver to
-     * use it.
+     * Initialize runtime resource manager and swap configuration resolver to use
+     * it.
      * 
      * @throws SiteWhereException
      */

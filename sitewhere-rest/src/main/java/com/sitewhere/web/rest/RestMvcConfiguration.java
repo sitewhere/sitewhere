@@ -9,6 +9,8 @@ package com.sitewhere.web.rest;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 import com.sitewhere.web.rest.controllers.AssetsController;
@@ -19,4 +21,24 @@ public class RestMvcConfiguration extends WebMvcConfigurationSupport {
 
     /** URL prefix for matching REST API calls */
     public static final String REST_API_MATCHER = "/api/*";
+
+    /*
+     * @see org.springframework.web.servlet.config.annotation.WebMvcConfigurer#
+     * configurePathMatch(org.springframework.web.servlet.config.annotation.
+     * PathMatchConfigurer)
+     */
+    @Override
+    public void configurePathMatch(PathMatchConfigurer configurer) {
+	configurer.setUseSuffixPatternMatch(false);
+    }
+
+    /*
+     * @see org.springframework.web.servlet.config.annotation.WebMvcConfigurer#
+     * configureContentNegotiation(org.springframework.web.servlet.config.annotation
+     * .ContentNegotiationConfigurer)
+     */
+    @Override
+    public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+	configurer.favorPathExtension(false);
+    }
 }
