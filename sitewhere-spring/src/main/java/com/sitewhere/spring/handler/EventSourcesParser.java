@@ -81,8 +81,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spring.handler.SiteWhereBeanListParser#parse(org.w3c.dom.
+     * @see com.sitewhere.spring.handler.SiteWhereBeanListParser#parse(org.w3c.dom.
      * Element, org.springframework.beans.factory.xml.ParserContext)
      */
     public ManagedList<?> parse(Element element, ParserContext context) {
@@ -255,6 +254,11 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	    throw new RuntimeException("MQTT topic attribute not provided.");
 	}
 	mqtt.addPropertyValue("topic", topic.getValue());
+
+	Attr numThreads = element.getAttributeNode("numThreads");
+	if (numThreads != null) {
+	    mqtt.addPropertyValue("numThreads", numThreads.getValue());
+	}
 
 	Attr trustStorePath = element.getAttributeNode("trustStorePath");
 	if (trustStorePath != null) {
@@ -547,8 +551,8 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
     }
 
     /**
-     * Parse an event source that uses ActiveMQ to connect to a remote broker
-     * and ingest messages.
+     * Parse an event source that uses ActiveMQ to connect to a remote broker and
+     * ingest messages.
      * 
      * @param element
      * @param context
@@ -695,8 +699,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
     }
 
     /**
-     * Parse a socket interaction handler factory from the list of
-     * possibilities.
+     * Parse a socket interaction handler factory from the list of possibilities.
      * 
      * @param decoder
      * @param context
@@ -747,8 +750,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
     }
 
     /**
-     * Parse reference to an external {@link ISocketInteractionHandlerFactory}
-     * bean.
+     * Parse reference to an external {@link ISocketInteractionHandlerFactory} bean.
      * 
      * @param parent
      * @param decoder
@@ -1409,8 +1411,7 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
     }
 
     /**
-     * Parse the message metadata extractor for a composite device event
-     * decoder.
+     * Parse the message metadata extractor for a composite device event decoder.
      * 
      * @param element
      * @param context

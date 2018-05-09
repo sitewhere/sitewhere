@@ -44,17 +44,26 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
     /** Default subscribed topic name */
     public static final String DEFAULT_TOPIC = "SiteWhere/input/protobuf";
 
+    /** Number of threads used for processing events */
+    public static final int DEFAULT_NUM_THREADS = 5;
+
     /** Parent event source */
     private IInboundEventSource<byte[]> eventSource;
 
     /** Topic name */
     private String topic = DEFAULT_TOPIC;
 
+    /** Number of threads used for processing */
+    private int numThreads = DEFAULT_NUM_THREADS;
+
     /** Shared MQTT connection */
     private FutureConnection connection;
 
     /** Used to execute MQTT subscribe in separate thread */
-    private ExecutorService executor;
+    private ExecutorService subscriptionExecutor;
+
+    /** Used to process MQTT events in a thread pool */
+    private ExecutorService processorsExecutor;
 
     public MqttInboundEventReceiver() {
 	super(LifecycleComponentType.InboundEventReceiver);
@@ -71,7 +80,9 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.start(monitor);
 
-	this.executor = Executors.newSingleThreadExecutor(new SubscribersThreadFactory());
+	this.subscriptionExecutor = Executors.newSingleThreadExecutor(new SubscribersThreadFactory());
+	this.processorsExecutor = Executors.newFixedThreadPool(getNumThreads(), new ProcessorsThreadFactory());
+
 	LOGGER.info("Receiver connecting to MQTT broker at '" + getBrokerInfo() + "'...");
 	connection = getConnection();
 	LOGGER.info("Receiver connected to MQTT broker.");
@@ -87,8 +98,10 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 	    throw new SiteWhereException("Exception while attempting to subscribe to MQTT topic: " + getTopic(), e);
 	}
 
+	LOGGER.info("Will be using " + getNumThreads() + " threads to process MQTT payloads.");
+
 	// Handle message processing in separate thread.
-	executor.execute(new MqttSubscriptionProcessor());
+	subscriptionExecutor.execute(new MqttSubscriptionProcessor());
     }
 
     /*
@@ -110,18 +123,6 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
     @Override
     public String getDisplayName() {
 	return getProtocol() + "://" + getHostname() + ":" + getPort() + "/" + getTopic();
-    }
-
-    /** Used for naming consumer threads */
-    private class SubscribersThreadFactory implements ThreadFactory {
-
-	/** Counts threads */
-	private AtomicInteger counter = new AtomicInteger();
-
-	public Thread newThread(Runnable r) {
-	    return new Thread(r, "SiteWhere MQTT(" + getEventSource().getSourceId() + " - " + getTopic() + ") Receiver "
-		    + counter.incrementAndGet());
-	}
     }
 
     /*
@@ -151,7 +152,7 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 		    Future<Message> future = connection.receive();
 		    Message message = future.await();
 		    message.ack();
-		    EventProcessingLogic.processRawPayload(MqttInboundEventReceiver.this, message.getPayload(), null);
+		    processorsExecutor.execute(new MqttPayloadProcessor(message));
 		} catch (InterruptedException e) {
 		    break;
 		} catch (Throwable e) {
@@ -161,17 +162,43 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 	}
     }
 
+    /**
+     * Processes an encoded event payload.
+     * 
+     * @author Derek
+     */
+    private class MqttPayloadProcessor implements Runnable {
+
+	/** MQTT message */
+	private Message message;
+
+	public MqttPayloadProcessor(Message message) {
+	    this.message = message;
+	}
+
+	@Override
+	public void run() {
+	    try {
+		EventProcessingLogic.processRawPayload(MqttInboundEventReceiver.this, message.getPayload(), null);
+	    } catch (Throwable e) {
+		LOGGER.error(e);
+	    }
+	}
+    }
+
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.device.communication.mqtt.MqttLifecycleComponent#stop(com.
+     * @see com.sitewhere.device.communication.mqtt.MqttLifecycleComponent#stop(com.
      * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	if (executor != null) {
-	    executor.shutdownNow();
+	if (processorsExecutor != null) {
+	    processorsExecutor.shutdownNow();
+	}
+	if (subscriptionExecutor != null) {
+	    subscriptionExecutor.shutdownNow();
 	}
 	if (connection != null) {
 	    try {
@@ -200,8 +227,7 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
-     * setEventSource(com
-     * .sitewhere.spi.device.communication.IInboundEventSource)
+     * setEventSource(com .sitewhere.spi.device.communication.IInboundEventSource)
      */
     public void setEventSource(IInboundEventSource<byte[]> eventSource) {
 	this.eventSource = eventSource;
@@ -213,5 +239,37 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 
     public void setTopic(String topic) {
 	this.topic = topic;
+    }
+
+    public int getNumThreads() {
+	return numThreads;
+    }
+
+    public void setNumThreads(int numThreads) {
+	this.numThreads = numThreads;
+    }
+
+    /** Used for naming consumer threads */
+    private class SubscribersThreadFactory implements ThreadFactory {
+
+	/** Counts threads */
+	private AtomicInteger counter = new AtomicInteger();
+
+	public Thread newThread(Runnable r) {
+	    return new Thread(r, "SiteWhere MQTT(" + getEventSource().getSourceId() + " - " + getTopic() + ") Receiver "
+		    + counter.incrementAndGet());
+	}
+    }
+
+    /** Used for naming processor threads */
+    private class ProcessorsThreadFactory implements ThreadFactory {
+
+	/** Counts threads */
+	private AtomicInteger counter = new AtomicInteger();
+
+	public Thread newThread(Runnable r) {
+	    return new Thread(r, "SiteWhere MQTT(" + getEventSource().getSourceId() + " - " + getTopic()
+		    + ") Processor " + counter.incrementAndGet());
+	}
     }
 }

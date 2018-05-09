@@ -157,6 +157,8 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 	addMqttConnectivityAttributes(builder);
 	builder.attribute((new AttributeNode.Builder("MQTT topic", "topic", AttributeType.String)
 		.description("MQTT topic event source uses for inbound messages.").build()));
+	builder.attribute((new AttributeNode.Builder("Processing threads", "numThreads", AttributeType.Integer)
+		.defaultValue("5").description("Number of threads used for processing MQTT payloads.").build()));
 
 	return builder.build();
     }

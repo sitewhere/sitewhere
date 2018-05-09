@@ -7,6 +7,9 @@
  */
 package com.sitewhere.server.lifecycle;
 
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.Timer;
+import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -45,8 +48,7 @@ public abstract class TenantLifecycleComponent extends LifecycleComponent implem
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#startNestedComponent(
+     * @see com.sitewhere.server.lifecycle.LifecycleComponent#startNestedComponent(
      * com.sitewhere.spi.server.lifecycle.ILifecycleComponent,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor,
      * java.lang.String, boolean)
@@ -58,6 +60,26 @@ public abstract class TenantLifecycleComponent extends LifecycleComponent implem
 	    ((ITenantLifecycleComponent) component).setTenant(getTenant());
 	}
 	super.startNestedComponent(component, monitor, errorMessage, require);
+    }
+
+    /**
+     * Create meter metric.
+     * 
+     * @param name
+     * @return
+     */
+    public Meter createMeterMetric(String name) {
+	return SiteWhere.getServer().getMetricRegistry().meter(getTenant().getId() + "." + name);
+    }
+
+    /**
+     * Create timer metric.
+     * 
+     * @param name
+     * @return
+     */
+    public Timer createTimerMetric(String name) {
+	return SiteWhere.getServer().getMetricRegistry().timer(getTenant().getId() + "." + name);
     }
 
     /** Tenant associated with component */

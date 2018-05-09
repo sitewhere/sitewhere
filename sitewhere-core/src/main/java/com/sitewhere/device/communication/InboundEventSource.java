@@ -14,6 +14,8 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.Timer;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -64,6 +66,21 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
     /** List of {@link IInboundEventReceiver} that supply this processor */
     private List<IInboundEventReceiver<T>> inboundEventReceivers = new ArrayList<IInboundEventReceiver<T>>();
 
+    /** Meter for counting processed events */
+    private Meter processedEventsMeter;
+
+    /** Meter for counting failed decodes */
+    private Meter decodeFailedMeter;
+
+    /** Meter for counting duplicate events */
+    private Meter duplicateEventMeter;
+
+    /** Histogram for decode time */
+    private Timer decodeTimer;
+
+    /** Histogram for deduplication time */
+    private Timer deduplicationTimer;
+
     public InboundEventSource() {
 	super(LifecycleComponentType.InboundEventSource);
     }
@@ -78,6 +95,13 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getLifecycleComponents().clear();
+
+	// Set up metrics.
+	this.processedEventsMeter = createMeterMetric(getSourceId() + ".processedEvents");
+	this.decodeFailedMeter = createMeterMetric(getSourceId() + ".decodeFailed");
+	this.duplicateEventMeter = createMeterMetric(getSourceId() + ".duplicateEventMeter");
+	this.decodeTimer = createTimerMetric(getSourceId() + ".decodeTimer");
+	this.deduplicationTimer = createTimerMetric(getSourceId() + ".deduplicationTimer");
 
 	LOGGER.debug("Starting event source '" + getSourceId() + "'.");
 	if (getInboundProcessingStrategy() == null) {
@@ -176,17 +200,32 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
     @Override
     public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encodedPayload,
 	    Map<String, Object> metadata) throws EventDecodeException {
-	LOGGER.debug("Device event receiver thread picked up event.");
-	List<IDecodedDeviceRequest<?>> requests = decodePayload(encodedPayload, metadata);
+	getProcessedEventsMeter().mark();
+	List<IDecodedDeviceRequest<?>> requests = null;
+	Timer.Context decodeTimer = getDecodeTimer().time();
+	try {
+	    requests = decodePayload(encodedPayload, metadata);
+	} catch (Throwable e) {
+	    getDecodeFailedMeter().mark();
+	    throw e;
+	} finally {
+	    decodeTimer.stop();
+	}
 	try {
 	    if (requests != null) {
 		for (IDecodedDeviceRequest<?> decoded : requests) {
-		    boolean isDuplicate = ((getDeviceEventDeduplicator() != null)
-			    && (getDeviceEventDeduplicator().isDuplicate(decoded)));
+		    Timer.Context dedupTimer = getDeduplicationTimer().time();
+		    boolean isDuplicate = false;
+		    try {
+			isDuplicate = ((getDeviceEventDeduplicator() != null)
+				&& (getDeviceEventDeduplicator().isDuplicate(decoded)));
+		    } finally {
+			dedupTimer.stop();
+		    }
 		    if (!isDuplicate) {
 			handleDecodedRequest(decoded);
 		    } else {
-			LOGGER.info("Event not processed due to duplicate detected.");
+			getDuplicateEventMeter().mark();
 		    }
 		}
 	    }
@@ -198,8 +237,8 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
     }
 
     /**
-     * Handle a single decoded request by passing it to the correct method on
-     * the inbound processing strategy.
+     * Handle a single decoded request by passing it to the correct method on the
+     * inbound processing strategy.
      * 
      * @param decoded
      * @throws SiteWhereException
@@ -268,8 +307,7 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.communication.IInboundEventSource#getSourceId()
+     * @see com.sitewhere.spi.device.communication.IInboundEventSource#getSourceId()
      */
     @Override
     public String getSourceId() {
@@ -341,5 +379,45 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
 
     public List<IInboundEventReceiver<T>> getInboundEventReceivers() {
 	return inboundEventReceivers;
+    }
+
+    public Meter getProcessedEventsMeter() {
+	return processedEventsMeter;
+    }
+
+    public void setProcessedEventsMeter(Meter processedEventsMeter) {
+	this.processedEventsMeter = processedEventsMeter;
+    }
+
+    public Meter getDecodeFailedMeter() {
+	return decodeFailedMeter;
+    }
+
+    public void setDecodeFailedMeter(Meter decodeFailedMeter) {
+	this.decodeFailedMeter = decodeFailedMeter;
+    }
+
+    public Meter getDuplicateEventMeter() {
+	return duplicateEventMeter;
+    }
+
+    public void setDuplicateEventMeter(Meter duplicateEventMeter) {
+	this.duplicateEventMeter = duplicateEventMeter;
+    }
+
+    public Timer getDecodeTimer() {
+	return decodeTimer;
+    }
+
+    public void setDecodeTimer(Timer decodeTimer) {
+	this.decodeTimer = decodeTimer;
+    }
+
+    public Timer getDeduplicationTimer() {
+	return deduplicationTimer;
+    }
+
+    public void setDeduplicationTimer(Timer deduplicationTimer) {
+	this.deduplicationTimer = deduplicationTimer;
     }
 }

@@ -2156,6 +2156,13 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
+				<xsd:attribute name="numThreads" type="sw:substitutableInt">
+					<xsd:annotation>
+						<xsd:documentation>
+							Number of threads used to process events.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>

@@ -24,6 +24,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 
+import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.sitewhere.SiteWhere;
@@ -718,6 +719,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      * server.lifecycle.ILifecycleProgressMonitor)
      */
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Start logging metrics to the console.
+	logMetricsToConsole();
+
 	// Handle backward compatibility.
 	backwardCompatibilityService.beforeServerInitialize(monitor);
 
@@ -975,7 +979,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-
 	// Organizes steps for starting server.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Started Server");
 
@@ -1031,6 +1034,18 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 	// Start the operation and report progress.
 	start.execute(monitor);
+    }
+
+    /**
+     * Log metrics to console.
+     */
+    protected void logMetricsToConsole() {
+	String useMetricsStr = System.getProperty("sitewhere.metrics");
+	if ((useMetricsStr != null) && ("true".equals(useMetricsStr))) {
+	    ConsoleReporter reporter = ConsoleReporter.forRegistry(SiteWhere.getServer().getMetricRegistry())
+		    .convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MILLISECONDS).build();
+	    reporter.start(10, TimeUnit.SECONDS);
+	}
     }
 
     /**
