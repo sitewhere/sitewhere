@@ -25,8 +25,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 
-import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Slf4jReporter;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.common.MarshalUtils;
@@ -1043,7 +1043,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     protected void logMetricsToConsole() {
 	String useMetricsStr = System.getProperty("sitewhere.metrics");
 	if ((useMetricsStr != null) && ("true".equals(useMetricsStr))) {
-	    ConsoleReporter reporter = ConsoleReporter.forRegistry(SiteWhere.getServer().getMetricRegistry())
+	    Slf4jReporter reporter = Slf4jReporter.forRegistry(SiteWhere.getServer().getMetricRegistry())
 		    .convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MILLISECONDS).build();
 	    reporter.start(10, TimeUnit.SECONDS);
 	}

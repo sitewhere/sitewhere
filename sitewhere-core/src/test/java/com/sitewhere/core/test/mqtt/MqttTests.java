@@ -39,7 +39,7 @@ public class MqttTests {
     private static final int NUM_THREADS = 20;
 
     /** Nunber of calls performed per thread */
-    private static final int NUM_CALLS_PER_THREAD = 1000;
+    private static final int NUM_CALLS_PER_THREAD = 100;
 
     @Test
     public void runMqttTest() throws Exception {
@@ -104,7 +104,7 @@ public class MqttTests {
 	 */
 	public void sendLocationOverMqtt() throws SiteWhereException {
 	    DeviceRequest request = new DeviceRequest();
-	    request.setHardwareId("b213814c-3b69-419e-be98-66fc89754a1e");
+	    request.setHardwareId("760f6a59-b6b6-441f-8b28-ca0ec3a9d91e");
 	    request.setType(Type.DeviceLocation);
 	    DeviceLocationCreateRequest location = new DeviceLocationCreateRequest();
 	    location.setEventDate(new Date());
