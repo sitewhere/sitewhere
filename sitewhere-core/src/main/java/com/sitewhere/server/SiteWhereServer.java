@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -165,10 +166,10 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
     private Map<String, ILifecycleComponent> lifecycleComponentsById = new HashMap<String, ILifecycleComponent>();
 
     /** Map of tenants by authentication token */
-    private Map<String, ITenant> tenantsByAuthToken = new HashMap<String, ITenant>();
+    private Map<String, ITenant> tenantsByAuthToken = new ConcurrentHashMap<String, ITenant>();
 
     /** Map of tenant engines by tenant id */
-    private Map<String, ISiteWhereTenantEngine> tenantEnginesById = new HashMap<String, ISiteWhereTenantEngine>();
+    private Map<String, ISiteWhereTenantEngine> tenantEnginesById = new ConcurrentHashMap<String, ISiteWhereTenantEngine>();
 
     /** Metric regsitry */
     private MetricRegistry metricRegistry = new MetricRegistry();
