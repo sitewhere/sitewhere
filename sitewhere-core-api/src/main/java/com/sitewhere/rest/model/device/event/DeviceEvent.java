@@ -45,6 +45,9 @@ public abstract class DeviceEvent extends MetadataProvider implements IDeviceEve
     /** Device assignment id */
     private UUID deviceAssignmentId;
 
+    /** Customer id */
+    private UUID customerId;
+
     /** Area id */
     private UUID areaId;
 
@@ -123,6 +126,18 @@ public abstract class DeviceEvent extends MetadataProvider implements IDeviceEve
 
     public void setDeviceAssignmentId(UUID deviceAssignmentId) {
 	this.deviceAssignmentId = deviceAssignmentId;
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.event.IDeviceEvent#getCustomerId()
+     */
+    @Override
+    public UUID getCustomerId() {
+	return customerId;
+    }
+
+    public void setCustomerId(UUID customerId) {
+	this.customerId = customerId;
     }
 
     /*

@@ -15,6 +15,8 @@ import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetType;
+import com.sitewhere.spi.customer.ICustomer;
+import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
@@ -42,6 +44,25 @@ public class DefaultEntityUriProvider implements IEntityUriProvider {
 	    INSTANCE = new DefaultEntityUriProvider();
 	}
 	return INSTANCE;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.label.IEntityUriProvider#getCustomerTypeIdentifier(com.
+     * sitewhere.spi.customer.ICustomerType)
+     */
+    @Override
+    public URI getCustomerTypeIdentifier(ICustomerType customerType) throws SiteWhereException {
+	return createUri(SITEWHERE_PROTOCOL + "customertype/" + customerType.getToken());
+    }
+
+    /*
+     * @see com.sitewhere.spi.label.IEntityUriProvider#getCustomerIdentifier(com.
+     * sitewhere.spi.customer.ICustomer)
+     */
+    @Override
+    public URI getCustomerIdentifier(ICustomer customer) throws SiteWhereException {
+	return createUri(SITEWHERE_PROTOCOL + "customer/" + customer.getToken());
     }
 
     /*

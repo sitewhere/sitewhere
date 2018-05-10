@@ -434,7 +434,7 @@ devicesPerSite.times {
 	logger.info "[Create Device] ${device.token}"
 	
 	// Create an assignment based on device type.
-	def assn = deviceBuilder.newAssignment device.token, assnInfo.areaToken, assnInfo.assetToken
+	def assn = deviceBuilder.newAssignment device.token, acmeCustomer.token, assnInfo.areaToken, assnInfo.assetToken
 	assn = deviceBuilder.persist assn
 	logger.info "[Create Assignment] ${assn.token}"
 	

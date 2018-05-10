@@ -13,8 +13,8 @@ import java.util.UUID;
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 
 /**
- * Assigns a device to a physical entity being monitored. A device may be used
- * for multiple assets over a period of time.
+ * Assigns a device to a customer, area, and/or asset so that events may be
+ * associated with those entities.
  * 
  * @author Derek
  */
@@ -26,6 +26,13 @@ public interface IDeviceAssignment extends IMetadataProviderEntity {
      * @return
      */
     public UUID getDeviceId();
+
+    /**
+     * Get unqiue id for customer assigned to device.
+     * 
+     * @return
+     */
+    public UUID getCustomerId();
 
     /**
      * Get unique id for area assigned to device.

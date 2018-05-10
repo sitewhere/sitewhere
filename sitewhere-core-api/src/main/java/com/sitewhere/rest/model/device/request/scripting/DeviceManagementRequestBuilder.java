@@ -253,13 +253,15 @@ public class DeviceManagementRequestBuilder {
     /**
      * Create a new device assignment.
      * 
-     * @param hardwareId
+     * @param deviceToken
+     * @param customerToken
      * @param areaToken
      * @param assetToken
      * @return
      */
-    public DeviceAssignmentCreateRequest.Builder newAssignment(String hardwareId, String areaToken, String assetToken) {
-	return new DeviceAssignmentCreateRequest.Builder(hardwareId, areaToken, assetToken);
+    public DeviceAssignmentCreateRequest.Builder newAssignment(String deviceToken, String customerToken,
+	    String areaToken, String assetToken) {
+	return new DeviceAssignmentCreateRequest.Builder(deviceToken, customerToken, areaToken, assetToken);
     }
 
     /**

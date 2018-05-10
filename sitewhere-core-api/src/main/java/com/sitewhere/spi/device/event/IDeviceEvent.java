@@ -57,6 +57,13 @@ public interface IDeviceEvent extends IMetadataProvider, Serializable {
     public UUID getDeviceAssignmentId();
 
     /**
+     * Get customer id if assigned.
+     * 
+     * @return
+     */
+    public UUID getCustomerId();
+
+    /**
      * Get area id if assigned.
      * 
      * @return

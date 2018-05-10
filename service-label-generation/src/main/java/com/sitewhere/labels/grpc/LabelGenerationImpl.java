@@ -18,6 +18,10 @@ import com.sitewhere.grpc.service.GGetAssetLabelRequest;
 import com.sitewhere.grpc.service.GGetAssetLabelResponse;
 import com.sitewhere.grpc.service.GGetAssetTypeLabelRequest;
 import com.sitewhere.grpc.service.GGetAssetTypeLabelResponse;
+import com.sitewhere.grpc.service.GGetCustomerLabelRequest;
+import com.sitewhere.grpc.service.GGetCustomerLabelResponse;
+import com.sitewhere.grpc.service.GGetCustomerTypeLabelRequest;
+import com.sitewhere.grpc.service.GGetCustomerTypeLabelResponse;
 import com.sitewhere.grpc.service.GGetDeviceAssignmentLabelRequest;
 import com.sitewhere.grpc.service.GGetDeviceAssignmentLabelResponse;
 import com.sitewhere.grpc.service.GGetDeviceGroupLabelRequest;
@@ -38,6 +42,8 @@ import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetType;
+import com.sitewhere.spi.customer.ICustomer;
+import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -65,6 +71,61 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
 
     public LabelGenerationImpl(ILabelGenerationTenantEngine labelGenerationTenantEngine) {
 	this.labelGenerationTenantEngine = labelGenerationTenantEngine;
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.LabelGenerationGrpc.LabelGenerationImplBase#
+     * getCustomerTypeLabel(com.sitewhere.grpc.service.GGetCustomerTypeLabelRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getCustomerTypeLabel(GGetCustomerTypeLabelRequest request,
+	    StreamObserver<GGetCustomerTypeLabelResponse> responseObserver) {
+	try {
+	    GrpcUtils.logServerMethodEntry(LabelGenerationGrpc.METHOD_GET_CUSTOMER_TYPE_LABEL);
+
+	    ILabelGenerator generator = getLabelGeneratorById(request.getGeneratorId());
+	    ICustomerType customerType = getDeviceManagement()
+		    .getCustomerType(CommonModelConverter.asApiUuid(request.getCustomerTypeId()));
+	    byte[] content = generator.getCustomerTypeLabel(customerType, getEntityUriProvider());
+	    Label label = new Label();
+	    label.setContent(content);
+
+	    GGetCustomerTypeLabelResponse.Builder response = GGetCustomerTypeLabelResponse.newBuilder();
+	    response.setLabel(LabelGenerationModelConverter.asGrpcLabel(label));
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(LabelGenerationGrpc.METHOD_GET_CUSTOMER_TYPE_LABEL, e,
+		    responseObserver);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.LabelGenerationGrpc.LabelGenerationImplBase#
+     * getCustomerLabel(com.sitewhere.grpc.service.GGetCustomerLabelRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getCustomerLabel(GGetCustomerLabelRequest request,
+	    StreamObserver<GGetCustomerLabelResponse> responseObserver) {
+	try {
+	    GrpcUtils.logServerMethodEntry(LabelGenerationGrpc.METHOD_GET_CUSTOMER_LABEL);
+
+	    ILabelGenerator generator = getLabelGeneratorById(request.getGeneratorId());
+	    ICustomer customer = getDeviceManagement()
+		    .getCustomer(CommonModelConverter.asApiUuid(request.getCustomerId()));
+	    byte[] content = generator.getCustomerLabel(customer, getEntityUriProvider());
+	    Label label = new Label();
+	    label.setContent(content);
+
+	    GGetCustomerLabelResponse.Builder response = GGetCustomerLabelResponse.newBuilder();
+	    response.setLabel(LabelGenerationModelConverter.asGrpcLabel(label));
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(LabelGenerationGrpc.METHOD_GET_CUSTOMER_LABEL, e, responseObserver);
+	}
     }
 
     /*

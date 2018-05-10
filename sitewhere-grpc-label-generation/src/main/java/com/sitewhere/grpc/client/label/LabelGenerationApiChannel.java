@@ -23,6 +23,10 @@ import com.sitewhere.grpc.service.GGetAssetLabelRequest;
 import com.sitewhere.grpc.service.GGetAssetLabelResponse;
 import com.sitewhere.grpc.service.GGetAssetTypeLabelRequest;
 import com.sitewhere.grpc.service.GGetAssetTypeLabelResponse;
+import com.sitewhere.grpc.service.GGetCustomerLabelRequest;
+import com.sitewhere.grpc.service.GGetCustomerLabelResponse;
+import com.sitewhere.grpc.service.GGetCustomerTypeLabelRequest;
+import com.sitewhere.grpc.service.GGetCustomerTypeLabelResponse;
 import com.sitewhere.grpc.service.GGetDeviceAssignmentLabelRequest;
 import com.sitewhere.grpc.service.GGetDeviceAssignmentLabelResponse;
 import com.sitewhere.grpc.service.GGetDeviceGroupLabelRequest;
@@ -57,6 +61,50 @@ public class LabelGenerationApiChannel extends MultitenantApiChannel<LabelGenera
     @Override
     public LabelGenerationGrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
 	return new LabelGenerationGrpcChannel(tracerProvider, host, port);
+    }
+
+    /*
+     * @see com.sitewhere.spi.label.ILabelGeneration#getCustomerTypeLabel(java.lang.
+     * String, java.util.UUID)
+     */
+    @Override
+    public ILabel getCustomerTypeLabel(String labelGeneratorId, UUID customerTypeId) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, LabelGenerationGrpc.METHOD_GET_CUSTOMER_TYPE_LABEL);
+	    GGetCustomerTypeLabelRequest.Builder grequest = GGetCustomerTypeLabelRequest.newBuilder();
+	    grequest.setGeneratorId(labelGeneratorId);
+	    grequest.setCustomerTypeId(CommonModelConverter.asGrpcUuid(customerTypeId));
+	    GGetCustomerTypeLabelResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .getCustomerTypeLabel(grequest.build());
+	    ILabel response = (gresponse.hasLabel()) ? LabelGenerationModelConverter.asApiLabel(gresponse.getLabel())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(LabelGenerationGrpc.METHOD_GET_CUSTOMER_TYPE_LABEL, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(LabelGenerationGrpc.METHOD_GET_CUSTOMER_TYPE_LABEL, t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.label.ILabelGeneration#getCustomerLabel(java.lang.String,
+     * java.util.UUID)
+     */
+    @Override
+    public ILabel getCustomerLabel(String labelGeneratorId, UUID customerId) throws SiteWhereException {
+	try {
+	    GrpcUtils.logClientMethodEntry(this, LabelGenerationGrpc.METHOD_GET_CUSTOMER_LABEL);
+	    GGetCustomerLabelRequest.Builder grequest = GGetCustomerLabelRequest.newBuilder();
+	    grequest.setGeneratorId(labelGeneratorId);
+	    grequest.setCustomerId(CommonModelConverter.asGrpcUuid(customerId));
+	    GGetCustomerLabelResponse gresponse = getGrpcChannel().getBlockingStub().getCustomerLabel(grequest.build());
+	    ILabel response = (gresponse.hasLabel()) ? LabelGenerationModelConverter.asApiLabel(gresponse.getLabel())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(LabelGenerationGrpc.METHOD_GET_CUSTOMER_LABEL, response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(LabelGenerationGrpc.METHOD_GET_CUSTOMER_LABEL, t);
+	}
     }
 
     /*

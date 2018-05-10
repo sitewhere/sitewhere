@@ -12,6 +12,8 @@ import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetType;
+import com.sitewhere.spi.customer.ICustomer;
+import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
@@ -40,6 +42,27 @@ public interface ILabelGenerator extends ITenantEngineLifecycleComponent {
      * @throws SiteWhereException
      */
     public String getName() throws SiteWhereException;
+
+    /**
+     * Get label for a customer type.
+     * 
+     * @param customerType
+     * @param provider
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] getCustomerTypeLabel(ICustomerType customerType, IEntityUriProvider provider)
+	    throws SiteWhereException;
+
+    /**
+     * Get label for a customer.
+     * 
+     * @param customer
+     * @param provider
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] getCustomerLabel(ICustomer customer, IEntityUriProvider provider) throws SiteWhereException;
 
     /**
      * Get label for an area type.

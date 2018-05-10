@@ -15,6 +15,8 @@ import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetType;
+import com.sitewhere.spi.customer.ICustomer;
+import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
@@ -54,6 +56,31 @@ public class QrCodeGenerator extends TenantEngineLifecycleComponent implements I
 
     public QrCodeGenerator() {
 	super(LifecycleComponentType.LabelGenerator);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.label.ILabelGenerator#getCustomerTypeLabel(com.sitewhere.
+     * spi.customer.ICustomerType, com.sitewhere.spi.label.IEntityUriProvider)
+     */
+    @Override
+    public byte[] getCustomerTypeLabel(ICustomerType customerType, IEntityUriProvider provider)
+	    throws SiteWhereException {
+	URI uri = provider.getCustomerTypeIdentifier(customerType);
+	return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())
+		.withColor(getForegroundColor(), getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.label.ILabelGenerator#getCustomerLabel(com.sitewhere.spi.
+     * customer.ICustomer, com.sitewhere.spi.label.IEntityUriProvider)
+     */
+    @Override
+    public byte[] getCustomerLabel(ICustomer customer, IEntityUriProvider provider) throws SiteWhereException {
+	URI uri = provider.getCustomerIdentifier(customer);
+	return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())
+		.withColor(getForegroundColor(), getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
     }
 
     /*

@@ -834,6 +834,15 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	}
 	Document deviceDb = assertDevice(existing.getId());
 
+	// Look up customer if specified.
+	ICustomer customer = null;
+	if (request.getCustomerToken() != null) {
+	    customer = getCustomerByToken(request.getCustomerToken());
+	    if (customer == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidCustomerToken, ErrorLevel.ERROR);
+	    }
+	}
+
 	// Look up area if specified.
 	IArea area = null;
 	if (request.getAreaToken() != null) {
@@ -854,8 +863,8 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	}
 
 	// Use common logic to load assignment from request.
-	DeviceAssignment newAssignment = DeviceManagementPersistence.deviceAssignmentCreateLogic(request, area, asset,
-		existing);
+	DeviceAssignment newAssignment = DeviceManagementPersistence.deviceAssignmentCreateLogic(request, customer,
+		area, asset, existing);
 	if (newAssignment.getToken() == null) {
 	    newAssignment.setToken(UUID.randomUUID().toString());
 	}
@@ -944,6 +953,15 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    }
 	}
 
+	// Verify updated customer token exists.
+	ICustomer customer = null;
+	if (request.getCustomerToken() != null) {
+	    customer = getCustomerByToken(request.getCustomerToken());
+	    if (customer == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidCustomerToken, ErrorLevel.ERROR);
+	    }
+	}
+
 	// Verify updated area token exists.
 	IArea area = null;
 	if (request.getAreaToken() != null) {
@@ -962,7 +980,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    }
 	}
 
-	DeviceManagementPersistence.deviceAssignmentUpdateLogic(device, area, asset, request, assignment);
+	DeviceManagementPersistence.deviceAssignmentUpdateLogic(device, customer, area, asset, request, assignment);
 
 	DeviceManagementPersistence.setUpdatedEntityMetadata(assignment);
 	Document query = new Document(MongoDeviceAssignment.PROP_ID, id);
@@ -987,11 +1005,14 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	if (criteria.getDeviceId() != null) {
 	    query.append(MongoDeviceAssignment.PROP_DEVICE_ID, criteria.getDeviceId());
 	}
-	if (criteria.getAssetId() != null) {
-	    query.append(MongoDeviceAssignment.PROP_ASSET_ID, criteria.getAssetId());
+	if ((criteria.getCustomerIds() != null) && (criteria.getCustomerIds().size() > 0)) {
+	    query.append(MongoDeviceAssignment.PROP_CUSTOMER_ID, new Document("$in", criteria.getCustomerIds()));
 	}
 	if ((criteria.getAreaIds() != null) && (criteria.getAreaIds().size() > 0)) {
-	    query.append(MongoDeviceAssignment.PROP_AREA_ID, createAreasInClause(criteria.getAreaIds()));
+	    query.append(MongoDeviceAssignment.PROP_AREA_ID, new Document("$in", criteria.getAreaIds()));
+	}
+	if (criteria.getAssetIds() != null) {
+	    query.append(MongoDeviceAssignment.PROP_ASSET_ID, new Document("$in", criteria.getAssetIds()));
 	}
 	Document sort = new Document(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);
 	return MongoPersistence.search(IDeviceAssignment.class, assignments, query, sort, criteria, LOOKUP);
@@ -2303,16 +2324,6 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceGroupToken, ErrorLevel.ERROR);
 	}
 	return match;
-    }
-
-    /**
-     * Create "in" clause for a list of areas.
-     * 
-     * @param areas
-     * @return
-     */
-    protected Document createAreasInClause(List<UUID> areas) {
-	return new Document("$in", areas);
     }
 
     /**

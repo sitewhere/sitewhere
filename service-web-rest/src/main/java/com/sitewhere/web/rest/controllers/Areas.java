@@ -458,6 +458,11 @@ public class Areas extends RestControllerBase {
      * Find device assignments associated with an area.
      * 
      * @param areaToken
+     * @param status
+     * @param includeDevice
+     * @param includeAsset
+     * @param page
+     * @param pageSize
      * @return
      * @throws SiteWhereException
      */

@@ -822,16 +822,19 @@ public class DeviceManagementPersistence extends Persistence {
      * Common logic for creating a device assignment from a request.
      * 
      * @param source
+     * @param customer
+     * @param area
+     * @param asset
      * @param device
-     * @param uuid
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceAssignment deviceAssignmentCreateLogic(IDeviceAssignmentCreateRequest source, IArea area,
-	    IAsset asset, IDevice device) throws SiteWhereException {
+    public static DeviceAssignment deviceAssignmentCreateLogic(IDeviceAssignmentCreateRequest source,
+	    ICustomer customer, IArea area, IAsset asset, IDevice device) throws SiteWhereException {
 	DeviceAssignment assignment = new DeviceAssignment();
 	assignment.setId(UUID.randomUUID());
 	assignment.setToken(source.getToken());
+	assignment.setCustomerId(customer != null ? customer.getId() : null);
 	assignment.setAreaId(area != null ? area.getId() : null);
 	assignment.setAssetId(asset != null ? asset.getId() : null);
 	assignment.setDeviceId(device.getId());
@@ -847,17 +850,24 @@ public class DeviceManagementPersistence extends Persistence {
     /**
      * Common logic for updating an existing device assignment.
      * 
+     * @param device
+     * @param customer
+     * @param area
+     * @param asset
      * @param request
      * @param target
      * @throws SiteWhereException
      */
-    public static void deviceAssignmentUpdateLogic(IDevice device, IArea area, IAsset asset,
+    public static void deviceAssignmentUpdateLogic(IDevice device, ICustomer customer, IArea area, IAsset asset,
 	    IDeviceAssignmentCreateRequest request, DeviceAssignment target) throws SiteWhereException {
 	if (request.getToken() != null) {
 	    target.setToken(request.getToken());
 	}
 	if (device != null) {
 	    target.setDeviceId(device.getId());
+	}
+	if (customer != null) {
+	    target.setCustomerId(customer.getId());
 	}
 	if (area != null) {
 	    target.setAreaId(area.getId());

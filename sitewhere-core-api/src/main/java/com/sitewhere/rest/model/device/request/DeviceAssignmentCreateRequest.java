@@ -7,7 +7,6 @@
  */
 package com.sitewhere.rest.model.device.request;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +21,7 @@ import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
  * @author Derek Adams
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateRequest, Serializable {
+public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateRequest {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = -6880578458870122016L;
@@ -32,6 +31,9 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
 
     /** Device token */
     private String deviceToken;
+
+    /** Customer token */
+    private String customerToken;
 
     /** Area token */
     private String areaToken;
@@ -71,6 +73,19 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
 
     public void setDeviceToken(String deviceToken) {
 	this.deviceToken = deviceToken;
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#
+     * getCustomerToken()
+     */
+    @Override
+    public String getCustomerToken() {
+	return customerToken;
+    }
+
+    public void setCustomerToken(String customerToken) {
+	this.customerToken = customerToken;
     }
 
     /*
@@ -133,8 +148,9 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
 	/** Request being built */
 	private DeviceAssignmentCreateRequest request = new DeviceAssignmentCreateRequest();
 
-	public Builder(String token, String areaToken, String assetToken) {
-	    request.setDeviceToken(token);
+	public Builder(String deviceToken, String customerToken, String areaToken, String assetToken) {
+	    request.setDeviceToken(deviceToken);
+	    request.setCustomerToken(customerToken);
 	    request.setAreaToken(areaToken);
 	    request.setAssetToken(assetToken);
 	}

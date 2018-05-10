@@ -57,7 +57,7 @@ public class AreaMarshalHelper {
     /** Include parent area information */
     private boolean includeParentArea = false;
 
-    /** Indicates whether assignments for site should be included */
+    /** Indicates whether assignments for area should be included */
     private boolean includeAssignments = false;
 
     /** Indicates whether zones are to be included */

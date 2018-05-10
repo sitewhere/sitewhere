@@ -12,6 +12,12 @@ import "sitewhere-common.proto";
 // Label generation APIs.
 service LabelGeneration {
 
+	// Get label for customer type.
+	rpc GetCustomerTypeLabel (GGetCustomerTypeLabelRequest) returns (GGetCustomerTypeLabelResponse) {}
+
+	// Get label for customer.
+	rpc GetCustomerLabel (GGetCustomerLabelRequest) returns (GGetCustomerLabelResponse) {}
+
 	// Get label for area type.
 	rpc GetAreaTypeLabel (GGetAreaTypeLabelRequest) returns (GGetAreaTypeLabelResponse) {}
 
@@ -35,6 +41,28 @@ service LabelGeneration {
 
 	// Get label for asset.
 	rpc GetAssetLabel (GGetAssetLabelRequest) returns (GGetAssetLabelResponse) {}
+}
+		
+// Request for creating label for customer type.
+message GGetCustomerTypeLabelRequest {
+	string generatorId = 1;
+	com.sitewhere.grpc.model.GUUID customerTypeId = 2;
+}
+	
+// Response for creating label for customer type.
+message GGetCustomerTypeLabelResponse {
+	com.sitewhere.grpc.model.GLabel label = 1;
+}
+	
+// Request for creating label for customer.
+message GGetCustomerLabelRequest {
+	string generatorId = 1;
+	com.sitewhere.grpc.model.GUUID customerId = 2;
+}
+	
+// Response for creating label for customer.
+message GGetCustomerLabelResponse {
+	com.sitewhere.grpc.model.GLabel label = 1;
 }
 	
 // Request for creating label for area type.

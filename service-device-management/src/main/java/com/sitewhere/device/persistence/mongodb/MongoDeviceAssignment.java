@@ -35,6 +35,9 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
     /** Property for device hardware id */
     public static final String PROP_DEVICE_ID = "dvid";
 
+    /** Property for customer id */
+    public static final String PROP_CUSTOMER_ID = "csid";
+
     /** Property for area id */
     public static final String PROP_AREA_ID = "arid";
 
@@ -78,8 +81,9 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
 	target.append(PROP_ID, source.getId());
 	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_DEVICE_ID, source.getDeviceId());
-	target.append(PROP_ASSET_ID, source.getAssetId());
+	target.append(PROP_CUSTOMER_ID, source.getCustomerId());
 	target.append(PROP_AREA_ID, source.getAreaId());
+	target.append(PROP_ASSET_ID, source.getAssetId());
 
 	if (source.getActiveDate() != null) {
 	    target.append(PROP_ACTIVE_DATE, source.getActiveDate());
@@ -105,8 +109,9 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
 	UUID id = (UUID) source.get(PROP_ID);
 	String token = (String) source.get(PROP_TOKEN);
 	UUID deviceId = (UUID) source.get(PROP_DEVICE_ID);
-	UUID assetId = (UUID) source.get(PROP_ASSET_ID);
+	UUID customerId = (UUID) source.get(PROP_CUSTOMER_ID);
 	UUID areaId = (UUID) source.get(PROP_AREA_ID);
+	UUID assetId = (UUID) source.get(PROP_ASSET_ID);
 	String status = (String) source.get(PROP_STATUS);
 	Date activeDate = (Date) source.get(PROP_ACTIVE_DATE);
 	Date releasedDate = (Date) source.get(PROP_RELEASED_DATE);
@@ -114,6 +119,7 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
 	target.setId(id);
 	target.setToken(token);
 	target.setDeviceId(deviceId);
+	target.setCustomerId(customerId);
 	target.setAreaId(areaId);
 	target.setAssetId(assetId);
 	if (activeDate != null) {

@@ -31,7 +31,7 @@ public class MarshaledArea extends Area {
     /** Parent area information */
     private IArea parentArea;
 
-    /** List of assignments for site */
+    /** List of assignments for area */
     private List<DeviceAssignment> deviceAssignments;
 
     /** List of zones for site */

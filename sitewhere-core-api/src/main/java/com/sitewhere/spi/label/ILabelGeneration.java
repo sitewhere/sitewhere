@@ -20,6 +20,26 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 public interface ILabelGeneration extends ITenantEngineLifecycleComponent {
 
     /**
+     * For a given generator, get the customer type label.
+     * 
+     * @param labelGeneratorId
+     * @param customerTypeId
+     * @return
+     * @throws SiteWhereException
+     */
+    public ILabel getCustomerTypeLabel(String labelGeneratorId, UUID customerTypeId) throws SiteWhereException;
+
+    /**
+     * For a given generator, get the customer label.
+     * 
+     * @param labelGeneratorId
+     * @param customerId
+     * @return
+     * @throws SiteWhereException
+     */
+    public ILabel getCustomerLabel(String labelGeneratorId, UUID customerId) throws SiteWhereException;
+
+    /**
      * For a given generator, get the area type label.
      * 
      * @param labelGeneratorId

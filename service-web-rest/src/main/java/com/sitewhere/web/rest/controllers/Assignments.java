@@ -246,6 +246,7 @@ public class Assignments extends RestControllerBase {
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceAssignment> listAssignments(
 	    @ApiParam(value = "Limit by device token", required = false) @RequestParam(required = false) String deviceToken,
+	    @ApiParam(value = "Limit by customer token", required = false) @RequestParam(required = false) String customerToken,
 	    @ApiParam(value = "Limit by area token", required = false) @RequestParam(required = false) String areaToken,
 	    @ApiParam(value = "Limit by asset token", required = false) @RequestParam(required = false) String assetToken,
 	    @ApiParam(value = "Include device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
@@ -264,19 +265,27 @@ public class Assignments extends RestControllerBase {
 	    criteria.setDeviceId(device.getId());
 	}
 
+	// If limiting by customer, look up customer and contained customers.
+	if (customerToken != null) {
+	    List<UUID> customerIds = Customers.resolveCustomerIds(customerToken, true, getDeviceManagement());
+	    criteria.setCustomerIds(customerIds);
+	}
+
+	// If limiting by area, look up area and contained areas.
+	if (areaToken != null) {
+	    List<UUID> areaIds = Areas.resolveAreaIds(areaToken, true, getDeviceManagement());
+	    criteria.setAreaIds(areaIds);
+	}
+
 	// If limiting by asset, look up asset.
 	if (assetToken != null) {
 	    IAsset asset = getAssetManagement().getAssetByToken(assetToken);
 	    if (asset == null) {
 		throw new SiteWhereSystemException(ErrorCode.InvalidAssetToken, ErrorLevel.ERROR);
 	    }
-	    criteria.setAssetId(asset.getId());
-	}
-
-	// If limiting by area, look up area and subareas.
-	if (areaToken != null) {
-	    List<UUID> areaIds = Areas.resolveAreaIds(areaToken, true, getDeviceManagement());
-	    criteria.setAreaIds(areaIds);
+	    List<UUID> assetIds = new ArrayList<>();
+	    assetIds.add(asset.getId());
+	    criteria.setAssetIds(assetIds);
 	}
 
 	// Perform search.

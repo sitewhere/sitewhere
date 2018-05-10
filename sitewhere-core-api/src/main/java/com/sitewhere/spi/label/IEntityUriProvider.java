@@ -14,6 +14,8 @@ import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetType;
+import com.sitewhere.spi.customer.ICustomer;
+import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
@@ -25,6 +27,24 @@ import com.sitewhere.spi.device.group.IDeviceGroup;
  * @author Derek
  */
 public interface IEntityUriProvider {
+
+    /**
+     * Get unique identifier for a customer type.
+     * 
+     * @param customerType
+     * @return
+     * @throws SiteWhereException
+     */
+    public URI getCustomerTypeIdentifier(ICustomerType customerType) throws SiteWhereException;
+
+    /**
+     * Get unique identifier for a customer.
+     * 
+     * @param customer
+     * @return
+     * @throws SiteWhereException
+     */
+    public URI getCustomerIdentifier(ICustomer customer) throws SiteWhereException;
 
     /**
      * Get unique identifier for an area type.

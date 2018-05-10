@@ -277,19 +277,21 @@ message GDeviceGroup {
 message GDeviceAssignmentCreateRequest {
 	GOptionalString token = 1;
 	GOptionalString deviceToken = 2;
-	GOptionalString areaToken = 3;
-	GOptionalString assetToken = 4;
-	GDeviceAssignmentStatus status = 5;
-	map<string, string> metadata = 6;
+	GOptionalString customerToken = 3;
+	GOptionalString areaToken = 4;
+	GOptionalString assetToken = 5;
+	GDeviceAssignmentStatus status = 6;
+	map<string, string> metadata = 7;
 }
 
 // Criteria for searching device assignments.
 message GDeviceAssignmentSearchCriteria {
 	GDeviceAssignmentStatus status = 1;
 	GUUID deviceId = 2;
-	repeated GUUID areaIds = 3;
-	GUUID assetId = 4;
-	GPaging paging = 5;
+	repeated GUUID customerIds = 3;
+	repeated GUUID areaIds = 4;
+	repeated GUUID assetIds = 5;
+	GPaging paging = 6;
 }
 
 // Results for device assignment search.
@@ -303,13 +305,14 @@ message GDeviceAssignment {
 	GUUID id = 1;
 	string token = 2;
 	GUUID deviceId = 3;
-	GUUID areaId = 4;
-	GUUID assetId = 5;
-	GDeviceAssignmentStatus status = 6;
-	google.protobuf.Timestamp activeDate = 7;
-	google.protobuf.Timestamp releasedDate = 8;
-	map<string, string> metadata = 9;
-	GEntityInformation entityInformation = 10;
+	GUUID customerId = 4;
+	GUUID areaId = 5;
+	GUUID assetId = 6;
+	GDeviceAssignmentStatus status = 7;
+	google.protobuf.Timestamp activeDate = 8;
+	google.protobuf.Timestamp releasedDate = 9;
+	map<string, string> metadata = 10;
+	GEntityInformation entityInformation = 11;
 }
 
 // ######################

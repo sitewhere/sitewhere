@@ -1451,8 +1451,9 @@ public class DeviceModelConverter {
 		grpc.getPaging().getPageSize());
 	api.setStatus(DeviceModelConverter.asApiDeviceAssignmentStatus(grpc.getStatus()));
 	api.setDeviceId(grpc.hasDeviceId() ? CommonModelConverter.asApiUuid(grpc.getDeviceId()) : null);
-	api.setAssetId(grpc.hasAssetId() ? CommonModelConverter.asApiUuid(grpc.getAssetId()) : null);
+	api.setCustomerIds(CommonModelConverter.asApiUuids(grpc.getCustomerIdsList()));
 	api.setAreaIds(CommonModelConverter.asApiUuids(grpc.getAreaIdsList()));
+	api.setAssetIds(CommonModelConverter.asApiUuids(grpc.getAssetIdsList()));
 	return api;
     }
 
@@ -1470,11 +1471,14 @@ public class DeviceModelConverter {
 	if (api.getDeviceId() != null) {
 	    grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
 	}
-	if (api.getAssetId() != null) {
-	    grpc.setAssetId(CommonModelConverter.asGrpcUuid(api.getAssetId()));
+	if (api.getCustomerIds() != null) {
+	    grpc.addAllCustomerIds(CommonModelConverter.asGrpcUuids(api.getCustomerIds()));
 	}
 	if (api.getAreaIds() != null) {
 	    grpc.addAllAreaIds(CommonModelConverter.asGrpcUuids(api.getAreaIds()));
+	}
+	if (api.getAssetIds() != null) {
+	    grpc.addAllAssetIds(CommonModelConverter.asGrpcUuids(api.getAssetIds()));
 	}
 	grpc.setPaging(CommonModelConverter.asGrpcPaging(api));
 	return grpc.build();
@@ -1508,6 +1512,7 @@ public class DeviceModelConverter {
 	DeviceAssignmentCreateRequest api = new DeviceAssignmentCreateRequest();
 	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
 	api.setDeviceToken(grpc.hasDeviceToken() ? grpc.getDeviceToken().getValue() : null);
+	api.setCustomerToken(grpc.hasCustomerToken() ? grpc.getCustomerToken().getValue() : null);
 	api.setAreaToken(grpc.hasAreaToken() ? grpc.getAreaToken().getValue() : null);
 	api.setAssetToken(grpc.hasAssetToken() ? grpc.getAssetToken().getValue() : null);
 	api.setStatus(DeviceModelConverter.asApiDeviceAssignmentStatus(grpc.getStatus()));
@@ -1530,6 +1535,9 @@ public class DeviceModelConverter {
 	}
 	if (api.getDeviceToken() != null) {
 	    grpc.setDeviceToken(GOptionalString.newBuilder().setValue(api.getDeviceToken()));
+	}
+	if (api.getCustomerToken() != null) {
+	    grpc.setCustomerToken(GOptionalString.newBuilder().setValue(api.getCustomerToken()));
 	}
 	if (api.getAreaToken() != null) {
 	    grpc.setAreaToken(GOptionalString.newBuilder().setValue(api.getAreaToken()));
@@ -1559,6 +1567,7 @@ public class DeviceModelConverter {
 	api.setToken(grpc.getToken());
 	api.setStatus(DeviceModelConverter.asApiDeviceAssignmentStatus(grpc.getStatus()));
 	api.setDeviceId(CommonModelConverter.asApiUuid(grpc.getDeviceId()));
+	api.setCustomerId(grpc.hasCustomerId() ? CommonModelConverter.asApiUuid(grpc.getCustomerId()) : null);
 	api.setAreaId(grpc.hasAreaId() ? CommonModelConverter.asApiUuid(grpc.getAreaId()) : null);
 	api.setAssetId(grpc.hasAssetId() ? CommonModelConverter.asApiUuid(grpc.getAssetId()) : null);
 	if (grpc.hasActiveDate()) {

@@ -39,7 +39,10 @@ public class MongoDeviceEvent {
     /** Property for device assignment id */
     public static final String PROP_DEVICE_ASSIGNMENT_ID = "asid";
 
-    /** Property for site id */
+    /** Property for customer id */
+    public static final String PROP_CUSTOMER_ID = "csid";
+
+    /** Property for area id */
     public static final String PROP_AREA_ID = "arid";
 
     /** Property for asset id */
@@ -69,6 +72,7 @@ public class MongoDeviceEvent {
 	target.append(PROP_EVENT_TYPE, source.getEventType().name());
 	target.append(PROP_DEVICE_ID, source.getDeviceId());
 	target.append(PROP_DEVICE_ASSIGNMENT_ID, source.getDeviceAssignmentId());
+	target.append(PROP_CUSTOMER_ID, source.getCustomerId());
 	target.append(PROP_AREA_ID, source.getAreaId());
 	target.append(PROP_ASSET_ID, source.getAssetId());
 	target.append(PROP_EVENT_DATE, source.getEventDate());
@@ -90,6 +94,7 @@ public class MongoDeviceEvent {
 	String eventType = (String) source.get(PROP_EVENT_TYPE);
 	UUID deviceId = (UUID) source.get(PROP_DEVICE_ID);
 	UUID assignmentId = (UUID) source.get(PROP_DEVICE_ASSIGNMENT_ID);
+	UUID customerId = (UUID) source.get(PROP_CUSTOMER_ID);
 	UUID areaId = (UUID) source.get(PROP_AREA_ID);
 	UUID assetId = (UUID) source.get(PROP_ASSET_ID);
 	Date eventDate = (Date) source.get(PROP_EVENT_DATE);
@@ -102,6 +107,7 @@ public class MongoDeviceEvent {
 	target.setAlternateId(alternateId);
 	target.setDeviceId(deviceId);
 	target.setDeviceAssignmentId(assignmentId);
+	target.setCustomerId(customerId);
 	target.setAreaId(areaId);
 	target.setAssetId(assetId);
 	target.setEventDate(eventDate);

@@ -35,6 +35,13 @@ public interface IDeviceAssignmentSearchCriteria extends ISearchCriteria {
     public UUID getDeviceId();
 
     /**
+     * Limits search the given list of customers.
+     * 
+     * @return
+     */
+    public List<UUID> getCustomerIds();
+
+    /**
      * Limits search the given list of areas.
      * 
      * @return
@@ -42,9 +49,9 @@ public interface IDeviceAssignmentSearchCriteria extends ISearchCriteria {
     public List<UUID> getAreaIds();
 
     /**
-     * Limits search to a given asset.
+     * Limits search to a given list of assets.
      * 
      * @return
      */
-    public UUID getAssetId();
+    public List<UUID> getAssetIds();
 }

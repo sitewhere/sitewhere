@@ -83,6 +83,7 @@ public class DeviceEventManagementPersistence extends Persistence {
 	target.setAlternateId(request.getAlternateId());
 	target.setDeviceId(assignment.getDeviceId());
 	target.setDeviceAssignmentId(assignment.getId());
+	target.setCustomerId(assignment.getCustomerId());
 	target.setAreaId(assignment.getAreaId());
 	target.setAssetId(assignment.getAssetId());
 	if (request.getEventDate() != null) {
@@ -92,21 +93,6 @@ public class DeviceEventManagementPersistence extends Persistence {
 	}
 	target.setReceivedDate(new Date());
 	MetadataProvider.copy(request.getMetadata(), target);
-    }
-
-    /**
-     * Common logic for updating a device event (Only metadata can be updated).
-     * 
-     * @param metadata
-     * @param target
-     * @throws SiteWhereException
-     */
-    public static void deviceEventUpdateLogic(IDeviceEventCreateRequest request, DeviceEvent target)
-	    throws SiteWhereException {
-	if (request.getMetadata() != null) {
-	    target.getMetadata().clear();
-	    MetadataProvider.copy(request.getMetadata(), target);
-	}
     }
 
     /**

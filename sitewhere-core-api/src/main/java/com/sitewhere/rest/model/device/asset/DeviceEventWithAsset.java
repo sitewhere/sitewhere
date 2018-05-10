@@ -158,6 +158,14 @@ public class DeviceEventWithAsset implements IDeviceEventWithAsset {
     }
 
     /*
+     * @see com.sitewhere.spi.device.event.IDeviceEvent#getCustomerId()
+     */
+    @Override
+    public UUID getCustomerId() {
+	return getWrapped().getCustomerId();
+    }
+
+    /*
      * @see com.sitewhere.spi.device.event.IDeviceEvent#getAreaId()
      */
     @Override

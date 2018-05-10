@@ -27,11 +27,14 @@ public class DeviceAssignmentSearchCriteria extends SearchCriteria implements ID
     /** Limit search by device */
     private UUID deviceId;
 
+    /** Limit search by customers */
+    private List<UUID> customerIds;
+
     /** Limit search by areas */
     private List<UUID> areaIds;
 
-    /** Limit search by asset */
-    private UUID assetId;
+    /** Limit search by assets */
+    private List<UUID> assetIds;
 
     public DeviceAssignmentSearchCriteria(int pageNumber, int pageSize) {
 	super(pageNumber, pageSize);
@@ -64,6 +67,19 @@ public class DeviceAssignmentSearchCriteria extends SearchCriteria implements ID
     }
 
     /*
+     * @see com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria#
+     * getCustomerIds()
+     */
+    @Override
+    public List<UUID> getCustomerIds() {
+	return customerIds;
+    }
+
+    public void setCustomerIds(List<UUID> customerIds) {
+	this.customerIds = customerIds;
+    }
+
+    /*
      * @see
      * com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria#getAreaIds()
      */
@@ -78,14 +94,14 @@ public class DeviceAssignmentSearchCriteria extends SearchCriteria implements ID
 
     /*
      * @see
-     * com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria#getAssetId()
+     * com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria#getAssetIds()
      */
     @Override
-    public UUID getAssetId() {
-	return assetId;
+    public List<UUID> getAssetIds() {
+	return assetIds;
     }
 
-    public void setAssetId(UUID assetId) {
-	this.assetId = assetId;
+    public void setAssetIds(List<UUID> assetIds) {
+	this.assetIds = assetIds;
     }
 }

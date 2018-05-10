@@ -7,6 +7,8 @@
  */
 package com.sitewhere.asset.persistence;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import com.sitewhere.persistence.Persistence;
@@ -184,7 +186,9 @@ public class AssetManagementPersistence extends Persistence {
     public static void assetDeleteLogic(IAsset asset, IAssetManagement assetManagement,
 	    IDeviceManagement deviceManagement) throws SiteWhereException {
 	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(1, 1);
-	criteria.setAssetId(asset.getId());
+	List<UUID> assetIds = new ArrayList<>();
+	assetIds.add(asset.getId());
+	criteria.setAssetIds(assetIds);
 	ISearchResults<IDeviceAssignment> assignments = deviceManagement.listDeviceAssignments(criteria);
 	if (assignments.getNumResults() > 0) {
 	    throw new SiteWhereSystemException(ErrorCode.AssetNoDeleteHasAssignments, ErrorLevel.ERROR);

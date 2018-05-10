@@ -59,6 +59,9 @@ public class InfluxDbDeviceEvent {
     /** Event assignment tag */
     public static final String EVENT_ASSIGNMENT = "assignment";
 
+    /** Event customer tag */
+    public static final String EVENT_CUSTOMER = "customer";
+
     /** Event area tag */
     public static final String EVENT_AREA = "area";
 
@@ -461,6 +464,7 @@ public class InfluxDbDeviceEvent {
 	event.setId(convertUUID((String) values.get(EVENT_ID)));
 	event.setDeviceId(convertUUID((String) values.get(EVENT_DEVICE)));
 	event.setDeviceAssignmentId(convertUUID((String) values.get(EVENT_ASSIGNMENT)));
+	event.setCustomerId(convertUUID((String) values.get(EVENT_CUSTOMER)));
 	event.setAreaId(convertUUID((String) values.get(EVENT_AREA)));
 	event.setAssetId(convertUUID((String) values.get(EVENT_ASSET)));
 	event.setReceivedDate(parseDateField(values, RECEIVED_DATE));
@@ -532,6 +536,7 @@ public class InfluxDbDeviceEvent {
 	builder.tag(EVENT_TYPE, event.getEventType().name());
 	builder.tag(EVENT_DEVICE, event.getDeviceId().toString());
 	builder.tag(EVENT_ASSIGNMENT, event.getDeviceAssignmentId().toString());
+	builder.tag(EVENT_CUSTOMER, event.getCustomerId().toString());
 	builder.tag(EVENT_AREA, event.getAreaId().toString());
 	builder.tag(EVENT_ASSET, event.getAssetId().toString());
 	builder.addField(RECEIVED_DATE, ISODateTimeFormat.dateTime().print(event.getReceivedDate().getTime()));

@@ -7,6 +7,7 @@
  */
 package com.sitewhere.spi.device.request;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
@@ -16,7 +17,7 @@ import com.sitewhere.spi.device.DeviceAssignmentStatus;
  * 
  * @author Derek
  */
-public interface IDeviceAssignmentCreateRequest {
+public interface IDeviceAssignmentCreateRequest extends Serializable {
 
     /**
      * Get token for assignment. (Auto-assign if null).
@@ -33,14 +34,21 @@ public interface IDeviceAssignmentCreateRequest {
     public String getDeviceToken();
 
     /**
-     * Get token of assigned area.
+     * Get token of customer if assigned.
+     * 
+     * @return
+     */
+    public String getCustomerToken();
+
+    /**
+     * Get token of area if assigned.
      * 
      * @return
      */
     public String getAreaToken();
 
     /**
-     * Get token of assigned asset.
+     * Get token of asset if assigned.
      * 
      * @return
      */
