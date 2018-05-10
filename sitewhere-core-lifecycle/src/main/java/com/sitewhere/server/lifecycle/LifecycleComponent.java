@@ -167,11 +167,11 @@ public class LifecycleComponent implements ILifecycleComponent {
 		return;
 	    }
 	    setLifecycleStatus(LifecycleStatus.Initializing);
-	    getLogger().info(getComponentName() + " state transitioned to INITIALIZING.");
+	    getLogger().debug(getComponentName() + " state transitioned to INITIALIZING.");
 
 	    initialize(monitor);
 	    setLifecycleStatus(LifecycleStatus.Stopped);
-	    getLogger().info(getComponentName() + " state transitioned to INITIALIZED.");
+	    getLogger().debug(getComponentName() + " state transitioned to INITIALIZED.");
 	} catch (SiteWhereException e) {
 	    setLifecycleError(e);
 	    setLifecycleStatus(LifecycleStatus.InitializationError);
@@ -251,13 +251,13 @@ public class LifecycleComponent implements ILifecycleComponent {
 
 	    LifecycleStatus old = getLifecycleStatus();
 	    setLifecycleStatus(LifecycleStatus.Starting);
-	    getLogger().info(getComponentName() + " state transitioned to STARTING.");
+	    getLogger().debug(getComponentName() + " state transitioned to STARTING.");
 
 	    if (old != LifecycleStatus.Paused) {
 		start(monitor);
 	    }
 	    setLifecycleStatus(LifecycleStatus.Started);
-	    getLogger().info(getComponentName() + " state transitioned to STARTED.");
+	    getLogger().debug(getComponentName() + " state transitioned to STARTED.");
 	} catch (SiteWhereException e) {
 	    setLifecycleError(e);
 	    setLifecycleStatus(LifecycleStatus.LifecycleError);
@@ -327,7 +327,7 @@ public class LifecycleComponent implements ILifecycleComponent {
 	try {
 	    pause(monitor);
 	    setLifecycleStatus(LifecycleStatus.Paused);
-	    getLogger().info(getComponentName() + " state transitioned to PAUSED.");
+	    getLogger().debug(getComponentName() + " state transitioned to PAUSED.");
 	} catch (SiteWhereException e) {
 	    setLifecycleError(e);
 	    setLifecycleStatus(LifecycleStatus.LifecycleError);
@@ -391,7 +391,7 @@ public class LifecycleComponent implements ILifecycleComponent {
 	    }
 
 	    setLifecycleStatus(LifecycleStatus.Stopping);
-	    getLogger().info(getComponentName() + " state transitioned to STOPPING.");
+	    getLogger().debug(getComponentName() + " state transitioned to STOPPING.");
 
 	    if (constraints == null) {
 		stop(monitor);
@@ -399,7 +399,7 @@ public class LifecycleComponent implements ILifecycleComponent {
 		stop(monitor, constraints);
 	    }
 	    setLifecycleStatus(LifecycleStatus.Stopped);
-	    getLogger().info(getComponentName() + " state transitioned to STOPPED.");
+	    getLogger().debug(getComponentName() + " state transitioned to STOPPED.");
 	} catch (SiteWhereException e) {
 	    setLifecycleError(e);
 	    setLifecycleStatus(LifecycleStatus.LifecycleError);
@@ -474,11 +474,11 @@ public class LifecycleComponent implements ILifecycleComponent {
     @Override
     public void lifecycleTerminate(ILifecycleProgressMonitor monitor) {
 	setLifecycleStatus(LifecycleStatus.Terminating);
-	getLogger().info(getComponentName() + " state transitioned to TERMINATING.");
+	getLogger().debug(getComponentName() + " state transitioned to TERMINATING.");
 	try {
 	    terminate(monitor);
 	    setLifecycleStatus(LifecycleStatus.Terminated);
-	    getLogger().info(getComponentName() + " state transitioned to TERMINATED.");
+	    getLogger().debug(getComponentName() + " state transitioned to TERMINATED.");
 	} catch (SiteWhereException e) {
 	    setLifecycleError(e);
 	    setLifecycleStatus(LifecycleStatus.LifecycleError);

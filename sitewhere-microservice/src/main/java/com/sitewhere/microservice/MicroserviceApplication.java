@@ -18,7 +18,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.ComponentScan;
 
-import com.sitewhere.microservice.docker.InitializationMarkerUtils;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.TracerUtils;
@@ -100,9 +99,6 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
 	    try {
 		span = service.getTracer().buildSpan("Start microservice").startActive();
 
-		// Remove marker to let Docker know service is not initialized.
-		InitializationMarkerUtils.removeExistingInitializationMarker(service);
-
 		// Initialize microservice.
 		LifecycleProgressMonitor initMonitor = new LifecycleProgressMonitor(
 			new LifecycleProgressContext(1, "Initialize " + service.getName()), service);
@@ -111,9 +107,6 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
 		    TracerUtils.handleErrorInTracerSpan(span, service.getLifecycleError());
 		    throw service.getLifecycleError();
 		}
-
-		// Add marker to let Docker know service is initialized.
-		InitializationMarkerUtils.createInitializationMarker(service);
 
 		// Start microservice.
 		LifecycleProgressMonitor startMonitor = new LifecycleProgressMonitor(

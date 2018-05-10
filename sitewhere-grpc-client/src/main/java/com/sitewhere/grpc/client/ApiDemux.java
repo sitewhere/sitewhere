@@ -86,7 +86,9 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	getMicroservice().getTopologyStateAggregator().removeInstanceTopologyUpdatesListener(this);
+	if (getMicroservice().getTopologyStateAggregator() != null) {
+	    getMicroservice().getTopologyStateAggregator().removeInstanceTopologyUpdatesListener(this);
+	}
 	if (executor != null) {
 	    executor.shutdown();
 	}

@@ -10,8 +10,6 @@ package com.sitewhere.server.lifecycle.parameters;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.text.StrSubstitutor;
-
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
@@ -50,12 +48,15 @@ public class ValueResolver {
 	    throw new SiteWhereException("Unable to resolve reference to tenant id in a global component.");
 	}
 
+	String result = value;
 	Map<String, String> variables = new HashMap<String, String>();
 	if (engine != null) {
 	    variables.put(TENANT_ID, engine.getTenant().getToken());
 	}
-	StrSubstitutor sub = new StrSubstitutor(variables, PREFIX, SUFFIX);
-	return sub.replace(value);
+	for (String key : variables.keySet()) {
+	    result = result.replace(asVariable(key), variables.get(key));
+	}
+	return result;
     }
 
     /**

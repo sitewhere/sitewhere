@@ -1,13 +1,11 @@
 description = 'SiteWhere Common Microservice Library'
 
 configurations {
-    compile.exclude module: 'spring-boot-starter-logging'
     compile.exclude module: 'spring-boot-autoconfigure'
 }
 
 dependencies {
 	compile ('org.springframework.boot:spring-boot-starter')
-	compile ('org.springframework.boot:spring-boot-starter-log4j2')
 	
 	// Should be removed after properties have been migrated.
 	compile ('org.springframework.boot:spring-boot-properties-migrator:2.0.0.RELEASE')
@@ -15,7 +13,6 @@ dependencies {
 	compile project(':sitewhere-core')
 	compile project(':sitewhere-configuration')
 	compile project(':sitewhere-grpc-client')
-	compile project(':sitewhere-mongodb')
 	
 	// GRPC server components.
 	compile group: 'io.grpc', name: 'grpc-netty', version: "${rootProject.ext['grpc.version']}"
