@@ -36,6 +36,7 @@ import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEventBatchCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEventBatchResponse;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEventContext;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEventCreateRequest;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEventIndex;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEventSearchCriteria;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEventSearchResults;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEventType;
@@ -80,6 +81,7 @@ import com.sitewhere.spi.device.event.AlertSource;
 import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandStatus;
 import com.sitewhere.spi.device.event.CommandTarget;
+import com.sitewhere.spi.device.event.DeviceEventIndex;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -178,6 +180,50 @@ public class EventModelConverter {
 	GDeviceEventSearchCriteria.Builder grpc = GDeviceEventSearchCriteria.newBuilder();
 	grpc.setCriteria(CommonModelConverter.asGrpcDateRangeSearchCriteria(api));
 	return grpc.build();
+    }
+
+    /**
+     * Convert device event index from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceEventIndex asApiDeviceEventIndex(GDeviceEventIndex grpc) throws SiteWhereException {
+	switch (grpc) {
+	case EVENT_INDEX_AREA:
+	    return DeviceEventIndex.Area;
+	case EVENT_INDEX_ASSET:
+	    return DeviceEventIndex.Asset;
+	case EVENT_INDEX_ASSIGNMENT:
+	    return DeviceEventIndex.Assignment;
+	case EVENT_INDEX_CUSTOMER:
+	    return DeviceEventIndex.Customer;
+	case UNRECOGNIZED:
+	    throw new SiteWhereException("Unknown event index: " + grpc.name());
+	}
+	return null;
+    }
+
+    /**
+     * Convert device event index from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceEventIndex asGrpcDeviceEventIndex(DeviceEventIndex api) throws SiteWhereException {
+	switch (api) {
+	case Area:
+	    return GDeviceEventIndex.EVENT_INDEX_AREA;
+	case Asset:
+	    return GDeviceEventIndex.EVENT_INDEX_ASSET;
+	case Assignment:
+	    return GDeviceEventIndex.EVENT_INDEX_ASSIGNMENT;
+	case Customer:
+	    return GDeviceEventIndex.EVENT_INDEX_CUSTOMER;
+	}
+	throw new SiteWhereException("Unknown event index: " + api.name());
     }
 
     /**

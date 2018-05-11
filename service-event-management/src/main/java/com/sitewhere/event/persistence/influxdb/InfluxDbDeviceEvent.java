@@ -29,6 +29,7 @@ import com.sitewhere.influxdb.InfluxDbClient;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.event.DeviceEventIndex;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
@@ -109,9 +110,11 @@ public class InfluxDbDeviceEvent {
     }
 
     /**
-     * Search for of events of a given type associated with one or more assignments.
+     * Search for of events of a given type associated with one or more entities for
+     * a given index.
      * 
-     * @param assignmentIds
+     * @param index
+     * @param entityIds
      * @param type
      * @param criteria
      * @param client
@@ -119,15 +122,15 @@ public class InfluxDbDeviceEvent {
      * @return
      * @throws SiteWhereException
      */
-    public static <T> SearchResults<T> searchByAssignments(List<UUID> assignmentIds, DeviceEventType type,
+    public static <T> SearchResults<T> searchByIndex(DeviceEventIndex index, List<UUID> entityIds, DeviceEventType type,
 	    ISearchCriteria criteria, InfluxDbClient client, Class<T> clazz) throws SiteWhereException {
-	Query query = InfluxDbDeviceEvent.queryEventsOfTypeForAssignments(type, assignmentIds, criteria,
+	Query query = InfluxDbDeviceEvent.queryEventsOfTypeForIndex(index, type, entityIds, criteria,
 		client.getDatabase().getValue());
 	LOGGER.debug("Query: " + query.getCommand());
 	QueryResult response = client.getInflux().query(query, TimeUnit.MILLISECONDS);
 	List<T> results = InfluxDbDeviceEvent.eventsOfType(response, clazz);
 
-	Query countQuery = InfluxDbDeviceEvent.queryEventsOfTypeForAssignmentsCount(type, assignmentIds, criteria,
+	Query countQuery = InfluxDbDeviceEvent.queryEventsOfTypeForIndexCount(index, type, entityIds, criteria,
 		client.getDatabase().getValue());
 	LOGGER.debug("Count: " + countQuery.getCommand());
 	QueryResult countResponse = client.getInflux().query(countQuery);
@@ -136,103 +139,41 @@ public class InfluxDbDeviceEvent {
     }
 
     /**
-     * Search for of events of a given type associated with one or more areas.
+     * Get a query for events of a given type associated with one or more entities
+     * for a given index and that meet the search criteria.
      * 
-     * @param areaIds
+     * @param index
      * @param type
-     * @param criteria
-     * @param client
-     * @param clazz
-     * @return
-     * @throws SiteWhereException
-     */
-    public static <T> SearchResults<T> searchByAreaIds(List<UUID> areaIds, DeviceEventType type,
-	    ISearchCriteria criteria, InfluxDbClient client, Class<T> clazz) throws SiteWhereException {
-	Query query = InfluxDbDeviceEvent.queryEventsOfTypeForAreas(type, areaIds, criteria,
-		client.getDatabase().getValue());
-	LOGGER.debug("Query: " + query.getCommand());
-	QueryResult response = client.getInflux().query(query, TimeUnit.MILLISECONDS);
-	List<T> results = InfluxDbDeviceEvent.eventsOfType(response, clazz);
-
-	Query countQuery = InfluxDbDeviceEvent.queryEventsOfTypeForAreasCount(type, areaIds, criteria,
-		client.getDatabase().getValue());
-	LOGGER.debug("Count: " + countQuery.getCommand());
-	QueryResult countResponse = client.getInflux().query(countQuery);
-	long count = parseCount(countResponse);
-	return new SearchResults<T>(results, count);
-    }
-
-    /**
-     * Get a query for events of a given type associated with one or more
-     * assignments and that meet the search criteria.
-     * 
-     * @param type
-     * @param assignmentIds
+     * @param entityIds
      * @param criteria
      * @param database
      * @return
      * @throws SiteWhereException
      */
-    protected static Query queryEventsOfTypeForAssignments(DeviceEventType type, List<UUID> assignmentIds,
+    protected static Query queryEventsOfTypeForIndex(DeviceEventIndex index, DeviceEventType type, List<UUID> entityIds,
 	    ISearchCriteria criteria, String database) throws SiteWhereException {
 	return new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where type='" + type.name()
-		+ "' and " + buildAssignmentsClause(assignmentIds) + buildDateRangeCriteria(criteria) + " GROUP BY "
+		+ "' and " + buildInClause(index, entityIds) + buildDateRangeCriteria(criteria) + " GROUP BY "
 		+ EVENT_ASSIGNMENT + " ORDER BY time DESC" + buildPagingCriteria(criteria), database);
     }
 
     /**
      * Get a query for counting events of a given type associated with one or more
-     * assignments and that meet the search criteria.
+     * entities for a given index and that meet the search criteria.
      * 
+     * @param index
      * @param type
-     * @param assignmentIds
+     * @param entityIds
      * @param criteria
      * @param database
      * @return
      * @throws SiteWhereException
      */
-    protected static Query queryEventsOfTypeForAssignmentsCount(DeviceEventType type, List<UUID> assignmentIds,
-	    ISearchCriteria criteria, String database) throws SiteWhereException {
+    protected static Query queryEventsOfTypeForIndexCount(DeviceEventIndex index, DeviceEventType type,
+	    List<UUID> entityIds, ISearchCriteria criteria, String database) throws SiteWhereException {
 	return new Query("SELECT count(" + EVENT_ID + ") FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS
-		+ " where type='" + type.name() + "' and " + buildAssignmentsClause(assignmentIds)
+		+ " where type='" + type.name() + "' and " + buildInClause(index, entityIds)
 		+ buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_ASSIGNMENT, database);
-    }
-
-    /**
-     * Get a query for events of a given type associated with an area and meeting
-     * the search criteria.
-     * 
-     * @param type
-     * @param areaIds
-     * @param criteria
-     * @param database
-     * @return
-     * @throws SiteWhereException
-     */
-    protected static Query queryEventsOfTypeForAreas(DeviceEventType type, List<UUID> areaIds, ISearchCriteria criteria,
-	    String database) throws SiteWhereException {
-	return new Query("SELECT * FROM " + COLLECTION_EVENTS + " where type='" + type.name() + "' and "
-		+ buildAreasClause(areaIds) + buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_AREA
-		+ " ORDER BY time DESC" + buildPagingCriteria(criteria), database);
-    }
-
-    /**
-     * Get a query for counting events of a given type associated with an area and
-     * meeting the search criteria.
-     * 
-     * @param type
-     * @param areaIds
-     * @param criteria
-     * @param database
-     * @return
-     * @throws SiteWhereException
-     */
-    protected static Query queryEventsOfTypeForAreasCount(DeviceEventType type, List<UUID> areaIds,
-	    ISearchCriteria criteria, String database) throws SiteWhereException {
-	return new Query(
-		"SELECT count(" + EVENT_ID + ") FROM " + COLLECTION_EVENTS + " where type='" + type.name() + "' and "
-			+ buildAreasClause(areaIds) + buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_AREA,
-		database);
     }
 
     /**
@@ -548,29 +489,43 @@ public class InfluxDbDeviceEvent {
     }
 
     /**
-     * Get clause that includes assignments list.
+     * Get field name associated with index.
      * 
-     * @param areas
+     * @param index
      * @return
+     * @throws SiteWhereException
      */
-    protected static String buildAssignmentsClause(List<UUID> assignmentIds) {
-	List<String> clauses = new ArrayList<>();
-	for (UUID assignmentId : assignmentIds) {
-	    clauses.add(EVENT_ASSIGNMENT + "='" + assignmentId.toString() + "'");
+    protected static String getFieldForIndex(DeviceEventIndex index) throws SiteWhereException {
+	switch (index) {
+	case Area: {
+	    return EVENT_AREA;
 	}
-	return String.join(" or ", clauses);
+	case Asset: {
+	    return EVENT_ASSET;
+	}
+	case Assignment: {
+	    return EVENT_ASSIGNMENT;
+	}
+	case Customer: {
+	    return EVENT_CUSTOMER;
+	}
+	}
+	throw new SiteWhereException("Unknown index: " + index.name());
     }
 
     /**
-     * Get clause that includes areas list.
+     * Get "in" clause for matching on a list of entity ids for an index.
      * 
-     * @param areas
+     * @param index
+     * @param entityIds
      * @return
+     * @throws SiteWhereException
      */
-    protected static String buildAreasClause(List<UUID> areaIds) {
+    protected static String buildInClause(DeviceEventIndex index, List<UUID> entityIds) throws SiteWhereException {
+	String field = getFieldForIndex(index);
 	List<String> clauses = new ArrayList<>();
-	for (UUID areaId : areaIds) {
-	    clauses.add(EVENT_AREA + "='" + areaId.toString() + "'");
+	for (UUID entityId : entityIds) {
+	    clauses.add(field + "='" + entityId.toString() + "'");
 	}
 	return String.join(" or ", clauses);
     }

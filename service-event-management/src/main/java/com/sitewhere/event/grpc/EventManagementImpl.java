@@ -22,20 +22,20 @@ import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.grpc.model.converter.DeviceModelConverter;
 import com.sitewhere.grpc.model.converter.EventModelConverter;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
-import com.sitewhere.grpc.service.GAddAlertForAssignmentRequest;
-import com.sitewhere.grpc.service.GAddAlertForAssignmentResponse;
-import com.sitewhere.grpc.service.GAddCommandInvocationForAssignmentRequest;
-import com.sitewhere.grpc.service.GAddCommandInvocationForAssignmentResponse;
-import com.sitewhere.grpc.service.GAddCommandResponseForAssignmentRequest;
-import com.sitewhere.grpc.service.GAddCommandResponseForAssignmentResponse;
+import com.sitewhere.grpc.service.GAddAlertRequest;
+import com.sitewhere.grpc.service.GAddAlertResponse;
+import com.sitewhere.grpc.service.GAddCommandInvocationRequest;
+import com.sitewhere.grpc.service.GAddCommandInvocationResponse;
+import com.sitewhere.grpc.service.GAddCommandResponseRequest;
+import com.sitewhere.grpc.service.GAddCommandResponseResponse;
 import com.sitewhere.grpc.service.GAddDeviceEventBatchRequest;
 import com.sitewhere.grpc.service.GAddDeviceEventBatchResponse;
-import com.sitewhere.grpc.service.GAddLocationForAssignmentRequest;
-import com.sitewhere.grpc.service.GAddLocationForAssignmentResponse;
-import com.sitewhere.grpc.service.GAddMeasurementsForAssignmentRequest;
-import com.sitewhere.grpc.service.GAddMeasurementsForAssignmentResponse;
-import com.sitewhere.grpc.service.GAddStateChangeForAssignmentRequest;
-import com.sitewhere.grpc.service.GAddStateChangeForAssignmentResponse;
+import com.sitewhere.grpc.service.GAddLocationRequest;
+import com.sitewhere.grpc.service.GAddLocationResponse;
+import com.sitewhere.grpc.service.GAddMeasurementsRequest;
+import com.sitewhere.grpc.service.GAddMeasurementsResponse;
+import com.sitewhere.grpc.service.GAddStateChangeRequest;
+import com.sitewhere.grpc.service.GAddStateChangeResponse;
 import com.sitewhere.grpc.service.GAddStreamDataForAssignmentRequest;
 import com.sitewhere.grpc.service.GAddStreamDataForAssignmentResponse;
 import com.sitewhere.grpc.service.GGetDeviceEventByAlternateIdRequest;
@@ -44,32 +44,20 @@ import com.sitewhere.grpc.service.GGetDeviceEventByIdRequest;
 import com.sitewhere.grpc.service.GGetDeviceEventByIdResponse;
 import com.sitewhere.grpc.service.GGetStreamDataForAssignmentRequest;
 import com.sitewhere.grpc.service.GGetStreamDataForAssignmentResponse;
-import com.sitewhere.grpc.service.GListAlertsForAreasRequest;
-import com.sitewhere.grpc.service.GListAlertsForAreasResponse;
-import com.sitewhere.grpc.service.GListAlertsForAssignmentsRequest;
-import com.sitewhere.grpc.service.GListAlertsForAssignmentsResponse;
-import com.sitewhere.grpc.service.GListCommandInvocationsForAreasRequest;
-import com.sitewhere.grpc.service.GListCommandInvocationsForAreasResponse;
-import com.sitewhere.grpc.service.GListCommandInvocationsForAssignmentsRequest;
-import com.sitewhere.grpc.service.GListCommandInvocationsForAssignmentsResponse;
-import com.sitewhere.grpc.service.GListCommandResponsesForAreasRequest;
-import com.sitewhere.grpc.service.GListCommandResponsesForAreasResponse;
-import com.sitewhere.grpc.service.GListCommandResponsesForAssignmentsRequest;
-import com.sitewhere.grpc.service.GListCommandResponsesForAssignmentsResponse;
+import com.sitewhere.grpc.service.GListAlertsForIndexRequest;
+import com.sitewhere.grpc.service.GListAlertsForIndexResponse;
+import com.sitewhere.grpc.service.GListCommandInvocationsForIndexRequest;
+import com.sitewhere.grpc.service.GListCommandInvocationsForIndexResponse;
+import com.sitewhere.grpc.service.GListCommandResponsesForIndexRequest;
+import com.sitewhere.grpc.service.GListCommandResponsesForIndexResponse;
 import com.sitewhere.grpc.service.GListCommandResponsesForInvocationRequest;
 import com.sitewhere.grpc.service.GListCommandResponsesForInvocationResponse;
-import com.sitewhere.grpc.service.GListLocationsForAreasRequest;
-import com.sitewhere.grpc.service.GListLocationsForAreasResponse;
-import com.sitewhere.grpc.service.GListLocationsForAssignmentsRequest;
-import com.sitewhere.grpc.service.GListLocationsForAssignmentsResponse;
-import com.sitewhere.grpc.service.GListMeasurementsForAreasRequest;
-import com.sitewhere.grpc.service.GListMeasurementsForAreasResponse;
-import com.sitewhere.grpc.service.GListMeasurementsForAssignmentsRequest;
-import com.sitewhere.grpc.service.GListMeasurementsForAssignmentsResponse;
-import com.sitewhere.grpc.service.GListStateChangesForAreasRequest;
-import com.sitewhere.grpc.service.GListStateChangesForAreasResponse;
-import com.sitewhere.grpc.service.GListStateChangesForAssignmentsRequest;
-import com.sitewhere.grpc.service.GListStateChangesForAssignmentsResponse;
+import com.sitewhere.grpc.service.GListLocationsForIndexRequest;
+import com.sitewhere.grpc.service.GListLocationsForIndexResponse;
+import com.sitewhere.grpc.service.GListMeasurementsForIndexRequest;
+import com.sitewhere.grpc.service.GListMeasurementsForIndexResponse;
+import com.sitewhere.grpc.service.GListStateChangesForIndexRequest;
+import com.sitewhere.grpc.service.GListStateChangesForIndexResponse;
 import com.sitewhere.grpc.service.GListStreamDataForAssignmentRequest;
 import com.sitewhere.grpc.service.GListStreamDataForAssignmentResponse;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
@@ -206,79 +194,45 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#addMeasurementsForAssignment(com.sitewhere.
-     * grpc.service.GAddMeasurementsForAssignmentRequest,
-     * io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#addMeasurements(com.sitewhere.grpc.service.
+     * GAddMeasurementsRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void addMeasurementsForAssignment(GAddMeasurementsForAssignmentRequest request,
-	    StreamObserver<GAddMeasurementsForAssignmentResponse> responseObserver) {
+    public void addMeasurements(GAddMeasurementsRequest request,
+	    StreamObserver<GAddMeasurementsResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_MEASUREMENTS_FOR_ASSIGNMENT);
+	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_MEASUREMENTS);
 	    IDeviceMeasurements apiResult = getDeviceEventManagement().addDeviceMeasurements(
 		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
 		    EventModelConverter.asApiDeviceMeasurementsCreateRequest(request.getRequest()));
-	    GAddMeasurementsForAssignmentResponse.Builder response = GAddMeasurementsForAssignmentResponse.newBuilder();
+	    GAddMeasurementsResponse.Builder response = GAddMeasurementsResponse.newBuilder();
 	    if (apiResult != null) {
 		response.setMeasurements(EventModelConverter.asGrpcDeviceMeasurements(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_MEASUREMENTS_FOR_ASSIGNMENT, e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_MEASUREMENTS, e,
 		    responseObserver);
 	}
     }
 
     /*
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listMeasurementsForAssignments(com.sitewhere.
-     * grpc.service.GListMeasurementsForAssignmentsRequest,
-     * io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#listMeasurementsForIndex(com.sitewhere.grpc.
+     * service.GListMeasurementsForIndexRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listMeasurementsForAssignments(GListMeasurementsForAssignmentsRequest request,
-	    StreamObserver<GListMeasurementsForAssignmentsResponse> responseObserver) {
+    public void listMeasurementsForIndex(GListMeasurementsForIndexRequest request,
+	    StreamObserver<GListMeasurementsForIndexResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_ASSIGNMENTS);
-	    ISearchResults<IDeviceMeasurements> apiResult = getDeviceEventManagement()
-		    .listDeviceMeasurementsForAssignments(
-			    CommonModelConverter.asApiUuids(request.getDeviceAssignmentIdsList()),
-			    CommonModelConverter.asDateRangeSearchCriteria(request.getCriteria()));
-	    GListMeasurementsForAssignmentsResponse.Builder response = GListMeasurementsForAssignmentsResponse
-		    .newBuilder();
-	    GDeviceMeasurementsSearchResults.Builder results = GDeviceMeasurementsSearchResults.newBuilder();
-	    for (IDeviceMeasurements api : apiResult.getResults()) {
-		results.addMeasurements(EventModelConverter.asGrpcDeviceMeasurements(api));
-	    }
-	    results.setCount(apiResult.getNumResults());
-	    response.setResults(results.build());
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_ASSIGNMENTS, e,
-		    responseObserver);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listMeasurementsForAreas(com.sitewhere.grpc.
-     * service.GListMeasurementsForAreasRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void listMeasurementsForAreas(GListMeasurementsForAreasRequest request,
-	    StreamObserver<GListMeasurementsForAreasResponse> responseObserver) {
-	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_AREAS);
-	    ISearchResults<IDeviceMeasurements> apiResult = getDeviceEventManagement().listDeviceMeasurementsForAreas(
-		    CommonModelConverter.asApiUuids(request.getAreaIdsList()),
+	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_INDEX);
+	    ISearchResults<IDeviceMeasurements> apiResult = getDeviceEventManagement().listDeviceMeasurementsForIndex(
+		    EventModelConverter.asApiDeviceEventIndex(request.getIndex()),
+		    CommonModelConverter.asApiUuids(request.getEntityIdsList()),
 		    CommonModelConverter.asDateRangeSearchCriteria(request.getCriteria()));
-	    GrpcUtils.logServerApiResult(DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_AREAS, apiResult);
-	    GListMeasurementsForAreasResponse.Builder response = GListMeasurementsForAreasResponse.newBuilder();
+	    GListMeasurementsForIndexResponse.Builder response = GListMeasurementsForIndexResponse.newBuilder();
 	    GDeviceMeasurementsSearchResults.Builder results = GDeviceMeasurementsSearchResults.newBuilder();
 	    for (IDeviceMeasurements api : apiResult.getResults()) {
 		results.addMeasurements(EventModelConverter.asGrpcDeviceMeasurements(api));
@@ -288,52 +242,49 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_AREAS, e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_INDEX, e,
 		    responseObserver);
 	}
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#addLocationForAssignment(com.sitewhere.grpc
-     * .service.GAddLocationForAssignmentRequest, io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#addLocation(com.sitewhere.grpc.service.
+     * GAddLocationRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void addLocationForAssignment(GAddLocationForAssignmentRequest request,
-	    StreamObserver<GAddLocationForAssignmentResponse> responseObserver) {
+    public void addLocation(GAddLocationRequest request, StreamObserver<GAddLocationResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_LOCATION_FOR_ASSIGNMENT);
+	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_LOCATION);
 	    IDeviceLocation apiResult = getDeviceEventManagement().addDeviceLocation(
 		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
 		    EventModelConverter.asApiDeviceLocationCreateRequest(request.getRequest()));
-	    GAddLocationForAssignmentResponse.Builder response = GAddLocationForAssignmentResponse.newBuilder();
+	    GAddLocationResponse.Builder response = GAddLocationResponse.newBuilder();
 	    if (apiResult != null) {
 		response.setLocation(EventModelConverter.asGrpcDeviceLocation(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_LOCATION_FOR_ASSIGNMENT, e,
-		    responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_LOCATION, e, responseObserver);
 	}
     }
 
     /*
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listLocationsForAssignments(com.sitewhere.grpc.
-     * service.GListLocationsForAssignmentsRequest, io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#listLocationsForIndex(com.sitewhere.grpc.
+     * service.GListLocationsForIndexRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listLocationsForAssignments(GListLocationsForAssignmentsRequest request,
-	    StreamObserver<GListLocationsForAssignmentsResponse> responseObserver) {
+    public void listLocationsForIndex(GListLocationsForIndexRequest request,
+	    StreamObserver<GListLocationsForIndexResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_LOCATIONS_FOR_ASSIGNMENTS);
-	    ISearchResults<IDeviceLocation> apiResult = getDeviceEventManagement().listDeviceLocationsForAssignments(
-		    CommonModelConverter.asApiUuids(request.getDeviceAssignmentIdsList()),
+	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_LOCATIONS_FOR_INDEX);
+	    ISearchResults<IDeviceLocation> apiResult = getDeviceEventManagement().listDeviceLocationsForIndex(
+		    EventModelConverter.asApiDeviceEventIndex(request.getIndex()),
+		    CommonModelConverter.asApiUuids(request.getEntityIdsList()),
 		    CommonModelConverter.asDateRangeSearchCriteria(request.getCriteria()));
-	    GListLocationsForAssignmentsResponse.Builder response = GListLocationsForAssignmentsResponse.newBuilder();
+	    GListLocationsForIndexResponse.Builder response = GListLocationsForIndexResponse.newBuilder();
 	    GDeviceLocationSearchResults.Builder results = GDeviceLocationSearchResults.newBuilder();
 	    for (IDeviceLocation api : apiResult.getResults()) {
 		results.addLocations(EventModelConverter.asGrpcDeviceLocation(api));
@@ -343,80 +294,49 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_LOCATIONS_FOR_ASSIGNMENTS, e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_LOCATIONS_FOR_INDEX, e,
 		    responseObserver);
 	}
     }
 
     /*
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listLocationsForAreas(com.sitewhere.grpc.
-     * service.GListLocationsForAreasRequest, io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#addAlert(com.sitewhere.grpc.service.
+     * GAddAlertRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listLocationsForAreas(GListLocationsForAreasRequest request,
-	    StreamObserver<GListLocationsForAreasResponse> responseObserver) {
+    public void addAlert(GAddAlertRequest request, StreamObserver<GAddAlertResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_LOCATIONS_FOR_AREAS);
-	    ISearchResults<IDeviceLocation> apiResult = getDeviceEventManagement().listDeviceLocationsForAreas(
-		    CommonModelConverter.asApiUuids(request.getAreaIdsList()),
-		    CommonModelConverter.asDateRangeSearchCriteria(request.getCriteria()));
-	    GListLocationsForAreasResponse.Builder response = GListLocationsForAreasResponse.newBuilder();
-	    GDeviceLocationSearchResults.Builder results = GDeviceLocationSearchResults.newBuilder();
-	    for (IDeviceLocation api : apiResult.getResults()) {
-		results.addLocations(EventModelConverter.asGrpcDeviceLocation(api));
-	    }
-	    results.setCount(apiResult.getNumResults());
-	    response.setResults(results.build());
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_LOCATIONS_FOR_AREAS, e,
-		    responseObserver);
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#addAlertForAssignment(com.sitewhere.grpc.
-     * service.GAddAlertForAssignmentRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void addAlertForAssignment(GAddAlertForAssignmentRequest request,
-	    StreamObserver<GAddAlertForAssignmentResponse> responseObserver) {
-	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_ALERT_FOR_ASSIGNMENT);
+	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_ALERT);
 	    IDeviceAlert apiResult = getDeviceEventManagement().addDeviceAlert(
 		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
 		    EventModelConverter.asApiDeviceAlertCreateRequest(request.getRequest()));
-	    GAddAlertForAssignmentResponse.Builder response = GAddAlertForAssignmentResponse.newBuilder();
+	    GAddAlertResponse.Builder response = GAddAlertResponse.newBuilder();
 	    if (apiResult != null) {
 		response.setAlert(EventModelConverter.asGrpcDeviceAlert(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_ALERT_FOR_ASSIGNMENT, e,
-		    responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_ALERT, e, responseObserver);
 	}
     }
 
     /*
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listAlertsForAssignments(com.sitewhere.grpc.
-     * service.GListAlertsForAssignmentsRequest, io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#listAlertsForIndex(com.sitewhere.grpc.service.
+     * GListAlertsForIndexRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listAlertsForAssignments(GListAlertsForAssignmentsRequest request,
-	    StreamObserver<GListAlertsForAssignmentsResponse> responseObserver) {
+    public void listAlertsForIndex(GListAlertsForIndexRequest request,
+	    StreamObserver<GListAlertsForIndexResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_ASSIGNMENTS);
-	    ISearchResults<IDeviceAlert> apiResult = getDeviceEventManagement().listDeviceAlertsForAssignments(
-		    CommonModelConverter.asApiUuids(request.getDeviceAssignmentIdsList()),
+	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_INDEX);
+	    ISearchResults<IDeviceAlert> apiResult = getDeviceEventManagement().listDeviceAlertsForIndex(
+		    EventModelConverter.asApiDeviceEventIndex(request.getIndex()),
+		    CommonModelConverter.asApiUuids(request.getEntityIdsList()),
 		    CommonModelConverter.asDateRangeSearchCriteria(request.getCriteria()));
-	    GListAlertsForAssignmentsResponse.Builder response = GListAlertsForAssignmentsResponse.newBuilder();
+	    GListAlertsForIndexResponse.Builder response = GListAlertsForIndexResponse.newBuilder();
 	    GDeviceAlertSearchResults.Builder results = GDeviceAlertSearchResults.newBuilder();
 	    for (IDeviceAlert api : apiResult.getResults()) {
 		results.addAlerts(EventModelConverter.asGrpcDeviceAlert(api));
@@ -426,35 +346,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_ASSIGNMENTS, e,
-		    responseObserver);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listAlertsForAreas(com.sitewhere.grpc.service.
-     * GListAlertsForAreasRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void listAlertsForAreas(GListAlertsForAreasRequest request,
-	    StreamObserver<GListAlertsForAreasResponse> responseObserver) {
-	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_AREAS);
-	    ISearchResults<IDeviceAlert> apiResult = getDeviceEventManagement().listDeviceAlertsForAreas(
-		    CommonModelConverter.asApiUuids(request.getAreaIdsList()),
-		    CommonModelConverter.asDateRangeSearchCriteria(request.getCriteria()));
-	    GListAlertsForAreasResponse.Builder response = GListAlertsForAreasResponse.newBuilder();
-	    GDeviceAlertSearchResults.Builder results = GDeviceAlertSearchResults.newBuilder();
-	    for (IDeviceAlert api : apiResult.getResults()) {
-		results.addAlerts(EventModelConverter.asGrpcDeviceAlert(api));
-	    }
-	    results.setCount(apiResult.getNumResults());
-	    response.setResults(results.build());
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_AREAS, e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_INDEX, e,
 		    responseObserver);
 	}
     }
@@ -546,50 +438,46 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#addCommandInvocationForAssignment(com.
-     * sitewhere.grpc.service.GAddCommandInvocationForAssignmentRequest,
-     * io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#addCommandInvocation(com.sitewhere.grpc.service
+     * .GAddCommandInvocationRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void addCommandInvocationForAssignment(GAddCommandInvocationForAssignmentRequest request,
-	    StreamObserver<GAddCommandInvocationForAssignmentResponse> responseObserver) {
+    public void addCommandInvocation(GAddCommandInvocationRequest request,
+	    StreamObserver<GAddCommandInvocationResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_INVOCATION_FOR_ASSIGNMENT);
+	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_INVOCATION);
 	    IDeviceCommandInvocation apiResult = getDeviceEventManagement().addDeviceCommandInvocation(
 		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
 		    EventModelConverter.asApiDeviceCommandInvocationCreateRequest(request.getRequest()));
-	    GAddCommandInvocationForAssignmentResponse.Builder response = GAddCommandInvocationForAssignmentResponse
-		    .newBuilder();
+	    GAddCommandInvocationResponse.Builder response = GAddCommandInvocationResponse.newBuilder();
 	    if (apiResult != null) {
 		response.setInvocation(EventModelConverter.asGrpcDeviceCommandInvocation(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(
-		    DeviceEventManagementGrpc.METHOD_ADD_COMMAND_INVOCATION_FOR_ASSIGNMENT, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_INVOCATION, e,
+		    responseObserver);
 	}
     }
 
     /*
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listCommandInvocationsForAssignments(com.
-     * sitewhere.grpc.service.GListCommandInvocationsForAssignmentsRequest,
+     * DeviceEventManagementImplBase#listCommandInvocationsForIndex(com.sitewhere.
+     * grpc.service.GListCommandInvocationsForIndexRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listCommandInvocationsForAssignments(GListCommandInvocationsForAssignmentsRequest request,
-	    StreamObserver<GListCommandInvocationsForAssignmentsResponse> responseObserver) {
+    public void listCommandInvocationsForIndex(GListCommandInvocationsForIndexRequest request,
+	    StreamObserver<GListCommandInvocationsForIndexResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_INVOCATIONS_FOR_ASSIGNMENTS);
+	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_INVOCATIONS_FOR_INDEX);
 	    ISearchResults<IDeviceCommandInvocation> apiResult = getDeviceEventManagement()
-		    .listDeviceCommandInvocationsForAssignments(
-			    CommonModelConverter.asApiUuids(request.getDeviceAssignmentIdsList()),
+		    .listDeviceCommandInvocationsForIndex(EventModelConverter.asApiDeviceEventIndex(request.getIndex()),
+			    CommonModelConverter.asApiUuids(request.getEntityIdsList()),
 			    CommonModelConverter.asDateRangeSearchCriteria(request.getCriteria()));
-	    GListCommandInvocationsForAssignmentsResponse.Builder response = GListCommandInvocationsForAssignmentsResponse
+	    GListCommandInvocationsForIndexResponse.Builder response = GListCommandInvocationsForIndexResponse
 		    .newBuilder();
 	    GDeviceCommandInvocationSearchResults.Builder results = GDeviceCommandInvocationSearchResults.newBuilder();
 	    for (IDeviceCommandInvocation api : apiResult.getResults()) {
@@ -600,67 +488,33 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(
-		    DeviceEventManagementGrpc.METHOD_LIST_COMMAND_INVOCATIONS_FOR_ASSIGNMENTS, e, responseObserver);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listCommandInvocationsForAreas(com.sitewhere.
-     * grpc.service.GListCommandInvocationsForAreasRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void listCommandInvocationsForAreas(GListCommandInvocationsForAreasRequest request,
-	    StreamObserver<GListCommandInvocationsForAreasResponse> responseObserver) {
-	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_INVOCATIONS_FOR_AREAS);
-	    ISearchResults<IDeviceCommandInvocation> apiResult = getDeviceEventManagement()
-		    .listDeviceCommandInvocationsForAreas(CommonModelConverter.asApiUuids(request.getAreaIdsList()),
-			    CommonModelConverter.asDateRangeSearchCriteria(request.getCriteria()));
-	    GListCommandInvocationsForAreasResponse.Builder response = GListCommandInvocationsForAreasResponse
-		    .newBuilder();
-	    GDeviceCommandInvocationSearchResults.Builder results = GDeviceCommandInvocationSearchResults.newBuilder();
-	    for (IDeviceCommandInvocation api : apiResult.getResults()) {
-		results.addInvocations(EventModelConverter.asGrpcDeviceCommandInvocation(api));
-	    }
-	    results.setCount(apiResult.getNumResults());
-	    response.setResults(results.build());
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_INVOCATIONS_FOR_AREAS,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_INVOCATIONS_FOR_INDEX,
 		    e, responseObserver);
 	}
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#addCommandResponseForAssignment(com.
-     * sitewhere.grpc.service.GAddCommandResponseForAssignmentRequest,
-     * io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#addCommandResponse(com.sitewhere.grpc.service.
+     * GAddCommandResponseRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void addCommandResponseForAssignment(GAddCommandResponseForAssignmentRequest request,
-	    StreamObserver<GAddCommandResponseForAssignmentResponse> responseObserver) {
+    public void addCommandResponse(GAddCommandResponseRequest request,
+	    StreamObserver<GAddCommandResponseResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_RESPONSE_FOR_ASSIGNMENT);
+	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_RESPONSE);
 	    IDeviceCommandResponse apiResult = getDeviceEventManagement().addDeviceCommandResponse(
 		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
 		    EventModelConverter.asApiDeviceCommandResponseCreateRequest(request.getRequest()));
-	    GAddCommandResponseForAssignmentResponse.Builder response = GAddCommandResponseForAssignmentResponse
-		    .newBuilder();
+	    GAddCommandResponseResponse.Builder response = GAddCommandResponseResponse.newBuilder();
 	    if (apiResult != null) {
 		response.setResponse(EventModelConverter.asGrpcDeviceCommandResponse(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_RESPONSE_FOR_ASSIGNMENT,
-		    e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_RESPONSE, e,
+		    responseObserver);
 	}
     }
 
@@ -698,21 +552,19 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 
     /*
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listCommandResponsesForAssignments(com.
-     * sitewhere.grpc.service.GListCommandResponsesForAssignmentsRequest,
-     * io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#listCommandResponsesForIndex(com.sitewhere.grpc
+     * .service.GListCommandResponsesForIndexRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listCommandResponsesForAssignments(GListCommandResponsesForAssignmentsRequest request,
-	    StreamObserver<GListCommandResponsesForAssignmentsResponse> responseObserver) {
+    public void listCommandResponsesForIndex(GListCommandResponsesForIndexRequest request,
+	    StreamObserver<GListCommandResponsesForIndexResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_ASSIGNMENTS);
+	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_INDEX);
 	    ISearchResults<IDeviceCommandResponse> apiResult = getDeviceEventManagement()
-		    .listDeviceCommandResponsesForAssignments(
-			    CommonModelConverter.asApiUuids(request.getDeviceAssignmentIdsList()),
+		    .listDeviceCommandResponsesForIndex(EventModelConverter.asApiDeviceEventIndex(request.getIndex()),
+			    CommonModelConverter.asApiUuids(request.getEntityIdsList()),
 			    CommonModelConverter.asDateRangeSearchCriteria(request.getCriteria()));
-	    GListCommandResponsesForAssignmentsResponse.Builder response = GListCommandResponsesForAssignmentsResponse
-		    .newBuilder();
+	    GListCommandResponsesForIndexResponse.Builder response = GListCommandResponsesForIndexResponse.newBuilder();
 	    GDeviceCommandResponseSearchResults.Builder results = GDeviceCommandResponseSearchResults.newBuilder();
 	    for (IDeviceCommandResponse api : apiResult.getResults()) {
 		results.addResponses(EventModelConverter.asGrpcDeviceCommandResponse(api));
@@ -722,112 +574,51 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(
-		    DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_ASSIGNMENTS, e, responseObserver);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listCommandResponsesForAreas(com.sitewhere.grpc
-     * .service.GListCommandResponsesForAreasRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void listCommandResponsesForAreas(GListCommandResponsesForAreasRequest request,
-	    StreamObserver<GListCommandResponsesForAreasResponse> responseObserver) {
-	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_AREAS);
-	    ISearchResults<IDeviceCommandResponse> apiResult = getDeviceEventManagement()
-		    .listDeviceCommandResponsesForAreas(CommonModelConverter.asApiUuids(request.getAreaIdsList()),
-			    CommonModelConverter.asDateRangeSearchCriteria(request.getCriteria()));
-	    GListCommandResponsesForAreasResponse.Builder response = GListCommandResponsesForAreasResponse.newBuilder();
-	    GDeviceCommandResponseSearchResults.Builder results = GDeviceCommandResponseSearchResults.newBuilder();
-	    for (IDeviceCommandResponse api : apiResult.getResults()) {
-		results.addResponses(EventModelConverter.asGrpcDeviceCommandResponse(api));
-	    }
-	    results.setCount(apiResult.getNumResults());
-	    response.setResults(results.build());
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_AREAS, e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_INDEX, e,
 		    responseObserver);
 	}
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#addStateChangeForAssignment(com.sitewhere.
-     * grpc.service.GAddStateChangeForAssignmentRequest,
-     * io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#addStateChange(com.sitewhere.grpc.service.
+     * GAddStateChangeRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void addStateChangeForAssignment(GAddStateChangeForAssignmentRequest request,
-	    StreamObserver<GAddStateChangeForAssignmentResponse> responseObserver) {
+    public void addStateChange(GAddStateChangeRequest request,
+	    StreamObserver<GAddStateChangeResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_STATE_CHANGE_FOR_ASSIGNMENT);
+	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_STATE_CHANGE);
 	    IDeviceStateChange apiResult = getDeviceEventManagement().addDeviceStateChange(
 		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
 		    EventModelConverter.asApiDeviceStateChangeCreateRequest(request.getRequest()));
-	    GAddStateChangeForAssignmentResponse.Builder response = GAddStateChangeForAssignmentResponse.newBuilder();
+	    GAddStateChangeResponse.Builder response = GAddStateChangeResponse.newBuilder();
 	    if (apiResult != null) {
 		response.setStateChange(EventModelConverter.asGrpcDeviceStateChange(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_STATE_CHANGE_FOR_ASSIGNMENT, e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_STATE_CHANGE, e,
 		    responseObserver);
 	}
     }
 
     /*
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listStateChangesForAssignments(com.sitewhere.
-     * grpc.service.GListStateChangesForAssignmentsRequest,
-     * io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#listStateChangesForIndex(com.sitewhere.grpc.
+     * service.GListStateChangesForIndexRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listStateChangesForAssignments(GListStateChangesForAssignmentsRequest request,
-	    StreamObserver<GListStateChangesForAssignmentsResponse> responseObserver) {
+    public void listStateChangesForIndex(GListStateChangesForIndexRequest request,
+	    StreamObserver<GListStateChangesForIndexResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_ASSIGNMENTS);
-	    ISearchResults<IDeviceStateChange> apiResult = getDeviceEventManagement()
-		    .listDeviceStateChangesForAssignments(
-			    CommonModelConverter.asApiUuids(request.getDeviceAssignmentIdsList()),
-			    CommonModelConverter.asDateRangeSearchCriteria(request.getCriteria()));
-	    GListStateChangesForAssignmentsResponse.Builder response = GListStateChangesForAssignmentsResponse
-		    .newBuilder();
-	    GDeviceStateChangeSearchResults.Builder results = GDeviceStateChangeSearchResults.newBuilder();
-	    for (IDeviceStateChange api : apiResult.getResults()) {
-		results.addStateChanges(EventModelConverter.asGrpcDeviceStateChange(api));
-	    }
-	    results.setCount(apiResult.getNumResults());
-	    response.setResults(results.build());
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_ASSIGNMENTS,
-		    e, responseObserver);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listStateChangesForAreas(com.sitewhere.grpc.
-     * service.GListStateChangesForAreasRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void listStateChangesForAreas(GListStateChangesForAreasRequest request,
-	    StreamObserver<GListStateChangesForAreasResponse> responseObserver) {
-	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_AREAS);
-	    ISearchResults<IDeviceStateChange> apiResult = getDeviceEventManagement().listDeviceStateChangesForAreas(
-		    CommonModelConverter.asApiUuids(request.getAreaIdsList()),
+	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_INDEX);
+	    ISearchResults<IDeviceStateChange> apiResult = getDeviceEventManagement().listDeviceStateChangesForIndex(
+		    EventModelConverter.asApiDeviceEventIndex(request.getIndex()),
+		    CommonModelConverter.asApiUuids(request.getEntityIdsList()),
 		    CommonModelConverter.asDateRangeSearchCriteria(request.getCriteria()));
-	    GListStateChangesForAreasResponse.Builder response = GListStateChangesForAreasResponse.newBuilder();
+	    GListStateChangesForIndexResponse.Builder response = GListStateChangesForIndexResponse.newBuilder();
 	    GDeviceStateChangeSearchResults.Builder results = GDeviceStateChangeSearchResults.newBuilder();
 	    for (IDeviceStateChange api : apiResult.getResults()) {
 		results.addStateChanges(EventModelConverter.asGrpcDeviceStateChange(api));
@@ -837,7 +628,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_AREAS, e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_INDEX, e,
 		    responseObserver);
 	}
     }

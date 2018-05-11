@@ -85,26 +85,16 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
 	    IDeviceMeasurementsCreateRequest measurements) throws SiteWhereException;
 
     /**
-     * Gets device measurement entries for assignments based on criteria.
+     * List device measurement entries for an index based on criteria.
      * 
-     * @param assignmentIds
+     * @param index
+     * @param entityIds
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForAssignments(List<UUID> assignmentIds,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
-
-    /**
-     * List device measurements for one more areas.
-     * 
-     * @param areaIds
-     * @param criteria
-     * @return
-     * @throws SiteWhereException
-     */
-    public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForAreas(List<UUID> areaIds,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
+    public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForIndex(DeviceEventIndex index,
+	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
     /**
      * Add location for a given device assignment.
@@ -118,25 +108,15 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
 	    throws SiteWhereException;
 
     /**
-     * List device location entries for one or more assignments.
+     * List device location entries for an index based on criteria.
      * 
-     * @param assignmentIds
+     * @param index
+     * @param entityIds
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IDeviceLocation> listDeviceLocationsForAssignments(List<UUID> assignmentIds,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
-
-    /**
-     * List device locations for one or more areas.
-     * 
-     * @param areaIds
-     * @param criteria
-     * @return
-     * @throws SiteWhereException
-     */
-    public ISearchResults<IDeviceLocation> listDeviceLocationsForAreas(List<UUID> areaIds,
+    public ISearchResults<IDeviceLocation> listDeviceLocationsForIndex(DeviceEventIndex index, List<UUID> entityIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
     /**
@@ -151,26 +131,16 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
 	    throws SiteWhereException;
 
     /**
-     * List device alert entries for one or more assignments.
+     * List device location entries for an index based on criteria.
      * 
-     * @param assignmentIds
+     * @param index
+     * @param entityIds
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IDeviceAlert> listDeviceAlertsForAssignments(List<UUID> assignmentIds,
+    public ISearchResults<IDeviceAlert> listDeviceAlertsForIndex(DeviceEventIndex index, List<UUID> entityIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
-
-    /**
-     * List device alerts for one or more areas.
-     * 
-     * @param areaIds
-     * @param criteria
-     * @return
-     * @throws SiteWhereException
-     */
-    public ISearchResults<IDeviceAlert> listDeviceAlertsForAreas(List<UUID> areaIds, IDateRangeSearchCriteria criteria)
-	    throws SiteWhereException;
 
     /**
      * Add a chunk of stream data for a given device assignment.
@@ -221,26 +191,16 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
 	    IDeviceCommandInvocationCreateRequest request) throws SiteWhereException;
 
     /**
-     * List device command invocations one or more assignments based on criteria.
+     * List device command invocation events for an index based on criteria.
      * 
-     * @param assignmentIds
+     * @param index
+     * @param entityIds
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForAssignments(List<UUID> assignmentIds,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
-
-    /**
-     * List device command invocations for one or more areas.
-     * 
-     * @param areaIds
-     * @param criteria
-     * @return
-     * @throws SiteWhereException
-     */
-    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForAreas(List<UUID> areaIds,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
+    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForIndex(DeviceEventIndex index,
+	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
     /**
      * List responses associated with a command invocation.
@@ -265,26 +225,16 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
 	    IDeviceCommandResponseCreateRequest request) throws SiteWhereException;
 
     /**
-     * List device command response entries for one or more assignments.
+     * List device command response events for an index based on criteria.
      * 
-     * @param assignmentIds
+     * @param index
+     * @param entityIds
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForAssignments(List<UUID> assignmentIds,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
-
-    /**
-     * List device command responses for one or more areas.
-     * 
-     * @param areaIds
-     * @param criteria
-     * @return
-     * @throws SiteWhereException
-     */
-    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForAreas(List<UUID> areaIds,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
+    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForIndex(DeviceEventIndex index,
+	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
     /**
      * Adds a new device state change event.
@@ -298,24 +248,14 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
 	    throws SiteWhereException;
 
     /**
-     * List device state change entries for one or more assignments.
+     * List device state change events for an index based on criteria.
      * 
-     * @param assignmentIds
+     * @param index
+     * @param entityIds
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IDeviceStateChange> listDeviceStateChangesForAssignments(List<UUID> assignmentIds,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
-
-    /**
-     * List device state changes for one or more areas.
-     * 
-     * @param areaIds
-     * @param criteria
-     * @return
-     * @throws SiteWhereException
-     */
-    public ISearchResults<IDeviceStateChange> listDeviceStateChangesForAreas(List<UUID> areaIds,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
+    public ISearchResults<IDeviceStateChange> listDeviceStateChangesForIndex(DeviceEventIndex index,
+	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException;
 }

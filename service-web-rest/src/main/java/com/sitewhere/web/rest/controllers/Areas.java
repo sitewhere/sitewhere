@@ -57,6 +57,7 @@ import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.event.DeviceEventIndex;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -284,8 +285,8 @@ public class Areas extends RestControllerBase {
 	List<UUID> areas = resolveAreaIds(areaToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
 		endDate, response);
-	ISearchResults<IDeviceMeasurements> results = getDeviceEventManagement().listDeviceMeasurementsForAreas(areas,
-		criteria);
+	ISearchResults<IDeviceMeasurements> results = getDeviceEventManagement()
+		.listDeviceMeasurementsForIndex(DeviceEventIndex.Area, areas, criteria);
 
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceMeasurements> wrapped = new ArrayList<IDeviceMeasurements>();
@@ -316,8 +317,8 @@ public class Areas extends RestControllerBase {
 	List<UUID> areas = resolveAreaIds(areaToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
 		endDate, response);
-	ISearchResults<IDeviceLocation> results = getDeviceEventManagement().listDeviceLocationsForAreas(areas,
-		criteria);
+	ISearchResults<IDeviceLocation> results = getDeviceEventManagement()
+		.listDeviceLocationsForIndex(DeviceEventIndex.Area, areas, criteria);
 
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceLocation> wrapped = new ArrayList<IDeviceLocation>();
@@ -348,7 +349,8 @@ public class Areas extends RestControllerBase {
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
 		endDate, response);
 	List<UUID> areas = resolveAreaIds(areaToken, true, getDeviceManagement());
-	ISearchResults<IDeviceAlert> results = getDeviceEventManagement().listDeviceAlertsForAreas(areas, criteria);
+	ISearchResults<IDeviceAlert> results = getDeviceEventManagement()
+		.listDeviceAlertsForIndex(DeviceEventIndex.Area, areas, criteria);
 
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceAlert> wrapped = new ArrayList<IDeviceAlert>();
@@ -380,7 +382,7 @@ public class Areas extends RestControllerBase {
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
 		endDate, response);
 	ISearchResults<IDeviceCommandInvocation> results = getDeviceEventManagement()
-		.listDeviceCommandInvocationsForAreas(areas, criteria);
+		.listDeviceCommandInvocationsForIndex(DeviceEventIndex.Area, areas, criteria);
 
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceCommandInvocation> wrapped = new ArrayList<IDeviceCommandInvocation>();
@@ -412,7 +414,7 @@ public class Areas extends RestControllerBase {
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
 		endDate, response);
 	ISearchResults<IDeviceCommandResponse> results = getDeviceEventManagement()
-		.listDeviceCommandResponsesForAreas(areas, criteria);
+		.listDeviceCommandResponsesForIndex(DeviceEventIndex.Area, areas, criteria);
 
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceCommandResponse> wrapped = new ArrayList<IDeviceCommandResponse>();
@@ -443,8 +445,8 @@ public class Areas extends RestControllerBase {
 	List<UUID> areas = resolveAreaIds(areaToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
 		endDate, response);
-	ISearchResults<IDeviceStateChange> results = getDeviceEventManagement().listDeviceStateChangesForAreas(areas,
-		criteria);
+	ISearchResults<IDeviceStateChange> results = getDeviceEventManagement()
+		.listDeviceStateChangesForIndex(DeviceEventIndex.Area, areas, criteria);
 
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceStateChange> wrapped = new ArrayList<IDeviceStateChange>();

@@ -68,6 +68,7 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.charting.IChartSeries;
 import com.sitewhere.spi.device.command.IDeviceCommand;
+import com.sitewhere.spi.device.event.DeviceEventIndex;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -352,8 +353,8 @@ public class Assignments extends RestControllerBase {
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
-	return getDeviceEventManagement()
-		.listDeviceMeasurementsForAssignments(Collections.singletonList(assignment.getId()), criteria);
+	return getDeviceEventManagement().listDeviceMeasurementsForIndex(DeviceEventIndex.Assignment,
+		Collections.singletonList(assignment.getId()), criteria);
     }
 
     /**
@@ -376,8 +377,8 @@ public class Assignments extends RestControllerBase {
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	ISearchResults<IDeviceMeasurements> measurements = getDeviceEventManagement()
-		.listDeviceMeasurementsForAssignments(Collections.singletonList(assignment.getId()), criteria);
+	ISearchResults<IDeviceMeasurements> measurements = getDeviceEventManagement().listDeviceMeasurementsForIndex(
+		DeviceEventIndex.Assignment, Collections.singletonList(assignment.getId()), criteria);
 	ChartBuilder builder = new ChartBuilder();
 	return builder.process(measurements.getResults(), measurementIds);
     }
@@ -421,8 +422,8 @@ public class Assignments extends RestControllerBase {
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return getDeviceEventManagement()
-		.listDeviceLocationsForAssignments(Collections.singletonList(assignment.getId()), criteria);
+	return getDeviceEventManagement().listDeviceLocationsForIndex(DeviceEventIndex.Assignment,
+		Collections.singletonList(assignment.getId()), criteria);
     }
 
     /**
@@ -463,8 +464,8 @@ public class Assignments extends RestControllerBase {
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return getDeviceEventManagement().listDeviceAlertsForAssignments(Collections.singletonList(assignment.getId()),
-		criteria);
+	return getDeviceEventManagement().listDeviceAlertsForIndex(DeviceEventIndex.Assignment,
+		Collections.singletonList(assignment.getId()), criteria);
     }
 
     /**
@@ -727,7 +728,8 @@ public class Assignments extends RestControllerBase {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	ISearchResults<IDeviceCommandInvocation> matches = getDeviceEventManagement()
-		.listDeviceCommandInvocationsForAssignments(Collections.singletonList(assignment.getId()), criteria);
+		.listDeviceCommandInvocationsForIndex(DeviceEventIndex.Assignment,
+			Collections.singletonList(assignment.getId()), criteria);
 	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(getDeviceManagement());
 	helper.setIncludeCommand(includeCommand);
 	List<IDeviceCommandInvocation> converted = new ArrayList<IDeviceCommandInvocation>();
@@ -774,8 +776,8 @@ public class Assignments extends RestControllerBase {
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return getDeviceEventManagement()
-		.listDeviceStateChangesForAssignments(Collections.singletonList(assignment.getId()), criteria);
+	return getDeviceEventManagement().listDeviceStateChangesForIndex(DeviceEventIndex.Assignment,
+		Collections.singletonList(assignment.getId()), criteria);
     }
 
     /**
@@ -816,8 +818,8 @@ public class Assignments extends RestControllerBase {
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return getDeviceEventManagement()
-		.listDeviceCommandResponsesForAssignments(Collections.singletonList(assignment.getId()), criteria);
+	return getDeviceEventManagement().listDeviceCommandResponsesForIndex(DeviceEventIndex.Assignment,
+		Collections.singletonList(assignment.getId()), criteria);
     }
 
     /**

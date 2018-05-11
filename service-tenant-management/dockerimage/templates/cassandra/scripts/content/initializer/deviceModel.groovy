@@ -22,6 +22,43 @@ def randomItem = { items ->
 	items.get((int)(Math.random() * items.size()))
 }
 
+// ################################### //
+// Create Customer Types and Customers //
+// ################################### //
+
+// Construction company type.
+def companyCustomerType = deviceBuilder.newCustomerType 'construction', 'Construction Company'
+companyCustomerType.withDescription 'A company that manages one or more construction areas.' withIcon 'fa-building'
+companyCustomerType = deviceBuilder.persist companyCustomerType
+logger.info "[Create Customer Type] ${companyCustomerType.name}"
+
+// Subcontractor company type.
+def subCustomerType = deviceBuilder.newCustomerType 'subcontractor', 'Subcontractor'
+subCustomerType.withDescription 'A subcontractor that works for a company.' withIcon 'fa-truck'
+subCustomerType = deviceBuilder.persist subCustomerType
+logger.info "[Create Customer Type] ${subCustomerType.name}"
+
+// Acme Construction Company.
+def acmeCustomer = deviceBuilder.newCustomer companyCustomerType.token, null, 'acme', 'ACME Construction Company'
+acmeCustomer.withDescription 'ACME construction company manages many subcontractors and construction sites.'
+acmeCustomer.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/construction.jpg'
+acmeCustomer = deviceBuilder.persist acmeCustomer
+logger.info "[Create Customer] ${acmeCustomer.name}"
+
+// Subcontractor A.
+def subACustomer = deviceBuilder.newCustomer subCustomerType.token, 'acme', 'subA', 'Subcontractor A'
+subACustomer.withDescription 'Subcontractor A manages multiple construction sites.'
+subACustomer.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/construction.jpg'
+subACustomer = deviceBuilder.persist subACustomer
+logger.info "[Create Customer] ${subACustomer.name}"
+
+// Subcontractor B.
+def subBCustomer = deviceBuilder.newCustomer subCustomerType.token, 'acme', 'subB', 'Subcontractor B'
+subBCustomer.withDescription 'Subcontractor B manages multiple construction sites.'
+subBCustomer.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/construction.jpg'
+subBCustomer = deviceBuilder.persist subBCustomer
+logger.info "[Create Customer] ${subBCustomer.name}"
+
 // ################################# //
 // Create Area Types, Areas and Zone //
 // ################################# //
@@ -43,7 +80,11 @@ logger.info "[Create Area Type] ${regionType.name}"
 def seRegion = deviceBuilder.newArea regionType.token, null, 'southeast', 'Southeast Region'
 seRegion.withDescription 'Region including the southeastern portion of the United States.'
 seRegion.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/areas/region-se.jpg'
-seRegion.openStreetMap 34.10469794977326, -84.23966646194458, 15
+seRegion.coord(34.10260138703638, -84.24412965774536) coord(34.101837372446774, -84.24243450164795)
+seRegion.coord(34.101517550337825, -84.24091100692749) coord(34.10154953265732, -84.23856675624847)
+seRegion.coord(34.10153176473365, -84.23575580120087) coord(34.10409030732968, -84.23689305782318)
+seRegion.coord(34.104996439280704, -84.23700034618376) coord(34.10606246444614, -84.23700034618376)
+seRegion.coord(34.107691680235604, -84.23690915107727)
 seRegion = deviceBuilder.persist seRegion
 logger.info "[Create Area] ${seRegion.name}"
 
@@ -53,7 +94,11 @@ ptreeSite.withDescription '''A construction site with many high-value assets tha
 The system provides location tracking for the assets and notifies administrators if any of the assets move 
 outside of the general site area or into areas where they are not allowed.'''
 ptreeSite.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/construction.jpg'
-ptreeSite.openStreetMap 34.10469794977326, -84.23966646194458, 15
+ptreeSite.coord(34.10260138703638, -84.24412965774536) coord(34.101837372446774, -84.24243450164795)
+ptreeSite.coord(34.101517550337825, -84.24091100692749) coord(34.10154953265732, -84.23856675624847)
+ptreeSite.coord(34.10153176473365, -84.23575580120087) coord(34.10409030732968, -84.23689305782318)
+ptreeSite.coord(34.104996439280704, -84.23700034618376) coord(34.10606246444614, -84.23700034618376)
+ptreeSite.coord(34.107691680235604, -84.23690915107727)
 ptreeSite = deviceBuilder.persist ptreeSite
 logger.info "[Create Area] ${ptreeSite.name}"
 
@@ -389,7 +434,7 @@ devicesPerSite.times {
 	logger.info "[Create Device] ${device.token}"
 	
 	// Create an assignment based on device type.
-	def assn = deviceBuilder.newAssignment device.token, assnInfo.areaToken, assnInfo.assetToken
+	def assn = deviceBuilder.newAssignment device.token, acmeCustomer.token, assnInfo.areaToken, assnInfo.assetToken
 	assn = deviceBuilder.persist assn
 	logger.info "[Create Assignment] ${assn.token}"
 	

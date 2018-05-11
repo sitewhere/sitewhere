@@ -11,14 +11,23 @@ import "google/protobuf/timestamp.proto";
 // ### DEVICE EVENTS ###
 // #####################
 
+// Event index types.
+enum GDeviceEventIndex {
+	EVENT_INDEX_ASSIGNMENT = 0;
+	EVENT_INDEX_CUSTOMER = 1;
+	EVENT_INDEX_AREA = 2;
+	EVENT_INDEX_ASSET = 3;
+}
+
 // Base fields for creating a device event.
 message GDeviceEventCreateRequest {
 	GOptionalString alternateId = 1;
-	GOptionalString areaToken = 2;
-	GOptionalString assetToken = 3;
-	google.protobuf.Timestamp eventDate = 4;
-	GOptionalBoolean updateState = 5;
-	map<string, string> metadata = 6;
+	GOptionalString customerToken = 2;
+	GOptionalString areaToken = 3;
+	GOptionalString assetToken = 4;
+	google.protobuf.Timestamp eventDate = 5;
+	GOptionalBoolean updateState = 6;
+	map<string, string> metadata = 7;
 }
 
 // Request data for creating device measurements.
@@ -137,11 +146,12 @@ message GDeviceEvent {
 	GDeviceEventType eventType = 3;
 	GUUID deviceId = 4;
 	GUUID deviceAssignmentId = 5;
-	GUUID areaId = 6;
-	GUUID assetId = 7;
-	google.protobuf.Timestamp eventDate = 8;
-	google.protobuf.Timestamp receivedDate = 9;
-	map<string, string> metadata = 10;
+	GUUID customerId = 6;
+	GUUID areaId = 7;
+	GUUID assetId = 8;
+	google.protobuf.Timestamp eventDate = 9;
+	google.protobuf.Timestamp receivedDate = 10;
+	map<string, string> metadata = 11;
 }
 
 // Measurements event.

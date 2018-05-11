@@ -21,6 +21,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.result.DeleteResult;
+import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.device.microservice.DeviceManagementMicroservice;
 import com.sitewhere.device.persistence.DeviceManagementPersistence;
 import com.sitewhere.mongodb.IMongoConverterLookup;
@@ -997,6 +998,9 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     @Override
     public ISearchResults<IDeviceAssignment> listDeviceAssignments(IDeviceAssignmentSearchCriteria criteria)
 	    throws SiteWhereException {
+	if (getLogger().isDebugEnabled()) {
+	    getLogger().debug("Assignment search criteria:\n\n" + MarshalUtils.marshalJsonAsPrettyString(criteria));
+	}
 	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
 	Document query = new Document();
 	if (criteria.getStatus() != null) {
@@ -1011,7 +1015,7 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	if ((criteria.getAreaIds() != null) && (criteria.getAreaIds().size() > 0)) {
 	    query.append(MongoDeviceAssignment.PROP_AREA_ID, new Document("$in", criteria.getAreaIds()));
 	}
-	if (criteria.getAssetIds() != null) {
+	if ((criteria.getAssetIds() != null) && (criteria.getAssetIds().size() > 0)) {
 	    query.append(MongoDeviceAssignment.PROP_ASSET_ID, new Document("$in", criteria.getAssetIds()));
 	}
 	Document sort = new Document(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);

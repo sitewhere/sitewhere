@@ -41,6 +41,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.event.DeviceEventIndex;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -182,43 +183,20 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceMeasurementsForAssignments(java.util.List,
+     * listDeviceMeasurementsForIndex(com.sitewhere.spi.device.event.
+     * DeviceEventIndex, java.util.List,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForAssignments(List<UUID> assignmentIds,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
+    public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForIndex(DeviceEventIndex index,
+	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
+	PreparedStatement query = getQueryForIndex(index);
+	String queryField = getQueryFieldForIndex(index);
 	Pager<IDeviceMeasurements> pager = new Pager<>(criteria);
 	List<Integer> buckets = getBucketsForDateRange(criteria);
 	for (int bucket : buckets) {
-	    List<ResultSet> perBucket = listResultsForBucket(getClient().getSelectEventsByAssignmentForType(),
-		    "assignmentId", assignmentIds, criteria, DeviceEventType.Measurements, bucket);
-	    List<IDeviceMeasurements> bucketEvents = new ArrayList<>();
-	    for (ResultSet perKey : perBucket) {
-		for (Row row : perKey) {
-		    DeviceMeasurements mxs = new DeviceMeasurements();
-		    CassandraDeviceMeasurements.loadFields(getClient(), mxs, row);
-		    bucketEvents.add(mxs);
-		}
-	    }
-	    addSortedEventsToPager(pager, bucketEvents, bucket);
-	}
-	return new SearchResults<IDeviceMeasurements>(pager.getResults(), pager.getTotal());
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceMeasurementsForAreas(java.util.List,
-     * com.sitewhere.spi.search.IDateRangeSearchCriteria)
-     */
-    @Override
-    public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForAreas(List<UUID> areaIds,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	Pager<IDeviceMeasurements> pager = new Pager<>(criteria);
-	List<Integer> buckets = getBucketsForDateRange(criteria);
-	for (int bucket : buckets) {
-	    List<ResultSet> perBucket = listResultsForBucket(getClient().getSelectEventsByAreaForType(), "areaId",
-		    areaIds, criteria, DeviceEventType.Measurements, bucket);
+	    List<ResultSet> perBucket = listResultsForBucket(query, queryField, entityIds, criteria,
+		    DeviceEventType.Measurements, bucket);
 	    List<IDeviceMeasurements> bucketEvents = new ArrayList<>();
 	    for (ResultSet perKey : perBucket) {
 		for (Row row : perKey) {
@@ -276,43 +254,19 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceLocationsForAssignments(java.util.List,
-     * com.sitewhere.spi.search.IDateRangeSearchCriteria)
+     * listDeviceLocationsForIndex(com.sitewhere.spi.device.event.DeviceEventIndex,
+     * java.util.List, com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceLocation> listDeviceLocationsForAssignments(List<UUID> assignmentIds,
+    public ISearchResults<IDeviceLocation> listDeviceLocationsForIndex(DeviceEventIndex index, List<UUID> entityIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
+	PreparedStatement query = getQueryForIndex(index);
+	String queryField = getQueryFieldForIndex(index);
 	Pager<IDeviceLocation> pager = new Pager<>(criteria);
 	List<Integer> buckets = getBucketsForDateRange(criteria);
 	for (int bucket : buckets) {
-	    List<ResultSet> perBucket = listResultsForBucket(getClient().getSelectEventsByAssignmentForType(),
-		    "assignmentId", assignmentIds, criteria, DeviceEventType.Location, bucket);
-	    List<IDeviceLocation> bucketEvents = new ArrayList<>();
-	    for (ResultSet perKey : perBucket) {
-		for (Row row : perKey) {
-		    DeviceLocation location = new DeviceLocation();
-		    CassandraDeviceLocation.loadFields(getClient(), location, row);
-		    bucketEvents.add(location);
-		}
-	    }
-	    addSortedEventsToPager(pager, bucketEvents, bucket);
-	}
-	return new SearchResults<IDeviceLocation>(pager.getResults(), pager.getTotal());
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceLocationsForAreas(java.util.List,
-     * com.sitewhere.spi.search.IDateRangeSearchCriteria)
-     */
-    @Override
-    public ISearchResults<IDeviceLocation> listDeviceLocationsForAreas(List<UUID> areaIds,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	Pager<IDeviceLocation> pager = new Pager<>(criteria);
-	List<Integer> buckets = getBucketsForDateRange(criteria);
-	for (int bucket : buckets) {
-	    List<ResultSet> perBucket = listResultsForBucket(getClient().getSelectEventsByAreaForType(), "areaId",
-		    areaIds, criteria, DeviceEventType.Location, bucket);
+	    List<ResultSet> perBucket = listResultsForBucket(query, queryField, entityIds, criteria,
+		    DeviceEventType.Location, bucket);
 	    List<IDeviceLocation> bucketEvents = new ArrayList<>();
 	    for (ResultSet perKey : perBucket) {
 		for (Row row : perKey) {
@@ -369,43 +323,19 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceAlertsForAssignments(java.util.List,
-     * com.sitewhere.spi.search.IDateRangeSearchCriteria)
+     * listDeviceAlertsForIndex(com.sitewhere.spi.device.event.DeviceEventIndex,
+     * java.util.List, com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceAlert> listDeviceAlertsForAssignments(List<UUID> assignmentIds,
+    public ISearchResults<IDeviceAlert> listDeviceAlertsForIndex(DeviceEventIndex index, List<UUID> entityIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
+	PreparedStatement query = getQueryForIndex(index);
+	String queryField = getQueryFieldForIndex(index);
 	Pager<IDeviceAlert> pager = new Pager<>(criteria);
 	List<Integer> buckets = getBucketsForDateRange(criteria);
 	for (int bucket : buckets) {
-	    List<ResultSet> perBucket = listResultsForBucket(getClient().getSelectEventsByAssignmentForType(),
-		    "assignmentId", assignmentIds, criteria, DeviceEventType.Alert, bucket);
-	    List<IDeviceAlert> bucketEvents = new ArrayList<>();
-	    for (ResultSet perKey : perBucket) {
-		for (Row row : perKey) {
-		    DeviceAlert alert = new DeviceAlert();
-		    CassandraDeviceAlert.loadFields(getClient(), alert, row);
-		    bucketEvents.add(alert);
-		}
-	    }
-	    addSortedEventsToPager(pager, bucketEvents, bucket);
-	}
-	return new SearchResults<IDeviceAlert>(pager.getResults(), pager.getTotal());
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceAlertsForAreas(java.util.List,
-     * com.sitewhere.spi.search.IDateRangeSearchCriteria)
-     */
-    @Override
-    public ISearchResults<IDeviceAlert> listDeviceAlertsForAreas(List<UUID> areaIds, IDateRangeSearchCriteria criteria)
-	    throws SiteWhereException {
-	Pager<IDeviceAlert> pager = new Pager<>(criteria);
-	List<Integer> buckets = getBucketsForDateRange(criteria);
-	for (int bucket : buckets) {
-	    List<ResultSet> perBucket = listResultsForBucket(getClient().getSelectEventsByAreaForType(), "areaId",
-		    areaIds, criteria, DeviceEventType.Alert, bucket);
+	    List<ResultSet> perBucket = listResultsForBucket(query, queryField, entityIds, criteria,
+		    DeviceEventType.Alert, bucket);
 	    List<IDeviceAlert> bucketEvents = new ArrayList<>();
 	    for (ResultSet perKey : perBucket) {
 		for (Row row : perKey) {
@@ -497,43 +427,20 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandInvocationsForAssignments(java.util.List,
+     * listDeviceCommandInvocationsForIndex(com.sitewhere.spi.device.event.
+     * DeviceEventIndex, java.util.List,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForAssignments(List<UUID> assignmentIds,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
+    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForIndex(DeviceEventIndex index,
+	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
+	PreparedStatement query = getQueryForIndex(index);
+	String queryField = getQueryFieldForIndex(index);
 	Pager<IDeviceCommandInvocation> pager = new Pager<>(criteria);
 	List<Integer> buckets = getBucketsForDateRange(criteria);
 	for (int bucket : buckets) {
-	    List<ResultSet> perBucket = listResultsForBucket(getClient().getSelectEventsByAssignmentForType(),
-		    "assignmentId", assignmentIds, criteria, DeviceEventType.CommandInvocation, bucket);
-	    List<IDeviceCommandInvocation> bucketEvents = new ArrayList<>();
-	    for (ResultSet perKey : perBucket) {
-		for (Row row : perKey) {
-		    DeviceCommandInvocation invocation = new DeviceCommandInvocation();
-		    CassandraDeviceCommandInvocation.loadFields(getClient(), invocation, row);
-		    bucketEvents.add(invocation);
-		}
-	    }
-	    addSortedEventsToPager(pager, bucketEvents, bucket);
-	}
-	return new SearchResults<IDeviceCommandInvocation>(pager.getResults(), pager.getTotal());
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandInvocationsForAreas(java.util.List,
-     * com.sitewhere.spi.search.IDateRangeSearchCriteria)
-     */
-    @Override
-    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForAreas(List<UUID> areaIds,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	Pager<IDeviceCommandInvocation> pager = new Pager<>(criteria);
-	List<Integer> buckets = getBucketsForDateRange(criteria);
-	for (int bucket : buckets) {
-	    List<ResultSet> perBucket = listResultsForBucket(getClient().getSelectEventsByAreaForType(), "areaId",
-		    areaIds, criteria, DeviceEventType.CommandInvocation, bucket);
+	    List<ResultSet> perBucket = listResultsForBucket(query, queryField, entityIds, criteria,
+		    DeviceEventType.CommandInvocation, bucket);
 	    List<IDeviceCommandInvocation> bucketEvents = new ArrayList<>();
 	    for (ResultSet perKey : perBucket) {
 		for (Row row : perKey) {
@@ -601,43 +508,20 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandResponsesForAssignments(java.util.List,
+     * listDeviceCommandResponsesForIndex(com.sitewhere.spi.device.event.
+     * DeviceEventIndex, java.util.List,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForAssignments(List<UUID> assignmentIds,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
+    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForIndex(DeviceEventIndex index,
+	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
+	PreparedStatement query = getQueryForIndex(index);
+	String queryField = getQueryFieldForIndex(index);
 	Pager<IDeviceCommandResponse> pager = new Pager<>(criteria);
 	List<Integer> buckets = getBucketsForDateRange(criteria);
 	for (int bucket : buckets) {
-	    List<ResultSet> perBucket = listResultsForBucket(getClient().getSelectEventsByAssignmentForType(),
-		    "assignmentId", assignmentIds, criteria, DeviceEventType.CommandResponse, bucket);
-	    List<IDeviceCommandResponse> bucketEvents = new ArrayList<>();
-	    for (ResultSet perKey : perBucket) {
-		for (Row row : perKey) {
-		    DeviceCommandResponse response = new DeviceCommandResponse();
-		    CassandraDeviceCommandResponse.loadFields(getClient(), response, row);
-		    bucketEvents.add(response);
-		}
-	    }
-	    addSortedEventsToPager(pager, bucketEvents, bucket);
-	}
-	return new SearchResults<IDeviceCommandResponse>(pager.getResults(), pager.getTotal());
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandResponsesForAreas(java.util.List,
-     * com.sitewhere.spi.search.IDateRangeSearchCriteria)
-     */
-    @Override
-    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForAreas(List<UUID> areaIds,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	Pager<IDeviceCommandResponse> pager = new Pager<>(criteria);
-	List<Integer> buckets = getBucketsForDateRange(criteria);
-	for (int bucket : buckets) {
-	    List<ResultSet> perBucket = listResultsForBucket(getClient().getSelectEventsByAreaForType(), "areaId",
-		    areaIds, criteria, DeviceEventType.CommandResponse, bucket);
+	    List<ResultSet> perBucket = listResultsForBucket(query, queryField, entityIds, criteria,
+		    DeviceEventType.CommandResponse, bucket);
 	    List<IDeviceCommandResponse> bucketEvents = new ArrayList<>();
 	    for (ResultSet perKey : perBucket) {
 		for (Row row : perKey) {
@@ -695,43 +579,20 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceStateChangesForAssignments(java.util.List,
+     * listDeviceStateChangesForIndex(com.sitewhere.spi.device.event.
+     * DeviceEventIndex, java.util.List,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceStateChange> listDeviceStateChangesForAssignments(List<UUID> assignmentIds,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
+    public ISearchResults<IDeviceStateChange> listDeviceStateChangesForIndex(DeviceEventIndex index,
+	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
+	PreparedStatement query = getQueryForIndex(index);
+	String queryField = getQueryFieldForIndex(index);
 	Pager<IDeviceStateChange> pager = new Pager<>(criteria);
 	List<Integer> buckets = getBucketsForDateRange(criteria);
 	for (int bucket : buckets) {
-	    List<ResultSet> perBucket = listResultsForBucket(getClient().getSelectEventsByAssignmentForType(),
-		    "assignmentId", assignmentIds, criteria, DeviceEventType.StateChange, bucket);
-	    List<IDeviceStateChange> bucketEvents = new ArrayList<>();
-	    for (ResultSet perKey : perBucket) {
-		for (Row row : perKey) {
-		    DeviceStateChange response = new DeviceStateChange();
-		    CassandraDeviceStateChange.loadFields(getClient(), response, row);
-		    bucketEvents.add(response);
-		}
-	    }
-	    addSortedEventsToPager(pager, bucketEvents, bucket);
-	}
-	return new SearchResults<IDeviceStateChange>(pager.getResults(), pager.getTotal());
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceStateChangesForAreas(java.util.List,
-     * com.sitewhere.spi.search.IDateRangeSearchCriteria)
-     */
-    @Override
-    public ISearchResults<IDeviceStateChange> listDeviceStateChangesForAreas(List<UUID> areaIds,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	Pager<IDeviceStateChange> pager = new Pager<>(criteria);
-	List<Integer> buckets = getBucketsForDateRange(criteria);
-	for (int bucket : buckets) {
-	    List<ResultSet> perBucket = listResultsForBucket(getClient().getSelectEventsByAreaForType(), "areaId",
-		    areaIds, criteria, DeviceEventType.StateChange, bucket);
+	    List<ResultSet> perBucket = listResultsForBucket(query, queryField, entityIds, criteria,
+		    DeviceEventType.StateChange, bucket);
 	    List<IDeviceStateChange> bucketEvents = new ArrayList<>();
 	    for (ResultSet perKey : perBucket) {
 		for (Row row : perKey) {
@@ -772,6 +633,56 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 		getLogger().error("Failed to persist Cassandra event: " + event.getId(), t);
 	    }
 	}, MoreExecutors.directExecutor());
+    }
+
+    /**
+     * Get query that corresponds to the given event index.
+     * 
+     * @param index
+     * @return
+     * @throws SiteWhereException
+     */
+    protected PreparedStatement getQueryForIndex(DeviceEventIndex index) throws SiteWhereException {
+	switch (index) {
+	case Area: {
+	    return getClient().getSelectEventsByAreaForType();
+	}
+	case Asset: {
+	    throw new SiteWhereException("Indexing by asset not implemented.");
+	}
+	case Assignment: {
+	    return getClient().getSelectEventsByAssignmentForType();
+	}
+	case Customer: {
+	    throw new SiteWhereException("Indexing by customer not implemented.");
+	}
+	}
+	throw new SiteWhereException("Index type not implemented: " + index.name());
+    }
+
+    /**
+     * Get query field that corresponds to index.
+     * 
+     * @param index
+     * @return
+     * @throws SiteWhereException
+     */
+    protected String getQueryFieldForIndex(DeviceEventIndex index) throws SiteWhereException {
+	switch (index) {
+	case Area: {
+	    return "areaId";
+	}
+	case Asset: {
+	    throw new SiteWhereException("Indexing by asset not implemented.");
+	}
+	case Assignment: {
+	    return "assignmentId";
+	}
+	case Customer: {
+	    throw new SiteWhereException("Indexing by customer not implemented.");
+	}
+	}
+	throw new SiteWhereException("Index type not implemented: " + index.name());
     }
 
     /**
