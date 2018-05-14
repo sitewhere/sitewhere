@@ -43,8 +43,17 @@ task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, depends
 	// Copy Spring Boot jar.
 	copyFile("${project.name}-${project.version}-boot.jar", "/")
 
+	if(project.hasProperty("debug")) {
+		println "Generating DEGUB IMAGE for project ${project.name}"
+		exposePort 8081
+	}
+
 	// Run Java command to start application.
-	defaultCommand 'java', '-Xmx768M', '-XX:+UnlockExperimentalVMOptions', '-XX:+UseCGroupMemoryLimitForHeap', '-jar', "/${project.name}-${project.version}-boot.jar"
+	if(!project.hasProperty("debug")) {
+		defaultCommand 'java', '-Xmx768M', '-XX:+UnlockExperimentalVMOptions', '-XX:+UseCGroupMemoryLimitForHeap', '-jar', "/${project.name}-${project.version}-boot.jar"
+	} else {
+		defaultCommand 'java', '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8001', '-Xmx768M', '-XX:+UnlockExperimentalVMOptions', '-XX:+UseCGroupMemoryLimitForHeap', '-jar', "/${project.name}-${project.version}-boot.jar"
+	}
 }
 
 // Copy artifacts to Docker input folder.
@@ -56,7 +65,11 @@ task copyArtifactsToDocker(type: Copy, dependsOn: dockerFile) {
 // Build an image from the Dockerfile.
 task dockerImage(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildImage, dependsOn: copyArtifactsToDocker) {
     inputDir = project.file('build/docker')
-    tag = "${dockerRepository}/sitewhere/${project.name}:${version}"
+ 	if(!project.hasProperty("debug")) {
+	    tag = "${dockerRepository}/sitewhere/${project.name}:${version}"
+	} else {
+	    tag = "${dockerRepository}/sitewhere/${project.name}:debug-${version}"		
+	}
 }
 
 // Push image to remote repository.
