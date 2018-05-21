@@ -36,7 +36,7 @@ public class DeviceManagementApiDemux extends ApiDemux<IDeviceManagementApiChann
      * com.sitewhere.grpc.model.spi.IApiDemux#createApiChannel(java.lang.String)
      */
     @Override
-    public IDeviceManagementApiChannel createApiChannel(String host) throws SiteWhereException {
+    public IDeviceManagementApiChannel<?> createApiChannel(String host) throws SiteWhereException {
 	return new CachedDeviceManagementApiChannel(this, host, getMicroservice().getInstanceSettings().getGrpcPort());
     }
 }

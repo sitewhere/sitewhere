@@ -36,7 +36,7 @@ public class LabelGenerationApiDemux extends ApiDemux<ILabelGenerationApiChannel
      * com.sitewhere.grpc.model.spi.IApiDemux#createApiChannel(java.lang.String)
      */
     @Override
-    public ILabelGenerationApiChannel createApiChannel(String host) throws SiteWhereException {
+    public ILabelGenerationApiChannel<?> createApiChannel(String host) throws SiteWhereException {
 	return new LabelGenerationApiChannel(this, host, getMicroservice().getInstanceSettings().getGrpcPort());
     }
 }

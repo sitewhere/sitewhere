@@ -37,7 +37,7 @@ public class DeviceEventManagementApiDemux extends ApiDemux<IDeviceEventManageme
      * com.sitewhere.grpc.model.spi.IApiDemux#createApiChannel(java.lang.String)
      */
     @Override
-    public IDeviceEventManagementApiChannel createApiChannel(String host) throws SiteWhereException {
+    public IDeviceEventManagementApiChannel<?> createApiChannel(String host) throws SiteWhereException {
 	return new DeviceEventManagementApiChannel(this, host, getMicroservice().getInstanceSettings().getGrpcPort());
     }
 }
