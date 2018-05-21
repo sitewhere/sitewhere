@@ -36,7 +36,7 @@ public class BatchManagementApiDemux extends ApiDemux<IBatchManagementApiChannel
      * com.sitewhere.grpc.model.spi.IApiDemux#createApiChannel(java.lang.String)
      */
     @Override
-    public IBatchManagementApiChannel createApiChannel(String host) throws SiteWhereException {
+    public IBatchManagementApiChannel<?> createApiChannel(String host) throws SiteWhereException {
 	return new BatchManagementApiChannel(this, host, getMicroservice().getInstanceSettings().getGrpcPort());
     }
 }

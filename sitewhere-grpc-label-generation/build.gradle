@@ -36,8 +36,12 @@ protobuf {
 
 apply plugin: 'eclipse'
 eclipse.classpath.file.whenMerged {
-	entries += new org.gradle.plugins.ide.eclipse.model.SourceFolder('src/generated/main/grpc', null)    
-	entries += new org.gradle.plugins.ide.eclipse.model.SourceFolder('src/generated/main/java', null)    
+	def grpc = new org.gradle.plugins.ide.eclipse.model.SourceFolder('src/generated/main/grpc', null)
+	grpc.getEntryAttributes().put("ignore_optional_problems", "true")
+	entries += grpc
+	def gjava = new org.gradle.plugins.ide.eclipse.model.SourceFolder('src/generated/main/java', null)
+	gjava.getEntryAttributes().put("ignore_optional_problems", "true")
+	entries += gjava
 }
 
 // Publish jar.

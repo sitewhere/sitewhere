@@ -34,7 +34,9 @@ protobuf {
 apply plugin: 'eclipse'
 eclipse.classpath.file.whenMerged {
 	entries += new org.gradle.plugins.ide.eclipse.model.SourceFolder('src/main/resources', null)    
-	entries += new org.gradle.plugins.ide.eclipse.model.SourceFolder('src/generated/main/java', null)    
+ 	def generated = new org.gradle.plugins.ide.eclipse.model.SourceFolder('src/generated/main/java', null)
+	generated.getEntryAttributes().put("ignore_optional_problems", "true")
+	entries += generated
 }
 
 // Publish jar.
