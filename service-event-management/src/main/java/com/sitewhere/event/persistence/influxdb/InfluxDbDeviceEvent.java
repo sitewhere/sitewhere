@@ -153,8 +153,8 @@ public class InfluxDbDeviceEvent {
     protected static Query queryEventsOfTypeForIndex(DeviceEventIndex index, DeviceEventType type, List<UUID> entityIds,
 	    ISearchCriteria criteria, String database) throws SiteWhereException {
 	return new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where type='" + type.name()
-		+ "' and " + buildInClause(index, entityIds) + buildDateRangeCriteria(criteria) + " GROUP BY "
-		+ EVENT_ASSIGNMENT + " ORDER BY time DESC" + buildPagingCriteria(criteria), database);
+		+ "' and " + buildInClause(index, entityIds) + buildDateRangeCriteria(criteria) + " ORDER BY time DESC"
+		+ buildPagingCriteria(criteria), database);
     }
 
     /**
@@ -171,9 +171,10 @@ public class InfluxDbDeviceEvent {
      */
     protected static Query queryEventsOfTypeForIndexCount(DeviceEventIndex index, DeviceEventType type,
 	    List<UUID> entityIds, ISearchCriteria criteria, String database) throws SiteWhereException {
-	return new Query("SELECT count(" + EVENT_ID + ") FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS
-		+ " where type='" + type.name() + "' and " + buildInClause(index, entityIds)
-		+ buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_ASSIGNMENT, database);
+	return new Query(
+		"SELECT count(" + EVENT_ID + ") FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where type='"
+			+ type.name() + "' and " + buildInClause(index, entityIds) + buildDateRangeCriteria(criteria),
+		database);
     }
 
     /**
@@ -390,7 +391,9 @@ public class InfluxDbDeviceEvent {
 		map.put(key, value);
 	    }
 	}
-	map.putAll(series.getTags());
+	if (series.getTags() != null) {
+	    map.putAll(series.getTags());
+	}
 	return map;
     }
 
