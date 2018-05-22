@@ -84,7 +84,7 @@ public class NearCacheManager extends LifecycleComponent implements INearCacheMa
 	config.addNearCacheConfig(createNearCacheConfig());
 
 	hazelcastInstance = HazelcastClient.newHazelcastClient(config);
-	getLogger().info("Hazelcast client for near cache started.");
+	getLogger().debug("Hazelcast client for near cache started.");
     }
 
     protected NearCacheConfig createNearCacheConfig() {

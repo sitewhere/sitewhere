@@ -42,6 +42,9 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
     /** Amount of time to wait between check for available API channel */
     private static final int API_CHANNEL_WAIT_INTERVAL_IN_SECS = 3;
 
+    /** Amount of time to wait before logging warnings about missing API channel */
+    private static final int API_CHANNEL_WARN_INTERVAL_IN_SECS = 30;
+
     /** List of API channels */
     private List<T> apiChannels = new ArrayList<>();
 
@@ -107,11 +110,16 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
      */
     @Override
     public T waitForApiChannel() {
+	long deadline = System.currentTimeMillis() + (API_CHANNEL_WARN_INTERVAL_IN_SECS * 1000);
 	while (true) {
 	    try {
 		return getApiChannel();
 	    } catch (ApiChannelNotAvailableException e) {
-		getLogger().info("Waiting for '" + getTargetIdentifier() + "' API channel to become available.");
+		if ((System.currentTimeMillis() - deadline) < 0) {
+		    getLogger().debug("Waiting for '" + getTargetIdentifier() + "' API channel to become available.");
+		} else {
+		    getLogger().warn("Waiting for '" + getTargetIdentifier() + "' API channel to become available.");
+		}
 	    }
 	    try {
 		Thread.sleep(API_CHANNEL_WAIT_INTERVAL_IN_SECS * 1000);
