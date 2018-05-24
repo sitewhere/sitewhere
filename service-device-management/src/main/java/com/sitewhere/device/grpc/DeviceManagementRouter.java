@@ -65,6 +65,472 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * createCustomerType(com.sitewhere.grpc.service.GCreateCustomerTypeRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void createCustomerType(GCreateCustomerTypeRequest request,
+	    StreamObserver<GCreateCustomerTypeResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.createCustomerType(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getCustomerType(com.sitewhere.grpc.service.GGetCustomerTypeRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getCustomerType(GGetCustomerTypeRequest request,
+	    StreamObserver<GGetCustomerTypeResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getCustomerType(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getCustomerTypeByToken(com.sitewhere.grpc.service.
+     * GGetCustomerTypeByTokenRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getCustomerTypeByToken(GGetCustomerTypeByTokenRequest request,
+	    StreamObserver<GGetCustomerTypeByTokenResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getCustomerTypeByToken(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * updateCustomerType(com.sitewhere.grpc.service.GUpdateCustomerTypeRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void updateCustomerType(GUpdateCustomerTypeRequest request,
+	    StreamObserver<GUpdateCustomerTypeResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.updateCustomerType(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listCustomerTypes(com.sitewhere.grpc.service.GListCustomerTypesRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void listCustomerTypes(GListCustomerTypesRequest request,
+	    StreamObserver<GListCustomerTypesResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.listCustomerTypes(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * deleteCustomerType(com.sitewhere.grpc.service.GDeleteCustomerTypeRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void deleteCustomerType(GDeleteCustomerTypeRequest request,
+	    StreamObserver<GDeleteCustomerTypeResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.deleteCustomerType(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * createCustomer(com.sitewhere.grpc.service.GCreateCustomerRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void createCustomer(GCreateCustomerRequest request,
+	    StreamObserver<GCreateCustomerResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.createCustomer(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getCustomer(com.sitewhere.grpc.service.GGetCustomerRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getCustomer(GGetCustomerRequest request, StreamObserver<GGetCustomerResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getCustomer(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getCustomerByToken(com.sitewhere.grpc.service.GGetCustomerByTokenRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getCustomerByToken(GGetCustomerByTokenRequest request,
+	    StreamObserver<GGetCustomerByTokenResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getCustomerByToken(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getCustomerChildren(com.sitewhere.grpc.service.GGetCustomerChildrenRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getCustomerChildren(GGetCustomerChildrenRequest request,
+	    StreamObserver<GGetCustomerChildrenResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getCustomerChildren(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * updateCustomer(com.sitewhere.grpc.service.GUpdateCustomerRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void updateCustomer(GUpdateCustomerRequest request,
+	    StreamObserver<GUpdateCustomerResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.updateCustomer(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listCustomers(com.sitewhere.grpc.service.GListCustomersRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void listCustomers(GListCustomersRequest request, StreamObserver<GListCustomersResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.listCustomers(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * deleteCustomer(com.sitewhere.grpc.service.GDeleteCustomerRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void deleteCustomer(GDeleteCustomerRequest request,
+	    StreamObserver<GDeleteCustomerResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.deleteCustomer(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * createAreaType(com.sitewhere.grpc.service.GCreateAreaTypeRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void createAreaType(GCreateAreaTypeRequest request,
+	    StreamObserver<GCreateAreaTypeResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.createAreaType(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getAreaType(com.sitewhere.grpc.service.GGetAreaTypeRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getAreaType(GGetAreaTypeRequest request, StreamObserver<GGetAreaTypeResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getAreaType(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getAreaTypeByToken(com.sitewhere.grpc.service.GGetAreaTypeByTokenRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getAreaTypeByToken(GGetAreaTypeByTokenRequest request,
+	    StreamObserver<GGetAreaTypeByTokenResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getAreaTypeByToken(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * updateAreaType(com.sitewhere.grpc.service.GUpdateAreaTypeRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void updateAreaType(GUpdateAreaTypeRequest request,
+	    StreamObserver<GUpdateAreaTypeResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.updateAreaType(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listAreaTypes(com.sitewhere.grpc.service.GListAreaTypesRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void listAreaTypes(GListAreaTypesRequest request, StreamObserver<GListAreaTypesResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.listAreaTypes(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * deleteAreaType(com.sitewhere.grpc.service.GDeleteAreaTypeRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void deleteAreaType(GDeleteAreaTypeRequest request,
+	    StreamObserver<GDeleteAreaTypeResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.deleteAreaType(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * createArea(com.sitewhere.grpc.service.GCreateAreaRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void createArea(GCreateAreaRequest request, StreamObserver<GCreateAreaResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.createArea(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getArea(com.sitewhere.grpc.service.GGetAreaRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getArea(GGetAreaRequest request, StreamObserver<GGetAreaResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getArea(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getAreaByToken(com.sitewhere.grpc.service.GGetAreaByTokenRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getAreaByToken(GGetAreaByTokenRequest request,
+	    StreamObserver<GGetAreaByTokenResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getAreaByToken(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getAreaChildren(com.sitewhere.grpc.service.GGetAreaChildrenRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getAreaChildren(GGetAreaChildrenRequest request,
+	    StreamObserver<GGetAreaChildrenResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getAreaChildren(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * updateArea(com.sitewhere.grpc.service.GUpdateAreaRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void updateArea(GUpdateAreaRequest request, StreamObserver<GUpdateAreaResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.updateArea(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listAreas(com.sitewhere.grpc.service.GListAreasRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void listAreas(GListAreasRequest request, StreamObserver<GListAreasResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.listAreas(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * deleteArea(com.sitewhere.grpc.service.GDeleteAreaRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void deleteArea(GDeleteAreaRequest request, StreamObserver<GDeleteAreaResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.deleteArea(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * createZone(com.sitewhere.grpc.service.GCreateZoneRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void createZone(GCreateZoneRequest request, StreamObserver<GCreateZoneResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.createZone(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getZone(com.sitewhere.grpc.service.GGetZoneRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getZone(GGetZoneRequest request, StreamObserver<GGetZoneResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getZone(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getZoneByToken(com.sitewhere.grpc.service.GGetZoneByTokenRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getZoneByToken(GGetZoneByTokenRequest request,
+	    StreamObserver<GGetZoneByTokenResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getZoneByToken(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * updateZone(com.sitewhere.grpc.service.GUpdateZoneRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void updateZone(GUpdateZoneRequest request, StreamObserver<GUpdateZoneResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.updateZone(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listZones(com.sitewhere.grpc.service.GListZonesRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void listZones(GListZonesRequest request, StreamObserver<GListZonesResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.listZones(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * deleteZone(com.sitewhere.grpc.service.GDeleteZoneRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void deleteZone(GDeleteZoneRequest request, StreamObserver<GDeleteZoneResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.deleteZone(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
      * createDeviceType(com.sitewhere.grpc.service.GCreateDeviceTypeRequest,
      * io.grpc.stub.StreamObserver)
      */
@@ -743,279 +1209,6 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
 	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
 	if (engine != null) {
 	    engine.listDeviceStreams(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * createAreaType(com.sitewhere.grpc.service.GCreateAreaTypeRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void createAreaType(GCreateAreaTypeRequest request,
-	    StreamObserver<GCreateAreaTypeResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.createAreaType(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getAreaType(com.sitewhere.grpc.service.GGetAreaTypeRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getAreaType(GGetAreaTypeRequest request, StreamObserver<GGetAreaTypeResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getAreaType(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getAreaTypeByToken(com.sitewhere.grpc.service.GGetAreaTypeByTokenRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getAreaTypeByToken(GGetAreaTypeByTokenRequest request,
-	    StreamObserver<GGetAreaTypeByTokenResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getAreaTypeByToken(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * updateAreaType(com.sitewhere.grpc.service.GUpdateAreaTypeRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void updateAreaType(GUpdateAreaTypeRequest request,
-	    StreamObserver<GUpdateAreaTypeResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.updateAreaType(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * listAreaTypes(com.sitewhere.grpc.service.GListAreaTypesRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void listAreaTypes(GListAreaTypesRequest request, StreamObserver<GListAreaTypesResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listAreaTypes(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * deleteAreaType(com.sitewhere.grpc.service.GDeleteAreaTypeRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void deleteAreaType(GDeleteAreaTypeRequest request,
-	    StreamObserver<GDeleteAreaTypeResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.deleteAreaType(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * createArea(com.sitewhere.grpc.service.GCreateAreaRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void createArea(GCreateAreaRequest request, StreamObserver<GCreateAreaResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.createArea(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getArea(com.sitewhere.grpc.service.GGetAreaRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getArea(GGetAreaRequest request, StreamObserver<GGetAreaResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getArea(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getAreaByToken(com.sitewhere.grpc.service.GGetAreaByTokenRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getAreaByToken(GGetAreaByTokenRequest request,
-	    StreamObserver<GGetAreaByTokenResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getAreaByToken(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getAreaChildren(com.sitewhere.grpc.service.GGetAreaChildrenRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getAreaChildren(GGetAreaChildrenRequest request,
-	    StreamObserver<GGetAreaChildrenResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getAreaChildren(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * updateArea(com.sitewhere.grpc.service.GUpdateAreaRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void updateArea(GUpdateAreaRequest request, StreamObserver<GUpdateAreaResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.updateArea(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * listAreas(com.sitewhere.grpc.service.GListAreasRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void listAreas(GListAreasRequest request, StreamObserver<GListAreasResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listAreas(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * deleteArea(com.sitewhere.grpc.service.GDeleteAreaRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void deleteArea(GDeleteAreaRequest request, StreamObserver<GDeleteAreaResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.deleteArea(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * createZone(com.sitewhere.grpc.service.GCreateZoneRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void createZone(GCreateZoneRequest request, StreamObserver<GCreateZoneResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.createZone(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getZone(com.sitewhere.grpc.service.GGetZoneRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getZone(GGetZoneRequest request, StreamObserver<GGetZoneResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getZone(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getZoneByToken(com.sitewhere.grpc.service.GGetZoneByTokenRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getZoneByToken(GGetZoneByTokenRequest request,
-	    StreamObserver<GGetZoneByTokenResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getZoneByToken(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * updateZone(com.sitewhere.grpc.service.GUpdateZoneRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void updateZone(GUpdateZoneRequest request, StreamObserver<GUpdateZoneResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.updateZone(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * listZones(com.sitewhere.grpc.service.GListZonesRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void listZones(GListZonesRequest request, StreamObserver<GListZonesResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listZones(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * deleteZone(com.sitewhere.grpc.service.GDeleteZoneRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void deleteZone(GDeleteZoneRequest request, StreamObserver<GDeleteZoneResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.deleteZone(request, responseObserver);
 	}
     }
 
