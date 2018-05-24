@@ -5,7 +5,6 @@ package com.sitewhere.grpc.model;
 option java_outer_classname = "UserModel";
 
 import "sitewhere-common.proto";
-import "google/protobuf/timestamp.proto";
 
 // #############
 // ### USERS ###
@@ -33,7 +32,7 @@ message GUser {
 	string hashedPassword = 2;
 	string firstName = 3;
 	string lastName = 4;
-	google.protobuf.Timestamp lastLogin = 5;
+	uint64 lastLogin = 5;
 	GUserAccountStatus status = 6;
 	repeated string authorities = 7;
 	map<string, string> metadata = 8;

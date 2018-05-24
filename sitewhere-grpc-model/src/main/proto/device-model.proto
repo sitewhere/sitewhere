@@ -5,7 +5,6 @@ package com.sitewhere.grpc.model;
 option java_outer_classname = "DeviceModel";
 
 import "sitewhere-common.proto";
-import "google/protobuf/timestamp.proto";
 
 // ####################
 // ### DEVICE TYPES ###
@@ -172,8 +171,8 @@ message GDeviceSearchCriteria {
 	GOptionalBoolean includeDeleted = 1;
 	GDeviceTypeReference deviceType = 2;
 	GOptionalBoolean excludeAssigned = 4;
-	google.protobuf.Timestamp createdAfter = 5;
-	google.protobuf.Timestamp createdBefore = 6;
+	uint64 createdAfter = 5;
+	uint64 createdBefore = 6;
 	GPaging paging = 7;
 }
 
@@ -309,8 +308,8 @@ message GDeviceAssignment {
 	GUUID areaId = 5;
 	GUUID assetId = 6;
 	GDeviceAssignmentStatus status = 7;
-	google.protobuf.Timestamp activeDate = 8;
-	google.protobuf.Timestamp releasedDate = 9;
+	uint64 activeDate = 8;
+	uint64 releasedDate = 9;
 	map<string, string> metadata = 10;
 	GEntityInformation entityInformation = 11;
 }

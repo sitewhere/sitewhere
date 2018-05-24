@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import com.google.protobuf.Timestamp;
 import com.sitewhere.grpc.model.CommonModel;
 import com.sitewhere.grpc.model.CommonModel.GDateRangeSearchCriteria;
 import com.sitewhere.grpc.model.CommonModel.GEntityInformation;
@@ -39,34 +38,31 @@ import com.sitewhere.spi.search.ISearchCriteria;
 public class CommonModelConverter {
 
     /**
-     * Convert date to GRPC value.
-     * 
-     * @param date
-     * @return
-     * @throws SiteWhereException
-     */
-    public static Timestamp asGrpcTimestamp(Date date) throws SiteWhereException {
-	if (date == null) {
-	    return null;
-	}
-	Timestamp.Builder grpc = Timestamp.newBuilder();
-	long millis = date.getTime();
-	grpc.setSeconds(millis / 1000);
-	grpc.setNanos((int) (millis % 1000) * 1000000);
-	return grpc.build();
-    }
-
-    /**
      * Convert GRPC timestamp to date.
      * 
      * @param grpc
      * @return
      * @throws SiteWhereException
      */
-    public static Date asDate(Timestamp grpc) throws SiteWhereException {
-	long millis = grpc.getSeconds() * 1000;
-	millis += (grpc.getNanos() / 1000);
-	return new Date(millis);
+    public static Date asApiDate(long grpc) throws SiteWhereException {
+	if (grpc == 0) {
+	    return null;
+	}
+	return new Date(grpc);
+    }
+
+    /**
+     * Convert date to GRPC value.
+     * 
+     * @param date
+     * @return
+     * @throws SiteWhereException
+     */
+    public static long asGrpcDate(Date date) throws SiteWhereException {
+	if (date == null) {
+	    return 0;
+	}
+	return date.getTime();
     }
 
     /**
@@ -155,8 +151,8 @@ public class CommonModelConverter {
      */
     public static DateRangeSearchCriteria asDateRangeSearchCriteria(GDateRangeSearchCriteria grpc)
 	    throws SiteWhereException {
-	Date startDate = grpc.hasStartDate() ? CommonModelConverter.asDate(grpc.getStartDate()) : null;
-	Date endDate = grpc.hasEndDate() ? CommonModelConverter.asDate(grpc.getEndDate()) : null;
+	Date startDate = CommonModelConverter.asApiDate(grpc.getStartDate());
+	Date endDate = CommonModelConverter.asApiDate(grpc.getEndDate());
 	return new DateRangeSearchCriteria(grpc.getPageNumber(), grpc.getPageSize(), startDate, endDate);
     }
 
@@ -172,12 +168,8 @@ public class CommonModelConverter {
 	GDateRangeSearchCriteria.Builder grpc = GDateRangeSearchCriteria.newBuilder();
 	grpc.setPageNumber(api.getPageNumber());
 	grpc.setPageSize(api.getPageSize());
-	if (api.getStartDate() != null) {
-	    grpc.setStartDate(CommonModelConverter.asGrpcTimestamp(api.getStartDate()));
-	}
-	if (api.getEndDate() != null) {
-	    grpc.setEndDate(CommonModelConverter.asGrpcTimestamp(api.getEndDate()));
-	}
+	grpc.setStartDate(CommonModelConverter.asGrpcDate(api.getStartDate()));
+	grpc.setEndDate(CommonModelConverter.asGrpcDate(api.getEndDate()));
 	return grpc.build();
     }
 
@@ -209,17 +201,13 @@ public class CommonModelConverter {
 	    ref.setUsername(api.getCreatedBy());
 	    grpc.setCreatedBy(ref);
 	}
-	if (api.getCreatedDate() != null) {
-	    grpc.setCreatedDate(CommonModelConverter.asGrpcTimestamp(api.getCreatedDate()));
-	}
+	grpc.setCreatedDate(CommonModelConverter.asGrpcDate(api.getCreatedDate()));
 	if (api.getUpdatedBy() != null) {
 	    GUserReference.Builder ref = GUserReference.newBuilder();
 	    ref.setUsername(api.getUpdatedBy());
 	    grpc.setUpdatedBy(ref);
 	}
-	if (api.getUpdatedDate() != null) {
-	    grpc.setUpdatedDate(CommonModelConverter.asGrpcTimestamp(api.getUpdatedDate()));
-	}
+	grpc.setUpdatedDate(CommonModelConverter.asGrpcDate(api.getUpdatedDate()));
 	grpc.setDeleted(api.isDeleted());
 	return grpc.build();
     }
@@ -235,9 +223,9 @@ public class CommonModelConverter {
 	    throws SiteWhereException {
 	if (grpc != null) {
 	    api.setCreatedBy(grpc.hasCreatedBy() ? grpc.getCreatedBy().getUsername() : null);
-	    api.setCreatedDate(grpc.hasCreatedDate() ? CommonModelConverter.asDate(grpc.getCreatedDate()) : null);
+	    api.setCreatedDate(CommonModelConverter.asApiDate(grpc.getCreatedDate()));
 	    api.setUpdatedBy(grpc.hasUpdatedBy() ? grpc.getUpdatedBy().getUsername() : null);
-	    api.setUpdatedDate(grpc.hasUpdatedDate() ? CommonModelConverter.asDate(grpc.getUpdatedDate()) : null);
+	    api.setUpdatedDate(CommonModelConverter.asApiDate(grpc.getUpdatedDate()));
 	    api.setDeleted(grpc.getDeleted());
 	}
     }

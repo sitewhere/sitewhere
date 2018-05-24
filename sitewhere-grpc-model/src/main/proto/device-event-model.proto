@@ -5,7 +5,6 @@ package com.sitewhere.grpc.model;
 option java_outer_classname = "DeviceEventModel";
 
 import "sitewhere-common.proto";
-import "google/protobuf/timestamp.proto";
 
 // #####################
 // ### DEVICE EVENTS ###
@@ -25,7 +24,7 @@ message GDeviceEventCreateRequest {
 	GOptionalString customerToken = 2;
 	GOptionalString areaToken = 3;
 	GOptionalString assetToken = 4;
-	google.protobuf.Timestamp eventDate = 5;
+	uint64 eventDate = 5;
 	GOptionalBoolean updateState = 6;
 	map<string, string> metadata = 7;
 }
@@ -149,8 +148,8 @@ message GDeviceEvent {
 	GUUID customerId = 6;
 	GUUID areaId = 7;
 	GUUID assetId = 8;
-	google.protobuf.Timestamp eventDate = 9;
-	google.protobuf.Timestamp receivedDate = 10;
+	uint64 eventDate = 9;
+	uint64 receivedDate = 10;
 	map<string, string> metadata = 11;
 }
 

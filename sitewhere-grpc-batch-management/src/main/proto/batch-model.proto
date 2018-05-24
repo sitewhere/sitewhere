@@ -5,7 +5,6 @@ package com.sitewhere.grpc.model;
 option java_outer_classname = "BatchModel";
 
 import "sitewhere-common.proto";
-import "google/protobuf/timestamp.proto";
 
 // ########################
 // ### BATCH OPERATIONS ###
@@ -39,8 +38,8 @@ message GBatchCommandInvocationCreateRequest {
 // Batch operation update request.
 message GBatchOperationUpdateRequest {
 	GBatchOperationStatus processingStatus = 1;
-	google.protobuf.Timestamp processingStartedDate = 2;
-	google.protobuf.Timestamp processingEndedDate = 3;
+	uint64 processingStartedDate = 2;
+	uint64 processingEndedDate = 3;
 	map<string, string> metadata = 4;
 }
 
@@ -63,8 +62,8 @@ message GBatchOperation {
 	string operationType = 3;
 	map<string, string> parameters = 4;
 	GBatchOperationStatus processingStatus = 5;
-	google.protobuf.Timestamp processingStartedDate = 6;
-	google.protobuf.Timestamp processingEndedDate = 7;
+	uint64 processingStartedDate = 6;
+	uint64 processingEndedDate = 7;
 	map<string, string> metadata = 8;
 	GEntityInformation entityInformation = 9;
 }
@@ -84,7 +83,7 @@ enum GElementProcessingStatus {
 // Batch element update request.
 message GBatchOperationElementUpdateRequest {
 	GElementProcessingStatus processingStatus = 1;
-	google.protobuf.Timestamp processedDate = 2;
+	uint64 processedDate = 2;
 	map<string, string> metadata = 3;
 }
 
@@ -106,6 +105,6 @@ message GBatchOperationElement {
 	GUUID batchOperationId = 2;
 	GUUID deviceId = 3;
 	GElementProcessingStatus processingStatus = 4;
-	google.protobuf.Timestamp processedDate = 5;
+	uint64 processedDate = 5;
 	map<string, string> metadata = 6;
 }

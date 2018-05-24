@@ -4,8 +4,6 @@ package com.sitewhere.grpc.model;
 
 option java_outer_classname = "CommonModel";
 
-import "google/protobuf/timestamp.proto";
-
 // #######################
 // ### OPTIONAL FIELDS ###
 // #######################
@@ -40,9 +38,9 @@ message GUUID {
 
 // Common entity information.
 message GEntityInformation {
-	google.protobuf.Timestamp createdDate = 1;
+	uint64 createdDate = 1;
 	GUserReference createdBy = 2;
-	google.protobuf.Timestamp updatedDate = 3;
+	uint64 updatedDate = 3;
 	GUserReference updatedBy = 4;
 	bool deleted = 5;
 }
@@ -55,8 +53,8 @@ message GPaging {
 
 // Search criteria that includes a date range.
 message GDateRangeSearchCriteria {
-	google.protobuf.Timestamp startDate = 1;
-	google.protobuf.Timestamp endDate = 2;
+	uint64 startDate = 1;
+	uint64 endDate = 2;
 	int32 pageNumber = 3;
 	int32 pageSize = 4;
 }

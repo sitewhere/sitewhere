@@ -94,8 +94,8 @@ public class ScheduleModelConverter {
 	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
 	api.setName(grpc.hasName() ? grpc.getName().getValue() : null);
 	api.setTriggerType(ScheduleModelConverter.asApiTriggerType(grpc.getTriggerType()));
-	api.setStartDate(grpc.hasStartDate() ? CommonModelConverter.asDate(grpc.getStartDate()) : null);
-	api.setEndDate(grpc.hasEndDate() ? CommonModelConverter.asDate(grpc.getEndDate()) : null);
+	api.setStartDate(CommonModelConverter.asApiDate(grpc.getStartDate()));
+	api.setEndDate(CommonModelConverter.asApiDate(grpc.getEndDate()));
 	api.setTriggerConfiguration(grpc.getTriggerConfigurationMap());
 	api.setMetadata(grpc.getMetadataMap());
 	return api;
@@ -118,12 +118,8 @@ public class ScheduleModelConverter {
 	    grpc.setName(GOptionalString.newBuilder().setValue(api.getName()));
 	}
 	grpc.setTriggerType(ScheduleModelConverter.asGrpcTriggerType(api.getTriggerType()));
-	if (api.getStartDate() != null) {
-	    grpc.setStartDate(CommonModelConverter.asGrpcTimestamp(api.getStartDate()));
-	}
-	if (api.getEndDate() != null) {
-	    grpc.setEndDate(CommonModelConverter.asGrpcTimestamp(api.getEndDate()));
-	}
+	grpc.setStartDate(CommonModelConverter.asGrpcDate(api.getStartDate()));
+	grpc.setEndDate(CommonModelConverter.asGrpcDate(api.getEndDate()));
 	grpc.putAllTriggerConfiguration(api.getTriggerConfiguration());
 	grpc.putAllMetadata(api.getMetadata());
 	return grpc.build();
@@ -182,8 +178,8 @@ public class ScheduleModelConverter {
 	api.setToken(grpc.getToken());
 	api.setName(grpc.getName());
 	api.setTriggerType(ScheduleModelConverter.asApiTriggerType(grpc.getTriggerType()));
-	api.setStartDate(grpc.hasStartDate() ? CommonModelConverter.asDate(grpc.getStartDate()) : null);
-	api.setEndDate(grpc.hasEndDate() ? CommonModelConverter.asDate(grpc.getEndDate()) : null);
+	api.setStartDate(CommonModelConverter.asApiDate(grpc.getStartDate()));
+	api.setEndDate(CommonModelConverter.asApiDate(grpc.getEndDate()));
 	api.setTriggerConfiguration(grpc.getTriggerConfigurationMap());
 	api.setMetadata(grpc.getMetadataMap());
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
@@ -203,12 +199,8 @@ public class ScheduleModelConverter {
 	grpc.setToken(api.getToken());
 	grpc.setName(api.getName());
 	grpc.setTriggerType(ScheduleModelConverter.asGrpcTriggerType(api.getTriggerType()));
-	if (api.getStartDate() != null) {
-	    grpc.setStartDate(CommonModelConverter.asGrpcTimestamp(api.getStartDate()));
-	}
-	if (api.getEndDate() != null) {
-	    grpc.setEndDate(CommonModelConverter.asGrpcTimestamp(api.getEndDate()));
-	}
+	grpc.setStartDate(CommonModelConverter.asGrpcDate(api.getStartDate()));
+	grpc.setEndDate(CommonModelConverter.asGrpcDate(api.getEndDate()));
 	grpc.putAllTriggerConfiguration(api.getTriggerConfiguration());
 	grpc.putAllMetadata(api.getMetadata());
 	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));

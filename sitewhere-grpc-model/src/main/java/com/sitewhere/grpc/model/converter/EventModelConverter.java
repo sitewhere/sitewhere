@@ -124,7 +124,7 @@ public class EventModelConverter {
     public static void copyApiDeviceEventCreateRequest(GDeviceEventCreateRequest grpc, DeviceEventCreateRequest api)
 	    throws SiteWhereException {
 	api.setAlternateId(grpc.hasAlternateId() ? grpc.getAlternateId().getValue() : null);
-	api.setEventDate(grpc.hasEventDate() ? CommonModelConverter.asDate(grpc.getEventDate()) : null);
+	api.setEventDate(CommonModelConverter.asApiDate(grpc.getEventDate()));
 	api.setUpdateState(grpc.hasUpdateState() ? grpc.getUpdateState().getValue() : false);
 	api.setMetadata(grpc.getMetadataMap());
     }
@@ -156,9 +156,7 @@ public class EventModelConverter {
 	if (api.getAlternateId() != null) {
 	    grpc.setAlternateId(GOptionalString.newBuilder().setValue(api.getAlternateId()).build());
 	}
-	if (api.getEventDate() != null) {
-	    grpc.setEventDate(CommonModelConverter.asGrpcTimestamp(api.getEventDate()));
-	}
+	grpc.setEventDate(CommonModelConverter.asGrpcDate(api.getEventDate()));
 	if (api.isUpdateState()) {
 	    grpc.setUpdateState(GOptionalBoolean.newBuilder().setValue(true).build());
 	}
@@ -301,8 +299,8 @@ public class EventModelConverter {
 	api.setDeviceAssignmentId(CommonModelConverter.asApiUuid(grpc.getDeviceAssignmentId()));
 	api.setAreaId(CommonModelConverter.asApiUuid(grpc.getAreaId()));
 	api.setAssetId(CommonModelConverter.asApiUuid(grpc.getAssetId()));
-	api.setEventDate(grpc.hasEventDate() ? CommonModelConverter.asDate(grpc.getEventDate()) : null);
-	api.setReceivedDate(grpc.hasReceivedDate() ? CommonModelConverter.asDate(grpc.getReceivedDate()) : null);
+	api.setEventDate(CommonModelConverter.asApiDate(grpc.getEventDate()));
+	api.setReceivedDate(CommonModelConverter.asApiDate(grpc.getReceivedDate()));
 	api.setMetadata(grpc.getMetadataMap());
     }
 
@@ -328,12 +326,8 @@ public class EventModelConverter {
 	if (api.getAssetId() != null) {
 	    grpc.setAssetId(CommonModelConverter.asGrpcUuid(api.getAssetId()));
 	}
-	if (api.getEventDate() != null) {
-	    grpc.setEventDate(CommonModelConverter.asGrpcTimestamp(api.getEventDate()));
-	}
-	if (api.getReceivedDate() != null) {
-	    grpc.setReceivedDate(CommonModelConverter.asGrpcTimestamp(api.getReceivedDate()));
-	}
+	grpc.setEventDate(CommonModelConverter.asGrpcDate(api.getEventDate()));
+	grpc.setReceivedDate(CommonModelConverter.asGrpcDate(api.getReceivedDate()));
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
 	}

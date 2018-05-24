@@ -8,8 +8,11 @@
 package com.sitewhere.rest.model.datatype;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -43,7 +46,7 @@ public class JsonDateSerializer extends JsonSerializer<Date> {
      * @return
      */
     public static final String serialize(Date value) {
-	SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-	return formatter.format(value);
+	DateTimeFormatter formatter = ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
+	return formatter.print(value.getTime());
     }
 }

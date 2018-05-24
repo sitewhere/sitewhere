@@ -1069,8 +1069,8 @@ public class DeviceModelConverter {
     public static DeviceSearchCriteria asApiDeviceSearchCriteria(GDeviceSearchCriteria grpc) throws SiteWhereException {
 	int pageNumber = grpc.hasPaging() ? grpc.getPaging().getPageNumber() : 1;
 	int pageSize = grpc.hasPaging() ? grpc.getPaging().getPageSize() : 0;
-	Date createdAfter = grpc.hasCreatedAfter() ? CommonModelConverter.asDate(grpc.getCreatedAfter()) : null;
-	Date createdBefore = grpc.hasCreatedBefore() ? CommonModelConverter.asDate(grpc.getCreatedBefore()) : null;
+	Date createdAfter = CommonModelConverter.asApiDate(grpc.getCreatedAfter());
+	Date createdBefore = CommonModelConverter.asApiDate(grpc.getCreatedBefore());
 	DeviceSearchCriteria api = new DeviceSearchCriteria(pageNumber, pageSize, createdAfter, createdBefore);
 	api.setExcludeAssigned(grpc.hasExcludeAssigned() ? grpc.getExcludeAssigned().getValue() : false);
 	api.setDeviceTypeToken(grpc.hasDeviceType() ? grpc.getDeviceType().getToken() : null);
@@ -1091,12 +1091,8 @@ public class DeviceModelConverter {
 	if (api.getDeviceTypeToken() != null) {
 	    grpc.setDeviceType(GDeviceTypeReference.newBuilder().setToken(api.getDeviceTypeToken()).build());
 	}
-	if (api.getStartDate() != null) {
-	    grpc.setCreatedAfter(CommonModelConverter.asGrpcTimestamp(api.getStartDate()));
-	}
-	if (api.getEndDate() != null) {
-	    grpc.setCreatedBefore(CommonModelConverter.asGrpcTimestamp(api.getEndDate()));
-	}
+	grpc.setCreatedAfter(CommonModelConverter.asGrpcDate(api.getStartDate()));
+	grpc.setCreatedBefore(CommonModelConverter.asGrpcDate(api.getEndDate()));
 	if (api.isExcludeAssigned()) {
 	    grpc.setExcludeAssigned(GOptionalBoolean.newBuilder().setValue(true));
 	}
@@ -1570,12 +1566,8 @@ public class DeviceModelConverter {
 	api.setCustomerId(grpc.hasCustomerId() ? CommonModelConverter.asApiUuid(grpc.getCustomerId()) : null);
 	api.setAreaId(grpc.hasAreaId() ? CommonModelConverter.asApiUuid(grpc.getAreaId()) : null);
 	api.setAssetId(grpc.hasAssetId() ? CommonModelConverter.asApiUuid(grpc.getAssetId()) : null);
-	if (grpc.hasActiveDate()) {
-	    api.setActiveDate(CommonModelConverter.asDate(grpc.getActiveDate()));
-	}
-	if (grpc.hasReleasedDate()) {
-	    api.setReleasedDate(CommonModelConverter.asDate(grpc.getReleasedDate()));
-	}
+	api.setActiveDate(CommonModelConverter.asApiDate(grpc.getActiveDate()));
+	api.setReleasedDate(CommonModelConverter.asApiDate(grpc.getReleasedDate()));
 	api.setMetadata(grpc.getMetadataMap());
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
 	return api;
@@ -1600,12 +1592,8 @@ public class DeviceModelConverter {
 	if (api.getAssetId() != null) {
 	    grpc.setAssetId(CommonModelConverter.asGrpcUuid(api.getAssetId()));
 	}
-	if (api.getActiveDate() != null) {
-	    grpc.setActiveDate(CommonModelConverter.asGrpcTimestamp(api.getActiveDate()));
-	}
-	if (api.getReleasedDate() != null) {
-	    grpc.setReleasedDate(CommonModelConverter.asGrpcTimestamp(api.getReleasedDate()));
-	}
+	grpc.setActiveDate(CommonModelConverter.asGrpcDate(api.getActiveDate()));
+	grpc.setReleasedDate(CommonModelConverter.asGrpcDate(api.getReleasedDate()));
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
 	}

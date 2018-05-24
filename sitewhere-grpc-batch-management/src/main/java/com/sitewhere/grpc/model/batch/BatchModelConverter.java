@@ -183,10 +183,8 @@ public class BatchModelConverter {
 	    throws SiteWhereException {
 	BatchOperationUpdateRequest api = new BatchOperationUpdateRequest();
 	api.setProcessingStatus(BatchModelConverter.asApiBatchOperationStatus(grpc.getProcessingStatus()));
-	api.setProcessingStartedDate(
-		grpc.hasProcessingStartedDate() ? CommonModelConverter.asDate(grpc.getProcessingStartedDate()) : null);
-	api.setProcessingEndedDate(
-		grpc.hasProcessingEndedDate() ? CommonModelConverter.asDate(grpc.getProcessingEndedDate()) : null);
+	api.setProcessingStartedDate(CommonModelConverter.asApiDate(grpc.getProcessingStartedDate()));
+	api.setProcessingEndedDate(CommonModelConverter.asApiDate(grpc.getProcessingEndedDate()));
 	api.setMetadata(grpc.getMetadataMap());
 	return api;
     }
@@ -202,12 +200,8 @@ public class BatchModelConverter {
 	    throws SiteWhereException {
 	GBatchOperationUpdateRequest.Builder grpc = GBatchOperationUpdateRequest.newBuilder();
 	grpc.setProcessingStatus(BatchModelConverter.asGrpcBatchOperationStatus(api.getProcessingStatus()));
-	if (api.getProcessingStartedDate() != null) {
-	    grpc.setProcessingStartedDate(CommonModelConverter.asGrpcTimestamp(api.getProcessingStartedDate()));
-	}
-	if (api.getProcessingEndedDate() != null) {
-	    grpc.setProcessingEndedDate(CommonModelConverter.asGrpcTimestamp(api.getProcessingEndedDate()));
-	}
+	grpc.setProcessingStartedDate(CommonModelConverter.asGrpcDate(api.getProcessingStartedDate()));
+	grpc.setProcessingEndedDate(CommonModelConverter.asGrpcDate(api.getProcessingEndedDate()));
 	grpc.putAllMetadata(api.getMetadata());
 	return grpc.build();
     }
@@ -275,10 +269,8 @@ public class BatchModelConverter {
 	api.setParameters(grpc.getParametersMap());
 	api.setMetadata(grpc.getMetadataMap());
 	api.setProcessingStatus(BatchModelConverter.asApiBatchOperationStatus(grpc.getProcessingStatus()));
-	api.setProcessingStartedDate(
-		grpc.hasProcessingStartedDate() ? CommonModelConverter.asDate(grpc.getProcessingStartedDate()) : null);
-	api.setProcessingEndedDate(
-		grpc.hasProcessingEndedDate() ? CommonModelConverter.asDate(grpc.getProcessingEndedDate()) : null);
+	api.setProcessingStartedDate(CommonModelConverter.asApiDate(grpc.getProcessingStartedDate()));
+	api.setProcessingEndedDate(CommonModelConverter.asApiDate(grpc.getProcessingEndedDate()));
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
 	return api;
     }
@@ -298,12 +290,8 @@ public class BatchModelConverter {
 	grpc.putAllParameters(api.getParameters());
 	grpc.putAllMetadata(api.getMetadata());
 	grpc.setProcessingStatus(BatchModelConverter.asGrpcBatchOperationStatus(api.getProcessingStatus()));
-	if (api.getProcessingStartedDate() != null) {
-	    grpc.setProcessingStartedDate(CommonModelConverter.asGrpcTimestamp(api.getProcessingStartedDate()));
-	}
-	if (api.getProcessingEndedDate() != null) {
-	    grpc.setProcessingEndedDate(CommonModelConverter.asGrpcTimestamp(api.getProcessingEndedDate()));
-	}
+	grpc.setProcessingStartedDate(CommonModelConverter.asGrpcDate(api.getProcessingStartedDate()));
+	grpc.setProcessingEndedDate(CommonModelConverter.asGrpcDate(api.getProcessingEndedDate()));
 	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
 	return grpc.build();
     }
@@ -371,7 +359,7 @@ public class BatchModelConverter {
 	    throws SiteWhereException {
 	BatchElementUpdateRequest api = new BatchElementUpdateRequest();
 	api.setProcessingStatus(BatchModelConverter.asApiElementProcessingStatus(grpc.getProcessingStatus()));
-	api.setProcessedDate(grpc.hasProcessedDate() ? CommonModelConverter.asDate(grpc.getProcessedDate()) : null);
+	api.setProcessedDate(CommonModelConverter.asApiDate(grpc.getProcessedDate()));
 	api.setMetadata(grpc.getMetadataMap());
 	return api;
     }
@@ -387,9 +375,7 @@ public class BatchModelConverter {
 	    throws SiteWhereException {
 	GBatchOperationElementUpdateRequest.Builder grpc = GBatchOperationElementUpdateRequest.newBuilder();
 	grpc.setProcessingStatus(BatchModelConverter.asGrpcElementProcessingStatus(api.getProcessingStatus()));
-	if (api.getProcessedDate() != null) {
-	    grpc.setProcessedDate(CommonModelConverter.asGrpcTimestamp(api.getProcessedDate()));
-	}
+	grpc.setProcessedDate(CommonModelConverter.asGrpcDate(api.getProcessedDate()));
 	grpc.putAllMetadata(api.getMetadata());
 	return grpc.build();
     }
