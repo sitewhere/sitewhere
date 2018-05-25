@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sitewhere.grpc.model.CommonModel.GGrantedAuthorityReference;
+import com.sitewhere.grpc.model.CommonModel.GOptionalString;
 import com.sitewhere.grpc.model.CommonModel.GUserAccountStatus;
 import com.sitewhere.grpc.model.UserModel;
 import com.sitewhere.grpc.model.UserModel.GGrantedAuthority;
@@ -86,10 +87,10 @@ public class UserModelConverter {
      */
     public static IUserCreateRequest asApiUserCreateRequest(GUserCreateRequest grpc) throws SiteWhereException {
 	UserCreateRequest api = new UserCreateRequest();
-	api.setUsername(grpc.getUsername());
-	api.setPassword(grpc.getPassword());
-	api.setFirstName(grpc.getFirstName());
-	api.setLastName(grpc.getLastName());
+	api.setUsername(grpc.hasUsername() ? grpc.getUsername().getValue() : null);
+	api.setPassword(grpc.hasPassword() ? grpc.getPassword().getValue() : null);
+	api.setFirstName(grpc.hasFirstName() ? grpc.getFirstName().getValue() : null);
+	api.setLastName(grpc.hasLastName() ? grpc.getLastName().getValue() : null);
 	api.setStatus(UserModelConverter.asApiAccountStatus(grpc.getStatus()));
 	if (grpc.getAuthoritiesList().size() > 0) {
 	    List<String> authorities = new ArrayList<>();
@@ -109,13 +110,27 @@ public class UserModelConverter {
      */
     public static GUserCreateRequest asGrpcUserCreateRequest(IUserCreateRequest api) throws SiteWhereException {
 	GUserCreateRequest.Builder builder = GUserCreateRequest.newBuilder();
-	builder.setUsername(api.getUsername());
-	builder.setPassword(api.getPassword());
-	builder.setFirstName(api.getFirstName());
-	builder.setLastName(api.getLastName());
-	builder.setStatus(UserModelConverter.asGrpcAccountStatus(api.getStatus()));
-	builder.addAllAuthorities(api.getAuthorities());
-	builder.putAllMetadata(api.getMetadata());
+	if (api.getUsername() != null) {
+	    builder.setUsername(GOptionalString.newBuilder().setValue(api.getUsername()));
+	}
+	if (api.getPassword() != null) {
+	    builder.setPassword(GOptionalString.newBuilder().setValue(api.getPassword()));
+	}
+	if (api.getFirstName() != null) {
+	    builder.setFirstName(GOptionalString.newBuilder().setValue(api.getFirstName()));
+	}
+	if (api.getLastName() != null) {
+	    builder.setLastName(GOptionalString.newBuilder().setValue(api.getLastName()));
+	}
+	if (api.getStatus() != null) {
+	    builder.setStatus(UserModelConverter.asGrpcAccountStatus(api.getStatus()));
+	}
+	if (api.getAuthorities() != null) {
+	    builder.addAllAuthorities(api.getAuthorities());
+	}
+	if (api.getMetadata() != null) {
+	    builder.putAllMetadata(api.getMetadata());
+	}
 	return builder.build();
     }
 

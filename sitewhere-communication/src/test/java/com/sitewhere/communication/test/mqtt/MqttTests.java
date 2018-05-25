@@ -28,18 +28,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sitewhere.rest.model.device.communication.DeviceRequest;
 import com.sitewhere.rest.model.device.communication.DeviceRequest.Type;
+import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceMappingCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.event.AlertLevel;
+import com.sitewhere.spi.device.event.AlertSource;
 
 public class MqttTests {
 
     /** Nunber of threads for multithreaded tests */
-    private static final int NUM_THREADS = 20;
+    private static final int NUM_THREADS = 1;
 
     /** Nunber of calls performed per thread */
-    private static final int NUM_CALLS_PER_THREAD = 10000;
+    private static final int NUM_CALLS_PER_THREAD = 1;
 
     @Test
     public void runMqttTest() throws Exception {
@@ -83,10 +86,10 @@ public class MqttTests {
 
 		long start = System.currentTimeMillis();
 		for (int i = 0; i < messageCount; i++) {
-		    sendLocationOverMqtt();
+		    sendAlertOverMqtt();
 		}
-		System.out.println(
-			"Sent " + messageCount + " locations in " + (System.currentTimeMillis() - start) + "ms.");
+		System.out
+			.println("Sent " + messageCount + " events in " + (System.currentTimeMillis() - start) + "ms.");
 
 		connection.disconnect();
 		return null;
@@ -104,7 +107,7 @@ public class MqttTests {
 	 */
 	public void sendLocationOverMqtt() throws SiteWhereException {
 	    DeviceRequest request = new DeviceRequest();
-	    request.setHardwareId("27351-NODERED-2417540");
+	    request.setHardwareId("72413-UNO-9252587");
 	    request.setType(Type.DeviceLocation);
 	    DeviceLocationCreateRequest location = new DeviceLocationCreateRequest();
 	    location.setEventDate(new Date());
@@ -118,6 +121,38 @@ public class MqttTests {
 	    request.setRequest(location);
 	    try {
 		String payload = MAPPER.writeValueAsString(request);
+		connection.publish("SiteWhere/input/json", payload.getBytes(), QoS.AT_MOST_ONCE, false);
+	    } catch (JsonProcessingException e) {
+		throw new SiteWhereException(e);
+	    } catch (Exception e) {
+		throw new SiteWhereException(e);
+	    }
+	}
+
+	/**
+	 * Send an alert event request via JSON/MQTT.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	public void sendAlertOverMqtt() throws SiteWhereException {
+	    DeviceRequest request = new DeviceRequest();
+	    request.setHardwareId("80647-GATEWAY-2114040");
+	    request.setType(Type.DeviceAlert);
+	    DeviceAlertCreateRequest alert = new DeviceAlertCreateRequest();
+	    alert.setSource(AlertSource.Device);
+	    alert.setLevel(AlertLevel.Info);
+	    alert.setType("engine.overheat");
+	    alert.setMessage("eeeeyyyyyy!");
+	    alert.setEventDate(new Date(System.currentTimeMillis() - ( 10 * 60 * 1000)));
+	    Map<String, String> metadata = new HashMap<String, String>();
+	    metadata.put("name1", "value1");
+	    metadata.put("name2", "value2");
+	    alert.setMetadata(metadata);
+	    alert.setUpdateState(true);
+	    request.setRequest(alert);
+	    try {
+		String payload = MAPPER.writeValueAsString(request);
+		System.out.println(payload);
 		connection.publish("SiteWhere/input/json", payload.getBytes(), QoS.AT_MOST_ONCE, false);
 	    } catch (JsonProcessingException e) {
 		throw new SiteWhereException(e);

@@ -12,10 +12,10 @@ import "sitewhere-common.proto";
 
 // Request for creating a user.
 message GUserCreateRequest {
-	string username = 1;
-	string password = 2;
-	string firstName = 3;
-	string lastName = 4;
+	GOptionalString username = 1;
+	GOptionalString password = 2;
+	GOptionalString firstName = 3;
+	GOptionalString lastName = 4;
 	GUserAccountStatus status = 5;
 	repeated string authorities = 6;
 	map<string, string> metadata = 7;
