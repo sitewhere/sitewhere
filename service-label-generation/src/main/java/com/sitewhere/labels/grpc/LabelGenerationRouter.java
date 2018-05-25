@@ -22,6 +22,10 @@ import com.sitewhere.grpc.service.GGetAssetLabelRequest;
 import com.sitewhere.grpc.service.GGetAssetLabelResponse;
 import com.sitewhere.grpc.service.GGetAssetTypeLabelRequest;
 import com.sitewhere.grpc.service.GGetAssetTypeLabelResponse;
+import com.sitewhere.grpc.service.GGetCustomerLabelRequest;
+import com.sitewhere.grpc.service.GGetCustomerLabelResponse;
+import com.sitewhere.grpc.service.GGetCustomerTypeLabelRequest;
+import com.sitewhere.grpc.service.GGetCustomerTypeLabelResponse;
 import com.sitewhere.grpc.service.GGetDeviceAssignmentLabelRequest;
 import com.sitewhere.grpc.service.GGetDeviceAssignmentLabelResponse;
 import com.sitewhere.grpc.service.GGetDeviceGroupLabelRequest;
@@ -76,6 +80,34 @@ public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationIm
 	} catch (TenantEngineNotAvailableException e) {
 	    observer.onError(GrpcUtils.convertServerException(e));
 	    return null;
+	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.LabelGenerationGrpc.LabelGenerationImplBase#
+     * getCustomerTypeLabel(com.sitewhere.grpc.service.GGetCustomerTypeLabelRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getCustomerTypeLabel(GGetCustomerTypeLabelRequest request,
+	    StreamObserver<GGetCustomerTypeLabelResponse> responseObserver) {
+	LabelGenerationGrpc.LabelGenerationImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getCustomerTypeLabel(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.LabelGenerationGrpc.LabelGenerationImplBase#
+     * getCustomerLabel(com.sitewhere.grpc.service.GGetCustomerLabelRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getCustomerLabel(GGetCustomerLabelRequest request,
+	    StreamObserver<GGetCustomerLabelResponse> responseObserver) {
+	LabelGenerationGrpc.LabelGenerationImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getCustomerLabel(request, responseObserver);
 	}
     }
 

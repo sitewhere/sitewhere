@@ -265,10 +265,14 @@ public class Areas extends RestControllerBase {
     }
 
     /**
-     * Get device measurements for a given area.
+     * Get device measurements for an area.
      * 
      * @param areaToken
-     * @param count
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param response
      * @return
      * @throws SiteWhereException
      */
@@ -297,10 +301,14 @@ public class Areas extends RestControllerBase {
     }
 
     /**
-     * Get device locations for a given area.
+     * Get device locations for an area.
      * 
      * @param areaToken
-     * @param count
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param response
      * @return
      * @throws SiteWhereException
      */
@@ -329,10 +337,14 @@ public class Areas extends RestControllerBase {
     }
 
     /**
-     * Get device alerts for a given area.
+     * Get device alerts for an area.
      * 
      * @param areaToken
-     * @param count
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param response
      * @return
      * @throws SiteWhereException
      */
@@ -361,10 +373,14 @@ public class Areas extends RestControllerBase {
     }
 
     /**
-     * Get device command invocations for a given area.
+     * Get device command invocations for an area.
      * 
      * @param areaToken
-     * @param count
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param response
      * @return
      * @throws SiteWhereException
      */
@@ -393,10 +409,14 @@ public class Areas extends RestControllerBase {
     }
 
     /**
-     * Get device command responses for a given area.
+     * Get device command responses for an area.
      * 
      * @param areaToken
-     * @param count
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param response
      * @return
      * @throws SiteWhereException
      */
@@ -425,10 +445,14 @@ public class Areas extends RestControllerBase {
     }
 
     /**
-     * Get device state changes for a given area.
+     * Get device state changes for an area.
      * 
      * @param areaToken
-     * @param count
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param response
      * @return
      * @throws SiteWhereException
      */

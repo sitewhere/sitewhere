@@ -34,6 +34,12 @@ import com.sitewhere.device.marshaling.CustomerMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.rest.model.customer.request.CustomerCreateRequest;
 import com.sitewhere.rest.model.device.DeviceAssignment;
+import com.sitewhere.rest.model.device.asset.DeviceAlertWithAsset;
+import com.sitewhere.rest.model.device.asset.DeviceCommandInvocationWithAsset;
+import com.sitewhere.rest.model.device.asset.DeviceCommandResponseWithAsset;
+import com.sitewhere.rest.model.device.asset.DeviceLocationWithAsset;
+import com.sitewhere.rest.model.device.asset.DeviceMeasurementsWithAsset;
+import com.sitewhere.rest.model.device.asset.DeviceStateChangeWithAsset;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.area.AreaSearchCriteria;
 import com.sitewhere.rest.model.search.customer.CustomerSearchCriteria;
@@ -48,10 +54,19 @@ import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.event.DeviceEventIndex;
+import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.event.IDeviceCommandResponse;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
+import com.sitewhere.spi.device.event.IDeviceLocation;
+import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.label.ILabel;
 import com.sitewhere.spi.label.ILabelGeneration;
+import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
@@ -215,17 +230,19 @@ public class Customers extends RestControllerBase {
 	// Look up parent customer if provided.
 	if (parentCustomerToken != null) {
 	    ICustomer parent = getDeviceManagement().getCustomerByToken(parentCustomerToken);
-	    if (parent != null) {
-		criteria.setParentCustomerId(parent.getId());
+	    if (parent == null) {
+		throw new SiteWhereException("Invalid parent customer token.");
 	    }
+	    criteria.setParentCustomerId(parent.getId());
 	}
 
 	// Look up customer type if provided.
 	if (customerTypeToken != null) {
 	    ICustomerType customerType = getDeviceManagement().getCustomerTypeByToken(customerTypeToken);
-	    if (customerTypeToken != null) {
-		criteria.setCustomerTypeId(customerType.getId());
+	    if (customerType == null) {
+		throw new SiteWhereException("Invalid customer type token.");
 	    }
+	    criteria.setCustomerTypeId(customerType.getId());
 	}
 
 	return criteria;
@@ -270,7 +287,7 @@ public class Customers extends RestControllerBase {
     /**
      * Delete information for a given customer based on token.
      * 
-     * @param areaToken
+     * @param customerToken
      * @param force
      * @return
      * @throws SiteWhereException
@@ -284,6 +301,221 @@ public class Customers extends RestControllerBase {
 	    throws SiteWhereException {
 	ICustomer existing = assertCustomer(customerToken);
 	return getDeviceManagement().deleteCustomer(existing.getId(), force);
+    }
+
+    /**
+     * Get device measurements for a customer.
+     * 
+     * @param customerToken
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{customerToken}/measurements", method = RequestMethod.GET)
+    @ApiOperation(value = "List measurements for a customer")
+    @Secured({ SiteWhereRoles.REST })
+    public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForCustomer(
+	    @ApiParam(value = "Token that identifies customer", required = true) @PathVariable String customerToken,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    HttpServletResponse response) throws SiteWhereException {
+	List<UUID> customers = resolveCustomerIds(customerToken, true, getDeviceManagement());
+	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
+		endDate, response);
+	ISearchResults<IDeviceMeasurements> results = getDeviceEventManagement()
+		.listDeviceMeasurementsForIndex(DeviceEventIndex.Customer, customers, criteria);
+
+	List<IDeviceMeasurements> wrapped = new ArrayList<IDeviceMeasurements>();
+	for (IDeviceMeasurements result : results.getResults()) {
+	    wrapped.add(new DeviceMeasurementsWithAsset(result, getAssetManagement()));
+	}
+	return new SearchResults<IDeviceMeasurements>(wrapped, results.getNumResults());
+    }
+
+    /**
+     * Get device locations for a customer.
+     * 
+     * @param customerToken
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{customerToken}/locations", method = RequestMethod.GET)
+    @ApiOperation(value = "List locations for a customer")
+    @Secured({ SiteWhereRoles.REST })
+    public ISearchResults<IDeviceLocation> listDeviceLocationsForCustomer(
+	    @ApiParam(value = "Token that identifies customer", required = true) @PathVariable String customerToken,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    HttpServletResponse response) throws SiteWhereException {
+	List<UUID> customers = resolveCustomerIds(customerToken, true, getDeviceManagement());
+	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
+		endDate, response);
+	ISearchResults<IDeviceLocation> results = getDeviceEventManagement()
+		.listDeviceLocationsForIndex(DeviceEventIndex.Customer, customers, criteria);
+
+	// Marshal with asset info since multiple assignments might match.
+	List<IDeviceLocation> wrapped = new ArrayList<IDeviceLocation>();
+	for (IDeviceLocation result : results.getResults()) {
+	    wrapped.add(new DeviceLocationWithAsset(result, getAssetManagement()));
+	}
+	return new SearchResults<IDeviceLocation>(wrapped, results.getNumResults());
+    }
+
+    /**
+     * Get device alerts for a customer.
+     * 
+     * @param customerToken
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{customerToken}/alerts", method = RequestMethod.GET)
+    @ApiOperation(value = "List alerts for a customer")
+    @Secured({ SiteWhereRoles.REST })
+    public ISearchResults<IDeviceAlert> listDeviceAlertsForCustomer(
+	    @ApiParam(value = "Token that identifies customer", required = true) @PathVariable String customerToken,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    HttpServletResponse response) throws SiteWhereException {
+	List<UUID> customers = resolveCustomerIds(customerToken, true, getDeviceManagement());
+	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
+		endDate, response);
+	ISearchResults<IDeviceAlert> results = getDeviceEventManagement()
+		.listDeviceAlertsForIndex(DeviceEventIndex.Customer, customers, criteria);
+
+	// Marshal with asset info since multiple assignments might match.
+	List<IDeviceAlert> wrapped = new ArrayList<IDeviceAlert>();
+	for (IDeviceAlert result : results.getResults()) {
+	    wrapped.add(new DeviceAlertWithAsset(result, getAssetManagement()));
+	}
+	return new SearchResults<IDeviceAlert>(wrapped, results.getNumResults());
+    }
+
+    /**
+     * Get device command invocations for a customer.
+     * 
+     * @param customerToken
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{customerToken}/invocations", method = RequestMethod.GET)
+    @ApiOperation(value = "List command invocations for a customer")
+    @Secured({ SiteWhereRoles.REST })
+    public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForCustomer(
+	    @ApiParam(value = "Token that identifies customer", required = true) @PathVariable String customerToken,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    HttpServletResponse response) throws SiteWhereException {
+	List<UUID> customers = resolveCustomerIds(customerToken, true, getDeviceManagement());
+	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
+		endDate, response);
+	ISearchResults<IDeviceCommandInvocation> results = getDeviceEventManagement()
+		.listDeviceCommandInvocationsForIndex(DeviceEventIndex.Customer, customers, criteria);
+
+	// Marshal with asset info since multiple assignments might match.
+	List<IDeviceCommandInvocation> wrapped = new ArrayList<IDeviceCommandInvocation>();
+	for (IDeviceCommandInvocation result : results.getResults()) {
+	    wrapped.add(new DeviceCommandInvocationWithAsset(result, getAssetManagement()));
+	}
+	return new SearchResults<IDeviceCommandInvocation>(wrapped, results.getNumResults());
+    }
+
+    /**
+     * Get device command responses for a customer.
+     * 
+     * @param customerToken
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{customerToken}/responses", method = RequestMethod.GET)
+    @ApiOperation(value = "List command responses for a customer")
+    @Secured({ SiteWhereRoles.REST })
+    public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForCustomer(
+	    @ApiParam(value = "Token that identifies customer", required = true) @PathVariable String customerToken,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    HttpServletResponse response) throws SiteWhereException {
+	List<UUID> customers = resolveCustomerIds(customerToken, true, getDeviceManagement());
+	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
+		endDate, response);
+	ISearchResults<IDeviceCommandResponse> results = getDeviceEventManagement()
+		.listDeviceCommandResponsesForIndex(DeviceEventIndex.Customer, customers, criteria);
+
+	// Marshal with asset info since multiple assignments might match.
+	List<IDeviceCommandResponse> wrapped = new ArrayList<IDeviceCommandResponse>();
+	for (IDeviceCommandResponse result : results.getResults()) {
+	    wrapped.add(new DeviceCommandResponseWithAsset(result, getAssetManagement()));
+	}
+	return new SearchResults<IDeviceCommandResponse>(wrapped, results.getNumResults());
+    }
+
+    /**
+     * Get device state changes for a customer.
+     * 
+     * @param customerToken
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/{customerToken}/statechanges", method = RequestMethod.GET)
+    @ApiOperation(value = "List state changes associated with a customer")
+    @Secured({ SiteWhereRoles.REST })
+    public ISearchResults<IDeviceStateChange> listDeviceStateChangesForCustomer(
+	    @ApiParam(value = "Token that identifies customer", required = true) @PathVariable String customerToken,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    HttpServletResponse response) throws SiteWhereException {
+	List<UUID> customers = resolveCustomerIds(customerToken, true, getDeviceManagement());
+	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
+		endDate, response);
+	ISearchResults<IDeviceStateChange> results = getDeviceEventManagement()
+		.listDeviceStateChangesForIndex(DeviceEventIndex.Customer, customers, criteria);
+
+	// Marshal with asset info since multiple assignments might match.
+	List<IDeviceStateChange> wrapped = new ArrayList<IDeviceStateChange>();
+	for (IDeviceStateChange result : results.getResults()) {
+	    wrapped.add(new DeviceStateChangeWithAsset(result, getAssetManagement()));
+	}
+	return new SearchResults<IDeviceStateChange>(wrapped, results.getNumResults());
     }
 
     /**
@@ -404,6 +636,10 @@ public class Customers extends RestControllerBase {
 
     private IDeviceManagement getDeviceManagement() {
 	return getMicroservice().getDeviceManagementApiDemux().getApiChannel();
+    }
+
+    private IDeviceEventManagement getDeviceEventManagement() {
+	return getMicroservice().getDeviceEventManagementApiDemux().getApiChannel();
     }
 
     private IAssetManagement getAssetManagement() {
