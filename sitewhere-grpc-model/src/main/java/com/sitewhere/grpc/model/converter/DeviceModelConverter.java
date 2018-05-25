@@ -1852,13 +1852,21 @@ public class DeviceModelConverter {
 	if (api.getToken() != null) {
 	    grpc.setToken(GOptionalString.newBuilder().setValue(api.getToken()));
 	}
-	grpc.setCustomerTypeToken(api.getCustomerTypeToken());
+	if (api.getCustomerTypeToken() != null) {
+	    grpc.setCustomerTypeToken(api.getCustomerTypeToken());
+	}
 	if (api.getParentCustomerToken() != null) {
 	    grpc.setParentCustomerToken(GOptionalString.newBuilder().setValue(api.getParentCustomerToken()));
 	}
-	grpc.setName(api.getName());
-	grpc.setDescription(api.getDescription());
-	grpc.setImageUrl(api.getImageUrl());
+	if (api.getName() != null) {
+	    grpc.setName(api.getName());
+	}
+	if (api.getDescription() != null) {
+	    grpc.setDescription(api.getDescription());
+	}
+	if (api.getImageUrl() != null) {
+	    grpc.setImageUrl(api.getImageUrl());
+	}
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
 	}
