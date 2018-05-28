@@ -434,6 +434,8 @@ public class MicroserviceModelConverter {
 	    return MicroserviceIdentifier.DeviceManagement;
 	case MSID_DEVICE_REGISTRATION:
 	    return MicroserviceIdentifier.DeviceRegistration;
+	case MSID_DEVICE_STATE:
+	    return MicroserviceIdentifier.DeviceState;
 	case MSID_EVENT_MANAGEMENT:
 	    return MicroserviceIdentifier.EventManagement;
 	case MSID_EVENT_SEARCH:
@@ -448,8 +450,6 @@ public class MicroserviceModelConverter {
 	    return MicroserviceIdentifier.LabelGeneration;
 	case MSID_OUTBOUND_CONNECTORS:
 	    return MicroserviceIdentifier.OutboundConnectors;
-	case MSID_PRESENCE_MANAGEMENT:
-	    return MicroserviceIdentifier.PresenceManagement;
 	case MSID_RULE_PROCESSING:
 	    return MicroserviceIdentifier.RuleProcessing;
 	case MSID_SCHEDULE_MANAGEMENT:
@@ -488,6 +488,8 @@ public class MicroserviceModelConverter {
 	    return GMicroserviceIdentifier.MSID_DEVICE_MANAGEMENT;
 	case DeviceRegistration:
 	    return GMicroserviceIdentifier.MSID_DEVICE_REGISTRATION;
+	case DeviceState:
+	    return GMicroserviceIdentifier.MSID_DEVICE_STATE;
 	case EventManagement:
 	    return GMicroserviceIdentifier.MSID_EVENT_MANAGEMENT;
 	case EventSearch:
@@ -502,8 +504,6 @@ public class MicroserviceModelConverter {
 	    return GMicroserviceIdentifier.MSID_LABEL_GENERATION;
 	case OutboundConnectors:
 	    return GMicroserviceIdentifier.MSID_OUTBOUND_CONNECTORS;
-	case PresenceManagement:
-	    return GMicroserviceIdentifier.MSID_PRESENCE_MANAGEMENT;
 	case RuleProcessing:
 	    return GMicroserviceIdentifier.MSID_RULE_PROCESSING;
 	case ScheduleManagement:

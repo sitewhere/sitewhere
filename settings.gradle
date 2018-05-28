@@ -4,6 +4,7 @@ include ':service-batch-operations'
 include ':service-command-delivery'
 include ':service-device-management'
 include ':service-device-registration'
+include ':service-device-state'
 include ':service-event-management'
 include ':service-event-search'
 include ':service-event-sources'
@@ -11,7 +12,6 @@ include ':service-inbound-processing'
 include ':service-instance-management'
 include ':service-label-generation'
 include ':service-outbound-connectors'
-include ':service-presence-management'
 include ':service-rule-processing'
 include ':service-schedule-management'
 include ':service-streaming-media'
@@ -44,6 +44,7 @@ project(':service-batch-operations').projectDir = "$rootDir/service-batch-operat
 project(':service-command-delivery').projectDir = "$rootDir/service-command-delivery" as File
 project(':service-device-management').projectDir = "$rootDir/service-device-management" as File
 project(':service-device-registration').projectDir = "$rootDir/service-device-registration" as File
+project(':service-device-state').projectDir = "$rootDir/service-device-state" as File
 project(':service-event-management').projectDir = "$rootDir/service-event-management" as File
 project(':service-event-search').projectDir = "$rootDir/service-event-search" as File
 project(':service-event-sources').projectDir = "$rootDir/service-event-sources" as File
@@ -51,7 +52,6 @@ project(':service-inbound-processing').projectDir = "$rootDir/service-inbound-pr
 project(':service-instance-management').projectDir = "$rootDir/service-instance-management" as File
 project(':service-label-generation').projectDir = "$rootDir/service-label-generation" as File
 project(':service-outbound-connectors').projectDir = "$rootDir/service-outbound-connectors" as File
-project(':service-presence-management').projectDir = "$rootDir/service-presence-management" as File
 project(':service-rule-processing').projectDir = "$rootDir/service-rule-processing" as File
 project(':service-schedule-management').projectDir = "$rootDir/service-schedule-management" as File
 project(':service-streaming-media').projectDir = "$rootDir/service-streaming-media" as File

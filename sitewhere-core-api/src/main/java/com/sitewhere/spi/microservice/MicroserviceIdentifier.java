@@ -38,7 +38,7 @@ public enum MicroserviceIdentifier implements IFunctionIdentifier {
 
     OutboundConnectors("outbound-connectors"),
 
-    PresenceManagement("presence-management"),
+    DeviceState("device-state"),
 
     RuleProcessing("rule-processing"),
 
