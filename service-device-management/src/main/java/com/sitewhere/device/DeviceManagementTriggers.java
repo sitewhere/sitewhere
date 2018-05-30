@@ -9,6 +9,11 @@ package com.sitewhere.device;
 
 import java.util.UUID;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
+import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
 import com.sitewhere.rest.model.device.event.request.DeviceStateChangeCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -24,12 +29,13 @@ import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
  */
 public class DeviceManagementTriggers extends DeviceManagementDecorator {
 
-    /** Device event management */
-    private IDeviceEventManagement deviceEventManangement;
+    /** Device management tenant engine */
+    private IDeviceManagementTenantEngine deviceManagementTenantEngine;
 
-    public DeviceManagementTriggers(IDeviceManagement delegate, IDeviceEventManagement deviceEventManangement) {
+    public DeviceManagementTriggers(IDeviceManagement delegate,
+	    IDeviceManagementTenantEngine deviceManagementTenantEngine) {
 	super(delegate);
-	this.deviceEventManangement = deviceEventManangement;
+	this.deviceManagementTenantEngine = deviceManagementTenantEngine;
     }
 
     /*
@@ -42,10 +48,12 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
     @Override
     public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request) throws SiteWhereException {
 	IDeviceAssignment created = super.createDeviceAssignment(request);
+
+	updateTenantAuthentication();
 	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest();
 	state.setCategory(IDeviceStateChangeCreateRequest.CATEGORY_ASSIGNMENT);
 	state.setType("create");
-	getDeviceEventManangement().addDeviceStateChange(created.getId(), state);
+	getDeviceEventManagement().addDeviceStateChange(created.getId(), state);
 	return created;
     }
 
@@ -58,10 +66,12 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
     public IDeviceAssignment updateDeviceAssignment(UUID id, IDeviceAssignmentCreateRequest request)
 	    throws SiteWhereException {
 	IDeviceAssignment updated = super.updateDeviceAssignment(id, request);
+
+	updateTenantAuthentication();
 	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest();
 	state.setCategory(IDeviceStateChangeCreateRequest.CATEGORY_ASSIGNMENT);
 	state.setType("update");
-	getDeviceEventManangement().addDeviceStateChange(updated.getId(), state);
+	getDeviceEventManagement().addDeviceStateChange(updated.getId(), state);
 	return updated;
     }
 
@@ -73,18 +83,37 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
     @Override
     public IDeviceAssignment endDeviceAssignment(UUID id) throws SiteWhereException {
 	IDeviceAssignment updated = super.endDeviceAssignment(id);
+
+	updateTenantAuthentication();
 	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest();
 	state.setCategory(IDeviceStateChangeCreateRequest.CATEGORY_ASSIGNMENT);
 	state.setType("end");
-	getDeviceEventManangement().addDeviceStateChange(updated.getId(), state);
+	getDeviceEventManagement().addDeviceStateChange(updated.getId(), state);
 	return updated;
     }
 
-    public IDeviceEventManagement getDeviceEventManangement() {
-	return deviceEventManangement;
+    /**
+     * Update authentication for current thread to include current tenant and a
+     * valid system user.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void updateTenantAuthentication() throws SiteWhereException {
+	Authentication system = getMicroservice().getSystemUser()
+		.getAuthenticationForTenant(getDeviceManagementTenantEngine().getTenant());
+	SecurityContextHolder.getContext().setAuthentication(system);
     }
 
-    public void setDeviceEventManangement(IDeviceEventManagement deviceEventManangement) {
-	this.deviceEventManangement = deviceEventManangement;
+    protected IDeviceEventManagement getDeviceEventManagement() throws SiteWhereException {
+	return ((IDeviceManagementMicroservice) getDeviceManagementTenantEngine().getMicroservice())
+		.getEventManagementApiDemux().getApiChannel();
+    }
+
+    protected IDeviceManagementTenantEngine getDeviceManagementTenantEngine() {
+	return deviceManagementTenantEngine;
+    }
+
+    protected void setDeviceManagementTenantEngine(IDeviceManagementTenantEngine deviceManagementTenantEngine) {
+	this.deviceManagementTenantEngine = deviceManagementTenantEngine;
     }
 }
