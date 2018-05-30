@@ -30,6 +30,12 @@ public interface IApiDemux<T extends IApiChannel> extends ITenantEngineLifecycle
     public String getTargetIdentifier();
 
     /**
+     * Wait for an instance of the remote microservice to become available. This
+     * does not guarantee that tenant engines are available.
+     */
+    public void waitForMicroserviceAvailable();
+
+    /**
      * List of available {@link IApiChannel} that can be used for routing.
      * 
      * @return
@@ -42,13 +48,6 @@ public interface IApiDemux<T extends IApiChannel> extends ITenantEngineLifecycle
      * @return
      */
     public T getApiChannel();
-
-    /**
-     * Wait for an API channel to become available.
-     * 
-     * @return
-     */
-    public T waitForApiChannel();
 
     /**
      * Create an API channel to the given host.

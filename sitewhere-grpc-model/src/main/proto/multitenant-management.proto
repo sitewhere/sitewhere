@@ -15,20 +15,19 @@ service MultitenantManagement {
 	// ### CONFIGURATION ###
 	// #####################
 
-	// Check if multitenant services is available.
-	rpc CheckMultitenantServicesAvailable (GCheckMultitenantServicesAvailableRequest) returns (GCheckMultitenantServicesAvailableResponse) {}
+	// Check if tenant engine is available.
+	rpc CheckTenantEngineAvailable (GCheckTenantEngineAvailableRequest) returns (GCheckTenantEngineAvailableResponse) {}
 }
 
 // #####################
 // ### CONFIGURATION ###
 // #####################
 
-// Request for checking if the multitenant services is available.
-message GCheckMultitenantServicesAvailableRequest {
+// Request for checking if the tenant engine is available.
+message GCheckTenantEngineAvailableRequest {
 }
 	
-// Response for checking if the multitenant services is available.
-message GCheckMultitenantServicesAvailableResponse {
+// Response for checking if the tenant engine is available.
+message GCheckTenantEngineAvailableResponse {
 	bool available = 1;
 }
-	

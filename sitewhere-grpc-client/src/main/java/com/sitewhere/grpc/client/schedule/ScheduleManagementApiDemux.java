@@ -7,7 +7,7 @@
  */
 package com.sitewhere.grpc.client.schedule;
 
-import com.sitewhere.grpc.client.ApiDemux;
+import com.sitewhere.grpc.client.MultitenantApiDemux;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiDemux;
 import com.sitewhere.spi.SiteWhereException;
@@ -20,7 +20,7 @@ import com.sitewhere.spi.microservice.MicroserviceIdentifier;
  *
  * @param <IAssetManagementApiChannel>
  */
-public class ScheduleManagementApiDemux extends ApiDemux<IScheduleManagementApiChannel<?>>
+public class ScheduleManagementApiDemux extends MultitenantApiDemux<IScheduleManagementApiChannel<?>>
 	implements IScheduleManagementApiDemux {
 
     /*

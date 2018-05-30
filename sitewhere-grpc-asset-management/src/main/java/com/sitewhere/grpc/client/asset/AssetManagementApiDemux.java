@@ -7,7 +7,7 @@
  */
 package com.sitewhere.grpc.client.asset;
 
-import com.sitewhere.grpc.client.ApiDemux;
+import com.sitewhere.grpc.client.MultitenantApiDemux;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiDemux;
 import com.sitewhere.spi.SiteWhereException;
@@ -20,7 +20,7 @@ import com.sitewhere.spi.microservice.MicroserviceIdentifier;
  *
  * @param <IAssetManagementApiChannel>
  */
-public class AssetManagementApiDemux extends ApiDemux<IAssetManagementApiChannel<?>>
+public class AssetManagementApiDemux extends MultitenantApiDemux<IAssetManagementApiChannel<?>>
 	implements IAssetManagementApiDemux {
 
     /*

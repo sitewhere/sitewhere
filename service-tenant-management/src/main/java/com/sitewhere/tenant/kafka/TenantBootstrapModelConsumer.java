@@ -148,6 +148,7 @@ public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer impl
 	@Override
 	public void run() {
 	    try {
+		getLogger().info("About to bootstrap new tenant.");
 		CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
 		createTenantsConfigurationRootIfNotFound(curator);
 		createTenantConfigurationIfNotFound(curator);

@@ -47,9 +47,12 @@ public abstract class MultitenantApiChannel<T extends MultitenantGrpcChannel<?, 
 	    throws ApiNotAvailableException {
     }
 
-	@Override
-	public boolean checkTenantAvailable() {
-		MultitenantGrpcChannel<?, ?> channel = (MultitenantGrpcChannel<?, ?>)getGrpcChannel();
-		return channel.checkMultitenantServicesAvailable();
-	}
+    /*
+     * @see com.sitewhere.grpc.client.spi.multitenant.IMultitenantApiChannel#
+     * checkTenantEngineAvailable()
+     */
+    @Override
+    public boolean checkTenantEngineAvailable() {
+	return getGrpcChannel().checkTenantEngineAvailable();
+    }
 }

@@ -233,11 +233,11 @@ public class TenantManagementMicroservice extends GlobalMicroservice<Microservic
 	// Initialize tenant management GRPC server.
 	init.addInitializeStep(this, getTenantManagementGrpcServer(), true);
 
-	// Initialize tenant model producer.
-	init.addInitializeStep(this, getTenantModelProducer(), true);
-
 	// Initialize tenant bootstrap model consumer.
 	init.addInitializeStep(this, getTenantBootstrapModelConsumer(), true);
+
+	// Initialize tenant model producer.
+	init.addInitializeStep(this, getTenantModelProducer(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -274,11 +274,11 @@ public class TenantManagementMicroservice extends GlobalMicroservice<Microservic
 	// Start GRPC server.
 	start.addStartStep(this, getTenantManagementGrpcServer(), true);
 
-	// Start tenant model producer.
-	start.addStartStep(this, getTenantModelProducer(), true);
-
 	// Start tenant bootstrap model consumer.
 	start.addStartStep(this, getTenantBootstrapModelConsumer(), true);
+
+	// Start tenant model producer.
+	start.addStartStep(this, getTenantModelProducer(), true);
 
 	// Execute initialization steps.
 	start.execute(monitor);
@@ -295,11 +295,11 @@ public class TenantManagementMicroservice extends GlobalMicroservice<Microservic
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
-	// Stop tenant bootstrap model consumer.
-	stop.addStopStep(this, getTenantBootstrapModelConsumer());
-
 	// Stop tenant model producer.
 	stop.addStopStep(this, getTenantModelProducer());
+
+	// Stop tenant bootstrap model consumer.
+	stop.addStopStep(this, getTenantBootstrapModelConsumer());
 
 	// Stop GRPC manager.
 	stop.addStopStep(this, getTenantManagementGrpcServer());

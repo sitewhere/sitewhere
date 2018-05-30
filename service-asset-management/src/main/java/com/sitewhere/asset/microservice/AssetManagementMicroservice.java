@@ -100,21 +100,21 @@ public class AssetManagementMicroservice
     @Override
     public void afterMicroserviceStarted() {
 	try {
-	    waitForApisAvailable();
-	    getLogger().info("All required APIs detected as available.");
+	    waitForDependenciesAvailable();
+	    getLogger().debug("All required microservices detected as available.");
 	} catch (ApiNotAvailableException e) {
-	    getLogger().error("Required APIs not available.", e);
+	    getLogger().error("Required microservices not available.", e);
 	}
     }
 
     /**
-     * Wait for required APIs to become available.
+     * Wait for required microservices to become available.
      * 
      * @throws ApiNotAvailableException
      */
-    protected void waitForApisAvailable() throws ApiNotAvailableException {
-	getDeviceManagementApiDemux().waitForApiChannel().waitForApiAvailable();
-	getLogger().info("Device management API detected as available.");
+    protected void waitForDependenciesAvailable() throws ApiNotAvailableException {
+	getDeviceManagementApiDemux().waitForMicroserviceAvailable();
+	getLogger().debug("Device management microservice detected as available.");
     }
 
     /*

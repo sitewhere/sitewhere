@@ -522,7 +522,7 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
 	    while (true) {
 		try {
 		    // Wait for tenant API available.
-		    getTenantManagementApiDemux().waitForApiChannel().waitForApiAvailable();
+		    getTenantManagementApiDemux().waitForMicroserviceAvailable();
 
 		    // Get next tenant id from the queue and look up the tenant.
 		    UUID tenantId = getTenantInitializationQueue().take();

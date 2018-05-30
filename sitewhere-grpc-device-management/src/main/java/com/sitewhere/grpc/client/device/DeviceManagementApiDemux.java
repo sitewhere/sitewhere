@@ -7,7 +7,7 @@
  */
 package com.sitewhere.grpc.client.device;
 
-import com.sitewhere.grpc.client.ApiDemux;
+import com.sitewhere.grpc.client.MultitenantApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
 import com.sitewhere.spi.SiteWhereException;
@@ -20,7 +20,7 @@ import com.sitewhere.spi.microservice.MicroserviceIdentifier;
  *
  * @param <IAssetManagementApiChannel>
  */
-public class DeviceManagementApiDemux extends ApiDemux<IDeviceManagementApiChannel<?>>
+public class DeviceManagementApiDemux extends MultitenantApiDemux<IDeviceManagementApiChannel<?>>
 	implements IDeviceManagementApiDemux {
 
     /*

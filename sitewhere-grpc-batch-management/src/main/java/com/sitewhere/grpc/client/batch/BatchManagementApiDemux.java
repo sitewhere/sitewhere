@@ -7,7 +7,7 @@
  */
 package com.sitewhere.grpc.client.batch;
 
-import com.sitewhere.grpc.client.ApiDemux;
+import com.sitewhere.grpc.client.MultitenantApiDemux;
 import com.sitewhere.grpc.client.spi.client.IBatchManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IBatchManagementApiDemux;
 import com.sitewhere.spi.SiteWhereException;
@@ -20,7 +20,7 @@ import com.sitewhere.spi.microservice.MicroserviceIdentifier;
  *
  * @param <IAssetManagementApiChannel>
  */
-public class BatchManagementApiDemux extends ApiDemux<IBatchManagementApiChannel<?>>
+public class BatchManagementApiDemux extends MultitenantApiDemux<IBatchManagementApiChannel<?>>
 	implements IBatchManagementApiDemux {
 
     /*

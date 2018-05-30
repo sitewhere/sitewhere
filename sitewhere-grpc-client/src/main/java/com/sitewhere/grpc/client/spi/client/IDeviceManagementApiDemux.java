@@ -7,7 +7,7 @@
  */
 package com.sitewhere.grpc.client.spi.client;
 
-import com.sitewhere.grpc.client.spi.IApiDemux;
+import com.sitewhere.grpc.client.spi.multitenant.IMultitenantApiDemux;
 
-public interface IDeviceManagementApiDemux extends IApiDemux<IDeviceManagementApiChannel<?>> {
+public interface IDeviceManagementApiDemux extends IMultitenantApiDemux<IDeviceManagementApiChannel<?>> {
 }

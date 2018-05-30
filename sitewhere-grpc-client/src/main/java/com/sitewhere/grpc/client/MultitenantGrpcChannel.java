@@ -11,8 +11,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.grpc.client.spi.multitenant.IMultitenantGrpcChannel;
-import com.sitewhere.grpc.service.GCheckMultitenantServicesAvailableRequest;
-import com.sitewhere.grpc.service.GCheckMultitenantServicesAvailableResponse;
+import com.sitewhere.grpc.service.GCheckTenantEngineAvailableRequest;
+import com.sitewhere.grpc.service.GCheckTenantEngineAvailableResponse;
 import com.sitewhere.grpc.service.MultitenantManagementGrpc;
 import com.sitewhere.grpc.service.MultitenantManagementGrpc.MultitenantManagementBlockingStub;
 import com.sitewhere.spi.SiteWhereException;
@@ -32,56 +32,51 @@ import io.grpc.ManagedChannelBuilder;
  */
 public abstract class MultitenantGrpcChannel<B, A> extends GrpcChannel<B, A> implements IMultitenantGrpcChannel<B, A> {
 
-	/** Static logger instance */
-	@SuppressWarnings("unused")
-	protected static Log LOGGER = LogFactory.getLog(MultitenantGrpcChannel.class);
+    /** Static logger instance */
+    @SuppressWarnings("unused")
+    protected static Log LOGGER = LogFactory.getLog(MultitenantGrpcChannel.class);
 
-	/** Client interceptor for adding tenant token */
-	private TenantTokenClientInterceptor tenant = new TenantTokenClientInterceptor();
+    /** Client interceptor for adding tenant token */
+    private TenantTokenClientInterceptor tenant = new TenantTokenClientInterceptor();
 
-	public MultitenantGrpcChannel(ITracerProvider tracerProvider, String hostname, int port) {
-		super(tracerProvider, hostname, port);
+    public MultitenantGrpcChannel(ITracerProvider tracerProvider, String hostname, int port) {
+	super(tracerProvider, hostname, port);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	ManagedChannelBuilder<?> builder = ManagedChannelBuilder.forAddress(getHostname(), getPort()).usePlaintext(true)
+		.intercept(getJwtInterceptor()).intercept(tenant);
+	if (isUseTracingInterceptor()) {
+	    builder.intercept(getTracingInterceptor());
+	}
+	this.channel = builder.build();
+	this.blockingStub = createBlockingStub();
+	this.asyncStub = createAsyncStub();
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantManagement#
+     * checkTenantEngineAvailable()
+     */
+    @Override
+    public boolean checkTenantEngineAvailable() {
+	MultitenantManagementBlockingStub stub = MultitenantManagementGrpc.newBlockingStub(getChannel());
+
+	GCheckTenantEngineAvailableRequest request = GCheckTenantEngineAvailableRequest.newBuilder().build();
+	GCheckTenantEngineAvailableResponse response = stub.checkTenantEngineAvailable(request);
+
+	if (response == null) {
+	    return false;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
-	 * .server.lifecycle.ILifecycleProgressMonitor)
-	 */
-	@Override
-	public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-		ManagedChannelBuilder<?> builder = ManagedChannelBuilder.forAddress(getHostname(), getPort()).usePlaintext(true)
-				.intercept(getJwtInterceptor()).intercept(tenant);
-		if (isUseTracingInterceptor()) {
-			builder.intercept(getTracingInterceptor());
-		}
-		this.channel = builder.build();
-		this.blockingStub = createBlockingStub();
-		this.asyncStub = createAsyncStub();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.microservice.multitenant.IMultitenantManagement#
-	 * checkMultitenantServicesAvailable(java.lang.String)
-	 */
-	@Override
-	public boolean checkMultitenantServicesAvailable() {
-		MultitenantManagementBlockingStub stub = MultitenantManagementGrpc.newBlockingStub(getChannel());
-
-		GCheckMultitenantServicesAvailableRequest request = GCheckMultitenantServicesAvailableRequest.newBuilder()
-				.build();
-
-		GCheckMultitenantServicesAvailableResponse response;
-
-		response = stub.checkMultitenantServicesAvailable(request);
-
-		if (response == null)
-			return false;
-
-		return response.getAvailable();
-	}
+	return response.getAvailable();
+    }
 }

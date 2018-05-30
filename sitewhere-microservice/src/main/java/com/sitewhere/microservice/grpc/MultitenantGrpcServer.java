@@ -20,26 +20,26 @@ import io.grpc.ServerBuilder;
  */
 public class MultitenantGrpcServer extends GrpcServer {
 
-	/** Interceptor for tenant token */
-	private TenantTokenServerInterceptor tenant;
+    /** Interceptor for tenant token */
+    private TenantTokenServerInterceptor tenant;
 
-	public MultitenantGrpcServer(BindableService serviceImplementation, int port) {
-		super(serviceImplementation, port);
-	}
+    public MultitenantGrpcServer(BindableService serviceImplementation, int port) {
+	super(serviceImplementation, port);
+    }
 
-	/**
-	 * Build server component based on configuration.
-	 * 
-	 * @return
-	 */
-	protected Server buildServer() {
-		this.tenant = new TenantTokenServerInterceptor(getMicroservice());
-		ServerBuilder<?> builder = ServerBuilder.forPort(getPort());
-		builder.addService(getServiceImplementation()).intercept(getJwtInterceptor()).intercept(tenant);
-		builder.addService(new MultitenantManagementImpl((IMultitenantMicroservice<?, ?>) getMicroservice()));
-		if (isUseTracingInterceptor()) {
-			builder.intercept(getTracingInterceptor());
-		}
-		return builder.build();
+    /**
+     * Build server component based on configuration.
+     * 
+     * @return
+     */
+    protected Server buildServer() {
+	this.tenant = new TenantTokenServerInterceptor(getMicroservice());
+	ServerBuilder<?> builder = ServerBuilder.forPort(getPort());
+	builder.addService(getServiceImplementation()).intercept(getJwtInterceptor()).intercept(tenant);
+	builder.addService(new MultitenantManagementImpl((IMultitenantMicroservice<?, ?>) getMicroservice()));
+	if (isUseTracingInterceptor()) {
+	    builder.intercept(getTracingInterceptor());
 	}
+	return builder.build();
+    }
 }

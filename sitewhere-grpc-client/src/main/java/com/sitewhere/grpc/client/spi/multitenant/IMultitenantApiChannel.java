@@ -25,6 +25,13 @@ import com.sitewhere.grpc.client.spi.IApiChannel;
 public interface IMultitenantApiChannel<T extends MultitenantGrpcChannel<?, ?>> extends IApiChannel<T> {
 
     /**
+     * Checks whether engine for tenant is available.
+     * 
+     * @return true if tenant is available
+     */
+    public boolean checkTenantEngineAvailable();
+
+    /**
      * Wait the default amount of time for API to become available for a given
      * tenant.
      * 

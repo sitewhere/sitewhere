@@ -13,10 +13,11 @@ package com.sitewhere.spi.microservice.multitenant;
  * @author Jorge Villaverde
  */
 public interface IMultitenantManagement {
-	
-	/**
-	 * Checks if the services is available.
-	 * @return true if multitenant services is available.
-	 */
-	public boolean checkMultitenantServicesAvailable();
+
+    /**
+     * Checks whether a tenant engine is available.
+     * 
+     * @return true if tenant engine is available.
+     */
+    public boolean checkTenantEngineAvailable();
 }

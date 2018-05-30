@@ -7,7 +7,7 @@
  */
 package com.sitewhere.grpc.client.label;
 
-import com.sitewhere.grpc.client.ApiDemux;
+import com.sitewhere.grpc.client.MultitenantApiDemux;
 import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiChannel;
 import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiDemux;
 import com.sitewhere.spi.SiteWhereException;
@@ -20,7 +20,7 @@ import com.sitewhere.spi.microservice.MicroserviceIdentifier;
  *
  * @param <IAssetManagementApiChannel>
  */
-public class LabelGenerationApiDemux extends ApiDemux<ILabelGenerationApiChannel<?>>
+public class LabelGenerationApiDemux extends MultitenantApiDemux<ILabelGenerationApiChannel<?>>
 	implements ILabelGenerationApiDemux {
 
     /*

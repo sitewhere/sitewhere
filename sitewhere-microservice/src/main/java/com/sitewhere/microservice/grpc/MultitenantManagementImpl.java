@@ -10,14 +10,13 @@ package com.sitewhere.microservice.grpc;
 import java.util.UUID;
 
 import com.sitewhere.grpc.client.GrpcUtils;
-import com.sitewhere.grpc.service.GCheckMultitenantServicesAvailableRequest;
-import com.sitewhere.grpc.service.GCheckMultitenantServicesAvailableResponse;
+import com.sitewhere.grpc.service.GCheckTenantEngineAvailableRequest;
+import com.sitewhere.grpc.service.GCheckTenantEngineAvailableResponse;
 import com.sitewhere.grpc.service.MultitenantManagementGrpc;
-import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
 
 import io.grpc.stub.StreamObserver;
 
@@ -27,45 +26,49 @@ import io.grpc.stub.StreamObserver;
  */
 public class MultitenantManagementImpl extends MultitenantManagementGrpc.MultitenantManagementImplBase {
 
-	/** Multitenant microservice */
-	private IMultitenantMicroservice<?, ?> microservice;
+    /** Multitenant microservice */
+    private IMultitenantMicroservice<?, ?> microservice;
 
-	public MultitenantManagementImpl(IMultitenantMicroservice<?, ?> microservice) {
-		super();
-		this.microservice = microservice;
+    public MultitenantManagementImpl(IMultitenantMicroservice<?, ?> microservice) {
+	super();
+	this.microservice = microservice;
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.MultitenantManagementGrpc.
+     * MultitenantManagementImplBase#checkMultitenantServicesAvailable(com.sitewhere
+     * .grpc.service.GCheckMultitenantServicesAvailableRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void checkTenantEngineAvailable(GCheckTenantEngineAvailableRequest request,
+	    StreamObserver<GCheckTenantEngineAvailableResponse> responseObserver) {
+	GCheckTenantEngineAvailableResponse.Builder response = GCheckTenantEngineAvailableResponse.newBuilder();
+	try {
+	    String tenantId = TenantTokenServerInterceptor.TENANT_ID_KEY.get();
+	    if (tenantId == null) {
+		throw new RuntimeException("Tenant id not found in device management request.");
+	    }
+	    UUID tenanUUID = UUID.fromString(tenantId);
+	    getMicroservice().assureTenantEngineAvailable(tenanUUID);
+	    response.setAvailable(true);
+	} catch (TenantEngineNotAvailableException e) {
+	    response.setAvailable(false);
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(MultitenantManagementGrpc.METHOD_CHECK_TENANT_ENGINE_AVAILABLE, e,
+		    responseObserver);
+	    response.setAvailable(false);
 	}
 
-	@Override
-	public void checkMultitenantServicesAvailable(GCheckMultitenantServicesAvailableRequest request,
-			StreamObserver<GCheckMultitenantServicesAvailableResponse> responseObserver) {
-		boolean responseValue = false;
-		try {
-			String tenantId = TenantTokenServerInterceptor.TENANT_ID_KEY.get();
-			if (tenantId == null) {
-				throw new RuntimeException("Tenant id not found in device management request.");
-			}
-			UUID tenanUUID = UUID.fromString(tenantId);
+	responseObserver.onNext(response.build());
+	responseObserver.onCompleted();
+    }
 
-			getMicroservice().assureTenantEngineAvailable(tenanUUID);
-			ITenant tenant = getMicroservice().getTenantEngineByTenantId(tenanUUID).getTenant();
-			UserContextManager.setCurrentTenant(tenant);
-			responseValue = true;
-		} catch (Throwable e) {
-			GrpcUtils.handleServerMethodException(MultitenantManagementGrpc.METHOD_CHECK_MULTITENANT_SERVICES_AVAILABLE,
-					e, responseObserver);
-		}
-		GCheckMultitenantServicesAvailableResponse response = GCheckMultitenantServicesAvailableResponse.newBuilder()
-				.setAvailable(responseValue).build();
-		responseObserver.onNext(response);
-		responseObserver.onCompleted();
-	}
+    public IMultitenantMicroservice<?, ?> getMicroservice() {
+	return microservice;
+    }
 
-	public IMultitenantMicroservice<?, ?> getMicroservice() {
-		return microservice;
-	}
-
-	public void setMicroservice(IMultitenantMicroservice<IFunctionIdentifier, IMicroserviceTenantEngine> microservice) {
-		this.microservice = microservice;
-	}
-
+    public void setMicroservice(IMultitenantMicroservice<IFunctionIdentifier, IMicroserviceTenantEngine> microservice) {
+	this.microservice = microservice;
+    }
 }

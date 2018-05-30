@@ -128,23 +128,23 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
     @Override
     public void afterMicroserviceStarted() {
 	try {
-	    waitForApisAvailable();
-	    getLogger().info("All required APIs detected as available.");
+	    waitForDependenciesAvailable();
+	    getLogger().debug("All required microservices detected as available.");
 	} catch (ApiNotAvailableException e) {
-	    getLogger().error("Required APIs not available for web/REST.", e);
+	    getLogger().error("Required microservices not available.", e);
 	}
     }
 
     /**
-     * Wait for required APIs to become available.
+     * Wait for required microservices to become available.
      * 
      * @throws ApiNotAvailableException
      */
-    protected void waitForApisAvailable() throws ApiNotAvailableException {
-	getUserManagementApiDemux().waitForApiChannel().waitForApiAvailable();
-	getLogger().info("User management API detected as available.");
-	getTenantManagementApiDemux().waitForApiChannel().waitForApiAvailable();
-	getLogger().info("Tenant management API detected as available.");
+    protected void waitForDependenciesAvailable() throws ApiNotAvailableException {
+	getUserManagementApiDemux().waitForMicroserviceAvailable();
+	getLogger().info("User management microservice detected as available.");
+	getTenantManagementApiDemux().waitForMicroserviceAvailable();
+	getLogger().info("Tenant management microservice detected as available.");
     }
 
     /*
