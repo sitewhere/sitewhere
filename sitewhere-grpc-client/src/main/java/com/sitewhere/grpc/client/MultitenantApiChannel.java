@@ -46,4 +46,10 @@ public abstract class MultitenantApiChannel<T extends MultitenantGrpcChannel<?, 
     public void waitForTenantApiAvailable(UUID tenantId, long duration, TimeUnit unit, long logMessageDelay)
 	    throws ApiNotAvailableException {
     }
+
+	@Override
+	public boolean checkTenantAvailable() {
+		MultitenantGrpcChannel<?, ?> channel = (MultitenantGrpcChannel<?, ?>)getGrpcChannel();
+		return channel.checkMultitenantServicesAvailable();
+	}
 }

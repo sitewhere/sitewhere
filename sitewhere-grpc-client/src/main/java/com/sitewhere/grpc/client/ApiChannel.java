@@ -187,4 +187,12 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
     public void setDemux(IApiDemux<?> demux) {
 	this.demux = demux;
     }
+
+    /*
+     * @see com.sitewhere.grpc.client.spi.IApiChannel#checkTenantAvailable()
+     */
+	@Override
+	public boolean checkTenantAvailable() {
+		return true;
+	}
 }

@@ -75,4 +75,11 @@ public interface IApiChannel<T extends GrpcChannel<?, ?>> extends ITenantEngineL
      * @return
      */
     public IApiDemux<?> getDemux();
+   
+    /**
+     * Checks whether tenant is available.
+     * 
+     * @return true if tenant is available
+     */
+    public boolean checkTenantAvailable();
 }

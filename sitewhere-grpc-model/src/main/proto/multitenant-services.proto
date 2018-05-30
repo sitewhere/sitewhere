@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.service;
+
+option java_multiple_files = true;
+option java_package = "com.sitewhere.grpc.service";
+option java_outer_classname = "MultitenantServices";
+
+import "sitewhere-common.proto";
+
+// Multitenant Services APIs.
+service MultitenantManagement {
+
+	// #####################
+	// ### CONFIGURATION ###
+	// #####################
+
+	// Check if multitenant services is available.
+	rpc CheckMultitenantServicesAvailable (GCheckMultitenantServicesAvailableRequest) returns (GCheckMultitenantServicesAvailableResponse) {}
+}
+
+// #####################
+// ### CONFIGURATION ###
+// #####################
+
+// Request for checking if the multitenant services is available.
+message GCheckMultitenantServicesAvailableRequest {
+}
+	
+// Response for checking if the multitenant services is available.
+message GCheckMultitenantServicesAvailableResponse {
+	bool available = 1;
+}
+	

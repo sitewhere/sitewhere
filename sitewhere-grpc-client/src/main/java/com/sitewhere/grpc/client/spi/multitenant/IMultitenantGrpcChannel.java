@@ -8,6 +8,7 @@
 package com.sitewhere.grpc.client.spi.multitenant;
 
 import com.sitewhere.grpc.client.spi.IGrpcChannel;
+import com.sitewhere.spi.microservice.multitenant.IMultitenantManagement;
 
 /**
  * Extends {@link IGrpcChannel} to add support for multitenant operations.
@@ -17,6 +18,6 @@ import com.sitewhere.grpc.client.spi.IGrpcChannel;
  * @param <B>
  * @param <A>
  */
-public interface IMultitenantGrpcChannel<B, A> extends IGrpcChannel<B, A> {
+public interface IMultitenantGrpcChannel<B, A> extends IGrpcChannel<B, A>, IMultitenantManagement {
 
 }
