@@ -40,10 +40,10 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 	implements IApiDemux<T>, IInstanceTopologyUpdatesListener {
 
     /** Amount of time to wait between check for available API channel */
-    private static final int API_CHANNEL_WAIT_INTERVAL_IN_SECS = 3;
+    protected static final int API_CHANNEL_WAIT_INTERVAL_IN_SECS = 3;
 
     /** Amount of time to wait before logging warnings about missing API channel */
-    private static final int API_CHANNEL_WARN_INTERVAL_IN_SECS = 30;
+    protected static final int API_CHANNEL_WARN_INTERVAL_IN_SECS = 30;
 
     /** List of API channels */
     private List<T> apiChannels = new ArrayList<>();
@@ -150,10 +150,21 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
      */
     @Override
     public void waitForMicroserviceAvailable() {
+	waitForApiChannelAvailable(false);
+    }
+
+    /**
+     * Wait for an API channel to become available. Validation flag indicate whether
+     * extra validation should be applied (such as detecting a tenant engine also
+     * being available).
+     * 
+     * @param validate
+     */
+    protected void waitForApiChannelAvailable(boolean validate) {
 	long deadline = System.currentTimeMillis() + (API_CHANNEL_WARN_INTERVAL_IN_SECS * 1000);
 	while (true) {
 	    try {
-		getApiChannel(false);
+		getApiChannel(validate);
 		return;
 	    } catch (ApiChannelNotAvailableException e) {
 		if ((System.currentTimeMillis() - deadline) < 0) {

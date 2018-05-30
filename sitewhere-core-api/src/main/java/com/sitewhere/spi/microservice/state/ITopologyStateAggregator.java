@@ -50,6 +50,7 @@ public interface ITopologyStateAggregator extends IMicroserviceStateUpdatesKafka
      * @param logMessageDelay
      * @throws SiteWhereException
      */
+    @Deprecated
     public void waitForTenantEngineAvailable(String identifier, UUID tenantId, long duration, TimeUnit unit,
 	    long logMessageDelay) throws SiteWhereException;
 

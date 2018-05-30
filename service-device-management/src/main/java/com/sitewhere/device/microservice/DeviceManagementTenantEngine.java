@@ -19,8 +19,8 @@ import com.sitewhere.device.grpc.DeviceManagementImpl;
 import com.sitewhere.device.initializer.GroovyDeviceModelInitializer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
-import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
-import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IAssetManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
 import com.sitewhere.grpc.service.DeviceManagementGrpc;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
@@ -120,14 +120,12 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	    getTenantScriptSynchronizer().add(script);
 	}
 
-	// Wait for asset management API to become available and bootstrapped.
-	getAssetManagementApiChannel().waitForApiAvailable();
-	waitForModuleBootstrapped(MicroserviceIdentifier.AssetManagement.getPath(), 2, TimeUnit.MINUTES);
+	// Wait for event management API to become available.
+	getEventManagementApiDemux().waitForCorrespondingTenantEngineAvailable(this);
 
-	// Wait for event management APIs to become available for the given tenant.
-	getEventManagementApiChannel().waitForApiAvailable();
-	getMicroservice().getTopologyStateAggregator().waitForTenantEngineAvailable(
-		MicroserviceIdentifier.EventManagement.getPath(), getTenant().getId(), 2, TimeUnit.MINUTES, 1);
+	// Wait for asset management API to become available and bootstrapped.
+	getAssetManagementApiDemux().waitForCorrespondingTenantEngineAvailable(this);
+	waitForModuleBootstrapped(MicroserviceIdentifier.AssetManagement.getPath(), 2, TimeUnit.MINUTES);
 
 	// Execute remote calls as superuser.
 	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
@@ -139,8 +137,8 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 		    getMicroservice()));
 	    for (String script : scripts) {
 		GroovyDeviceModelInitializer initializer = new GroovyDeviceModelInitializer(groovy, script);
-		initializer.initialize(getDeviceManagement(), getEventManagementApiChannel(),
-			getAssetManagementApiChannel());
+		initializer.initialize(getDeviceManagement(), getEventManagementApiDemux().getApiChannel(),
+			getAssetManagementApiDemux().getApiChannel());
 	    }
 	} finally {
 	    SecurityContextHolder.getContext().setAuthentication(previous);
@@ -198,11 +196,11 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	this.deviceManagementImpl = deviceManagementImpl;
     }
 
-    public IAssetManagementApiChannel<?> getAssetManagementApiChannel() {
-	return ((IDeviceManagementMicroservice) getMicroservice()).getAssetManagementApiDemux().getApiChannel();
+    public IAssetManagementApiDemux getAssetManagementApiDemux() {
+	return ((IDeviceManagementMicroservice) getMicroservice()).getAssetManagementApiDemux();
     }
 
-    public IDeviceEventManagementApiChannel<?> getEventManagementApiChannel() {
-	return ((IDeviceManagementMicroservice) getMicroservice()).getEventManagementApiDemux().getApiChannel();
+    public IDeviceEventManagementApiDemux getEventManagementApiDemux() {
+	return ((IDeviceManagementMicroservice) getMicroservice()).getEventManagementApiDemux();
     }
 }

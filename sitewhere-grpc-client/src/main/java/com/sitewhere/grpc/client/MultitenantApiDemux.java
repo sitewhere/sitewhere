@@ -7,8 +7,13 @@
  */
 package com.sitewhere.grpc.client;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import com.sitewhere.grpc.client.spi.multitenant.IMultitenantApiChannel;
 import com.sitewhere.grpc.client.spi.multitenant.IMultitenantApiDemux;
+import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
  * Extends {@link ApiDemux} with functionality required to support multitenant
@@ -29,7 +34,18 @@ public abstract class MultitenantApiDemux<T extends IMultitenantApiChannel<?>> e
      * @return
      */
     protected boolean isApiChannelMatch(T channel) {
-	getLogger().info("Checking for tenant engine available.");
 	return channel.checkTenantEngineAvailable();
+    }
+
+    /*
+     * @see com.sitewhere.grpc.client.spi.multitenant.IMultitenantApiDemux#
+     * waitForCorrespondingTenantEngineAvailable(com.sitewhere.spi.microservice.
+     * multitenant.IMicroserviceTenantEngine)
+     */
+    @Override
+    public void waitForCorrespondingTenantEngineAvailable(IMicroserviceTenantEngine engine) throws SiteWhereException {
+	Authentication system = engine.getMicroservice().getSystemUser().getAuthenticationForTenant(engine.getTenant());
+	SecurityContextHolder.getContext().setAuthentication(system);
+	waitForApiChannelAvailable(true);
     }
 }

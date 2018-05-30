@@ -86,8 +86,12 @@ public class JwtServerInterceptor implements ServerInterceptor {
 		List<String> auths = gauths.stream().map(g -> g.getAuthority()).collect(Collectors.toList());
 		establishSecurityContext(jwt, username, gauths, auths);
 
-		Method implMethod = locateMethod(call.getMethodDescriptor());
-		return processAuthAnnotations(call, headers, next, username, auths, implMethod);
+		// Skip method-level security check for now due to multiple service
+		// implementations.
+		// Method implMethod = locateMethod(call.getMethodDescriptor());
+		// return processAuthAnnotations(call, headers, next, username, auths,
+		// implMethod);
+		return next.startCall(call, headers);
 	    } catch (SiteWhereException e) {
 		call.close(Status.PERMISSION_DENIED.withDescription(e.getMessage()), headers);
 		return new ServerCall.Listener<ReqT>() {

@@ -8,6 +8,8 @@
 package com.sitewhere.grpc.client.spi.multitenant;
 
 import com.sitewhere.grpc.client.spi.IApiDemux;
+import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
  * Adds behaviors specific to APIs that are provided at the tenant engine rather
@@ -16,4 +18,13 @@ import com.sitewhere.grpc.client.spi.IApiDemux;
  * @author Derek
  */
 public interface IMultitenantApiDemux<T extends IMultitenantApiChannel<?>> extends IApiDemux<T> {
+
+    /**
+     * Wait for the remote tenant engine corresponding to the given tenant engine to
+     * become available.
+     * 
+     * @param engine
+     * @throws SiteWhereException
+     */
+    public void waitForCorrespondingTenantEngineAvailable(IMicroserviceTenantEngine engine) throws SiteWhereException;
 }
