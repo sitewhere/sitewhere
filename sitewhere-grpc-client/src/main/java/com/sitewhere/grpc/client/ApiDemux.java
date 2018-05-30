@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import com.sitewhere.grpc.client.spi.IApiChannel;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.IApiDemuxRoutingStrategy;
@@ -26,8 +29,10 @@ import com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesListener;
 import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 import com.sitewhere.spi.microservice.state.IMicroserviceState;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
+import com.sitewhere.spi.security.ITenantAwareAuthentication;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Demulitiplexes API calls across multiple {@link IApiChannel} in order to
@@ -101,10 +106,12 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
      * Indicates if the given API channel should be considered a match for a given
      * request.
      * 
+     * @param tenant
      * @param channel
      * @return
+     * @throws SiteWhereException
      */
-    protected boolean isApiChannelMatch(T channel) {
+    protected boolean isApiChannelMatch(ITenant tenant, T channel) throws SiteWhereException {
 	return true;
     }
 
@@ -113,18 +120,27 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
      */
     @Override
     public T getApiChannel() {
-	return getApiChannel(true);
+	try {
+	    ITenant tenant = null;
+	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	    if ((authentication != null) && (authentication instanceof ITenantAwareAuthentication)) {
+		tenant = ((ITenantAwareAuthentication) authentication).getTenant();
+	    }
+	    return getApiChannelWithConstraints(tenant);
+	} catch (SiteWhereException e) {
+	    throw new RuntimeException("Unable to get API channel.", e);
+	}
     }
 
     /**
      * Loop through channels to find an available match based on the routing
-     * strategy. If the validate flag is false, any additional validation logic is
-     * skipped.
+     * strategy. The matching criteria may be re-implemented in subclasses.
      * 
-     * @param validate
+     * @param tenant
      * @return
+     * @throws SiteWhereException
      */
-    protected T getApiChannel(boolean validate) {
+    protected T getApiChannelWithConstraints(ITenant tenant) throws SiteWhereException {
 	int channelCount = getApiChannels().size();
 	if (channelCount == 0) {
 	    throw new ApiChannelNotAvailableException("No API Channels found.");
@@ -132,8 +148,7 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 
 	T selectedChannel = getRoutingStrategy().chooseApiChannel(getApiChannels());
 	while (channelCount > 0) {
-	    boolean valid = !validate || isApiChannelMatch(selectedChannel);
-	    if (valid) {
+	    if (isApiChannelMatch(tenant, selectedChannel)) {
 		return selectedChannel;
 	    }
 
@@ -141,8 +156,7 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 	    channelCount--;
 	}
 
-	throw new ApiChannelNotAvailableException(
-		"No API Channel available for tenant: " + getTenantEngine().getTenant().getToken() + ".");
+	throw new ApiChannelNotAvailableException("No API Channel available.");
     }
 
     /*
@@ -150,21 +164,25 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
      */
     @Override
     public void waitForMicroserviceAvailable() {
-	waitForApiChannelAvailable(false);
+	try {
+	    waitForApiChannelAvailable(null);
+	} catch (SiteWhereException e) {
+	    throw new RuntimeException("Error waiting for microservice to become available.", e);
+	}
     }
 
     /**
-     * Wait for an API channel to become available. Validation flag indicate whether
-     * extra validation should be applied (such as detecting a tenant engine also
-     * being available).
+     * Wait for an API channel to become available. A tenant may be passed to add
+     * extra matching criteria for channel selection.
      * 
-     * @param validate
+     * @param tenant
+     * @throws SiteWhereException
      */
-    protected void waitForApiChannelAvailable(boolean validate) {
+    protected void waitForApiChannelAvailable(ITenant tenant) throws SiteWhereException {
 	long deadline = System.currentTimeMillis() + (API_CHANNEL_WARN_INTERVAL_IN_SECS * 1000);
 	while (true) {
 	    try {
-		getApiChannel(validate);
+		getApiChannelWithConstraints(tenant);
 		return;
 	    } catch (ApiChannelNotAvailableException e) {
 		if ((System.currentTimeMillis() - deadline) < 0) {
