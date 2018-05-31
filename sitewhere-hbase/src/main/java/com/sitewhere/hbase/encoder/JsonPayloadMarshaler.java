@@ -14,7 +14,6 @@ import com.sitewhere.rest.model.batch.BatchElement;
 import com.sitewhere.rest.model.batch.BatchOperation;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
-import com.sitewhere.rest.model.device.DeviceAssignmentState;
 import com.sitewhere.rest.model.device.DeviceType;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
@@ -26,6 +25,7 @@ import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.device.event.DeviceStreamData;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
+import com.sitewhere.rest.model.device.state.DeviceState;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.tenant.Tenant;
 import com.sitewhere.rest.model.user.GrantedAuthority;
@@ -37,7 +37,6 @@ import com.sitewhere.spi.batch.IBatchElement;
 import com.sitewhere.spi.batch.IBatchOperation;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceAssignmentState;
 import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
@@ -49,6 +48,7 @@ import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
+import com.sitewhere.spi.device.state.IDeviceState;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.IGrantedAuthority;
@@ -223,7 +223,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
      * (com.sitewhere .spi.device.IDeviceAssignmentState)
      */
     @Override
-    public byte[] encodeDeviceAssignmentState(IDeviceAssignmentState state) throws SiteWhereException {
+    public byte[] encodeDeviceAssignmentState(IDeviceState state) throws SiteWhereException {
 	return MarshalUtils.marshalJson(state);
     }
 
@@ -235,8 +235,8 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
      * (byte[])
      */
     @Override
-    public DeviceAssignmentState decodeDeviceAssignmentState(byte[] payload) throws SiteWhereException {
-	return MarshalUtils.unmarshalJson(payload, DeviceAssignmentState.class);
+    public DeviceState decodeDeviceAssignmentState(byte[] payload) throws SiteWhereException {
+	return MarshalUtils.unmarshalJson(payload, DeviceState.class);
     }
 
     /*

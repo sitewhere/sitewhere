@@ -74,7 +74,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 
 /**
- * Common methods needed by device service provider implementations.
+ * Common methods needed by device management implementations.
  * 
  * @author Derek
  */
@@ -338,12 +338,10 @@ public class DeviceManagementPersistence extends Persistence {
      * Common logic for creating new device type and populating it from request.
      * 
      * @param request
-     * @param token
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceType deviceTypeCreateLogic(IDeviceTypeCreateRequest request, String token)
-	    throws SiteWhereException {
+    public static DeviceType deviceTypeCreateLogic(IDeviceTypeCreateRequest request) throws SiteWhereException {
 	DeviceType type = new DeviceType();
 	type.setId(UUID.randomUUID());
 	type.setDescription(request.getDescription() != null ? request.getDescription() : "");

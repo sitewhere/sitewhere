@@ -2,6 +2,7 @@
 <xsd:schema
 	xmlns="http://sitewhere.io/schema/sitewhere/microservice/device-state"
 	xmlns:sw="http://sitewhere.io/schema/sitewhere/microservice/common"
+	xmlns:ds="http://sitewhere.io/schema/sitewhere/microservice/common/datastore"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/device-state"
 	elementFormDefault="qualified" attributeFormDefault="unqualified">
@@ -9,6 +10,10 @@
 	<xsd:import
 		namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
 		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
+
+	<xsd:import
+		namespace="http://sitewhere.io/schema/sitewhere/microservice/common/datastore"
+		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/datastore-common.xsd" />
 
 	<xsd:element name="device-state" type="deviceStateType">
 		<xsd:annotation>
@@ -21,7 +26,8 @@
 
 	<!-- Contains information about device state management -->
 	<xsd:complexType name="deviceStateType">
-		<xsd:sequence>
-		</xsd:sequence>
+		<xsd:all>
+			<xsd:element ref="ds:device-state-datastore" />
+		</xsd:all>
 	</xsd:complexType>
 </xsd:schema>

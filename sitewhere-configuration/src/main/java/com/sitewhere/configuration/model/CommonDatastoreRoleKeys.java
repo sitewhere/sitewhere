@@ -32,6 +32,12 @@ public enum CommonDatastoreRoleKeys implements IRoleKey {
     /** Event management datastore element */
     EventManagementDatastoreElement("evt_mgmt_ds_elm"),
 
+    /** Device state management datastores */
+    DeviceStateManagementDatastore("dev_state_mgmt_ds"),
+
+    /** Device state management datastore element */
+    DeviceStateManagementDatastoreElement("dev_state_mgmt_ds_elm"),
+
     /** InfluxDB datastore */
     InfluxDBDatastore("influx_ds"),
 

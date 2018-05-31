@@ -7,6 +7,7 @@
  */
 package com.sitewhere.devicestate.spi.microservice;
 
+import com.sitewhere.spi.device.state.IDeviceStateManagement;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
@@ -16,4 +17,11 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
  * @author Derek
  */
 public interface IDeviceStateTenantEngine extends IMicroserviceTenantEngine {
+
+    /**
+     * Get associated device state management implementation.
+     * 
+     * @return
+     */
+    public IDeviceStateManagement getDeviceStateManagement();
 }

@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.devicestate;
+package com.sitewhere.devicestate.presence;
 
 import com.sitewhere.devicestate.spi.IPresenceNotificationStrategy;
 import com.sitewhere.spi.SiteWhereException;

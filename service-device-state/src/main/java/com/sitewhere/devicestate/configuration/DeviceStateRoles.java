@@ -8,6 +8,7 @@
 package com.sitewhere.devicestate.configuration;
 
 import com.sitewhere.configuration.ConfigurationRole;
+import com.sitewhere.configuration.model.CommonDatastoreRoleKeys;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRole;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 import com.sitewhere.spi.microservice.configuration.model.IRoleKey;
@@ -20,8 +21,10 @@ import com.sitewhere.spi.microservice.configuration.model.IRoleKey;
 public enum DeviceStateRoles implements IConfigurationRoleProvider {
 
     /** Root device state role. */
-    DeviceState(ConfigurationRole.build(DeviceStateRoleKeys.DeviceState, "Device State", false, false, false,
-	    new IRoleKey[] { DeviceStateRoleKeys.PresenceManager }, new IRoleKey[0], true)),
+    DeviceState(ConfigurationRole.build(
+	    DeviceStateRoleKeys.DeviceState, "Device State", false, false, false, new IRoleKey[] {
+		    CommonDatastoreRoleKeys.DeviceStateManagementDatastore, DeviceStateRoleKeys.PresenceManager },
+	    new IRoleKey[0], true)),
 
     /** Presence manager. */
     PresenceManager(

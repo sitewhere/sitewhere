@@ -98,6 +98,34 @@ public class DatastoreConfigurationParser {
     }
 
     /**
+     * Parse potential configuration options for a device state datastore and return
+     * configuration details.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    public static DatastoreConfiguration parseDeviceStateDatastore(Element element, ParserContext context) {
+	List<Element> children = DomUtils.getChildElements(element);
+	for (Element child : children) {
+	    DeviceManagementDatastoreElements type = DeviceManagementDatastoreElements
+		    .getByLocalName(child.getLocalName());
+	    if (type == null) {
+		throw new RuntimeException("Unknown datastore element: " + child.getLocalName());
+	    }
+	    switch (type) {
+	    case MongoDBDatastore: {
+		return parseMongoDbDatastore(child, context);
+	    }
+	    case MongoDBReference: {
+		return parseMongoDbReference(child, context);
+	    }
+	    }
+	}
+	return null;
+    }
+
+    /**
      * Parse configuration for a MongoDB datastore.
      * 
      * @param element

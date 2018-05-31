@@ -47,6 +47,17 @@ public enum CommonDatastoreRoles implements IConfigurationRoleProvider {
 		    CommonDatastoreRoleKeys.InfluxDBDatastore, CommonDatastoreRoleKeys.InfluxDBReference,
 		    CommonDatastoreRoleKeys.CassandraDatastore, CommonDatastoreRoleKeys.CassandraReference })),
 
+    /** Device state management datastore */
+    DeviceStateManagementDatastore(ConfigurationRole.build(CommonDatastoreRoleKeys.DeviceStateManagementDatastore,
+	    "Datastore", false, false, false,
+	    new IRoleKey[] { CommonDatastoreRoleKeys.DeviceStateManagementDatastoreElement }, new IRoleKey[0])),
+
+    /** Elements that can be added to a device state management datastore */
+    DeviceStateManagementDatastoreElement(ConfigurationRole.build(
+	    CommonDatastoreRoleKeys.DeviceStateManagementDatastoreElement, "Datastore", false, false, false,
+	    new IRoleKey[0],
+	    new IRoleKey[] { CommonDatastoreRoleKeys.MongoDBDatastore, CommonDatastoreRoleKeys.MongoDBReference })),
+
     /** MongoDB datastore */
     MongoDBDatastore(ConfigurationRole.build(CommonDatastoreRoleKeys.MongoDBDatastore, "MongoDB Datastore", false,
 	    false, false)),

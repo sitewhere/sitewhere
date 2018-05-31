@@ -20,7 +20,10 @@ public interface IDatastoreCommonParser {
 	DeviceManagementDatastore("device-management-datastore"),
 
 	/** Event management datastore */
-	EventManagementDatastore("event-management-datastore");
+	EventManagementDatastore("event-management-datastore"),
+
+	/** Device state management datastore */
+	DeviceStateManagementDatastore("device-state-datastore");
 
 	/** Event code */
 	private String localName;

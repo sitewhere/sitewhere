@@ -45,6 +45,16 @@
 		</xsd:complexType>
 	</xsd:element>
 
+	<!-- Choices for potential device state datastores -->
+	<xsd:element name="device-state-datastore">
+		<xsd:complexType>
+			<xsd:choice>
+				<xsd:element ref="mongodb-datastore" />
+				<xsd:element ref="mongodb-datastore-reference" />
+			</xsd:choice>
+		</xsd:complexType>
+	</xsd:element>
+
 	<!-- Cassandra datastore reference -->
 	<xsd:element name="cassandra-datastore-reference" type="cassandraDatastoreReferenceType"
 		substitutionGroup="abstract-datastore">

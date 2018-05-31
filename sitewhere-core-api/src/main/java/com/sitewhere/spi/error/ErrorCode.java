@@ -240,6 +240,9 @@ public enum ErrorCode {
     /** Invalid batch element id */
     InvalidBatchElementId(4430, "Batch element not found."),
 
+    /** Invalid device stateid */
+    InvalidDeviceStateId(4440, "Device state id not found."),
+
     /******************
      * DEVICE COMMAND *
      ******************/

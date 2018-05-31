@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:sw="http://sitewhere.io/schema/sitewhere/microservice/common"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:ds="http://sitewhere.io/schema/sitewhere/microservice/device-state"
+	xmlns:data="http://sitewhere.io/schema/sitewhere/microservice/common/datastore"
 	xsi:schemaLocation="
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
            http://sitewhere.io/schema/sitewhere/microservice/common http://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd
+           http://sitewhere.io/schema/sitewhere/microservice/common/datastore http://sitewhere.io/schema/sitewhere/microservice/common/current/datastore-common.xsd
            http://sitewhere.io/schema/sitewhere/microservice/device-state http://sitewhere.io/schema/sitewhere/microservice/device-state/current/device-state.xsd">
 
 	<!-- Allow property placeholder substitution -->
 	<context:property-placeholder />
 
-	<ds:device-state></ds:device-state>
+	<ds:device-state>
+
+		<!-- Use global MongoDB tenant configuration -->
+		<data:device-state-datastore>
+			<data:mongodb-datastore-reference
+				id="tenant" />
+		</data:device-state-datastore>
+
+	</ds:device-state>
 
 </beans>

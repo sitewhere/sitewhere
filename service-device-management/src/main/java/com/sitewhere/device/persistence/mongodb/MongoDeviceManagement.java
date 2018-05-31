@@ -168,15 +168,8 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     @Override
     public IDeviceType createDeviceType(IDeviceTypeCreateRequest request) throws SiteWhereException {
-	String uuid = null;
-	if (request.getToken() != null) {
-	    uuid = request.getToken();
-	} else {
-	    uuid = UUID.randomUUID().toString();
-	}
-
 	// Use common logic so all backend implementations work the same.
-	DeviceType deviceType = DeviceManagementPersistence.deviceTypeCreateLogic(request, uuid);
+	DeviceType deviceType = DeviceManagementPersistence.deviceTypeCreateLogic(request);
 
 	MongoCollection<Document> types = getMongoClient().getDeviceTypesCollection();
 	Document created = MongoDeviceType.toDocument(deviceType);

@@ -34,8 +34,8 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceAssignmentState;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
+import com.sitewhere.spi.device.state.IDeviceState;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 
@@ -217,7 +217,7 @@ public class HBaseDeviceAssignment {
      * @throws SiteWhereException
      */
     public static DeviceAssignment updateDeviceAssignmentState(IHBaseContext context, IDeviceAssignment assn,
-	    IDeviceAssignmentState state) throws SiteWhereException {
+	    IDeviceState state) throws SiteWhereException {
 	DeviceAssignment updated = getDeviceAssignment(context, assn);
 	// updated.setState(DeviceAssignmentState.copy(state));
 

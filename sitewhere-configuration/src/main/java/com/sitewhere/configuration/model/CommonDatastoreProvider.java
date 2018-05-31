@@ -46,6 +46,7 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
     public void initializeElements() {
 	addElement(createDeviceManagementDatastoreElement());
 	addElement(creatEventManagementDatastoreElement());
+	addElement(createDeviceStateManagementDatastoreElement());
 	addElement(createMongoDbDatastoreElement());
 	addElement(createMongoDbReferenceElement());
 	addElement(createInfluxDbDatastoreElement());
@@ -65,7 +66,7 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 		IDatastoreCommonParser.Elements.DeviceManagementDatastore.getLocalName(), "database",
 		CommonDatastoreRoleKeys.DeviceManagementDatastore, this);
 
-	builder.description("Specifies how data will be stored.");
+	builder.description("Specifies how device management data will be stored.");
 
 	return builder.build();
     }
@@ -81,7 +82,23 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 		IDatastoreCommonParser.Elements.EventManagementDatastore.getLocalName(), "database",
 		CommonDatastoreRoleKeys.EventManagementDatastore, this);
 
-	builder.description("Specifies how data will be stored.");
+	builder.description("Specifies how device event data will be stored.");
+
+	return builder.build();
+    }
+
+    /**
+     * Create device state management datastore element.
+     * 
+     * @return
+     */
+    protected ElementNode createDeviceStateManagementDatastoreElement() {
+	ElementNode.Builder builder = new ElementNode.Builder(
+		CommonDatastoreRoles.DeviceStateManagementDatastore.getRole().getName(),
+		IDatastoreCommonParser.Elements.DeviceStateManagementDatastore.getLocalName(), "database",
+		CommonDatastoreRoleKeys.DeviceStateManagementDatastore, this);
+
+	builder.description("Specifies how device state data will be stored.");
 
 	return builder.build();
     }

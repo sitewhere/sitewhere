@@ -305,7 +305,7 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 	if (getTargetIdentifier().equals(microservice.getIdentifier())) {
 	    T existing = getApiChannelForHost(microservice.getHostname());
 	    if (existing == null) {
-		getLogger().info("Microservice for '" + getTargetIdentifier() + "' at hostname "
+		getLogger().debug("Microservice for '" + getTargetIdentifier() + "' at hostname "
 			+ microservice.getHostname() + " added. Initializing API channel.");
 		try {
 		    initializeApiChannel(microservice.getHostname());
