@@ -67,19 +67,16 @@ public class UserContextManager {
     }
 
     /**
-     * Set tenant for current context (creating a placeholder if necessary).
+     * Set tenant for current context.
      * 
      * @param tenant
      */
     public static void setCurrentTenant(ITenant tenant) {
 	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-	if (auth == null) {
-	    SitewhereAuthentication sw = new SitewhereAuthentication(null, null);
-	    sw.setTenant(tenant);
-	    SecurityContextHolder.getContext().setAuthentication(sw);
-	    return;
-	} else if (auth instanceof SitewhereAuthentication) {
+	if ((auth != null) && (auth instanceof SitewhereAuthentication)) {
 	    ((SitewhereAuthentication) auth).setTenant(tenant);
+	} else {
+	    throw new RuntimeException("Attempting to set tenant with no established user context.");
 	}
     }
 }
