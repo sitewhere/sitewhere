@@ -7,8 +7,6 @@
  */
 package com.sitewhere.grpc.client;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -29,10 +27,6 @@ import io.grpc.MethodDescriptor;
  * @author Derek
  */
 public class TenantTokenClientInterceptor implements ClientInterceptor {
-
-    /** Static logger instance */
-    @SuppressWarnings("unused")
-    private static Log LOGGER = LogFactory.getLog(TenantTokenClientInterceptor.class);
 
     /** Tenant token metadata key */
     public static final Metadata.Key<String> TENANT_ID_KEY = Metadata.Key.of("tenant",

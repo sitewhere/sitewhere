@@ -10,8 +10,8 @@ package com.sitewhere.spi.server.lifecycle;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sitewhere.rest.model.monitoring.ProgressMessage;
 import com.sitewhere.spi.SiteWhereException;
@@ -25,7 +25,7 @@ public class LifecycleProgressUtils {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
-    private static Log LOGGER = LogFactory.getLog(LifecycleProgressUtils.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(LifecycleProgressUtils.class);
 
     /**
      * Common logic for starting an operation on an

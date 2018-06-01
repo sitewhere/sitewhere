@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.customer.CustomerType;
@@ -30,7 +30,7 @@ import com.sitewhere.spi.device.IDeviceManagement;
 public class CustomerTypeMarshalHelper {
 
     /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(CustomerTypeMarshalHelper.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(CustomerTypeMarshalHelper.class);
 
     /** Device management */
     private IDeviceManagement deviceManagement;

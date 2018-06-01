@@ -7,9 +7,6 @@
  */
 package com.sitewhere.grpc.client;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.grpc.client.spi.multitenant.IMultitenantGrpcChannel;
 import com.sitewhere.grpc.service.GCheckTenantEngineAvailableRequest;
 import com.sitewhere.grpc.service.GCheckTenantEngineAvailableResponse;
@@ -31,10 +28,6 @@ import io.grpc.ManagedChannelBuilder;
  * @param <A>
  */
 public abstract class MultitenantGrpcChannel<B, A> extends GrpcChannel<B, A> implements IMultitenantGrpcChannel<B, A> {
-
-    /** Static logger instance */
-    @SuppressWarnings("unused")
-    protected static Log LOGGER = LogFactory.getLog(MultitenantGrpcChannel.class);
 
     /** Client interceptor for adding tenant token */
     private TenantTokenClientInterceptor tenant = new TenantTokenClientInterceptor();

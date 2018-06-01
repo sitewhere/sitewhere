@@ -1,8 +1,6 @@
 description = 'SiteWhere Core API'
 
 dependencies {
-    compile group: 'commons-logging', name: 'commons-logging'
-    
 	// Spring security components.
     compile group: 'org.springframework.security', name: 'spring-security-core'
 	

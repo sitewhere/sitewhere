@@ -10,8 +10,8 @@ package com.sitewhere.server.lifecycle;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
@@ -31,7 +31,7 @@ import io.opentracing.ActiveSpan;
 public class LifecycleProgressMonitor implements ILifecycleProgressMonitor {
 
     /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(LifecycleProgressMonitor.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(LifecycleProgressMonitor.class);
 
     /** Stack for nested progress tracking */
     private Deque<ILifecycleProgressContext> contextStack = new ArrayDeque<ILifecycleProgressContext>();

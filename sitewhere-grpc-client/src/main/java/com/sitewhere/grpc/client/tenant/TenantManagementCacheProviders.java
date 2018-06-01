@@ -9,8 +9,8 @@ package com.sitewhere.grpc.client.tenant;
 
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sitewhere.grpc.client.cache.CacheIdentifier;
 import com.sitewhere.grpc.client.cache.CacheProvider;
@@ -38,7 +38,7 @@ public class TenantManagementCacheProviders {
     public static class TenantByTokenCache extends CacheProvider<String, ITenant> {
 
 	/** Static logger instance */
-	private static Log LOGGER = LogFactory.getLog(TenantByTokenCache.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(TenantByTokenCache.class);
 
 	public TenantByTokenCache(IHazelcastProvider hazelcastProvider) {
 	    super(hazelcastProvider, CacheIdentifier.TenantByToken, 100);
@@ -48,7 +48,7 @@ public class TenantManagementCacheProviders {
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override
-	public Log getLogger() {
+	public Logger getLogger() {
 	    return LOGGER;
 	}
     }
@@ -61,7 +61,7 @@ public class TenantManagementCacheProviders {
     public static class TenantByIdCache extends CacheProvider<UUID, ITenant> {
 
 	/** Static logger instance */
-	private static Log LOGGER = LogFactory.getLog(TenantByIdCache.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(TenantByIdCache.class);
 
 	public TenantByIdCache(IHazelcastProvider hazelcastProvider) {
 	    super(hazelcastProvider, CacheIdentifier.TenantById, 100);
@@ -71,7 +71,7 @@ public class TenantManagementCacheProviders {
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override
-	public Log getLogger() {
+	public Logger getLogger() {
 	    return LOGGER;
 	}
     }

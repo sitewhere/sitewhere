@@ -10,8 +10,8 @@ package com.sitewhere.server.lifecycle;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -30,7 +30,7 @@ import io.opentracing.ActiveSpan;
 public class CompositeLifecycleStep implements ICompositeLifecycleStep {
 
     /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(CompositeLifecycleStep.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(CompositeLifecycleStep.class);
 
     /** Step name */
     private String name;

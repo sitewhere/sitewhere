@@ -21,8 +21,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -42,10 +40,6 @@ import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
  * @author Derek
  */
 public class ConfigurationContentParser {
-
-    /** Static logger instance */
-    @SuppressWarnings("unused")
-    private static Log LOGGER = LogFactory.getLog(ConfigurationContentParser.class);
 
     /**
      * Parse a byte[] containing SiteWhere XML configuration for JSON

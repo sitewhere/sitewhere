@@ -7,8 +7,8 @@
  */
 package com.sitewhere.batch.marshaling;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sitewhere.rest.model.batch.BatchElement;
 import com.sitewhere.rest.model.batch.MarshaledBatchElement;
@@ -27,7 +27,7 @@ import com.sitewhere.spi.device.IDeviceManagement;
 public class BatchElementMarshalHelper {
 
     /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(BatchElementMarshalHelper.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(BatchElementMarshalHelper.class);
 
     /** Include device information */
     private boolean includeDevice;

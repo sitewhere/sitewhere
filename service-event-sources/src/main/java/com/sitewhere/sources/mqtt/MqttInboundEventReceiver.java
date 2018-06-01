@@ -143,7 +143,7 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 		} catch (InterruptedException e) {
 		    break;
 		} catch (Throwable e) {
-		    getLogger().error(e);
+		    getLogger().error("Error in MQTT processing.", e);
 		}
 	    }
 	}

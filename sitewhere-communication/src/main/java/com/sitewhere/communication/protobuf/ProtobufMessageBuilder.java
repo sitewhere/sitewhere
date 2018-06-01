@@ -10,8 +10,8 @@ package com.sitewhere.communication.protobuf;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.DescriptorProtos;
 import com.google.protobuf.Descriptors;
@@ -33,7 +33,7 @@ import com.sitewhere.spi.tenant.ITenant;
 public class ProtobufMessageBuilder {
 
     /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(ProtobufMessageBuilder.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(ProtobufMessageBuilder.class);
 
     /**
      * Create a protobuf message for an {@link IDeviceCommandExecution} targeted at

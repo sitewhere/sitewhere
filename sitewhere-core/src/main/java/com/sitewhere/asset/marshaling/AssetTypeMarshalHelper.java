@@ -7,9 +7,6 @@
  */
 package com.sitewhere.asset.marshaling;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.rest.model.asset.AssetType;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.spi.SiteWhereException;
@@ -23,10 +20,6 @@ import com.sitewhere.spi.asset.IAssetType;
  * @author Derek
  */
 public class AssetTypeMarshalHelper {
-
-    /** Static logger instance */
-    @SuppressWarnings("unused")
-    private static Log LOGGER = LogFactory.getLog(AssetTypeMarshalHelper.class);
 
     /** Asset management */
     private IAssetManagement assetManagement;

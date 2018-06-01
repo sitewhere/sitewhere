@@ -9,8 +9,8 @@ package com.sitewhere.grpc.client.user;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sitewhere.grpc.client.cache.CacheIdentifier;
 import com.sitewhere.grpc.client.cache.CacheProvider;
@@ -39,7 +39,7 @@ public class UserManagementCacheProviders {
     public static class UserByTokenCache extends CacheProvider<String, IUser> {
 
 	/** Static logger instance */
-	private static Log LOGGER = LogFactory.getLog(UserByTokenCache.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(UserByTokenCache.class);
 
 	public UserByTokenCache(IHazelcastProvider hazelcastProvider) {
 	    super(hazelcastProvider, CacheIdentifier.UserByToken, 100);
@@ -49,7 +49,7 @@ public class UserManagementCacheProviders {
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override
-	public Log getLogger() {
+	public Logger getLogger() {
 	    return LOGGER;
 	}
     }
@@ -62,7 +62,7 @@ public class UserManagementCacheProviders {
     public static class GrantedAuthorityByTokenCache extends CacheProvider<String, List<IGrantedAuthority>> {
 
 	/** Static logger instance */
-	private static Log LOGGER = LogFactory.getLog(GrantedAuthorityByTokenCache.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(GrantedAuthorityByTokenCache.class);
 
 	public GrantedAuthorityByTokenCache(IHazelcastProvider hazelcastProvider) {
 	    super(hazelcastProvider, CacheIdentifier.GrantedAuthorityByToken, 100);
@@ -72,7 +72,7 @@ public class UserManagementCacheProviders {
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override
-	public Log getLogger() {
+	public Logger getLogger() {
 	    return LOGGER;
 	}
     }

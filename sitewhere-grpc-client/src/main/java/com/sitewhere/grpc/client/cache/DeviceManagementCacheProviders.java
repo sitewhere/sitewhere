@@ -9,8 +9,8 @@ package com.sitewhere.grpc.client.cache;
 
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.device.IDevice;
@@ -33,7 +33,7 @@ public class DeviceManagementCacheProviders {
     public static class AreaByTokenCache extends CacheProvider<String, IArea> {
 
 	/** Static logger instance */
-	private static Log LOGGER = LogFactory.getLog(AreaByTokenCache.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(AreaByTokenCache.class);
 
 	public AreaByTokenCache(IHazelcastProvider hazelcastProvider) {
 	    super(hazelcastProvider, CacheIdentifier.AreaByToken, 1000);
@@ -43,7 +43,7 @@ public class DeviceManagementCacheProviders {
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override
-	public Log getLogger() {
+	public Logger getLogger() {
 	    return LOGGER;
 	}
     }
@@ -56,7 +56,7 @@ public class DeviceManagementCacheProviders {
     public static class AreaByIdCache extends CacheProvider<UUID, IArea> {
 
 	/** Static logger instance */
-	private static Log LOGGER = LogFactory.getLog(AreaByIdCache.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(AreaByIdCache.class);
 
 	public AreaByIdCache(IHazelcastProvider hazelcastProvider) {
 	    super(hazelcastProvider, CacheIdentifier.AreaById, 1000);
@@ -66,7 +66,7 @@ public class DeviceManagementCacheProviders {
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override
-	public Log getLogger() {
+	public Logger getLogger() {
 	    return LOGGER;
 	}
     }
@@ -79,7 +79,7 @@ public class DeviceManagementCacheProviders {
     public static class DeviceTypeByTokenCache extends CacheProvider<String, IDeviceType> {
 
 	/** Static logger instance */
-	private static Log LOGGER = LogFactory.getLog(DeviceTypeByTokenCache.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(DeviceTypeByTokenCache.class);
 
 	public DeviceTypeByTokenCache(IHazelcastProvider hazelcastProvider) {
 	    super(hazelcastProvider, CacheIdentifier.DeviceByToken, 100);
@@ -89,7 +89,7 @@ public class DeviceManagementCacheProviders {
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override
-	public Log getLogger() {
+	public Logger getLogger() {
 	    return LOGGER;
 	}
     }
@@ -102,7 +102,7 @@ public class DeviceManagementCacheProviders {
     public static class DeviceTypeByIdCache extends CacheProvider<UUID, IDeviceType> {
 
 	/** Static logger instance */
-	private static Log LOGGER = LogFactory.getLog(DeviceTypeByIdCache.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(DeviceTypeByIdCache.class);
 
 	public DeviceTypeByIdCache(IHazelcastProvider hazelcastProvider) {
 	    super(hazelcastProvider, CacheIdentifier.DeviceTypeById, 100);
@@ -112,7 +112,7 @@ public class DeviceManagementCacheProviders {
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override
-	public Log getLogger() {
+	public Logger getLogger() {
 	    return LOGGER;
 	}
     }
@@ -125,7 +125,7 @@ public class DeviceManagementCacheProviders {
     public static class DeviceByTokenCache extends CacheProvider<String, IDevice> {
 
 	/** Static logger instance */
-	private static Log LOGGER = LogFactory.getLog(DeviceByTokenCache.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(DeviceByTokenCache.class);
 
 	public DeviceByTokenCache(IHazelcastProvider hazelcastProvider) {
 	    super(hazelcastProvider, CacheIdentifier.DeviceByToken, 5000);
@@ -135,7 +135,7 @@ public class DeviceManagementCacheProviders {
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override
-	public Log getLogger() {
+	public Logger getLogger() {
 	    return LOGGER;
 	}
     }
@@ -148,7 +148,7 @@ public class DeviceManagementCacheProviders {
     public static class DeviceByIdCache extends CacheProvider<UUID, IDevice> {
 
 	/** Static logger instance */
-	private static Log LOGGER = LogFactory.getLog(DeviceByIdCache.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(DeviceByIdCache.class);
 
 	public DeviceByIdCache(IHazelcastProvider hazelcastProvider) {
 	    super(hazelcastProvider, CacheIdentifier.DeviceById, 5000);
@@ -158,7 +158,7 @@ public class DeviceManagementCacheProviders {
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override
-	public Log getLogger() {
+	public Logger getLogger() {
 	    return LOGGER;
 	}
     }
@@ -171,7 +171,7 @@ public class DeviceManagementCacheProviders {
     public static class DeviceAssignmentByTokenCache extends CacheProvider<String, IDeviceAssignment> {
 
 	/** Static logger instance */
-	private static Log LOGGER = LogFactory.getLog(DeviceAssignmentByTokenCache.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(DeviceAssignmentByTokenCache.class);
 
 	public DeviceAssignmentByTokenCache(IHazelcastProvider hazelcastProvider) {
 	    super(hazelcastProvider, CacheIdentifier.DeviceAssignmentByToken, 5000);
@@ -181,7 +181,7 @@ public class DeviceManagementCacheProviders {
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override
-	public Log getLogger() {
+	public Logger getLogger() {
 	    return LOGGER;
 	}
     }
@@ -194,7 +194,7 @@ public class DeviceManagementCacheProviders {
     public static class DeviceAssignmentByIdCache extends CacheProvider<UUID, IDeviceAssignment> {
 
 	/** Static logger instance */
-	private static Log LOGGER = LogFactory.getLog(DeviceAssignmentByIdCache.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(DeviceAssignmentByIdCache.class);
 
 	public DeviceAssignmentByIdCache(IHazelcastProvider hazelcastProvider) {
 	    super(hazelcastProvider, CacheIdentifier.DeviceAssignmentById, 5000);
@@ -204,7 +204,7 @@ public class DeviceManagementCacheProviders {
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override
-	public Log getLogger() {
+	public Logger getLogger() {
 	    return LOGGER;
 	}
     }

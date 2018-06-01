@@ -10,10 +10,10 @@ package com.sitewhere.mongodb;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mongodb.ErrorCategory;
 import com.mongodb.MongoClientException;
@@ -39,7 +39,7 @@ import com.sitewhere.spi.search.ISearchCriteria;
 public class MongoPersistence {
 
     /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(MongoPersistence.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(MongoPersistence.class);
 
     /**
      * Common handler for creating new objects. Assures that errors are handled in a

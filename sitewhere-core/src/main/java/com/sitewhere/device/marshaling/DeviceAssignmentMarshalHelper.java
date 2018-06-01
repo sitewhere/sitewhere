@@ -7,8 +7,8 @@
  */
 package com.sitewhere.device.marshaling;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sitewhere.asset.InvalidAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
@@ -30,7 +30,7 @@ import com.sitewhere.spi.device.IDeviceManagement;
 public class DeviceAssignmentMarshalHelper {
 
     /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(DeviceAssignmentMarshalHelper.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(DeviceAssignmentMarshalHelper.class);
 
     /** Indicates whether device asset information is to be included */
     private boolean includeAsset = true;

@@ -7,7 +7,7 @@
  */
 package com.sitewhere.grpc.client.spi.cache;
 
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 
 import com.sitewhere.grpc.client.cache.CacheIdentifier;
 import com.sitewhere.spi.SiteWhereException;
@@ -71,5 +71,5 @@ public interface ICacheProvider<K, V> {
      * 
      * @return
      */
-    public Log getLogger();
+    public Logger getLogger();
 }

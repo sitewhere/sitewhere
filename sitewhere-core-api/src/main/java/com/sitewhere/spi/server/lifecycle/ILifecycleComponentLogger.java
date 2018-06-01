@@ -7,7 +7,7 @@
  */
 package com.sitewhere.spi.server.lifecycle;
 
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 
 import com.sitewhere.spi.microservice.logging.LogLevel;
 
@@ -17,7 +17,7 @@ import com.sitewhere.spi.microservice.logging.LogLevel;
  * 
  * @author Derek
  */
-public interface ILifecycleComponentLogger extends Log {
+public interface ILifecycleComponentLogger extends Logger {
 
     /**
      * Get lifeycle component associated with logger.

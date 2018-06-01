@@ -7,8 +7,8 @@
  */
 package com.sitewhere.grpc.client;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.client.spi.IApiChannel;
@@ -32,7 +32,7 @@ import io.grpc.stub.StreamObserver;
 public class GrpcUtils {
 
     /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(GrpcUtils.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(GrpcUtils.class);
 
     public static void logClientMethodEntry(IApiChannel<?> channel, MethodDescriptor<?, ?> method,
 	    DebugParameter... parameters) {

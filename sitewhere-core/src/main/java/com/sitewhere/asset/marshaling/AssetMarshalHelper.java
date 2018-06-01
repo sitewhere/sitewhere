@@ -7,8 +7,8 @@
  */
 package com.sitewhere.asset.marshaling;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sitewhere.rest.model.asset.Asset;
 import com.sitewhere.rest.model.asset.marshaling.MarshaledAsset;
@@ -27,7 +27,7 @@ import com.sitewhere.spi.asset.IAssetType;
 public class AssetMarshalHelper {
 
     /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(AssetMarshalHelper.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(AssetMarshalHelper.class);
 
     /** Asset management */
     private IAssetManagement assetManagement;

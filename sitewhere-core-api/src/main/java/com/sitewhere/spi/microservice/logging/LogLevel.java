@@ -13,7 +13,7 @@ package com.sitewhere.spi.microservice.logging;
  * @author Derek
  */
 public enum LogLevel {
-    Trace(0), Debug(1), Information(2), Warning(3), Error(4), Fatal(5);
+    Trace(0), Debug(1), Information(2), Warning(3), Error(4);
 
     /** Path */
     private int level;

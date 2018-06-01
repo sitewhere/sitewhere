@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sitewhere.rest.model.area.AreaType;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
@@ -30,7 +30,7 @@ import com.sitewhere.spi.device.IDeviceManagement;
 public class AreaTypeMarshalHelper {
 
     /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(AreaTypeMarshalHelper.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(AreaTypeMarshalHelper.class);
 
     /** Device management */
     private IDeviceManagement deviceManagement;

@@ -322,8 +322,6 @@ public class KafkaModelConverter {
 	    return LogLevel.Debug;
 	case LOG_LEVEL_ERROR:
 	    return LogLevel.Error;
-	case LOG_LEVEL_FATAL:
-	    return LogLevel.Fatal;
 	case LOG_LEVEL_INFO:
 	    return LogLevel.Information;
 	case LOG_LEVEL_TRACE:
@@ -349,8 +347,6 @@ public class KafkaModelConverter {
 	    return GLogLevel.LOG_LEVEL_DEBUG;
 	case Error:
 	    return GLogLevel.LOG_LEVEL_ERROR;
-	case Fatal:
-	    return GLogLevel.LOG_LEVEL_FATAL;
 	case Information:
 	    return GLogLevel.LOG_LEVEL_INFO;
 	case Trace:

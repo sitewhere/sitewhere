@@ -7,8 +7,8 @@
  */
 package com.sitewhere.grpc.client;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -29,7 +29,7 @@ import io.grpc.MethodDescriptor;
 public class JwtClientInterceptor implements ClientInterceptor {
 
     /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(JwtClientInterceptor.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(JwtClientInterceptor.class);
 
     /** JWT metadata key */
     public static final Metadata.Key<String> JWT_KEY = Metadata.Key.of("jwt", Metadata.ASCII_STRING_MARSHALLER);

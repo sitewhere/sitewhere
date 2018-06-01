@@ -7,8 +7,8 @@
  */
 package com.sitewhere.batch.marshaling;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sitewhere.rest.model.batch.BatchOperation;
 import com.sitewhere.rest.model.batch.MarshaledBatchOperation;
@@ -26,7 +26,7 @@ public class BatchOperationMarshalHelper {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
-    private static Log LOGGER = LogFactory.getLog(BatchOperationMarshalHelper.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(BatchOperationMarshalHelper.class);
 
     /**
      * Convert the SPI into a model object based on marshaling parameters.

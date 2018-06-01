@@ -11,8 +11,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GEnrichedEventPayload;
@@ -36,7 +36,7 @@ import com.sitewhere.spi.tenant.ITenant;
 public class KafkaModelMarshaler {
 
     /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(KafkaModelMarshaler.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(KafkaModelMarshaler.class);
 
     /**
      * Build message that reflects a tenant model update.
@@ -264,7 +264,7 @@ public class KafkaModelMarshaler {
 	    try {
 		output.close();
 	    } catch (IOException e) {
-		LOGGER.error(e);
+		LOGGER.error("Unable to close output stream.", e);
 	    }
 	}
     }

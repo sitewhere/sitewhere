@@ -9,8 +9,9 @@ package com.sitewhere.server.lifecycle;
 
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
 
 import com.sitewhere.rest.model.microservice.logging.LoggedException;
 import com.sitewhere.rest.model.microservice.logging.MicroserviceLogMessage;
@@ -30,8 +31,11 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
  */
 public class LifecycleComponentLogger implements ILifecycleComponentLogger {
 
+    /** Logger name */
+    private static final String LOGGER_NAME = "sitewhere";
+
     /** Static logger instance */
-    private Log logger;
+    private Logger logger;
 
     /** Lifecycle component for logger */
     private ILifecycleComponent lifecycleComponent;
@@ -41,7 +45,7 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
 
     public LifecycleComponentLogger(ILifecycleComponent lifecycleComponent) {
 	this.lifecycleComponent = lifecycleComponent;
-	this.logger = LogFactory.getLog(lifecycleComponent.getClass());
+	this.logger = LoggerFactory.getLogger(lifecycleComponent.getClass());
     }
 
     /**
@@ -51,7 +55,7 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      * @param message
      * @param e
      */
-    protected void log(LogLevel level, Object message, Throwable e) {
+    protected void log(LogLevel level, String message, Throwable e) {
 	// Elevate log level if requested.
 	if ((getLogLevelOverride() != null) && (level.getLevel() < getLogLevelOverride().getLevel())) {
 	    level = getLogLevelOverride();
@@ -99,7 +103,7 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      * @param message
      * @param t
      */
-    protected void forwardToLogImpl(LogLevel level, Object message, Throwable t) {
+    protected void forwardToLogImpl(LogLevel level, String message, Throwable t) {
 	switch (level) {
 	case Trace: {
 	    if (t != null) {
@@ -141,91 +145,262 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
 	    }
 	    break;
 	}
-	case Fatal: {
-	    if (t != null) {
-		getLogger().fatal(message, t);
-	    } else {
-		getLogger().fatal(message);
-	    }
-	    break;
-	}
 	}
     }
 
     /*
-     * @see org.apache.commons.logging.Log#debug(java.lang.Object)
+     * @see org.slf4j.Logger#getName()
      */
     @Override
-    public void debug(Object message) {
+    public String getName() {
+	return LOGGER_NAME;
+    }
+
+    /*
+     * @see org.slf4j.Logger#debug(java.lang.String)
+     */
+    @Override
+    public void debug(String message) {
 	log(LogLevel.Debug, message, null);
     }
 
     /*
-     * @see org.apache.commons.logging.Log#debug(java.lang.Object,
-     * java.lang.Throwable)
+     * @see org.slf4j.Logger#debug(java.lang.String, java.lang.Throwable)
      */
     @Override
-    public void debug(Object message, Throwable t) {
+    public void debug(String message, Throwable t) {
 	log(LogLevel.Debug, message, t);
     }
 
     /*
-     * @see org.apache.commons.logging.Log#error(java.lang.Object)
+     * @see org.slf4j.Logger#debug(java.lang.String, java.lang.Object)
      */
     @Override
-    public void error(Object message) {
+    public void debug(String format, Object arg) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#debug(java.lang.String, java.lang.Object,
+     * java.lang.Object)
+     */
+    @Override
+    public void debug(String format, Object arg1, Object arg2) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#debug(java.lang.String, java.lang.Object[])
+     */
+    @Override
+    public void debug(String format, Object... arguments) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#debug(org.slf4j.Marker, java.lang.String)
+     */
+    @Override
+    public void debug(Marker marker, String msg) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#debug(org.slf4j.Marker, java.lang.String,
+     * java.lang.Object)
+     */
+    @Override
+    public void debug(Marker marker, String format, Object arg) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#debug(org.slf4j.Marker, java.lang.String,
+     * java.lang.Object, java.lang.Object)
+     */
+    @Override
+    public void debug(Marker marker, String format, Object arg1, Object arg2) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#debug(org.slf4j.Marker, java.lang.String,
+     * java.lang.Object[])
+     */
+    @Override
+    public void debug(Marker marker, String format, Object... arguments) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#debug(org.slf4j.Marker, java.lang.String,
+     * java.lang.Throwable)
+     */
+    @Override
+    public void debug(Marker marker, String msg, Throwable t) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#error(java.lang.String)
+     */
+    @Override
+    public void error(String message) {
 	log(LogLevel.Error, message, null);
     }
 
     /*
-     * @see org.apache.commons.logging.Log#error(java.lang.Object,
-     * java.lang.Throwable)
+     * @see org.slf4j.Logger#error(java.lang.String, java.lang.Throwable)
      */
     @Override
-    public void error(Object message, Throwable t) {
+    public void error(String message, Throwable t) {
 	log(LogLevel.Error, message, t);
     }
 
     /*
-     * @see org.apache.commons.logging.Log#fatal(java.lang.Object)
+     * @see org.slf4j.Logger#error(java.lang.String, java.lang.Object)
      */
     @Override
-    public void fatal(Object message) {
-	log(LogLevel.Fatal, message, null);
+    public void error(String format, Object arg) {
     }
 
     /*
-     * @see org.apache.commons.logging.Log#fatal(java.lang.Object,
+     * @see org.slf4j.Logger#error(java.lang.String, java.lang.Object,
+     * java.lang.Object)
+     */
+    @Override
+    public void error(String format, Object arg1, Object arg2) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#error(java.lang.String, java.lang.Object[])
+     */
+    @Override
+    public void error(String format, Object... arguments) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#error(org.slf4j.Marker, java.lang.String)
+     */
+    @Override
+    public void error(Marker marker, String msg) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#error(org.slf4j.Marker, java.lang.String,
+     * java.lang.Object)
+     */
+    @Override
+    public void error(Marker marker, String format, Object arg) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#error(org.slf4j.Marker, java.lang.String,
+     * java.lang.Object, java.lang.Object)
+     */
+    @Override
+    public void error(Marker marker, String format, Object arg1, Object arg2) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#error(org.slf4j.Marker, java.lang.String,
+     * java.lang.Object[])
+     */
+    @Override
+    public void error(Marker marker, String format, Object... arguments) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#error(org.slf4j.Marker, java.lang.String,
      * java.lang.Throwable)
      */
     @Override
-    public void fatal(Object message, Throwable t) {
-	log(LogLevel.Fatal, message, t);
+    public void error(Marker marker, String msg, Throwable t) {
     }
 
     /*
-     * @see org.apache.commons.logging.Log#info(java.lang.Object)
+     * @see org.slf4j.Logger#info(java.lang.String)
      */
     @Override
-    public void info(Object message) {
+    public void info(String message) {
 	log(LogLevel.Information, message, null);
     }
 
     /*
-     * @see org.apache.commons.logging.Log#info(java.lang.Object,
-     * java.lang.Throwable)
+     * @see org.slf4j.Logger#info(java.lang.String, java.lang.Throwable)
      */
     @Override
-    public void info(Object message, Throwable t) {
+    public void info(String message, Throwable t) {
 	log(LogLevel.Information, message, t);
     }
 
     /*
-     * @see org.apache.commons.logging.Log#isDebugEnabled()
+     * @see org.slf4j.Logger#info(java.lang.String, java.lang.Object)
+     */
+    @Override
+    public void info(String format, Object arg) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#info(java.lang.String, java.lang.Object,
+     * java.lang.Object)
+     */
+    @Override
+    public void info(String format, Object arg1, Object arg2) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#info(java.lang.String, java.lang.Object[])
+     */
+    @Override
+    public void info(String format, Object... arguments) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#info(org.slf4j.Marker, java.lang.String)
+     */
+    @Override
+    public void info(Marker marker, String msg) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#info(org.slf4j.Marker, java.lang.String,
+     * java.lang.Object)
+     */
+    @Override
+    public void info(Marker marker, String format, Object arg) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#info(org.slf4j.Marker, java.lang.String,
+     * java.lang.Object, java.lang.Object)
+     */
+    @Override
+    public void info(Marker marker, String format, Object arg1, Object arg2) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#info(org.slf4j.Marker, java.lang.String,
+     * java.lang.Object[])
+     */
+    @Override
+    public void info(Marker marker, String format, Object... arguments) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#info(org.slf4j.Marker, java.lang.String,
+     * java.lang.Throwable)
+     */
+    @Override
+    public void info(Marker marker, String msg, Throwable t) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#isDebugEnabled()
      */
     @Override
     public boolean isDebugEnabled() {
 	return getLogger().isDebugEnabled();
+    }
+
+    /*
+     * @see org.slf4j.Logger#isDebugEnabled(org.slf4j.Marker)
+     */
+    @Override
+    public boolean isDebugEnabled(Marker marker) {
+	return getLogger().isDebugEnabled(marker);
     }
 
     /*
@@ -237,15 +412,15 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
     }
 
     /*
-     * @see org.apache.commons.logging.Log#isFatalEnabled()
+     * @see org.slf4j.Logger#isErrorEnabled(org.slf4j.Marker)
      */
     @Override
-    public boolean isFatalEnabled() {
-	return getLogger().isFatalEnabled();
+    public boolean isErrorEnabled(Marker marker) {
+	return getLogger().isErrorEnabled(marker);
     }
 
     /*
-     * @see org.apache.commons.logging.Log#isInfoEnabled()
+     * @see org.slf4j.Logger#isInfoEnabled()
      */
     @Override
     public boolean isInfoEnabled() {
@@ -253,7 +428,15 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
     }
 
     /*
-     * @see org.apache.commons.logging.Log#isTraceEnabled()
+     * @see org.slf4j.Logger#isInfoEnabled(org.slf4j.Marker)
+     */
+    @Override
+    public boolean isInfoEnabled(Marker marker) {
+	return getLogger().isInfoEnabled(marker);
+    }
+
+    /*
+     * @see org.slf4j.Logger#isTraceEnabled()
      */
     @Override
     public boolean isTraceEnabled() {
@@ -261,7 +444,15 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
     }
 
     /*
-     * @see org.apache.commons.logging.Log#isWarnEnabled()
+     * @see org.slf4j.Logger#isTraceEnabled(org.slf4j.Marker)
+     */
+    @Override
+    public boolean isTraceEnabled(Marker marker) {
+	return getLogger().isTraceEnabled(marker);
+    }
+
+    /*
+     * @see org.slf4j.Logger#isWarnEnabled()
      */
     @Override
     public boolean isWarnEnabled() {
@@ -269,37 +460,165 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
     }
 
     /*
-     * @see org.apache.commons.logging.Log#trace(java.lang.Object)
+     * @see org.slf4j.Logger#isWarnEnabled(org.slf4j.Marker)
      */
     @Override
-    public void trace(Object message) {
+    public boolean isWarnEnabled(Marker marker) {
+	return getLogger().isWarnEnabled(marker);
+    }
+
+    /*
+     * @see org.slf4j.Logger#trace(java.lang.String)
+     */
+    @Override
+    public void trace(String message) {
 	log(LogLevel.Trace, message, null);
     }
 
     /*
-     * @see org.apache.commons.logging.Log#trace(java.lang.Object,
-     * java.lang.Throwable)
+     * @see org.slf4j.Logger#trace(java.lang.String, java.lang.Throwable)
      */
     @Override
-    public void trace(Object message, Throwable t) {
+    public void trace(String message, Throwable t) {
 	log(LogLevel.Trace, message, t);
     }
 
     /*
-     * @see org.apache.commons.logging.Log#warn(java.lang.Object)
+     * @see org.slf4j.Logger#trace(java.lang.String, java.lang.Object)
      */
     @Override
-    public void warn(Object message) {
+    public void trace(String format, Object arg) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#trace(java.lang.String, java.lang.Object,
+     * java.lang.Object)
+     */
+    @Override
+    public void trace(String format, Object arg1, Object arg2) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#trace(java.lang.String, java.lang.Object[])
+     */
+    @Override
+    public void trace(String format, Object... arguments) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#trace(org.slf4j.Marker, java.lang.String)
+     */
+    @Override
+    public void trace(Marker marker, String msg) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#trace(org.slf4j.Marker, java.lang.String,
+     * java.lang.Object)
+     */
+    @Override
+    public void trace(Marker marker, String format, Object arg) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#trace(org.slf4j.Marker, java.lang.String,
+     * java.lang.Object, java.lang.Object)
+     */
+    @Override
+    public void trace(Marker marker, String format, Object arg1, Object arg2) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#trace(org.slf4j.Marker, java.lang.String,
+     * java.lang.Object[])
+     */
+    @Override
+    public void trace(Marker marker, String format, Object... argArray) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#trace(org.slf4j.Marker, java.lang.String,
+     * java.lang.Throwable)
+     */
+    @Override
+    public void trace(Marker marker, String msg, Throwable t) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#warn(java.lang.String)
+     */
+    @Override
+    public void warn(String message) {
 	log(LogLevel.Warning, message, null);
     }
 
     /*
-     * @see org.apache.commons.logging.Log#warn(java.lang.Object,
+     * @see org.slf4j.Logger#warn(java.lang.String, java.lang.Throwable)
+     */
+    @Override
+    public void warn(String message, Throwable t) {
+	log(LogLevel.Warning, message, t);
+    }
+
+    /*
+     * @see org.slf4j.Logger#warn(java.lang.String, java.lang.Object)
+     */
+    @Override
+    public void warn(String format, Object arg) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#warn(java.lang.String, java.lang.Object[])
+     */
+    @Override
+    public void warn(String format, Object... arguments) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#warn(java.lang.String, java.lang.Object,
+     * java.lang.Object)
+     */
+    @Override
+    public void warn(String format, Object arg1, Object arg2) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#warn(org.slf4j.Marker, java.lang.String)
+     */
+    @Override
+    public void warn(Marker marker, String msg) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#warn(org.slf4j.Marker, java.lang.String,
+     * java.lang.Object)
+     */
+    @Override
+    public void warn(Marker marker, String format, Object arg) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#warn(org.slf4j.Marker, java.lang.String,
+     * java.lang.Object, java.lang.Object)
+     */
+    @Override
+    public void warn(Marker marker, String format, Object arg1, Object arg2) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#warn(org.slf4j.Marker, java.lang.String,
+     * java.lang.Object[])
+     */
+    @Override
+    public void warn(Marker marker, String format, Object... arguments) {
+    }
+
+    /*
+     * @see org.slf4j.Logger#warn(org.slf4j.Marker, java.lang.String,
      * java.lang.Throwable)
      */
     @Override
-    public void warn(Object message, Throwable t) {
-	log(LogLevel.Warning, message, t);
+    public void warn(Marker marker, String msg, Throwable t) {
     }
 
     /*
@@ -328,11 +647,11 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
 	this.lifecycleComponent = lifecycleComponent;
     }
 
-    public Log getLogger() {
+    public Logger getLogger() {
 	return logger;
     }
 
-    public void setLogger(Log logger) {
+    public void setLogger(Logger logger) {
 	this.logger = logger;
     }
 }

@@ -10,8 +10,8 @@ package com.sitewhere.device.marshaling;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
@@ -31,7 +31,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 public class DeviceCommandInvocationMarshalHelper {
 
     /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(DeviceCommandInvocationMarshalHelper.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(DeviceCommandInvocationMarshalHelper.class);
 
     /** Device Management */
     private IDeviceManagement deviceManagement;
