@@ -16,11 +16,6 @@ node {
 	download = true
 }
 
-// Prevents Logback conflict.
-configurations {
-    compile.exclude module: 'spring-boot-starter-logging'
-}
-
 dependencies {
 	compile project(':sitewhere-communication')
 	compile project(':sitewhere-microservice')
