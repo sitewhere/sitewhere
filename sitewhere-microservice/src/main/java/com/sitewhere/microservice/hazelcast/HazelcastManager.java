@@ -211,7 +211,7 @@ public class HazelcastManager extends LifecycleComponent implements IHazelcastMa
 			if (members.size() > 0) {
 			    try {
 				String delimited = String.join(",", members);
-				getLogger().info("Hazelcast will connect to members: " + delimited);
+				getLogger().debug("Hazelcast will connect to members: " + delimited);
 				connect(delimited);
 				return;
 			    } catch (SiteWhereException e) {

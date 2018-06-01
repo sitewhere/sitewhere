@@ -2,6 +2,7 @@ description = 'SiteWhere Device State Microservice'
 
 dependencies {
 	compile project(':sitewhere-microservice')
+	compile project(':sitewhere-grpc-device-state')
 	
 	// Supported databases.
 	compile project(':sitewhere-mongodb')

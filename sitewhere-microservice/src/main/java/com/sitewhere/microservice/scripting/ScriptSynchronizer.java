@@ -101,7 +101,7 @@ public abstract class ScriptSynchronizer extends LifecycleComponent implements I
 	if (existing.exists()) {
 	    try {
 		Files.delete(existing.toPath());
-		getLogger().info("Deleted script at path '" + existing.getAbsolutePath() + "'.");
+		getLogger().debug("Deleted script at path '" + existing.getAbsolutePath() + "'.");
 	    } catch (IOException e) {
 		throw new SiteWhereException("Unable to delete script from filesystem.", e);
 	    }
@@ -214,7 +214,7 @@ public abstract class ScriptSynchronizer extends LifecycleComponent implements I
 	    output = new FileOutputStream(out);
 	    ByteArrayInputStream input = new ByteArrayInputStream(content);
 	    IOUtils.copy(input, output);
-	    getLogger().info("Copied script content (" + content.length + " bytes) from '" + zkPath + "' to '"
+	    getLogger().debug("Copied script content (" + content.length + " bytes) from '" + zkPath + "' to '"
 		    + out.getAbsolutePath() + "'.");
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to copy script from Zookeeper path '" + zkPath + "' to file '"

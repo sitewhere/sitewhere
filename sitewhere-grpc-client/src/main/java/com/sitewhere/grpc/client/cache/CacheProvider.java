@@ -98,7 +98,7 @@ public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
 	    String cacheName = getCacheNameForTenant(tenant);
 	    return getHazelcastProvider().getHazelcastInstance().getMap(cacheName);
 	} else {
-	    getLogger().warn("Trying to access uninitialized cache.");
+	    getLogger().debug("Trying to access uninitialized cache.");
 	    return null;
 	}
     }

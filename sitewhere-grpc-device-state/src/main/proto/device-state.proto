@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.service;
+
+option java_multiple_files = true;
+option java_package = "com.sitewhere.grpc.service";
+option java_outer_classname = "DeviceStateServices";
+
+import "device-state-model.proto";
+import "sitewhere-common.proto";
+
+// Device state APIs.
+service DeviceState {
+
+	// ####################
+	// ### DEVICE STATE ###
+	// ####################
+	
+	// Create new device state.
+	rpc CreateDeviceState (GCreateDeviceStateRequest) returns (GCreateDeviceStateResponse) {}
+		
+	// Get device state by id.
+	rpc GetDeviceState (GGetDeviceStateRequest) returns (GGetDeviceStateResponse) {}
+	
+	// Get devicestate by device assignment id.
+	rpc GetDeviceStateByDeviceAssignmentId (GGetDeviceStateByDeviceAssignmentIdRequest) returns (GGetDeviceStateByDeviceAssignmentIdResponse) {}
+	
+	// Update existing device state.
+	rpc UpdateDeviceState (GUpdateDeviceStateRequest) returns (GUpdateDeviceStateResponse) {}
+	
+	// Delete existing device state.
+	rpc DeleteDeviceState (GDeleteDeviceStateRequest) returns (GDeleteDeviceStateResponse) {}
+}
+
+// ####################
+// ### DEVICE STATE ###
+// ####################
+
+// Request for creating device state.
+message GCreateDeviceStateRequest {
+	com.sitewhere.grpc.model.GDeviceStateCreateRequest request = 1;
+}
+
+// Response from creating device state.
+message GCreateDeviceStateResponse {
+	com.sitewhere.grpc.model.GDeviceState deviceState = 1;
+}
+	
+// Request for getting device state by id.
+message GGetDeviceStateRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+}
+	
+// Response for getting device state by id.
+message GGetDeviceStateResponse {
+	com.sitewhere.grpc.model.GDeviceState deviceState = 1;
+}
+	
+// Request for getting device state by device assignment id.
+message GGetDeviceStateByDeviceAssignmentIdRequest {
+	com.sitewhere.grpc.model.GUUID deviceAssignmentId = 1;
+}
+	
+// Response for getting device state by device assignment id.
+message GGetDeviceStateByDeviceAssignmentIdResponse {
+	com.sitewhere.grpc.model.GDeviceState deviceState = 1;
+}
+	
+// Request for updating device state.
+message GUpdateDeviceStateRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	com.sitewhere.grpc.model.GDeviceStateCreateRequest request = 2;
+}
+	
+// Response for updating device state.
+message GUpdateDeviceStateResponse {
+	com.sitewhere.grpc.model.GDeviceState deviceState = 1;
+}
+	
+// Request for deleting device state.
+message GDeleteDeviceStateRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	bool force = 2;
+}
+	
+// Response for deleting device state.
+message GDeleteDeviceStateResponse {
+	com.sitewhere.grpc.model.GDeviceState deviceState = 1;
+}

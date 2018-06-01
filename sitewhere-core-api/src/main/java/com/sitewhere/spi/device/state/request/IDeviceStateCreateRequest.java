@@ -7,6 +7,7 @@
  */
 package com.sitewhere.spi.device.state.request;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
@@ -16,7 +17,7 @@ import java.util.UUID;
  * 
  * @author Derek
  */
-public interface IDeviceStateCreateRequest {
+public interface IDeviceStateCreateRequest extends Serializable {
 
     /**
      * Get device id.

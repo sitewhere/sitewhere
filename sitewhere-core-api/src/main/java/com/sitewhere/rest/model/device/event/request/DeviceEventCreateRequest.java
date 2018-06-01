@@ -7,7 +7,6 @@
  */
 package com.sitewhere.rest.model.device.event.request;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
@@ -22,7 +21,7 @@ import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
  * 
  * @author Derek
  */
-public class DeviceEventCreateRequest implements IDeviceEventCreateRequest, Serializable {
+public class DeviceEventCreateRequest implements IDeviceEventCreateRequest {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = -8906177904822194407L;

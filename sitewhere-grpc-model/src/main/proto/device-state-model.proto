@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.model;
+
+option java_outer_classname = "DeviceStateModel";
+
+import "sitewhere-common.proto";
+
+// ####################
+// ### DEVICE STATE ###
+// ####################
+
+// Request for creating device state.
+message GDeviceStateCreateRequest {
+	GUUID deviceId = 1;
+	GUUID deviceAssignmentId = 2;
+	uint64 lastInteractionDate = 3;
+	uint64 presenceMissingDate = 4;
+	GUUID lastLocationEventId = 5;
+	map<string, GUUID> lastMeasurementEventIds = 6;
+	map<string, GUUID> lastAlertEventIds = 7;
+}
+
+// Device state.
+message GDeviceState {
+	GUUID id = 1;
+	GUUID deviceId = 2;
+	GUUID deviceAssignmentId = 3;
+	uint64 lastInteractionDate = 4;
+	uint64 presenceMissingDate = 5;
+	GUUID lastLocationEventId = 6;
+	map<string, GUUID> lastMeasurementEventIds = 7;
+	map<string, GUUID> lastAlertEventIds = 8;
+}

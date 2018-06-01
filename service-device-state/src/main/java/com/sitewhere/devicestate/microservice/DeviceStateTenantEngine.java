@@ -7,7 +7,9 @@
  */
 package com.sitewhere.devicestate.microservice;
 
+import com.sitewhere.devicestate.grpc.DeviceStateImpl;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
+import com.sitewhere.grpc.service.DeviceStateGrpc;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
@@ -30,6 +32,9 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine implements
     /** Device state management persistence API */
     private IDeviceStateManagement deviceStateManagement;
 
+    /** Responds to device state GRPC requests */
+    private DeviceStateGrpc.DeviceStateImplBase deviceStateImpl;
+
     public DeviceStateTenantEngine(ITenant tenant) {
 	super(tenant);
     }
@@ -45,6 +50,7 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine implements
 	IDeviceStateManagement implementation = (IDeviceStateManagement) getModuleContext()
 		.getBean(DeviceStateManagementBeans.BEAN_DEVICE_STATE_MANAGEMENT);
 	this.deviceStateManagement = implementation;
+	this.deviceStateImpl = new DeviceStateImpl(getDeviceStateManagement());
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
@@ -117,5 +123,18 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine implements
 
     public void setDeviceStateManagement(IDeviceStateManagement deviceStateManagement) {
 	this.deviceStateManagement = deviceStateManagement;
+    }
+
+    /*
+     * @see com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine#
+     * getDeviceStateImpl()
+     */
+    @Override
+    public DeviceStateGrpc.DeviceStateImplBase getDeviceStateImpl() {
+	return deviceStateImpl;
+    }
+
+    public void setDeviceStateImpl(DeviceStateGrpc.DeviceStateImplBase deviceStateImpl) {
+	this.deviceStateImpl = deviceStateImpl;
     }
 }

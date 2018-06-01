@@ -8,6 +8,8 @@
 package com.sitewhere.devicestate.microservice;
 
 import com.sitewhere.devicestate.configuration.DeviceStateModelProvider;
+import com.sitewhere.devicestate.grpc.DeviceStateGrpcServer;
+import com.sitewhere.devicestate.spi.grpc.IDeviceStateGrpcServer;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
 import com.sitewhere.grpc.client.device.DeviceManagementApiDemux;
@@ -34,6 +36,9 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
 
     /** Microservice name */
     private static final String NAME = "Presence Management";
+
+    /** Provides server for device management GRPC requests */
+    private IDeviceStateGrpcServer deviceStateGrpcServer;
 
     /** Device management API demux */
     private IDeviceManagementApiDemux deviceManagementApiDemux;
@@ -122,6 +127,9 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
 	// Composite step for initializing microservice.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
+	// Initialize device state GRPC server.
+	init.addInitializeStep(this, getDeviceStateGrpcServer(), true);
+
 	// Initialize device management API demux.
 	init.addInitializeStep(this, getDeviceManagementApiDemux(), true);
 
@@ -141,6 +149,9 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
     public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
+
+	// Start device state GRPC server.
+	start.addStartStep(this, getDeviceStateGrpcServer(), true);
 
 	// Start device mangement API demux.
 	start.addStartStep(this, getDeviceManagementApiDemux(), true);
@@ -168,6 +179,9 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
 	// Stop device event mangement API demux.
 	stop.addStopStep(this, getDeviceEventManagementApiDemux());
 
+	// Stop device state GRPC server.
+	stop.addStopStep(this, getDeviceStateGrpcServer());
+
 	// Execute shutdown steps.
 	stop.execute(monitor);
     }
@@ -176,11 +190,27 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
      * Create GRPC components required by the microservice.
      */
     private void createGrpcComponents() {
+	// Create device state GRPC server.
+	this.deviceStateGrpcServer = new DeviceStateGrpcServer(this);
+
 	// Device management.
 	this.deviceManagementApiDemux = new DeviceManagementApiDemux();
 
 	// Device event management.
 	this.deviceEventManagementApiDemux = new DeviceEventManagementApiDemux();
+    }
+
+    /*
+     * @see com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice#
+     * getDeviceStateGrpcServer()
+     */
+    @Override
+    public IDeviceStateGrpcServer getDeviceStateGrpcServer() {
+	return deviceStateGrpcServer;
+    }
+
+    public void setDeviceStateGrpcServer(IDeviceStateGrpcServer deviceStateGrpcServer) {
+	this.deviceStateGrpcServer = deviceStateGrpcServer;
     }
 
     /*
