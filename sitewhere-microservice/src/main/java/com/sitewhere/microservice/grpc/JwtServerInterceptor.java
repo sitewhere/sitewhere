@@ -7,7 +7,6 @@
  */
 package com.sitewhere.microservice.grpc;
 
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,20 +16,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.client.JwtClientInterceptor;
-import com.sitewhere.microservice.security.annotations.GrpcSecured;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.security.SitewhereUserDetails;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.user.IGrantedAuthority;
-import com.sitewhere.spi.user.SiteWhereAuthority;
 
 import io.grpc.BindableService;
 import io.grpc.Metadata;
-import io.grpc.MethodDescriptor;
 import io.grpc.ServerCall;
 import io.grpc.ServerCall.Listener;
 import io.grpc.ServerCallHandler;
@@ -54,9 +49,6 @@ public class JwtServerInterceptor implements ServerInterceptor {
 
     /** Service implementation */
     private Class<? extends BindableService> implementation;
-
-    /** Map of implementation methods indexed by full name from descriptor */
-    private Map<String, Method> methodsByFullName = new HashMap<String, Method>();
 
     /** Hashmap of JWT to decoded claims */
     private Map<String, Claims> jwtToClaims = new HashMap<String, Claims>();
@@ -85,12 +77,6 @@ public class JwtServerInterceptor implements ServerInterceptor {
 			.getGrantedAuthoritiesFromClaims(claims);
 		List<String> auths = gauths.stream().map(g -> g.getAuthority()).collect(Collectors.toList());
 		establishSecurityContext(jwt, username, gauths, auths);
-
-		// Skip method-level security check for now due to multiple service
-		// implementations.
-		// Method implMethod = locateMethod(call.getMethodDescriptor());
-		// return processAuthAnnotations(call, headers, next, username, auths,
-		// implMethod);
 		return next.startCall(call, headers);
 	    } catch (SiteWhereException e) {
 		call.close(Status.PERMISSION_DENIED.withDescription(e.getMessage()), headers);
@@ -142,85 +128,6 @@ public class JwtServerInterceptor implements ServerInterceptor {
 	return claims;
     }
 
-    /**
-     * Process authentication annotations on the implementation method.
-     * 
-     * @param call
-     * @param headers
-     * @param next
-     * @param username
-     * @param auths
-     * @param method
-     * @return
-     * @throws SiteWhereException
-     */
-    protected <ReqT, RespT> Listener<ReqT> processAuthAnnotations(ServerCall<ReqT, RespT> call, Metadata headers,
-	    ServerCallHandler<ReqT, RespT> next, String username, List<String> auths, Method method)
-	    throws SiteWhereException {
-	processGrpcSecured(call, headers, next, username, auths, method);
-	return next.startCall(call, headers);
-    }
-
-    /**
-     * Process {@link GrpcSecured} annotation.
-     * 
-     * @param call
-     * @param headers
-     * @param next
-     * @param username
-     * @param auths
-     * @param method
-     * @return
-     * @throws SiteWhereException
-     */
-    protected <ReqT, RespT> void processGrpcSecured(ServerCall<ReqT, RespT> call, Metadata headers,
-	    ServerCallHandler<ReqT, RespT> next, String username, List<String> auths, Method method)
-	    throws SiteWhereException {
-	GrpcSecured secured = method.getAnnotation(GrpcSecured.class);
-	if (secured != null) {
-	    if (LOGGER.isDebugEnabled()) {
-		LOGGER.debug("Found @GrpcSecured annotation on " + method.toGenericString());
-	    }
-	    SiteWhereAuthority[] roles = secured.value();
-	    for (SiteWhereAuthority role : roles) {
-		if (!auths.contains(role.getName())) {
-		    throw new SiteWhereException("User '" + username + "' not authenticated for '" + role
-			    + "' authority.\n\n" + MarshalUtils.marshalJsonAsPrettyString(auths));
-		}
-	    }
-	}
-    }
-
-    /**
-     * Locate implementation method based on name from descriptor.
-     * 
-     * @param descriptor
-     * @return
-     * @throws SiteWhereException
-     */
-    protected Method locateMethod(MethodDescriptor<?, ?> descriptor) throws SiteWhereException {
-	String fullName = descriptor.getFullMethodName();
-	Method match = getMethodsByFullName().get(fullName);
-	if (match == null) {
-	    String[] parts = fullName.split("/");
-	    String camelName = parts[1];
-
-	    // Lowercase first letter.
-	    String realName = camelName.substring(0, 1).toLowerCase() + camelName.substring(1);
-	    Method[] methods = getImplementation().getDeclaredMethods();
-	    for (Method method : methods) {
-		if (method.getName().equals(realName)) {
-		    getMethodsByFullName().put(fullName, method);
-		    return method;
-		}
-	    }
-	    throw new SiteWhereException(
-		    "Unable to locate method '" + realName + "' on " + getImplementation().getName() + ".");
-	} else {
-	    return match;
-	}
-    }
-
     public IMicroservice<?> getMicroservice() {
 	return microservice;
     }
@@ -235,13 +142,5 @@ public class JwtServerInterceptor implements ServerInterceptor {
 
     public void setImplementation(Class<? extends BindableService> implementation) {
 	this.implementation = implementation;
-    }
-
-    public Map<String, Method> getMethodsByFullName() {
-	return methodsByFullName;
-    }
-
-    public void setMethodsByFullName(Map<String, Method> methodsByFullName) {
-	this.methodsByFullName = methodsByFullName;
     }
 }

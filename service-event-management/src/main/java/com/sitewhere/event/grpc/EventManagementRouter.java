@@ -94,7 +94,7 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
 	try {
 	    IEventManagementTenantEngine engine = getMicroservice()
 		    .assureTenantEngineAvailable(UUID.fromString(tenantId));
-	    UserContextManager.setCurrentTenant(engine.getTenant());
+	    UserContextManager.setCurrentTenant(engine.getTenant(), engine.getLogger());
 	    return engine.getEventManagementImpl();
 	} catch (TenantEngineNotAvailableException e) {
 	    observer.onError(GrpcUtils.convertServerException(e));

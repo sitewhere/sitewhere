@@ -70,7 +70,7 @@ public class BatchManagementRouter extends BatchManagementGrpc.BatchManagementIm
 	try {
 	    IBatchOperationsTenantEngine engine = getMicroservice()
 		    .assureTenantEngineAvailable(UUID.fromString(tenantId));
-	    UserContextManager.setCurrentTenant(engine.getTenant());
+	    UserContextManager.setCurrentTenant(engine.getTenant(), engine.getLogger());
 	    return engine.getBatchManagementImpl();
 	} catch (TenantEngineNotAvailableException e) {
 	    observer.onError(GrpcUtils.convertServerException(e));

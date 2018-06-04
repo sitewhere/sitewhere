@@ -75,7 +75,7 @@ public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationIm
 	try {
 	    ILabelGenerationTenantEngine engine = getMicroservice()
 		    .assureTenantEngineAvailable(UUID.fromString(tenantId));
-	    UserContextManager.setCurrentTenant(engine.getTenant());
+	    UserContextManager.setCurrentTenant(engine.getTenant(), engine.getLogger());
 	    return engine.getLabelGenerationImpl();
 	} catch (TenantEngineNotAvailableException e) {
 	    observer.onError(GrpcUtils.convertServerException(e));

@@ -74,7 +74,7 @@ public class ScheduleManagementRouter extends ScheduleManagementGrpc.ScheduleMan
 	try {
 	    IScheduleManagementTenantEngine engine = getMicroservice()
 		    .assureTenantEngineAvailable(UUID.fromString(tenantId));
-	    UserContextManager.setCurrentTenant(engine.getTenant());
+	    UserContextManager.setCurrentTenant(engine.getTenant(), engine.getLogger());
 	    return engine.getScheduleManagementImpl();
 	} catch (TenantEngineNotAvailableException e) {
 	    observer.onError(GrpcUtils.convertServerException(e));

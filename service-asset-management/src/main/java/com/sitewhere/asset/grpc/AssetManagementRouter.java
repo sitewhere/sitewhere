@@ -78,7 +78,7 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
 	try {
 	    IAssetManagementTenantEngine engine = getMicroservice()
 		    .assureTenantEngineAvailable(UUID.fromString(tenantId));
-	    UserContextManager.setCurrentTenant(engine.getTenant());
+	    UserContextManager.setCurrentTenant(engine.getTenant(), engine.getLogger());
 	    return engine.getAssetManagementImpl();
 	} catch (TenantEngineNotAvailableException e) {
 	    observer.onError(GrpcUtils.convertServerException(e));

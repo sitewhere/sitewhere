@@ -55,12 +55,12 @@ public class JwtClientInterceptor implements ClientInterceptor {
 	    @Override
 	    public void start(Listener<RespT> responseListener, Metadata headers) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		LOGGER.trace("Looking for Spring Security authentication...");
-		if (authentication != null) {
-		    String jwt = (String) authentication.getCredentials();
-		    LOGGER.trace("Found JWT " + jwt);
-		    headers.put(JWT_KEY, jwt);
+		if (authentication == null) {
+		    throw new RuntimeException("Attempting to make remote call with no credentials provided.");
 		}
+		String jwt = (String) authentication.getCredentials();
+		LOGGER.trace("Found JWT " + jwt);
+		headers.put(JWT_KEY, jwt);
 		super.start(responseListener, headers);
 	    }
 	};
