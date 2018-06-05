@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
+import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.rest.model.device.event.request.DeviceStateChangeCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -105,8 +106,9 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
     }
 
     protected IDeviceEventManagement getDeviceEventManagement() throws SiteWhereException {
-	return ((IDeviceManagementMicroservice) getDeviceManagementTenantEngine().getMicroservice())
-		.getEventManagementApiDemux().getApiChannel();
+	return new BlockingDeviceEventManagement(
+		((IDeviceManagementMicroservice) getDeviceManagementTenantEngine().getMicroservice())
+			.getEventManagementApiDemux().getApiChannel());
     }
 
     protected IDeviceManagementTenantEngine getDeviceManagementTenantEngine() {

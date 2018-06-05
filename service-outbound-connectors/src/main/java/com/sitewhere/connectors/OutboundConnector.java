@@ -9,6 +9,7 @@ package com.sitewhere.connectors;
 
 import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsMicroservice;
+import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -143,7 +144,7 @@ public abstract class OutboundConnector extends TenantEngineLifecycleComponent i
      */
     @Override
     public IDeviceEventManagement getDeviceEventManagement() {
-	return ((IOutboundConnectorsMicroservice) getTenantEngine().getMicroservice())
-		.getDeviceEventManagementApiDemux().getApiChannel();
+	return new BlockingDeviceEventManagement(((IOutboundConnectorsMicroservice) getTenantEngine().getMicroservice())
+		.getDeviceEventManagementApiDemux().getApiChannel());
     }
 }

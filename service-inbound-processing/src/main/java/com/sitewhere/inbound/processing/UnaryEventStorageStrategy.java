@@ -7,6 +7,7 @@
  */
 package com.sitewhere.inbound.processing;
 
+import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
 import com.sitewhere.grpc.model.DeviceEventModel.GAnyDeviceEventCreateRequest;
 import com.sitewhere.grpc.model.converter.EventModelConverter;
@@ -104,8 +105,8 @@ public class UnaryEventStorageStrategy implements IInboundEventStorageStrategy {
      * @return
      */
     protected IDeviceEventManagement getDeviceEventManagement() {
-	return ((IInboundProcessingMicroservice) getTenantEngine().getMicroservice()).getDeviceEventManagementApiDemux()
-		.getApiChannel();
+	return new BlockingDeviceEventManagement(((IInboundProcessingMicroservice) getTenantEngine().getMicroservice())
+		.getDeviceEventManagementApiDemux().getApiChannel());
     }
 
     public IInboundProcessingTenantEngine getTenantEngine() {

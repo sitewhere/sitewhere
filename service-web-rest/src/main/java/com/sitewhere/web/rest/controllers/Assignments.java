@@ -41,6 +41,7 @@ import com.sitewhere.core.DataUtils;
 import com.sitewhere.device.charting.ChartBuilder;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
+import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
@@ -1033,7 +1034,7 @@ public class Assignments extends RestControllerBase {
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {
-	return getMicroservice().getDeviceEventManagementApiDemux().getApiChannel();
+	return new BlockingDeviceEventManagement(getMicroservice().getDeviceEventManagementApiDemux().getApiChannel());
     }
 
     private IAssetManagement getAssetManagement() {

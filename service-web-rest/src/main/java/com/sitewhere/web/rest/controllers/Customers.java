@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.device.marshaling.CustomerMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
+import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.rest.model.customer.request.CustomerCreateRequest;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.asset.DeviceAlertWithAsset;
@@ -639,7 +640,7 @@ public class Customers extends RestControllerBase {
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {
-	return getMicroservice().getDeviceEventManagementApiDemux().getApiChannel();
+	return new BlockingDeviceEventManagement(getMicroservice().getDeviceEventManagementApiDemux().getApiChannel());
     }
 
     private IAssetManagement getAssetManagement() {

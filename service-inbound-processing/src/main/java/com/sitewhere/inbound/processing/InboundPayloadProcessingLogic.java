@@ -9,22 +9,20 @@ package com.sitewhere.inbound.processing;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.reactivestreams.Processor;
 
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
 import com.sitewhere.common.MarshalUtils;
+import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
-import com.sitewhere.grpc.model.DeviceEventModel.GAnyDeviceEventCreateRequest;
-import com.sitewhere.grpc.model.converter.EventModelConverter;
 import com.sitewhere.grpc.model.converter.KafkaModelConverter;
 import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
 import com.sitewhere.inbound.spi.kafka.IUnregisteredEventsProducer;
+import com.sitewhere.inbound.spi.microservice.IInboundEventStorageStrategy;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.rest.model.device.event.request.DeviceAssignmentEventCreateRequest;
@@ -35,13 +33,7 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
-import com.sitewhere.spi.device.event.request.IDeviceAssignmentEventCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
-import com.sitewhere.spi.device.event.streaming.IEventStreamAck;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-
-import reactor.core.publisher.BaseSubscriber;
-import reactor.core.publisher.Flux;
 
 /**
  * Processing logic which verifies that an incoming event belongs to a
@@ -70,6 +62,9 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
     /** Histogram for event storage time */
     private Timer eventStorageTimer;
 
+    /** Event storage strategy */
+    private IInboundEventStorageStrategy eventStorageStrategy;
+
     /*
      * @see
      * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
@@ -85,6 +80,7 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	this.deviceLookupTimer = createTimerMetric("deviceLookup");
 	this.assignmentLookupTimer = createTimerMetric("assignmentLookup");
 	this.eventStorageTimer = createTimerMetric("eventStorage");
+	this.eventStorageStrategy = new UnaryEventStorageStrategy((IInboundProcessingTenantEngine) getTenantEngine());
 	// logMetricsToConsole();
     }
 
@@ -101,44 +97,6 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	    return;
 	}
 
-	CountDownLatch latch = new CountDownLatch(1);
-	Processor<IDeviceAssignmentEventCreateRequest, IEventStreamAck> stream = getDeviceEventManagement()
-		.streamDeviceAssignmentCreateEvents();
-	stream.subscribe(new BaseSubscriber<IEventStreamAck>() {
-
-	    /*
-	     * @see reactor.core.publisher.BaseSubscriber#hookOnNext(java.lang.Object)
-	     */
-	    @Override
-	    protected void hookOnNext(IEventStreamAck value) {
-		getLogger()
-			.debug("Ack indicates " + value.getProcessedEventCount() + " events processed in microbatch.");
-	    }
-
-	    /*
-	     * @see reactor.core.publisher.BaseSubscriber#hookOnComplete()
-	     */
-	    @Override
-	    protected void hookOnComplete() {
-		latch.countDown();
-	    }
-
-	    /*
-	     * @see reactor.core.publisher.BaseSubscriber#hookOnError(java.lang.Throwable)
-	     */
-	    @Override
-	    protected void hookOnError(Throwable e) {
-		getLogger().warn("Error bubbled to subscriber.", e);
-		latch.countDown();
-	    }
-	});
-	Flux<DeviceAssignmentEventCreateRequest> requestsFlux = Flux.fromIterable(requests);
-	requestsFlux.subscribe(stream);
-	try {
-	    latch.await();
-	} catch (InterruptedException e) {
-	    getLogger().warn("Interrupted while wait for microbatch to process.", e);
-	}
     }
 
     /**
@@ -151,11 +109,9 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	    throws SiteWhereException {
 	List<DeviceAssignmentEventCreateRequest> requests = new ArrayList<>();
 	for (ConsumerRecord<String, byte[]> record : records) {
-	    GInboundEventPayload message = decodeRequest(record);
-	    DeviceAssignmentEventCreateRequest request = verifyAndBuildRequest(message);
-	    if (request != null) {
-		requests.add(request);
-	    }
+	    GInboundEventPayload payload = decodeRequest(record);
+	    IDeviceAssignment assignment = validateAssignment(payload);
+	    getEventStorageStrategy().storeDeviceEvent(assignment, payload);
 	}
 	return requests;
     }
@@ -177,14 +133,14 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
     }
 
     /**
-     * Validate device/assignment reference and build the request.
+     * Validates that inbound event payload references a registered device that is
+     * asssigned.
      * 
      * @param payload
      * @return
      * @throws SiteWhereException
      */
-    protected DeviceAssignmentEventCreateRequest verifyAndBuildRequest(GInboundEventPayload payload)
-	    throws SiteWhereException {
+    protected IDeviceAssignment validateAssignment(GInboundEventPayload payload) throws SiteWhereException {
 	// Verify that device is registered.
 	final Timer.Context deviceLookupTime = getDeviceLookupTimer().time();
 	IDevice device = null;
@@ -218,12 +174,7 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	    return null;
 	}
 
-	GAnyDeviceEventCreateRequest grpc = payload.getEvent();
-	IDeviceEventCreateRequest request = EventModelConverter.asApiDeviceEventCreateRequest(grpc);
-	DeviceAssignmentEventCreateRequest assnEventRequest = new DeviceAssignmentEventCreateRequest();
-	assnEventRequest.setDeviceAssignmentId(assignment.getId());
-	assnEventRequest.setRequest(request);
-	return assnEventRequest;
+	return assignment;
     }
 
     /**
@@ -288,8 +239,8 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
      * @return
      */
     protected IDeviceEventManagement getDeviceEventManagement() {
-	return ((IInboundProcessingMicroservice) getTenantEngine().getMicroservice()).getDeviceEventManagementApiDemux()
-		.getApiChannel();
+	return new BlockingDeviceEventManagement(((IInboundProcessingMicroservice) getTenantEngine().getMicroservice())
+		.getDeviceEventManagementApiDemux().getApiChannel());
     }
 
     public Meter getProcessedEvents() {
@@ -310,5 +261,9 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 
     public Timer getAssignmentLookupTimer() {
 	return assignmentLookupTimer;
+    }
+
+    public IInboundEventStorageStrategy getEventStorageStrategy() {
+	return eventStorageStrategy;
     }
 }

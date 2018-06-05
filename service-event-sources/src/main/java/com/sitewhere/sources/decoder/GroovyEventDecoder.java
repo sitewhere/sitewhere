@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitewhere.groovy.IGroovyVariables;
+import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventRequestBuilder;
 import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequestBuilder;
@@ -73,7 +74,7 @@ public class GroovyEventDecoder extends GroovyComponent implements IDeviceEventD
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {
-	return ((IEventSourcesMicroservice) getTenantEngine().getMicroservice()).getDeviceEventManagementApiDemux()
-		.getApiChannel();
+	return new BlockingDeviceEventManagement(((IEventSourcesMicroservice) getTenantEngine().getMicroservice())
+		.getDeviceEventManagementApiDemux().getApiChannel());
     }
 }

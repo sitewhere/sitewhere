@@ -13,7 +13,7 @@ import java.util.Map;
 import com.sitewhere.batch.BatchOperationTypes;
 import com.sitewhere.batch.spi.IBatchOperationHandler;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
-import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
+import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -30,6 +30,7 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
 
 /**
  * Operation handler for batch command invocations.
@@ -106,8 +107,8 @@ public class BatchCommandInvocationHandler extends TenantEngineLifecycleComponen
 		.getApiChannel();
     }
 
-    public IDeviceEventManagementApiChannel<?> getDeviceEventManagement() {
-	return ((IBatchOperationsMicroservice) getTenantEngine().getMicroservice()).getDeviceEventManagementApiDemux()
-		.getApiChannel();
+    public IDeviceEventManagement getDeviceEventManagement() {
+	return new BlockingDeviceEventManagement(((IBatchOperationsMicroservice) getTenantEngine().getMicroservice())
+		.getDeviceEventManagementApiDemux().getApiChannel());
     }
 }

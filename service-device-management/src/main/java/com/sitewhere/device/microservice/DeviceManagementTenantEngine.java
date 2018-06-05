@@ -19,6 +19,7 @@ import com.sitewhere.device.grpc.DeviceManagementImpl;
 import com.sitewhere.device.initializer.GroovyDeviceModelInitializer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
+import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
 import com.sitewhere.grpc.service.DeviceManagementGrpc;
@@ -138,7 +139,8 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 		    getMicroservice()));
 	    for (String script : scripts) {
 		GroovyDeviceModelInitializer initializer = new GroovyDeviceModelInitializer(groovy, script);
-		initializer.initialize(getDeviceManagement(), getEventManagementApiDemux().getApiChannel(),
+		initializer.initialize(getDeviceManagement(),
+			new BlockingDeviceEventManagement(getEventManagementApiDemux().getApiChannel()),
 			getAssetManagementApiDemux().getApiChannel());
 	    }
 	} finally {

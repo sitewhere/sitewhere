@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.device.marshaling.AreaMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
+import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.rest.model.area.Zone;
 import com.sitewhere.rest.model.area.request.AreaCreateRequest;
 import com.sitewhere.rest.model.area.request.ZoneCreateRequest;
@@ -722,7 +723,7 @@ public class Areas extends RestControllerBase {
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {
-	return getMicroservice().getDeviceEventManagementApiDemux().getApiChannel();
+	return new BlockingDeviceEventManagement(getMicroservice().getDeviceEventManagementApiDemux().getApiChannel());
     }
 
     private IAssetManagement getAssetManagement() {

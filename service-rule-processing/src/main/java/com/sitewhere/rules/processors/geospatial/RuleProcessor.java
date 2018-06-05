@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rules.processors.geospatial;
 
+import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.rules.spi.IRuleProcessor;
 import com.sitewhere.rules.spi.microservice.IRuleProcessingMicroservice;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -136,7 +137,7 @@ public class RuleProcessor extends TenantEngineLifecycleComponent implements IRu
      */
     @Override
     public IDeviceEventManagement getDeviceEventManagement() {
-	return ((IRuleProcessingMicroservice) getTenantEngine().getMicroservice()).getDeviceEventManagementApiDemux()
-		.getApiChannel();
+	return new BlockingDeviceEventManagement(((IRuleProcessingMicroservice) getTenantEngine().getMicroservice())
+		.getDeviceEventManagementApiDemux().getApiChannel());
     }
 }

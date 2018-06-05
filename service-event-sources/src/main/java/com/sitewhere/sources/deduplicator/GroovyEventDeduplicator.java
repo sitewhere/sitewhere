@@ -8,6 +8,7 @@
 package com.sitewhere.sources.deduplicator;
 
 import com.sitewhere.groovy.IGroovyVariables;
+import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventRequestBuilder;
 import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequestBuilder;
@@ -65,7 +66,7 @@ public class GroovyEventDeduplicator extends GroovyComponent implements IDeviceE
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {
-	return ((IEventSourcesMicroservice) getTenantEngine().getMicroservice()).getDeviceEventManagementApiDemux()
-		.getApiChannel();
+	return new BlockingDeviceEventManagement(((IEventSourcesMicroservice) getTenantEngine().getMicroservice())
+		.getDeviceEventManagementApiDemux().getApiChannel());
     }
 }

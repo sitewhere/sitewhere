@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDevice;
@@ -104,6 +105,6 @@ public class DeviceEvents extends RestControllerBase {
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {
-	return getMicroservice().getDeviceEventManagementApiDemux().getApiChannel();
+	return new BlockingDeviceEventManagement(getMicroservice().getDeviceEventManagementApiDemux().getApiChannel());
     }
 }

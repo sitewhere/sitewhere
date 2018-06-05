@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sitewhere.device.group.DeviceGroupUtils;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceMarshalHelper;
+import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
@@ -498,7 +499,7 @@ public class Devices extends RestControllerBase {
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {
-	return getMicroservice().getDeviceEventManagementApiDemux().getApiChannel();
+	return new BlockingDeviceEventManagement(getMicroservice().getDeviceEventManagementApiDemux().getApiChannel());
     }
 
     private IAssetManagement getAssetManagement() {

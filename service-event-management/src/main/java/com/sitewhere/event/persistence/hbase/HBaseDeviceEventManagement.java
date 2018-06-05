@@ -11,10 +11,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.hadoop.hbase.regionserver.BloomType;
-import org.reactivestreams.Processor;
 
 import com.sitewhere.event.persistence.DeviceEventManagementPersistence;
-import com.sitewhere.event.persistence.streaming.DeviceAssignmentEventCreateProcessor;
 import com.sitewhere.hbase.DeviceIdManager;
 import com.sitewhere.hbase.HBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
@@ -40,14 +38,12 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceAssignmentEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
-import com.sitewhere.spi.device.event.streaming.IEventStreamAck;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
@@ -165,15 +161,6 @@ public class HBaseDeviceEventManagement extends TenantEngineLifecycleComponent i
     @Override
     public IDeviceEvent getDeviceEventByAlternateId(UUID deviceId, String alternateId) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented yet for HBase device management.");
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * streamDeviceAssignmentCreateEvents()
-     */
-    @Override
-    public Processor<IDeviceAssignmentEventCreateRequest, IEventStreamAck> streamDeviceAssignmentCreateEvents() {
-	return new DeviceAssignmentEventCreateProcessor(this);
     }
 
     /*
