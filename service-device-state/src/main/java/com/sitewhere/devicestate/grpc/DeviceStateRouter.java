@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
+import com.sitewhere.grpc.client.GrpcContextKeys;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.server.IGrpcRouter;
 import com.sitewhere.grpc.service.DeviceStateGrpc;
@@ -27,8 +28,6 @@ import com.sitewhere.grpc.service.GGetDeviceStateRequest;
 import com.sitewhere.grpc.service.GGetDeviceStateResponse;
 import com.sitewhere.grpc.service.GUpdateDeviceStateRequest;
 import com.sitewhere.grpc.service.GUpdateDeviceStateResponse;
-import com.sitewhere.microservice.grpc.TenantTokenServerInterceptor;
-import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
 
 import io.grpc.stub.StreamObserver;
@@ -57,13 +56,12 @@ public class DeviceStateRouter extends DeviceStateGrpc.DeviceStateImplBase
      */
     @Override
     public DeviceStateGrpc.DeviceStateImplBase getTenantImplementation(StreamObserver<?> observer) {
-	String tenantId = TenantTokenServerInterceptor.TENANT_ID_KEY.get();
+	String tenantId = GrpcContextKeys.TENANT_ID_KEY.get();
 	if (tenantId == null) {
 	    throw new RuntimeException("Tenant id not found in device state request.");
 	}
 	try {
 	    IDeviceStateTenantEngine engine = getMicroservice().assureTenantEngineAvailable(UUID.fromString(tenantId));
-	    UserContextManager.setCurrentTenant(engine.getTenant(), engine.getLogger());
 	    return engine.getDeviceStateImpl();
 	} catch (TenantEngineNotAvailableException e) {
 	    observer.onError(GrpcUtils.convertServerException(e));

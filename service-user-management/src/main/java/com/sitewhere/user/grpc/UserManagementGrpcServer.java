@@ -8,9 +8,9 @@
 package com.sitewhere.user.grpc;
 
 import com.sitewhere.microservice.grpc.GrpcServer;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.user.spi.grpc.IUserManagementGrpcServer;
+import com.sitewhere.user.spi.microservice.IUserManagementMicroservice;
 
 /**
  * Hosts a GRPC server that handles user management requests.
@@ -19,7 +19,7 @@ import com.sitewhere.user.spi.grpc.IUserManagementGrpcServer;
  */
 public class UserManagementGrpcServer extends GrpcServer implements IUserManagementGrpcServer {
 
-    public UserManagementGrpcServer(IMicroservice<?> microservice, IUserManagement userManagement) {
-	super(new UserManagementImpl(userManagement), microservice.getInstanceSettings().getGrpcPort());
+    public UserManagementGrpcServer(IUserManagementMicroservice<?> microservice, IUserManagement userManagement) {
+	super(new UserManagementImpl(microservice, userManagement), microservice.getInstanceSettings().getGrpcPort());
     }
 }

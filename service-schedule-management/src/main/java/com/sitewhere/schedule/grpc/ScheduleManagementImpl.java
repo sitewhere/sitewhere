@@ -8,6 +8,7 @@
 package com.sitewhere.schedule.grpc;
 
 import com.sitewhere.grpc.client.GrpcUtils;
+import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
 import com.sitewhere.grpc.model.ScheduleModel.GScheduleSearchResults;
 import com.sitewhere.grpc.model.ScheduleModel.GScheduledJobSearchResults;
 import com.sitewhere.grpc.model.converter.ScheduleModelConverter;
@@ -32,6 +33,8 @@ import com.sitewhere.grpc.service.GUpdateScheduleResponse;
 import com.sitewhere.grpc.service.GUpdateScheduledJobRequest;
 import com.sitewhere.grpc.service.GUpdateScheduledJobResponse;
 import com.sitewhere.grpc.service.ScheduleManagementGrpc;
+import com.sitewhere.schedule.spi.microservice.IScheduleManagementMicroservice;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduledJob;
@@ -46,12 +49,18 @@ import io.grpc.stub.StreamObserver;
  * 
  * @author Derek
  */
-public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManagementImplBase {
+public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManagementImplBase
+	implements IGrpcApiImplementation {
+
+    /** Parent microservice */
+    private IScheduleManagementMicroservice microservice;
 
     /** Schedule management persistence */
     private IScheduleManagement scheduleManagement;
 
-    public ScheduleManagementImpl(IScheduleManagement scheduleManagement) {
+    public ScheduleManagementImpl(IScheduleManagementMicroservice microservice,
+	    IScheduleManagement scheduleManagement) {
+	this.microservice = microservice;
 	this.scheduleManagement = scheduleManagement;
     }
 
@@ -65,7 +74,7 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
     public void createSchedule(GCreateScheduleRequest request,
 	    StreamObserver<GCreateScheduleResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(ScheduleManagementGrpc.METHOD_CREATE_SCHEDULE);
+	    GrpcUtils.handleServerMethodEntry(this, ScheduleManagementGrpc.getCreateScheduleMethod());
 	    IScheduleCreateRequest apiRequest = ScheduleModelConverter.asApiScheduleCreateRequest(request.getRequest());
 	    ISchedule apiResult = getScheduleManagement().createSchedule(apiRequest);
 	    GCreateScheduleResponse.Builder response = GCreateScheduleResponse.newBuilder();
@@ -73,7 +82,10 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.METHOD_CREATE_SCHEDULE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.getCreateScheduleMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(ScheduleManagementGrpc.getCreateScheduleMethod());
 	}
     }
 
@@ -87,7 +99,7 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
     public void updateSchedule(GUpdateScheduleRequest request,
 	    StreamObserver<GUpdateScheduleResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(ScheduleManagementGrpc.METHOD_UPDATE_SCHEDULE);
+	    GrpcUtils.handleServerMethodEntry(this, ScheduleManagementGrpc.getUpdateScheduleMethod());
 	    IScheduleCreateRequest apiRequest = ScheduleModelConverter.asApiScheduleCreateRequest(request.getRequest());
 	    ISchedule apiResult = getScheduleManagement().updateSchedule(request.getToken(), apiRequest);
 	    GUpdateScheduleResponse.Builder response = GUpdateScheduleResponse.newBuilder();
@@ -95,7 +107,10 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.METHOD_UPDATE_SCHEDULE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.getUpdateScheduleMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(ScheduleManagementGrpc.getUpdateScheduleMethod());
 	}
     }
 
@@ -109,7 +124,7 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
     public void getScheduleByToken(GGetScheduleByTokenRequest request,
 	    StreamObserver<GGetScheduleByTokenResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(ScheduleManagementGrpc.METHOD_GET_SCHEDULE_BY_TOKEN);
+	    GrpcUtils.handleServerMethodEntry(this, ScheduleManagementGrpc.getGetScheduleByTokenMethod());
 	    ISchedule apiResult = getScheduleManagement().getScheduleByToken(request.getToken());
 	    GGetScheduleByTokenResponse.Builder response = GGetScheduleByTokenResponse.newBuilder();
 	    if (apiResult != null) {
@@ -118,8 +133,10 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.METHOD_GET_SCHEDULE_BY_TOKEN, e,
+	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.getGetScheduleByTokenMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(ScheduleManagementGrpc.getGetScheduleByTokenMethod());
 	}
     }
 
@@ -132,7 +149,7 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
     @Override
     public void listSchedules(GListSchedulesRequest request, StreamObserver<GListSchedulesResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(ScheduleManagementGrpc.METHOD_LIST_SCHEDULES);
+	    GrpcUtils.handleServerMethodEntry(this, ScheduleManagementGrpc.getListSchedulesMethod());
 	    ISearchResults<ISchedule> apiResult = getScheduleManagement()
 		    .listSchedules(ScheduleModelConverter.asApiScheduleSearchCrtieria(request.getCriteria()));
 	    GListSchedulesResponse.Builder response = GListSchedulesResponse.newBuilder();
@@ -145,7 +162,9 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.METHOD_LIST_SCHEDULES, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.getListSchedulesMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(ScheduleManagementGrpc.getListSchedulesMethod());
 	}
     }
 
@@ -159,14 +178,17 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
     public void deleteSchedule(GDeleteScheduleRequest request,
 	    StreamObserver<GDeleteScheduleResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(ScheduleManagementGrpc.METHOD_DELETE_SCHEDULE);
+	    GrpcUtils.handleServerMethodEntry(this, ScheduleManagementGrpc.getDeleteScheduleMethod());
 	    ISchedule apiResult = getScheduleManagement().deleteSchedule(request.getToken(), request.getForce());
 	    GDeleteScheduleResponse.Builder response = GDeleteScheduleResponse.newBuilder();
 	    response.setSchedule(ScheduleModelConverter.asGrpcSchedule(apiResult));
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.METHOD_DELETE_SCHEDULE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.getDeleteScheduleMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(ScheduleManagementGrpc.getDeleteScheduleMethod());
 	}
     }
 
@@ -180,7 +202,7 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
     public void createScheduledJob(GCreateScheduledJobRequest request,
 	    StreamObserver<GCreateScheduledJobResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(ScheduleManagementGrpc.METHOD_CREATE_SCHEDULED_JOB);
+	    GrpcUtils.handleServerMethodEntry(this, ScheduleManagementGrpc.getCreateScheduledJobMethod());
 	    IScheduledJobCreateRequest apiRequest = ScheduleModelConverter
 		    .asApiScheduledJobCreateRequest(request.getRequest());
 	    IScheduledJob apiResult = getScheduleManagement().createScheduledJob(apiRequest);
@@ -189,8 +211,10 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.METHOD_CREATE_SCHEDULED_JOB, e,
+	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.getCreateScheduledJobMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(ScheduleManagementGrpc.getCreateScheduledJobMethod());
 	}
     }
 
@@ -204,7 +228,7 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
     public void updateScheduledJob(GUpdateScheduledJobRequest request,
 	    StreamObserver<GUpdateScheduledJobResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(ScheduleManagementGrpc.METHOD_UPDATE_SCHEDULED_JOB);
+	    GrpcUtils.handleServerMethodEntry(this, ScheduleManagementGrpc.getUpdateScheduledJobMethod());
 	    IScheduledJobCreateRequest apiRequest = ScheduleModelConverter
 		    .asApiScheduledJobCreateRequest(request.getRequest());
 	    IScheduledJob apiResult = getScheduleManagement().updateScheduledJob(request.getToken(), apiRequest);
@@ -213,8 +237,10 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.METHOD_UPDATE_SCHEDULED_JOB, e,
+	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.getUpdateScheduledJobMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(ScheduleManagementGrpc.getUpdateScheduledJobMethod());
 	}
     }
 
@@ -228,7 +254,7 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
     public void getScheduledJobByToken(GGetScheduledJobByTokenRequest request,
 	    StreamObserver<GGetScheduledJobByTokenResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(ScheduleManagementGrpc.METHOD_GET_SCHEDULED_JOB_BY_TOKEN);
+	    GrpcUtils.handleServerMethodEntry(this, ScheduleManagementGrpc.getGetScheduledJobByTokenMethod());
 	    IScheduledJob apiResult = getScheduleManagement().getScheduledJobByToken(request.getToken());
 	    GGetScheduledJobByTokenResponse.Builder response = GGetScheduledJobByTokenResponse.newBuilder();
 	    if (apiResult != null) {
@@ -237,8 +263,10 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.METHOD_GET_SCHEDULED_JOB_BY_TOKEN, e,
+	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.getGetScheduledJobByTokenMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(ScheduleManagementGrpc.getGetScheduledJobByTokenMethod());
 	}
     }
 
@@ -252,7 +280,7 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
     public void listScheduledJobs(GListScheduledJobsRequest request,
 	    StreamObserver<GListScheduledJobsResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(ScheduleManagementGrpc.METHOD_LIST_SCHEDULED_JOBS);
+	    GrpcUtils.handleServerMethodEntry(this, ScheduleManagementGrpc.getListScheduledJobsMethod());
 	    ISearchResults<IScheduledJob> apiResult = getScheduleManagement()
 		    .listScheduledJobs(ScheduleModelConverter.asApiScheduledJobSearchCrtieria(request.getCriteria()));
 	    GListScheduledJobsResponse.Builder response = GListScheduledJobsResponse.newBuilder();
@@ -265,8 +293,10 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.METHOD_LIST_SCHEDULED_JOBS, e,
+	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.getListScheduledJobsMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(ScheduleManagementGrpc.getListScheduledJobsMethod());
 	}
     }
 
@@ -280,7 +310,7 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
     public void deleteScheduledJob(GDeleteScheduledJobRequest request,
 	    StreamObserver<GDeleteScheduledJobResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(ScheduleManagementGrpc.METHOD_DELETE_SCHEDULED_JOB);
+	    GrpcUtils.handleServerMethodEntry(this, ScheduleManagementGrpc.getDeleteScheduledJobMethod());
 	    IScheduledJob apiResult = getScheduleManagement().deleteScheduledJob(request.getToken(),
 		    request.getForce());
 	    GDeleteScheduledJobResponse.Builder response = GDeleteScheduledJobResponse.newBuilder();
@@ -288,16 +318,23 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.METHOD_DELETE_SCHEDULED_JOB, e,
+	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.getDeleteScheduledJobMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(ScheduleManagementGrpc.getDeleteScheduledJobMethod());
 	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation#getMicroservice()
+     */
+    @Override
+    public IMicroservice<?> getMicroservice() {
+	return microservice;
     }
 
     protected IScheduleManagement getScheduleManagement() {
 	return scheduleManagement;
-    }
-
-    protected void setScheduleManagement(IScheduleManagement scheduleManagement) {
-	this.scheduleManagement = scheduleManagement;
     }
 }

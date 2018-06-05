@@ -9,6 +9,7 @@ package com.sitewhere.microservice.grpc;
 
 import java.util.UUID;
 
+import com.sitewhere.grpc.client.GrpcContextKeys;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.service.GCheckTenantEngineAvailableRequest;
 import com.sitewhere.grpc.service.GCheckTenantEngineAvailableResponse;
@@ -45,7 +46,7 @@ public class MultitenantManagementImpl extends MultitenantManagementGrpc.Multite
 	    StreamObserver<GCheckTenantEngineAvailableResponse> responseObserver) {
 	GCheckTenantEngineAvailableResponse.Builder response = GCheckTenantEngineAvailableResponse.newBuilder();
 	try {
-	    String tenantId = TenantTokenServerInterceptor.TENANT_ID_KEY.get();
+	    String tenantId = GrpcContextKeys.TENANT_ID_KEY.get();
 	    if (tenantId == null) {
 		throw new RuntimeException("Tenant id not found in device management request.");
 	    }
@@ -55,7 +56,7 @@ public class MultitenantManagementImpl extends MultitenantManagementGrpc.Multite
 	} catch (TenantEngineNotAvailableException e) {
 	    response.setAvailable(false);
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(MultitenantManagementGrpc.METHOD_CHECK_TENANT_ENGINE_AVAILABLE, e,
+	    GrpcUtils.handleServerMethodException(MultitenantManagementGrpc.getCheckTenantEngineAvailableMethod(), e,
 		    responseObserver);
 	    response.setAvailable(false);
 	}

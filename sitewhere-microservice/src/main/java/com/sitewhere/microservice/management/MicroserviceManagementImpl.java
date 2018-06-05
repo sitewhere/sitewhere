@@ -9,6 +9,7 @@ package com.sitewhere.microservice.management;
 
 import com.google.protobuf.ByteString;
 import com.sitewhere.grpc.client.GrpcUtils;
+import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
 import com.sitewhere.grpc.model.MicroserviceModel.GConfigurationContent;
 import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.grpc.model.converter.MicroserviceModelConverter;
@@ -36,7 +37,8 @@ import io.grpc.stub.StreamObserver;
  * 
  * @author Derek
  */
-public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.MicroserviceManagementImplBase {
+public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.MicroserviceManagementImplBase
+	implements IGrpcApiImplementation {
 
     /** Microservice */
     private IMicroservice<?> microservice;
@@ -54,15 +56,17 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
     public void getConfigurationModel(GGetConfigurationModelRequest request,
 	    StreamObserver<GGetConfigurationModelResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(MicroserviceManagementGrpc.METHOD_GET_CONFIGURATION_MODEL);
+	    GrpcUtils.handleServerMethodEntry(this, MicroserviceManagementGrpc.getGetConfigurationModelMethod());
 	    IConfigurationModel apiResult = getMicroservice().getConfigurationModel();
 	    GGetConfigurationModelResponse.Builder response = GGetConfigurationModelResponse.newBuilder();
 	    response.setModel(MicroserviceModelConverter.asGrpcConfigurationModel(apiResult));
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(MicroserviceManagementGrpc.METHOD_GET_CONFIGURATION_MODEL, e,
+	    GrpcUtils.handleServerMethodException(MicroserviceManagementGrpc.getGetConfigurationModelMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(MicroserviceManagementGrpc.getGetConfigurationModelMethod());
 	}
     }
 
@@ -75,7 +79,7 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
     public void getGlobalConfiguration(GGetGlobalConfigurationRequest request,
 	    StreamObserver<GGetGlobalConfigurationResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(MicroserviceManagementGrpc.METHOD_GET_GLOBAL_CONFIGURATION);
+	    GrpcUtils.handleServerMethodEntry(this, MicroserviceManagementGrpc.getGetGlobalConfigurationMethod());
 	    GGetGlobalConfigurationResponse.Builder response = GGetGlobalConfigurationResponse.newBuilder();
 	    GConfigurationContent.Builder configuration = GConfigurationContent.newBuilder();
 
@@ -90,8 +94,10 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(MicroserviceManagementGrpc.METHOD_GET_GLOBAL_CONFIGURATION, e,
+	    GrpcUtils.handleServerMethodException(MicroserviceManagementGrpc.getGetGlobalConfigurationMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(MicroserviceManagementGrpc.getGetGlobalConfigurationMethod());
 	}
     }
 
@@ -104,7 +110,7 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
     public void getTenantConfiguration(GGetTenantConfigurationRequest request,
 	    StreamObserver<GGetTenantConfigurationResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(MicroserviceManagementGrpc.METHOD_GET_TENANT_CONFIGURATION);
+	    GrpcUtils.handleServerMethodEntry(this, MicroserviceManagementGrpc.getGetTenantConfigurationMethod());
 	    GGetTenantConfigurationResponse.Builder response = GGetTenantConfigurationResponse.newBuilder();
 	    GConfigurationContent.Builder configuration = GConfigurationContent.newBuilder();
 
@@ -120,8 +126,10 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(MicroserviceManagementGrpc.METHOD_GET_TENANT_CONFIGURATION, e,
+	    GrpcUtils.handleServerMethodException(MicroserviceManagementGrpc.getGetTenantConfigurationMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(MicroserviceManagementGrpc.getGetTenantConfigurationMethod());
 	}
     }
 
@@ -134,7 +142,7 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
     public void updateGlobalConfiguration(GUpdateGlobalConfigurationRequest request,
 	    StreamObserver<GUpdateGlobalConfigurationResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(MicroserviceManagementGrpc.METHOD_UPDATE_GLOBAL_CONFIGURATION);
+	    GrpcUtils.handleServerMethodEntry(this, MicroserviceManagementGrpc.getUpdateGlobalConfigurationMethod());
 	    byte[] content = request.getConfiguration().getContent().toByteArray();
 
 	    if (getMicroservice() instanceof IGlobalMicroservice) {
@@ -147,8 +155,10 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(MicroserviceManagementGrpc.METHOD_UPDATE_GLOBAL_CONFIGURATION, e,
+	    GrpcUtils.handleServerMethodException(MicroserviceManagementGrpc.getUpdateGlobalConfigurationMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(MicroserviceManagementGrpc.getUpdateGlobalConfigurationMethod());
 	}
     }
 
@@ -161,7 +171,7 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
     public void updateTenantConfiguration(GUpdateTenantConfigurationRequest request,
 	    StreamObserver<GUpdateTenantConfigurationResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(MicroserviceManagementGrpc.METHOD_UPDATE_TENANT_CONFIGURATION);
+	    GrpcUtils.handleServerMethodEntry(this, MicroserviceManagementGrpc.getUpdateTenantConfigurationMethod());
 	    byte[] content = request.getConfiguration().getContent().toByteArray();
 
 	    if (getMicroservice() instanceof IMultitenantMicroservice) {
@@ -175,16 +185,19 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(MicroserviceManagementGrpc.METHOD_UPDATE_TENANT_CONFIGURATION, e,
+	    GrpcUtils.handleServerMethodException(MicroserviceManagementGrpc.getUpdateTenantConfigurationMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(MicroserviceManagementGrpc.getUpdateTenantConfigurationMethod());
 	}
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation#getMicroservice()
+     */
+    @Override
     public IMicroservice<?> getMicroservice() {
 	return microservice;
-    }
-
-    public void setMicroservice(IMicroservice<?> microservice) {
-	this.microservice = microservice;
     }
 }

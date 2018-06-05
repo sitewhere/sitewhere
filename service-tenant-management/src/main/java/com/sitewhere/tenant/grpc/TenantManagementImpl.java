@@ -9,10 +9,8 @@ package com.sitewhere.tenant.grpc;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.grpc.client.GrpcUtils;
+import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
 import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.grpc.model.converter.TenantModelConverter;
 import com.sitewhere.grpc.service.GCreateTenantRequest;
@@ -30,12 +28,14 @@ import com.sitewhere.grpc.service.GListTenantsResponse;
 import com.sitewhere.grpc.service.GUpdateTenantRequest;
 import com.sitewhere.grpc.service.GUpdateTenantResponse;
 import com.sitewhere.grpc.service.TenantManagementGrpc;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantAdministration;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
+import com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice;
 
 import io.grpc.stub.StreamObserver;
 
@@ -44,11 +44,11 @@ import io.grpc.stub.StreamObserver;
  * 
  * @author Derek
  */
-public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementImplBase {
+public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementImplBase
+	implements IGrpcApiImplementation {
 
-    /** Static logger instance */
-    @SuppressWarnings("unused")
-    private static Log LOGGER = LogFactory.getLog(TenantManagementImpl.class);
+    /** Parent microservice */
+    private ITenantManagementMicroservice<?> microservice;
 
     /** Tenant management persistence */
     private ITenantManagement tenantMangagement;
@@ -56,7 +56,9 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
     /** Tenant administration */
     private ITenantAdministration tenantAdministration;
 
-    public TenantManagementImpl(ITenantManagement tenantManagement, ITenantAdministration tenantAdministration) {
+    public TenantManagementImpl(ITenantManagementMicroservice<?> microservice, ITenantManagement tenantManagement,
+	    ITenantAdministration tenantAdministration) {
+	this.microservice = microservice;
 	this.tenantMangagement = tenantManagement;
 	this.tenantAdministration = tenantAdministration;
     }
@@ -72,7 +74,7 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
     @Override
     public void createTenant(GCreateTenantRequest request, StreamObserver<GCreateTenantResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(TenantManagementGrpc.METHOD_CREATE_TENANT);
+	    GrpcUtils.handleServerMethodEntry(this, TenantManagementGrpc.getCreateTenantMethod());
 	    ITenantCreateRequest apiRequest = TenantModelConverter.asApiTenantCreateRequest(request.getRequest());
 	    ITenant apiResult = getTenantMangagement().createTenant(apiRequest);
 	    GCreateTenantResponse.Builder response = GCreateTenantResponse.newBuilder();
@@ -80,7 +82,9 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.METHOD_CREATE_TENANT, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.getCreateTenantMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(TenantManagementGrpc.getCreateTenantMethod());
 	}
     }
 
@@ -95,7 +99,7 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
     @Override
     public void updateTenant(GUpdateTenantRequest request, StreamObserver<GUpdateTenantResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(TenantManagementGrpc.METHOD_UPDATE_TENANT);
+	    GrpcUtils.handleServerMethodEntry(this, TenantManagementGrpc.getUpdateTenantMethod());
 	    ITenantCreateRequest apiRequest = TenantModelConverter.asApiTenantCreateRequest(request.getRequest());
 	    ITenant apiResult = getTenantMangagement().updateTenant(CommonModelConverter.asApiUuid(request.getId()),
 		    apiRequest);
@@ -104,7 +108,9 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.METHOD_UPDATE_TENANT, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.getUpdateTenantMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(TenantManagementGrpc.getUpdateTenantMethod());
 	}
     }
 
@@ -119,7 +125,7 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
     @Override
     public void getTenantById(GGetTenantByIdRequest request, StreamObserver<GGetTenantByIdResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(TenantManagementGrpc.METHOD_GET_TENANT_BY_ID);
+	    GrpcUtils.handleServerMethodEntry(this, TenantManagementGrpc.getGetTenantByIdMethod());
 	    ITenant apiResult = getTenantMangagement().getTenant(CommonModelConverter.asApiUuid(request.getId()));
 	    GGetTenantByIdResponse.Builder response = GGetTenantByIdResponse.newBuilder();
 	    if (apiResult != null) {
@@ -128,7 +134,9 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.METHOD_GET_TENANT_BY_ID, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.getGetTenantByIdMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(TenantManagementGrpc.getGetTenantByIdMethod());
 	}
     }
 
@@ -142,7 +150,7 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
     public void getTenantByToken(GGetTenantByTokenRequest request,
 	    StreamObserver<GGetTenantByTokenResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(TenantManagementGrpc.METHOD_GET_TENANT_BY_TOKEN);
+	    GrpcUtils.handleServerMethodEntry(this, TenantManagementGrpc.getGetTenantByTokenMethod());
 	    ITenant apiResult = getTenantMangagement().getTenantByToken(request.getToken());
 	    GGetTenantByTokenResponse.Builder response = GGetTenantByTokenResponse.newBuilder();
 	    if (apiResult != null) {
@@ -151,7 +159,10 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.METHOD_GET_TENANT_BY_TOKEN, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.getGetTenantByTokenMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(TenantManagementGrpc.getGetTenantByTokenMethod());
 	}
     }
 
@@ -166,7 +177,7 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
     @Override
     public void listTenants(GListTenantsRequest request, StreamObserver<GListTenantsResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(TenantManagementGrpc.METHOD_LIST_TENANTS);
+	    GrpcUtils.handleServerMethodEntry(this, TenantManagementGrpc.getListTenantsMethod());
 	    ISearchResults<ITenant> apiResult = getTenantMangagement()
 		    .listTenants(TenantModelConverter.asApiTenantSearchCriteria(request.getCriteria()));
 	    GListTenantsResponse.Builder response = GListTenantsResponse.newBuilder();
@@ -174,7 +185,9 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.METHOD_LIST_TENANTS, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.getListTenantsMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(TenantManagementGrpc.getListTenantsMethod());
 	}
     }
 
@@ -189,7 +202,7 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
     @Override
     public void deleteTenant(GDeleteTenantRequest request, StreamObserver<GDeleteTenantResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(TenantManagementGrpc.METHOD_DELETE_TENANT);
+	    GrpcUtils.handleServerMethodEntry(this, TenantManagementGrpc.getDeleteTenantMethod());
 	    ITenant apiResult = getTenantMangagement().deleteTenant(CommonModelConverter.asApiUuid(request.getId()),
 		    request.getForce());
 	    GDeleteTenantResponse.Builder response = GDeleteTenantResponse.newBuilder();
@@ -197,7 +210,9 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.METHOD_DELETE_TENANT, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.getDeleteTenantMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(TenantManagementGrpc.getDeleteTenantMethod());
 	}
     }
 
@@ -211,31 +226,34 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
     public void getTenantTemplates(GGetTenantTemplatesRequest request,
 	    StreamObserver<GGetTenantTemplatesResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(TenantManagementGrpc.METHOD_GET_TENANT_TEMPLATES);
+	    GrpcUtils.handleServerMethodEntry(this, TenantManagementGrpc.getGetTenantTemplatesMethod());
 	    List<ITenantTemplate> apiResult = getTenantAdministration().getTenantTemplates();
 	    GGetTenantTemplatesResponse.Builder response = GGetTenantTemplatesResponse.newBuilder();
 	    response.addAllTemplate(TenantModelConverter.asGrpcTenantTemplateList(apiResult));
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.METHOD_GET_TENANT_TEMPLATES, e,
+	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.getGetTenantTemplatesMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(TenantManagementGrpc.getGetTenantTemplatesMethod());
 	}
     }
 
-    public ITenantManagement getTenantMangagement() {
+    /*
+     * @see
+     * com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation#getMicroservice()
+     */
+    @Override
+    public IMicroservice<?> getMicroservice() {
+	return microservice;
+    }
+
+    protected ITenantManagement getTenantMangagement() {
 	return tenantMangagement;
     }
 
-    public void setTenantMangagement(ITenantManagement tenantMangagement) {
-	this.tenantMangagement = tenantMangagement;
-    }
-
-    public ITenantAdministration getTenantAdministration() {
+    protected ITenantAdministration getTenantAdministration() {
 	return tenantAdministration;
-    }
-
-    public void setTenantAdministration(ITenantAdministration tenantAdministration) {
-	this.tenantAdministration = tenantAdministration;
     }
 }

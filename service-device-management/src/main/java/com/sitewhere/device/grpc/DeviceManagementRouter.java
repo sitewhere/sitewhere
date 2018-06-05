@@ -14,11 +14,10 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
+import com.sitewhere.grpc.client.GrpcContextKeys;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.server.IGrpcRouter;
 import com.sitewhere.grpc.service.*;
-import com.sitewhere.microservice.grpc.TenantTokenServerInterceptor;
-import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
 
 import io.grpc.stub.StreamObserver;
@@ -47,14 +46,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
      */
     @Override
     public DeviceManagementGrpc.DeviceManagementImplBase getTenantImplementation(StreamObserver<?> observer) {
-	String tenantId = TenantTokenServerInterceptor.TENANT_ID_KEY.get();
+	String tenantId = GrpcContextKeys.TENANT_ID_KEY.get();
 	if (tenantId == null) {
 	    throw new RuntimeException("Tenant id not found in device management request.");
 	}
 	try {
 	    IDeviceManagementTenantEngine engine = getMicroservice()
 		    .assureTenantEngineAvailable(UUID.fromString(tenantId));
-	    UserContextManager.setCurrentTenant(engine.getTenant(), engine.getLogger());
 	    return engine.getDeviceManagementImpl();
 	} catch (TenantEngineNotAvailableException e) {
 	    observer.onError(GrpcUtils.convertServerException(e));

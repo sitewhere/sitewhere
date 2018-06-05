@@ -7,7 +7,9 @@
  */
 package com.sitewhere.asset.grpc;
 
+import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.grpc.client.GrpcUtils;
+import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
 import com.sitewhere.grpc.model.AssetModel.GAssetSearchResults;
 import com.sitewhere.grpc.model.AssetModel.GAssetTypeSearchResults;
 import com.sitewhere.grpc.model.asset.AssetModelConverter;
@@ -51,12 +53,16 @@ import io.grpc.stub.StreamObserver;
  * 
  * @author Derek
  */
-public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImplBase {
+public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImplBase implements IGrpcApiImplementation {
+
+    /** Handle to asset management microservice */
+    private IAssetManagementMicroservice microservice;
 
     /** Asset management */
     private IAssetManagement assetManagement;
 
-    public AssetManagementImpl(IAssetManagement assetManagement) {
+    public AssetManagementImpl(IAssetManagementMicroservice microservice, IAssetManagement assetManagement) {
+	this.microservice = microservice;
 	this.assetManagement = assetManagement;
     }
 
@@ -69,7 +75,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
     public void createAssetType(GCreateAssetTypeRequest request,
 	    StreamObserver<GCreateAssetTypeResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_CREATE_ASSET_TYPE);
+	    GrpcUtils.handleServerMethodEntry(this, AssetManagementGrpc.getCreateAssetTypeMethod());
 	    IAssetTypeCreateRequest apiRequest = AssetModelConverter.asApiAssetTypeCreateRequest(request.getRequest());
 	    IAssetType apiResult = getAssetManagement().createAssetType(apiRequest);
 	    GCreateAssetTypeResponse.Builder response = GCreateAssetTypeResponse.newBuilder();
@@ -77,7 +83,9 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_CREATE_ASSET_TYPE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.getCreateAssetTypeMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(AssetManagementGrpc.getCreateAssetTypeMethod());
 	}
     }
 
@@ -90,7 +98,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
     public void updateAssetType(GUpdateAssetTypeRequest request,
 	    StreamObserver<GUpdateAssetTypeResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_UPDATE_ASSET_TYPE);
+	    GrpcUtils.handleServerMethodEntry(this, AssetManagementGrpc.getUpdateAssetTypeMethod());
 	    IAssetTypeCreateRequest apiRequest = AssetModelConverter.asApiAssetTypeCreateRequest(request.getRequest());
 	    IAssetType apiResult = getAssetManagement()
 		    .updateAssetType(CommonModelConverter.asApiUuid(request.getAssetTypeId()), apiRequest);
@@ -99,7 +107,9 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_UPDATE_ASSET_TYPE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.getUpdateAssetTypeMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(AssetManagementGrpc.getUpdateAssetTypeMethod());
 	}
     }
 
@@ -112,7 +122,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
     public void getAssetTypeById(GGetAssetTypeByIdRequest request,
 	    StreamObserver<GGetAssetTypeByIdResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_TYPE_BY_ID);
+	    GrpcUtils.handleServerMethodEntry(this, AssetManagementGrpc.getGetAssetTypeByIdMethod());
 	    IAssetType apiResult = getAssetManagement()
 		    .getAssetType(CommonModelConverter.asApiUuid(request.getAssetTypeId()));
 	    GGetAssetTypeByIdResponse.Builder response = GGetAssetTypeByIdResponse.newBuilder();
@@ -122,7 +132,9 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_GET_ASSET_TYPE_BY_ID, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.getGetAssetTypeByIdMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(AssetManagementGrpc.getGetAssetTypeByIdMethod());
 	}
     }
 
@@ -135,7 +147,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
     public void getAssetTypeByToken(GGetAssetTypeByTokenRequest request,
 	    StreamObserver<GGetAssetTypeByTokenResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_TYPE_BY_TOKEN);
+	    GrpcUtils.handleServerMethodEntry(this, AssetManagementGrpc.getGetAssetTypeByTokenMethod());
 	    IAssetType apiResult = getAssetManagement().getAssetTypeByToken(request.getToken());
 	    GGetAssetTypeByTokenResponse.Builder response = GGetAssetTypeByTokenResponse.newBuilder();
 	    if (apiResult != null) {
@@ -144,8 +156,10 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_GET_ASSET_TYPE_BY_TOKEN, e,
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.getGetAssetTypeByTokenMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(AssetManagementGrpc.getGetAssetTypeByTokenMethod());
 	}
     }
 
@@ -158,7 +172,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
     public void deleteAssetType(GDeleteAssetTypeRequest request,
 	    StreamObserver<GDeleteAssetTypeResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_DELETE_ASSET_TYPE);
+	    GrpcUtils.handleServerMethodEntry(this, AssetManagementGrpc.getDeleteAssetTypeMethod());
 	    IAssetType apiResult = getAssetManagement()
 		    .deleteAssetType(CommonModelConverter.asApiUuid(request.getAssetTypeId()), request.getForce());
 	    GDeleteAssetTypeResponse.Builder response = GDeleteAssetTypeResponse.newBuilder();
@@ -166,7 +180,9 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_DELETE_ASSET_TYPE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.getDeleteAssetTypeMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(AssetManagementGrpc.getDeleteAssetTypeMethod());
 	}
     }
 
@@ -179,7 +195,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
     public void listAssetTypes(GListAssetTypesRequest request,
 	    StreamObserver<GListAssetTypesResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_LIST_ASSET_TYPES);
+	    GrpcUtils.handleServerMethodEntry(this, AssetManagementGrpc.getListAssetTypesMethod());
 	    ISearchResults<IAssetType> apiResult = getAssetManagement()
 		    .listAssetTypes(AssetModelConverter.asApiAssetTypeSearchCriteria(request.getCriteria()));
 	    GListAssetTypesResponse.Builder response = GListAssetTypesResponse.newBuilder();
@@ -192,7 +208,9 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_LIST_ASSET_TYPES, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.getListAssetTypesMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(AssetManagementGrpc.getListAssetTypesMethod());
 	}
     }
 
@@ -204,7 +222,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
     @Override
     public void createAsset(GCreateAssetRequest request, StreamObserver<GCreateAssetResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_CREATE_ASSET);
+	    GrpcUtils.handleServerMethodEntry(this, AssetManagementGrpc.getCreateAssetMethod());
 	    IAssetCreateRequest apiRequest = AssetModelConverter.asApiAssetCreateRequest(request.getRequest());
 	    IAsset apiResult = getAssetManagement().createAsset(apiRequest);
 	    GCreateAssetResponse.Builder response = GCreateAssetResponse.newBuilder();
@@ -212,7 +230,9 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_CREATE_ASSET, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.getCreateAssetMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(AssetManagementGrpc.getCreateAssetMethod());
 	}
     }
 
@@ -224,7 +244,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
     @Override
     public void updateAsset(GUpdateAssetRequest request, StreamObserver<GUpdateAssetResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_UPDATE_ASSET);
+	    GrpcUtils.handleServerMethodEntry(this, AssetManagementGrpc.getUpdateAssetMethod());
 	    IAssetCreateRequest apiRequest = AssetModelConverter.asApiAssetCreateRequest(request.getRequest());
 	    IAsset apiResult = getAssetManagement().updateAsset(CommonModelConverter.asApiUuid(request.getAssetId()),
 		    apiRequest);
@@ -233,7 +253,9 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_UPDATE_ASSET, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.getUpdateAssetMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(AssetManagementGrpc.getUpdateAssetMethod());
 	}
     }
 
@@ -247,7 +269,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
     @Override
     public void getAssetById(GGetAssetByIdRequest request, StreamObserver<GGetAssetByIdResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_BY_ID);
+	    GrpcUtils.handleServerMethodEntry(this, AssetManagementGrpc.getGetAssetByIdMethod());
 	    IAsset apiResult = getAssetManagement().getAsset(CommonModelConverter.asApiUuid(request.getAssetId()));
 	    GGetAssetByIdResponse.Builder response = GGetAssetByIdResponse.newBuilder();
 	    if (apiResult != null) {
@@ -256,7 +278,9 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_GET_ASSET_BY_ID, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.getGetAssetByIdMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(AssetManagementGrpc.getGetAssetByIdMethod());
 	}
     }
 
@@ -269,7 +293,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
     public void getAssetByToken(GGetAssetByTokenRequest request,
 	    StreamObserver<GGetAssetByTokenResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_GET_ASSET_BY_TOKEN);
+	    GrpcUtils.handleServerMethodEntry(this, AssetManagementGrpc.getGetAssetByTokenMethod());
 	    IAsset apiResult = getAssetManagement().getAssetByToken(request.getToken());
 	    GGetAssetByTokenResponse.Builder response = GGetAssetByTokenResponse.newBuilder();
 	    if (apiResult != null) {
@@ -278,7 +302,9 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_GET_ASSET_BY_TOKEN, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.getGetAssetByTokenMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(AssetManagementGrpc.getGetAssetByTokenMethod());
 	}
     }
 
@@ -292,7 +318,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
     @Override
     public void deleteAsset(GDeleteAssetRequest request, StreamObserver<GDeleteAssetResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_DELETE_ASSET);
+	    GrpcUtils.handleServerMethodEntry(this, AssetManagementGrpc.getDeleteAssetMethod());
 	    IAsset apiResult = getAssetManagement().deleteAsset(CommonModelConverter.asApiUuid(request.getAssetId()),
 		    request.getForce());
 	    GDeleteAssetResponse.Builder response = GDeleteAssetResponse.newBuilder();
@@ -300,7 +326,9 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_DELETE_ASSET, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.getDeleteAssetMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(AssetManagementGrpc.getDeleteAssetMethod());
 	}
     }
 
@@ -314,7 +342,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
     @Override
     public void listAssets(GListAssetsRequest request, StreamObserver<GListAssetsResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(AssetManagementGrpc.METHOD_LIST_ASSETS);
+	    GrpcUtils.handleServerMethodEntry(this, AssetManagementGrpc.getListAssetsMethod());
 	    ISearchResults<IAsset> apiResult = getAssetManagement()
 		    .listAssets(AssetModelConverter.asApiAssetSearchCriteria(request.getCriteria()));
 	    GListAssetsResponse.Builder response = GListAssetsResponse.newBuilder();
@@ -327,8 +355,23 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.METHOD_LIST_ASSETS, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(AssetManagementGrpc.getListAssetsMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(AssetManagementGrpc.getListAssetsMethod());
 	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation#getMicroservice()
+     */
+    @Override
+    public IAssetManagementMicroservice getMicroservice() {
+	return microservice;
+    }
+
+    public void setMicroservice(IAssetManagementMicroservice microservice) {
+	this.microservice = microservice;
     }
 
     public IAssetManagement getAssetManagement() {

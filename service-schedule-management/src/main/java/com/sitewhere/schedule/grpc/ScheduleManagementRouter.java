@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sitewhere.grpc.client.GrpcContextKeys;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.server.IGrpcRouter;
 import com.sitewhere.grpc.service.GCreateScheduleRequest;
@@ -35,10 +36,8 @@ import com.sitewhere.grpc.service.GUpdateScheduleResponse;
 import com.sitewhere.grpc.service.GUpdateScheduledJobRequest;
 import com.sitewhere.grpc.service.GUpdateScheduledJobResponse;
 import com.sitewhere.grpc.service.ScheduleManagementGrpc;
-import com.sitewhere.microservice.grpc.TenantTokenServerInterceptor;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementMicroservice;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementTenantEngine;
-import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
 
 import io.grpc.stub.StreamObserver;
@@ -67,14 +66,13 @@ public class ScheduleManagementRouter extends ScheduleManagementGrpc.ScheduleMan
      */
     @Override
     public ScheduleManagementGrpc.ScheduleManagementImplBase getTenantImplementation(StreamObserver<?> observer) {
-	String tenantId = TenantTokenServerInterceptor.TENANT_ID_KEY.get();
+	String tenantId = GrpcContextKeys.TENANT_ID_KEY.get();
 	if (tenantId == null) {
 	    throw new RuntimeException("Tenant id not found in schedule management request.");
 	}
 	try {
 	    IScheduleManagementTenantEngine engine = getMicroservice()
 		    .assureTenantEngineAvailable(UUID.fromString(tenantId));
-	    UserContextManager.setCurrentTenant(engine.getTenant(), engine.getLogger());
 	    return engine.getScheduleManagementImpl();
 	} catch (TenantEngineNotAvailableException e) {
 	    observer.onError(GrpcUtils.convertServerException(e));

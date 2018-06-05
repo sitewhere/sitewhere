@@ -81,17 +81,17 @@ public class AssetManagementApiChannel extends MultitenantApiChannel<AssetManage
     @Override
     public IAssetType createAssetType(IAssetTypeCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_CREATE_ASSET_TYPE);
+	    GrpcUtils.handleClientMethodEntry(this, AssetManagementGrpc.getCreateAssetTypeMethod());
 	    GCreateAssetTypeRequest.Builder grequest = GCreateAssetTypeRequest.newBuilder();
 	    grequest.setRequest(AssetModelConverter.asGrpcAssetTypeCreateRequest(request));
 	    GCreateAssetTypeResponse gresponse = getGrpcChannel().getBlockingStub().createAssetType(grequest.build());
 	    IAssetType response = (gresponse.hasAssetType())
 		    ? AssetModelConverter.asApiAssetType(gresponse.getAssetType())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.METHOD_CREATE_ASSET_TYPE, response);
+	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.getCreateAssetTypeMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.METHOD_CREATE_ASSET_TYPE, t);
+	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.getCreateAssetTypeMethod(), t);
 	}
     }
 
@@ -102,7 +102,7 @@ public class AssetManagementApiChannel extends MultitenantApiChannel<AssetManage
     @Override
     public IAssetType updateAssetType(UUID assetTypeId, IAssetTypeCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_UPDATE_ASSET_TYPE);
+	    GrpcUtils.handleClientMethodEntry(this, AssetManagementGrpc.getUpdateAssetTypeMethod());
 	    GUpdateAssetTypeRequest.Builder grequest = GUpdateAssetTypeRequest.newBuilder();
 	    grequest.setAssetTypeId(CommonModelConverter.asGrpcUuid(assetTypeId));
 	    grequest.setRequest(AssetModelConverter.asGrpcAssetTypeCreateRequest(request));
@@ -110,10 +110,10 @@ public class AssetManagementApiChannel extends MultitenantApiChannel<AssetManage
 	    IAssetType response = (gresponse.hasAssetType())
 		    ? AssetModelConverter.asApiAssetType(gresponse.getAssetType())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.METHOD_UPDATE_ASSET_TYPE, response);
+	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.getUpdateAssetTypeMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.METHOD_UPDATE_ASSET_TYPE, t);
+	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.getUpdateAssetTypeMethod(), t);
 	}
     }
 
@@ -123,17 +123,17 @@ public class AssetManagementApiChannel extends MultitenantApiChannel<AssetManage
     @Override
     public IAssetType getAssetType(UUID assetTypeId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_GET_ASSET_TYPE_BY_ID);
+	    GrpcUtils.handleClientMethodEntry(this, AssetManagementGrpc.getGetAssetTypeByIdMethod());
 	    GGetAssetTypeByIdRequest.Builder grequest = GGetAssetTypeByIdRequest.newBuilder();
 	    grequest.setAssetTypeId(CommonModelConverter.asGrpcUuid(assetTypeId));
 	    GGetAssetTypeByIdResponse gresponse = getGrpcChannel().getBlockingStub().getAssetTypeById(grequest.build());
 	    IAssetType response = (gresponse.hasAssetType())
 		    ? AssetModelConverter.asApiAssetType(gresponse.getAssetType())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.METHOD_GET_ASSET_TYPE_BY_ID, response);
+	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.getGetAssetTypeByIdMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.METHOD_GET_ASSET_TYPE_BY_ID, t);
+	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.getGetAssetTypeByIdMethod(), t);
 	}
     }
 
@@ -144,7 +144,7 @@ public class AssetManagementApiChannel extends MultitenantApiChannel<AssetManage
     @Override
     public IAssetType getAssetTypeByToken(String token) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_GET_ASSET_TYPE_BY_TOKEN);
+	    GrpcUtils.handleClientMethodEntry(this, AssetManagementGrpc.getGetAssetTypeByTokenMethod());
 	    GGetAssetTypeByTokenRequest.Builder grequest = GGetAssetTypeByTokenRequest.newBuilder();
 	    grequest.setToken(token);
 	    GGetAssetTypeByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -152,10 +152,10 @@ public class AssetManagementApiChannel extends MultitenantApiChannel<AssetManage
 	    IAssetType response = (gresponse.hasAssetType())
 		    ? AssetModelConverter.asApiAssetType(gresponse.getAssetType())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.METHOD_GET_ASSET_TYPE_BY_TOKEN, response);
+	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.getGetAssetTypeByTokenMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.METHOD_GET_ASSET_TYPE_BY_TOKEN, t);
+	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.getGetAssetTypeByTokenMethod(), t);
 	}
     }
 
@@ -166,17 +166,17 @@ public class AssetManagementApiChannel extends MultitenantApiChannel<AssetManage
     @Override
     public IAssetType deleteAssetType(UUID assetTypeId, boolean force) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_DELETE_ASSET_TYPE);
+	    GrpcUtils.handleClientMethodEntry(this, AssetManagementGrpc.getDeleteAssetTypeMethod());
 	    GDeleteAssetTypeRequest.Builder grequest = GDeleteAssetTypeRequest.newBuilder();
 	    grequest.setAssetTypeId(CommonModelConverter.asGrpcUuid(assetTypeId));
 	    GDeleteAssetTypeResponse gresponse = getGrpcChannel().getBlockingStub().deleteAssetType(grequest.build());
 	    IAssetType response = (gresponse.hasAssetType())
 		    ? AssetModelConverter.asApiAssetType(gresponse.getAssetType())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.METHOD_DELETE_ASSET_TYPE, response);
+	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.getDeleteAssetTypeMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.METHOD_DELETE_ASSET_TYPE, t);
+	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.getDeleteAssetTypeMethod(), t);
 	}
     }
 
@@ -188,16 +188,16 @@ public class AssetManagementApiChannel extends MultitenantApiChannel<AssetManage
     @Override
     public ISearchResults<IAssetType> listAssetTypes(IAssetTypeSearchCritiera criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_LIST_ASSET_TYPES);
+	    GrpcUtils.handleClientMethodEntry(this, AssetManagementGrpc.getListAssetTypesMethod());
 	    GListAssetTypesRequest.Builder grequest = GListAssetTypesRequest.newBuilder();
 	    grequest.setCriteria(AssetModelConverter.asGrpcAssetTypeSearchCriteria(criteria));
 	    GListAssetTypesResponse gresponse = getGrpcChannel().getBlockingStub().listAssetTypes(grequest.build());
 	    ISearchResults<IAssetType> results = AssetModelConverter
 		    .asApiAssetTypeSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.METHOD_LIST_ASSET_TYPES, results);
+	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.getListAssetTypesMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.METHOD_LIST_ASSET_TYPES, t);
+	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.getListAssetTypesMethod(), t);
 	}
     }
 
@@ -209,15 +209,15 @@ public class AssetManagementApiChannel extends MultitenantApiChannel<AssetManage
     @Override
     public IAsset createAsset(IAssetCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_CREATE_ASSET);
+	    GrpcUtils.handleClientMethodEntry(this, AssetManagementGrpc.getCreateAssetMethod());
 	    GCreateAssetRequest.Builder grequest = GCreateAssetRequest.newBuilder();
 	    grequest.setRequest(AssetModelConverter.asGrpcAssetCreateRequest(request));
 	    GCreateAssetResponse gresponse = getGrpcChannel().getBlockingStub().createAsset(grequest.build());
 	    IAsset response = (gresponse.hasAsset()) ? AssetModelConverter.asApiAsset(gresponse.getAsset()) : null;
-	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.METHOD_CREATE_ASSET, response);
+	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.getCreateAssetMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.METHOD_CREATE_ASSET, t);
+	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.getCreateAssetMethod(), t);
 	}
     }
 
@@ -228,16 +228,16 @@ public class AssetManagementApiChannel extends MultitenantApiChannel<AssetManage
     @Override
     public IAsset updateAsset(UUID assetId, IAssetCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_UPDATE_ASSET);
+	    GrpcUtils.handleClientMethodEntry(this, AssetManagementGrpc.getUpdateAssetMethod());
 	    GUpdateAssetRequest.Builder grequest = GUpdateAssetRequest.newBuilder();
 	    grequest.setAssetId(CommonModelConverter.asGrpcUuid(assetId));
 	    grequest.setRequest(AssetModelConverter.asGrpcAssetCreateRequest(request));
 	    GUpdateAssetResponse gresponse = getGrpcChannel().getBlockingStub().updateAsset(grequest.build());
 	    IAsset response = (gresponse.hasAsset()) ? AssetModelConverter.asApiAsset(gresponse.getAsset()) : null;
-	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.METHOD_UPDATE_ASSET, response);
+	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.getUpdateAssetMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.METHOD_UPDATE_ASSET, t);
+	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.getUpdateAssetMethod(), t);
 	}
     }
 
@@ -247,15 +247,15 @@ public class AssetManagementApiChannel extends MultitenantApiChannel<AssetManage
     @Override
     public IAsset getAsset(UUID assetId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_GET_ASSET_BY_ID);
+	    GrpcUtils.handleClientMethodEntry(this, AssetManagementGrpc.getGetAssetByIdMethod());
 	    GGetAssetByIdRequest.Builder grequest = GGetAssetByIdRequest.newBuilder();
 	    grequest.setAssetId(CommonModelConverter.asGrpcUuid(assetId));
 	    GGetAssetByIdResponse gresponse = getGrpcChannel().getBlockingStub().getAssetById(grequest.build());
 	    IAsset response = (gresponse.hasAsset()) ? AssetModelConverter.asApiAsset(gresponse.getAsset()) : null;
-	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.METHOD_GET_ASSET_BY_ID, response);
+	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.getGetAssetByIdMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.METHOD_GET_ASSET_BY_ID, t);
+	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.getGetAssetByIdMethod(), t);
 	}
     }
 
@@ -266,15 +266,15 @@ public class AssetManagementApiChannel extends MultitenantApiChannel<AssetManage
     @Override
     public IAsset getAssetByToken(String token) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_GET_ASSET_BY_TOKEN);
+	    GrpcUtils.handleClientMethodEntry(this, AssetManagementGrpc.getGetAssetByTokenMethod());
 	    GGetAssetByTokenRequest.Builder grequest = GGetAssetByTokenRequest.newBuilder();
 	    grequest.setToken(token);
 	    GGetAssetByTokenResponse gresponse = getGrpcChannel().getBlockingStub().getAssetByToken(grequest.build());
 	    IAsset response = (gresponse.hasAsset()) ? AssetModelConverter.asApiAsset(gresponse.getAsset()) : null;
-	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.METHOD_GET_ASSET_BY_TOKEN, response);
+	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.getGetAssetByTokenMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.METHOD_GET_ASSET_BY_TOKEN, t);
+	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.getGetAssetByTokenMethod(), t);
 	}
     }
 
@@ -285,15 +285,15 @@ public class AssetManagementApiChannel extends MultitenantApiChannel<AssetManage
     @Override
     public IAsset deleteAsset(UUID assetId, boolean force) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_DELETE_ASSET);
+	    GrpcUtils.handleClientMethodEntry(this, AssetManagementGrpc.getDeleteAssetMethod());
 	    GDeleteAssetRequest.Builder grequest = GDeleteAssetRequest.newBuilder();
 	    grequest.setAssetId(CommonModelConverter.asGrpcUuid(assetId));
 	    GDeleteAssetResponse gresponse = getGrpcChannel().getBlockingStub().deleteAsset(grequest.build());
 	    IAsset response = (gresponse.hasAsset()) ? AssetModelConverter.asApiAsset(gresponse.getAsset()) : null;
-	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.METHOD_DELETE_ASSET, response);
+	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.getDeleteAssetMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.METHOD_DELETE_ASSET, t);
+	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.getDeleteAssetMethod(), t);
 	}
     }
 
@@ -305,15 +305,15 @@ public class AssetManagementApiChannel extends MultitenantApiChannel<AssetManage
     @Override
     public ISearchResults<IAsset> listAssets(IAssetSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, AssetManagementGrpc.METHOD_LIST_ASSETS);
+	    GrpcUtils.handleClientMethodEntry(this, AssetManagementGrpc.getListAssetsMethod());
 	    GListAssetsRequest.Builder grequest = GListAssetsRequest.newBuilder();
 	    grequest.setCriteria(AssetModelConverter.asGrpcAssetSearchCriteria(criteria));
 	    GListAssetsResponse gresponse = getGrpcChannel().getBlockingStub().listAssets(grequest.build());
 	    ISearchResults<IAsset> results = AssetModelConverter.asApiAssetSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.METHOD_LIST_ASSETS, results);
+	    GrpcUtils.logClientMethodResponse(AssetManagementGrpc.getListAssetsMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.METHOD_LIST_ASSETS, t);
+	    throw GrpcUtils.handleClientMethodException(AssetManagementGrpc.getListAssetsMethod(), t);
 	}
     }
 }

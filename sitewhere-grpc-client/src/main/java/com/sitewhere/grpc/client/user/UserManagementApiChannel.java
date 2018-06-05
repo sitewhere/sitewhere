@@ -86,16 +86,16 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     @Override
     public IUser createUser(IUserCreateRequest request, Boolean encodePassword) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, UserManagementGrpc.METHOD_CREATE_USER);
+	    GrpcUtils.handleClientMethodEntry(this, UserManagementGrpc.getCreateUserMethod());
 	    GCreateUserRequest.Builder grequest = GCreateUserRequest.newBuilder();
 	    grequest.setRequest(UserModelConverter.asGrpcUserCreateRequest(request));
 	    grequest.setEncodePassword(((encodePassword != null) && (encodePassword == false)) ? false : true);
 	    GCreateUserResponse gresponse = getGrpcChannel().getBlockingStub().createUser(grequest.build());
 	    IUser response = UserModelConverter.asApiUser(gresponse.getUser());
-	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.METHOD_CREATE_USER, response);
+	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.getCreateUserMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.METHOD_CREATE_USER, t);
+	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.getCreateUserMethod(), t);
 	}
     }
 
@@ -109,16 +109,16 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     @Override
     public IUser importUser(IUser user, boolean overwrite) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, UserManagementGrpc.METHOD_IMPORT_USER);
+	    GrpcUtils.handleClientMethodEntry(this, UserManagementGrpc.getImportUserMethod());
 	    GImportUserRequest.Builder grequest = GImportUserRequest.newBuilder();
 	    grequest.setUser(UserModelConverter.asGrpcUser(user));
 	    grequest.setOverwrite(overwrite);
 	    GImportUserResponse gresponse = getGrpcChannel().getBlockingStub().importUser(grequest.build());
 	    IUser response = UserModelConverter.asApiUser(gresponse.getUser());
-	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.METHOD_IMPORT_USER, response);
+	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.getImportUserMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.METHOD_IMPORT_USER, t);
+	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.getImportUserMethod(), t);
 	}
     }
 
@@ -131,17 +131,17 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     @Override
     public IUser authenticate(String username, String password, boolean updateLastLogin) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, UserManagementGrpc.METHOD_AUTHENTICATE);
+	    GrpcUtils.handleClientMethodEntry(this, UserManagementGrpc.getAuthenticateMethod());
 	    GAuthenticateRequest.Builder grequest = GAuthenticateRequest.newBuilder();
 	    grequest.setUsername(username);
 	    grequest.setPassword(password);
 	    grequest.setUpdateLastLogin(updateLastLogin);
 	    GAuthenticateResponse gresponse = getGrpcChannel().getBlockingStub().authenticate(grequest.build());
 	    IUser response = UserModelConverter.asApiUser(gresponse.getUser());
-	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.METHOD_AUTHENTICATE, response);
+	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.getAuthenticateMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.METHOD_AUTHENTICATE, t);
+	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.getAuthenticateMethod(), t);
 	}
     }
 
@@ -155,17 +155,17 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     public IUser updateUser(String username, IUserCreateRequest request, boolean encodePassword)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, UserManagementGrpc.METHOD_UPDATE_USER);
+	    GrpcUtils.handleClientMethodEntry(this, UserManagementGrpc.getUpdateUserMethod());
 	    GUpdateUserRequest.Builder grequest = GUpdateUserRequest.newBuilder();
 	    grequest.setUsername(username);
 	    grequest.setRequest(UserModelConverter.asGrpcUserCreateRequest(request));
 	    grequest.setEncodePassword(encodePassword);
 	    GUpdateUserResponse gresponse = getGrpcChannel().getBlockingStub().updateUser(grequest.build());
 	    IUser response = UserModelConverter.asApiUser(gresponse.getUser());
-	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.METHOD_UPDATE_USER, response);
+	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.getUpdateUserMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.METHOD_UPDATE_USER, t);
+	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.getUpdateUserMethod(), t);
 	}
     }
 
@@ -178,16 +178,16 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     @Override
     public IUser getUserByUsername(String username) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, UserManagementGrpc.METHOD_GET_USER_BY_USERNAME);
+	    GrpcUtils.handleClientMethodEntry(this, UserManagementGrpc.getGetUserByUsernameMethod());
 	    GGetUserByUsernameRequest.Builder grequest = GGetUserByUsernameRequest.newBuilder();
 	    grequest.setUsername(username);
 	    GGetUserByUsernameResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getUserByUsername(grequest.build());
 	    IUser response = (gresponse.hasUser()) ? UserModelConverter.asApiUser(gresponse.getUser()) : null;
-	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.METHOD_GET_USER_BY_USERNAME, response);
+	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.getGetUserByUsernameMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.METHOD_GET_USER_BY_USERNAME, t);
+	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.getGetUserByUsernameMethod(), t);
 	}
     }
 
@@ -200,17 +200,17 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     @Override
     public List<IGrantedAuthority> getGrantedAuthorities(String username) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, UserManagementGrpc.METHOD_GET_GRANTED_AUTHORITIES_FOR_USER);
+	    GrpcUtils.handleClientMethodEntry(this, UserManagementGrpc.getGetGrantedAuthoritiesForUserMethod());
 	    GGetGrantedAuthoritiesRequest.Builder grequest = GGetGrantedAuthoritiesRequest.newBuilder();
 	    grequest.setUsername(username);
 	    GGetGrantedAuthoritiesResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getGrantedAuthoritiesForUser(grequest.build());
 	    List<IGrantedAuthority> response = UserModelConverter
 		    .asApiGrantedAuthorities(gresponse.getAuthoritiesList());
-	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.METHOD_GET_GRANTED_AUTHORITIES_FOR_USER, response);
+	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.getGetGrantedAuthoritiesForUserMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.METHOD_GET_GRANTED_AUTHORITIES_FOR_USER, t);
+	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.getGetGrantedAuthoritiesForUserMethod(), t);
 	}
     }
 
@@ -224,7 +224,7 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     public List<IGrantedAuthority> addGrantedAuthorities(String username, List<String> authorities)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, UserManagementGrpc.METHOD_ADD_GRANTED_AUTHORITIES_FOR_USER);
+	    GrpcUtils.handleClientMethodEntry(this, UserManagementGrpc.getAddGrantedAuthoritiesForUserMethod());
 	    GAddGrantedAuthoritiesRequest.Builder grequest = GAddGrantedAuthoritiesRequest.newBuilder();
 	    grequest.setUsername(username);
 	    grequest.getAuthoritiesList().addAll(authorities);
@@ -232,10 +232,10 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
 		    .addGrantedAuthoritiesForUser(grequest.build());
 	    List<IGrantedAuthority> response = UserModelConverter
 		    .asApiGrantedAuthorities(gresponse.getAuthoritiesList());
-	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.METHOD_ADD_GRANTED_AUTHORITIES_FOR_USER, response);
+	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.getAddGrantedAuthoritiesForUserMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.METHOD_ADD_GRANTED_AUTHORITIES_FOR_USER, t);
+	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.getAddGrantedAuthoritiesForUserMethod(), t);
 	}
     }
 
@@ -250,7 +250,7 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     public List<IGrantedAuthority> removeGrantedAuthorities(String username, List<String> authorities)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, UserManagementGrpc.METHOD_REMOVE_GRANTED_AUTHORITIES_FOR_USER);
+	    GrpcUtils.handleClientMethodEntry(this, UserManagementGrpc.getRemoveGrantedAuthoritiesForUserMethod());
 	    GRemoveGrantedAuthoritiesRequest.Builder grequest = GRemoveGrantedAuthoritiesRequest.newBuilder();
 	    grequest.setUsername(username);
 	    grequest.getAuthoritiesList().addAll(authorities);
@@ -258,10 +258,10 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
 		    .removeGrantedAuthoritiesForUser(grequest.build());
 	    List<IGrantedAuthority> response = UserModelConverter
 		    .asApiGrantedAuthorities(gresponse.getAuthoritiesList());
-	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.METHOD_REMOVE_GRANTED_AUTHORITIES_FOR_USER, response);
+	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.getRemoveGrantedAuthoritiesForUserMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.METHOD_REMOVE_GRANTED_AUTHORITIES_FOR_USER,
+	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.getRemoveGrantedAuthoritiesForUserMethod(),
 		    t);
 	}
     }
@@ -275,15 +275,15 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     @Override
     public List<IUser> listUsers(IUserSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, UserManagementGrpc.METHOD_LIST_USERS);
+	    GrpcUtils.handleClientMethodEntry(this, UserManagementGrpc.getListUsersMethod());
 	    GListUsersRequest.Builder grequest = GListUsersRequest.newBuilder();
 	    grequest.setCriteria(UserModelConverter.asGrpcUserSearchCriteria(criteria));
 	    GListUsersResponse gresponse = getGrpcChannel().getBlockingStub().listUsers(grequest.build());
 	    List<IUser> response = UserModelConverter.asApiUsers(gresponse.getUserList());
-	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.METHOD_LIST_USERS, response);
+	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.getListUsersMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.METHOD_LIST_USERS, t);
+	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.getListUsersMethod(), t);
 	}
     }
 
@@ -296,16 +296,16 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     @Override
     public IUser deleteUser(String username, boolean force) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, UserManagementGrpc.METHOD_DELETE_USER);
+	    GrpcUtils.handleClientMethodEntry(this, UserManagementGrpc.getDeleteUserMethod());
 	    GDeleteUserRequest.Builder grequest = GDeleteUserRequest.newBuilder();
 	    grequest.setUsername(username);
 	    grequest.setForce(force);
 	    GDeleteUserResponse gresponse = getGrpcChannel().getBlockingStub().deleteUser(grequest.build());
 	    IUser response = UserModelConverter.asApiUser(gresponse.getUser());
-	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.METHOD_DELETE_USER, response);
+	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.getDeleteUserMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.METHOD_DELETE_USER, t);
+	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.getDeleteUserMethod(), t);
 	}
     }
 
@@ -318,16 +318,16 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     @Override
     public IGrantedAuthority createGrantedAuthority(IGrantedAuthorityCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, UserManagementGrpc.METHOD_CREATE_GRANTED_AUTHORITY);
+	    GrpcUtils.handleClientMethodEntry(this, UserManagementGrpc.getCreateGrantedAuthorityMethod());
 	    GCreateGrantedAuthorityRequest.Builder grequest = GCreateGrantedAuthorityRequest.newBuilder();
 	    grequest.setRequest(UserModelConverter.asGrpcGrantedAuthorityCreateRequest(request));
 	    GCreateGrantedAuthorityResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .createGrantedAuthority(grequest.build());
 	    IGrantedAuthority response = UserModelConverter.asApiGrantedAuthority(gresponse.getAuthority());
-	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.METHOD_GET_GRANTED_AUTHORITY_BY_NAME, response);
+	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.getCreateGrantedAuthorityMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.METHOD_CREATE_GRANTED_AUTHORITY, t);
+	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.getCreateGrantedAuthorityMethod(), t);
 	}
     }
 
@@ -340,19 +340,19 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     @Override
     public IGrantedAuthority getGrantedAuthorityByName(String name) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, UserManagementGrpc.METHOD_GET_GRANTED_AUTHORITY_BY_NAME);
+	    GrpcUtils.handleClientMethodEntry(this, UserManagementGrpc.getGetGrantedAuthorityByNameMethod());
 	    GGetGrantedAuthorityByNameRequest.Builder grequest = GGetGrantedAuthorityByNameRequest.newBuilder();
 	    grequest.setName(name);
 	    GGetGrantedAuthorityByNameResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getGrantedAuthorityByName(grequest.build());
 	    if (gresponse.hasAuthority()) {
 		IGrantedAuthority response = UserModelConverter.asApiGrantedAuthority(gresponse.getAuthority());
-		GrpcUtils.logClientMethodResponse(UserManagementGrpc.METHOD_GET_GRANTED_AUTHORITY_BY_NAME, response);
+		GrpcUtils.logClientMethodResponse(UserManagementGrpc.getGetGrantedAuthorityByNameMethod(), response);
 		return response;
 	    }
 	    return null;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.METHOD_GET_GRANTED_AUTHORITY_BY_NAME, t);
+	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.getGetGrantedAuthorityByNameMethod(), t);
 	}
     }
 
@@ -366,17 +366,17 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     public IGrantedAuthority updateGrantedAuthority(String name, IGrantedAuthorityCreateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, UserManagementGrpc.METHOD_UPDATE_GRANTED_AUTHORITY);
+	    GrpcUtils.handleClientMethodEntry(this, UserManagementGrpc.getUpdateGrantedAuthorityMethod());
 	    GUpdateGrantedAuthorityRequest.Builder grequest = GUpdateGrantedAuthorityRequest.newBuilder();
 	    grequest.setName(name);
 	    grequest.setRequest(UserModelConverter.asGrpcGrantedAuthorityCreateRequest(request));
 	    GUpdateGrantedAuthorityResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .updateGrantedAuthority(grequest.build());
 	    IGrantedAuthority response = UserModelConverter.asApiGrantedAuthority(gresponse.getAuthority());
-	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.METHOD_UPDATE_GRANTED_AUTHORITY, response);
+	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.getUpdateGrantedAuthorityMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.METHOD_UPDATE_GRANTED_AUTHORITY, t);
+	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.getUpdateGrantedAuthorityMethod(), t);
 	}
     }
 
@@ -390,16 +390,16 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     public List<IGrantedAuthority> listGrantedAuthorities(IGrantedAuthoritySearchCriteria criteria)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, UserManagementGrpc.METHOD_LIST_GRANTED_AUTHORITIES);
+	    GrpcUtils.handleClientMethodEntry(this, UserManagementGrpc.getListGrantedAuthoritiesMethod());
 	    GListGrantedAuthoritiesRequest.Builder grequest = GListGrantedAuthoritiesRequest.newBuilder();
 	    GListGrantedAuthoritiesResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .listGrantedAuthorities(grequest.build());
 	    List<IGrantedAuthority> response = UserModelConverter
 		    .asApiGrantedAuthorities(gresponse.getAuthoritiesList());
-	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.METHOD_LIST_GRANTED_AUTHORITIES, response);
+	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.getListGrantedAuthoritiesMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.METHOD_LIST_GRANTED_AUTHORITIES, t);
+	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.getListGrantedAuthoritiesMethod(), t);
 	}
     }
 
@@ -412,12 +412,12 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     @Override
     public void deleteGrantedAuthority(String authority) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, UserManagementGrpc.METHOD_DELETE_GRANTED_AUTHORITY);
+	    GrpcUtils.handleClientMethodEntry(this, UserManagementGrpc.getDeleteGrantedAuthorityMethod());
 	    GDeleteGrantedAuthorityRequest.Builder grequest = GDeleteGrantedAuthorityRequest.newBuilder();
 	    grequest.setName(authority);
 	    getGrpcChannel().getBlockingStub().deleteGrantedAuthority(grequest.build());
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.METHOD_DELETE_GRANTED_AUTHORITY, t);
+	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.getDeleteGrantedAuthorityMethod(), t);
 	}
     }
 }

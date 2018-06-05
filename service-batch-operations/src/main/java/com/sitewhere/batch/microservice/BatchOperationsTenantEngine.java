@@ -8,6 +8,7 @@
 package com.sitewhere.batch.microservice;
 
 import com.sitewhere.batch.grpc.BatchManagementImpl;
+import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
 import com.sitewhere.grpc.service.BatchManagementGrpc;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
@@ -49,7 +50,8 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
 	// Create management interfaces.
 	this.batchManagement = (IBatchManagement) getModuleContext()
 		.getBean(BatchManagementBeans.BEAN_BATCH_MANAGEMENT);
-	this.batchManagementImpl = new BatchManagementImpl(getBatchManagement());
+	this.batchManagementImpl = new BatchManagementImpl((IBatchOperationsMicroservice) getMicroservice(),
+		getBatchManagement());
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());

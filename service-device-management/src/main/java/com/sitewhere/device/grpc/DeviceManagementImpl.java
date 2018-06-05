@@ -10,7 +10,9 @@ package com.sitewhere.device.grpc;
 import java.util.List;
 import java.util.UUID;
 
+import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.grpc.client.GrpcUtils;
+import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
 import com.sitewhere.grpc.model.DeviceModel.GAreaSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GAreaTypeSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GCustomerSearchResults;
@@ -53,6 +55,7 @@ import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.search.ISearchResults;
 
 import io.grpc.stub.StreamObserver;
@@ -62,12 +65,17 @@ import io.grpc.stub.StreamObserver;
  * 
  * @author Derek
  */
-public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementImplBase {
+public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementImplBase
+	implements IGrpcApiImplementation {
+
+    /** Parent microservice */
+    private IDeviceManagementMicroservice microservice;
 
     /** Device management persistence */
     private IDeviceManagement deviceManagement;
 
-    public DeviceManagementImpl(IDeviceManagement deviceManagement) {
+    public DeviceManagementImpl(IDeviceManagementMicroservice microservice, IDeviceManagement deviceManagement) {
+	this.microservice = microservice;
 	this.deviceManagement = deviceManagement;
     }
 
@@ -81,7 +89,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void createCustomerType(GCreateCustomerTypeRequest request,
 	    StreamObserver<GCreateCustomerTypeResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_CREATE_CUSTOMER_TYPE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getCreateCustomerTypeMethod());
 	    ICustomerTypeCreateRequest apiRequest = DeviceModelConverter
 		    .asApiCustomerTypeCreateRequest(request.getRequest());
 	    ICustomerType apiResult = getDeviceManagement().createCustomerType(apiRequest);
@@ -90,8 +98,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_CUSTOMER_TYPE, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getCreateCustomerTypeMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getCreateCustomerTypeMethod());
 	}
     }
 
@@ -105,7 +115,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void getCustomerType(GGetCustomerTypeRequest request,
 	    StreamObserver<GGetCustomerTypeResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_CUSTOMER_TYPE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetCustomerTypeMethod());
 	    ICustomerType apiResult = getDeviceManagement()
 		    .getCustomerType(CommonModelConverter.asApiUuid(request.getId()));
 	    GGetCustomerTypeResponse.Builder response = GGetCustomerTypeResponse.newBuilder();
@@ -115,7 +125,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_CUSTOMER_TYPE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetCustomerTypeMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetCustomerTypeMethod());
 	}
     }
 
@@ -129,7 +141,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void getCustomerTypeByToken(GGetCustomerTypeByTokenRequest request,
 	    StreamObserver<GGetCustomerTypeByTokenResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_CUSTOMER_TYPE_BY_TOKEN);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetCustomerTypeByTokenMethod());
 	    ICustomerType apiResult = getDeviceManagement().getCustomerTypeByToken(request.getToken());
 	    GGetCustomerTypeByTokenResponse.Builder response = GGetCustomerTypeByTokenResponse.newBuilder();
 	    if (apiResult != null) {
@@ -138,8 +150,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_CUSTOMER_TYPE_BY_TOKEN, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetCustomerTypeByTokenMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetCustomerTypeByTokenMethod());
 	}
     }
 
@@ -153,7 +167,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void updateCustomerType(GUpdateCustomerTypeRequest request,
 	    StreamObserver<GUpdateCustomerTypeResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_UPDATE_CUSTOMER_TYPE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getUpdateCustomerTypeMethod());
 	    ICustomerTypeCreateRequest update = DeviceModelConverter
 		    .asApiCustomerTypeCreateRequest(request.getRequest());
 	    ICustomerType apiResult = getDeviceManagement()
@@ -165,8 +179,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_CUSTOMER_TYPE, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getUpdateCustomerTypeMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getUpdateCustomerTypeMethod());
 	}
     }
 
@@ -180,7 +196,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void listCustomerTypes(GListCustomerTypesRequest request,
 	    StreamObserver<GListCustomerTypesResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_CUSTOMER_TYPES);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListCustomerTypesMethod());
 	    ISearchResults<ICustomerType> apiResult = getDeviceManagement()
 		    .listCustomerTypes(CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
 	    GListCustomerTypesResponse.Builder response = GListCustomerTypesResponse.newBuilder();
@@ -193,7 +209,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_CUSTOMER_TYPES, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getListCustomerTypesMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getListCustomerTypesMethod());
 	}
     }
 
@@ -207,7 +226,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void deleteCustomerType(GDeleteCustomerTypeRequest request,
 	    StreamObserver<GDeleteCustomerTypeResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_DELETE_CUSTOMER_TYPE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getDeleteCustomerTypeMethod());
 	    ICustomerType apiResult = getDeviceManagement()
 		    .deleteCustomerType(CommonModelConverter.asApiUuid(request.getId()), request.getForce());
 	    GDeleteCustomerTypeResponse.Builder response = GDeleteCustomerTypeResponse.newBuilder();
@@ -215,8 +234,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_DELETE_CUSTOMER_TYPE, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getDeleteCustomerTypeMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getDeleteCustomerTypeMethod());
 	}
     }
 
@@ -230,7 +251,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void createCustomer(GCreateCustomerRequest request,
 	    StreamObserver<GCreateCustomerResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_CREATE_CUSTOMER);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getCreateCustomerMethod());
 	    ICustomerCreateRequest apiRequest = DeviceModelConverter.asApiCustomerCreateRequest(request.getRequest());
 	    ICustomer apiResult = getDeviceManagement().createCustomer(apiRequest);
 	    GCreateCustomerResponse.Builder response = GCreateCustomerResponse.newBuilder();
@@ -238,7 +259,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_CUSTOMER, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getCreateCustomerMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getCreateCustomerMethod());
 	}
     }
 
@@ -251,7 +274,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     @Override
     public void getCustomer(GGetCustomerRequest request, StreamObserver<GGetCustomerResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_CUSTOMER);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetCustomerMethod());
 	    ICustomer apiResult = getDeviceManagement().getCustomer(CommonModelConverter.asApiUuid(request.getId()));
 	    GGetCustomerResponse.Builder response = GGetCustomerResponse.newBuilder();
 	    if (apiResult != null) {
@@ -260,7 +283,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_CUSTOMER, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetCustomerMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetCustomerMethod());
 	}
     }
 
@@ -274,7 +299,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void getCustomerByToken(GGetCustomerByTokenRequest request,
 	    StreamObserver<GGetCustomerByTokenResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_CUSTOMER_BY_TOKEN);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetCustomerByTokenMethod());
 	    ICustomer apiResult = getDeviceManagement().getCustomerByToken(request.getToken());
 	    GGetCustomerByTokenResponse.Builder response = GGetCustomerByTokenResponse.newBuilder();
 	    if (apiResult != null) {
@@ -283,8 +308,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_CUSTOMER_BY_TOKEN, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetCustomerByTokenMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetCustomerByTokenMethod());
 	}
     }
 
@@ -298,7 +325,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void getCustomerChildren(GGetCustomerChildrenRequest request,
 	    StreamObserver<GGetCustomerChildrenResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_CUSTOMER_CHILDREN);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetCustomerChildrenMethod());
 	    List<ICustomer> apiResult = getDeviceManagement().getCustomerChildren(request.getToken());
 	    GGetCustomerChildrenResponse.Builder response = GGetCustomerChildrenResponse.newBuilder();
 	    if (apiResult != null) {
@@ -307,8 +334,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_CUSTOMER_CHILDREN, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetCustomerChildrenMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetCustomerChildrenMethod());
 	}
     }
 
@@ -322,7 +351,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void updateCustomer(GUpdateCustomerRequest request,
 	    StreamObserver<GUpdateCustomerResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_UPDATE_CUSTOMER);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getUpdateCustomerMethod());
 	    ICustomerCreateRequest update = DeviceModelConverter.asApiCustomerCreateRequest(request.getRequest());
 	    ICustomer apiResult = getDeviceManagement().updateCustomer(CommonModelConverter.asApiUuid(request.getId()),
 		    update);
@@ -333,7 +362,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_CUSTOMER, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getUpdateCustomerMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getUpdateCustomerMethod());
 	}
     }
 
@@ -346,7 +377,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     @Override
     public void listCustomers(GListCustomersRequest request, StreamObserver<GListCustomersResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_CUSTOMERS);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListCustomersMethod());
 	    ISearchResults<ICustomer> apiResult = getDeviceManagement()
 		    .listCustomers(DeviceModelConverter.asApiCustomerSearchCriteria(request.getCriteria()));
 	    GListCustomersResponse.Builder response = GListCustomersResponse.newBuilder();
@@ -359,7 +390,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_CUSTOMERS, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getListCustomersMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getListCustomersMethod());
 	}
     }
 
@@ -373,7 +406,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void deleteCustomer(GDeleteCustomerRequest request,
 	    StreamObserver<GDeleteCustomerResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_DELETE_CUSTOMER);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getDeleteCustomerMethod());
 	    ICustomer apiResult = getDeviceManagement().deleteCustomer(CommonModelConverter.asApiUuid(request.getId()),
 		    request.getForce());
 	    GDeleteCustomerResponse.Builder response = GDeleteCustomerResponse.newBuilder();
@@ -381,7 +414,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_DELETE_CUSTOMER, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getDeleteCustomerMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getDeleteCustomerMethod());
 	}
     }
 
@@ -395,7 +430,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void createAreaType(GCreateAreaTypeRequest request,
 	    StreamObserver<GCreateAreaTypeResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_CREATE_AREA_TYPE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getCreateAreaTypeMethod());
 	    IAreaTypeCreateRequest apiRequest = DeviceModelConverter.asApiAreaTypeCreateRequest(request.getRequest());
 	    IAreaType apiResult = getDeviceManagement().createAreaType(apiRequest);
 	    GCreateAreaTypeResponse.Builder response = GCreateAreaTypeResponse.newBuilder();
@@ -403,7 +438,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_AREA_TYPE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getCreateAreaTypeMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getCreateAreaTypeMethod());
 	}
     }
 
@@ -416,7 +453,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     @Override
     public void getAreaType(GGetAreaTypeRequest request, StreamObserver<GGetAreaTypeResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_AREA_TYPE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetAreaTypeMethod());
 	    IAreaType apiResult = getDeviceManagement().getAreaType(CommonModelConverter.asApiUuid(request.getId()));
 	    GGetAreaTypeResponse.Builder response = GGetAreaTypeResponse.newBuilder();
 	    if (apiResult != null) {
@@ -425,7 +462,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_AREA_TYPE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetAreaTypeMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetAreaTypeMethod());
 	}
     }
 
@@ -439,7 +478,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void getAreaTypeByToken(GGetAreaTypeByTokenRequest request,
 	    StreamObserver<GGetAreaTypeByTokenResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_AREA_TYPE_BY_TOKEN);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetAreaTypeByTokenMethod());
 	    IAreaType apiResult = getDeviceManagement().getAreaTypeByToken(request.getToken());
 	    GGetAreaTypeByTokenResponse.Builder response = GGetAreaTypeByTokenResponse.newBuilder();
 	    if (apiResult != null) {
@@ -448,8 +487,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_AREA_TYPE_BY_TOKEN, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetAreaTypeByTokenMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetAreaTypeByTokenMethod());
 	}
     }
 
@@ -463,7 +504,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void updateAreaType(GUpdateAreaTypeRequest request,
 	    StreamObserver<GUpdateAreaTypeResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_UPDATE_AREA_TYPE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getUpdateAreaTypeMethod());
 	    IAreaTypeCreateRequest update = DeviceModelConverter.asApiAreaTypeCreateRequest(request.getRequest());
 	    IAreaType apiResult = getDeviceManagement().updateAreaType(CommonModelConverter.asApiUuid(request.getId()),
 		    update);
@@ -474,7 +515,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_AREA_TYPE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getUpdateAreaTypeMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getUpdateAreaTypeMethod());
 	}
     }
 
@@ -487,7 +530,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     @Override
     public void listAreaTypes(GListAreaTypesRequest request, StreamObserver<GListAreaTypesResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_AREA_TYPES);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListAreaTypesMethod());
 	    ISearchResults<IAreaType> apiResult = getDeviceManagement()
 		    .listAreaTypes(CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
 	    GListAreaTypesResponse.Builder response = GListAreaTypesResponse.newBuilder();
@@ -500,7 +543,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_AREA_TYPES, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getListAreaTypesMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getListAreaTypesMethod());
 	}
     }
 
@@ -514,7 +559,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void deleteAreaType(GDeleteAreaTypeRequest request,
 	    StreamObserver<GDeleteAreaTypeResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_DELETE_AREA_TYPE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getDeleteAreaTypeMethod());
 	    IAreaType apiResult = getDeviceManagement().deleteAreaType(CommonModelConverter.asApiUuid(request.getId()),
 		    request.getForce());
 	    GDeleteAreaTypeResponse.Builder response = GDeleteAreaTypeResponse.newBuilder();
@@ -522,7 +567,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_DELETE_AREA_TYPE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getDeleteAreaTypeMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getDeleteAreaTypeMethod());
 	}
     }
 
@@ -535,7 +582,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     @Override
     public void createArea(GCreateAreaRequest request, StreamObserver<GCreateAreaResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_CREATE_AREA);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getCreateAreaMethod());
 	    IAreaCreateRequest apiRequest = DeviceModelConverter.asApiAreaCreateRequest(request.getRequest());
 	    IArea apiResult = getDeviceManagement().createArea(apiRequest);
 	    GCreateAreaResponse.Builder response = GCreateAreaResponse.newBuilder();
@@ -543,7 +590,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_AREA, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getCreateAreaMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getCreateAreaMethod());
 	}
     }
 
@@ -556,7 +605,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     @Override
     public void getArea(GGetAreaRequest request, StreamObserver<GGetAreaResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_AREA);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetAreaMethod());
 	    IArea apiResult = getDeviceManagement().getArea(CommonModelConverter.asApiUuid(request.getId()));
 	    GGetAreaResponse.Builder response = GGetAreaResponse.newBuilder();
 	    if (apiResult != null) {
@@ -565,7 +614,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_AREA, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetAreaMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetAreaMethod());
 	}
     }
 
@@ -579,7 +630,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void getAreaByToken(GGetAreaByTokenRequest request,
 	    StreamObserver<GGetAreaByTokenResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_AREA_BY_TOKEN);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetAreaByTokenMethod());
 	    IArea apiResult = getDeviceManagement().getAreaByToken(request.getToken());
 	    GGetAreaByTokenResponse.Builder response = GGetAreaByTokenResponse.newBuilder();
 	    if (apiResult != null) {
@@ -588,7 +639,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_AREA_BY_TOKEN, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetAreaByTokenMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetAreaByTokenMethod());
 	}
     }
 
@@ -602,7 +655,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void getAreaChildren(GGetAreaChildrenRequest request,
 	    StreamObserver<GGetAreaChildrenResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_AREA_CHILDREN);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetAreaChildrenMethod());
 	    List<IArea> apiResult = getDeviceManagement().getAreaChildren(request.getToken());
 	    GGetAreaChildrenResponse.Builder response = GGetAreaChildrenResponse.newBuilder();
 	    if (apiResult != null) {
@@ -611,7 +664,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_AREA_CHILDREN, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetAreaChildrenMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetAreaChildrenMethod());
 	}
     }
 
@@ -624,7 +679,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     @Override
     public void updateArea(GUpdateAreaRequest request, StreamObserver<GUpdateAreaResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_UPDATE_AREA);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getUpdateAreaMethod());
 	    IAreaCreateRequest update = DeviceModelConverter.asApiAreaCreateRequest(request.getRequest());
 	    IArea apiResult = getDeviceManagement().updateArea(CommonModelConverter.asApiUuid(request.getId()), update);
 	    GUpdateAreaResponse.Builder response = GUpdateAreaResponse.newBuilder();
@@ -634,7 +689,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_AREA, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getUpdateAreaMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getUpdateAreaMethod());
 	}
     }
 
@@ -647,7 +704,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     @Override
     public void listAreas(GListAreasRequest request, StreamObserver<GListAreasResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_AREAS);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListAreasMethod());
 	    ISearchResults<IArea> apiResult = getDeviceManagement()
 		    .listAreas(DeviceModelConverter.asApiAreaSearchCriteria(request.getCriteria()));
 	    GListAreasResponse.Builder response = GListAreasResponse.newBuilder();
@@ -660,7 +717,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_AREAS, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getListAreasMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getListAreasMethod());
 	}
     }
 
@@ -673,7 +732,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     @Override
     public void deleteArea(GDeleteAreaRequest request, StreamObserver<GDeleteAreaResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_DELETE_AREA);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getDeleteAreaMethod());
 	    IArea apiResult = getDeviceManagement().deleteArea(CommonModelConverter.asApiUuid(request.getId()),
 		    request.getForce());
 	    GDeleteAreaResponse.Builder response = GDeleteAreaResponse.newBuilder();
@@ -681,7 +740,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_DELETE_AREA, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getDeleteAreaMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getDeleteAreaMethod());
 	}
     }
 
@@ -696,7 +757,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     @Override
     public void createZone(GCreateZoneRequest request, StreamObserver<GCreateZoneResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_CREATE_ZONE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getCreateZoneMethod());
 	    IZoneCreateRequest apiRequest = DeviceModelConverter.asApiZoneCreateRequest(request.getRequest());
 	    IZone apiResult = getDeviceManagement().createZone(CommonModelConverter.asApiUuid(request.getSiteId()),
 		    apiRequest);
@@ -705,7 +766,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_ZONE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getCreateZoneMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getCreateZoneMethod());
 	}
     }
 
@@ -718,7 +781,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     @Override
     public void getZone(GGetZoneRequest request, StreamObserver<GGetZoneResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_ZONE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetZoneMethod());
 	    IZone apiResult = getDeviceManagement().getZone(CommonModelConverter.asApiUuid(request.getId()));
 	    GGetZoneResponse.Builder response = GGetZoneResponse.newBuilder();
 	    if (apiResult != null) {
@@ -727,7 +790,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_ZONE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetZoneMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetZoneMethod());
 	}
     }
 
@@ -743,7 +808,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void getZoneByToken(GGetZoneByTokenRequest request,
 	    StreamObserver<GGetZoneByTokenResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_ZONE_BY_TOKEN);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetZoneByTokenMethod());
 	    IZone apiResult = getDeviceManagement().getZoneByToken(request.getToken());
 	    GGetZoneByTokenResponse.Builder response = GGetZoneByTokenResponse.newBuilder();
 	    if (apiResult != null) {
@@ -752,7 +817,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_ZONE_BY_TOKEN, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetZoneByTokenMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetZoneByTokenMethod());
 	}
     }
 
@@ -767,7 +834,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     @Override
     public void updateZone(GUpdateZoneRequest request, StreamObserver<GUpdateZoneResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_UPDATE_ZONE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getUpdateZoneMethod());
 	    IZoneCreateRequest update = DeviceModelConverter.asApiZoneCreateRequest(request.getRequest());
 	    IZone apiResult = getDeviceManagement().updateZone(CommonModelConverter.asApiUuid(request.getSiteId()),
 		    update);
@@ -778,7 +845,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_ZONE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getUpdateZoneMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getUpdateZoneMethod());
 	}
     }
 
@@ -793,7 +862,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     @Override
     public void listZones(GListZonesRequest request, StreamObserver<GListZonesResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_ZONES);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListZonesMethod());
 	    ISearchResults<IZone> apiResult = getDeviceManagement().listZones(
 		    CommonModelConverter.asApiUuid(request.getSiteId()),
 		    CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
@@ -807,7 +876,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_ZONES, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getListZonesMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getListZonesMethod());
 	}
     }
 
@@ -822,7 +893,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     @Override
     public void deleteZone(GDeleteZoneRequest request, StreamObserver<GDeleteZoneResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_DELETE_ZONE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getDeleteZoneMethod());
 	    IZone apiResult = getDeviceManagement().deleteZone(CommonModelConverter.asApiUuid(request.getId()),
 		    request.getForce());
 	    GDeleteZoneResponse.Builder response = GDeleteZoneResponse.newBuilder();
@@ -830,7 +901,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_DELETE_ZONE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getDeleteZoneMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getDeleteZoneMethod());
 	}
     }
 
@@ -844,7 +917,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void createDeviceType(GCreateDeviceTypeRequest request,
 	    StreamObserver<GCreateDeviceTypeResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_CREATE_DEVICE_TYPE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getCreateDeviceTypeMethod());
 	    IDeviceTypeCreateRequest apiRequest = DeviceModelConverter
 		    .asApiDeviceTypeCreateRequest(request.getRequest());
 	    IDeviceType apiResult = getDeviceManagement().createDeviceType(apiRequest);
@@ -853,7 +926,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_TYPE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getCreateDeviceTypeMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getCreateDeviceTypeMethod());
 	}
     }
 
@@ -866,7 +942,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     @Override
     public void getDeviceType(GGetDeviceTypeRequest request, StreamObserver<GGetDeviceTypeResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_TYPE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetDeviceTypeMethod());
 	    IDeviceType apiResult = getDeviceManagement()
 		    .getDeviceType(CommonModelConverter.asApiUuid(request.getId()));
 	    GGetDeviceTypeResponse.Builder response = GGetDeviceTypeResponse.newBuilder();
@@ -876,7 +952,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_TYPE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetDeviceTypeMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetDeviceTypeMethod());
 	}
     }
 
@@ -890,7 +968,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void getDeviceTypeByToken(GGetDeviceTypeByTokenRequest request,
 	    StreamObserver<GGetDeviceTypeByTokenResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_TYPE_BY_TOKEN);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetDeviceTypeByTokenMethod());
 	    IDeviceType apiResult = getDeviceManagement().getDeviceTypeByToken(request.getToken());
 	    GGetDeviceTypeByTokenResponse.Builder response = GGetDeviceTypeByTokenResponse.newBuilder();
 	    if (apiResult != null) {
@@ -899,8 +977,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_TYPE_BY_TOKEN, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetDeviceTypeByTokenMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetDeviceTypeByTokenMethod());
 	}
     }
 
@@ -914,7 +994,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void updateDeviceType(GUpdateDeviceTypeRequest request,
 	    StreamObserver<GUpdateDeviceTypeResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_TYPE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getUpdateDeviceTypeMethod());
 	    IDeviceTypeCreateRequest apiRequest = DeviceModelConverter
 		    .asApiDeviceTypeCreateRequest(request.getRequest());
 	    IDeviceType apiResult = getDeviceManagement()
@@ -924,7 +1004,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_TYPE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getUpdateDeviceTypeMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getUpdateDeviceTypeMethod());
 	}
     }
 
@@ -938,7 +1021,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void listDeviceTypes(GListDeviceTypesRequest request,
 	    StreamObserver<GListDeviceTypesResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_DEVICE_TYPES);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDeviceTypesMethod());
 	    boolean includeDeleted = request.getCriteria().hasIncludeDeleted()
 		    ? request.getCriteria().getIncludeDeleted().getValue()
 		    : false;
@@ -954,7 +1037,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_TYPES, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getListDeviceTypesMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getListDeviceTypesMethod());
 	}
     }
 
@@ -968,7 +1053,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void deleteDeviceType(GDeleteDeviceTypeRequest request,
 	    StreamObserver<GDeleteDeviceTypeResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_DELETE_DEVICE_TYPE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceTypeMethod());
 	    IDeviceType apiResult = getDeviceManagement()
 		    .deleteDeviceType(CommonModelConverter.asApiUuid(request.getId()), request.getForce());
 	    GDeleteDeviceTypeResponse.Builder response = GDeleteDeviceTypeResponse.newBuilder();
@@ -976,7 +1061,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_TYPE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getDeleteDeviceTypeMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getDeleteDeviceTypeMethod());
 	}
     }
 
@@ -992,7 +1080,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void createDeviceCommand(GCreateDeviceCommandRequest request,
 	    StreamObserver<GCreateDeviceCommandResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_CREATE_DEVICE_COMMAND);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getCreateDeviceCommandMethod());
 	    IDeviceCommandCreateRequest apiRequest = DeviceModelConverter
 		    .asApiDeviceCommandCreateRequest(request.getRequest());
 	    IDeviceCommand apiResult = getDeviceManagement()
@@ -1002,8 +1090,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_COMMAND, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getCreateDeviceCommandMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getCreateDeviceCommandMethod());
 	}
     }
 
@@ -1017,7 +1107,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void getDeviceCommand(GGetDeviceCommandRequest request,
 	    StreamObserver<GGetDeviceCommandResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_COMMAND);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetDeviceCommandMethod());
 	    IDeviceCommand apiResult = getDeviceManagement()
 		    .getDeviceCommand(CommonModelConverter.asApiUuid(request.getId()));
 	    GGetDeviceCommandResponse.Builder response = GGetDeviceCommandResponse.newBuilder();
@@ -1027,7 +1117,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_COMMAND, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetDeviceCommandMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetDeviceCommandMethod());
 	}
     }
 
@@ -1043,7 +1136,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void getDeviceCommandByToken(GGetDeviceCommandByTokenRequest request,
 	    StreamObserver<GGetDeviceCommandByTokenResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_COMMAND_BY_TOKEN);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetDeviceCommandByTokenMethod());
 	    IDeviceCommand apiResult = getDeviceManagement().getDeviceCommandByToken(request.getToken());
 	    GGetDeviceCommandByTokenResponse.Builder response = GGetDeviceCommandByTokenResponse.newBuilder();
 	    if (apiResult != null) {
@@ -1052,8 +1145,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_COMMAND_BY_TOKEN, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetDeviceCommandByTokenMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetDeviceCommandByTokenMethod());
 	}
     }
 
@@ -1069,7 +1164,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void updateDeviceCommand(GUpdateDeviceCommandRequest request,
 	    StreamObserver<GUpdateDeviceCommandResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_COMMAND);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getUpdateDeviceCommandMethod());
 	    IDeviceCommandCreateRequest apiRequest = DeviceModelConverter
 		    .asApiDeviceCommandCreateRequest(request.getRequest());
 	    IDeviceCommand apiResult = getDeviceManagement()
@@ -1079,8 +1174,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_COMMAND, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getUpdateDeviceCommandMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getUpdateDeviceCommandMethod());
 	}
     }
 
@@ -1096,7 +1193,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void listDeviceCommands(GListDeviceCommandsRequest request,
 	    StreamObserver<GListDeviceCommandsResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_DEVICE_COMMANDS);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDeviceCommandsMethod());
 	    boolean includeDeleted = request.getCriteria().hasIncludeDeleted()
 		    ? request.getCriteria().getIncludeDeleted().getValue()
 		    : false;
@@ -1110,8 +1207,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_COMMANDS, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getListDeviceCommandsMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getListDeviceCommandsMethod());
 	}
     }
 
@@ -1127,7 +1226,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void deleteDeviceCommand(GDeleteDeviceCommandRequest request,
 	    StreamObserver<GDeleteDeviceCommandResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_DELETE_DEVICE_COMMAND);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceCommandMethod());
 	    IDeviceCommand apiResult = getDeviceManagement()
 		    .deleteDeviceCommand(CommonModelConverter.asApiUuid(request.getId()), request.getForce());
 	    GDeleteDeviceCommandResponse.Builder response = GDeleteDeviceCommandResponse.newBuilder();
@@ -1135,8 +1234,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_COMMAND, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getDeleteDeviceCommandMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getDeleteDeviceCommandMethod());
 	}
     }
 
@@ -1152,7 +1253,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void createDeviceStatus(GCreateDeviceStatusRequest request,
 	    StreamObserver<GCreateDeviceStatusResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_CREATE_DEVICE_STATUS);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getCreateDeviceStatusMethod());
 	    IDeviceStatusCreateRequest apiRequest = DeviceModelConverter
 		    .asApiDeviceStatusCreateRequest(request.getRequest());
 	    IDeviceStatus apiResult = getDeviceManagement()
@@ -1162,8 +1263,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_STATUS, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getCreateDeviceStatusMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getCreateDeviceStatusMethod());
 	}
     }
 
@@ -1179,7 +1282,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void getDeviceStatusByCode(GGetDeviceStatusByCodeRequest request,
 	    StreamObserver<GGetDeviceStatusByCodeResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_STATUS_BY_CODE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetDeviceStatusByCodeMethod());
 	    IDeviceStatus apiResult = getDeviceManagement().getDeviceStatusByCode(
 		    CommonModelConverter.asApiUuid(request.getDeviceTypeId()), request.getCode());
 	    GGetDeviceStatusByCodeResponse.Builder response = GGetDeviceStatusByCodeResponse.newBuilder();
@@ -1189,8 +1292,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_STATUS_BY_CODE, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetDeviceStatusByCodeMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetDeviceStatusByCodeMethod());
 	}
     }
 
@@ -1206,7 +1311,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void updateDeviceStatus(GUpdateDeviceStatusRequest request,
 	    StreamObserver<GUpdateDeviceStatusResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_STATUS);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getUpdateDeviceStatusMethod());
 	    IDeviceStatusCreateRequest apiRequest = DeviceModelConverter
 		    .asApiDeviceStatusCreateRequest(request.getRequest());
 	    IDeviceStatus apiResult = getDeviceManagement().updateDeviceStatus(
@@ -1216,8 +1321,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_STATUS, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getUpdateDeviceStatusMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getUpdateDeviceStatusMethod());
 	}
     }
 
@@ -1233,7 +1340,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void listDeviceStatuses(GListDeviceStatusesRequest request,
 	    StreamObserver<GListDeviceStatusesResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_DEVICE_STATUSES);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDeviceStatusesMethod());
 	    List<IDeviceStatus> apiResult = getDeviceManagement()
 		    .listDeviceStatuses(CommonModelConverter.asApiUuid(request.getCriteria().getDeviceTypeId()));
 	    GListDeviceStatusesResponse.Builder response = GListDeviceStatusesResponse.newBuilder();
@@ -1243,8 +1350,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_STATUSES, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getListDeviceStatusesMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getListDeviceStatusesMethod());
 	}
     }
 
@@ -1260,7 +1369,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void deleteDeviceStatus(GDeleteDeviceStatusRequest request,
 	    StreamObserver<GDeleteDeviceStatusResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_DELETE_DEVICE_STATUS);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceStatusMethod());
 	    IDeviceStatus apiResult = getDeviceManagement()
 		    .deleteDeviceStatus(CommonModelConverter.asApiUuid(request.getDeviceTypeId()), request.getCode());
 	    GDeleteDeviceStatusResponse.Builder response = GDeleteDeviceStatusResponse.newBuilder();
@@ -1268,8 +1377,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_STATUS, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getDeleteDeviceStatusMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getDeleteDeviceStatusMethod());
 	}
     }
 
@@ -1284,7 +1395,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     @Override
     public void createDevice(GCreateDeviceRequest request, StreamObserver<GCreateDeviceResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_CREATE_DEVICE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getCreateDeviceMethod());
 	    IDeviceCreateRequest apiRequest = DeviceModelConverter.asApiDeviceCreateRequest(request.getRequest());
 	    IDevice apiResult = getDeviceManagement().createDevice(apiRequest);
 	    GCreateDeviceResponse.Builder response = GCreateDeviceResponse.newBuilder();
@@ -1292,7 +1403,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getCreateDeviceMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getCreateDeviceMethod());
 	}
     }
 
@@ -1305,7 +1418,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     @Override
     public void getDevice(GGetDeviceRequest request, StreamObserver<GGetDeviceResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetDeviceMethod());
 	    IDevice apiResult = getDeviceManagement().getDevice(CommonModelConverter.asApiUuid(request.getId()));
 	    GGetDeviceResponse.Builder response = GGetDeviceResponse.newBuilder();
 	    if (apiResult != null) {
@@ -1314,7 +1427,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetDeviceMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetDeviceMethod());
 	}
     }
 
@@ -1328,7 +1443,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void getDeviceByToken(GGetDeviceByTokenRequest request,
 	    StreamObserver<GGetDeviceByTokenResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_BY_TOKEN);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetDeviceByTokenMethod());
 	    IDevice apiResult = getDeviceManagement().getDeviceByToken(request.getToken());
 	    GGetDeviceByTokenResponse.Builder response = GGetDeviceByTokenResponse.newBuilder();
 	    if (apiResult != null) {
@@ -1337,7 +1452,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_BY_TOKEN, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetDeviceByTokenMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetDeviceByTokenMethod());
 	}
     }
 
@@ -1352,7 +1470,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     @Override
     public void updateDevice(GUpdateDeviceRequest request, StreamObserver<GUpdateDeviceResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_UPDATE_DEVICE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getUpdateDeviceMethod());
 	    IDeviceCreateRequest apiRequest = DeviceModelConverter.asApiDeviceCreateRequest(request.getRequest());
 	    IDevice apiResult = getDeviceManagement().updateDevice(CommonModelConverter.asApiUuid(request.getId()),
 		    apiRequest);
@@ -1361,7 +1479,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getUpdateDeviceMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getUpdateDeviceMethod());
 	}
     }
 
@@ -1376,7 +1496,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     @Override
     public void listDevices(GListDevicesRequest request, StreamObserver<GListDevicesResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_DEVICES);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDevicesMethod());
 	    boolean includeDeleted = request.getCriteria().hasIncludeDeleted()
 		    ? request.getCriteria().getIncludeDeleted().getValue()
 		    : false;
@@ -1392,7 +1512,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICES, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getListDevicesMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getListDevicesMethod());
 	}
     }
 
@@ -1408,7 +1530,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void createDeviceElementMapping(GCreateDeviceElementMappingRequest request,
 	    StreamObserver<GCreateDeviceElementMappingResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_CREATE_DEVICE_ELEMENT_MAPPING);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getCreateDeviceElementMappingMethod());
 	    IDeviceElementMapping apiRequest = DeviceModelConverter.asApiDeviceElementMapping(request.getMapping());
 	    IDevice apiResult = getDeviceManagement()
 		    .createDeviceElementMapping(CommonModelConverter.asApiUuid(request.getId()), apiRequest);
@@ -1417,8 +1539,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_ELEMENT_MAPPING, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getCreateDeviceElementMappingMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getCreateDeviceElementMappingMethod());
 	}
     }
 
@@ -1434,7 +1558,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void deleteDeviceElementMapping(GDeleteDeviceElementMappingRequest request,
 	    StreamObserver<GDeleteDeviceElementMappingResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_DELETE_DEVICE_ELEMENT_MAPPING);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceElementMappingMethod());
 	    IDevice apiResult = getDeviceManagement()
 		    .deleteDeviceElementMapping(CommonModelConverter.asApiUuid(request.getId()), request.getPath());
 	    GDeleteDeviceElementMappingResponse.Builder response = GDeleteDeviceElementMappingResponse.newBuilder();
@@ -1442,8 +1566,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_ELEMENT_MAPPING, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getDeleteDeviceElementMappingMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getDeleteDeviceElementMappingMethod());
 	}
     }
 
@@ -1458,7 +1584,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     @Override
     public void deleteDevice(GDeleteDeviceRequest request, StreamObserver<GDeleteDeviceResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_DELETE_DEVICE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceMethod());
 	    IDevice apiResult = getDeviceManagement().deleteDevice(CommonModelConverter.asApiUuid(request.getId()),
 		    request.getForce());
 	    GDeleteDeviceResponse.Builder response = GDeleteDeviceResponse.newBuilder();
@@ -1466,7 +1592,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getDeleteDeviceMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getDeleteDeviceMethod());
 	}
     }
 
@@ -1482,7 +1610,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void createDeviceGroup(GCreateDeviceGroupRequest request,
 	    StreamObserver<GCreateDeviceGroupResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_CREATE_DEVICE_GROUP);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getCreateDeviceGroupMethod());
 	    IDeviceGroupCreateRequest apiRequest = DeviceModelConverter
 		    .asApiDeviceGroupCreateRequest(request.getRequest());
 	    IDeviceGroup apiResult = getDeviceManagement().createDeviceGroup(apiRequest);
@@ -1491,7 +1619,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_GROUP, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getCreateDeviceGroupMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getCreateDeviceGroupMethod());
 	}
     }
 
@@ -1505,7 +1636,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void getDeviceGroup(GGetDeviceGroupRequest request,
 	    StreamObserver<GGetDeviceGroupResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_GROUP);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetDeviceGroupMethod());
 	    IDeviceGroup apiResult = getDeviceManagement()
 		    .getDeviceGroup(CommonModelConverter.asApiUuid(request.getId()));
 	    GGetDeviceGroupResponse.Builder response = GGetDeviceGroupResponse.newBuilder();
@@ -1515,7 +1646,9 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_GROUP, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetDeviceGroupMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetDeviceGroupMethod());
 	}
     }
 
@@ -1531,7 +1664,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void getDeviceGroupByToken(GGetDeviceGroupByTokenRequest request,
 	    StreamObserver<GGetDeviceGroupByTokenResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_GROUP_BY_TOKEN);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetDeviceGroupByTokenMethod());
 	    IDeviceGroup apiResult = getDeviceManagement().getDeviceGroupByToken(request.getToken());
 	    GGetDeviceGroupByTokenResponse.Builder response = GGetDeviceGroupByTokenResponse.newBuilder();
 	    if (apiResult != null) {
@@ -1540,8 +1673,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_GROUP_BY_TOKEN, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetDeviceGroupByTokenMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetDeviceGroupByTokenMethod());
 	}
     }
 
@@ -1557,7 +1692,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void updateDeviceGroup(GUpdateDeviceGroupRequest request,
 	    StreamObserver<GUpdateDeviceGroupResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_GROUP);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getUpdateDeviceGroupMethod());
 	    IDeviceGroupCreateRequest apiRequest = DeviceModelConverter
 		    .asApiDeviceGroupCreateRequest(request.getRequest());
 	    IDeviceGroup apiResult = getDeviceManagement()
@@ -1567,7 +1702,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_GROUP, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getUpdateDeviceGroupMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getUpdateDeviceGroupMethod());
 	}
     }
 
@@ -1583,7 +1721,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void listDeviceGroups(GListDeviceGroupsRequest request,
 	    StreamObserver<GListDeviceGroupsResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUPS);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDeviceGroupsMethod());
 	    boolean includeDeleted = request.getCriteria().hasIncludeDeleted()
 		    ? request.getCriteria().getIncludeDeleted().getValue()
 		    : false;
@@ -1599,7 +1737,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUPS, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getListDeviceGroupsMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getListDeviceGroupsMethod());
 	}
     }
 
@@ -1615,7 +1756,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void listDeviceGroupsWithRole(GListDeviceGroupsWithRoleRequest request,
 	    StreamObserver<GListDeviceGroupsWithRoleResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUPS);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDeviceGroupsWithRoleMethod());
 	    boolean includeDeleted = request.getCriteria().hasIncludeDeleted()
 		    ? request.getCriteria().getIncludeDeleted().getValue()
 		    : false;
@@ -1632,7 +1773,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUPS, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getListDeviceGroupsWithRoleMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getListDeviceGroupsWithRoleMethod());
 	}
     }
 
@@ -1648,7 +1792,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void deleteDeviceGroup(GDeleteDeviceGroupRequest request,
 	    StreamObserver<GDeleteDeviceGroupResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_DELETE_DEVICE_GROUP);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceGroupMethod());
 	    IDeviceGroup apiResult = getDeviceManagement()
 		    .deleteDeviceGroup(CommonModelConverter.asApiUuid(request.getId()), request.getForce());
 	    GDeleteDeviceGroupResponse.Builder response = GDeleteDeviceGroupResponse.newBuilder();
@@ -1656,7 +1800,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_GROUP, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getDeleteDeviceGroupMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getDeleteDeviceGroupMethod());
 	}
     }
 
@@ -1672,7 +1819,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void addDeviceGroupElements(GAddDeviceGroupElementsRequest request,
 	    StreamObserver<GAddDeviceGroupElementsResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_ADD_DEVICE_GROUP_ELEMENTS);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getAddDeviceGroupElementsMethod());
 	    List<IDeviceGroupElementCreateRequest> apiRequest = DeviceModelConverter
 		    .asApiDeviceGroupElementCreateRequests(request.getRequestsList());
 	    List<IDeviceGroupElement> apiResult = getDeviceManagement().addDeviceGroupElements(
@@ -1684,8 +1831,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_ADD_DEVICE_GROUP_ELEMENTS, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getAddDeviceGroupElementsMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getAddDeviceGroupElementsMethod());
 	}
     }
 
@@ -1701,7 +1850,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void removeDeviceGroupElements(GRemoveDeviceGroupElementsRequest request,
 	    StreamObserver<GRemoveDeviceGroupElementsResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_REMOVE_DEVICE_GROUP_ELEMENTS);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getRemoveDeviceGroupElementsMethod());
 	    List<IDeviceGroupElement> apiResult = getDeviceManagement()
 		    .removeDeviceGroupElements(CommonModelConverter.asApiUuids(request.getElementIdsList()));
 	    GRemoveDeviceGroupElementsResponse.Builder response = GRemoveDeviceGroupElementsResponse.newBuilder();
@@ -1711,8 +1860,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_REMOVE_DEVICE_GROUP_ELEMENTS, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getRemoveDeviceGroupElementsMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getRemoveDeviceGroupElementsMethod());
 	}
     }
 
@@ -1728,7 +1879,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void listDeviceGroupElements(GListDeviceGroupElementsRequest request,
 	    StreamObserver<GListDeviceGroupElementsResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUP_ELEMENTS);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDeviceGroupElementsMethod());
 	    ISearchResults<IDeviceGroupElement> apiResult = getDeviceManagement().listDeviceGroupElements(
 		    CommonModelConverter.asApiUuid(request.getGroupId()),
 		    CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
@@ -1742,8 +1893,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUP_ELEMENTS, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getListDeviceGroupElementsMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getListDeviceGroupElementsMethod());
 	}
     }
 
@@ -1759,7 +1912,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void createDeviceAssignment(GCreateDeviceAssignmentRequest request,
 	    StreamObserver<GCreateDeviceAssignmentResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_CREATE_DEVICE_ASSIGNMENT);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getCreateDeviceAssignmentMethod());
 	    IDeviceAssignmentCreateRequest apiRequest = DeviceModelConverter
 		    .asApiDeviceAssignmentCreateRequest(request.getRequest());
 	    IDeviceAssignment apiResult = getDeviceManagement().createDeviceAssignment(apiRequest);
@@ -1768,8 +1921,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_ASSIGNMENT, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getCreateDeviceAssignmentMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getCreateDeviceAssignmentMethod());
 	}
     }
 
@@ -1783,7 +1938,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void getDeviceAssignment(GGetDeviceAssignmentRequest request,
 	    StreamObserver<GGetDeviceAssignmentResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetDeviceAssignmentMethod());
 	    IDeviceAssignment apiResult = getDeviceManagement()
 		    .getDeviceAssignment(CommonModelConverter.asApiUuid(request.getId()));
 	    GGetDeviceAssignmentResponse.Builder response = GGetDeviceAssignmentResponse.newBuilder();
@@ -1793,8 +1948,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetDeviceAssignmentMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetDeviceAssignmentMethod());
 	}
     }
 
@@ -1810,7 +1967,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void getDeviceAssignmentByToken(GGetDeviceAssignmentByTokenRequest request,
 	    StreamObserver<GGetDeviceAssignmentByTokenResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT_BY_TOKEN);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetDeviceAssignmentByTokenMethod());
 	    IDeviceAssignment apiResult = getDeviceManagement().getDeviceAssignmentByToken(request.getToken());
 	    GGetDeviceAssignmentByTokenResponse.Builder response = GGetDeviceAssignmentByTokenResponse.newBuilder();
 	    if (apiResult != null) {
@@ -1819,8 +1976,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT_BY_TOKEN, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetDeviceAssignmentByTokenMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetDeviceAssignmentByTokenMethod());
 	}
     }
 
@@ -1836,7 +1995,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void getCurrentAssignmentForDevice(GGetCurrentAssignmentForDeviceRequest request,
 	    StreamObserver<GGetCurrentAssignmentForDeviceResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_CURRENT_ASSIGNMENT_FOR_DEVICE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetCurrentAssignmentForDeviceMethod());
 	    IDeviceAssignment apiResult = getDeviceManagement()
 		    .getCurrentDeviceAssignment(CommonModelConverter.asApiUuid(request.getId()));
 	    GGetCurrentAssignmentForDeviceResponse.Builder response = GGetCurrentAssignmentForDeviceResponse
@@ -1847,8 +2006,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_CURRENT_ASSIGNMENT_FOR_DEVICE, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetCurrentAssignmentForDeviceMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetCurrentAssignmentForDeviceMethod());
 	}
     }
 
@@ -1864,7 +2025,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void deleteDeviceAssignment(GDeleteDeviceAssignmentRequest request,
 	    StreamObserver<GDeleteDeviceAssignmentResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_DELETE_DEVICE_ASSIGNMENT);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceAssignmentMethod());
 	    IDeviceAssignment apiResult = getDeviceManagement()
 		    .deleteDeviceAssignment(CommonModelConverter.asApiUuid(request.getId()), request.getForce());
 	    GDeleteDeviceAssignmentResponse.Builder response = GDeleteDeviceAssignmentResponse.newBuilder();
@@ -1872,8 +2033,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_ASSIGNMENT, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getDeleteDeviceAssignmentMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getDeleteDeviceAssignmentMethod());
 	}
     }
 
@@ -1887,7 +2050,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void updateDeviceAssignment(GUpdateDeviceAssignmentRequest request,
 	    StreamObserver<GUpdateDeviceAssignmentResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getUpdateDeviceAssignmentMethod());
 	    IDeviceAssignment apiResult = getDeviceManagement().updateDeviceAssignment(
 		    CommonModelConverter.asApiUuid(request.getId()),
 		    DeviceModelConverter.asApiDeviceAssignmentCreateRequest(request.getRequest()));
@@ -1898,8 +2061,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getUpdateDeviceAssignmentMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getUpdateDeviceAssignmentMethod());
 	}
     }
 
@@ -1915,7 +2080,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void endDeviceAssignment(GEndDeviceAssignmentRequest request,
 	    StreamObserver<GEndDeviceAssignmentResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_END_DEVICE_ASSIGNMENT);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getEndDeviceAssignmentMethod());
 	    IDeviceAssignment apiResult = getDeviceManagement()
 		    .endDeviceAssignment(CommonModelConverter.asApiUuid(request.getId()));
 	    GEndDeviceAssignmentResponse.Builder response = GEndDeviceAssignmentResponse.newBuilder();
@@ -1925,8 +2090,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_END_DEVICE_ASSIGNMENT, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getEndDeviceAssignmentMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getEndDeviceAssignmentMethod());
 	}
     }
 
@@ -1940,7 +2107,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void listDeviceAssignments(GListDeviceAssignmentsRequest request,
 	    StreamObserver<GListDeviceAssignmentsResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_DEVICE_ASSIGNMENTS);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDeviceAssignmentsMethod());
 	    ISearchResults<IDeviceAssignment> apiResult = getDeviceManagement().listDeviceAssignments(
 		    DeviceModelConverter.asApiDeviceAssignmentSearchCriteria(request.getCriteria()));
 	    GListDeviceAssignmentsResponse.Builder response = GListDeviceAssignmentsResponse.newBuilder();
@@ -1953,8 +2120,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_ASSIGNMENTS, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getListDeviceAssignmentsMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getListDeviceAssignmentsMethod());
 	}
     }
 
@@ -1970,7 +2139,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void createDeviceStream(GCreateDeviceStreamRequest request,
 	    StreamObserver<GCreateDeviceStreamResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_CREATE_DEVICE_STREAM);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getCreateDeviceStreamMethod());
 	    IDeviceStreamCreateRequest apiRequest = DeviceModelConverter
 		    .asApiDeviceStreamCreateRequest(request.getRequest());
 	    IDeviceStream apiResult = getDeviceManagement()
@@ -1980,8 +2149,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_STREAM, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getCreateDeviceStreamMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getCreateDeviceStreamMethod());
 	}
     }
 
@@ -1997,7 +2168,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void getDeviceStreamByStreamId(GGetDeviceStreamByStreamIdRequest request,
 	    StreamObserver<GGetDeviceStreamByStreamIdResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_GET_DEVICE_STREAM_BY_STREAM_ID);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetDeviceStreamByStreamIdMethod());
 	    IDeviceStream apiResult = getDeviceManagement()
 		    .getDeviceStream(CommonModelConverter.asApiUuid(request.getAssignmentId()), request.getStreamId());
 	    GGetDeviceStreamByStreamIdResponse.Builder response = GGetDeviceStreamByStreamIdResponse.newBuilder();
@@ -2007,8 +2178,10 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_STREAM_BY_STREAM_ID, e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetDeviceStreamByStreamIdMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetDeviceStreamByStreamIdMethod());
 	}
     }
 
@@ -2024,7 +2197,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void listDeviceStreams(GListDeviceStreamsRequest request,
 	    StreamObserver<GListDeviceStreamsResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceManagementGrpc.METHOD_LIST_DEVICE_STREAMS);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDeviceStreamsMethod());
 	    ISearchResults<IDeviceStream> apiResult = getDeviceManagement().listDeviceStreams(
 		    CommonModelConverter.asApiUuid(request.getAssignmentId()),
 		    CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
@@ -2038,15 +2211,23 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_STREAMS, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getListDeviceStreamsMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getListDeviceStreamsMethod());
 	}
     }
 
-    public IDeviceManagement getDeviceManagement() {
-	return deviceManagement;
+    /*
+     * @see
+     * com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation#getMicroservice()
+     */
+    @Override
+    public IMicroservice<?> getMicroservice() {
+	return microservice;
     }
 
-    public void setDeviceManagement(IDeviceManagement deviceManagement) {
-	this.deviceManagement = deviceManagement;
+    protected IDeviceManagement getDeviceManagement() {
+	return deviceManagement;
     }
 }

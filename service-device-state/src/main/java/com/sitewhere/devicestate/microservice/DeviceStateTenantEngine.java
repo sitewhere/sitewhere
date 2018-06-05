@@ -8,6 +8,7 @@
 package com.sitewhere.devicestate.microservice;
 
 import com.sitewhere.devicestate.grpc.DeviceStateImpl;
+import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
 import com.sitewhere.grpc.service.DeviceStateGrpc;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
@@ -50,7 +51,8 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine implements
 	IDeviceStateManagement implementation = (IDeviceStateManagement) getModuleContext()
 		.getBean(DeviceStateManagementBeans.BEAN_DEVICE_STATE_MANAGEMENT);
 	this.deviceStateManagement = implementation;
-	this.deviceStateImpl = new DeviceStateImpl(getDeviceStateManagement());
+	this.deviceStateImpl = new DeviceStateImpl((IDeviceStateMicroservice) getMicroservice(),
+		getDeviceStateManagement());
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());

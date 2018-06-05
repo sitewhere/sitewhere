@@ -61,15 +61,15 @@ public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceMan
     @Override
     public IConfigurationModel getConfigurationModel() throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, MicroserviceManagementGrpc.METHOD_GET_CONFIGURATION_MODEL);
+	    GrpcUtils.handleClientMethodEntry(this, MicroserviceManagementGrpc.getGetConfigurationModelMethod());
 	    GGetConfigurationModelRequest.Builder grequest = GGetConfigurationModelRequest.newBuilder();
 	    GGetConfigurationModelResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getConfigurationModel(grequest.build());
 	    IConfigurationModel response = MicroserviceModelConverter.asApiConfigurationModel(gresponse.getModel());
-	    GrpcUtils.logClientMethodResponse(MicroserviceManagementGrpc.METHOD_GET_CONFIGURATION_MODEL, response);
+	    GrpcUtils.logClientMethodResponse(MicroserviceManagementGrpc.getGetConfigurationModelMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(MicroserviceManagementGrpc.METHOD_GET_CONFIGURATION_MODEL, t);
+	    throw GrpcUtils.handleClientMethodException(MicroserviceManagementGrpc.getGetConfigurationModelMethod(), t);
 	}
     }
 
@@ -81,15 +81,16 @@ public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceMan
     @Override
     public byte[] getGlobalConfiguration() throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, MicroserviceManagementGrpc.METHOD_GET_GLOBAL_CONFIGURATION);
+	    GrpcUtils.handleClientMethodEntry(this, MicroserviceManagementGrpc.getGetGlobalConfigurationMethod());
 	    GGetGlobalConfigurationRequest.Builder grequest = GGetGlobalConfigurationRequest.newBuilder();
 	    GGetGlobalConfigurationResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getGlobalConfiguration(grequest.build());
 	    byte[] response = gresponse.getConfiguration().getContent().toByteArray();
-	    GrpcUtils.logClientMethodResponse(MicroserviceManagementGrpc.METHOD_GET_GLOBAL_CONFIGURATION, response);
+	    GrpcUtils.logClientMethodResponse(MicroserviceManagementGrpc.getGetGlobalConfigurationMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(MicroserviceManagementGrpc.METHOD_GET_GLOBAL_CONFIGURATION, t);
+	    throw GrpcUtils.handleClientMethodException(MicroserviceManagementGrpc.getGetGlobalConfigurationMethod(),
+		    t);
 	}
     }
 
@@ -101,16 +102,17 @@ public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceMan
     @Override
     public byte[] getTenantConfiguration(UUID tenantId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, MicroserviceManagementGrpc.METHOD_GET_TENANT_CONFIGURATION);
+	    GrpcUtils.handleClientMethodEntry(this, MicroserviceManagementGrpc.getGetTenantConfigurationMethod());
 	    GGetTenantConfigurationRequest.Builder grequest = GGetTenantConfigurationRequest.newBuilder();
 	    grequest.setTenantId(CommonModelConverter.asGrpcUuid(tenantId));
 	    GGetTenantConfigurationResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getTenantConfiguration(grequest.build());
 	    byte[] response = gresponse.getConfiguration().getContent().toByteArray();
-	    GrpcUtils.logClientMethodResponse(MicroserviceManagementGrpc.METHOD_GET_TENANT_CONFIGURATION, response);
+	    GrpcUtils.logClientMethodResponse(MicroserviceManagementGrpc.getGetTenantConfigurationMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(MicroserviceManagementGrpc.METHOD_GET_TENANT_CONFIGURATION, t);
+	    throw GrpcUtils.handleClientMethodException(MicroserviceManagementGrpc.getGetTenantConfigurationMethod(),
+		    t);
 	}
     }
 
@@ -121,7 +123,7 @@ public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceMan
     @Override
     public void updateGlobalConfiguration(byte[] config) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, MicroserviceManagementGrpc.METHOD_UPDATE_GLOBAL_CONFIGURATION);
+	    GrpcUtils.handleClientMethodEntry(this, MicroserviceManagementGrpc.getUpdateGlobalConfigurationMethod());
 	    GUpdateGlobalConfigurationRequest.Builder grequest = GUpdateGlobalConfigurationRequest.newBuilder();
 	    GConfigurationContent content = GConfigurationContent.newBuilder().setContent(ByteString.copyFrom(config))
 		    .build();
@@ -129,7 +131,7 @@ public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceMan
 	    getGrpcChannel().getBlockingStub().updateGlobalConfiguration(grequest.build());
 	    return;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(MicroserviceManagementGrpc.METHOD_UPDATE_GLOBAL_CONFIGURATION,
+	    throw GrpcUtils.handleClientMethodException(MicroserviceManagementGrpc.getUpdateGlobalConfigurationMethod(),
 		    t);
 	}
     }
@@ -141,7 +143,7 @@ public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceMan
     @Override
     public void updateTenantConfiguration(UUID tenantId, byte[] config) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, MicroserviceManagementGrpc.METHOD_UPDATE_TENANT_CONFIGURATION);
+	    GrpcUtils.handleClientMethodEntry(this, MicroserviceManagementGrpc.getUpdateTenantConfigurationMethod());
 	    GUpdateTenantConfigurationRequest.Builder grequest = GUpdateTenantConfigurationRequest.newBuilder();
 	    GConfigurationContent content = GConfigurationContent.newBuilder().setContent(ByteString.copyFrom(config))
 		    .build();
@@ -150,7 +152,7 @@ public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceMan
 	    getGrpcChannel().getBlockingStub().updateTenantConfiguration(grequest.build());
 	    return;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(MicroserviceManagementGrpc.METHOD_UPDATE_TENANT_CONFIGURATION,
+	    throw GrpcUtils.handleClientMethodException(MicroserviceManagementGrpc.getUpdateTenantConfigurationMethod(),
 		    t);
 	}
     }

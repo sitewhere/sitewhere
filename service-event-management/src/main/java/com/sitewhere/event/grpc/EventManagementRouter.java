@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
+import com.sitewhere.grpc.client.GrpcContextKeys;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.server.IGrpcRouter;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceAssignmentEventCreateRequest;
@@ -57,8 +58,6 @@ import com.sitewhere.grpc.service.GListStateChangesForIndexRequest;
 import com.sitewhere.grpc.service.GListStateChangesForIndexResponse;
 import com.sitewhere.grpc.service.GListStreamDataForAssignmentRequest;
 import com.sitewhere.grpc.service.GListStreamDataForAssignmentResponse;
-import com.sitewhere.microservice.grpc.TenantTokenServerInterceptor;
-import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
 
 import io.grpc.stub.StreamObserver;
@@ -87,14 +86,13 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
      */
     @Override
     public DeviceEventManagementGrpc.DeviceEventManagementImplBase getTenantImplementation(StreamObserver<?> observer) {
-	String tenantId = TenantTokenServerInterceptor.TENANT_ID_KEY.get();
+	String tenantId = GrpcContextKeys.TENANT_ID_KEY.get();
 	if (tenantId == null) {
 	    throw new RuntimeException("Tenant id not found in event management request.");
 	}
 	try {
 	    IEventManagementTenantEngine engine = getMicroservice()
 		    .assureTenantEngineAvailable(UUID.fromString(tenantId));
-	    UserContextManager.setCurrentTenant(engine.getTenant(), engine.getLogger());
 	    return engine.getEventManagementImpl();
 	} catch (TenantEngineNotAvailableException e) {
 	    observer.onError(GrpcUtils.convertServerException(e));

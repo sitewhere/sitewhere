@@ -7,20 +7,36 @@
  */
 package com.sitewhere.grpc.client;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.client.spi.IApiChannel;
+import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
 import com.sitewhere.grpc.model.security.NotAuthorizedException;
 import com.sitewhere.grpc.model.security.UnauthenticatedException;
 import com.sitewhere.grpc.model.tracing.DebugParameter;
+import com.sitewhere.rest.model.user.User;
+import com.sitewhere.security.SitewhereAuthentication;
+import com.sitewhere.security.SitewhereUserDetails;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.ServiceNotAvailableException;
+import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
+import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
+import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.user.IGrantedAuthority;
 
 import io.grpc.MethodDescriptor;
 import io.grpc.Status;
@@ -28,13 +44,17 @@ import io.grpc.Status.Code;
 import io.grpc.StatusException;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
+import io.jsonwebtoken.Claims;
 
 public class GrpcUtils {
 
     /** Static logger instance */
     private static Logger LOGGER = LoggerFactory.getLogger(GrpcUtils.class);
 
-    public static void logClientMethodEntry(IApiChannel<?> channel, MethodDescriptor<?, ?> method,
+    /** Hashmap of JWT to decoded claims */
+    private static Map<String, Claims> jwtToClaims = new HashMap<String, Claims>();
+
+    public static void handleClientMethodEntry(IApiChannel<?> channel, MethodDescriptor<?, ?> method,
 	    DebugParameter... parameters) {
 	LOGGER.debug(channel.getClass().getSimpleName() + " connected to '" + channel.getHostname()
 		+ "' received call to  " + method.getFullMethodName() + ".");
@@ -64,8 +84,90 @@ public class GrpcUtils {
 	return request;
     }
 
-    public static void logServerMethodEntry(MethodDescriptor<?, ?> method) {
+    /**
+     * Handle entry logic for a gRPC server method.
+     * 
+     * @param api
+     * @param method
+     */
+    public static void handleServerMethodEntry(IGrpcApiImplementation api, MethodDescriptor<?, ?> method) {
 	LOGGER.debug("Server received call to  " + method.getFullMethodName() + ".");
+	displaySecurityContext();
+	String jwt = GrpcContextKeys.JWT_KEY.get();
+	if (jwt == null) {
+	    throw new RuntimeException("JWT not found in server request.");
+	}
+	ITenant tenant = null;
+	try {
+	    if (api.getMicroservice() instanceof IMultitenantMicroservice) {
+		String tenantId = GrpcContextKeys.TENANT_ID_KEY.get();
+		if (tenantId == null) {
+		    throw new RuntimeException("Tenant id not found in server request.");
+		}
+		IMicroserviceTenantEngine engine = ((IMultitenantMicroservice<?, ?>) api.getMicroservice())
+			.assureTenantEngineAvailable(UUID.fromString(tenantId));
+		tenant = engine.getTenant();
+	    }
+	    Claims claims = getClaimsForJwt(api, jwt);
+	    String username = api.getMicroservice().getTokenManagement().getUsernameFromClaims(claims);
+	    List<IGrantedAuthority> gauths = api.getMicroservice().getTokenManagement()
+		    .getGrantedAuthoritiesFromClaims(claims);
+	    List<String> auths = gauths.stream().map(g -> g.getAuthority()).collect(Collectors.toList());
+	    establishSecurityContext(jwt, username, gauths, auths, tenant);
+	} catch (SiteWhereException e) {
+	    LOGGER.error("Error in gRPC server method " + method.getFullMethodName(), e);
+	}
+    }
+
+    /**
+     * Get cached claims for JWT.
+     * 
+     * @param jwt
+     * @return
+     * @throws SiteWhereException
+     */
+    protected static Claims getClaimsForJwt(IGrpcApiImplementation api, String jwt) throws SiteWhereException {
+	// TODO: Swap to expiring cache and put limits on number of cached JWTs.
+	Claims claims = jwtToClaims.get(jwt);
+	if (claims == null) {
+	    claims = api.getMicroservice().getTokenManagement().getClaimsForToken(jwt);
+	    jwtToClaims.put(jwt, claims);
+	}
+	return claims;
+    }
+
+    /**
+     * Indicate that Spring security content was not properly cleared previously.
+     */
+    protected static void displaySecurityContext() {
+	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	if (auth != null) {
+	    String user = (String) auth.getPrincipal();
+	    LOGGER.warn("!!! Thread already has Spring Security auth info !!! user=" + user);
+	}
+    }
+
+    /**
+     * Build Spring Security context based on values passed via gRPC interceptors.
+     * 
+     * @param jwt
+     * @param username
+     * @param gauths
+     * @param auths
+     * @param tenantId
+     */
+    protected static void establishSecurityContext(String jwt, String username, List<IGrantedAuthority> gauths,
+	    List<String> auths, ITenant tenant) {
+	User user = new User();
+	user.setUsername(username);
+	user.setAuthorities(auths);
+	SitewhereUserDetails details = new SitewhereUserDetails(user, gauths);
+	SitewhereAuthentication auth = new SitewhereAuthentication(details, jwt);
+	if (tenant != null) {
+	    auth.setTenant(tenant);
+	}
+	SecurityContextHolder.getContext().setAuthentication(auth);
+	LOGGER.trace("Set security context: username=" + username + " jwt=" + jwt);
     }
 
     public static void logServerApiResult(MethodDescriptor<?, ?> method, Object result) throws SiteWhereException {
@@ -77,6 +179,11 @@ public class GrpcUtils {
 	} else {
 	    LOGGER.trace("Response to " + method.getFullMethodName() + " was NULL");
 	}
+    }
+
+    public static void handleServerMethodExit(MethodDescriptor<?, ?> method) {
+	LOGGER.debug("Server finished call to  " + method.getFullMethodName() + ".");
+	SecurityContextHolder.getContext().setAuthentication(null);
     }
 
     /**

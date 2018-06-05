@@ -75,14 +75,10 @@ public class UserContextManager {
      */
     public static void setCurrentTenant(ITenant tenant, ILifecycleComponentLogger logger) {
 	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-	if (auth == null) {
-	    logger.info("No existing authentication information when setting current tenant.");
-	    SitewhereAuthentication sw = new SitewhereAuthentication(null, null);
-	    sw.setTenant(tenant);
-	    SecurityContextHolder.getContext().setAuthentication(sw);
-	    return;
-	} else if (auth instanceof SitewhereAuthentication) {
+	if ((auth != null) && (auth instanceof SitewhereAuthentication)) {
 	    ((SitewhereAuthentication) auth).setTenant(tenant);
+	} else {
+	    throw new RuntimeException("Setting tenant when no Spring Security context has been established.");
 	}
     }
 }

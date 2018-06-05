@@ -84,7 +84,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public ICustomerType createCustomerType(ICustomerTypeCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_CREATE_CUSTOMER_TYPE);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getCreateCustomerTypeMethod());
 	    GCreateCustomerTypeRequest.Builder grequest = GCreateCustomerTypeRequest.newBuilder();
 	    grequest.setRequest(DeviceModelConverter.asGrpcCustomerTypeCreateRequest(request));
 	    GCreateCustomerTypeResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -92,10 +92,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    ICustomerType response = (gresponse.hasCustomerType())
 		    ? DeviceModelConverter.asApiCustomerType(gresponse.getCustomerType())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_CUSTOMER_TYPE, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getCreateCustomerTypeMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_CUSTOMER_TYPE, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getCreateCustomerTypeMethod(), t);
 	}
     }
 
@@ -106,17 +106,17 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public ICustomerType getCustomerType(UUID id) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_CUSTOMER_TYPE);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetCustomerTypeMethod());
 	    GGetCustomerTypeRequest.Builder grequest = GGetCustomerTypeRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    GGetCustomerTypeResponse gresponse = getGrpcChannel().getBlockingStub().getCustomerType(grequest.build());
 	    ICustomerType response = (gresponse.hasCustomerType())
 		    ? DeviceModelConverter.asApiCustomerType(gresponse.getCustomerType())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_CUSTOMER_TYPE, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetCustomerTypeMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_CUSTOMER_TYPE, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetCustomerTypeMethod(), t);
 	}
     }
 
@@ -128,7 +128,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public ICustomerType getCustomerTypeByToken(String token) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_CUSTOMER_TYPE_BY_TOKEN);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetCustomerTypeByTokenMethod());
 	    GGetCustomerTypeByTokenRequest.Builder grequest = GGetCustomerTypeByTokenRequest.newBuilder();
 	    grequest.setToken(token);
 	    GGetCustomerTypeByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -136,10 +136,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    ICustomerType response = (gresponse.hasCustomerType())
 		    ? DeviceModelConverter.asApiCustomerType(gresponse.getCustomerType())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_CUSTOMER_TYPE_BY_TOKEN, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetCustomerTypeByTokenMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_CUSTOMER_TYPE_BY_TOKEN, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetCustomerTypeByTokenMethod(), t);
 	}
     }
 
@@ -151,7 +151,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public ICustomerType updateCustomerType(UUID id, ICustomerTypeCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_UPDATE_CUSTOMER_TYPE);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getUpdateCustomerTypeMethod());
 	    GUpdateCustomerTypeRequest.Builder grequest = GUpdateCustomerTypeRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setRequest(DeviceModelConverter.asGrpcCustomerTypeCreateRequest(request));
@@ -160,10 +160,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    ICustomerType response = (gresponse.hasCustomerType())
 		    ? DeviceModelConverter.asApiCustomerType(gresponse.getCustomerType())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_CUSTOMER_TYPE, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getUpdateCustomerTypeMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_CUSTOMER_TYPE, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getUpdateCustomerTypeMethod(), t);
 	}
     }
 
@@ -175,17 +175,17 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public ISearchResults<ICustomerType> listCustomerTypes(ISearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_CUSTOMER_TYPES);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getListCustomerTypesMethod());
 	    GListCustomerTypesRequest.Builder grequest = GListCustomerTypesRequest.newBuilder();
 	    grequest.setCriteria(DeviceModelConverter.asApiCustomerTypeSearchCriteria(criteria));
 	    GListCustomerTypesResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .listCustomerTypes(grequest.build());
 	    ISearchResults<ICustomerType> results = DeviceModelConverter
 		    .asApiCustomerTypeSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_CUSTOMER_TYPES, results);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getListCustomerTypesMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_CUSTOMER_TYPES, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getListCustomerTypesMethod(), t);
 	}
     }
 
@@ -197,7 +197,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public ICustomerType deleteCustomerType(UUID id, boolean force) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_DELETE_CUSTOMER_TYPE);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getDeleteCustomerTypeMethod());
 	    GDeleteCustomerTypeRequest.Builder grequest = GDeleteCustomerTypeRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setForce(force);
@@ -206,10 +206,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    ICustomerType response = (gresponse.hasCustomerType())
 		    ? DeviceModelConverter.asApiCustomerType(gresponse.getCustomerType())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_CUSTOMER_TYPE, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getDeleteCustomerTypeMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_CUSTOMER_TYPE, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getDeleteCustomerTypeMethod(), t);
 	}
     }
 
@@ -221,16 +221,16 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public ICustomer createCustomer(ICustomerCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_CREATE_CUSTOMER);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getCreateCustomerMethod());
 	    GCreateCustomerRequest.Builder grequest = GCreateCustomerRequest.newBuilder();
 	    grequest.setRequest(DeviceModelConverter.asGrpcCustomerCreateRequest(request));
 	    GCreateCustomerResponse gresponse = getGrpcChannel().getBlockingStub().createCustomer(grequest.build());
 	    ICustomer response = (gresponse.hasCustomer()) ? DeviceModelConverter.asApiCustomer(gresponse.getCustomer())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_CUSTOMER, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getCreateCustomerMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_CUSTOMER, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getCreateCustomerMethod(), t);
 	}
     }
 
@@ -240,16 +240,16 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public ICustomer getCustomer(UUID id) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_CUSTOMER);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetCustomerMethod());
 	    GGetCustomerRequest.Builder grequest = GGetCustomerRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    GGetCustomerResponse gresponse = getGrpcChannel().getBlockingStub().getCustomer(grequest.build());
 	    ICustomer response = (gresponse.hasCustomer()) ? DeviceModelConverter.asApiCustomer(gresponse.getCustomer())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_CUSTOMER, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetCustomerMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_CUSTOMER, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetCustomerMethod(), t);
 	}
     }
 
@@ -260,17 +260,17 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public ICustomer getCustomerByToken(String token) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_CUSTOMER_BY_TOKEN);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetCustomerByTokenMethod());
 	    GGetCustomerByTokenRequest.Builder grequest = GGetCustomerByTokenRequest.newBuilder();
 	    grequest.setToken(token);
 	    GGetCustomerByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getCustomerByToken(grequest.build());
 	    ICustomer response = (gresponse.hasCustomer()) ? DeviceModelConverter.asApiCustomer(gresponse.getCustomer())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_CUSTOMER_BY_TOKEN, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetCustomerByTokenMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_CUSTOMER_BY_TOKEN, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetCustomerByTokenMethod(), t);
 	}
     }
 
@@ -282,16 +282,16 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public List<ICustomer> getCustomerChildren(String token) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_CUSTOMER_CHILDREN);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetCustomerChildrenMethod());
 	    GGetCustomerChildrenRequest.Builder grequest = GGetCustomerChildrenRequest.newBuilder();
 	    grequest.setToken(token);
 	    GGetCustomerChildrenResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getCustomerChildren(grequest.build());
 	    List<ICustomer> response = DeviceModelConverter.asApiCustomers(gresponse.getCustomersList());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_CUSTOMER_CHILDREN, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetCustomerChildrenMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_CUSTOMER_CHILDREN, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetCustomerChildrenMethod(), t);
 	}
     }
 
@@ -303,17 +303,17 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public ICustomer updateCustomer(UUID id, ICustomerCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_UPDATE_CUSTOMER);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getUpdateCustomerMethod());
 	    GUpdateCustomerRequest.Builder grequest = GUpdateCustomerRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setRequest(DeviceModelConverter.asGrpcCustomerCreateRequest(request));
 	    GUpdateCustomerResponse gresponse = getGrpcChannel().getBlockingStub().updateCustomer(grequest.build());
 	    ICustomer response = (gresponse.hasCustomer()) ? DeviceModelConverter.asApiCustomer(gresponse.getCustomer())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_CUSTOMER, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getUpdateCustomerMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_CUSTOMER, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getUpdateCustomerMethod(), t);
 	}
     }
 
@@ -325,15 +325,15 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public ISearchResults<ICustomer> listCustomers(ICustomerSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_CUSTOMERS);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getListCustomersMethod());
 	    GListCustomersRequest.Builder grequest = GListCustomersRequest.newBuilder();
 	    grequest.setCriteria(DeviceModelConverter.asGrpcCustomerSearchCriteria(criteria));
 	    GListCustomersResponse gresponse = getGrpcChannel().getBlockingStub().listCustomers(grequest.build());
 	    ISearchResults<ICustomer> results = DeviceModelConverter.asApiCustomerSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_CUSTOMERS, results);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getListCustomersMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_CUSTOMERS, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getListCustomersMethod(), t);
 	}
     }
 
@@ -345,17 +345,17 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public ICustomer deleteCustomer(UUID id, boolean force) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_DELETE_CUSTOMER);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getDeleteCustomerMethod());
 	    GDeleteCustomerRequest.Builder grequest = GDeleteCustomerRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setForce(force);
 	    GDeleteCustomerResponse gresponse = getGrpcChannel().getBlockingStub().deleteCustomer(grequest.build());
 	    ICustomer response = (gresponse.hasCustomer()) ? DeviceModelConverter.asApiCustomer(gresponse.getCustomer())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_CUSTOMER, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getDeleteCustomerMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_CUSTOMER, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getDeleteCustomerMethod(), t);
 	}
     }
 
@@ -367,16 +367,16 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IAreaType createAreaType(IAreaTypeCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_CREATE_AREA_TYPE);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getCreateAreaTypeMethod());
 	    GCreateAreaTypeRequest.Builder grequest = GCreateAreaTypeRequest.newBuilder();
 	    grequest.setRequest(DeviceModelConverter.asGrpcAreaTypeCreateRequest(request));
 	    GCreateAreaTypeResponse gresponse = getGrpcChannel().getBlockingStub().createAreaType(grequest.build());
 	    IAreaType response = (gresponse.hasAreaType()) ? DeviceModelConverter.asApiAreaType(gresponse.getAreaType())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_AREA_TYPE, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getCreateAreaTypeMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_AREA_TYPE, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getCreateAreaTypeMethod(), t);
 	}
     }
 
@@ -386,16 +386,16 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IAreaType getAreaType(UUID id) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_AREA_TYPE);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetAreaTypeMethod());
 	    GGetAreaTypeRequest.Builder grequest = GGetAreaTypeRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    GGetAreaTypeResponse gresponse = getGrpcChannel().getBlockingStub().getAreaType(grequest.build());
 	    IAreaType response = (gresponse.hasAreaType()) ? DeviceModelConverter.asApiAreaType(gresponse.getAreaType())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_AREA_TYPE, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetAreaTypeMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_AREA_TYPE, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetAreaTypeMethod(), t);
 	}
     }
 
@@ -406,17 +406,17 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IAreaType getAreaTypeByToken(String token) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_AREA_TYPE_BY_TOKEN);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetAreaTypeByTokenMethod());
 	    GGetAreaTypeByTokenRequest.Builder grequest = GGetAreaTypeByTokenRequest.newBuilder();
 	    grequest.setToken(token);
 	    GGetAreaTypeByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getAreaTypeByToken(grequest.build());
 	    IAreaType response = (gresponse.hasAreaType()) ? DeviceModelConverter.asApiAreaType(gresponse.getAreaType())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_AREA_TYPE_BY_TOKEN, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetAreaTypeByTokenMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_AREA_TYPE_BY_TOKEN, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetAreaTypeByTokenMethod(), t);
 	}
     }
 
@@ -428,17 +428,17 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IAreaType updateAreaType(UUID id, IAreaTypeCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_UPDATE_AREA_TYPE);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getUpdateAreaTypeMethod());
 	    GUpdateAreaTypeRequest.Builder grequest = GUpdateAreaTypeRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setRequest(DeviceModelConverter.asGrpcAreaTypeCreateRequest(request));
 	    GUpdateAreaTypeResponse gresponse = getGrpcChannel().getBlockingStub().updateAreaType(grequest.build());
 	    IAreaType response = (gresponse.hasAreaType()) ? DeviceModelConverter.asApiAreaType(gresponse.getAreaType())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_AREA_TYPE, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getUpdateAreaTypeMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_AREA_TYPE, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getUpdateAreaTypeMethod(), t);
 	}
     }
 
@@ -450,15 +450,15 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public ISearchResults<IAreaType> listAreaTypes(ISearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_AREA_TYPES);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getListAreaTypesMethod());
 	    GListAreaTypesRequest.Builder grequest = GListAreaTypesRequest.newBuilder();
 	    grequest.setCriteria(DeviceModelConverter.asApiAreaTypeSearchCriteria(criteria));
 	    GListAreaTypesResponse gresponse = getGrpcChannel().getBlockingStub().listAreaTypes(grequest.build());
 	    ISearchResults<IAreaType> results = DeviceModelConverter.asApiAreaTypeSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_AREA_TYPES, results);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getListAreaTypesMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_AREA_TYPES, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getListAreaTypesMethod(), t);
 	}
     }
 
@@ -470,17 +470,17 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IAreaType deleteAreaType(UUID id, boolean force) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_DELETE_AREA_TYPE);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getDeleteAreaTypeMethod());
 	    GDeleteAreaTypeRequest.Builder grequest = GDeleteAreaTypeRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setForce(force);
 	    GDeleteAreaTypeResponse gresponse = getGrpcChannel().getBlockingStub().deleteAreaType(grequest.build());
 	    IAreaType response = (gresponse.hasAreaType()) ? DeviceModelConverter.asApiAreaType(gresponse.getAreaType())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_AREA_TYPE, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getDeleteAreaTypeMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_AREA_TYPE, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getDeleteAreaTypeMethod(), t);
 	}
     }
 
@@ -492,15 +492,15 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IArea createArea(IAreaCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_CREATE_AREA);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getCreateAreaMethod());
 	    GCreateAreaRequest.Builder grequest = GCreateAreaRequest.newBuilder();
 	    grequest.setRequest(DeviceModelConverter.asGrpcAreaCreateRequest(request));
 	    GCreateAreaResponse gresponse = getGrpcChannel().getBlockingStub().createArea(grequest.build());
 	    IArea response = (gresponse.hasArea()) ? DeviceModelConverter.asApiArea(gresponse.getArea()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_AREA, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getCreateAreaMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_AREA, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getCreateAreaMethod(), t);
 	}
     }
 
@@ -510,15 +510,15 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IArea getArea(UUID id) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_AREA);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetAreaMethod());
 	    GGetAreaRequest.Builder grequest = GGetAreaRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    GGetAreaResponse gresponse = getGrpcChannel().getBlockingStub().getArea(grequest.build());
 	    IArea response = (gresponse.hasArea()) ? DeviceModelConverter.asApiArea(gresponse.getArea()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_AREA, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetAreaMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_AREA, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetAreaMethod(), t);
 	}
     }
 
@@ -529,15 +529,15 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IArea getAreaByToken(String token) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_AREA_BY_TOKEN);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetAreaByTokenMethod());
 	    GGetAreaByTokenRequest.Builder grequest = GGetAreaByTokenRequest.newBuilder();
 	    grequest.setToken(token);
 	    GGetAreaByTokenResponse gresponse = getGrpcChannel().getBlockingStub().getAreaByToken(grequest.build());
 	    IArea response = (gresponse.hasArea()) ? DeviceModelConverter.asApiArea(gresponse.getArea()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_AREA_BY_TOKEN, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetAreaByTokenMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_AREA_BY_TOKEN, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetAreaByTokenMethod(), t);
 	}
     }
 
@@ -548,15 +548,15 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public List<IArea> getAreaChildren(String token) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_AREA_CHILDREN);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetAreaChildrenMethod());
 	    GGetAreaChildrenRequest.Builder grequest = GGetAreaChildrenRequest.newBuilder();
 	    grequest.setToken(token);
 	    GGetAreaChildrenResponse gresponse = getGrpcChannel().getBlockingStub().getAreaChildren(grequest.build());
 	    List<IArea> response = DeviceModelConverter.asApiAreas(gresponse.getAreasList());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_AREA_CHILDREN, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetAreaChildrenMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_AREA_CHILDREN, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetAreaChildrenMethod(), t);
 	}
     }
 
@@ -567,16 +567,16 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IArea updateArea(UUID id, IAreaCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_UPDATE_AREA);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getUpdateAreaMethod());
 	    GUpdateAreaRequest.Builder grequest = GUpdateAreaRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setRequest(DeviceModelConverter.asGrpcAreaCreateRequest(request));
 	    GUpdateAreaResponse gresponse = getGrpcChannel().getBlockingStub().updateArea(grequest.build());
 	    IArea response = (gresponse.hasArea()) ? DeviceModelConverter.asApiArea(gresponse.getArea()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_AREA, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getUpdateAreaMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_AREA, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getUpdateAreaMethod(), t);
 	}
     }
 
@@ -588,15 +588,15 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public ISearchResults<IArea> listAreas(IAreaSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_AREAS);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getListAreasMethod());
 	    GListAreasRequest.Builder grequest = GListAreasRequest.newBuilder();
 	    grequest.setCriteria(DeviceModelConverter.asGrpcAreaSearchCriteria(criteria));
 	    GListAreasResponse gresponse = getGrpcChannel().getBlockingStub().listAreas(grequest.build());
 	    ISearchResults<IArea> results = DeviceModelConverter.asApiAreaSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_AREAS, results);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getListAreasMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_AREAS, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getListAreasMethod(), t);
 	}
     }
 
@@ -607,16 +607,16 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IArea deleteArea(UUID id, boolean force) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_DELETE_AREA);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getDeleteAreaMethod());
 	    GDeleteAreaRequest.Builder grequest = GDeleteAreaRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setForce(force);
 	    GDeleteAreaResponse gresponse = getGrpcChannel().getBlockingStub().deleteArea(grequest.build());
 	    IArea response = (gresponse.hasArea()) ? DeviceModelConverter.asApiArea(gresponse.getArea()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_AREA, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getDeleteAreaMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_AREA, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getDeleteAreaMethod(), t);
 	}
     }
 
@@ -627,16 +627,16 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IZone createZone(UUID siteId, IZoneCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_CREATE_ZONE);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getCreateZoneMethod());
 	    GCreateZoneRequest.Builder grequest = GCreateZoneRequest.newBuilder();
 	    grequest.setSiteId(CommonModelConverter.asGrpcUuid(siteId));
 	    grequest.setRequest(DeviceModelConverter.asGrpcZoneCreateRequest(request));
 	    GCreateZoneResponse gresponse = getGrpcChannel().getBlockingStub().createZone(grequest.build());
 	    IZone response = (gresponse.hasZone()) ? DeviceModelConverter.asApiZone(gresponse.getZone()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_ZONE, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getCreateZoneMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_ZONE, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getCreateZoneMethod(), t);
 	}
     }
 
@@ -646,15 +646,15 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IZone getZone(UUID id) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_ZONE);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetZoneMethod());
 	    GGetZoneRequest.Builder grequest = GGetZoneRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    GGetZoneResponse gresponse = getGrpcChannel().getBlockingStub().getZone(grequest.build());
 	    IZone response = (gresponse.hasZone()) ? DeviceModelConverter.asApiZone(gresponse.getZone()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_ZONE, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetZoneMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_ZONE, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetZoneMethod(), t);
 	}
     }
 
@@ -665,15 +665,15 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IZone getZoneByToken(String zoneToken) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_ZONE_BY_TOKEN);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetZoneByTokenMethod());
 	    GGetZoneByTokenRequest.Builder grequest = GGetZoneByTokenRequest.newBuilder();
 	    grequest.setToken(zoneToken);
 	    GGetZoneByTokenResponse gresponse = getGrpcChannel().getBlockingStub().getZoneByToken(grequest.build());
 	    IZone response = (gresponse.hasZone()) ? DeviceModelConverter.asApiZone(gresponse.getZone()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_ZONE_BY_TOKEN, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetZoneByTokenMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_ZONE_BY_TOKEN, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetZoneByTokenMethod(), t);
 	}
     }
 
@@ -684,16 +684,16 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IZone updateZone(UUID id, IZoneCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_UPDATE_ZONE);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getUpdateZoneMethod());
 	    GUpdateZoneRequest.Builder grequest = GUpdateZoneRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setRequest(DeviceModelConverter.asGrpcZoneCreateRequest(request));
 	    GUpdateZoneResponse gresponse = getGrpcChannel().getBlockingStub().updateZone(grequest.build());
 	    IZone response = (gresponse.hasZone()) ? DeviceModelConverter.asApiZone(gresponse.getZone()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_ZONE, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getUpdateZoneMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_ZONE, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getUpdateZoneMethod(), t);
 	}
     }
 
@@ -704,16 +704,16 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public ISearchResults<IZone> listZones(UUID siteId, ISearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_ZONES);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getListZonesMethod());
 	    GListZonesRequest.Builder grequest = GListZonesRequest.newBuilder();
 	    grequest.setSiteId(CommonModelConverter.asGrpcUuid(siteId));
 	    grequest.setCriteria(DeviceModelConverter.asApiZoneSearchCriteria(criteria));
 	    GListZonesResponse gresponse = getGrpcChannel().getBlockingStub().listZones(grequest.build());
 	    ISearchResults<IZone> results = DeviceModelConverter.asApiZoneSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_ZONES, results);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getListZonesMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_ZONES, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getListZonesMethod(), t);
 	}
     }
 
@@ -724,16 +724,16 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IZone deleteZone(UUID id, boolean force) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_DELETE_ZONE);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getDeleteZoneMethod());
 	    GDeleteZoneRequest.Builder grequest = GDeleteZoneRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setForce(force);
 	    GDeleteZoneResponse gresponse = getGrpcChannel().getBlockingStub().deleteZone(grequest.build());
 	    IZone response = (gresponse.hasZone()) ? DeviceModelConverter.asApiZone(gresponse.getZone()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_ZONE, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getDeleteZoneMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_ZONE, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getDeleteZoneMethod(), t);
 	}
     }
 
@@ -745,17 +745,17 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDeviceType createDeviceType(IDeviceTypeCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_CREATE_DEVICE_TYPE);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getCreateDeviceTypeMethod());
 	    GCreateDeviceTypeRequest.Builder grequest = GCreateDeviceTypeRequest.newBuilder();
 	    grequest.setRequest(DeviceModelConverter.asGrpcDeviceTypeCreateRequest(request));
 	    GCreateDeviceTypeResponse gresponse = getGrpcChannel().getBlockingStub().createDeviceType(grequest.build());
 	    IDeviceType response = (gresponse.hasDeviceType())
 		    ? DeviceModelConverter.asApiDeviceType(gresponse.getDeviceType())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_DEVICE_TYPE, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getCreateDeviceTypeMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_TYPE, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getCreateDeviceTypeMethod(), t);
 	}
     }
 
@@ -765,17 +765,17 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDeviceType getDeviceType(UUID id) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_DEVICE_TYPE);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetDeviceTypeMethod());
 	    GGetDeviceTypeRequest.Builder grequest = GGetDeviceTypeRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    GGetDeviceTypeResponse gresponse = getGrpcChannel().getBlockingStub().getDeviceType(grequest.build());
 	    IDeviceType response = (gresponse.hasDeviceType())
 		    ? DeviceModelConverter.asApiDeviceType(gresponse.getDeviceType())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_TYPE, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetDeviceTypeMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_TYPE, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetDeviceTypeMethod(), t);
 	}
     }
 
@@ -787,7 +787,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDeviceType getDeviceTypeByToken(String token) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_DEVICE_TYPE_BY_TOKEN);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetDeviceTypeByTokenMethod());
 	    GGetDeviceTypeByTokenRequest.Builder grequest = GGetDeviceTypeByTokenRequest.newBuilder();
 	    grequest.setToken(token);
 	    GGetDeviceTypeByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -795,10 +795,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    IDeviceType response = (gresponse.hasDeviceType())
 		    ? DeviceModelConverter.asApiDeviceType(gresponse.getDeviceType())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_TYPE_BY_TOKEN, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetDeviceTypeByTokenMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_TYPE_BY_TOKEN, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetDeviceTypeByTokenMethod(), t);
 	}
     }
 
@@ -810,7 +810,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDeviceType updateDeviceType(UUID id, IDeviceTypeCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_UPDATE_DEVICE_TYPE);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getUpdateDeviceTypeMethod());
 	    GUpdateDeviceTypeRequest.Builder grequest = GUpdateDeviceTypeRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setRequest(DeviceModelConverter.asGrpcDeviceTypeCreateRequest(request));
@@ -818,10 +818,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    IDeviceType response = (gresponse.hasDeviceType())
 		    ? DeviceModelConverter.asApiDeviceType(gresponse.getDeviceType())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_TYPE, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getUpdateDeviceTypeMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_TYPE, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getUpdateDeviceTypeMethod(), t);
 	}
     }
 
@@ -833,16 +833,16 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     public ISearchResults<IDeviceType> listDeviceTypes(boolean includeDeleted, ISearchCriteria criteria)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_DEVICE_TYPES);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getListDeviceTypesMethod());
 	    GListDeviceTypesRequest.Builder grequest = GListDeviceTypesRequest.newBuilder();
 	    grequest.setCriteria(DeviceModelConverter.asApiDeviceTypeSearchCriteria(includeDeleted, criteria));
 	    GListDeviceTypesResponse gresponse = getGrpcChannel().getBlockingStub().listDeviceTypes(grequest.build());
 	    ISearchResults<IDeviceType> results = DeviceModelConverter
 		    .asApiDeviceTypeSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_DEVICE_TYPES, results);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getListDeviceTypesMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_TYPES, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getListDeviceTypesMethod(), t);
 	}
     }
 
@@ -854,7 +854,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDeviceType deleteDeviceType(UUID id, boolean force) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_DELETE_DEVICE_TYPE);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceTypeMethod());
 	    GDeleteDeviceTypeRequest.Builder grequest = GDeleteDeviceTypeRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setForce(force);
@@ -862,10 +862,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    IDeviceType response = (gresponse.hasDeviceType())
 		    ? DeviceModelConverter.asApiDeviceType(gresponse.getDeviceType())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_DEVICE_TYPE, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getDeleteDeviceTypeMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_TYPE, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getDeleteDeviceTypeMethod(), t);
 	}
     }
 
@@ -878,7 +878,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     public IDeviceCommand createDeviceCommand(UUID deviceTypeId, IDeviceCommandCreateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_CREATE_DEVICE_COMMAND);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getCreateDeviceCommandMethod());
 	    GCreateDeviceCommandRequest.Builder grequest = GCreateDeviceCommandRequest.newBuilder();
 	    grequest.setDeviceTypeId(CommonModelConverter.asGrpcUuid(deviceTypeId));
 	    grequest.setRequest(DeviceModelConverter.asGrpcDeviceCommandCreateRequest(request));
@@ -887,10 +887,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    IDeviceCommand response = (gresponse.hasCommand())
 		    ? DeviceModelConverter.asApiDeviceCommand(gresponse.getCommand())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_DEVICE_COMMAND, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getCreateDeviceCommandMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_COMMAND, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getCreateDeviceCommandMethod(), t);
 	}
     }
 
@@ -901,17 +901,17 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDeviceCommand getDeviceCommand(UUID id) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_DEVICE_COMMAND);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetDeviceCommandMethod());
 	    GGetDeviceCommandRequest.Builder grequest = GGetDeviceCommandRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    GGetDeviceCommandResponse gresponse = getGrpcChannel().getBlockingStub().getDeviceCommand(grequest.build());
 	    IDeviceCommand response = (gresponse.hasCommand())
 		    ? DeviceModelConverter.asApiDeviceCommand(gresponse.getCommand())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_COMMAND, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetDeviceCommandMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_COMMAND, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetDeviceCommandMethod(), t);
 	}
     }
 
@@ -924,7 +924,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDeviceCommand getDeviceCommandByToken(String token) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_DEVICE_COMMAND_BY_TOKEN);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetDeviceCommandByTokenMethod());
 	    GGetDeviceCommandByTokenRequest.Builder grequest = GGetDeviceCommandByTokenRequest.newBuilder();
 	    grequest.setToken(token);
 	    GGetDeviceCommandByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -932,10 +932,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    IDeviceCommand response = (gresponse.hasCommand())
 		    ? DeviceModelConverter.asApiDeviceCommand(gresponse.getCommand())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_COMMAND_BY_TOKEN, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetDeviceCommandByTokenMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_COMMAND_BY_TOKEN, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetDeviceCommandByTokenMethod(), t);
 	}
     }
 
@@ -947,7 +947,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDeviceCommand updateDeviceCommand(UUID id, IDeviceCommandCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_UPDATE_DEVICE_COMMAND);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getUpdateDeviceCommandMethod());
 	    GUpdateDeviceCommandRequest.Builder grequest = GUpdateDeviceCommandRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setRequest(DeviceModelConverter.asGrpcDeviceCommandCreateRequest(request));
@@ -956,10 +956,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    IDeviceCommand response = (gresponse.hasCommand())
 		    ? DeviceModelConverter.asApiDeviceCommand(gresponse.getCommand())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_COMMAND, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getUpdateDeviceCommandMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_COMMAND, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getUpdateDeviceCommandMethod(), t);
 	}
     }
 
@@ -972,17 +972,17 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     public List<IDeviceCommand> listDeviceCommands(UUID deviceTypeId, boolean includeDeleted)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_DEVICE_COMMANDS);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getListDeviceCommandsMethod());
 	    GListDeviceCommandsRequest.Builder grequest = GListDeviceCommandsRequest.newBuilder();
 	    grequest.setCriteria(DeviceModelConverter.asApiDeviceCommandSearchCriteria(includeDeleted, deviceTypeId));
 	    GListDeviceCommandsResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .listDeviceCommands(grequest.build());
 	    List<IDeviceCommand> results = DeviceModelConverter
 		    .asApiDeviceCommandSearchResults(gresponse.getCommandsList());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_DEVICE_COMMANDS, results);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getListDeviceCommandsMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_COMMANDS, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getListDeviceCommandsMethod(), t);
 	}
     }
 
@@ -994,7 +994,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDeviceCommand deleteDeviceCommand(UUID id, boolean force) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_DELETE_DEVICE_COMMAND);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceCommandMethod());
 	    GDeleteDeviceCommandRequest.Builder grequest = GDeleteDeviceCommandRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setForce(force);
@@ -1003,10 +1003,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    IDeviceCommand response = (gresponse.hasCommand())
 		    ? DeviceModelConverter.asApiDeviceCommand(gresponse.getCommand())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_DEVICE_COMMAND, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getDeleteDeviceCommandMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_COMMAND, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getDeleteDeviceCommandMethod(), t);
 	}
     }
 
@@ -1019,7 +1019,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     public IDeviceStatus createDeviceStatus(UUID deviceTypeId, IDeviceStatusCreateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_CREATE_DEVICE_STATUS);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getCreateDeviceStatusMethod());
 	    GCreateDeviceStatusRequest.Builder grequest = GCreateDeviceStatusRequest.newBuilder();
 	    grequest.setDeviceTypeId(CommonModelConverter.asGrpcUuid(deviceTypeId));
 	    grequest.setRequest(DeviceModelConverter.asGrpcDeviceStatusCreateRequest(request));
@@ -1028,10 +1028,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    IDeviceStatus response = (gresponse.hasStatus())
 		    ? DeviceModelConverter.asApiDeviceStatus(gresponse.getStatus())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_DEVICE_STATUS, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getCreateDeviceStatusMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_STATUS, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getCreateDeviceStatusMethod(), t);
 	}
     }
 
@@ -1043,7 +1043,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDeviceStatus getDeviceStatusByCode(UUID deviceTypeId, String code) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_DEVICE_STATUS_BY_CODE);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetDeviceStatusByCodeMethod());
 	    GGetDeviceStatusByCodeRequest.Builder grequest = GGetDeviceStatusByCodeRequest.newBuilder();
 	    grequest.setDeviceTypeId(CommonModelConverter.asGrpcUuid(deviceTypeId));
 	    grequest.setCode(code);
@@ -1052,10 +1052,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    IDeviceStatus response = (gresponse.hasStatus())
 		    ? DeviceModelConverter.asApiDeviceStatus(gresponse.getStatus())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_STATUS_BY_CODE, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetDeviceStatusByCodeMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_STATUS_BY_CODE, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetDeviceStatusByCodeMethod(), t);
 	}
     }
 
@@ -1069,7 +1069,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     public IDeviceStatus updateDeviceStatus(UUID deviceTypeId, String code, IDeviceStatusCreateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_UPDATE_DEVICE_STATUS);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getUpdateDeviceStatusMethod());
 	    GUpdateDeviceStatusRequest.Builder grequest = GUpdateDeviceStatusRequest.newBuilder();
 	    grequest.setDeviceTypeId(CommonModelConverter.asGrpcUuid(deviceTypeId));
 	    grequest.setCode(code);
@@ -1079,10 +1079,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    IDeviceStatus response = (gresponse.hasStatus())
 		    ? DeviceModelConverter.asApiDeviceStatus(gresponse.getStatus())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_STATUS, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getUpdateDeviceStatusMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_STATUS, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getUpdateDeviceStatusMethod(), t);
 	}
     }
 
@@ -1093,17 +1093,17 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public List<IDeviceStatus> listDeviceStatuses(UUID deviceTypeId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_DEVICE_STATUSES);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getListDeviceStatusesMethod());
 	    GListDeviceStatusesRequest.Builder grequest = GListDeviceStatusesRequest.newBuilder();
 	    grequest.setCriteria(DeviceModelConverter.asApiDeviceStatusSearchCriteria(deviceTypeId, null));
 	    GListDeviceStatusesResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .listDeviceStatuses(grequest.build());
 	    List<IDeviceStatus> results = DeviceModelConverter
 		    .asApiDeviceStatusSearchResults(gresponse.getStatusList());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_DEVICE_STATUSES, results);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getListDeviceStatusesMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_STATUSES, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getListDeviceStatusesMethod(), t);
 	}
     }
 
@@ -1115,7 +1115,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDeviceStatus deleteDeviceStatus(UUID deviceTypeId, String code) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_DELETE_DEVICE_STATUS);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceStatusMethod());
 	    GDeleteDeviceStatusRequest.Builder grequest = GDeleteDeviceStatusRequest.newBuilder();
 	    grequest.setDeviceTypeId(CommonModelConverter.asGrpcUuid(deviceTypeId));
 	    grequest.setCode(code);
@@ -1124,10 +1124,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    IDeviceStatus response = (gresponse.hasStatus())
 		    ? DeviceModelConverter.asApiDeviceStatus(gresponse.getStatus())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_DEVICE_STATUS, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getDeleteDeviceStatusMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_STATUS, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getDeleteDeviceStatusMethod(), t);
 	}
     }
 
@@ -1141,15 +1141,15 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDevice createDevice(IDeviceCreateRequest device) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_CREATE_DEVICE);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getCreateDeviceMethod());
 	    GCreateDeviceRequest.Builder grequest = GCreateDeviceRequest.newBuilder();
 	    grequest.setRequest(DeviceModelConverter.asGrpcDeviceCreateRequest(device));
 	    GCreateDeviceResponse gresponse = getGrpcChannel().getBlockingStub().createDevice(grequest.build());
 	    IDevice response = (gresponse.hasDevice()) ? DeviceModelConverter.asApiDevice(gresponse.getDevice()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_DEVICE, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getCreateDeviceMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getCreateDeviceMethod(), t);
 	}
     }
 
@@ -1159,15 +1159,15 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDevice getDevice(UUID deviceId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_DEVICE);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetDeviceMethod());
 	    GGetDeviceRequest.Builder grequest = GGetDeviceRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(deviceId));
 	    GGetDeviceResponse gresponse = getGrpcChannel().getBlockingStub().getDevice(grequest.build());
 	    IDevice response = (gresponse.hasDevice()) ? DeviceModelConverter.asApiDevice(gresponse.getDevice()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetDeviceMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetDeviceMethod(), t);
 	}
     }
 
@@ -1178,15 +1178,15 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDevice getDeviceByToken(String token) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_DEVICE_BY_TOKEN);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetDeviceByTokenMethod());
 	    GGetDeviceByTokenRequest.Builder grequest = GGetDeviceByTokenRequest.newBuilder();
 	    grequest.setToken(token);
 	    GGetDeviceByTokenResponse gresponse = getGrpcChannel().getBlockingStub().getDeviceByToken(grequest.build());
 	    IDevice response = (gresponse.hasDevice()) ? DeviceModelConverter.asApiDevice(gresponse.getDevice()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_BY_TOKEN, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetDeviceByTokenMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_BY_TOKEN, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetDeviceByTokenMethod(), t);
 	}
     }
 
@@ -1197,16 +1197,16 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDevice updateDevice(UUID id, IDeviceCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_UPDATE_DEVICE);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getUpdateDeviceMethod());
 	    GUpdateDeviceRequest.Builder grequest = GUpdateDeviceRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setRequest(DeviceModelConverter.asGrpcDeviceCreateRequest(request));
 	    GUpdateDeviceResponse gresponse = getGrpcChannel().getBlockingStub().updateDevice(grequest.build());
 	    IDevice response = (gresponse.hasDevice()) ? DeviceModelConverter.asApiDevice(gresponse.getDevice()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_DEVICE, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getUpdateDeviceMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getUpdateDeviceMethod(), t);
 	}
     }
 
@@ -1220,15 +1220,15 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     public ISearchResults<IDevice> listDevices(boolean includeDeleted, IDeviceSearchCriteria criteria)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_DEVICES);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getListDevicesMethod());
 	    GListDevicesRequest.Builder grequest = GListDevicesRequest.newBuilder();
 	    grequest.setCriteria(DeviceModelConverter.asGrpcDeviceSearchCriteria(criteria));
 	    GListDevicesResponse gresponse = getGrpcChannel().getBlockingStub().listDevices(grequest.build());
 	    ISearchResults<IDevice> results = DeviceModelConverter.asApiDeviceSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_DEVICES, results);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getListDevicesMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICES, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getListDevicesMethod(), t);
 	}
     }
 
@@ -1240,17 +1240,17 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDevice createDeviceElementMapping(UUID id, IDeviceElementMapping mapping) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_CREATE_DEVICE_ELEMENT_MAPPING);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getCreateDeviceElementMappingMethod());
 	    GCreateDeviceElementMappingRequest.Builder grequest = GCreateDeviceElementMappingRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setMapping(DeviceModelConverter.asGrpcDeviceElementMapping(mapping));
 	    GCreateDeviceElementMappingResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .createDeviceElementMapping(grequest.build());
 	    IDevice response = (gresponse.hasDevice()) ? DeviceModelConverter.asApiDevice(gresponse.getDevice()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_DEVICE_ELEMENT_MAPPING, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getCreateDeviceElementMappingMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_ELEMENT_MAPPING, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getCreateDeviceElementMappingMethod(), t);
 	}
     }
 
@@ -1262,17 +1262,17 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDevice deleteDeviceElementMapping(UUID id, String path) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_DELETE_DEVICE_ELEMENT_MAPPING);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceElementMappingMethod());
 	    GDeleteDeviceElementMappingRequest.Builder grequest = GDeleteDeviceElementMappingRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setPath(path);
 	    GDeleteDeviceElementMappingResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .deleteDeviceElementMapping(grequest.build());
 	    IDevice response = (gresponse.hasDevice()) ? DeviceModelConverter.asApiDevice(gresponse.getDevice()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_DEVICE_ELEMENT_MAPPING, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getDeleteDeviceElementMappingMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_ELEMENT_MAPPING, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getDeleteDeviceElementMappingMethod(), t);
 	}
     }
 
@@ -1283,16 +1283,16 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDevice deleteDevice(UUID id, boolean force) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_DELETE_DEVICE);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceMethod());
 	    GDeleteDeviceRequest.Builder grequest = GDeleteDeviceRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setForce(force);
 	    GDeleteDeviceResponse gresponse = getGrpcChannel().getBlockingStub().deleteDevice(grequest.build());
 	    IDevice response = (gresponse.hasDevice()) ? DeviceModelConverter.asApiDevice(gresponse.getDevice()) : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_DEVICE, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getDeleteDeviceMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getDeleteDeviceMethod(), t);
 	}
     }
 
@@ -1305,7 +1305,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_CREATE_DEVICE_ASSIGNMENT);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getCreateDeviceAssignmentMethod());
 	    GCreateDeviceAssignmentRequest.Builder grequest = GCreateDeviceAssignmentRequest.newBuilder();
 	    grequest.setRequest(DeviceModelConverter.asGrpcDeviceAssignmentCreateRequest(request));
 	    GCreateDeviceAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -1313,10 +1313,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    IDeviceAssignment response = (gresponse.hasAssignment())
 		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_DEVICE_ASSIGNMENT, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getCreateDeviceAssignmentMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_ASSIGNMENT, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getCreateDeviceAssignmentMethod(), t);
 	}
     }
 
@@ -1328,7 +1328,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDeviceAssignment getDeviceAssignment(UUID id) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetDeviceAssignmentMethod());
 	    GGetDeviceAssignmentRequest.Builder grequest = GGetDeviceAssignmentRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    GGetDeviceAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -1336,10 +1336,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    IDeviceAssignment response = (gresponse.hasAssignment())
 		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetDeviceAssignmentMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetDeviceAssignmentMethod(), t);
 	}
     }
 
@@ -1352,7 +1352,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDeviceAssignment getDeviceAssignmentByToken(String token) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT_BY_TOKEN);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetDeviceAssignmentByTokenMethod());
 	    GGetDeviceAssignmentByTokenRequest.Builder grequest = GGetDeviceAssignmentByTokenRequest.newBuilder();
 	    grequest.setToken(token);
 	    GGetDeviceAssignmentByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -1360,10 +1360,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    IDeviceAssignment response = (gresponse.hasAssignment())
 		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT_BY_TOKEN, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetDeviceAssignmentByTokenMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_ASSIGNMENT_BY_TOKEN, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetDeviceAssignmentByTokenMethod(), t);
 	}
     }
 
@@ -1375,7 +1375,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDeviceAssignment getCurrentDeviceAssignment(UUID deviceId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_CURRENT_ASSIGNMENT_FOR_DEVICE);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetCurrentAssignmentForDeviceMethod());
 	    GGetCurrentAssignmentForDeviceRequest.Builder grequest = GGetCurrentAssignmentForDeviceRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(deviceId));
 	    GGetCurrentAssignmentForDeviceResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -1383,10 +1383,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    IDeviceAssignment response = (gresponse.hasAssignment())
 		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_CURRENT_ASSIGNMENT_FOR_DEVICE, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetCurrentAssignmentForDeviceMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_CURRENT_ASSIGNMENT_FOR_DEVICE,
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetCurrentAssignmentForDeviceMethod(),
 		    t);
 	}
     }
@@ -1399,7 +1399,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDeviceAssignment deleteDeviceAssignment(UUID id, boolean force) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_DELETE_DEVICE_ASSIGNMENT);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceAssignmentMethod());
 	    GDeleteDeviceAssignmentRequest.Builder grequest = GDeleteDeviceAssignmentRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setForce(force);
@@ -1408,10 +1408,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    IDeviceAssignment response = (gresponse.hasAssignment())
 		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_DEVICE_ASSIGNMENT, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getDeleteDeviceAssignmentMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_ASSIGNMENT, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getDeleteDeviceAssignmentMethod(), t);
 	}
     }
 
@@ -1424,7 +1424,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     public IDeviceAssignment updateDeviceAssignment(UUID id, IDeviceAssignmentCreateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getUpdateDeviceAssignmentMethod());
 	    GUpdateDeviceAssignmentRequest.Builder grequest = GUpdateDeviceAssignmentRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setRequest(DeviceModelConverter.asGrpcDeviceAssignmentCreateRequest(request));
@@ -1433,10 +1433,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    IDeviceAssignment response = (gresponse.hasAssignment())
 		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getUpdateDeviceAssignmentMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_ASSIGNMENT, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getUpdateDeviceAssignmentMethod(), t);
 	}
     }
 
@@ -1448,7 +1448,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDeviceAssignment endDeviceAssignment(UUID id) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_END_DEVICE_ASSIGNMENT);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getEndDeviceAssignmentMethod());
 	    GEndDeviceAssignmentRequest.Builder grequest = GEndDeviceAssignmentRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    GEndDeviceAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -1456,10 +1456,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    IDeviceAssignment response = (gresponse.hasAssignment())
 		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_END_DEVICE_ASSIGNMENT, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getEndDeviceAssignmentMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_END_DEVICE_ASSIGNMENT, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getEndDeviceAssignmentMethod(), t);
 	}
     }
 
@@ -1471,17 +1471,17 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     public ISearchResults<IDeviceAssignment> listDeviceAssignments(IDeviceAssignmentSearchCriteria criteria)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_DEVICE_ASSIGNMENTS);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getListDeviceAssignmentsMethod());
 	    GListDeviceAssignmentsRequest.Builder grequest = GListDeviceAssignmentsRequest.newBuilder();
 	    grequest.setCriteria(DeviceModelConverter.asGrpcDeviceAssignmentSearchCriteria(criteria));
 	    GListDeviceAssignmentsResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .listDeviceAssignments(grequest.build());
 	    ISearchResults<IDeviceAssignment> response = DeviceModelConverter
 		    .asApiDeviceAssignmentSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_DEVICE_ASSIGNMENTS, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getListDeviceAssignmentsMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_ASSIGNMENTS, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getListDeviceAssignmentsMethod(), t);
 	}
     }
 
@@ -1494,7 +1494,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     public IDeviceStream createDeviceStream(UUID assignmentId, IDeviceStreamCreateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_CREATE_DEVICE_STREAM);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getCreateDeviceStreamMethod());
 	    GCreateDeviceStreamRequest.Builder grequest = GCreateDeviceStreamRequest.newBuilder();
 	    grequest.setAssignmentId(CommonModelConverter.asGrpcUuid(assignmentId));
 	    grequest.setRequest(DeviceModelConverter.asGrpcDeviceStreamCreateRequest(request));
@@ -1503,10 +1503,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    IDeviceStream response = (gresponse.hasDeviceStream())
 		    ? DeviceModelConverter.asApiDeviceStream(gresponse.getDeviceStream())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_DEVICE_STREAM, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getCreateDeviceStreamMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_STREAM, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getCreateDeviceStreamMethod(), t);
 	}
     }
 
@@ -1518,7 +1518,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDeviceStream getDeviceStream(UUID assignmentId, String streamId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_DEVICE_STREAM_BY_STREAM_ID);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetDeviceStreamByStreamIdMethod());
 	    GGetDeviceStreamByStreamIdRequest.Builder grequest = GGetDeviceStreamByStreamIdRequest.newBuilder();
 	    grequest.setAssignmentId(CommonModelConverter.asGrpcUuid(assignmentId));
 	    grequest.setStreamId(streamId);
@@ -1527,10 +1527,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    IDeviceStream response = (gresponse.hasDeviceStream())
 		    ? DeviceModelConverter.asApiDeviceStream(gresponse.getDeviceStream())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_STREAM_BY_STREAM_ID, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetDeviceStreamByStreamIdMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_STREAM_BY_STREAM_ID, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetDeviceStreamByStreamIdMethod(), t);
 	}
     }
 
@@ -1543,7 +1543,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     public ISearchResults<IDeviceStream> listDeviceStreams(UUID assignmentId, ISearchCriteria criteria)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_DEVICE_STREAMS);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getListDeviceStreamsMethod());
 	    GListDeviceStreamsRequest.Builder grequest = GListDeviceStreamsRequest.newBuilder();
 	    grequest.setAssignmentId(CommonModelConverter.asGrpcUuid(assignmentId));
 	    grequest.setCriteria(DeviceModelConverter.asApiDeviceStreamSearchCriteria(criteria));
@@ -1551,10 +1551,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 		    .listDeviceStreams(grequest.build());
 	    ISearchResults<IDeviceStream> results = DeviceModelConverter
 		    .asApiDeviceStreamSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_DEVICE_STREAMS, results);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getListDeviceStreamsMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_STREAMS, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getListDeviceStreamsMethod(), t);
 	}
     }
 
@@ -1567,17 +1567,17 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDeviceGroup createDeviceGroup(IDeviceGroupCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_CREATE_DEVICE_GROUP);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getCreateDeviceGroupMethod());
 	    GCreateDeviceGroupRequest.Builder grequest = GCreateDeviceGroupRequest.newBuilder();
 	    grequest.setRequest(DeviceModelConverter.asGrpcDeviceGroupCreateRequest(request));
 	    GCreateDeviceGroupResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .createDeviceGroup(grequest.build());
 	    IDeviceGroup response = (gresponse.hasGroup()) ? DeviceModelConverter.asApiDeviceGroup(gresponse.getGroup())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_CREATE_DEVICE_GROUP, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getCreateDeviceGroupMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_CREATE_DEVICE_GROUP, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getCreateDeviceGroupMethod(), t);
 	}
     }
 
@@ -1588,16 +1588,16 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDeviceGroup getDeviceGroup(UUID id) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_DEVICE_GROUP);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetDeviceGroupMethod());
 	    GGetDeviceGroupRequest.Builder grequest = GGetDeviceGroupRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    GGetDeviceGroupResponse gresponse = getGrpcChannel().getBlockingStub().getDeviceGroup(grequest.build());
 	    IDeviceGroup response = (gresponse.hasGroup()) ? DeviceModelConverter.asApiDeviceGroup(gresponse.getGroup())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_GROUP, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetDeviceGroupMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_GROUP, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetDeviceGroupMethod(), t);
 	}
     }
 
@@ -1609,17 +1609,17 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDeviceGroup getDeviceGroupByToken(String token) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_GET_DEVICE_GROUP_BY_TOKEN);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetDeviceGroupByTokenMethod());
 	    GGetDeviceGroupByTokenRequest.Builder grequest = GGetDeviceGroupByTokenRequest.newBuilder();
 	    grequest.setToken(token);
 	    GGetDeviceGroupByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getDeviceGroupByToken(grequest.build());
 	    IDeviceGroup response = (gresponse.hasGroup()) ? DeviceModelConverter.asApiDeviceGroup(gresponse.getGroup())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_GET_DEVICE_GROUP_BY_TOKEN, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetDeviceGroupByTokenMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_GET_DEVICE_GROUP_BY_TOKEN, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetDeviceGroupByTokenMethod(), t);
 	}
     }
 
@@ -1631,7 +1631,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDeviceGroup updateDeviceGroup(UUID id, IDeviceGroupCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_UPDATE_DEVICE_GROUP);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getUpdateDeviceGroupMethod());
 	    GUpdateDeviceGroupRequest.Builder grequest = GUpdateDeviceGroupRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setRequest(DeviceModelConverter.asGrpcDeviceGroupCreateRequest(request));
@@ -1639,10 +1639,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 		    .updateDeviceGroup(grequest.build());
 	    IDeviceGroup response = (gresponse.hasGroup()) ? DeviceModelConverter.asApiDeviceGroup(gresponse.getGroup())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_GROUP, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getUpdateDeviceGroupMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_UPDATE_DEVICE_GROUP, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getUpdateDeviceGroupMethod(), t);
 	}
     }
 
@@ -1656,16 +1656,16 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     public ISearchResults<IDeviceGroup> listDeviceGroups(boolean includeDeleted, ISearchCriteria criteria)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUPS);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getListDeviceGroupsMethod());
 	    GListDeviceGroupsRequest.Builder grequest = GListDeviceGroupsRequest.newBuilder();
 	    grequest.setCriteria(DeviceModelConverter.asApiDeviceGroupSearchCriteria(criteria));
 	    GListDeviceGroupsResponse gresponse = getGrpcChannel().getBlockingStub().listDeviceGroups(grequest.build());
 	    ISearchResults<IDeviceGroup> results = DeviceModelConverter
 		    .asApiDeviceGroupSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUPS, results);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getListDeviceGroupsMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUPS, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getListDeviceGroupsMethod(), t);
 	}
     }
 
@@ -1680,7 +1680,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     public ISearchResults<IDeviceGroup> listDeviceGroupsWithRole(String role, boolean includeDeleted,
 	    ISearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUPS_WITH_ROLE);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getListDeviceGroupsWithRoleMethod());
 	    GListDeviceGroupsWithRoleRequest.Builder grequest = GListDeviceGroupsWithRoleRequest.newBuilder();
 	    grequest.setCriteria(
 		    DeviceModelConverter.asApiDeviceGroupsWithRoleSearchCriteria(role, includeDeleted, criteria));
@@ -1688,10 +1688,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 		    .listDeviceGroupsWithRole(grequest.build());
 	    ISearchResults<IDeviceGroup> results = DeviceModelConverter
 		    .asApiDeviceGroupSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUPS_WITH_ROLE, results);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getListDeviceGroupsWithRoleMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUPS_WITH_ROLE, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getListDeviceGroupsWithRoleMethod(), t);
 	}
     }
 
@@ -1703,7 +1703,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public IDeviceGroup deleteDeviceGroup(UUID id, boolean force) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_DELETE_DEVICE_GROUP);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceGroupMethod());
 	    GDeleteDeviceGroupRequest.Builder grequest = GDeleteDeviceGroupRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setForce(force);
@@ -1711,10 +1711,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 		    .deleteDeviceGroup(grequest.build());
 	    IDeviceGroup response = (gresponse.hasGroup()) ? DeviceModelConverter.asApiDeviceGroup(gresponse.getGroup())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_DELETE_DEVICE_GROUP, response);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getDeleteDeviceGroupMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_DELETE_DEVICE_GROUP, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getDeleteDeviceGroupMethod(), t);
 	}
     }
 
@@ -1727,7 +1727,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     public List<IDeviceGroupElement> addDeviceGroupElements(UUID groupId,
 	    List<IDeviceGroupElementCreateRequest> elements, boolean ignoreDuplicates) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_ADD_DEVICE_GROUP_ELEMENTS);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getAddDeviceGroupElementsMethod());
 	    GAddDeviceGroupElementsRequest.Builder grequest = GAddDeviceGroupElementsRequest.newBuilder();
 	    grequest.setGroupId(CommonModelConverter.asGrpcUuid(groupId));
 	    grequest.addAllRequests(DeviceModelConverter.asGrpcDeviceGroupElementCreateRequests(elements));
@@ -1736,10 +1736,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 		    .addDeviceGroupElements(grequest.build());
 	    List<IDeviceGroupElement> results = DeviceModelConverter
 		    .asApiDeviceGroupElements(gresponse.getElementsList());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_ADD_DEVICE_GROUP_ELEMENTS, results);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getAddDeviceGroupElementsMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_ADD_DEVICE_GROUP_ELEMENTS, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getAddDeviceGroupElementsMethod(), t);
 	}
     }
 
@@ -1751,17 +1751,17 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     @Override
     public List<IDeviceGroupElement> removeDeviceGroupElements(List<UUID> elements) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_REMOVE_DEVICE_GROUP_ELEMENTS);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getRemoveDeviceGroupElementsMethod());
 	    GRemoveDeviceGroupElementsRequest.Builder grequest = GRemoveDeviceGroupElementsRequest.newBuilder();
 	    grequest.addAllElementIds(CommonModelConverter.asGrpcUuids(elements));
 	    GRemoveDeviceGroupElementsResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .removeDeviceGroupElements(grequest.build());
 	    List<IDeviceGroupElement> results = DeviceModelConverter
 		    .asApiDeviceGroupElements(gresponse.getElementsList());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_REMOVE_DEVICE_GROUP_ELEMENTS, results);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getRemoveDeviceGroupElementsMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_REMOVE_DEVICE_GROUP_ELEMENTS, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getRemoveDeviceGroupElementsMethod(), t);
 	}
     }
 
@@ -1774,7 +1774,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     public ISearchResults<IDeviceGroupElement> listDeviceGroupElements(UUID groupId, ISearchCriteria criteria)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUP_ELEMENTS);
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getListDeviceGroupElementsMethod());
 	    GListDeviceGroupElementsRequest.Builder grequest = GListDeviceGroupElementsRequest.newBuilder();
 	    grequest.setGroupId(CommonModelConverter.asGrpcUuid(groupId));
 	    grequest.setCriteria(DeviceModelConverter.asApiDeviceGroupElementSearchCriteria(criteria));
@@ -1782,10 +1782,10 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 		    .listDeviceGroupElements(grequest.build());
 	    ISearchResults<IDeviceGroupElement> results = DeviceModelConverter
 		    .asApiDeviceGroupElementsSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUP_ELEMENTS, results);
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getListDeviceGroupElementsMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.METHOD_LIST_DEVICE_GROUP_ELEMENTS, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getListDeviceGroupElementsMethod(), t);
 	}
     }
 }

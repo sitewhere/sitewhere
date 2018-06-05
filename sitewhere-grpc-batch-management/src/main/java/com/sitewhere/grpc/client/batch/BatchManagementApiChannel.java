@@ -77,7 +77,7 @@ public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManage
     @Override
     public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, BatchManagementGrpc.METHOD_CREATE_BATCH_OPERATION);
+	    GrpcUtils.handleClientMethodEntry(this, BatchManagementGrpc.getCreateBatchOperationMethod());
 	    GCreateBatchOperationRequest.Builder grequest = GCreateBatchOperationRequest.newBuilder();
 	    grequest.setRequest(BatchModelConverter.asGrpcBatchOperationCreateRequest(request));
 	    GCreateBatchOperationResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -85,10 +85,10 @@ public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManage
 	    IBatchOperation response = (gresponse.hasBatchOperation())
 		    ? BatchModelConverter.asApiBatchOperation(gresponse.getBatchOperation())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(BatchManagementGrpc.METHOD_CREATE_BATCH_OPERATION, response);
+	    GrpcUtils.logClientMethodResponse(BatchManagementGrpc.getCreateBatchOperationMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(BatchManagementGrpc.METHOD_CREATE_BATCH_OPERATION, t);
+	    throw GrpcUtils.handleClientMethodException(BatchManagementGrpc.getCreateBatchOperationMethod(), t);
 	}
     }
 
@@ -101,7 +101,7 @@ public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManage
     public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, BatchManagementGrpc.METHOD_CREATE_BATCH_COMMAND_INVOCATION);
+	    GrpcUtils.handleClientMethodEntry(this, BatchManagementGrpc.getCreateBatchCommandInvocationMethod());
 	    GCreateBatchCommandInvocationRequest.Builder grequest = GCreateBatchCommandInvocationRequest.newBuilder();
 	    grequest.setRequest(BatchModelConverter.asGrpcBatchCommandInvocationRequest(request));
 	    GCreateBatchCommandInvocationResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -109,10 +109,10 @@ public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManage
 	    IBatchOperation response = (gresponse.hasBatchOperation())
 		    ? BatchModelConverter.asApiBatchOperation(gresponse.getBatchOperation())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(BatchManagementGrpc.METHOD_CREATE_BATCH_COMMAND_INVOCATION, response);
+	    GrpcUtils.logClientMethodResponse(BatchManagementGrpc.getCreateBatchCommandInvocationMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(BatchManagementGrpc.METHOD_CREATE_BATCH_COMMAND_INVOCATION, t);
+	    throw GrpcUtils.handleClientMethodException(BatchManagementGrpc.getCreateBatchCommandInvocationMethod(), t);
 	}
     }
 
@@ -125,7 +125,7 @@ public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManage
     public IBatchOperation updateBatchOperation(UUID batchOperationId, IBatchOperationUpdateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, BatchManagementGrpc.METHOD_UPDATE_BATCH_OPERATION);
+	    GrpcUtils.handleClientMethodEntry(this, BatchManagementGrpc.getUpdateBatchOperationMethod());
 	    GUpdateBatchOperationRequest.Builder grequest = GUpdateBatchOperationRequest.newBuilder();
 	    grequest.setBatchOperationId(CommonModelConverter.asGrpcUuid(batchOperationId));
 	    grequest.setRequest(BatchModelConverter.asGrpcBatchOperationUpdateRequest(request));
@@ -134,10 +134,10 @@ public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManage
 	    IBatchOperation response = (gresponse.hasBatchOperation())
 		    ? BatchModelConverter.asApiBatchOperation(gresponse.getBatchOperation())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(BatchManagementGrpc.METHOD_UPDATE_BATCH_OPERATION, response);
+	    GrpcUtils.logClientMethodResponse(BatchManagementGrpc.getUpdateBatchOperationMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(BatchManagementGrpc.METHOD_UPDATE_BATCH_OPERATION, t);
+	    throw GrpcUtils.handleClientMethodException(BatchManagementGrpc.getUpdateBatchOperationMethod(), t);
 	}
     }
 
@@ -148,7 +148,7 @@ public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManage
     @Override
     public IBatchOperation getBatchOperation(UUID batchOperationId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, BatchManagementGrpc.METHOD_GET_BATCH_OPERATION);
+	    GrpcUtils.handleClientMethodEntry(this, BatchManagementGrpc.getGetBatchOperationMethod());
 	    GGetBatchOperationRequest.Builder grequest = GGetBatchOperationRequest.newBuilder();
 	    grequest.setBatchOperationId(CommonModelConverter.asGrpcUuid(batchOperationId));
 	    GGetBatchOperationResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -156,10 +156,10 @@ public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManage
 	    IBatchOperation response = (gresponse.hasBatchOperation())
 		    ? BatchModelConverter.asApiBatchOperation(gresponse.getBatchOperation())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(BatchManagementGrpc.METHOD_GET_BATCH_OPERATION, response);
+	    GrpcUtils.logClientMethodResponse(BatchManagementGrpc.getGetBatchOperationMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(BatchManagementGrpc.METHOD_GET_BATCH_OPERATION, t);
+	    throw GrpcUtils.handleClientMethodException(BatchManagementGrpc.getGetBatchOperationMethod(), t);
 	}
     }
 
@@ -171,7 +171,7 @@ public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManage
     @Override
     public IBatchOperation getBatchOperationByToken(String token) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, BatchManagementGrpc.METHOD_GET_BATCH_OPERATION_BY_TOKEN);
+	    GrpcUtils.handleClientMethodEntry(this, BatchManagementGrpc.getGetBatchOperationByTokenMethod());
 	    GGetBatchOperationByTokenRequest.Builder grequest = GGetBatchOperationByTokenRequest.newBuilder();
 	    grequest.setToken(token);
 	    GGetBatchOperationByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
@@ -179,10 +179,10 @@ public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManage
 	    IBatchOperation response = (gresponse.hasBatchOperation())
 		    ? BatchModelConverter.asApiBatchOperation(gresponse.getBatchOperation())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(BatchManagementGrpc.METHOD_GET_BATCH_OPERATION_BY_TOKEN, response);
+	    GrpcUtils.logClientMethodResponse(BatchManagementGrpc.getGetBatchOperationByTokenMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(BatchManagementGrpc.METHOD_GET_BATCH_OPERATION_BY_TOKEN, t);
+	    throw GrpcUtils.handleClientMethodException(BatchManagementGrpc.getGetBatchOperationByTokenMethod(), t);
 	}
     }
 
@@ -195,17 +195,17 @@ public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManage
     public ISearchResults<IBatchOperation> listBatchOperations(IBatchOperationSearchCriteria criteria)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, BatchManagementGrpc.METHOD_LIST_BATCH_OPERATIONS);
+	    GrpcUtils.handleClientMethodEntry(this, BatchManagementGrpc.getListBatchOperationsMethod());
 	    GListBatchOperationsRequest.Builder grequest = GListBatchOperationsRequest.newBuilder();
 	    grequest.setCriteria(BatchModelConverter.asGrpcBatchOperationSearchCriteria(criteria));
 	    GListBatchOperationsResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .listBatchOperations(grequest.build());
 	    ISearchResults<IBatchOperation> results = BatchModelConverter
 		    .asApiBatchOperationSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(BatchManagementGrpc.METHOD_LIST_BATCH_OPERATIONS, results);
+	    GrpcUtils.logClientMethodResponse(BatchManagementGrpc.getListBatchOperationsMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(BatchManagementGrpc.METHOD_LIST_BATCH_OPERATIONS, t);
+	    throw GrpcUtils.handleClientMethodException(BatchManagementGrpc.getListBatchOperationsMethod(), t);
 	}
     }
 
@@ -217,7 +217,7 @@ public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManage
     @Override
     public IBatchOperation deleteBatchOperation(UUID batchOperationId, boolean force) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, BatchManagementGrpc.METHOD_DELETE_BATCH_OPERATION);
+	    GrpcUtils.handleClientMethodEntry(this, BatchManagementGrpc.getDeleteBatchOperationMethod());
 	    GDeleteBatchOperationRequest.Builder grequest = GDeleteBatchOperationRequest.newBuilder();
 	    grequest.setBatchOperationId(CommonModelConverter.asGrpcUuid(batchOperationId));
 	    grequest.setForce(force);
@@ -226,10 +226,10 @@ public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManage
 	    IBatchOperation response = (gresponse.hasBatchOperation())
 		    ? BatchModelConverter.asApiBatchOperation(gresponse.getBatchOperation())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(BatchManagementGrpc.METHOD_DELETE_BATCH_OPERATION, response);
+	    GrpcUtils.logClientMethodResponse(BatchManagementGrpc.getDeleteBatchOperationMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(BatchManagementGrpc.METHOD_DELETE_BATCH_OPERATION, t);
+	    throw GrpcUtils.handleClientMethodException(BatchManagementGrpc.getDeleteBatchOperationMethod(), t);
 	}
     }
 
@@ -242,7 +242,7 @@ public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManage
     public ISearchResults<IBatchElement> listBatchElements(UUID batchOperationId, IBatchElementSearchCriteria criteria)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, BatchManagementGrpc.METHOD_LIST_BATCH_OPERATION_ELEMENTS);
+	    GrpcUtils.handleClientMethodEntry(this, BatchManagementGrpc.getListBatchOperationElementsMethod());
 	    GListBatchOperationElementsRequest.Builder grequest = GListBatchOperationElementsRequest.newBuilder();
 	    grequest.setBatchOperationId(CommonModelConverter.asGrpcUuid(batchOperationId));
 	    grequest.setCriteria(BatchModelConverter.asGrpcBatchElementSearchCriteria(criteria));
@@ -250,10 +250,10 @@ public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManage
 		    .listBatchOperationElements(grequest.build());
 	    ISearchResults<IBatchElement> results = BatchModelConverter
 		    .asApiBatchElementSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(BatchManagementGrpc.METHOD_LIST_BATCH_OPERATION_ELEMENTS, results);
+	    GrpcUtils.logClientMethodResponse(BatchManagementGrpc.getListBatchOperationElementsMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(BatchManagementGrpc.METHOD_LIST_BATCH_OPERATION_ELEMENTS, t);
+	    throw GrpcUtils.handleClientMethodException(BatchManagementGrpc.getListBatchOperationElementsMethod(), t);
 	}
     }
 
@@ -266,7 +266,7 @@ public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManage
     public IBatchElement updateBatchElement(UUID elementId, IBatchElementUpdateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, BatchManagementGrpc.METHOD_UPDATE_BATCH_OPERATION_ELEMENT);
+	    GrpcUtils.handleClientMethodEntry(this, BatchManagementGrpc.getUpdateBatchOperationElementMethod());
 	    GUpdateBatchOperationElementRequest.Builder grequest = GUpdateBatchOperationElementRequest.newBuilder();
 	    grequest.setElementId(CommonModelConverter.asGrpcUuid(elementId));
 	    grequest.setRequest(BatchModelConverter.asGrpcBatchElementUpdateRequest(request));
@@ -275,10 +275,10 @@ public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManage
 	    IBatchElement response = (gresponse.hasElement())
 		    ? BatchModelConverter.asApiBatchElement(gresponse.getElement())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(BatchManagementGrpc.METHOD_UPDATE_BATCH_OPERATION_ELEMENT, response);
+	    GrpcUtils.logClientMethodResponse(BatchManagementGrpc.getUpdateBatchOperationElementMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(BatchManagementGrpc.METHOD_UPDATE_BATCH_OPERATION_ELEMENT, t);
+	    throw GrpcUtils.handleClientMethodException(BatchManagementGrpc.getUpdateBatchOperationElementMethod(), t);
 	}
     }
 }

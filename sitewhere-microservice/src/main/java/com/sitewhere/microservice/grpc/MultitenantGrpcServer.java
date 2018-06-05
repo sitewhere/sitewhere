@@ -21,7 +21,7 @@ import io.grpc.ServerBuilder;
 public class MultitenantGrpcServer extends GrpcServer {
 
     /** Interceptor for tenant token */
-    private TenantTokenServerInterceptor tenant;
+    private TenantTokenServerInterceptor tenantTokenInterceptor;
 
     public MultitenantGrpcServer(BindableService serviceImplementation, int port) {
 	super(serviceImplementation, port);
@@ -33,13 +33,22 @@ public class MultitenantGrpcServer extends GrpcServer {
      * @return
      */
     protected Server buildServer() {
-	this.tenant = new TenantTokenServerInterceptor(getMicroservice());
+	this.tenantTokenInterceptor = new TenantTokenServerInterceptor(getMicroservice());
 	ServerBuilder<?> builder = ServerBuilder.forPort(getPort());
-	builder.addService(getServiceImplementation()).intercept(getJwtInterceptor()).intercept(tenant);
+	builder.addService(getServiceImplementation()).intercept(getTenantTokenInterceptor())
+		.intercept(getJwtInterceptor());
 	builder.addService(new MultitenantManagementImpl((IMultitenantMicroservice<?, ?>) getMicroservice()));
 	if (isUseTracingInterceptor()) {
 	    builder.intercept(getTracingInterceptor());
 	}
 	return builder.build();
+    }
+
+    protected TenantTokenServerInterceptor getTenantTokenInterceptor() {
+	return tenantTokenInterceptor;
+    }
+
+    protected void setTenantTokenInterceptor(TenantTokenServerInterceptor tenantTokenInterceptor) {
+	this.tenantTokenInterceptor = tenantTokenInterceptor;
     }
 }

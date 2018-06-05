@@ -7,7 +7,9 @@
  */
 package com.sitewhere.devicestate.grpc;
 
+import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.grpc.client.GrpcUtils;
+import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
 import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.grpc.model.converter.DeviceStateModelConverter;
 import com.sitewhere.grpc.service.DeviceStateGrpc;
@@ -24,6 +26,7 @@ import com.sitewhere.grpc.service.GUpdateDeviceStateResponse;
 import com.sitewhere.spi.device.state.IDeviceState;
 import com.sitewhere.spi.device.state.IDeviceStateManagement;
 import com.sitewhere.spi.device.state.request.IDeviceStateCreateRequest;
+import com.sitewhere.spi.microservice.IMicroservice;
 
 import io.grpc.stub.StreamObserver;
 
@@ -32,12 +35,16 @@ import io.grpc.stub.StreamObserver;
  * 
  * @author Derek
  */
-public class DeviceStateImpl extends DeviceStateGrpc.DeviceStateImplBase {
+public class DeviceStateImpl extends DeviceStateGrpc.DeviceStateImplBase implements IGrpcApiImplementation {
+
+    /** Parent microservice */
+    private IDeviceStateMicroservice microservice;
 
     /** Device state management persistence */
     private IDeviceStateManagement deviceStateManagement;
 
-    public DeviceStateImpl(IDeviceStateManagement deviceStateManagement) {
+    public DeviceStateImpl(IDeviceStateMicroservice microservice, IDeviceStateManagement deviceStateManagement) {
+	this.microservice = microservice;
 	this.deviceStateManagement = deviceStateManagement;
     }
 
@@ -50,7 +57,7 @@ public class DeviceStateImpl extends DeviceStateGrpc.DeviceStateImplBase {
     public void createDeviceState(GCreateDeviceStateRequest request,
 	    StreamObserver<GCreateDeviceStateResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceStateGrpc.METHOD_CREATE_DEVICE_STATE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceStateGrpc.getCreateDeviceStateMethod());
 	    IDeviceStateCreateRequest apiRequest = DeviceStateModelConverter
 		    .asApiDeviceStateCreateRequest(request.getRequest());
 	    IDeviceState apiResult = getDeviceStateManagement().createDeviceState(apiRequest);
@@ -59,7 +66,9 @@ public class DeviceStateImpl extends DeviceStateGrpc.DeviceStateImplBase {
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceStateGrpc.METHOD_CREATE_DEVICE_STATE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceStateGrpc.getCreateDeviceStateMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceStateGrpc.getCreateDeviceStateMethod());
 	}
     }
 
@@ -73,7 +82,7 @@ public class DeviceStateImpl extends DeviceStateGrpc.DeviceStateImplBase {
     public void getDeviceState(GGetDeviceStateRequest request,
 	    StreamObserver<GGetDeviceStateResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceStateGrpc.METHOD_GET_DEVICE_STATE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceStateGrpc.getGetDeviceStateMethod());
 	    IDeviceState apiResult = getDeviceStateManagement()
 		    .getDeviceState(CommonModelConverter.asApiUuid(request.getId()));
 	    GGetDeviceStateResponse.Builder response = GGetDeviceStateResponse.newBuilder();
@@ -83,7 +92,9 @@ public class DeviceStateImpl extends DeviceStateGrpc.DeviceStateImplBase {
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceStateGrpc.METHOD_GET_DEVICE_STATE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceStateGrpc.getGetDeviceStateMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceStateGrpc.getGetDeviceStateMethod());
 	}
     }
 
@@ -96,7 +107,7 @@ public class DeviceStateImpl extends DeviceStateGrpc.DeviceStateImplBase {
     public void getDeviceStateByDeviceAssignmentId(GGetDeviceStateByDeviceAssignmentIdRequest request,
 	    StreamObserver<GGetDeviceStateByDeviceAssignmentIdResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceStateGrpc.METHOD_GET_DEVICE_STATE_BY_DEVICE_ASSIGNMENT_ID);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceStateGrpc.getGetDeviceStateByDeviceAssignmentIdMethod());
 	    IDeviceState apiResult = getDeviceStateManagement().getDeviceStateByDeviceAssignmentId(
 		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()));
 	    GGetDeviceStateByDeviceAssignmentIdResponse.Builder response = GGetDeviceStateByDeviceAssignmentIdResponse
@@ -107,8 +118,10 @@ public class DeviceStateImpl extends DeviceStateGrpc.DeviceStateImplBase {
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceStateGrpc.METHOD_GET_DEVICE_STATE_BY_DEVICE_ASSIGNMENT_ID, e,
+	    GrpcUtils.handleServerMethodException(DeviceStateGrpc.getGetDeviceStateByDeviceAssignmentIdMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceStateGrpc.getGetDeviceStateByDeviceAssignmentIdMethod());
 	}
     }
 
@@ -121,7 +134,7 @@ public class DeviceStateImpl extends DeviceStateGrpc.DeviceStateImplBase {
     public void updateDeviceState(GUpdateDeviceStateRequest request,
 	    StreamObserver<GUpdateDeviceStateResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceStateGrpc.METHOD_UPDATE_DEVICE_STATE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceStateGrpc.getUpdateDeviceStateMethod());
 	    IDeviceStateCreateRequest update = DeviceStateModelConverter
 		    .asApiDeviceStateCreateRequest(request.getRequest());
 	    IDeviceState apiResult = getDeviceStateManagement()
@@ -133,7 +146,9 @@ public class DeviceStateImpl extends DeviceStateGrpc.DeviceStateImplBase {
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceStateGrpc.METHOD_UPDATE_DEVICE_STATE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceStateGrpc.getUpdateDeviceStateMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceStateGrpc.getUpdateDeviceStateMethod());
 	}
     }
 
@@ -146,7 +161,7 @@ public class DeviceStateImpl extends DeviceStateGrpc.DeviceStateImplBase {
     public void deleteDeviceState(GDeleteDeviceStateRequest request,
 	    StreamObserver<GDeleteDeviceStateResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceStateGrpc.METHOD_DELETE_DEVICE_STATE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceStateGrpc.getDeleteDeviceStateMethod());
 	    IDeviceState apiResult = getDeviceStateManagement()
 		    .deleteDeviceState(CommonModelConverter.asApiUuid(request.getId()), request.getForce());
 	    GDeleteDeviceStateResponse.Builder response = GDeleteDeviceStateResponse.newBuilder();
@@ -154,15 +169,22 @@ public class DeviceStateImpl extends DeviceStateGrpc.DeviceStateImplBase {
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceStateGrpc.METHOD_DELETE_DEVICE_STATE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceStateGrpc.getDeleteDeviceStateMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceStateGrpc.getDeleteDeviceStateMethod());
 	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation#getMicroservice()
+     */
+    @Override
+    public IMicroservice<?> getMicroservice() {
+	return microservice;
     }
 
     protected IDeviceStateManagement getDeviceStateManagement() {
 	return deviceStateManagement;
-    }
-
-    protected void setDeviceStateManagement(IDeviceStateManagement deviceStateManagement) {
-	this.deviceStateManagement = deviceStateManagement;
     }
 }

@@ -118,19 +118,19 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
     public IDeviceEventBatchResponse addDeviceEventBatch(UUID deviceAssignmentId, IDeviceEventBatch batch)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceEventManagementGrpc.METHOD_ADD_DEVICE_EVENT_BATCH,
+	    GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getAddDeviceEventBatchMethod(),
 		    DebugParameter.create("Assignment Id", deviceAssignmentId), DebugParameter.create("Batch", batch));
 	    GAddDeviceEventBatchRequest.Builder grequest = GAddDeviceEventBatchRequest.newBuilder();
 	    grequest.setDeviceAssignmentId(CommonModelConverter.asGrpcUuid(deviceAssignmentId));
 	    grequest.setRequest(EventModelConverter.asGrpcDeviceEventBatch(batch));
 	    GAddDeviceEventBatchResponse gresponse = getGrpcChannel().getBlockingStub().addDeviceEventBatch(GrpcUtils
-		    .logGrpcClientRequest(DeviceEventManagementGrpc.METHOD_ADD_DEVICE_EVENT_BATCH, grequest.build()));
+		    .logGrpcClientRequest(DeviceEventManagementGrpc.getAddDeviceEventBatchMethod(), grequest.build()));
 	    IDeviceEventBatchResponse response = EventModelConverter
 		    .asApiDeviceEventBatchResponse(gresponse.getResponse());
-	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_ADD_DEVICE_EVENT_BATCH, response);
+	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.getAddDeviceEventBatchMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.METHOD_ADD_DEVICE_EVENT_BATCH, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.getAddDeviceEventBatchMethod(), t);
 	}
     }
 
@@ -142,20 +142,20 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
     @Override
     public IDeviceEvent getDeviceEventById(UUID deviceId, UUID eventId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceEventManagementGrpc.METHOD_GET_DEVICE_EVENT_BY_ID,
+	    GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getGetDeviceEventByIdMethod(),
 		    DebugParameter.create("Device Id", deviceId), DebugParameter.create("Event Id", eventId));
 	    GGetDeviceEventByIdRequest.Builder grequest = GGetDeviceEventByIdRequest.newBuilder();
 	    grequest.setDeviceId(CommonModelConverter.asGrpcUuid(deviceId));
 	    grequest.setEventId(CommonModelConverter.asGrpcUuid(eventId));
 	    GGetDeviceEventByIdResponse gresponse = getGrpcChannel().getBlockingStub().getDeviceEventById(GrpcUtils
-		    .logGrpcClientRequest(DeviceEventManagementGrpc.METHOD_GET_DEVICE_EVENT_BY_ID, grequest.build()));
+		    .logGrpcClientRequest(DeviceEventManagementGrpc.getGetDeviceEventByIdMethod(), grequest.build()));
 	    IDeviceEvent response = (gresponse.hasEvent())
 		    ? EventModelConverter.asApiGenericDeviceEvent(gresponse.getEvent())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_GET_DEVICE_EVENT_BY_ID, response);
+	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.getGetDeviceEventByIdMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.METHOD_GET_DEVICE_EVENT_BY_ID, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.getGetDeviceEventByIdMethod(), t);
 	}
     }
 
@@ -166,22 +166,22 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
     @Override
     public IDeviceEvent getDeviceEventByAlternateId(UUID deviceId, String alternateId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceEventManagementGrpc.METHOD_GET_DEVICE_EVENT_BY_ALTERNATE_ID,
+	    GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getGetDeviceEventByAlternateIdMethod(),
 		    DebugParameter.create("Alternate Id", alternateId));
 	    GGetDeviceEventByAlternateIdRequest.Builder grequest = GGetDeviceEventByAlternateIdRequest.newBuilder();
 	    grequest.setAlternateId(alternateId);
 	    GGetDeviceEventByAlternateIdResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getDeviceEventByAlternateId(GrpcUtils.logGrpcClientRequest(
-			    DeviceEventManagementGrpc.METHOD_GET_DEVICE_EVENT_BY_ALTERNATE_ID, grequest.build()));
+			    DeviceEventManagementGrpc.getGetDeviceEventByAlternateIdMethod(), grequest.build()));
 	    IDeviceEvent response = (gresponse.hasEvent())
 		    ? EventModelConverter.asApiGenericDeviceEvent(gresponse.getEvent())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_GET_DEVICE_EVENT_BY_ALTERNATE_ID,
+	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.getGetDeviceEventByAlternateIdMethod(),
 		    response);
 	    return response;
 	} catch (Throwable t) {
 	    throw GrpcUtils
-		    .handleClientMethodException(DeviceEventManagementGrpc.METHOD_GET_DEVICE_EVENT_BY_ALTERNATE_ID, t);
+		    .handleClientMethodException(DeviceEventManagementGrpc.getGetDeviceEventByAlternateIdMethod(), t);
 	}
     }
 
@@ -191,8 +191,8 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
      */
     @Override
     public Processor<IDeviceAssignmentEventCreateRequest, IEventStreamAck> streamDeviceAssignmentCreateEvents() {
-	GrpcUtils.logClientMethodEntry(this,
-		DeviceEventManagementGrpc.METHOD_STREAM_DEVICE_ASSIGNMENT_EVENT_CREATE_REQUESTS);
+	GrpcUtils.handleClientMethodEntry(this,
+		DeviceEventManagementGrpc.getStreamDeviceAssignmentEventCreateRequestsMethod());
 	return new DeviceAssignmentEventCreateProcessor(getGrpcChannel());
     }
 
@@ -206,19 +206,19 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
     public IDeviceMeasurements addDeviceMeasurements(UUID deviceAssignmentId,
 	    IDeviceMeasurementsCreateRequest measurements) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceEventManagementGrpc.METHOD_ADD_MEASUREMENTS,
+	    GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getAddMeasurementsMethod(),
 		    DebugParameter.create("Assignment Id", deviceAssignmentId),
 		    DebugParameter.create("Request", measurements));
 	    GAddMeasurementsRequest.Builder grequest = GAddMeasurementsRequest.newBuilder();
 	    grequest.setDeviceAssignmentId(CommonModelConverter.asGrpcUuid(deviceAssignmentId));
 	    grequest.setRequest(EventModelConverter.asGrpcDeviceMeasurementsCreateRequest(measurements));
 	    GAddMeasurementsResponse gresponse = getGrpcChannel().getBlockingStub().addMeasurements(GrpcUtils
-		    .logGrpcClientRequest(DeviceEventManagementGrpc.METHOD_ADD_MEASUREMENTS, grequest.build()));
+		    .logGrpcClientRequest(DeviceEventManagementGrpc.getAddMeasurementsMethod(), grequest.build()));
 	    IDeviceMeasurements response = EventModelConverter.asApiDeviceMeasurements(gresponse.getMeasurements());
-	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_ADD_MEASUREMENTS, response);
+	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.getAddMeasurementsMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.METHOD_ADD_MEASUREMENTS, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.getAddMeasurementsMethod(), t);
 	}
     }
 
@@ -232,7 +232,7 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
     public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForIndex(DeviceEventIndex index,
 	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_INDEX,
+	    GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getListMeasurementsForIndexMethod(),
 		    DebugParameter.create("Index", index), DebugParameter.create("Entity Ids", entityIds),
 		    DebugParameter.create("Criteria", criteria));
 	    GListMeasurementsForIndexRequest.Builder grequest = GListMeasurementsForIndexRequest.newBuilder();
@@ -240,14 +240,14 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
 	    grequest.addAllEntityIds(CommonModelConverter.asGrpcUuids(entityIds));
 	    grequest.setCriteria(CommonModelConverter.asGrpcDateRangeSearchCriteria(criteria));
 	    GListMeasurementsForIndexResponse gresponse = getGrpcChannel().getBlockingStub().listMeasurementsForIndex(
-		    GrpcUtils.logGrpcClientRequest(DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_INDEX,
+		    GrpcUtils.logGrpcClientRequest(DeviceEventManagementGrpc.getListMeasurementsForIndexMethod(),
 			    grequest.build()));
 	    ISearchResults<IDeviceMeasurements> results = EventModelConverter
 		    .asApiDeviceMeasurementsSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_INDEX, results);
+	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.getListMeasurementsForIndexMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_INDEX,
+	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.getListMeasurementsForIndexMethod(),
 		    t);
 	}
     }
@@ -262,19 +262,19 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
     public IDeviceLocation addDeviceLocation(UUID deviceAssignmentId, IDeviceLocationCreateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceEventManagementGrpc.METHOD_ADD_LOCATION,
+	    GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getAddLocationMethod(),
 		    DebugParameter.create("Assignment Id", deviceAssignmentId),
 		    DebugParameter.create("Request", request));
 	    GAddLocationRequest.Builder grequest = GAddLocationRequest.newBuilder();
 	    grequest.setDeviceAssignmentId(CommonModelConverter.asGrpcUuid(deviceAssignmentId));
 	    grequest.setRequest(EventModelConverter.asGrpcDeviceLocationCreateRequest(request));
 	    GAddLocationResponse gresponse = getGrpcChannel().getBlockingStub().addLocation(
-		    GrpcUtils.logGrpcClientRequest(DeviceEventManagementGrpc.METHOD_ADD_LOCATION, grequest.build()));
+		    GrpcUtils.logGrpcClientRequest(DeviceEventManagementGrpc.getAddLocationMethod(), grequest.build()));
 	    IDeviceLocation response = EventModelConverter.asApiDeviceLocation(gresponse.getLocation());
-	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_ADD_LOCATION, response);
+	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.getAddLocationMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.METHOD_ADD_LOCATION, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.getAddLocationMethod(), t);
 	}
     }
 
@@ -287,7 +287,7 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
     public ISearchResults<IDeviceLocation> listDeviceLocationsForIndex(DeviceEventIndex index, List<UUID> entityIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceEventManagementGrpc.METHOD_LIST_LOCATIONS_FOR_INDEX,
+	    GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getListLocationsForIndexMethod(),
 		    DebugParameter.create("Index", index), DebugParameter.create("Entity Ids", entityIds),
 		    DebugParameter.create("Criteria", criteria));
 	    GListLocationsForIndexRequest.Builder grequest = GListLocationsForIndexRequest.newBuilder();
@@ -295,14 +295,14 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
 	    grequest.addAllEntityIds(CommonModelConverter.asGrpcUuids(entityIds));
 	    grequest.setCriteria(CommonModelConverter.asGrpcDateRangeSearchCriteria(criteria));
 	    GListLocationsForIndexResponse gresponse = getGrpcChannel().getBlockingStub().listLocationsForIndex(
-		    GrpcUtils.logGrpcClientRequest(DeviceEventManagementGrpc.METHOD_LIST_LOCATIONS_FOR_INDEX,
+		    GrpcUtils.logGrpcClientRequest(DeviceEventManagementGrpc.getListLocationsForIndexMethod(),
 			    grequest.build()));
 	    ISearchResults<IDeviceLocation> results = EventModelConverter
 		    .asApiDeviceLocationSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_LIST_LOCATIONS_FOR_INDEX, results);
+	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.getListLocationsForIndexMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.METHOD_LIST_LOCATIONS_FOR_INDEX, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.getListLocationsForIndexMethod(), t);
 	}
     }
 
@@ -315,19 +315,19 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
     public IDeviceAlert addDeviceAlert(UUID deviceAssignmentId, IDeviceAlertCreateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceEventManagementGrpc.METHOD_ADD_ALERT,
+	    GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getAddAlertMethod(),
 		    DebugParameter.create("Assignment Id", deviceAssignmentId),
 		    DebugParameter.create("Request", request));
 	    GAddAlertRequest.Builder grequest = GAddAlertRequest.newBuilder();
 	    grequest.setDeviceAssignmentId(CommonModelConverter.asGrpcUuid(deviceAssignmentId));
 	    grequest.setRequest(EventModelConverter.asGrpcDeviceAlertCreateRequest(request));
 	    GAddAlertResponse gresponse = getGrpcChannel().getBlockingStub().addAlert(
-		    GrpcUtils.logGrpcClientRequest(DeviceEventManagementGrpc.METHOD_ADD_ALERT, grequest.build()));
+		    GrpcUtils.logGrpcClientRequest(DeviceEventManagementGrpc.getAddAlertMethod(), grequest.build()));
 	    IDeviceAlert response = EventModelConverter.asApiDeviceAlert(gresponse.getAlert());
-	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_ADD_ALERT, response);
+	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.getAddAlertMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.METHOD_ADD_ALERT, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.getAddAlertMethod(), t);
 	}
     }
 
@@ -340,7 +340,7 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
     public ISearchResults<IDeviceAlert> listDeviceAlertsForIndex(DeviceEventIndex index, List<UUID> entityIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_INDEX,
+	    GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getListAlertsForIndexMethod(),
 		    DebugParameter.create("Index", index), DebugParameter.create("Entity Ids", entityIds),
 		    DebugParameter.create("Criteria", criteria));
 	    GListAlertsForIndexRequest.Builder grequest = GListAlertsForIndexRequest.newBuilder();
@@ -348,13 +348,13 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
 	    grequest.addAllEntityIds(CommonModelConverter.asGrpcUuids(entityIds));
 	    grequest.setCriteria(CommonModelConverter.asGrpcDateRangeSearchCriteria(criteria));
 	    GListAlertsForIndexResponse gresponse = getGrpcChannel().getBlockingStub().listAlertsForIndex(GrpcUtils
-		    .logGrpcClientRequest(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_INDEX, grequest.build()));
+		    .logGrpcClientRequest(DeviceEventManagementGrpc.getListAlertsForIndexMethod(), grequest.build()));
 	    ISearchResults<IDeviceAlert> results = EventModelConverter
 		    .asApiDeviceAlertSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_INDEX, results);
+	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.getListAlertsForIndexMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_INDEX, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.getListAlertsForIndexMethod(), t);
 	}
     }
 
@@ -368,7 +368,7 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
     public IDeviceStreamData addDeviceStreamData(UUID deviceAssignmentId, IDeviceStream stream,
 	    IDeviceStreamDataCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceEventManagementGrpc.METHOD_ADD_STREAM_DATA_FOR_ASSIGNMENT,
+	    GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getAddStreamDataForAssignmentMethod(),
 		    DebugParameter.create("Assignment Id", deviceAssignmentId), DebugParameter.create("Stream", stream),
 		    DebugParameter.create("Request", request));
 	    GAddStreamDataForAssignmentRequest.Builder grequest = GAddStreamDataForAssignmentRequest.newBuilder();
@@ -377,13 +377,13 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
 	    grequest.setRequest(EventModelConverter.asGrpcDeviceStreamDataCreateRequest(request));
 	    GAddStreamDataForAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .addStreamDataForAssignment(GrpcUtils.logGrpcClientRequest(
-			    DeviceEventManagementGrpc.METHOD_ADD_STREAM_DATA_FOR_ASSIGNMENT, grequest.build()));
+			    DeviceEventManagementGrpc.getAddStreamDataForAssignmentMethod(), grequest.build()));
 	    IDeviceStreamData response = EventModelConverter.asApiDeviceStreamData(gresponse.getStreamData());
-	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_ADD_STREAM_DATA_FOR_ASSIGNMENT,
+	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.getAddStreamDataForAssignmentMethod(),
 		    response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.METHOD_ADD_STREAM_DATA_FOR_ASSIGNMENT,
+	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.getAddStreamDataForAssignmentMethod(),
 		    t);
 	}
     }
@@ -397,7 +397,7 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
     public IDeviceStreamData getDeviceStreamData(UUID deviceAssignmentId, String streamId, long sequenceNumber)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceEventManagementGrpc.METHOD_GET_STREAM_DATA_FOR_ASSIGNMENT,
+	    GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getGetStreamDataForAssignmentMethod(),
 		    DebugParameter.create("Assignment Id", deviceAssignmentId),
 		    DebugParameter.create("Stream Id", streamId),
 		    DebugParameter.create("Sequence Number", String.valueOf(sequenceNumber)));
@@ -407,12 +407,12 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
 	    grequest.setSequenceNumber(sequenceNumber);
 	    GGetStreamDataForAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getStreamDataForAssignment(GrpcUtils.logGrpcClientRequest(
-			    DeviceEventManagementGrpc.METHOD_GET_STREAM_DATA_FOR_ASSIGNMENT, grequest.build()));
+			    DeviceEventManagementGrpc.getGetStreamDataForAssignmentMethod(), grequest.build()));
 	    IDeviceStreamData results = EventModelConverter.asApiDeviceStreamData(gresponse.getStreamData());
-	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_GET_STREAM_DATA_FOR_ASSIGNMENT, results);
+	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.getGetStreamDataForAssignmentMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.METHOD_GET_STREAM_DATA_FOR_ASSIGNMENT,
+	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.getGetStreamDataForAssignmentMethod(),
 		    t);
 	}
     }
@@ -426,7 +426,7 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
     public ISearchResults<IDeviceStreamData> listDeviceStreamDataForAssignment(UUID deviceAssignmentId, String streamId,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceEventManagementGrpc.METHOD_LIST_STREAM_DATA_FOR_ASSIGNMENT,
+	    GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getListStreamDataForAssignmentMethod(),
 		    DebugParameter.create("Assignment Id", deviceAssignmentId),
 		    DebugParameter.create("Stream Id", streamId), DebugParameter.create("Criteria", criteria));
 	    GListStreamDataForAssignmentRequest.Builder grequest = GListStreamDataForAssignmentRequest.newBuilder();
@@ -435,15 +435,15 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
 	    grequest.setCriteria(CommonModelConverter.asGrpcDateRangeSearchCriteria(criteria));
 	    GListStreamDataForAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .listStreamDataForAssignment(GrpcUtils.logGrpcClientRequest(
-			    DeviceEventManagementGrpc.METHOD_LIST_STREAM_DATA_FOR_ASSIGNMENT, grequest.build()));
+			    DeviceEventManagementGrpc.getListStreamDataForAssignmentMethod(), grequest.build()));
 	    ISearchResults<IDeviceStreamData> results = EventModelConverter
 		    .asApiDeviceStreamDataSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_LIST_STREAM_DATA_FOR_ASSIGNMENT,
+	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.getListStreamDataForAssignmentMethod(),
 		    results);
 	    return results;
 	} catch (Throwable t) {
 	    throw GrpcUtils
-		    .handleClientMethodException(DeviceEventManagementGrpc.METHOD_LIST_STREAM_DATA_FOR_ASSIGNMENT, t);
+		    .handleClientMethodException(DeviceEventManagementGrpc.getListStreamDataForAssignmentMethod(), t);
 	}
     }
 
@@ -456,20 +456,20 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
     public IDeviceCommandInvocation addDeviceCommandInvocation(UUID deviceAssignmentId,
 	    IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceEventManagementGrpc.METHOD_ADD_COMMAND_INVOCATION,
+	    GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getAddCommandInvocationMethod(),
 		    DebugParameter.create("Assignment Id", deviceAssignmentId),
 		    DebugParameter.create("Request", request));
 	    GAddCommandInvocationRequest.Builder grequest = GAddCommandInvocationRequest.newBuilder();
 	    grequest.setDeviceAssignmentId(CommonModelConverter.asGrpcUuid(deviceAssignmentId));
 	    grequest.setRequest(EventModelConverter.asGrpcDeviceCommandInvocationCreateRequest(request));
 	    GAddCommandInvocationResponse gresponse = getGrpcChannel().getBlockingStub().addCommandInvocation(GrpcUtils
-		    .logGrpcClientRequest(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_INVOCATION, grequest.build()));
+		    .logGrpcClientRequest(DeviceEventManagementGrpc.getAddCommandInvocationMethod(), grequest.build()));
 	    IDeviceCommandInvocation response = EventModelConverter
 		    .asApiDeviceCommandInvocation(gresponse.getInvocation());
-	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_INVOCATION, response);
+	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.getAddCommandInvocationMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_INVOCATION, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.getAddCommandInvocationMethod(), t);
 	}
     }
 
@@ -483,7 +483,7 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
     public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForIndex(DeviceEventIndex index,
 	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceEventManagementGrpc.METHOD_LIST_COMMAND_INVOCATIONS_FOR_INDEX,
+	    GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getListCommandInvocationsForIndexMethod(),
 		    DebugParameter.create("Index", index), DebugParameter.create("Entity Ids", entityIds),
 		    DebugParameter.create("Criteria", criteria));
 	    GListCommandInvocationsForIndexRequest.Builder grequest = GListCommandInvocationsForIndexRequest
@@ -493,15 +493,15 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
 	    grequest.setCriteria(CommonModelConverter.asGrpcDateRangeSearchCriteria(criteria));
 	    GListCommandInvocationsForIndexResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .listCommandInvocationsForIndex(GrpcUtils.logGrpcClientRequest(
-			    DeviceEventManagementGrpc.METHOD_LIST_COMMAND_INVOCATIONS_FOR_INDEX, grequest.build()));
+			    DeviceEventManagementGrpc.getListCommandInvocationsForIndexMethod(), grequest.build()));
 	    ISearchResults<IDeviceCommandInvocation> results = EventModelConverter
 		    .asApiDeviceCommandInvocationSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_INVOCATIONS_FOR_INDEX,
+	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.getListCommandInvocationsForIndexMethod(),
 		    results);
 	    return results;
 	} catch (Throwable t) {
 	    throw GrpcUtils.handleClientMethodException(
-		    DeviceEventManagementGrpc.METHOD_LIST_COMMAND_INVOCATIONS_FOR_INDEX, t);
+		    DeviceEventManagementGrpc.getListCommandInvocationsForIndexMethod(), t);
 	}
     }
 
@@ -513,7 +513,7 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
     public ISearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(UUID deviceId, UUID invocationId)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_INVOCATION,
+	    GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getListCommandResponsesForInvocationMethod(),
 		    DebugParameter.create("Device Id", deviceId), DebugParameter.create("Invocation Id", invocationId));
 	    GListCommandResponsesForInvocationRequest.Builder grequest = GListCommandResponsesForInvocationRequest
 		    .newBuilder();
@@ -521,15 +521,15 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
 	    grequest.setInvocationEventId(CommonModelConverter.asGrpcUuid(invocationId));
 	    GListCommandResponsesForInvocationResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .listCommandResponsesForInvocation(GrpcUtils.logGrpcClientRequest(
-			    DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_INVOCATION, grequest.build()));
+			    DeviceEventManagementGrpc.getListCommandResponsesForInvocationMethod(), grequest.build()));
 	    ISearchResults<IDeviceCommandResponse> results = EventModelConverter
 		    .asApiDeviceCommandResponseSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_INVOCATION,
+	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.getListCommandResponsesForInvocationMethod(),
 		    results);
 	    return results;
 	} catch (Throwable t) {
 	    throw GrpcUtils.handleClientMethodException(
-		    DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_INVOCATION, t);
+		    DeviceEventManagementGrpc.getListCommandResponsesForInvocationMethod(), t);
 	}
     }
 
@@ -542,19 +542,19 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
     public IDeviceCommandResponse addDeviceCommandResponse(UUID deviceAssignmentId,
 	    IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceEventManagementGrpc.METHOD_ADD_COMMAND_RESPONSE,
+	    GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getAddCommandResponseMethod(),
 		    DebugParameter.create("Assignment Id", deviceAssignmentId),
 		    DebugParameter.create("Request", request));
 	    GAddCommandResponseRequest.Builder grequest = GAddCommandResponseRequest.newBuilder();
 	    grequest.setDeviceAssignmentId(CommonModelConverter.asGrpcUuid(deviceAssignmentId));
 	    grequest.setRequest(EventModelConverter.asGrpcDeviceCommandResponseCreateRequest(request));
 	    GAddCommandResponseResponse gresponse = getGrpcChannel().getBlockingStub().addCommandResponse(GrpcUtils
-		    .logGrpcClientRequest(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_RESPONSE, grequest.build()));
+		    .logGrpcClientRequest(DeviceEventManagementGrpc.getAddCommandResponseMethod(), grequest.build()));
 	    IDeviceCommandResponse response = EventModelConverter.asApiDeviceCommandResponse(gresponse.getResponse());
-	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_RESPONSE, response);
+	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.getAddCommandResponseMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_RESPONSE, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.getAddCommandResponseMethod(), t);
 	}
     }
 
@@ -568,7 +568,7 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
     public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForIndex(DeviceEventIndex index,
 	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_INDEX,
+	    GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getListCommandResponsesForIndexMethod(),
 		    DebugParameter.create("Index", index), DebugParameter.create("Entity Ids", entityIds),
 		    DebugParameter.create("Criteria", criteria));
 	    GListCommandResponsesForIndexRequest.Builder grequest = GListCommandResponsesForIndexRequest.newBuilder();
@@ -577,15 +577,15 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
 	    grequest.setCriteria(CommonModelConverter.asGrpcDateRangeSearchCriteria(criteria));
 	    GListCommandResponsesForIndexResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .listCommandResponsesForIndex(GrpcUtils.logGrpcClientRequest(
-			    DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_INDEX, grequest.build()));
+			    DeviceEventManagementGrpc.getListCommandResponsesForIndexMethod(), grequest.build()));
 	    ISearchResults<IDeviceCommandResponse> results = EventModelConverter
 		    .asApiDeviceCommandResponseSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_INDEX,
+	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.getListCommandResponsesForIndexMethod(),
 		    results);
 	    return results;
 	} catch (Throwable t) {
 	    throw GrpcUtils
-		    .handleClientMethodException(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_INDEX, t);
+		    .handleClientMethodException(DeviceEventManagementGrpc.getListCommandResponsesForIndexMethod(), t);
 	}
     }
 
@@ -599,19 +599,19 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
     public IDeviceStateChange addDeviceStateChange(UUID deviceAssignmentId, IDeviceStateChangeCreateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceEventManagementGrpc.METHOD_ADD_STATE_CHANGE,
+	    GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getAddStateChangeMethod(),
 		    DebugParameter.create("Assignment Id", deviceAssignmentId),
 		    DebugParameter.create("Request", request));
 	    GAddStateChangeRequest.Builder grequest = GAddStateChangeRequest.newBuilder();
 	    grequest.setDeviceAssignmentId(CommonModelConverter.asGrpcUuid(deviceAssignmentId));
 	    grequest.setRequest(EventModelConverter.asGrpcDeviceStateChangeCreateRequest(request));
 	    GAddStateChangeResponse gresponse = getGrpcChannel().getBlockingStub().addStateChange(GrpcUtils
-		    .logGrpcClientRequest(DeviceEventManagementGrpc.METHOD_ADD_STATE_CHANGE, grequest.build()));
+		    .logGrpcClientRequest(DeviceEventManagementGrpc.getAddStateChangeMethod(), grequest.build()));
 	    IDeviceStateChange response = EventModelConverter.asApiDeviceStateChange(gresponse.getStateChange());
-	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_ADD_STATE_CHANGE, response);
+	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.getAddStateChangeMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.METHOD_ADD_STATE_CHANGE, t);
+	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.getAddStateChangeMethod(), t);
 	}
     }
 
@@ -625,7 +625,7 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
     public ISearchResults<IDeviceStateChange> listDeviceStateChangesForIndex(DeviceEventIndex index,
 	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_INDEX,
+	    GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getListStateChangesForIndexMethod(),
 		    DebugParameter.create("Index", index), DebugParameter.create("Entity Ids", entityIds),
 		    DebugParameter.create("Criteria", criteria));
 	    GListStateChangesForIndexRequest.Builder grequest = GListStateChangesForIndexRequest.newBuilder();
@@ -633,14 +633,14 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
 	    grequest.addAllEntityIds(CommonModelConverter.asGrpcUuids(entityIds));
 	    grequest.setCriteria(CommonModelConverter.asGrpcDateRangeSearchCriteria(criteria));
 	    GListStateChangesForIndexResponse gresponse = getGrpcChannel().getBlockingStub().listStateChangesForIndex(
-		    GrpcUtils.logGrpcClientRequest(DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_INDEX,
+		    GrpcUtils.logGrpcClientRequest(DeviceEventManagementGrpc.getListStateChangesForIndexMethod(),
 			    grequest.build()));
 	    ISearchResults<IDeviceStateChange> results = EventModelConverter
 		    .asApiDeviceStateChangeSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_INDEX, results);
+	    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.getListStateChangesForIndexMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_INDEX,
+	    throw GrpcUtils.handleClientMethodException(DeviceEventManagementGrpc.getListStateChangesForIndexMethod(),
 		    t);
 	}
     }

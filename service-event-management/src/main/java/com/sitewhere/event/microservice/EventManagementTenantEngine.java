@@ -11,6 +11,7 @@ import com.sitewhere.event.grpc.EventManagementImpl;
 import com.sitewhere.event.kafka.InboundPersistedEventsProducer;
 import com.sitewhere.event.kafka.KafkaEventPersistenceTriggers;
 import com.sitewhere.event.spi.kafka.IInboundPersistedEventsProducer;
+import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
@@ -84,7 +85,8 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 		.getBean(EventManagementBeans.BEAN_EVENT_MANAGEMENT);
 	this.eventManagement = new KafkaEventPersistenceTriggers(this, impl);
 
-	this.eventManagementImpl = new EventManagementImpl(getEventManagement());
+	this.eventManagementImpl = new EventManagementImpl((IEventManagementMicroservice) getMicroservice(),
+		getEventManagement());
 	this.inboundPersistedEventsProducer = new InboundPersistedEventsProducer();
     }
 

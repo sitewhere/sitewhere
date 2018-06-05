@@ -8,7 +8,9 @@
 package com.sitewhere.event.grpc;
 
 import com.sitewhere.event.grpc.streaming.DeviceAssignmentEventCreateStreamObserver;
+import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.grpc.client.GrpcUtils;
+import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceAlertSearchResults;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceAssignmentEventCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceCommandInvocationSearchResults;
@@ -71,6 +73,7 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.search.ISearchResults;
 
 import io.grpc.stub.StreamObserver;
@@ -80,12 +83,18 @@ import io.grpc.stub.StreamObserver;
  * 
  * @author Derek
  */
-public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventManagementImplBase {
+public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventManagementImplBase
+	implements IGrpcApiImplementation {
+
+    /** Parent microservice */
+    private IEventManagementMicroservice microservice;
 
     /** Device management persistence */
     private IDeviceEventManagement deviceEventManagement;
 
-    public EventManagementImpl(IDeviceEventManagement deviceEventManagement) {
+    public EventManagementImpl(IEventManagementMicroservice microservice,
+	    IDeviceEventManagement deviceEventManagement) {
+	this.microservice = microservice;
 	this.deviceEventManagement = deviceEventManagement;
     }
 
@@ -104,7 +113,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
     public void addDeviceEventBatch(GAddDeviceEventBatchRequest request,
 	    StreamObserver<GAddDeviceEventBatchResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_DEVICE_EVENT_BATCH);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddDeviceEventBatchMethod());
 	    DeviceEventBatch apiRequest = EventModelConverter.asApiDeviceEventBatch(request.getRequest());
 	    IDeviceEventBatchResponse apiResult = getDeviceEventManagement()
 		    .addDeviceEventBatch(CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()), apiRequest);
@@ -113,8 +122,10 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_DEVICE_EVENT_BATCH, e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getAddDeviceEventBatchMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getAddDeviceEventBatchMethod());
 	}
     }
 
@@ -129,7 +140,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
     public void getDeviceEventById(GGetDeviceEventByIdRequest request,
 	    StreamObserver<GGetDeviceEventByIdResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_GET_DEVICE_EVENT_BY_ID);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getGetDeviceEventByIdMethod());
 	    IDeviceEvent apiResult = getDeviceEventManagement().getDeviceEventById(
 		    CommonModelConverter.asApiUuid(request.getDeviceId()),
 		    CommonModelConverter.asApiUuid(request.getEventId()));
@@ -140,8 +151,10 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_GET_DEVICE_EVENT_BY_ID, e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getGetDeviceEventByIdMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getGetDeviceEventByIdMethod());
 	}
     }
 
@@ -157,7 +170,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
     public void getDeviceEventByAlternateId(GGetDeviceEventByAlternateIdRequest request,
 	    StreamObserver<GGetDeviceEventByAlternateIdResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_GET_DEVICE_EVENT_BY_ALTERNATE_ID);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getGetDeviceEventByAlternateIdMethod());
 	    IDeviceEvent apiResult = getDeviceEventManagement().getDeviceEventByAlternateId(
 		    CommonModelConverter.asApiUuid(request.getDeviceId()), request.getAlternateId());
 	    GGetDeviceEventByAlternateIdResponse.Builder response = GGetDeviceEventByAlternateIdResponse.newBuilder();
@@ -167,8 +180,10 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_GET_DEVICE_EVENT_BY_ALTERNATE_ID, e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getGetDeviceEventByAlternateIdMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getGetDeviceEventByAlternateIdMethod());
 	}
     }
 
@@ -187,7 +202,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    return observer;
 	} catch (Throwable e) {
 	    GrpcUtils.handleServerMethodException(
-		    DeviceEventManagementGrpc.METHOD_STREAM_DEVICE_ASSIGNMENT_EVENT_CREATE_REQUESTS, e,
+		    DeviceEventManagementGrpc.getStreamDeviceAssignmentEventCreateRequestsMethod(), e,
 		    responseObserver);
 	    return null;
 	}
@@ -202,7 +217,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
     public void addMeasurements(GAddMeasurementsRequest request,
 	    StreamObserver<GAddMeasurementsResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_MEASUREMENTS);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddMeasurementsMethod());
 	    IDeviceMeasurements apiResult = getDeviceEventManagement().addDeviceMeasurements(
 		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
 		    EventModelConverter.asApiDeviceMeasurementsCreateRequest(request.getRequest()));
@@ -213,8 +228,10 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_MEASUREMENTS, e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getAddMeasurementsMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getAddMeasurementsMethod());
 	}
     }
 
@@ -227,7 +244,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
     public void listMeasurementsForIndex(GListMeasurementsForIndexRequest request,
 	    StreamObserver<GListMeasurementsForIndexResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_INDEX);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getListMeasurementsForIndexMethod());
 	    ISearchResults<IDeviceMeasurements> apiResult = getDeviceEventManagement().listDeviceMeasurementsForIndex(
 		    EventModelConverter.asApiDeviceEventIndex(request.getIndex()),
 		    CommonModelConverter.asApiUuids(request.getEntityIdsList()),
@@ -242,8 +259,10 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_MEASUREMENTS_FOR_INDEX, e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getListMeasurementsForIndexMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getListMeasurementsForIndexMethod());
 	}
     }
 
@@ -255,7 +274,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
     @Override
     public void addLocation(GAddLocationRequest request, StreamObserver<GAddLocationResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_LOCATION);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddLocationMethod());
 	    IDeviceLocation apiResult = getDeviceEventManagement().addDeviceLocation(
 		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
 		    EventModelConverter.asApiDeviceLocationCreateRequest(request.getRequest()));
@@ -266,7 +285,10 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_LOCATION, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getAddLocationMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getAddLocationMethod());
 	}
     }
 
@@ -279,7 +301,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
     public void listLocationsForIndex(GListLocationsForIndexRequest request,
 	    StreamObserver<GListLocationsForIndexResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_LOCATIONS_FOR_INDEX);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getListLocationsForIndexMethod());
 	    ISearchResults<IDeviceLocation> apiResult = getDeviceEventManagement().listDeviceLocationsForIndex(
 		    EventModelConverter.asApiDeviceEventIndex(request.getIndex()),
 		    CommonModelConverter.asApiUuids(request.getEntityIdsList()),
@@ -294,8 +316,10 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_LOCATIONS_FOR_INDEX, e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getListLocationsForIndexMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getListLocationsForIndexMethod());
 	}
     }
 
@@ -307,7 +331,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
     @Override
     public void addAlert(GAddAlertRequest request, StreamObserver<GAddAlertResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_ALERT);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddAlertMethod());
 	    IDeviceAlert apiResult = getDeviceEventManagement().addDeviceAlert(
 		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
 		    EventModelConverter.asApiDeviceAlertCreateRequest(request.getRequest()));
@@ -318,7 +342,9 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_ALERT, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getAddAlertMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getAddAlertMethod());
 	}
     }
 
@@ -331,7 +357,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
     public void listAlertsForIndex(GListAlertsForIndexRequest request,
 	    StreamObserver<GListAlertsForIndexResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_INDEX);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getListAlertsForIndexMethod());
 	    ISearchResults<IDeviceAlert> apiResult = getDeviceEventManagement().listDeviceAlertsForIndex(
 		    EventModelConverter.asApiDeviceEventIndex(request.getIndex()),
 		    CommonModelConverter.asApiUuids(request.getEntityIdsList()),
@@ -346,8 +372,10 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_ALERTS_FOR_INDEX, e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getListAlertsForIndexMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getListAlertsForIndexMethod());
 	}
     }
 
@@ -362,7 +390,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
     public void addStreamDataForAssignment(GAddStreamDataForAssignmentRequest request,
 	    StreamObserver<GAddStreamDataForAssignmentResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_STREAM_DATA_FOR_ASSIGNMENT);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddStreamDataForAssignmentMethod());
 	    IDeviceStreamData apiResult = getDeviceEventManagement().addDeviceStreamData(
 		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
 		    DeviceModelConverter.asApiDeviceStream(request.getDeviceStream()),
@@ -374,8 +402,10 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_STREAM_DATA_FOR_ASSIGNMENT, e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getAddStreamDataForAssignmentMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getAddStreamDataForAssignmentMethod());
 	}
     }
 
@@ -390,7 +420,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
     public void getStreamDataForAssignment(GGetStreamDataForAssignmentRequest request,
 	    StreamObserver<GGetStreamDataForAssignmentResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_GET_STREAM_DATA_FOR_ASSIGNMENT);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getGetStreamDataForAssignmentMethod());
 	    IDeviceStreamData apiResult = getDeviceEventManagement().getDeviceStreamData(
 		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()), request.getStreamId(),
 		    request.getSequenceNumber());
@@ -401,8 +431,10 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_GET_STREAM_DATA_FOR_ASSIGNMENT, e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getGetStreamDataForAssignmentMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getGetStreamDataForAssignmentMethod());
 	}
     }
 
@@ -418,7 +450,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
     public void listStreamDataForAssignment(GListStreamDataForAssignmentRequest request,
 	    StreamObserver<GListStreamDataForAssignmentResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_STREAM_DATA_FOR_ASSIGNMENT);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getListStreamDataForAssignmentMethod());
 	    ISearchResults<IDeviceStreamData> apiResult = getDeviceEventManagement().listDeviceStreamDataForAssignment(
 		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()), request.getStreamId(),
 		    CommonModelConverter.asDateRangeSearchCriteria(request.getCriteria()));
@@ -432,8 +464,10 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_STREAM_DATA_FOR_ASSIGNMENT, e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getListStreamDataForAssignmentMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getListStreamDataForAssignmentMethod());
 	}
     }
 
@@ -446,7 +480,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
     public void addCommandInvocation(GAddCommandInvocationRequest request,
 	    StreamObserver<GAddCommandInvocationResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_INVOCATION);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddCommandInvocationMethod());
 	    IDeviceCommandInvocation apiResult = getDeviceEventManagement().addDeviceCommandInvocation(
 		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
 		    EventModelConverter.asApiDeviceCommandInvocationCreateRequest(request.getRequest()));
@@ -457,8 +491,10 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_INVOCATION, e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getAddCommandInvocationMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getAddCommandInvocationMethod());
 	}
     }
 
@@ -472,7 +508,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
     public void listCommandInvocationsForIndex(GListCommandInvocationsForIndexRequest request,
 	    StreamObserver<GListCommandInvocationsForIndexResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_INVOCATIONS_FOR_INDEX);
+	    GrpcUtils.handleServerMethodEntry(this,
+		    DeviceEventManagementGrpc.getListCommandInvocationsForIndexMethod());
 	    ISearchResults<IDeviceCommandInvocation> apiResult = getDeviceEventManagement()
 		    .listDeviceCommandInvocationsForIndex(EventModelConverter.asApiDeviceEventIndex(request.getIndex()),
 			    CommonModelConverter.asApiUuids(request.getEntityIdsList()),
@@ -488,8 +525,10 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_INVOCATIONS_FOR_INDEX,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getListCommandInvocationsForIndexMethod(),
 		    e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getListCommandInvocationsForIndexMethod());
 	}
     }
 
@@ -502,7 +541,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
     public void addCommandResponse(GAddCommandResponseRequest request,
 	    StreamObserver<GAddCommandResponseResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_RESPONSE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddCommandResponseMethod());
 	    IDeviceCommandResponse apiResult = getDeviceEventManagement().addDeviceCommandResponse(
 		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
 		    EventModelConverter.asApiDeviceCommandResponseCreateRequest(request.getRequest()));
@@ -513,8 +552,10 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_COMMAND_RESPONSE, e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getAddCommandResponseMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getAddCommandResponseMethod());
 	}
     }
 
@@ -530,7 +571,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
     public void listCommandResponsesForInvocation(GListCommandResponsesForInvocationRequest request,
 	    StreamObserver<GListCommandResponsesForInvocationResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_INVOCATION);
+	    GrpcUtils.handleServerMethodEntry(this,
+		    DeviceEventManagementGrpc.getListCommandResponsesForInvocationMethod());
 	    ISearchResults<IDeviceCommandResponse> apiResult = getDeviceEventManagement()
 		    .listDeviceCommandInvocationResponses(CommonModelConverter.asApiUuid(request.getDeviceId()),
 			    CommonModelConverter.asApiUuid(request.getInvocationEventId()));
@@ -546,7 +588,9 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
 	    GrpcUtils.handleServerMethodException(
-		    DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_INVOCATION, e, responseObserver);
+		    DeviceEventManagementGrpc.getListCommandResponsesForInvocationMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getListCommandResponsesForInvocationMethod());
 	}
     }
 
@@ -559,7 +603,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
     public void listCommandResponsesForIndex(GListCommandResponsesForIndexRequest request,
 	    StreamObserver<GListCommandResponsesForIndexResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_INDEX);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getListCommandResponsesForIndexMethod());
 	    ISearchResults<IDeviceCommandResponse> apiResult = getDeviceEventManagement()
 		    .listDeviceCommandResponsesForIndex(EventModelConverter.asApiDeviceEventIndex(request.getIndex()),
 			    CommonModelConverter.asApiUuids(request.getEntityIdsList()),
@@ -574,8 +618,10 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_COMMAND_RESPONSES_FOR_INDEX, e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getListCommandResponsesForIndexMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getListCommandResponsesForIndexMethod());
 	}
     }
 
@@ -588,7 +634,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
     public void addStateChange(GAddStateChangeRequest request,
 	    StreamObserver<GAddStateChangeResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_ADD_STATE_CHANGE);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddStateChangeMethod());
 	    IDeviceStateChange apiResult = getDeviceEventManagement().addDeviceStateChange(
 		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
 		    EventModelConverter.asApiDeviceStateChangeCreateRequest(request.getRequest()));
@@ -599,8 +645,10 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_ADD_STATE_CHANGE, e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getAddStateChangeMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getAddStateChangeMethod());
 	}
     }
 
@@ -613,7 +661,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
     public void listStateChangesForIndex(GListStateChangesForIndexRequest request,
 	    StreamObserver<GListStateChangesForIndexResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_INDEX);
+	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getListStateChangesForIndexMethod());
 	    ISearchResults<IDeviceStateChange> apiResult = getDeviceEventManagement().listDeviceStateChangesForIndex(
 		    EventModelConverter.asApiDeviceEventIndex(request.getIndex()),
 		    CommonModelConverter.asApiUuids(request.getEntityIdsList()),
@@ -628,9 +676,20 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.METHOD_LIST_STATE_CHANGES_FOR_INDEX, e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getListStateChangesForIndexMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getListStateChangesForIndexMethod());
 	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation#getMicroservice()
+     */
+    @Override
+    public IMicroservice<?> getMicroservice() {
+	return microservice;
     }
 
     public void setDeviceEventManagement(IDeviceEventManagement deviceEventManagement) {

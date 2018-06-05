@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sitewhere.grpc.client.GrpcContextKeys;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.server.IGrpcRouter;
 import com.sitewhere.grpc.service.GGetAreaLabelRequest;
@@ -38,8 +39,6 @@ import com.sitewhere.grpc.service.LabelGenerationGrpc;
 import com.sitewhere.grpc.service.LabelGenerationGrpc.LabelGenerationImplBase;
 import com.sitewhere.labels.spi.microservice.ILabelGenerationMicroservice;
 import com.sitewhere.labels.spi.microservice.ILabelGenerationTenantEngine;
-import com.sitewhere.microservice.grpc.TenantTokenServerInterceptor;
-import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
 
 import io.grpc.stub.StreamObserver;
@@ -68,14 +67,13 @@ public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationIm
      */
     @Override
     public LabelGenerationImplBase getTenantImplementation(StreamObserver<?> observer) {
-	String tenantId = TenantTokenServerInterceptor.TENANT_ID_KEY.get();
+	String tenantId = GrpcContextKeys.TENANT_ID_KEY.get();
 	if (tenantId == null) {
 	    throw new RuntimeException("Tenant id not found in label generation request.");
 	}
 	try {
 	    ILabelGenerationTenantEngine engine = getMicroservice()
 		    .assureTenantEngineAvailable(UUID.fromString(tenantId));
-	    UserContextManager.setCurrentTenant(engine.getTenant(), engine.getLogger());
 	    return engine.getLabelGenerationImpl();
 	} catch (TenantEngineNotAvailableException e) {
 	    observer.onError(GrpcUtils.convertServerException(e));

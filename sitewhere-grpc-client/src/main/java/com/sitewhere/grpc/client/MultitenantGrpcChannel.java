@@ -30,7 +30,7 @@ import io.grpc.ManagedChannelBuilder;
 public abstract class MultitenantGrpcChannel<B, A> extends GrpcChannel<B, A> implements IMultitenantGrpcChannel<B, A> {
 
     /** Client interceptor for adding tenant token */
-    private TenantTokenClientInterceptor tenant = new TenantTokenClientInterceptor();
+    private TenantTokenClientInterceptor tenantTokenInterceptor = new TenantTokenClientInterceptor();
 
     public MultitenantGrpcChannel(ITracerProvider tracerProvider, String hostname, int port) {
 	super(tracerProvider, hostname, port);
@@ -45,8 +45,8 @@ public abstract class MultitenantGrpcChannel<B, A> extends GrpcChannel<B, A> imp
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	ManagedChannelBuilder<?> builder = ManagedChannelBuilder.forAddress(getHostname(), getPort()).usePlaintext(true)
-		.intercept(getJwtInterceptor()).intercept(tenant);
+	ManagedChannelBuilder<?> builder = ManagedChannelBuilder.forAddress(getHostname(), getPort()).usePlaintext()
+		.intercept(getTenantTokenInterceptor()).intercept(getJwtInterceptor());
 	if (isUseTracingInterceptor()) {
 	    builder.intercept(getTracingInterceptor());
 	}
@@ -71,5 +71,13 @@ public abstract class MultitenantGrpcChannel<B, A> extends GrpcChannel<B, A> imp
 	}
 
 	return response.getAvailable();
+    }
+
+    protected TenantTokenClientInterceptor getTenantTokenInterceptor() {
+	return tenantTokenInterceptor;
+    }
+
+    protected void setTenantTokenInterceptor(TenantTokenClientInterceptor tenantTokenInterceptor) {
+	this.tenantTokenInterceptor = tenantTokenInterceptor;
     }
 }

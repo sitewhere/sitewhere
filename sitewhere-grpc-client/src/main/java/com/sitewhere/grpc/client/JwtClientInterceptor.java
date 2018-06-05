@@ -62,7 +62,7 @@ public class JwtClientInterceptor implements ClientInterceptor {
 		if (jwt == null) {
 		    throw new RuntimeException("Attempting to make remote call with no JWT provided.");
 		}
-		LOGGER.trace("Found JWT " + jwt);
+		LOGGER.trace("Adding JWT into gRPC headers: " + jwt);
 		headers.put(JWT_KEY, jwt);
 		super.start(responseListener, headers);
 	    }

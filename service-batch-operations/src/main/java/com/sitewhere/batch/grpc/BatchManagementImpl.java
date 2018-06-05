@@ -7,7 +7,9 @@
  */
 package com.sitewhere.batch.grpc;
 
+import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.grpc.client.GrpcUtils;
+import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
 import com.sitewhere.grpc.model.BatchModel.GBatchOperationElementSearchResults;
 import com.sitewhere.grpc.model.BatchModel.GBatchOperationSearchResults;
 import com.sitewhere.grpc.model.batch.BatchModelConverter;
@@ -36,6 +38,7 @@ import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.batch.request.IBatchElementUpdateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.search.ISearchResults;
 
 import io.grpc.stub.StreamObserver;
@@ -45,12 +48,16 @@ import io.grpc.stub.StreamObserver;
  * 
  * @author Derek
  */
-public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImplBase {
+public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImplBase implements IGrpcApiImplementation {
+
+    /** Parent microservice */
+    private IBatchOperationsMicroservice microservice;
 
     /** Batch management persistence */
     private IBatchManagement batchManagement;
 
-    public BatchManagementImpl(IBatchManagement batchManagement) {
+    public BatchManagementImpl(IBatchOperationsMicroservice microservice, IBatchManagement batchManagement) {
+	this.microservice = microservice;
 	this.batchManagement = batchManagement;
     }
 
@@ -63,7 +70,7 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
     public void createBatchOperation(GCreateBatchOperationRequest request,
 	    StreamObserver<GCreateBatchOperationResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(BatchManagementGrpc.METHOD_CREATE_BATCH_OPERATION);
+	    GrpcUtils.handleServerMethodEntry(this, BatchManagementGrpc.getCreateBatchOperationMethod());
 	    IBatchOperationCreateRequest apiRequest = BatchModelConverter
 		    .asApiBatchOperationCreateRequest(request.getRequest());
 	    IBatchOperation apiResult = getBatchManagement().createBatchOperation(apiRequest);
@@ -72,8 +79,10 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(BatchManagementGrpc.METHOD_CREATE_BATCH_OPERATION, e,
+	    GrpcUtils.handleServerMethodException(BatchManagementGrpc.getCreateBatchOperationMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(BatchManagementGrpc.getCreateBatchOperationMethod());
 	}
     }
 
@@ -86,7 +95,7 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
     public void createBatchCommandInvocation(GCreateBatchCommandInvocationRequest request,
 	    StreamObserver<GCreateBatchCommandInvocationResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(BatchManagementGrpc.METHOD_CREATE_BATCH_COMMAND_INVOCATION);
+	    GrpcUtils.handleServerMethodEntry(this, BatchManagementGrpc.getCreateBatchCommandInvocationMethod());
 	    IBatchCommandInvocationRequest apiRequest = BatchModelConverter
 		    .asApiBatchCommandInvocationRequest(request.getRequest());
 	    IBatchOperation apiResult = getBatchManagement().createBatchCommandInvocation(apiRequest);
@@ -95,8 +104,10 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(BatchManagementGrpc.METHOD_CREATE_BATCH_COMMAND_INVOCATION, e,
+	    GrpcUtils.handleServerMethodException(BatchManagementGrpc.getCreateBatchCommandInvocationMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(BatchManagementGrpc.getCreateBatchCommandInvocationMethod());
 	}
     }
 
@@ -109,7 +120,7 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
     public void updateBatchOperation(GUpdateBatchOperationRequest request,
 	    StreamObserver<GUpdateBatchOperationResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(BatchManagementGrpc.METHOD_UPDATE_BATCH_OPERATION);
+	    GrpcUtils.handleServerMethodEntry(this, BatchManagementGrpc.getUpdateBatchOperationMethod());
 	    IBatchOperationUpdateRequest apiRequest = BatchModelConverter
 		    .asApiBatchOperationUpdateRequest(request.getRequest());
 	    IBatchOperation apiResult = getBatchManagement()
@@ -119,8 +130,10 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(BatchManagementGrpc.METHOD_UPDATE_BATCH_OPERATION, e,
+	    GrpcUtils.handleServerMethodException(BatchManagementGrpc.getUpdateBatchOperationMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(BatchManagementGrpc.getUpdateBatchOperationMethod());
 	}
     }
 
@@ -133,7 +146,7 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
     public void getBatchOperationByToken(GGetBatchOperationByTokenRequest request,
 	    StreamObserver<GGetBatchOperationByTokenResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(BatchManagementGrpc.METHOD_GET_BATCH_OPERATION_BY_TOKEN);
+	    GrpcUtils.handleServerMethodEntry(this, BatchManagementGrpc.getGetBatchOperationByTokenMethod());
 	    IBatchOperation apiResult = getBatchManagement().getBatchOperationByToken(request.getToken());
 	    GGetBatchOperationByTokenResponse.Builder response = GGetBatchOperationByTokenResponse.newBuilder();
 	    if (apiResult != null) {
@@ -142,8 +155,10 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(BatchManagementGrpc.METHOD_GET_BATCH_OPERATION_BY_TOKEN, e,
+	    GrpcUtils.handleServerMethodException(BatchManagementGrpc.getGetBatchOperationByTokenMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(BatchManagementGrpc.getGetBatchOperationByTokenMethod());
 	}
     }
 
@@ -156,7 +171,7 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
     public void listBatchOperations(GListBatchOperationsRequest request,
 	    StreamObserver<GListBatchOperationsResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(BatchManagementGrpc.METHOD_LIST_BATCH_OPERATIONS);
+	    GrpcUtils.handleServerMethodEntry(this, BatchManagementGrpc.getListBatchOperationsMethod());
 	    ISearchResults<IBatchOperation> apiResult = getBatchManagement()
 		    .listBatchOperations(BatchModelConverter.asApiBatchOperationSearchCriteria(request.getCriteria()));
 	    GListBatchOperationsResponse.Builder response = GListBatchOperationsResponse.newBuilder();
@@ -169,8 +184,10 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(BatchManagementGrpc.METHOD_LIST_BATCH_OPERATIONS, e,
+	    GrpcUtils.handleServerMethodException(BatchManagementGrpc.getListBatchOperationsMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(BatchManagementGrpc.getListBatchOperationsMethod());
 	}
     }
 
@@ -183,7 +200,7 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
     public void deleteBatchOperation(GDeleteBatchOperationRequest request,
 	    StreamObserver<GDeleteBatchOperationResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(BatchManagementGrpc.METHOD_DELETE_BATCH_OPERATION);
+	    GrpcUtils.handleServerMethodEntry(this, BatchManagementGrpc.getDeleteBatchOperationMethod());
 	    IBatchOperation apiResult = getBatchManagement().deleteBatchOperation(
 		    CommonModelConverter.asApiUuid(request.getBatchOperationId()), request.getForce());
 	    GDeleteBatchOperationResponse.Builder response = GDeleteBatchOperationResponse.newBuilder();
@@ -191,8 +208,10 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(BatchManagementGrpc.METHOD_DELETE_BATCH_OPERATION, e,
+	    GrpcUtils.handleServerMethodException(BatchManagementGrpc.getDeleteBatchOperationMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(BatchManagementGrpc.getDeleteBatchOperationMethod());
 	}
     }
 
@@ -205,7 +224,7 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
     public void listBatchOperationElements(GListBatchOperationElementsRequest request,
 	    StreamObserver<GListBatchOperationElementsResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(BatchManagementGrpc.METHOD_LIST_BATCH_OPERATION_ELEMENTS);
+	    GrpcUtils.handleServerMethodEntry(this, BatchManagementGrpc.getListBatchOperationElementsMethod());
 	    ISearchResults<IBatchElement> apiResult = getBatchManagement().listBatchElements(
 		    CommonModelConverter.asApiUuid(request.getBatchOperationId()),
 		    BatchModelConverter.asApiBatchElementSearchCriteria(request.getCriteria()));
@@ -219,8 +238,10 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(BatchManagementGrpc.METHOD_LIST_BATCH_OPERATION_ELEMENTS, e,
+	    GrpcUtils.handleServerMethodException(BatchManagementGrpc.getListBatchOperationElementsMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(BatchManagementGrpc.getListBatchOperationElementsMethod());
 	}
     }
 
@@ -233,7 +254,7 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
     public void updateBatchOperationElement(GUpdateBatchOperationElementRequest request,
 	    StreamObserver<GUpdateBatchOperationElementResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(BatchManagementGrpc.METHOD_UPDATE_BATCH_OPERATION_ELEMENT);
+	    GrpcUtils.handleServerMethodEntry(this, BatchManagementGrpc.getUpdateBatchOperationElementMethod());
 	    IBatchElementUpdateRequest apiRequest = BatchModelConverter
 		    .asApiBatchElementUpdateRequest(request.getRequest());
 	    IBatchElement apiResult = getBatchManagement()
@@ -243,16 +264,23 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(BatchManagementGrpc.METHOD_UPDATE_BATCH_OPERATION_ELEMENT, e,
+	    GrpcUtils.handleServerMethodException(BatchManagementGrpc.getUpdateBatchOperationElementMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(BatchManagementGrpc.getUpdateBatchOperationElementMethod());
 	}
     }
 
-    public IBatchManagement getBatchManagement() {
-	return batchManagement;
+    /*
+     * @see
+     * com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation#getMicroservice()
+     */
+    @Override
+    public IMicroservice<?> getMicroservice() {
+	return microservice;
     }
 
-    public void setBatchManagement(IBatchManagement batchManagement) {
-	this.batchManagement = batchManagement;
+    protected IBatchManagement getBatchManagement() {
+	return batchManagement;
     }
 }

@@ -70,7 +70,8 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 		.getBean(DeviceManagementBeans.BEAN_DEVICE_MANAGEMENT);
 	this.deviceManagement = new DeviceManagementTriggers(
 		new CacheAwareDeviceManagement(implementation, (ICachingMicroservice) getMicroservice()), this);
-	this.deviceManagementImpl = new DeviceManagementImpl(getDeviceManagement());
+	this.deviceManagementImpl = new DeviceManagementImpl((IDeviceManagementMicroservice) getMicroservice(),
+		getDeviceManagement());
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());

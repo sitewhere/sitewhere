@@ -17,6 +17,7 @@ import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.schedule.grpc.ScheduleManagementImpl;
 import com.sitewhere.schedule.initializer.GroovyScheduleModelInitializer;
+import com.sitewhere.schedule.spi.microservice.IScheduleManagementMicroservice;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
@@ -59,7 +60,8 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine
 	// Create management interfaces.
 	this.scheduleManagement = (IScheduleManagement) getModuleContext()
 		.getBean(ScheduleManagementBeans.BEAN_SCHEDULE_MANAGEMENT);
-	this.scheduleManagementImpl = new ScheduleManagementImpl(getScheduleManagement());
+	this.scheduleManagementImpl = new ScheduleManagementImpl((IScheduleManagementMicroservice) getMicroservice(),
+		getScheduleManagement());
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());

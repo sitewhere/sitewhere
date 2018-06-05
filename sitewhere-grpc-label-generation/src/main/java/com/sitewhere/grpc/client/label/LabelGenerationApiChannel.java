@@ -70,7 +70,7 @@ public class LabelGenerationApiChannel extends MultitenantApiChannel<LabelGenera
     @Override
     public ILabel getCustomerTypeLabel(String labelGeneratorId, UUID customerTypeId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, LabelGenerationGrpc.METHOD_GET_CUSTOMER_TYPE_LABEL);
+	    GrpcUtils.handleClientMethodEntry(this, LabelGenerationGrpc.getGetCustomerTypeLabelMethod());
 	    GGetCustomerTypeLabelRequest.Builder grequest = GGetCustomerTypeLabelRequest.newBuilder();
 	    grequest.setGeneratorId(labelGeneratorId);
 	    grequest.setCustomerTypeId(CommonModelConverter.asGrpcUuid(customerTypeId));
@@ -78,10 +78,10 @@ public class LabelGenerationApiChannel extends MultitenantApiChannel<LabelGenera
 		    .getCustomerTypeLabel(grequest.build());
 	    ILabel response = (gresponse.hasLabel()) ? LabelGenerationModelConverter.asApiLabel(gresponse.getLabel())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(LabelGenerationGrpc.METHOD_GET_CUSTOMER_TYPE_LABEL, response);
+	    GrpcUtils.logClientMethodResponse(LabelGenerationGrpc.getGetCustomerTypeLabelMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(LabelGenerationGrpc.METHOD_GET_CUSTOMER_TYPE_LABEL, t);
+	    throw GrpcUtils.handleClientMethodException(LabelGenerationGrpc.getGetCustomerTypeLabelMethod(), t);
 	}
     }
 
@@ -93,17 +93,17 @@ public class LabelGenerationApiChannel extends MultitenantApiChannel<LabelGenera
     @Override
     public ILabel getCustomerLabel(String labelGeneratorId, UUID customerId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, LabelGenerationGrpc.METHOD_GET_CUSTOMER_LABEL);
+	    GrpcUtils.handleClientMethodEntry(this, LabelGenerationGrpc.getGetCustomerLabelMethod());
 	    GGetCustomerLabelRequest.Builder grequest = GGetCustomerLabelRequest.newBuilder();
 	    grequest.setGeneratorId(labelGeneratorId);
 	    grequest.setCustomerId(CommonModelConverter.asGrpcUuid(customerId));
 	    GGetCustomerLabelResponse gresponse = getGrpcChannel().getBlockingStub().getCustomerLabel(grequest.build());
 	    ILabel response = (gresponse.hasLabel()) ? LabelGenerationModelConverter.asApiLabel(gresponse.getLabel())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(LabelGenerationGrpc.METHOD_GET_CUSTOMER_LABEL, response);
+	    GrpcUtils.logClientMethodResponse(LabelGenerationGrpc.getGetCustomerLabelMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(LabelGenerationGrpc.METHOD_GET_CUSTOMER_LABEL, t);
+	    throw GrpcUtils.handleClientMethodException(LabelGenerationGrpc.getGetCustomerLabelMethod(), t);
 	}
     }
 
@@ -115,17 +115,17 @@ public class LabelGenerationApiChannel extends MultitenantApiChannel<LabelGenera
     @Override
     public ILabel getAreaTypeLabel(String labelGeneratorId, UUID areaTypeId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, LabelGenerationGrpc.METHOD_GET_AREA_TYPE_LABEL);
+	    GrpcUtils.handleClientMethodEntry(this, LabelGenerationGrpc.getGetAreaTypeLabelMethod());
 	    GGetAreaTypeLabelRequest.Builder grequest = GGetAreaTypeLabelRequest.newBuilder();
 	    grequest.setGeneratorId(labelGeneratorId);
 	    grequest.setAreaTypeId(CommonModelConverter.asGrpcUuid(areaTypeId));
 	    GGetAreaTypeLabelResponse gresponse = getGrpcChannel().getBlockingStub().getAreaTypeLabel(grequest.build());
 	    ILabel response = (gresponse.hasLabel()) ? LabelGenerationModelConverter.asApiLabel(gresponse.getLabel())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(LabelGenerationGrpc.METHOD_GET_AREA_TYPE_LABEL, response);
+	    GrpcUtils.logClientMethodResponse(LabelGenerationGrpc.getGetAreaTypeLabelMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(LabelGenerationGrpc.METHOD_GET_AREA_TYPE_LABEL, t);
+	    throw GrpcUtils.handleClientMethodException(LabelGenerationGrpc.getGetAreaTypeLabelMethod(), t);
 	}
     }
 
@@ -136,17 +136,17 @@ public class LabelGenerationApiChannel extends MultitenantApiChannel<LabelGenera
     @Override
     public ILabel getAreaLabel(String labelGeneratorId, UUID areaId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, LabelGenerationGrpc.METHOD_GET_AREA_LABEL);
+	    GrpcUtils.handleClientMethodEntry(this, LabelGenerationGrpc.getGetAreaLabelMethod());
 	    GGetAreaLabelRequest.Builder grequest = GGetAreaLabelRequest.newBuilder();
 	    grequest.setGeneratorId(labelGeneratorId);
 	    grequest.setAreaId(CommonModelConverter.asGrpcUuid(areaId));
 	    GGetAreaLabelResponse gresponse = getGrpcChannel().getBlockingStub().getAreaLabel(grequest.build());
 	    ILabel response = (gresponse.hasLabel()) ? LabelGenerationModelConverter.asApiLabel(gresponse.getLabel())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(LabelGenerationGrpc.METHOD_GET_AREA_LABEL, response);
+	    GrpcUtils.logClientMethodResponse(LabelGenerationGrpc.getGetAreaLabelMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(LabelGenerationGrpc.METHOD_GET_AREA_LABEL, t);
+	    throw GrpcUtils.handleClientMethodException(LabelGenerationGrpc.getGetAreaLabelMethod(), t);
 	}
     }
 
@@ -158,7 +158,7 @@ public class LabelGenerationApiChannel extends MultitenantApiChannel<LabelGenera
     @Override
     public ILabel getDeviceTypeLabel(String labelGeneratorId, UUID deviceTypeId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, LabelGenerationGrpc.METHOD_GET_DEVICE_TYPE_LABEL);
+	    GrpcUtils.handleClientMethodEntry(this, LabelGenerationGrpc.getGetDeviceTypeLabelMethod());
 	    GGetDeviceTypeLabelRequest.Builder grequest = GGetDeviceTypeLabelRequest.newBuilder();
 	    grequest.setGeneratorId(labelGeneratorId);
 	    grequest.setDeviceTypeId(CommonModelConverter.asGrpcUuid(deviceTypeId));
@@ -166,10 +166,10 @@ public class LabelGenerationApiChannel extends MultitenantApiChannel<LabelGenera
 		    .getDeviceTypeLabel(grequest.build());
 	    ILabel response = (gresponse.hasLabel()) ? LabelGenerationModelConverter.asApiLabel(gresponse.getLabel())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(LabelGenerationGrpc.METHOD_GET_DEVICE_TYPE_LABEL, response);
+	    GrpcUtils.logClientMethodResponse(LabelGenerationGrpc.getGetDeviceTypeLabelMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(LabelGenerationGrpc.METHOD_GET_DEVICE_TYPE_LABEL, t);
+	    throw GrpcUtils.handleClientMethodException(LabelGenerationGrpc.getGetDeviceTypeLabelMethod(), t);
 	}
     }
 
@@ -181,17 +181,17 @@ public class LabelGenerationApiChannel extends MultitenantApiChannel<LabelGenera
     @Override
     public ILabel getDeviceLabel(String labelGeneratorId, UUID deviceId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, LabelGenerationGrpc.METHOD_GET_DEVICE_LABEL);
+	    GrpcUtils.handleClientMethodEntry(this, LabelGenerationGrpc.getGetDeviceLabelMethod());
 	    GGetDeviceLabelRequest.Builder grequest = GGetDeviceLabelRequest.newBuilder();
 	    grequest.setGeneratorId(labelGeneratorId);
 	    grequest.setDeviceId(CommonModelConverter.asGrpcUuid(deviceId));
 	    GGetDeviceLabelResponse gresponse = getGrpcChannel().getBlockingStub().getDeviceLabel(grequest.build());
 	    ILabel response = (gresponse.hasLabel()) ? LabelGenerationModelConverter.asApiLabel(gresponse.getLabel())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(LabelGenerationGrpc.METHOD_GET_DEVICE_LABEL, response);
+	    GrpcUtils.logClientMethodResponse(LabelGenerationGrpc.getGetDeviceLabelMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(LabelGenerationGrpc.METHOD_GET_DEVICE_LABEL, t);
+	    throw GrpcUtils.handleClientMethodException(LabelGenerationGrpc.getGetDeviceLabelMethod(), t);
 	}
     }
 
@@ -202,7 +202,7 @@ public class LabelGenerationApiChannel extends MultitenantApiChannel<LabelGenera
     @Override
     public ILabel getDeviceGroupLabel(String labelGeneratorId, UUID deviceGroupId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, LabelGenerationGrpc.METHOD_GET_DEVICE_GROUP_LABEL);
+	    GrpcUtils.handleClientMethodEntry(this, LabelGenerationGrpc.getGetDeviceGroupLabelMethod());
 	    GGetDeviceGroupLabelRequest.Builder grequest = GGetDeviceGroupLabelRequest.newBuilder();
 	    grequest.setGeneratorId(labelGeneratorId);
 	    grequest.setDeviceGroupId(CommonModelConverter.asGrpcUuid(deviceGroupId));
@@ -210,10 +210,10 @@ public class LabelGenerationApiChannel extends MultitenantApiChannel<LabelGenera
 		    .getDeviceGroupLabel(grequest.build());
 	    ILabel response = (gresponse.hasLabel()) ? LabelGenerationModelConverter.asApiLabel(gresponse.getLabel())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(LabelGenerationGrpc.METHOD_GET_DEVICE_GROUP_LABEL, response);
+	    GrpcUtils.logClientMethodResponse(LabelGenerationGrpc.getGetDeviceGroupLabelMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(LabelGenerationGrpc.METHOD_GET_DEVICE_GROUP_LABEL, t);
+	    throw GrpcUtils.handleClientMethodException(LabelGenerationGrpc.getGetDeviceGroupLabelMethod(), t);
 	}
     }
 
@@ -225,7 +225,7 @@ public class LabelGenerationApiChannel extends MultitenantApiChannel<LabelGenera
     @Override
     public ILabel getDeviceAssignmentLabel(String labelGeneratorId, UUID deviceAssignmentId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, LabelGenerationGrpc.METHOD_GET_DEVICE_ASSIGNMENT_LABEL);
+	    GrpcUtils.handleClientMethodEntry(this, LabelGenerationGrpc.getGetDeviceAssignmentLabelMethod());
 	    GGetDeviceAssignmentLabelRequest.Builder grequest = GGetDeviceAssignmentLabelRequest.newBuilder();
 	    grequest.setGeneratorId(labelGeneratorId);
 	    grequest.setDeviceAssignmentId(CommonModelConverter.asGrpcUuid(deviceAssignmentId));
@@ -233,10 +233,10 @@ public class LabelGenerationApiChannel extends MultitenantApiChannel<LabelGenera
 		    .getDeviceAssignmentLabel(grequest.build());
 	    ILabel response = (gresponse.hasLabel()) ? LabelGenerationModelConverter.asApiLabel(gresponse.getLabel())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(LabelGenerationGrpc.METHOD_GET_DEVICE_ASSIGNMENT_LABEL, response);
+	    GrpcUtils.logClientMethodResponse(LabelGenerationGrpc.getGetDeviceAssignmentLabelMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(LabelGenerationGrpc.METHOD_GET_DEVICE_ASSIGNMENT_LABEL, t);
+	    throw GrpcUtils.handleClientMethodException(LabelGenerationGrpc.getGetDeviceAssignmentLabelMethod(), t);
 	}
     }
 
@@ -248,7 +248,7 @@ public class LabelGenerationApiChannel extends MultitenantApiChannel<LabelGenera
     @Override
     public ILabel getAssetTypeLabel(String labelGeneratorId, UUID assetTypeId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, LabelGenerationGrpc.METHOD_GET_ASSET_LABEL);
+	    GrpcUtils.handleClientMethodEntry(this, LabelGenerationGrpc.getGetAssetLabelMethod());
 	    GGetAssetTypeLabelRequest.Builder grequest = GGetAssetTypeLabelRequest.newBuilder();
 	    grequest.setGeneratorId(labelGeneratorId);
 	    grequest.setAssetTypeId(CommonModelConverter.asGrpcUuid(assetTypeId));
@@ -256,10 +256,10 @@ public class LabelGenerationApiChannel extends MultitenantApiChannel<LabelGenera
 		    .getAssetTypeLabel(grequest.build());
 	    ILabel response = (gresponse.hasLabel()) ? LabelGenerationModelConverter.asApiLabel(gresponse.getLabel())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(LabelGenerationGrpc.METHOD_GET_ASSET_LABEL, response);
+	    GrpcUtils.logClientMethodResponse(LabelGenerationGrpc.getGetAssetLabelMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(LabelGenerationGrpc.METHOD_GET_ASSET_LABEL, t);
+	    throw GrpcUtils.handleClientMethodException(LabelGenerationGrpc.getGetAssetLabelMethod(), t);
 	}
     }
 
@@ -270,17 +270,17 @@ public class LabelGenerationApiChannel extends MultitenantApiChannel<LabelGenera
     @Override
     public ILabel getAssetLabel(String labelGeneratorId, UUID assetId) throws SiteWhereException {
 	try {
-	    GrpcUtils.logClientMethodEntry(this, LabelGenerationGrpc.METHOD_GET_ASSET_LABEL);
+	    GrpcUtils.handleClientMethodEntry(this, LabelGenerationGrpc.getGetAssetLabelMethod());
 	    GGetAssetLabelRequest.Builder grequest = GGetAssetLabelRequest.newBuilder();
 	    grequest.setGeneratorId(labelGeneratorId);
 	    grequest.setAssetId(CommonModelConverter.asGrpcUuid(assetId));
 	    GGetAssetLabelResponse gresponse = getGrpcChannel().getBlockingStub().getAssetLabel(grequest.build());
 	    ILabel response = (gresponse.hasLabel()) ? LabelGenerationModelConverter.asApiLabel(gresponse.getLabel())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(LabelGenerationGrpc.METHOD_GET_ASSET_LABEL, response);
+	    GrpcUtils.logClientMethodResponse(LabelGenerationGrpc.getGetAssetLabelMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(LabelGenerationGrpc.METHOD_GET_ASSET_LABEL, t);
+	    throw GrpcUtils.handleClientMethodException(LabelGenerationGrpc.getGetAssetLabelMethod(), t);
 	}
     }
 }

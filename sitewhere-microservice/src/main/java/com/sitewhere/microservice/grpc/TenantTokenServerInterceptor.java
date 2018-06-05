@@ -10,6 +10,7 @@ package com.sitewhere.microservice.grpc;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sitewhere.grpc.client.GrpcContextKeys;
 import com.sitewhere.grpc.client.TenantTokenClientInterceptor;
 import com.sitewhere.spi.microservice.IMicroservice;
 
@@ -29,9 +30,6 @@ import io.grpc.Status;
  * @author Derek
  */
 public class TenantTokenServerInterceptor implements ServerInterceptor {
-
-    /** Key for accessing requested tenant id */
-    public static final Context.Key<String> TENANT_ID_KEY = Context.key("tenant");
 
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(TenantTokenServerInterceptor.class);
@@ -54,11 +52,11 @@ public class TenantTokenServerInterceptor implements ServerInterceptor {
 	    ServerCallHandler<ReqT, RespT> next) {
 	if (headers.containsKey(TenantTokenClientInterceptor.TENANT_ID_KEY)) {
 	    String tenantId = headers.get(TenantTokenClientInterceptor.TENANT_ID_KEY);
-	    LOGGER.debug("Received tenant id key: " + tenantId);
-	    Context ctx = Context.current().withValue(TENANT_ID_KEY, tenantId);
+	    LOGGER.trace("Server received tenant id key: " + tenantId);
+	    Context ctx = Context.current().withValue(GrpcContextKeys.TENANT_ID_KEY, tenantId);
 	    return Contexts.interceptCall(ctx, call, headers, next);
 	} else {
-	    call.close(Status.UNAUTHENTICATED.withDescription("No tenant token passed in metadata."), headers);
+	    call.close(Status.UNAUTHENTICATED.withDescription("Tenant token not passed in metadata."), headers);
 	    return new ServerCall.Listener<ReqT>() {
 	    };
 	}

@@ -8,6 +8,7 @@
 package com.sitewhere.labels.grpc;
 
 import com.sitewhere.grpc.client.GrpcUtils;
+import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
 import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.grpc.model.label.LabelGenerationModelConverter;
 import com.sitewhere.grpc.service.GGetAreaLabelRequest;
@@ -53,6 +54,7 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.label.IEntityUriProvider;
 import com.sitewhere.spi.label.ILabelGenerator;
+import com.sitewhere.spi.microservice.IMicroservice;
 
 import io.grpc.stub.StreamObserver;
 
@@ -61,7 +63,7 @@ import io.grpc.stub.StreamObserver;
  * 
  * @author Derek
  */
-public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImplBase {
+public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImplBase implements IGrpcApiImplementation {
 
     /** Tenant engine */
     private ILabelGenerationTenantEngine labelGenerationTenantEngine;
@@ -82,7 +84,7 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
     public void getCustomerTypeLabel(GGetCustomerTypeLabelRequest request,
 	    StreamObserver<GGetCustomerTypeLabelResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(LabelGenerationGrpc.METHOD_GET_CUSTOMER_TYPE_LABEL);
+	    GrpcUtils.handleServerMethodEntry(this, LabelGenerationGrpc.getGetCustomerTypeLabelMethod());
 
 	    ILabelGenerator generator = getLabelGeneratorById(request.getGeneratorId());
 	    ICustomerType customerType = getDeviceManagement()
@@ -96,8 +98,10 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(LabelGenerationGrpc.METHOD_GET_CUSTOMER_TYPE_LABEL, e,
+	    GrpcUtils.handleServerMethodException(LabelGenerationGrpc.getGetCustomerTypeLabelMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(LabelGenerationGrpc.getGetCustomerTypeLabelMethod());
 	}
     }
 
@@ -110,7 +114,7 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
     public void getCustomerLabel(GGetCustomerLabelRequest request,
 	    StreamObserver<GGetCustomerLabelResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(LabelGenerationGrpc.METHOD_GET_CUSTOMER_LABEL);
+	    GrpcUtils.handleServerMethodEntry(this, LabelGenerationGrpc.getGetCustomerLabelMethod());
 
 	    ILabelGenerator generator = getLabelGeneratorById(request.getGeneratorId());
 	    ICustomer customer = getDeviceManagement()
@@ -124,7 +128,9 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(LabelGenerationGrpc.METHOD_GET_CUSTOMER_LABEL, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(LabelGenerationGrpc.getGetCustomerLabelMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(LabelGenerationGrpc.getGetCustomerLabelMethod());
 	}
     }
 
@@ -137,7 +143,7 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
     public void getAreaTypeLabel(GGetAreaTypeLabelRequest request,
 	    StreamObserver<GGetAreaTypeLabelResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(LabelGenerationGrpc.METHOD_GET_AREA_TYPE_LABEL);
+	    GrpcUtils.handleServerMethodEntry(this, LabelGenerationGrpc.getGetAreaTypeLabelMethod());
 
 	    ILabelGenerator generator = getLabelGeneratorById(request.getGeneratorId());
 	    IAreaType areaType = getDeviceManagement()
@@ -151,7 +157,9 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(LabelGenerationGrpc.METHOD_GET_AREA_TYPE_LABEL, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(LabelGenerationGrpc.getGetAreaTypeLabelMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(LabelGenerationGrpc.getGetAreaTypeLabelMethod());
 	}
     }
 
@@ -163,7 +171,7 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
     @Override
     public void getAreaLabel(GGetAreaLabelRequest request, StreamObserver<GGetAreaLabelResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(LabelGenerationGrpc.METHOD_GET_AREA_LABEL);
+	    GrpcUtils.handleServerMethodEntry(this, LabelGenerationGrpc.getGetAreaLabelMethod());
 
 	    ILabelGenerator generator = getLabelGeneratorById(request.getGeneratorId());
 	    IArea area = getDeviceManagement().getArea(CommonModelConverter.asApiUuid(request.getAreaId()));
@@ -176,7 +184,9 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(LabelGenerationGrpc.METHOD_GET_AREA_LABEL, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(LabelGenerationGrpc.getGetAreaLabelMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(LabelGenerationGrpc.getGetAreaLabelMethod());
 	}
     }
 
@@ -189,7 +199,7 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
     public void getDeviceTypeLabel(GGetDeviceTypeLabelRequest request,
 	    StreamObserver<GGetDeviceTypeLabelResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(LabelGenerationGrpc.METHOD_GET_DEVICE_TYPE_LABEL);
+	    GrpcUtils.handleServerMethodEntry(this, LabelGenerationGrpc.getGetDeviceTypeLabelMethod());
 
 	    ILabelGenerator generator = getLabelGeneratorById(request.getGeneratorId());
 	    IDeviceType deviceType = getDeviceManagement()
@@ -203,8 +213,10 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(LabelGenerationGrpc.METHOD_GET_DEVICE_TYPE_LABEL, e,
+	    GrpcUtils.handleServerMethodException(LabelGenerationGrpc.getGetDeviceTypeLabelMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(LabelGenerationGrpc.getGetDeviceTypeLabelMethod());
 	}
     }
 
@@ -217,7 +229,7 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
     public void getDeviceLabel(GGetDeviceLabelRequest request,
 	    StreamObserver<GGetDeviceLabelResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(LabelGenerationGrpc.METHOD_GET_DEVICE_LABEL);
+	    GrpcUtils.handleServerMethodEntry(this, LabelGenerationGrpc.getGetDeviceLabelMethod());
 
 	    ILabelGenerator generator = getLabelGeneratorById(request.getGeneratorId());
 	    IDevice device = getDeviceManagement().getDevice(CommonModelConverter.asApiUuid(request.getDeviceId()));
@@ -230,7 +242,9 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(LabelGenerationGrpc.METHOD_GET_DEVICE_LABEL, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(LabelGenerationGrpc.getGetDeviceLabelMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(LabelGenerationGrpc.getGetDeviceLabelMethod());
 	}
     }
 
@@ -243,7 +257,7 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
     public void getDeviceGroupLabel(GGetDeviceGroupLabelRequest request,
 	    StreamObserver<GGetDeviceGroupLabelResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(LabelGenerationGrpc.METHOD_GET_DEVICE_GROUP_LABEL);
+	    GrpcUtils.handleServerMethodEntry(this, LabelGenerationGrpc.getGetDeviceGroupLabelMethod());
 
 	    ILabelGenerator generator = getLabelGeneratorById(request.getGeneratorId());
 	    IDeviceGroup deviceGroup = getDeviceManagement()
@@ -257,8 +271,10 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(LabelGenerationGrpc.METHOD_GET_DEVICE_GROUP_LABEL, e,
+	    GrpcUtils.handleServerMethodException(LabelGenerationGrpc.getGetDeviceGroupLabelMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(LabelGenerationGrpc.getGetDeviceGroupLabelMethod());
 	}
     }
 
@@ -271,7 +287,7 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
     public void getDeviceAssignmentLabel(GGetDeviceAssignmentLabelRequest request,
 	    StreamObserver<GGetDeviceAssignmentLabelResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(LabelGenerationGrpc.METHOD_GET_DEVICE_ASSIGNMENT_LABEL);
+	    GrpcUtils.handleServerMethodEntry(this, LabelGenerationGrpc.getGetDeviceAssignmentLabelMethod());
 
 	    ILabelGenerator generator = getLabelGeneratorById(request.getGeneratorId());
 	    IDeviceAssignment assignment = getDeviceManagement()
@@ -285,8 +301,10 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(LabelGenerationGrpc.METHOD_GET_DEVICE_ASSIGNMENT_LABEL, e,
+	    GrpcUtils.handleServerMethodException(LabelGenerationGrpc.getGetDeviceAssignmentLabelMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(LabelGenerationGrpc.getGetDeviceAssignmentLabelMethod());
 	}
     }
 
@@ -299,7 +317,7 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
     public void getAssetTypeLabel(GGetAssetTypeLabelRequest request,
 	    StreamObserver<GGetAssetTypeLabelResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(LabelGenerationGrpc.METHOD_GET_ASSET_TYPE_LABEL);
+	    GrpcUtils.handleServerMethodEntry(this, LabelGenerationGrpc.getGetAssetTypeLabelMethod());
 
 	    ILabelGenerator generator = getLabelGeneratorById(request.getGeneratorId());
 	    IAssetType assetType = getAssetManagement()
@@ -313,7 +331,10 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(LabelGenerationGrpc.METHOD_GET_ASSET_TYPE_LABEL, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(LabelGenerationGrpc.getGetAssetTypeLabelMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(LabelGenerationGrpc.getGetAssetTypeLabelMethod());
 	}
     }
 
@@ -325,7 +346,7 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
     @Override
     public void getAssetLabel(GGetAssetLabelRequest request, StreamObserver<GGetAssetLabelResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(LabelGenerationGrpc.METHOD_GET_ASSET_LABEL);
+	    GrpcUtils.handleServerMethodEntry(this, LabelGenerationGrpc.getGetAssetLabelMethod());
 
 	    ILabelGenerator generator = getLabelGeneratorById(request.getGeneratorId());
 	    IAsset asset = getAssetManagement().getAsset(CommonModelConverter.asApiUuid(request.getAssetId()));
@@ -338,7 +359,9 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(LabelGenerationGrpc.METHOD_GET_ASSET_LABEL, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(LabelGenerationGrpc.getGetAssetLabelMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(LabelGenerationGrpc.getGetAssetLabelMethod());
 	}
     }
 
@@ -379,19 +402,20 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
 	return generator;
     }
 
+    /*
+     * @see
+     * com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation#getMicroservice()
+     */
+    @Override
+    public IMicroservice<?> getMicroservice() {
+	return getLabelGenerationTenantEngine().getMicroservice();
+    }
+
     protected ILabelGenerationTenantEngine getLabelGenerationTenantEngine() {
 	return labelGenerationTenantEngine;
     }
 
-    protected void setLabelGenerationTenantEngine(ILabelGenerationTenantEngine labelGenerationTenantEngine) {
-	this.labelGenerationTenantEngine = labelGenerationTenantEngine;
-    }
-
-    public IEntityUriProvider getEntityUriProvider() {
+    protected IEntityUriProvider getEntityUriProvider() {
 	return entityUriProvider;
-    }
-
-    public void setEntityUriProvider(IEntityUriProvider entityUriProvider) {
-	this.entityUriProvider = entityUriProvider;
     }
 }

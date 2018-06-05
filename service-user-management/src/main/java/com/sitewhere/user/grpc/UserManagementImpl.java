@@ -10,6 +10,7 @@ package com.sitewhere.user.grpc;
 import java.util.List;
 
 import com.sitewhere.grpc.client.GrpcUtils;
+import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
 import com.sitewhere.grpc.model.converter.UserModelConverter;
 import com.sitewhere.grpc.service.GAddGrantedAuthoritiesRequest;
 import com.sitewhere.grpc.service.GAddGrantedAuthoritiesResponse;
@@ -44,10 +45,12 @@ import com.sitewhere.grpc.service.GUpdateUserResponse;
 import com.sitewhere.grpc.service.UserManagementGrpc;
 import com.sitewhere.rest.model.search.user.UserSearchCriteria;
 import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
+import com.sitewhere.user.spi.microservice.IUserManagementMicroservice;
 
 import io.grpc.stub.StreamObserver;
 
@@ -56,12 +59,16 @@ import io.grpc.stub.StreamObserver;
  * 
  * @author Derek
  */
-public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBase {
+public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBase implements IGrpcApiImplementation {
+
+    /** Parent microservice */
+    private IUserManagementMicroservice<?> microservice;
 
     /** User management persistence */
     private IUserManagement userMangagement;
 
-    public UserManagementImpl(IUserManagement userMangagement) {
+    public UserManagementImpl(IUserManagementMicroservice<?> microservice, IUserManagement userMangagement) {
+	this.microservice = microservice;
 	this.userMangagement = userMangagement;
     }
 
@@ -75,7 +82,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     @Override
     public void createUser(GCreateUserRequest request, StreamObserver<GCreateUserResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_CREATE_USER);
+	    GrpcUtils.handleServerMethodEntry(this, UserManagementGrpc.getCreateUserMethod());
 	    IUserCreateRequest apiRequest = UserModelConverter.asApiUserCreateRequest(request.getRequest());
 	    IUser apiResult = getUserMangagement().createUser(apiRequest, request.getEncodePassword());
 	    GCreateUserResponse.Builder response = GCreateUserResponse.newBuilder();
@@ -83,7 +90,9 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_CREATE_USER, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.getCreateUserMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(UserManagementGrpc.getCreateUserMethod());
 	}
     }
 
@@ -97,7 +106,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     @Override
     public void importUser(GImportUserRequest request, StreamObserver<GImportUserResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_IMPORT_USER);
+	    GrpcUtils.handleServerMethodEntry(this, UserManagementGrpc.getImportUserMethod());
 	    IUser apiUser = UserModelConverter.asApiUser(request.getUser());
 	    IUser apiResult = getUserMangagement().importUser(apiUser, request.getOverwrite());
 	    GImportUserResponse.Builder response = GImportUserResponse.newBuilder();
@@ -105,7 +114,9 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_IMPORT_USER, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.getImportUserMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(UserManagementGrpc.getImportUserMethod());
 	}
     }
 
@@ -119,7 +130,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     @Override
     public void authenticate(GAuthenticateRequest request, StreamObserver<GAuthenticateResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_AUTHENTICATE);
+	    GrpcUtils.handleServerMethodEntry(this, UserManagementGrpc.getAuthenticateMethod());
 	    IUser apiResult = getUserMangagement().authenticate(request.getUsername(), request.getPassword(),
 		    request.getUpdateLastLogin());
 	    GAuthenticateResponse.Builder response = GAuthenticateResponse.newBuilder();
@@ -127,7 +138,9 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_AUTHENTICATE, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.getAuthenticateMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(UserManagementGrpc.getAuthenticateMethod());
 	}
     }
 
@@ -141,7 +154,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     @Override
     public void updateUser(GUpdateUserRequest request, StreamObserver<GUpdateUserResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_UPDATE_USER);
+	    GrpcUtils.handleServerMethodEntry(this, UserManagementGrpc.getUpdateUserMethod());
 	    IUserCreateRequest apiRequest = UserModelConverter.asApiUserCreateRequest(request.getRequest());
 	    IUser apiResult = getUserMangagement().updateUser(request.getUsername(), apiRequest,
 		    request.getEncodePassword());
@@ -150,7 +163,9 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_UPDATE_USER, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.getUpdateUserMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(UserManagementGrpc.getUpdateUserMethod());
 	}
     }
 
@@ -165,7 +180,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     public void getUserByUsername(GGetUserByUsernameRequest request,
 	    StreamObserver<GGetUserByUsernameResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_GET_USER_BY_USERNAME);
+	    GrpcUtils.handleServerMethodEntry(this, UserManagementGrpc.getGetUserByUsernameMethod());
 	    IUser apiResult = getUserMangagement().getUserByUsername(request.getUsername());
 	    GGetUserByUsernameResponse.Builder response = GGetUserByUsernameResponse.newBuilder();
 	    if (apiResult != null) {
@@ -174,7 +189,9 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_GET_USER_BY_USERNAME, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.getGetUserByUsernameMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(UserManagementGrpc.getGetUserByUsernameMethod());
 	}
     }
 
@@ -188,7 +205,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     @Override
     public void listUsers(GListUsersRequest request, StreamObserver<GListUsersResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_LIST_USERS);
+	    GrpcUtils.handleServerMethodEntry(this, UserManagementGrpc.getListUsersMethod());
 	    UserSearchCriteria criteria = new UserSearchCriteria();
 	    criteria.setIncludeDeleted(request.getCriteria().getIncludeDeleted());
 	    List<IUser> apiResult = getUserMangagement().listUsers(criteria);
@@ -199,7 +216,9 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_LIST_USERS, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.getListUsersMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(UserManagementGrpc.getListUsersMethod());
 	}
     }
 
@@ -213,14 +232,16 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     @Override
     public void deleteUser(GDeleteUserRequest request, StreamObserver<GDeleteUserResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_DELETE_USER);
+	    GrpcUtils.handleServerMethodEntry(this, UserManagementGrpc.getDeleteUserMethod());
 	    IUser apiResult = getUserMangagement().deleteUser(request.getUsername(), request.getForce());
 	    GDeleteUserResponse.Builder response = GDeleteUserResponse.newBuilder();
 	    response.setUser(UserModelConverter.asGrpcUser(apiResult));
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_DELETE_USER, e, responseObserver);
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.getDeleteUserMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(UserManagementGrpc.getDeleteUserMethod());
 	}
     }
 
@@ -235,7 +256,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     public void createGrantedAuthority(GCreateGrantedAuthorityRequest request,
 	    StreamObserver<GCreateGrantedAuthorityResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_CREATE_GRANTED_AUTHORITY);
+	    GrpcUtils.handleServerMethodEntry(this, UserManagementGrpc.getCreateGrantedAuthorityMethod());
 	    IGrantedAuthority apiResult = getUserMangagement().createGrantedAuthority(
 		    UserModelConverter.asApiGrantedAuthorityCreateRequest(request.getRequest()));
 	    GCreateGrantedAuthorityResponse.Builder response = GCreateGrantedAuthorityResponse.newBuilder();
@@ -243,8 +264,10 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_CREATE_GRANTED_AUTHORITY, e,
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.getCreateGrantedAuthorityMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(UserManagementGrpc.getCreateGrantedAuthorityMethod());
 	}
     }
 
@@ -259,7 +282,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     public void getGrantedAuthorityByName(GGetGrantedAuthorityByNameRequest request,
 	    StreamObserver<GGetGrantedAuthorityByNameResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_GET_GRANTED_AUTHORITY_BY_NAME);
+	    GrpcUtils.handleServerMethodEntry(this, UserManagementGrpc.getGetGrantedAuthorityByNameMethod());
 	    IGrantedAuthority apiResult = getUserMangagement().getGrantedAuthorityByName(request.getName());
 	    GGetGrantedAuthorityByNameResponse.Builder response = GGetGrantedAuthorityByNameResponse.newBuilder();
 	    if (apiResult != null) {
@@ -268,8 +291,10 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_GET_GRANTED_AUTHORITY_BY_NAME, e,
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.getGetGrantedAuthorityByNameMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(UserManagementGrpc.getGetGrantedAuthorityByNameMethod());
 	}
     }
 
@@ -284,7 +309,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     public void updateGrantedAuthority(GUpdateGrantedAuthorityRequest request,
 	    StreamObserver<GUpdateGrantedAuthorityResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_UPDATE_GRANTED_AUTHORITY);
+	    GrpcUtils.handleServerMethodEntry(this, UserManagementGrpc.getUpdateGrantedAuthorityMethod());
 	    IGrantedAuthority apiResult = getUserMangagement().updateGrantedAuthority(request.getName(),
 		    UserModelConverter.asApiGrantedAuthorityCreateRequest(request.getRequest()));
 	    GUpdateGrantedAuthorityResponse.Builder response = GUpdateGrantedAuthorityResponse.newBuilder();
@@ -292,8 +317,10 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_UPDATE_GRANTED_AUTHORITY, e,
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.getUpdateGrantedAuthorityMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(UserManagementGrpc.getUpdateGrantedAuthorityMethod());
 	}
     }
 
@@ -308,7 +335,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     public void listGrantedAuthorities(GListGrantedAuthoritiesRequest request,
 	    StreamObserver<GListGrantedAuthoritiesResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_LIST_GRANTED_AUTHORITIES);
+	    GrpcUtils.handleServerMethodEntry(this, UserManagementGrpc.getListGrantedAuthoritiesMethod());
 	    List<IGrantedAuthority> apiResult = getUserMangagement()
 		    .listGrantedAuthorities(new GrantedAuthoritySearchCriteria());
 	    GListGrantedAuthoritiesResponse.Builder response = GListGrantedAuthoritiesResponse.newBuilder();
@@ -318,8 +345,10 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_LIST_GRANTED_AUTHORITIES, e,
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.getListGrantedAuthoritiesMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(UserManagementGrpc.getListGrantedAuthoritiesMethod());
 	}
     }
 
@@ -334,14 +363,16 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     public void deleteGrantedAuthority(GDeleteGrantedAuthorityRequest request,
 	    StreamObserver<GDeleteGrantedAuthorityResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_DELETE_GRANTED_AUTHORITY);
+	    GrpcUtils.handleServerMethodEntry(this, UserManagementGrpc.getDeleteGrantedAuthorityMethod());
 	    getUserMangagement().deleteGrantedAuthority(request.getName());
 	    GDeleteGrantedAuthorityResponse.Builder response = GDeleteGrantedAuthorityResponse.newBuilder();
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_DELETE_GRANTED_AUTHORITY, e,
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.getDeleteGrantedAuthorityMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(UserManagementGrpc.getDeleteGrantedAuthorityMethod());
 	}
     }
 
@@ -356,7 +387,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     public void getGrantedAuthoritiesForUser(GGetGrantedAuthoritiesRequest request,
 	    StreamObserver<GGetGrantedAuthoritiesResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_GET_GRANTED_AUTHORITIES_FOR_USER);
+	    GrpcUtils.handleServerMethodEntry(this, UserManagementGrpc.getGetGrantedAuthoritiesForUserMethod());
 	    List<IGrantedAuthority> apiResult = getUserMangagement().getGrantedAuthorities(request.getUsername());
 	    GGetGrantedAuthoritiesResponse.Builder response = GGetGrantedAuthoritiesResponse.newBuilder();
 	    for (IGrantedAuthority apiAuth : apiResult) {
@@ -365,8 +396,10 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_GET_GRANTED_AUTHORITIES_FOR_USER, e,
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.getGetGrantedAuthoritiesForUserMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(UserManagementGrpc.getGetGrantedAuthoritiesForUserMethod());
 	}
     }
 
@@ -381,7 +414,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     public void addGrantedAuthoritiesForUser(GAddGrantedAuthoritiesRequest request,
 	    StreamObserver<GAddGrantedAuthoritiesResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_ADD_GRANTED_AUTHORITIES_FOR_USER);
+	    GrpcUtils.handleServerMethodEntry(this, UserManagementGrpc.getAddGrantedAuthoritiesForUserMethod());
 	    List<IGrantedAuthority> apiResult = getUserMangagement().addGrantedAuthorities(request.getUsername(),
 		    request.getAuthoritiesList());
 	    GAddGrantedAuthoritiesResponse.Builder response = GAddGrantedAuthoritiesResponse.newBuilder();
@@ -391,8 +424,10 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_ADD_GRANTED_AUTHORITIES_FOR_USER, e,
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.getAddGrantedAuthoritiesForUserMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(UserManagementGrpc.getAddGrantedAuthoritiesForUserMethod());
 	}
     }
 
@@ -407,7 +442,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     public void removeGrantedAuthoritiesForUser(GRemoveGrantedAuthoritiesRequest request,
 	    StreamObserver<GRemoveGrantedAuthoritiesResponse> responseObserver) {
 	try {
-	    GrpcUtils.logServerMethodEntry(UserManagementGrpc.METHOD_REMOVE_GRANTED_AUTHORITIES_FOR_USER);
+	    GrpcUtils.handleServerMethodEntry(this, UserManagementGrpc.getRemoveGrantedAuthoritiesForUserMethod());
 	    List<IGrantedAuthority> apiResult = getUserMangagement().removeGrantedAuthorities(request.getUsername(),
 		    request.getAuthoritiesList());
 	    GRemoveGrantedAuthoritiesResponse.Builder response = GRemoveGrantedAuthoritiesResponse.newBuilder();
@@ -417,16 +452,23 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(UserManagementGrpc.METHOD_REMOVE_GRANTED_AUTHORITIES_FOR_USER, e,
+	    GrpcUtils.handleServerMethodException(UserManagementGrpc.getRemoveGrantedAuthoritiesForUserMethod(), e,
 		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(UserManagementGrpc.getRemoveGrantedAuthoritiesForUserMethod());
 	}
     }
 
-    public IUserManagement getUserMangagement() {
-	return userMangagement;
+    /*
+     * @see
+     * com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation#getMicroservice()
+     */
+    @Override
+    public IMicroservice<?> getMicroservice() {
+	return microservice;
     }
 
-    public void setUserMangagement(IUserManagement userMangagement) {
-	this.userMangagement = userMangagement;
+    protected IUserManagement getUserMangagement() {
+	return userMangagement;
     }
 }

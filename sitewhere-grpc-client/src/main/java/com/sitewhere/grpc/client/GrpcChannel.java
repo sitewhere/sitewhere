@@ -71,7 +71,7 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	ManagedChannelBuilder<?> builder = ManagedChannelBuilder.forAddress(getHostname(), getPort()).usePlaintext(true)
+	ManagedChannelBuilder<?> builder = ManagedChannelBuilder.forAddress(getHostname(), getPort()).usePlaintext()
 		.intercept(getJwtInterceptor());
 	if (isUseTracingInterceptor()) {
 	    builder.intercept(getTracingInterceptor());
