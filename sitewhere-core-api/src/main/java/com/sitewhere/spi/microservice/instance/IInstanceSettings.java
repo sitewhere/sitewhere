@@ -83,4 +83,11 @@ public interface IInstanceSettings {
      * @return
      */
     public String getTracerServer();
+
+    /**
+     * Indicates whether to log metrics.
+     * 
+     * @return
+     */
+    public boolean isLogMetrics();
 }

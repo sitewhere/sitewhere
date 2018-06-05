@@ -58,6 +58,10 @@ public class InstanceSettings implements IInstanceSettings {
     @Value("${sitewhere.tracer.server:jaeger}")
     private String tracerServer;
 
+    /** Flag for whether to log metrics */
+    @Value("${sitewhere.log.metrics:false}")
+    private boolean logMetrics;
+
     /*
      * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#getProductId()
      */
@@ -71,10 +75,8 @@ public class InstanceSettings implements IInstanceSettings {
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.microservice.spi.instance.IInstanceSettings#getInstanceId()
+     * com.sitewhere.spi.microservice.instance.IInstanceSettings#getInstanceId()
      */
     @Override
     public String getInstanceId() {
@@ -86,9 +88,7 @@ public class InstanceSettings implements IInstanceSettings {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.instance.IInstanceSettings#
+     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
      * getInstanceTemplateId()
      */
     @Override
@@ -101,10 +101,8 @@ public class InstanceSettings implements IInstanceSettings {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.instance.IInstanceSettings#
-     * getZookeeperHost()
+     * @see
+     * com.sitewhere.spi.microservice.instance.IInstanceSettings#getZookeeperHost()
      */
     @Override
     public String getZookeeperHost() {
@@ -116,10 +114,8 @@ public class InstanceSettings implements IInstanceSettings {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.instance.IInstanceSettings#
-     * getZookeeperPort()
+     * @see
+     * com.sitewhere.spi.microservice.instance.IInstanceSettings#getZookeeperPort()
      */
     @Override
     public int getZookeeperPort() {
@@ -131,9 +127,7 @@ public class InstanceSettings implements IInstanceSettings {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.instance.IInstanceSettings#
+     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
      * getKafkaBootstrapServers()
      */
     @Override
@@ -146,9 +140,7 @@ public class InstanceSettings implements IInstanceSettings {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.instance.IInstanceSettings#
+     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
      * getFileSystemStorageRoot()
      */
     @Override
@@ -161,9 +153,7 @@ public class InstanceSettings implements IInstanceSettings {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.instance.IInstanceSettings#getGrpcPort()
+     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#getGrpcPort()
      */
     @Override
     public int getGrpcPort() {
@@ -188,10 +178,8 @@ public class InstanceSettings implements IInstanceSettings {
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.microservice.spi.instance.IInstanceSettings#getTracerServer ()
+     * com.sitewhere.spi.microservice.instance.IInstanceSettings#getTracerServer()
      */
     @Override
     public String getTracerServer() {
@@ -200,5 +188,17 @@ public class InstanceSettings implements IInstanceSettings {
 
     public void setTracerServer(String tracerServer) {
 	this.tracerServer = tracerServer;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#isLogMetrics()
+     */
+    @Override
+    public boolean isLogMetrics() {
+	return logMetrics;
+    }
+
+    public void setLogMetrics(boolean logMetrics) {
+	this.logMetrics = logMetrics;
     }
 }

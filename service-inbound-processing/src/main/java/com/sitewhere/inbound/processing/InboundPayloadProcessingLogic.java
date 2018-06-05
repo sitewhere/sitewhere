@@ -9,11 +9,9 @@ package com.sitewhere.inbound.processing;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
 import com.sitewhere.common.MarshalUtils;
@@ -81,7 +79,6 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	this.assignmentLookupTimer = createTimerMetric("assignmentLookup");
 	this.eventStorageTimer = createTimerMetric("eventStorage");
 	this.eventStorageStrategy = new UnaryEventStorageStrategy((IInboundProcessingTenantEngine) getTenantEngine());
-	// logMetricsToConsole();
     }
 
     /**
@@ -111,7 +108,12 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	for (ConsumerRecord<String, byte[]> record : records) {
 	    GInboundEventPayload payload = decodeRequest(record);
 	    IDeviceAssignment assignment = validateAssignment(payload);
-	    getEventStorageStrategy().storeDeviceEvent(assignment, payload);
+	    final Timer.Context eventStorageTime = getEventStorageTimer().time();
+	    try {
+		getEventStorageStrategy().storeDeviceEvent(assignment, payload);
+	    } finally {
+		eventStorageTime.stop();
+	    }
 	}
 	return requests;
     }
@@ -175,15 +177,6 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	}
 
 	return assignment;
-    }
-
-    /**
-     * Log metrics to console.
-     */
-    protected void logMetricsToConsole() {
-	ConsoleReporter reporter = ConsoleReporter.forRegistry(getTenantEngine().getMicroservice().getMetricRegistry())
-		.convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MILLISECONDS).build();
-	reporter.start(10, TimeUnit.SECONDS);
     }
 
     /**

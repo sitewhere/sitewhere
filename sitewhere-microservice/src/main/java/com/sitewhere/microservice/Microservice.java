@@ -13,11 +13,14 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.ScheduledReporter;
+import com.codahale.metrics.Slf4jReporter;
 import com.sitewhere.Version;
 import com.sitewhere.microservice.logging.MicroserviceLogProducer;
 import com.sitewhere.microservice.management.MicroserviceManagementGrpcServer;
@@ -126,6 +129,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     /** Metric registry */
     private MetricRegistry metricRegistry = new MetricRegistry();
 
+    /** Metrics reporter */
+    private ScheduledReporter metricsReporter;
+
     public Microservice() {
 	this.microserviceOperationsService = Executors
 		.newSingleThreadExecutor(new MicroserviceOperationsThreadFactory());
@@ -152,6 +158,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Initialize metrics logging.
+	initializeMetrics();
+
 	// Initialize GRPC components.
 	initializeGrpcComponents();
 
@@ -196,6 +205,19 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     }
 
     /**
+     * Initialize metrics.
+     */
+    protected void initializeMetrics() {
+	if (getInstanceSettings().isLogMetrics()) {
+	    this.metricsReporter = Slf4jReporter.forRegistry(getMetricRegistry()).convertRatesTo(TimeUnit.SECONDS)
+		    .convertDurationsTo(TimeUnit.MILLISECONDS).build();
+	    getMetricsReporter().start(20, TimeUnit.SECONDS);
+	} else {
+	    getLogger().info("Metrics reporting is disabled.");
+	}
+    }
+
+    /**
      * Initialize GRPC components.
      */
     protected void initializeGrpcComponents() {
@@ -229,6 +251,11 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
      */
     @Override
     public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Stop reporting metrics.
+	if (getMetricsReporter() != null) {
+	    getMetricsReporter().stop();
+	}
+
 	// Stop sending heartbeats.
 	if (getMicroserviceHeartbeatService() != null) {
 	    getMicroserviceHeartbeatService().shutdownNow();
@@ -562,6 +589,18 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     public void setMetricRegistry(MetricRegistry metricRegistry) {
 	this.metricRegistry = metricRegistry;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getMetricsReporter()
+     */
+    @Override
+    public ScheduledReporter getMetricsReporter() {
+	return metricsReporter;
+    }
+
+    public void setMetricsReporter(ScheduledReporter metricsReporter) {
+	this.metricsReporter = metricsReporter;
     }
 
     /*
