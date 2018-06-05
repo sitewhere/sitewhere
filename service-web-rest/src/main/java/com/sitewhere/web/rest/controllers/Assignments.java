@@ -42,9 +42,9 @@ import com.sitewhere.device.charting.ChartBuilder;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
 import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
+import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
-import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
@@ -73,8 +73,6 @@ import com.sitewhere.spi.device.event.DeviceEventIndex;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
-import com.sitewhere.spi.device.event.IDeviceEvent;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
@@ -305,37 +303,6 @@ public class Assignments extends RestControllerBase {
     }
 
     /**
-     * List all device events for an assignment that match the given criteria.
-     * 
-     * @param token
-     * @param page
-     * @param pageSize
-     * @param startDate
-     * @param endDate
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/{token}/events", method = RequestMethod.GET)
-    @ApiOperation(value = "List events for device assignment")
-    @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IDeviceEvent> listEvents(
-	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
-	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
-	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
-	    HttpServletResponse response) throws SiteWhereException {
-	// Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
-	// Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
-	// DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page,
-	// pageSize, parsedStartDate, parsedEndDate);
-	// IDeviceAssignment assignment = assertDeviceAssignment(token);
-	// return getDeviceEventManagement().listDeviceEvents(assignment.getId(),
-	// criteria);
-	return null;
-    }
-
-    /**
      * List all device measurements for a given assignment.
      * 
      * @param assignmentToken
@@ -354,8 +321,8 @@ public class Assignments extends RestControllerBase {
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
-	return getDeviceEventManagement().listDeviceMeasurementsForIndex(DeviceEventIndex.Assignment,
-		Collections.singletonList(assignment.getId()), criteria);
+	return new BlockingDeviceEventManagement(getDeviceEventManagement()).listDeviceMeasurementsForIndex(
+		DeviceEventIndex.Assignment, Collections.singletonList(assignment.getId()), criteria);
     }
 
     /**
@@ -378,8 +345,9 @@ public class Assignments extends RestControllerBase {
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	ISearchResults<IDeviceMeasurements> measurements = getDeviceEventManagement().listDeviceMeasurementsForIndex(
-		DeviceEventIndex.Assignment, Collections.singletonList(assignment.getId()), criteria);
+	ISearchResults<IDeviceMeasurements> measurements = new BlockingDeviceEventManagement(getDeviceEventManagement())
+		.listDeviceMeasurementsForIndex(DeviceEventIndex.Assignment,
+			Collections.singletonList(assignment.getId()), criteria);
 	ChartBuilder builder = new ChartBuilder();
 	return builder.process(measurements.getResults(), measurementIds);
     }
@@ -396,12 +364,12 @@ public class Assignments extends RestControllerBase {
     @RequestMapping(value = "/{token}/measurements", method = RequestMethod.POST)
     @ApiOperation(value = "Create measurements event for device assignment")
     @Secured({ SiteWhereRoles.REST })
-    public DeviceMeasurements createMeasurements(@RequestBody DeviceMeasurementsCreateRequest input,
+    public IDeviceMeasurements createMeasurements(@RequestBody DeviceMeasurementsCreateRequest input,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	IDeviceMeasurements result = getDeviceEventManagement().addDeviceMeasurements(assignment.getId(), input);
-	return DeviceMeasurements.copy(result);
+	return new BlockingDeviceEventManagement(getDeviceEventManagement()).addDeviceMeasurements(assignment.getId(),
+		input);
     }
 
     /**
@@ -423,8 +391,8 @@ public class Assignments extends RestControllerBase {
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return getDeviceEventManagement().listDeviceLocationsForIndex(DeviceEventIndex.Assignment,
-		Collections.singletonList(assignment.getId()), criteria);
+	return new BlockingDeviceEventManagement(getDeviceEventManagement()).listDeviceLocationsForIndex(
+		DeviceEventIndex.Assignment, Collections.singletonList(assignment.getId()), criteria);
     }
 
     /**
@@ -443,7 +411,8 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return getDeviceEventManagement().addDeviceLocation(assignment.getId(), input);
+	return new BlockingDeviceEventManagement(getDeviceEventManagement()).addDeviceLocation(assignment.getId(),
+		input);
     }
 
     /**
@@ -465,8 +434,8 @@ public class Assignments extends RestControllerBase {
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return getDeviceEventManagement().listDeviceAlertsForIndex(DeviceEventIndex.Assignment,
-		Collections.singletonList(assignment.getId()), criteria);
+	return new BlockingDeviceEventManagement(getDeviceEventManagement()).listDeviceAlertsForIndex(
+		DeviceEventIndex.Assignment, Collections.singletonList(assignment.getId()), criteria);
     }
 
     /**
@@ -485,7 +454,7 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return getDeviceEventManagement().addDeviceAlert(assignment.getId(), input);
+	return new BlockingDeviceEventManagement(getDeviceEventManagement()).addDeviceAlert(assignment.getId(), input);
     }
 
     /**
@@ -597,7 +566,8 @@ public class Assignments extends RestControllerBase {
 	    request.setEventDate(new Date());
 	    request.setUpdateState(false);
 	    request.setData(payload);
-	    getDeviceEventManagement().addDeviceStreamData(assignment.getId(), stream, request);
+	    new BlockingDeviceEventManagement(getDeviceEventManagement()).addDeviceStreamData(assignment.getId(),
+		    stream, request);
 	    svtResponse.setStatus(HttpServletResponse.SC_CREATED);
 	} catch (SiteWhereSystemException e) {
 	    if (e.getCode() == ErrorCode.InvalidStreamId) {
@@ -629,8 +599,8 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Sequence Number", required = true) @PathVariable long sequenceNumber,
 	    HttpServletRequest servletRequest, HttpServletResponse svtResponse) throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	IDeviceStreamData chunk = getDeviceEventManagement().getDeviceStreamData(assignment.getId(), streamId,
-		sequenceNumber);
+	IDeviceStreamData chunk = new BlockingDeviceEventManagement(getDeviceEventManagement())
+		.getDeviceStreamData(assignment.getId(), streamId, sequenceNumber);
 	if (chunk == null) {
 	    svtResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
 	    return;
@@ -654,7 +624,7 @@ public class Assignments extends RestControllerBase {
 	svtResponse.setContentType(stream.getContentType());
 
 	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 0, null, null);
-	ISearchResults<IDeviceStreamData> data = getDeviceEventManagement()
+	ISearchResults<IDeviceStreamData> data = new BlockingDeviceEventManagement(getDeviceEventManagement())
 		.listDeviceStreamDataForAssignment(assignment.getId(), streamId, criteria);
 
 	// Sort results by sequence number.
@@ -689,8 +659,8 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	IDeviceCommandInvocation result = getDeviceEventManagement().addDeviceCommandInvocation(assignment.getId(),
-		request);
+	IDeviceCommandInvocation result = new BlockingDeviceEventManagement(getDeviceEventManagement())
+		.addDeviceCommandInvocation(assignment.getId(), request);
 	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(getDeviceManagement());
 	return helper.convert(result);
     }
@@ -728,7 +698,7 @@ public class Assignments extends RestControllerBase {
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	ISearchResults<IDeviceCommandInvocation> matches = getDeviceEventManagement()
+	ISearchResults<IDeviceCommandInvocation> matches = new BlockingDeviceEventManagement(getDeviceEventManagement())
 		.listDeviceCommandInvocationsForIndex(DeviceEventIndex.Assignment,
 			Collections.singletonList(assignment.getId()), criteria);
 	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(getDeviceManagement());
@@ -755,7 +725,8 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return getDeviceEventManagement().addDeviceStateChange(assignment.getId(), input);
+	return new BlockingDeviceEventManagement(getDeviceEventManagement()).addDeviceStateChange(assignment.getId(),
+		input);
     }
 
     /**
@@ -777,8 +748,8 @@ public class Assignments extends RestControllerBase {
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return getDeviceEventManagement().listDeviceStateChangesForIndex(DeviceEventIndex.Assignment,
-		Collections.singletonList(assignment.getId()), criteria);
+	return new BlockingDeviceEventManagement(getDeviceEventManagement()).listDeviceStateChangesForIndex(
+		DeviceEventIndex.Assignment, Collections.singletonList(assignment.getId()), criteria);
     }
 
     /**
@@ -796,7 +767,8 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	IDeviceCommandResponse result = getDeviceEventManagement().addDeviceCommandResponse(assignment.getId(), input);
+	IDeviceCommandResponse result = new BlockingDeviceEventManagement(getDeviceEventManagement())
+		.addDeviceCommandResponse(assignment.getId(), input);
 	return DeviceCommandResponse.copy(result);
     }
 
@@ -819,8 +791,8 @@ public class Assignments extends RestControllerBase {
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return getDeviceEventManagement().listDeviceCommandResponsesForIndex(DeviceEventIndex.Assignment,
-		Collections.singletonList(assignment.getId()), criteria);
+	return new BlockingDeviceEventManagement(getDeviceEventManagement()).listDeviceCommandResponsesForIndex(
+		DeviceEventIndex.Assignment, Collections.singletonList(assignment.getId()), criteria);
     }
 
     /**
@@ -1033,8 +1005,8 @@ public class Assignments extends RestControllerBase {
 	return getMicroservice().getDeviceManagementApiDemux().getApiChannel();
     }
 
-    private IDeviceEventManagement getDeviceEventManagement() {
-	return new BlockingDeviceEventManagement(getMicroservice().getDeviceEventManagementApiDemux().getApiChannel());
+    private IDeviceEventManagementApiChannel<?> getDeviceEventManagement() {
+	return getMicroservice().getDeviceEventManagementApiDemux().getApiChannel();
     }
 
     private IAssetManagement getAssetManagement() {

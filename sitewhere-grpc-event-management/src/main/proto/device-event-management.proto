@@ -29,9 +29,6 @@ service DeviceEventManagement {
 	
 	// Get an event by alternate id.
 	rpc GetDeviceEventByAlternateId (GGetDeviceEventByAlternateIdRequest) returns (GGetDeviceEventByAlternateIdResponse) {}
-	
-	// Stream device events for one or more device assignments.
-	rpc StreamDeviceAssignmentEventCreateRequests (stream com.sitewhere.grpc.model.GDeviceAssignmentEventCreateRequest) returns (com.sitewhere.grpc.model.GEventStreamAck) {}
 
 	// ####################
 	// ### MEASUREMENTS ###

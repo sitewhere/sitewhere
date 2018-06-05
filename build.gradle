@@ -61,7 +61,7 @@ subprojects {
  	apply plugin: 'io.spring.dependency-management'
 	dependencyManagement {
 		imports {
-			mavenBom 'io.spring.platform:platform-bom:Brussels-SR5'
+			mavenBom 'io.spring.platform:platform-bom:Cairo-SR1'
 		}
 	}
 

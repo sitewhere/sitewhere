@@ -73,7 +73,13 @@ public class ZkUtils {
 		    }
 		} catch (IOException e) {
 		    LOGGER.error("Error copying tenant template file to Zk: " + file.getAbsolutePath(), e);
-		    IOUtils.closeQuietly(input);
+		    if (input != null) {
+			try {
+			    input.close();
+			} catch (IOException e1) {
+			    LOGGER.error("Unable to close file handle.", e1);
+			}
+		    }
 		}
 	    }
 	}
@@ -114,7 +120,13 @@ public class ZkUtils {
 		    throw new SiteWhereException(
 			    "Unable to copy file '" + local.getAbsolutePath() + "' from '" + current + "'.", e);
 		} finally {
-		    IOUtils.closeQuietly(output);
+		    if (output != null) {
+			try {
+			    output.close();
+			} catch (IOException e1) {
+			    LOGGER.error("Unable to close file handle.", e1);
+			}
+		    }
 		}
 	    }
 

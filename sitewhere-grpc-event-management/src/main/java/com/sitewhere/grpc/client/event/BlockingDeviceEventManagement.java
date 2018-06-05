@@ -58,7 +58,7 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public IDeviceEventBatchResponse addDeviceEventBatch(UUID deviceAssignmentId, IDeviceEventBatch batch)
 	    throws SiteWhereException {
-	MonoStreamObserver<IDeviceEventBatchResponse> observer = new MonoStreamObserver<>();
+	BlockingStreamObserver<IDeviceEventBatchResponse> observer = new BlockingStreamObserver<>();
 	api.addDeviceEventBatch(deviceAssignmentId, batch, observer);
 	return observer.getResult();
     }
@@ -70,7 +70,7 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
      */
     @Override
     public IDeviceEvent getDeviceEventById(UUID deviceId, UUID eventId) throws SiteWhereException {
-	MonoStreamObserver<IDeviceEvent> observer = new MonoStreamObserver<>();
+	BlockingStreamObserver<IDeviceEvent> observer = new BlockingStreamObserver<>();
 	api.getDeviceEventById(deviceId, eventId, observer);
 	return observer.getResult();
     }
@@ -81,7 +81,7 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
      */
     @Override
     public IDeviceEvent getDeviceEventByAlternateId(UUID deviceId, String alternateId) throws SiteWhereException {
-	MonoStreamObserver<IDeviceEvent> observer = new MonoStreamObserver<>();
+	BlockingStreamObserver<IDeviceEvent> observer = new BlockingStreamObserver<>();
 	api.getDeviceEventByAlternateId(deviceId, alternateId, observer);
 	return observer.getResult();
     }
@@ -95,7 +95,7 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public IDeviceMeasurements addDeviceMeasurements(UUID deviceAssignmentId,
 	    IDeviceMeasurementsCreateRequest measurements) throws SiteWhereException {
-	MonoStreamObserver<IDeviceMeasurements> observer = new MonoStreamObserver<>();
+	BlockingStreamObserver<IDeviceMeasurements> observer = new BlockingStreamObserver<>();
 	api.addDeviceMeasurements(deviceAssignmentId, measurements, observer);
 	return observer.getResult();
     }
@@ -109,7 +109,7 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForIndex(DeviceEventIndex index,
 	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	MonoStreamObserver<ISearchResults<IDeviceMeasurements>> observer = new MonoStreamObserver<>();
+	BlockingStreamObserver<ISearchResults<IDeviceMeasurements>> observer = new BlockingStreamObserver<>();
 	api.listDeviceMeasurementsForIndex(index, entityIds, criteria, observer);
 	return observer.getResult();
     }
@@ -123,7 +123,7 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public IDeviceLocation addDeviceLocation(UUID deviceAssignmentId, IDeviceLocationCreateRequest request)
 	    throws SiteWhereException {
-	MonoStreamObserver<IDeviceLocation> observer = new MonoStreamObserver<>();
+	BlockingStreamObserver<IDeviceLocation> observer = new BlockingStreamObserver<>();
 	api.addDeviceLocation(deviceAssignmentId, request, observer);
 	return observer.getResult();
     }
@@ -136,7 +136,7 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public ISearchResults<IDeviceLocation> listDeviceLocationsForIndex(DeviceEventIndex index, List<UUID> entityIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	MonoStreamObserver<ISearchResults<IDeviceLocation>> observer = new MonoStreamObserver<>();
+	BlockingStreamObserver<ISearchResults<IDeviceLocation>> observer = new BlockingStreamObserver<>();
 	api.listDeviceLocationsForIndex(index, entityIds, criteria, observer);
 	return observer.getResult();
     }
@@ -149,7 +149,7 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public IDeviceAlert addDeviceAlert(UUID deviceAssignmentId, IDeviceAlertCreateRequest request)
 	    throws SiteWhereException {
-	MonoStreamObserver<IDeviceAlert> observer = new MonoStreamObserver<>();
+	BlockingStreamObserver<IDeviceAlert> observer = new BlockingStreamObserver<>();
 	api.addDeviceAlert(deviceAssignmentId, request, observer);
 	return observer.getResult();
     }
@@ -162,7 +162,7 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public ISearchResults<IDeviceAlert> listDeviceAlertsForIndex(DeviceEventIndex index, List<UUID> entityIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	MonoStreamObserver<ISearchResults<IDeviceAlert>> observer = new MonoStreamObserver<>();
+	BlockingStreamObserver<ISearchResults<IDeviceAlert>> observer = new BlockingStreamObserver<>();
 	api.listDeviceAlertsForIndex(index, entityIds, criteria, observer);
 	return observer.getResult();
     }
@@ -176,7 +176,7 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public IDeviceStreamData addDeviceStreamData(UUID deviceAssignmentId, IDeviceStream stream,
 	    IDeviceStreamDataCreateRequest request) throws SiteWhereException {
-	MonoStreamObserver<IDeviceStreamData> observer = new MonoStreamObserver<>();
+	BlockingStreamObserver<IDeviceStreamData> observer = new BlockingStreamObserver<>();
 	api.addDeviceStreamData(deviceAssignmentId, stream, request, observer);
 	return observer.getResult();
     }
@@ -189,7 +189,7 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public IDeviceStreamData getDeviceStreamData(UUID deviceAssignmentId, String streamId, long sequenceNumber)
 	    throws SiteWhereException {
-	MonoStreamObserver<IDeviceStreamData> observer = new MonoStreamObserver<>();
+	BlockingStreamObserver<IDeviceStreamData> observer = new BlockingStreamObserver<>();
 	api.getDeviceStreamData(deviceAssignmentId, streamId, sequenceNumber, observer);
 	return observer.getResult();
     }
@@ -202,7 +202,7 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public ISearchResults<IDeviceStreamData> listDeviceStreamDataForAssignment(UUID assignmentId, String streamId,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	MonoStreamObserver<ISearchResults<IDeviceStreamData>> observer = new MonoStreamObserver<>();
+	BlockingStreamObserver<ISearchResults<IDeviceStreamData>> observer = new BlockingStreamObserver<>();
 	api.listDeviceStreamDataForAssignment(assignmentId, streamId, criteria, observer);
 	return observer.getResult();
     }
@@ -215,7 +215,7 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public IDeviceCommandInvocation addDeviceCommandInvocation(UUID deviceAssignmentId,
 	    IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
-	MonoStreamObserver<IDeviceCommandInvocation> observer = new MonoStreamObserver<>();
+	BlockingStreamObserver<IDeviceCommandInvocation> observer = new BlockingStreamObserver<>();
 	api.addDeviceCommandInvocation(deviceAssignmentId, request, observer);
 	return observer.getResult();
     }
@@ -229,7 +229,7 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForIndex(DeviceEventIndex index,
 	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	MonoStreamObserver<ISearchResults<IDeviceCommandInvocation>> observer = new MonoStreamObserver<>();
+	BlockingStreamObserver<ISearchResults<IDeviceCommandInvocation>> observer = new BlockingStreamObserver<>();
 	api.listDeviceCommandInvocationsForIndex(index, entityIds, criteria, observer);
 	return observer.getResult();
     }
@@ -241,7 +241,7 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public ISearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(UUID deviceId, UUID invocationId)
 	    throws SiteWhereException {
-	MonoStreamObserver<ISearchResults<IDeviceCommandResponse>> observer = new MonoStreamObserver<>();
+	BlockingStreamObserver<ISearchResults<IDeviceCommandResponse>> observer = new BlockingStreamObserver<>();
 	api.listDeviceCommandInvocationResponses(deviceId, invocationId, observer);
 	return observer.getResult();
     }
@@ -254,7 +254,7 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public IDeviceCommandResponse addDeviceCommandResponse(UUID deviceAssignmentId,
 	    IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
-	MonoStreamObserver<IDeviceCommandResponse> observer = new MonoStreamObserver<>();
+	BlockingStreamObserver<IDeviceCommandResponse> observer = new BlockingStreamObserver<>();
 	api.addDeviceCommandResponse(deviceAssignmentId, request, observer);
 	return observer.getResult();
     }
@@ -268,7 +268,7 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForIndex(DeviceEventIndex index,
 	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	MonoStreamObserver<ISearchResults<IDeviceCommandResponse>> observer = new MonoStreamObserver<>();
+	BlockingStreamObserver<ISearchResults<IDeviceCommandResponse>> observer = new BlockingStreamObserver<>();
 	api.listDeviceCommandResponsesForIndex(index, entityIds, criteria, observer);
 	return observer.getResult();
     }
@@ -282,7 +282,7 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public IDeviceStateChange addDeviceStateChange(UUID deviceAssignmentId, IDeviceStateChangeCreateRequest request)
 	    throws SiteWhereException {
-	MonoStreamObserver<IDeviceStateChange> observer = new MonoStreamObserver<>();
+	BlockingStreamObserver<IDeviceStateChange> observer = new BlockingStreamObserver<>();
 	api.addDeviceStateChange(deviceAssignmentId, request, observer);
 	return observer.getResult();
     }
@@ -296,7 +296,7 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
     @Override
     public ISearchResults<IDeviceStateChange> listDeviceStateChangesForIndex(DeviceEventIndex index,
 	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	MonoStreamObserver<ISearchResults<IDeviceStateChange>> observer = new MonoStreamObserver<>();
+	BlockingStreamObserver<ISearchResults<IDeviceStateChange>> observer = new BlockingStreamObserver<>();
 	api.listDeviceStateChangesForIndex(index, entityIds, criteria, observer);
 	return observer.getResult();
     }

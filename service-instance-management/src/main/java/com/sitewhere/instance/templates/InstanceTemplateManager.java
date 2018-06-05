@@ -146,7 +146,13 @@ public class InstanceTemplateManager extends LifecycleComponent implements IInst
 	    return MarshalUtils.unmarshalJson(content, InstanceTemplate.class);
 	} catch (IOException e) {
 	    getLogger().error("Unable to read instance template file.", e);
-	    IOUtils.closeQuietly(input);
+	    if (input != null) {
+		try {
+		    input.close();
+		} catch (IOException e1) {
+		    getLogger().error("Unable to close file handle.", e1);
+		}
+	    }
 	    return null;
 	}
     }

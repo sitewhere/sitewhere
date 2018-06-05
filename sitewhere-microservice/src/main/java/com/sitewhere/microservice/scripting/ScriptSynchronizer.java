@@ -220,7 +220,13 @@ public abstract class ScriptSynchronizer extends LifecycleComponent implements I
 	    throw new SiteWhereException("Unable to copy script from Zookeeper path '" + zkPath + "' to file '"
 		    + out.getAbsolutePath() + "'.", e);
 	} finally {
-	    IOUtils.closeQuietly(output);
+	    if (output != null) {
+		try {
+		    output.close();
+		} catch (IOException e1) {
+		    getLogger().error("Unable to close file handle.", e1);
+		}
+	    }
 	}
     }
 

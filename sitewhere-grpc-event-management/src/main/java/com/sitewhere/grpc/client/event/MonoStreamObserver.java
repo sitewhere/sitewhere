@@ -7,49 +7,32 @@
  */
 package com.sitewhere.grpc.client.event;
 
-import java.util.concurrent.CountDownLatch;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.sitewhere.spi.SiteWhereException;
-
 import io.grpc.stub.StreamObserver;
+import reactor.core.CoreSubscriber;
+import reactor.core.publisher.Mono;
+import reactor.core.publisher.Operators;
 
 /**
- * Blocks while waiting for a stream to return a single result or error.
+ * Takes data from a gRPC {@link StreamObserver} and publishes it using project
+ * reactor APIs.
  * 
  * @author Derek
  *
  * @param <T>
  */
-public class MonoStreamObserver<T> implements StreamObserver<T> {
+public class MonoStreamObserver<T> extends Mono<T> implements StreamObserver<T> {
 
-    /** Static logger instance */
-    private static Logger LOGGER = LoggerFactory.getLogger(MonoStreamObserver.class);
+    /** Single subscriber */
+    private CoreSubscriber<? super T> subscriber;
 
-    /** Operation result */
-    private T response;
-
-    /** Operation exception */
-    private Throwable exception;
-
-    /** Latch for blocking */
-    private CountDownLatch latch = new CountDownLatch(1);
-
-    public T getResult() throws SiteWhereException {
-	try {
-	    getLatch().await();
-	    if (getException() != null) {
-		throw new SiteWhereException(getException());
-	    }
-	    if (getResponse() != null) {
-		return getResponse();
-	    }
-	    return null;
-	} catch (InterruptedException e) {
-	    throw new SiteWhereException("Interrupted while waiting for API result.", e);
-	}
+    /*
+     * @see reactor.core.publisher.Mono#subscribe(reactor.core.CoreSubscriber)
+     */
+    @Override
+    public void subscribe(CoreSubscriber<? super T> actual) {
+	Operators.MonoSubscriber<T, T> sds = new Operators.MonoSubscriber<>(actual);
+	actual.onSubscribe(sds);
+	this.subscriber = actual;
     }
 
     /*
@@ -57,9 +40,9 @@ public class MonoStreamObserver<T> implements StreamObserver<T> {
      */
     @Override
     public void onNext(T value) {
-	this.response = value;
-	LOGGER.debug("Received response value.");
-	getLatch().countDown();
+	if (getSubscriber() != null) {
+	    getSubscriber().onNext(value);
+	}
     }
 
     /*
@@ -67,9 +50,9 @@ public class MonoStreamObserver<T> implements StreamObserver<T> {
      */
     @Override
     public void onError(Throwable t) {
-	this.exception = t;
-	LOGGER.debug("Exception in API implementation.", t);
-	getLatch().countDown();
+	if (getSubscriber() != null) {
+	    getSubscriber().onError(t);
+	}
     }
 
     /*
@@ -77,21 +60,16 @@ public class MonoStreamObserver<T> implements StreamObserver<T> {
      */
     @Override
     public void onCompleted() {
-	if (getResponse() == null) {
-	    LOGGER.debug("Completed called before response.");
+	if (getSubscriber() != null) {
+	    getSubscriber().onComplete();
 	}
-	getLatch().countDown();
     }
 
-    protected T getResponse() {
-	return response;
+    protected CoreSubscriber<? super T> getSubscriber() {
+	return subscriber;
     }
 
-    protected Throwable getException() {
-	return exception;
-    }
-
-    protected CountDownLatch getLatch() {
-	return latch;
+    protected void setSubscriber(CoreSubscriber<? super T> subscriber) {
+	this.subscriber = subscriber;
     }
 }
