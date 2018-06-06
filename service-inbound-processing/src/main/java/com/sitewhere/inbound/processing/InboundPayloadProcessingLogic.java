@@ -7,7 +7,6 @@
  */
 package com.sitewhere.inbound.processing;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -23,7 +22,6 @@ import com.sitewhere.inbound.spi.kafka.IUnregisteredEventsProducer;
 import com.sitewhere.inbound.spi.microservice.IInboundEventStorageStrategy;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
-import com.sitewhere.rest.model.device.event.request.DeviceAssignmentEventCreateRequest;
 import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -78,7 +76,8 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	this.deviceLookupTimer = createTimerMetric("deviceLookup");
 	this.assignmentLookupTimer = createTimerMetric("assignmentLookup");
 	this.eventStorageTimer = createTimerMetric("eventStorage");
-	this.eventStorageStrategy = new UnaryEventStorageStrategy((IInboundProcessingTenantEngine) getTenantEngine());
+	this.eventStorageStrategy = new UnaryEventStorageStrategy((IInboundProcessingTenantEngine) getTenantEngine(),
+		this);
     }
 
     /**
@@ -88,12 +87,7 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
      * @throws SiteWhereException
      */
     public void process(List<ConsumerRecord<String, byte[]>> records) throws SiteWhereException {
-	// Verify inbound records and build assignment event create requests.
-	List<DeviceAssignmentEventCreateRequest> requests = buildRequests(records);
-	if (requests.size() == 0) {
-	    return;
-	}
-
+	processPayloads(records);
     }
 
     /**
@@ -102,9 +96,7 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
      * @param records
      * @return
      */
-    protected List<DeviceAssignmentEventCreateRequest> buildRequests(List<ConsumerRecord<String, byte[]>> records)
-	    throws SiteWhereException {
-	List<DeviceAssignmentEventCreateRequest> requests = new ArrayList<>();
+    protected void processPayloads(List<ConsumerRecord<String, byte[]>> records) throws SiteWhereException {
 	for (ConsumerRecord<String, byte[]> record : records) {
 	    GInboundEventPayload payload = decodeRequest(record);
 	    IDeviceAssignment assignment = validateAssignment(payload);
@@ -115,7 +107,6 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 		eventStorageTime.stop();
 	    }
 	}
-	return requests;
     }
 
     /**

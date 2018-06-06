@@ -39,10 +39,10 @@ import com.sitewhere.spi.device.event.AlertSource;
 public class MqttTests {
 
     /** Nunber of threads for multithreaded tests */
-    private static final int NUM_THREADS = 1;
+    private static final int NUM_THREADS = 20;
 
     /** Nunber of calls performed per thread */
-    private static final int NUM_CALLS_PER_THREAD = 1;
+    private static final int NUM_CALLS_PER_THREAD = 10000;
 
     @Test
     public void runMqttTest() throws Exception {
@@ -136,14 +136,14 @@ public class MqttTests {
 	 */
 	public void sendAlertOverMqtt() throws SiteWhereException {
 	    DeviceRequest request = new DeviceRequest();
-	    request.setHardwareId("80647-GATEWAY-2114040");
+	    request.setHardwareId("14263-NODERED-1006740");
 	    request.setType(Type.DeviceAlert);
 	    DeviceAlertCreateRequest alert = new DeviceAlertCreateRequest();
 	    alert.setSource(AlertSource.Device);
 	    alert.setLevel(AlertLevel.Info);
 	    alert.setType("engine.overheat");
 	    alert.setMessage("eeeeyyyyyy!");
-	    alert.setEventDate(new Date(System.currentTimeMillis() - ( 10 * 60 * 1000)));
+	    alert.setEventDate(new Date(System.currentTimeMillis() - (10 * 60 * 1000)));
 	    Map<String, String> metadata = new HashMap<String, String>();
 	    metadata.put("name1", "value1");
 	    metadata.put("name2", "value2");
@@ -152,7 +152,7 @@ public class MqttTests {
 	    request.setRequest(alert);
 	    try {
 		String payload = MAPPER.writeValueAsString(request);
-		System.out.println(payload);
+		// System.out.println(payload);
 		connection.publish("SiteWhere/input/json", payload.getBytes(), QoS.AT_MOST_ONCE, false);
 	    } catch (JsonProcessingException e) {
 		throw new SiteWhereException(e);

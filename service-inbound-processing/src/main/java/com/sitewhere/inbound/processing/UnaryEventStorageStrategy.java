@@ -8,6 +8,7 @@
 package com.sitewhere.inbound.processing;
 
 import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
+import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
 import com.sitewhere.grpc.model.DeviceEventModel.GAnyDeviceEventCreateRequest;
 import com.sitewhere.grpc.model.converter.EventModelConverter;
@@ -17,7 +18,6 @@ import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
@@ -38,8 +38,13 @@ public class UnaryEventStorageStrategy implements IInboundEventStorageStrategy {
     /** Handle to inbound processing tenant engine */
     private IInboundProcessingTenantEngine tenantEngine;
 
-    public UnaryEventStorageStrategy(IInboundProcessingTenantEngine tenantEngine) {
+    /** Get processing logic */
+    private InboundPayloadProcessingLogic inboundPayloadProcessingLogic;
+
+    public UnaryEventStorageStrategy(IInboundProcessingTenantEngine tenantEngine,
+	    InboundPayloadProcessingLogic inboundPayloadProcessingLogic) {
 	this.tenantEngine = tenantEngine;
+	this.inboundPayloadProcessingLogic = inboundPayloadProcessingLogic;
     }
 
     /*
@@ -54,31 +59,38 @@ public class UnaryEventStorageStrategy implements IInboundEventStorageStrategy {
 	switch (request.getEventType()) {
 	case Measurements:
 	    getDeviceEventManagement().addDeviceMeasurements(assignment.getId(),
-		    (IDeviceMeasurementsCreateRequest) request);
+		    (IDeviceMeasurementsCreateRequest) request,
+		    new AlertHandlerStreamObserver<>(getInboundPayloadProcessingLogic()));
 	    break;
 	case Alert:
-	    getDeviceEventManagement().addDeviceAlert(assignment.getId(), (IDeviceAlertCreateRequest) request);
+	    getDeviceEventManagement().addDeviceAlert(assignment.getId(), (IDeviceAlertCreateRequest) request,
+		    new AlertHandlerStreamObserver<>(getInboundPayloadProcessingLogic()));
 	    break;
 	case CommandInvocation:
 	    getDeviceEventManagement().addDeviceCommandInvocation(assignment.getId(),
-		    (IDeviceCommandInvocationCreateRequest) request);
+		    (IDeviceCommandInvocationCreateRequest) request,
+		    new AlertHandlerStreamObserver<>(getInboundPayloadProcessingLogic()));
 	    break;
 	case CommandResponse:
 	    getDeviceEventManagement().addDeviceCommandResponse(assignment.getId(),
-		    (IDeviceCommandResponseCreateRequest) request);
+		    (IDeviceCommandResponseCreateRequest) request,
+		    new AlertHandlerStreamObserver<>(getInboundPayloadProcessingLogic()));
 	    break;
 	case Location:
-	    getDeviceEventManagement().addDeviceLocation(assignment.getId(), (IDeviceLocationCreateRequest) request);
+	    getDeviceEventManagement().addDeviceLocation(assignment.getId(), (IDeviceLocationCreateRequest) request,
+		    new AlertHandlerStreamObserver<>(getInboundPayloadProcessingLogic()));
 	    break;
 	case StateChange:
 	    getDeviceEventManagement().addDeviceStateChange(assignment.getId(),
-		    (IDeviceStateChangeCreateRequest) request);
+		    (IDeviceStateChangeCreateRequest) request,
+		    new AlertHandlerStreamObserver<>(getInboundPayloadProcessingLogic()));
 	    break;
 	case StreamData: {
 	    IDeviceStreamDataCreateRequest sdreq = (IDeviceStreamDataCreateRequest) request;
 	    IDeviceStream stream = getDeviceManagement().getDeviceStream(assignment.getId(), sdreq.getStreamId());
 	    if (stream != null) {
-		getDeviceEventManagement().addDeviceStreamData(assignment.getId(), stream, sdreq);
+		new BlockingDeviceEventManagement(getDeviceEventManagement()).addDeviceStreamData(assignment.getId(),
+			stream, sdreq);
 	    } else {
 		throw new SiteWhereException("Stream data references invalid stream: " + sdreq.getStreamId());
 	    }
@@ -87,6 +99,17 @@ public class UnaryEventStorageStrategy implements IInboundEventStorageStrategy {
 	default:
 	    throw new SiteWhereException("Unknown event type sent for storage: " + request.getEventType().name());
 	}
+    }
+
+    /**
+     * Send alert payload via event management api.
+     * 
+     * @param assignment
+     * @param request
+     * @throws SiteWhereException
+     */
+    protected void sendAlert(IDeviceAssignment assignment, IDeviceAlertCreateRequest request)
+	    throws SiteWhereException {
     }
 
     /**
@@ -104,16 +127,24 @@ public class UnaryEventStorageStrategy implements IInboundEventStorageStrategy {
      * 
      * @return
      */
-    protected IDeviceEventManagement getDeviceEventManagement() {
-	return new BlockingDeviceEventManagement(((IInboundProcessingMicroservice) getTenantEngine().getMicroservice())
-		.getDeviceEventManagementApiDemux().getApiChannel());
+    protected IDeviceEventManagementApiChannel<?> getDeviceEventManagement() {
+	return ((IInboundProcessingMicroservice) getTenantEngine().getMicroservice()).getDeviceEventManagementApiDemux()
+		.getApiChannel();
     }
 
-    public IInboundProcessingTenantEngine getTenantEngine() {
+    protected IInboundProcessingTenantEngine getTenantEngine() {
 	return tenantEngine;
     }
 
-    public void setTenantEngine(IInboundProcessingTenantEngine tenantEngine) {
+    protected void setTenantEngine(IInboundProcessingTenantEngine tenantEngine) {
 	this.tenantEngine = tenantEngine;
+    }
+
+    protected InboundPayloadProcessingLogic getInboundPayloadProcessingLogic() {
+	return inboundPayloadProcessingLogic;
+    }
+
+    protected void setInboundPayloadProcessingLogic(InboundPayloadProcessingLogic inboundPayloadProcessingLogic) {
+	this.inboundPayloadProcessingLogic = inboundPayloadProcessingLogic;
     }
 }
