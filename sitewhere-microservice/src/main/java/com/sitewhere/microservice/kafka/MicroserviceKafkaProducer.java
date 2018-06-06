@@ -58,7 +58,7 @@ public abstract class MicroserviceKafkaProducer extends TenantEngineLifecycleCom
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	getLogger().info(
+	getLogger().debug(
 		"Producer connecting to Kafka: " + getMicroservice().getInstanceSettings().getKafkaBootstrapServers());
 	getLogger().info("Will be producing messages for: " + getTargetTopicName());
 	this.producer = new KafkaProducer<String, byte[]>(buildConfiguration());

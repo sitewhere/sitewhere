@@ -38,17 +38,26 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
     /** Default subscribed topic name */
     public static final String DEFAULT_TOPIC = "SiteWhere/input/protobuf";
 
+    /** Number of threads used for processing events */
+    public static final int DEFAULT_NUM_THREADS = 5;
+
     /** Parent event source */
     private IInboundEventSource<byte[]> eventSource;
 
     /** Topic name */
     private String topic = DEFAULT_TOPIC;
 
+    /** Number of threads used for processing */
+    private int numThreads = DEFAULT_NUM_THREADS;
+
     /** Shared MQTT connection */
     private FutureConnection connection;
 
     /** Used to execute MQTT subscribe in separate thread */
-    private ExecutorService executor;
+    private ExecutorService subscriptionExecutor;
+
+    /** Used to process MQTT events in a thread pool */
+    private ExecutorService processorsExecutor;
 
     /** Count of received events */
     private AtomicInteger eventCount = new AtomicInteger();
@@ -68,7 +77,9 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.start(monitor);
 
-	this.executor = Executors.newSingleThreadExecutor(new SubscribersThreadFactory());
+	this.subscriptionExecutor = Executors.newSingleThreadExecutor(new SubscribersThreadFactory());
+	this.processorsExecutor = Executors.newFixedThreadPool(getNumThreads(), new ProcessorsThreadFactory());
+
 	getLogger().info("Receiver connecting to MQTT broker at '" + getBrokerInfo() + "'...");
 	connection = getConnection();
 	getLogger().info("Receiver connected to MQTT broker.");
@@ -79,13 +90,14 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 	    Future<byte[]> future = connection.subscribe(topics);
 	    future.await();
 
-	    getLogger().info("Subscribed to events on MQTT topic: " + getTopic());
+	    getLogger().info("Subscribed to events on MQTT topic '" + getTopic() + "' using " + getNumThreads()
+		    + " processing threads.");
 	} catch (Exception e) {
 	    throw new SiteWhereException("Exception while attempting to subscribe to MQTT topic: " + getTopic(), e);
 	}
 
 	// Handle message processing in separate thread.
-	executor.execute(new MqttSubscriptionProcessor());
+	subscriptionExecutor.execute(new MqttSubscriptionProcessor());
     }
 
     /*
@@ -99,18 +111,6 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 	return getProtocol() + "://" + getHostname() + ":" + getPort() + "/" + getTopic();
     }
 
-    /** Used for naming consumer threads */
-    private class SubscribersThreadFactory implements ThreadFactory {
-
-	/** Counts threads */
-	private AtomicInteger counter = new AtomicInteger();
-
-	public Thread newThread(Runnable r) {
-	    return new Thread(r, "SiteWhere MQTT(" + getEventSource().getSourceId() + " - " + getTopic() + ") Receiver "
-		    + counter.incrementAndGet());
-	}
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -119,8 +119,7 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
      */
     @Override
     public void onEventPayloadReceived(byte[] payload, Map<String, Object> metadata) {
-	eventCount.incrementAndGet();
-	getEventSource().onEncodedEventReceived(MqttInboundEventReceiver.this, payload, metadata);
+	processorsExecutor.execute(new MqttPayloadProcessor(payload));
     }
 
     /**
@@ -149,6 +148,31 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 	}
     }
 
+    /**
+     * Processes MQTT message payloads in a separate thread.
+     * 
+     * @author Derek
+     */
+    private class MqttPayloadProcessor implements Runnable {
+
+	/** MQTT payload */
+	private byte[] payload;
+
+	public MqttPayloadProcessor(byte[] payload) {
+	    this.payload = payload;
+	}
+
+	@Override
+	public void run() {
+	    try {
+		eventCount.incrementAndGet();
+		getEventSource().onEncodedEventReceived(MqttInboundEventReceiver.this, payload, null);
+	    } catch (Throwable e) {
+		getLogger().error("Error in MQTT processing.", e);
+	    }
+	}
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -157,8 +181,11 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	if (executor != null) {
-	    executor.shutdownNow();
+	if (processorsExecutor != null) {
+	    processorsExecutor.shutdownNow();
+	}
+	if (subscriptionExecutor != null) {
+	    subscriptionExecutor.shutdownNow();
 	}
 	if (connection != null) {
 	    try {
@@ -199,5 +226,37 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 
     public void setTopic(String topic) {
 	this.topic = topic;
+    }
+
+    public int getNumThreads() {
+	return numThreads;
+    }
+
+    public void setNumThreads(int numThreads) {
+	this.numThreads = numThreads;
+    }
+
+    /** Used for naming consumer threads */
+    private class SubscribersThreadFactory implements ThreadFactory {
+
+	/** Counts threads */
+	private AtomicInteger counter = new AtomicInteger();
+
+	public Thread newThread(Runnable r) {
+	    return new Thread(r, "SiteWhere MQTT(" + getEventSource().getSourceId() + " - " + getTopic() + ") Receiver "
+		    + counter.incrementAndGet());
+	}
+    }
+
+    /** Used for naming processor threads */
+    private class ProcessorsThreadFactory implements ThreadFactory {
+
+	/** Counts threads */
+	private AtomicInteger counter = new AtomicInteger();
+
+	public Thread newThread(Runnable r) {
+	    return new Thread(r, "SiteWhere MQTT(" + getEventSource().getSourceId() + " - " + getTopic()
+		    + ") Processor " + counter.incrementAndGet());
+	}
     }
 }

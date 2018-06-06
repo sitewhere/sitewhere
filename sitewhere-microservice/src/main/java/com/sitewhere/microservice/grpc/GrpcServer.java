@@ -75,7 +75,7 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
 	    this.jwtInterceptor = new JwtServerInterceptor(getMicroservice(), getServiceImplementation().getClass());
 	    this.tracingInterceptor = new ServerTracingInterceptor(getMicroservice().getTracer());
 	    this.server = buildServer();
-	    getLogger().info("Initialized GRPC server on port " + port + ".");
+	    getLogger().debug("Initialized GRPC server on port " + port + ".");
 	} catch (Throwable e) {
 	    throw new SiteWhereException("Unable to initialize GRPC server.", e);
 	}
@@ -92,7 +92,7 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	try {
 	    getServer().start();
-	    getLogger().info("Started GRPC server on port " + port + ".");
+	    getLogger().debug("Started GRPC server on port " + port + ".");
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to start GRPC server.", e);
 	}
@@ -110,7 +110,7 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
 	getServer().shutdown();
 	try {
 	    getServer().awaitTermination();
-	    getLogger().info("GRPC server terminated successfully.");
+	    getLogger().debug("GRPC server terminated successfully.");
 	} catch (InterruptedException e) {
 	    getLogger().error("Interrupted while waiting for GRPC server to terminate.", e);
 	}

@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema
 	xmlns="http://sitewhere.io/schema/sitewhere/microservice/event-sources"
+	xmlns:sw="http://sitewhere.io/schema/sitewhere/microservice/common"
 	xmlns:cn="http://sitewhere.io/schema/sitewhere/microservice/common/connector"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/event-sources"
 	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xsd:import namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
+		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
 
 	<xsd:import
 		namespace="http://sitewhere.io/schema/sitewhere/microservice/common/connector"
@@ -416,6 +420,13 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
+				<xsd:attribute name="numThreads" type="sw:substitutableInt">
+					<xsd:annotation>
+						<xsd:documentation>
+							MQTT topic used to deliver inbound events.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -458,7 +469,7 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="numConsumers" type="xsd:int">
+				<xsd:attribute name="numConsumers" type="sw:substitutableInt">
 					<xsd:annotation>
 						<xsd:documentation>
 							Number of consumer threads used to consume the
@@ -513,7 +524,7 @@
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="partitionCount" type="xsd:int">
+		<xsd:attribute name="partitionCount" type="sw:substitutableInt">
 			<xsd:annotation>
 				<xsd:documentation>
 					EventHub partition count.
@@ -585,7 +596,7 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="numConsumers" type="xsd:int" use="optional">
+				<xsd:attribute name="numConsumers" type="sw:substitutableInt" use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
 							Number of consumers used to read data from the
@@ -626,7 +637,7 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="numConsumers" type="xsd:int" use="optional">
+				<xsd:attribute name="numConsumers" type="sw:substitutableInt" use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
 							Number of consumers used to read data from the
@@ -653,7 +664,7 @@
 	<xsd:complexType name="pollingRestEventSourceType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
-				<xsd:attribute name="pollIntervalMs" type="xsd:int"
+				<xsd:attribute name="pollIntervalMs" type="sw:substitutableInt"
 					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
@@ -791,14 +802,14 @@
 						</xsd:element>
 					</xsd:choice>
 				</xsd:sequence>
-				<xsd:attribute name="port" type="xsd:int" use="required">
+				<xsd:attribute name="port" type="sw:substitutableInt" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Port on which the server socket will listen.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="numThreads" type="xsd:int" use="optional">
+				<xsd:attribute name="numThreads" type="sw:substitutableInt" use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
 							Number of threads used to handle client
@@ -891,7 +902,7 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="port" type="xsd:integer" use="optional">
+				<xsd:attribute name="port" type="sw:substitutableInt" use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
 							Port used when binding CoAP server socket.

@@ -248,6 +248,11 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 	}
 	mqtt.addPropertyValue("topic", topic.getValue());
 
+	Attr numThreads = element.getAttributeNode("numThreads");
+	if (numThreads != null) {
+	    mqtt.addPropertyValue("numThreads", numThreads.getValue());
+	}
+
 	Attr trustStorePath = element.getAttributeNode("trustStorePath");
 	if (trustStorePath != null) {
 	    mqtt.addPropertyValue("trustStorePath", trustStorePath.getValue());

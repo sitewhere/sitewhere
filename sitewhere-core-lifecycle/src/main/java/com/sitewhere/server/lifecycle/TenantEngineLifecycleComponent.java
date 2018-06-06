@@ -10,11 +10,13 @@ package com.sitewhere.server.lifecycle;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Base class for implementing {@link ITenantEngineLifecycleComponent}.
@@ -41,7 +43,7 @@ public abstract class TenantEngineLifecycleComponent extends LifecycleComponent
      */
     @Override
     public Meter createMeterMetric(String name) {
-	return getTenantEngine().getMicroservice().getMetricRegistry().meter(name);
+	return getTenantEngine().getMicroservice().getMetricRegistry().meter(getTenentMetricPrefix() + name);
     }
 
     /*
@@ -50,7 +52,21 @@ public abstract class TenantEngineLifecycleComponent extends LifecycleComponent
      */
     @Override
     public Timer createTimerMetric(String name) {
-	return getTenantEngine().getMicroservice().getMetricRegistry().timer(name);
+	return getTenantEngine().getMicroservice().getMetricRegistry().timer(getTenentMetricPrefix() + name);
+    }
+
+    /**
+     * Get prefix added to metrics so they are unique.
+     * 
+     * @return
+     */
+    protected String getTenentMetricPrefix() {
+	IMicroservice<?> microservice = getTenantEngine().getMicroservice();
+	ITenant tenant = getTenantEngine().getTenant();
+	String instanceId = microservice.getInstanceSettings().getInstanceId();
+	String identifier = microservice.getIdentifier().getPath();
+	String tenantToken = tenant.getToken();
+	return instanceId + "." + identifier + "." + tenantToken + ".";
     }
 
     /*

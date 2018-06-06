@@ -121,7 +121,7 @@ public class MqttTests {
 	    request.setRequest(location);
 	    try {
 		String payload = MAPPER.writeValueAsString(request);
-		connection.publish("SiteWhere/input/json", payload.getBytes(), QoS.AT_MOST_ONCE, false);
+		connection.publish("SiteWhere/default/input/json", payload.getBytes(), QoS.AT_MOST_ONCE, false);
 	    } catch (JsonProcessingException e) {
 		throw new SiteWhereException(e);
 	    } catch (Exception e) {
@@ -136,7 +136,7 @@ public class MqttTests {
 	 */
 	public void sendAlertOverMqtt() throws SiteWhereException {
 	    DeviceRequest request = new DeviceRequest();
-	    request.setHardwareId("14263-NODERED-1006740");
+	    request.setHardwareId("4545-UNO-9430527");
 	    request.setType(Type.DeviceAlert);
 	    DeviceAlertCreateRequest alert = new DeviceAlertCreateRequest();
 	    alert.setSource(AlertSource.Device);
@@ -153,7 +153,7 @@ public class MqttTests {
 	    try {
 		String payload = MAPPER.writeValueAsString(request);
 		// System.out.println(payload);
-		connection.publish("SiteWhere/input/json", payload.getBytes(), QoS.AT_MOST_ONCE, false);
+		connection.publish("SiteWhere/default/input/json", payload.getBytes(), QoS.AT_MOST_ONCE, false);
 	    } catch (JsonProcessingException e) {
 		throw new SiteWhereException(e);
 	    } catch (Exception e) {
@@ -186,7 +186,7 @@ public class MqttTests {
 		String payload = mapper.writeValueAsString(json);
 
 		System.out.println("Payload:\n\n" + payload);
-		connection.publish("SiteWhere/input/json", payload.getBytes(), QoS.AT_LEAST_ONCE, false);
+		connection.publish("SiteWhere/default/input/json", payload.getBytes(), QoS.AT_LEAST_ONCE, false);
 		System.out.println("Message sent successfully.");
 	    } catch (JsonProcessingException e) {
 		throw new SiteWhereException(e);

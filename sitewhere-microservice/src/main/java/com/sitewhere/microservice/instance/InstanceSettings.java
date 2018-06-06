@@ -23,7 +23,7 @@ public class InstanceSettings implements IInstanceSettings {
     private String productId;
 
     /** Instance id service belongs to */
-    @Value("${sitewhere.instance.id:default}")
+    @Value("${sitewhere.instance.id:sitewhere1}")
     private String instanceId;
 
     /** Id of instance template to use */

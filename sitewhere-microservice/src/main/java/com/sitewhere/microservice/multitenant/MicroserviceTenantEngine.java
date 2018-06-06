@@ -168,6 +168,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	    byte[] data = getModuleConfiguration();
 	    Map<String, Object> properties = ((IConfigurableMicroservice<?>) getMicroservice()).getSpringProperties();
 	    properties.put("tenant.id", getTenant().getId());
+	    properties.put("tenant.token", getTenant().getToken());
 	    this.moduleContext = ConfigurationUtils.buildSubcontext(data, properties,
 		    ((IConfigurableMicroservice<?>) getMicroservice()).getGlobalApplicationContext());
 	    getLogger().info("Successfully loaded module configuration from '" + getModuleConfigurationPath() + "'.");
