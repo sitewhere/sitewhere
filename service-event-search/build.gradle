@@ -45,7 +45,7 @@ task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, depends
 		println "Generating DEBUG IMAGE for project ${project.name}"
 
 		def jdwpPort = 8001
-		def jmxPort = 9010
+		def jmxPort = 1115
 		
 		// Set Env 
 		environmentVariable('JMX_HOST', '0.0.0.0')
@@ -54,7 +54,7 @@ task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, depends
 		exposePort jdwpPort
 		exposePort jmxPort
 
-		defaultCommand 'sh', '-c', "java -server -Xdebug -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.port=" + jmxPort + " -Dcom.sun.management.jmxremote.rmi.port="+ jmxPort + " -Dcom.sun.management.jmxremote.host=\$JMX_HOST -Djava.rmi.server.hostname=\$JMX_HOST -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=" + jdwpPort + " -Xmx768M -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -jar /${project.name}-${project.version}-boot.jar"
+		defaultCommand 'java', '-server', '-Xdebug', '-Dcom.sun.management.jmxremote.local.only=false', '-Dcom.sun.management.jmxremote.ssl=false', '-Dcom.sun.management.jmxremote.authenticate=false', "-Dcom.sun.management.jmxremote.port=${jmxPort}", "-Dcom.sun.management.jmxremote.rmi.port=${jmxPort}", '-Dcom.sun.management.jmxremote.host=0.0.0.0', '-Djava.rmi.server.hostname=0.0.0.0', "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=${jdwpPort}", '-Xmx768M', '-XX:+UnlockExperimentalVMOptions', '-XX:+UseCGroupMemoryLimitForHeap', '-jar', "/${project.name}-${project.version}-boot.jar"
 	}
 }
 
