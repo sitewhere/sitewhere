@@ -41,8 +41,8 @@ task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, depends
 	copyFile("templates", "/templates")
 
 	if(project.hasProperty("debug")) {
-		println "Generating DEGUB IMAGE for project ${project.name}"
-		exposePort 8081
+		println "Generating DEBUG IMAGE for project ${project.name}"
+		exposePort 8001
 	}
 
 	// Run Java command to start application.

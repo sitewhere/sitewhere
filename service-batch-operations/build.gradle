@@ -51,8 +51,8 @@ task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, depends
 	// Expose ports.
 	exposePort 8080
 	if(project.hasProperty("debug")) {
-		println "Generating DEGUB IMAGE for project ${project.name}"
-		exposePort 8081
+		println "Generating DEBUG IMAGE for project ${project.name}"
+		exposePort 8001
 	}
 	
 	// Copy Spring Boot jar.
