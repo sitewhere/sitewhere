@@ -47,7 +47,7 @@ public class AreaCreateRequest implements IAreaCreateRequest {
     private String imageUrl;
 
     /** Locations that define area boundaries */
-    private List<Location> coordinates = new ArrayList<Location>();
+    private List<Location> bounds = new ArrayList<Location>();
 
     /** Metadata values */
     private Map<String, String> metadata;
@@ -125,15 +125,15 @@ public class AreaCreateRequest implements IAreaCreateRequest {
     }
 
     /*
-     * @see com.sitewhere.spi.area.request.IAreaCreateRequest#getCoordinates()
+     * @see com.sitewhere.spi.area.request.IAreaCreateRequest#getBounds()
      */
     @Override
-    public List<Location> getCoordinates() {
-	return coordinates;
+    public List<Location> getBounds() {
+	return bounds;
     }
 
-    public void setCoordinates(List<Location> coordinates) {
-	this.coordinates = coordinates;
+    public void setBounds(List<Location> bounds) {
+	this.bounds = bounds;
     }
 
     /*
@@ -173,7 +173,7 @@ public class AreaCreateRequest implements IAreaCreateRequest {
 	}
 
 	public Builder coord(double latitude, double longitude) {
-	    request.getCoordinates().add(new Location(latitude, longitude));
+	    request.getBounds().add(new Location(latitude, longitude));
 	    return this;
 	}
 

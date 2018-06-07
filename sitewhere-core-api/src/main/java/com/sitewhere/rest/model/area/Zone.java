@@ -18,7 +18,6 @@ import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IZone;
-import com.sitewhere.spi.common.ILocation;
 
 /**
  * Model object for a zone.
@@ -43,8 +42,8 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
     /** Displayed name */
     private String name;
 
-    /** Zone coordinates */
-    private List<Location> coordinates = new ArrayList<Location>();
+    /** Zone bounds */
+    private List<Location> bounds = new ArrayList<Location>();
 
     /** Border color */
     private String borderColor;
@@ -104,15 +103,15 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
     }
 
     /*
-     * @see com.sitewhere.spi.area.IBoundedEntity#getCoordinates()
+     * @see com.sitewhere.spi.area.IBoundedEntity#getBounds()
      */
     @Override
-    public List<? extends ILocation> getCoordinates() {
-	return coordinates;
+    public List<Location> getBounds() {
+	return bounds;
     }
 
-    public void setCoordinates(List<Location> coordinates) {
-	this.coordinates = coordinates;
+    public void setBounds(List<Location> bounds) {
+	this.bounds = bounds;
     }
 
     /*
@@ -167,7 +166,7 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
 	result.setBorderColor(input.getBorderColor());
 	result.setFillColor(input.getFillColor());
 	result.setOpacity(input.getOpacity());
-	result.setCoordinates(Location.copy(input.getCoordinates()));
+	result.setBounds(Location.copy(input.getBounds()));
 
 	MetadataProviderEntity.copy(input, result);
 	return result;

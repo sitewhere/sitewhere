@@ -41,10 +41,10 @@ public class MongoBoundedEntity {
      * @param source
      * @param target
      */
-    public static void saveCoordinates(IBoundedEntity source, Document target) {
+    public static void saveBounds(IBoundedEntity source, Document target) {
 	ArrayList<Document> coords = new ArrayList<Document>();
-	if (source.getCoordinates() != null) {
-	    for (ILocation location : source.getCoordinates()) {
+	if (source.getBounds() != null) {
+	    for (ILocation location : source.getBounds()) {
 		Document coord = new Document();
 		coord.put(PROP_LATITUDE, location.getLatitude());
 		coord.put(PROP_LONGITUDE, location.getLongitude());
@@ -58,13 +58,13 @@ public class MongoBoundedEntity {
     }
 
     /**
-     * Load coordinates froma document.
+     * Load coordinates from a document.
      * 
      * @param source
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static List<Location> getCoordinates(Document source) {
+    public static List<Location> loadBounds(Document source) {
 	List<Location> locs = new ArrayList<Location>();
 	ArrayList<Document> coords = (ArrayList<Document>) source.get(PROP_COORDINATES);
 	for (int i = 0; i < coords.size(); i++) {

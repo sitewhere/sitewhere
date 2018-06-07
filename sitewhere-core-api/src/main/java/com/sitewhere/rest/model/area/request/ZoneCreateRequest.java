@@ -31,8 +31,8 @@ public class ZoneCreateRequest implements IZoneCreateRequest {
     /** Zone name */
     private String name;
 
-    /** Locations that define zone */
-    private List<Location> coordinates = new ArrayList<Location>();
+    /** Locations that define zone boundaries */
+    private List<Location> bounds = new ArrayList<Location>();
 
     /** Border color in UI */
     private String borderColor;
@@ -59,15 +59,15 @@ public class ZoneCreateRequest implements IZoneCreateRequest {
     }
 
     /*
-     * @see com.sitewhere.spi.area.request.IZoneCreateRequest#getCoordinates()
+     * @see com.sitewhere.spi.area.request.IZoneCreateRequest#getBounds()
      */
     @Override
-    public List<Location> getCoordinates() {
-	return coordinates;
+    public List<Location> getBounds() {
+	return bounds;
     }
 
-    public void setCoordinates(List<Location> coordinates) {
-	this.coordinates = coordinates;
+    public void setBounds(List<Location> bounds) {
+	this.bounds = bounds;
     }
 
     /*
@@ -143,7 +143,7 @@ public class ZoneCreateRequest implements IZoneCreateRequest {
 	}
 
 	public Builder coord(double latitude, double longitude) {
-	    request.getCoordinates().add(new Location(latitude, longitude));
+	    request.getBounds().add(new Location(latitude, longitude));
 	    return this;
 	}
 

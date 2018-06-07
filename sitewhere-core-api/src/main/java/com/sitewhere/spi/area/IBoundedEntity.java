@@ -20,9 +20,9 @@ import com.sitewhere.spi.common.ILocation;
 public interface IBoundedEntity {
 
     /**
-     * Get list of coordinates that defines the zone.
+     * Get list of locations that defines the bounding object.
      * 
      * @return
      */
-    public List<? extends ILocation> getCoordinates();
+    public List<? extends ILocation> getBounds();
 }

@@ -43,7 +43,7 @@ public class GeoUtils {
      * @return
      */
     public static Polygon createPolygonForZone(IZone zone) {
-	return createPolygonForLocations(zone.getCoordinates());
+	return createPolygonForLocations(zone.getBounds());
     }
 
     /**

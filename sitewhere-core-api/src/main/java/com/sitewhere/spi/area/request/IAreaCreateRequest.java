@@ -67,7 +67,7 @@ public interface IAreaCreateRequest extends Serializable {
      * 
      * @return
      */
-    public List<? extends ILocation> getCoordinates();
+    public List<? extends ILocation> getBounds();
 
     /**
      * Get metadata values.

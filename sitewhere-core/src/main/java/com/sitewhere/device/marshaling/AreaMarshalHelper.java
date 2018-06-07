@@ -95,7 +95,7 @@ public class AreaMarshalHelper {
 	area.setName(source.getName());
 	area.setDescription(source.getDescription());
 	area.setImageUrl(source.getImageUrl());
-	area.setCoordinates(Location.copy(source.getCoordinates()));
+	area.setBounds(Location.copy(source.getBounds()));
 	MetadataProviderEntity.copy(source, area);
 	if (isIncludeAreaType()) {
 	    area.setAreaType(getDeviceManagement().getAreaType(source.getAreaTypeId()));

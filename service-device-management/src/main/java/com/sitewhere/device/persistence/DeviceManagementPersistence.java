@@ -297,7 +297,7 @@ public class DeviceManagementPersistence extends Persistence {
 	area.setName(request.getName());
 	area.setDescription(request.getDescription());
 	area.setImageUrl(request.getImageUrl());
-	area.setCoordinates(Location.copy(request.getCoordinates()));
+	area.setBounds(Location.copy(request.getBounds()));
 
 	DeviceManagementPersistence.initializeEntityMetadata(area);
 	MetadataProvider.copy(request.getMetadata(), area);
@@ -324,8 +324,8 @@ public class DeviceManagementPersistence extends Persistence {
 	if (request.getImageUrl() != null) {
 	    target.setImageUrl(request.getImageUrl());
 	}
-	if (request.getCoordinates() != null) {
-	    target.setCoordinates(Location.copy(request.getCoordinates()));
+	if (request.getBounds() != null) {
+	    target.setBounds(Location.copy(request.getBounds()));
 	}
 	if (request.getMetadata() != null) {
 	    target.getMetadata().clear();
@@ -1011,7 +1011,7 @@ public class DeviceManagementPersistence extends Persistence {
 	zone.setBorderColor(source.getBorderColor());
 	zone.setFillColor(source.getFillColor());
 	zone.setOpacity(source.getOpacity());
-	zone.setCoordinates(Location.copy(source.getCoordinates()));
+	zone.setBounds(Location.copy(source.getBounds()));
 
 	DeviceManagementPersistence.initializeEntityMetadata(zone);
 	MetadataProvider.copy(source.getMetadata(), zone);
@@ -1040,8 +1040,8 @@ public class DeviceManagementPersistence extends Persistence {
 	if (request.getOpacity() != null) {
 	    target.setOpacity(request.getOpacity());
 	}
-	if (request.getCoordinates() != null) {
-	    target.setCoordinates(Location.copy(request.getCoordinates()));
+	if (request.getBounds() != null) {
+	    target.setBounds(Location.copy(request.getBounds()));
 	}
 	if (request.getMetadata() != null) {
 	    target.getMetadata().clear();

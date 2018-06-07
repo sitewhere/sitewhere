@@ -328,7 +328,7 @@ def createMeasurements = { assn, start ->
 // Closure for creating location events.
 def createLocations = { assn, startDate ->
 	long current = startDate.time - (long) (Math.random() * 60000.0);
-	Polygon polyZone = com.sitewhere.geospatial.GeoUtils.createPolygonForLocations(zone.coordinates);
+	Polygon polyZone = com.sitewhere.geospatial.GeoUtils.createPolygonForLocations(zone.bounds);
 	Point centroid = polyZone.getCentroid();
 
 	// Calculate length of steps between locations based on bounding circle.

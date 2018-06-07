@@ -474,7 +474,7 @@ message GAreaCreateRequest {
 	string name = 4;
 	string description = 5;
 	string imageUrl = 6;
-	repeated GLocation coordinates = 7;
+	repeated GLocation bounds = 7;
 	map<string, string> metadata = 8;
 }
 
@@ -501,7 +501,7 @@ message GArea {
 	string name = 5;
 	string description = 6;
 	string imageUrl = 7;
-	repeated GLocation coordinates = 8;
+	repeated GLocation bounds = 8;
 	map<string, string> metadata = 9;
 	GEntityInformation entityInformation = 10;
 }
@@ -513,7 +513,7 @@ message GArea {
 // Request data for creating a zone.
 message GZoneCreateRequest {
 	string name = 1;
-	repeated GLocation coordinates = 2;
+	repeated GLocation bounds = 2;
 	string borderColor = 3;
 	string fillColor = 4;
 	double opacity = 5;
@@ -537,7 +537,7 @@ message GZone {
 	string token = 2;
 	GUUID siteId = 3;
 	string name = 4;
-	repeated GLocation coordinates = 5;
+	repeated GLocation bounds = 5;
 	string borderColor = 6;
 	string fillColor = 7;
 	double opacity = 8;

@@ -16,7 +16,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.spi.area.IArea;
-import com.sitewhere.spi.common.ILocation;
 
 /**
  * Model object for area information.
@@ -51,7 +50,7 @@ public class Area extends MetadataProviderEntity implements IArea {
     private String imageUrl;
 
     /** Area boundary coordinates */
-    private List<Location> coordinates = new ArrayList<Location>();
+    private List<Location> bounds = new ArrayList<Location>();
 
     /*
      * @see com.sitewhere.spi.area.IArea#getId()
@@ -138,14 +137,14 @@ public class Area extends MetadataProviderEntity implements IArea {
     }
 
     /*
-     * @see com.sitewhere.spi.area.IBoundedEntity#getCoordinates()
+     * @see com.sitewhere.spi.area.IBoundedEntity#getBounds()
      */
     @Override
-    public List<? extends ILocation> getCoordinates() {
-	return coordinates;
+    public List<Location> getBounds() {
+	return bounds;
     }
 
-    public void setCoordinates(List<Location> coordinates) {
-	this.coordinates = coordinates;
+    public void setBounds(List<Location> bounds) {
+	this.bounds = bounds;
     }
 }

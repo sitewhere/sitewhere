@@ -80,7 +80,7 @@ public class MongoArea implements MongoConverter<IArea> {
 	target.append(PROP_IMAGE_URL, source.getImageUrl());
 	target.append(PROP_TOKEN, source.getToken());
 
-	MongoBoundedEntity.saveCoordinates(source, target);
+	MongoBoundedEntity.saveBounds(source, target);
 	MongoSiteWhereEntity.toDocument(source, target);
 	MongoMetadataProvider.toDocument(source, target);
     }
@@ -107,7 +107,7 @@ public class MongoArea implements MongoConverter<IArea> {
 	target.setDescription(description);
 	target.setImageUrl(imageUrl);
 	target.setToken(token);
-	target.setCoordinates(MongoBoundedEntity.getCoordinates(source));
+	target.setBounds(MongoBoundedEntity.loadBounds(source));
 
 	MongoSiteWhereEntity.fromDocument(source, target);
 	MongoMetadataProvider.fromDocument(source, target);

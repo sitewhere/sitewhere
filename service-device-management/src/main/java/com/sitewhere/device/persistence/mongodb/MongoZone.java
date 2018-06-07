@@ -80,7 +80,7 @@ public class MongoZone implements MongoConverter<IZone> {
 	target.append(PROP_FILL_COLOR, source.getFillColor());
 	target.append(PROP_OPACITY, source.getOpacity());
 
-	MongoBoundedEntity.saveCoordinates(source, target);
+	MongoBoundedEntity.saveBounds(source, target);
 	MongoSiteWhereEntity.toDocument(source, target);
 	MongoMetadataProvider.toDocument(source, target);
     }
@@ -107,7 +107,7 @@ public class MongoZone implements MongoConverter<IZone> {
 	target.setBorderColor(borderColor);
 	target.setFillColor(fillColor);
 	target.setOpacity(opacity);
-	target.setCoordinates(MongoBoundedEntity.getCoordinates(source));
+	target.setBounds(MongoBoundedEntity.loadBounds(source));
 
 	MongoSiteWhereEntity.fromDocument(source, target);
 	MongoMetadataProvider.fromDocument(source, target);

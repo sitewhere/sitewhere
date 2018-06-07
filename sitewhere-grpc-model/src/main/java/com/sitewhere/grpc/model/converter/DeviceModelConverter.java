@@ -2141,7 +2141,7 @@ public class DeviceModelConverter {
 	api.setName(grpc.getName());
 	api.setDescription(grpc.getDescription());
 	api.setImageUrl(grpc.getImageUrl());
-	api.setCoordinates(CommonModelConverter.asApiLocations(grpc.getCoordinatesList()));
+	api.setBounds(CommonModelConverter.asApiLocations(grpc.getBoundsList()));
 	api.setMetadata(grpc.getMetadataMap());
 	return api;
     }
@@ -2165,7 +2165,7 @@ public class DeviceModelConverter {
 	grpc.setName(api.getName());
 	grpc.setDescription(api.getDescription());
 	grpc.setImageUrl(api.getImageUrl());
-	grpc.addAllCoordinates(CommonModelConverter.asGrpcLocations(api.getCoordinates()));
+	grpc.addAllBounds(CommonModelConverter.asGrpcLocations(api.getBounds()));
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
 	}
@@ -2241,7 +2241,7 @@ public class DeviceModelConverter {
 	api.setName(grpc.getName());
 	api.setDescription(grpc.getDescription());
 	api.setImageUrl(grpc.getImageUrl());
-	api.setCoordinates(CommonModelConverter.asApiLocations(grpc.getCoordinatesList()));
+	api.setBounds(CommonModelConverter.asApiLocations(grpc.getBoundsList()));
 	api.setMetadata(grpc.getMetadataMap());
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
 	return api;
@@ -2280,7 +2280,7 @@ public class DeviceModelConverter {
 	grpc.setName(api.getName());
 	grpc.setDescription(api.getDescription());
 	grpc.setImageUrl(api.getImageUrl());
-	grpc.addAllCoordinates(CommonModelConverter.asGrpcLocations(api.getCoordinates()));
+	grpc.addAllBounds(CommonModelConverter.asGrpcLocations(api.getBounds()));
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
 	}
@@ -2313,7 +2313,7 @@ public class DeviceModelConverter {
     public static ZoneCreateRequest asApiZoneCreateRequest(GZoneCreateRequest grpc) throws SiteWhereException {
 	ZoneCreateRequest api = new ZoneCreateRequest();
 	api.setName(grpc.getName());
-	api.setCoordinates(CommonModelConverter.asApiLocations(grpc.getCoordinatesList()));
+	api.setBounds(CommonModelConverter.asApiLocations(grpc.getBoundsList()));
 	api.setFillColor(grpc.getFillColor());
 	api.setBorderColor(grpc.getBorderColor());
 	api.setOpacity(grpc.getOpacity());
@@ -2331,7 +2331,7 @@ public class DeviceModelConverter {
     public static GZoneCreateRequest asGrpcZoneCreateRequest(IZoneCreateRequest api) throws SiteWhereException {
 	GZoneCreateRequest.Builder grpc = GZoneCreateRequest.newBuilder();
 	grpc.setName(api.getName());
-	grpc.addAllCoordinates(CommonModelConverter.asGrpcLocations(api.getCoordinates()));
+	grpc.addAllBounds(CommonModelConverter.asGrpcLocations(api.getBounds()));
 	grpc.setFillColor(api.getFillColor());
 	grpc.setBorderColor(api.getBorderColor());
 	grpc.setOpacity(api.getOpacity());
@@ -2381,7 +2381,7 @@ public class DeviceModelConverter {
 	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
 	api.setToken(grpc.getToken());
 	api.setName(grpc.getName());
-	api.setCoordinates(CommonModelConverter.asApiLocations(grpc.getCoordinatesList()));
+	api.setBounds(CommonModelConverter.asApiLocations(grpc.getBoundsList()));
 	api.setFillColor(grpc.getFillColor());
 	api.setBorderColor(grpc.getBorderColor());
 	api.setOpacity(grpc.getOpacity());
@@ -2402,7 +2402,7 @@ public class DeviceModelConverter {
 	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
 	grpc.setToken(api.getToken());
 	grpc.setName(api.getName());
-	grpc.addAllCoordinates(CommonModelConverter.asGrpcLocations(api.getCoordinates()));
+	grpc.addAllBounds(CommonModelConverter.asGrpcLocations(api.getBounds()));
 	grpc.setFillColor(api.getFillColor());
 	grpc.setBorderColor(api.getBorderColor());
 	grpc.setOpacity(api.getOpacity());

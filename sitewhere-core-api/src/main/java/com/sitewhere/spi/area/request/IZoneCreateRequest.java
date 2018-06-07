@@ -28,11 +28,11 @@ public interface IZoneCreateRequest extends Serializable {
     public String getName();
 
     /**
-     * Get zone coordinates.
+     * Get zone boundary locations.
      * 
      * @return
      */
-    public List<? extends ILocation> getCoordinates();
+    public List<? extends ILocation> getBounds();
 
     /**
      * Get border color for UI.

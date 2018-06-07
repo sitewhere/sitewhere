@@ -223,12 +223,12 @@ public class ApiTests {
 	SiteWhereClient client = new SiteWhereClient();
 	ZoneCreateRequest request = new ZoneCreateRequest();
 	request.setName("My Test Zone");
-	List<Location> coords = new ArrayList<Location>();
-	coords.add(new Location(30.0, -85.0));
-	coords.add(new Location(30.0, -90.0));
-	coords.add(new Location(35.0, -90.0));
-	coords.add(new Location(35.0, -85.0));
-	request.setCoordinates(coords);
+	List<Location> bounds = new ArrayList<Location>();
+	bounds.add(new Location(30.0, -85.0));
+	bounds.add(new Location(30.0, -90.0));
+	bounds.add(new Location(35.0, -90.0));
+	bounds.add(new Location(35.0, -85.0));
+	request.setBounds(bounds);
 	Zone results = client.createZone(TEST_SITE_TOKEN, request);
 	System.out.println("Created zone: " + results.getName());
 	SearchResults<Zone> search = client.listZonesForSite(TEST_SITE_TOKEN);
