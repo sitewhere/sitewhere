@@ -16,6 +16,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.TopicPartition;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GPersistedEventPayload;
@@ -24,7 +25,7 @@ import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
 import com.sitewhere.inbound.processing.OutboundPayloadEnrichmentLogic;
 import com.sitewhere.inbound.spi.kafka.IPersistedEventsConsumer;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
-import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
+import com.sitewhere.microservice.kafka.DirectKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.rest.model.microservice.kafka.payload.PersistedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
@@ -37,7 +38,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public class PersistedEventsConsumer extends MicroserviceKafkaConsumer implements IPersistedEventsConsumer {
+public class PersistedEventsConsumer extends DirectKafkaConsumer implements IPersistedEventsConsumer {
 
     /** Consumer id */
     private static String CONSUMER_ID = UUID.randomUUID().toString();
@@ -125,11 +126,12 @@ public class PersistedEventsConsumer extends MicroserviceKafkaConsumer implement
 
     /*
      * @see
-     * com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#processBatch(
-     * java.util.List)
+     * com.sitewhere.microservice.kafka.DirectKafkaConsumer#attemptToProcess(org.
+     * apache.kafka.common.TopicPartition, java.util.List)
      */
     @Override
-    public void processBatch(List<ConsumerRecord<String, byte[]>> records) throws SiteWhereException {
+    public void attemptToProcess(TopicPartition topicPartition, List<ConsumerRecord<String, byte[]>> records)
+	    throws SiteWhereException {
 	for (ConsumerRecord<String, byte[]> record : records) {
 	    received(record.key(), record.value());
 	}

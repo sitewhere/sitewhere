@@ -10,6 +10,7 @@ package com.sitewhere.spi.microservice.kafka;
 import java.util.List;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.TopicPartition;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
@@ -46,10 +47,10 @@ public interface IMicroserviceKafkaConsumer extends ITenantEngineLifecycleCompon
     public List<String> getSourceTopicNames() throws SiteWhereException;
 
     /**
-     * Process a batch of records.
+     * Process a batch of records for a partition.
      * 
+     * @param topicPartition
      * @param records
-     * @throws SiteWhereException
      */
-    public void processBatch(List<ConsumerRecord<String, byte[]>> records) throws SiteWhereException;
+    public void process(TopicPartition topicPartition, List<ConsumerRecord<String, byte[]>> records);
 }

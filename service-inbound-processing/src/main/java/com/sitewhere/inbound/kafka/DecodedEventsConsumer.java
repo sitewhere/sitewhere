@@ -9,9 +9,13 @@ package com.sitewhere.inbound.kafka;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.clients.consumer.OffsetCommitCallback;
+import org.apache.kafka.common.TopicPartition;
 
 import com.sitewhere.inbound.processing.InboundPayloadProcessingLogic;
 import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
@@ -143,11 +147,11 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 
     /*
      * @see
-     * com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#processBatch(
-     * java.util.List)
+     * com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#process(org.
+     * apache.kafka.common.TopicPartition, java.util.List)
      */
     @Override
-    public void processBatch(List<ConsumerRecord<String, byte[]>> records) throws SiteWhereException {
+    public void process(TopicPartition topicPartition, List<ConsumerRecord<String, byte[]>> records) {
 	new InboundEventPayloadProcessor(getTenantEngine(), records).run();
     }
 
@@ -188,6 +192,13 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 	@Override
 	public void runAsSystemUser() throws SiteWhereException {
 	    getInboundPayloadProcessingLogic().process(records);
+	    getConsumer().commitAsync(new OffsetCommitCallback() {
+		public void onComplete(Map<TopicPartition, OffsetAndMetadata> offsets, Exception e) {
+		    if (e != null) {
+			getLogger().error("Commit failed for offsets " + offsets, e);
+		    }
+		}
+	    });
 	}
     }
 

@@ -17,13 +17,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.TopicPartition;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GEnrichedEventPayload;
 import com.sitewhere.grpc.model.converter.KafkaModelConverter;
 import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
-import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
+import com.sitewhere.microservice.kafka.DirectKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.rest.model.microservice.kafka.payload.EnrichedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
@@ -43,7 +44,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
+public class KafkaOutboundConnectorHost extends DirectKafkaConsumer {
 
     /** Consumer id */
     private static String CONSUMER_ID = UUID.randomUUID().toString();
@@ -136,11 +137,12 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
 
     /*
      * @see
-     * com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#processBatch(
-     * java.util.List)
+     * com.sitewhere.microservice.kafka.DirectKafkaConsumer#attemptToProcess(org.
+     * apache.kafka.common.TopicPartition, java.util.List)
      */
     @Override
-    public void processBatch(List<ConsumerRecord<String, byte[]>> records) throws SiteWhereException {
+    public void attemptToProcess(TopicPartition topicPartition, List<ConsumerRecord<String, byte[]>> records)
+	    throws SiteWhereException {
 	for (ConsumerRecord<String, byte[]> record : records) {
 	    received(record.key(), record.value());
 	}

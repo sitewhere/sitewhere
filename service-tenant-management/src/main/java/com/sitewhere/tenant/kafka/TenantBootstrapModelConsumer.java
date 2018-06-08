@@ -17,13 +17,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.zookeeper.data.Stat;
 
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdate;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdateType;
 import com.sitewhere.grpc.model.converter.TenantModelConverter;
 import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
-import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
+import com.sitewhere.microservice.kafka.DirectKafkaConsumer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -36,7 +37,7 @@ import com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice;
  * 
  * @author Derek
  */
-public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer implements ITenantBootstrapModelConsumer {
+public class TenantBootstrapModelConsumer extends DirectKafkaConsumer implements ITenantBootstrapModelConsumer {
 
     /** Consumer id */
     private static String CONSUMER_ID = UUID.randomUUID().toString();
@@ -110,11 +111,12 @@ public class TenantBootstrapModelConsumer extends MicroserviceKafkaConsumer impl
 
     /*
      * @see
-     * com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#processBatch(
-     * java.util.List)
+     * com.sitewhere.microservice.kafka.DirectKafkaConsumer#attemptToProcess(org.
+     * apache.kafka.common.TopicPartition, java.util.List)
      */
     @Override
-    public void processBatch(List<ConsumerRecord<String, byte[]>> records) throws SiteWhereException {
+    public void attemptToProcess(TopicPartition topicPartition, List<ConsumerRecord<String, byte[]>> records)
+	    throws SiteWhereException {
 	for (ConsumerRecord<String, byte[]> record : records) {
 	    received(record.key(), record.value());
 	}

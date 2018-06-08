@@ -8,7 +8,6 @@
 package com.sitewhere.microservice.kafka;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,8 +18,6 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.consumer.OffsetAndMetadata;
-import org.apache.kafka.clients.consumer.OffsetCommitCallback;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
@@ -56,7 +53,7 @@ public abstract class MicroserviceKafkaConsumer extends TenantEngineLifecycleCom
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getLogger().debug(
 		"Consumer connecting to Kafka: " + getMicroservice().getInstanceSettings().getKafkaBootstrapServers());
-	getLogger().info("Will be consuming messages from: " + getSourceTopicNames());
+	getLogger().debug("Will be consuming messages from: " + getSourceTopicNames());
 	this.consumer = new KafkaConsumer<>(buildConfiguration());
 	this.executor = Executors.newSingleThreadExecutor(new MicroserviceConsumerThreadFactory());
 	executor.execute(new MessageConsumer());
@@ -121,14 +118,7 @@ public abstract class MicroserviceKafkaConsumer extends TenantEngineLifecycleCom
 
 		    for (TopicPartition topicPartition : records.partitions()) {
 			List<ConsumerRecord<String, byte[]>> topicRecords = records.records(topicPartition);
-			processBatch(topicRecords);
-			getConsumer().commitAsync(new OffsetCommitCallback() {
-			    public void onComplete(Map<TopicPartition, OffsetAndMetadata> offsets, Exception e) {
-				if (e != null) {
-				    getLogger().error("Commit failed for offsets " + offsets, e);
-				}
-			    }
-			});
+			process(topicPartition, topicRecords);
 		    }
 		}
 	    } catch (WakeupException e) {
