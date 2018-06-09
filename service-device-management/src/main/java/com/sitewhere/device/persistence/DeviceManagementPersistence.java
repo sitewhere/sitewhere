@@ -996,25 +996,32 @@ public class DeviceManagementPersistence extends Persistence {
     /**
      * Common logic for creating a zone based on an incoming request.
      * 
-     * @param source
+     * @param request
      * @param area
      * @param uuid
      * @return
      * @throws SiteWhereException
      */
-    public static Zone zoneCreateLogic(IZoneCreateRequest source, IArea area, String uuid) throws SiteWhereException {
+    public static Zone zoneCreateLogic(IZoneCreateRequest request, IArea area, String uuid) throws SiteWhereException {
 	Zone zone = new Zone();
 	zone.setId(UUID.randomUUID());
-	zone.setToken(uuid);
+
+	// Use token if provided, otherwise generate one.
+	if (request.getToken() != null) {
+	    zone.setToken(request.getToken());
+	} else {
+	    zone.setToken(UUID.randomUUID().toString());
+	}
+
 	zone.setAreaId(area.getId());
-	zone.setName(source.getName());
-	zone.setBorderColor(source.getBorderColor());
-	zone.setFillColor(source.getFillColor());
-	zone.setOpacity(source.getOpacity());
-	zone.setBounds(Location.copy(source.getBounds()));
+	zone.setName(request.getName());
+	zone.setBorderColor(request.getBorderColor());
+	zone.setFillColor(request.getFillColor());
+	zone.setOpacity(request.getOpacity());
+	zone.setBounds(Location.copy(request.getBounds()));
 
 	DeviceManagementPersistence.initializeEntityMetadata(zone);
-	MetadataProvider.copy(source.getMetadata(), zone);
+	MetadataProvider.copy(request.getMetadata(), zone);
 
 	return zone;
     }
@@ -1028,6 +1035,9 @@ public class DeviceManagementPersistence extends Persistence {
      * @throws SiteWhereException
      */
     public static void zoneUpdateLogic(IZoneCreateRequest request, Zone target) throws SiteWhereException {
+	if (request.getToken() != null) {
+	    target.setToken(request.getToken());
+	}
 	if (request.getName() != null) {
 	    target.setName(request.getName());
 	}

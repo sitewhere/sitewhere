@@ -585,7 +585,7 @@ message GDeleteAreaResponse {
 
 // Request for creating a zone.
 message GCreateZoneRequest {
-	com.sitewhere.grpc.model.GUUID siteId = 1;
+	com.sitewhere.grpc.model.GUUID areaId = 1;
 	com.sitewhere.grpc.model.GZoneCreateRequest request = 2;
 }
 
@@ -616,9 +616,8 @@ message GGetZoneByTokenResponse {
 	
 // Request for updating an existing zone.
 message GUpdateZoneRequest {
-	com.sitewhere.grpc.model.GUUID siteId = 1;
-	com.sitewhere.grpc.model.GUUID id = 2;
-	com.sitewhere.grpc.model.GZoneCreateRequest request = 3;
+	com.sitewhere.grpc.model.GUUID zoneId = 1;
+	com.sitewhere.grpc.model.GZoneCreateRequest request = 2;
 }
 	
 // Response for updating an existing zone.

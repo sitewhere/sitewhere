@@ -8,7 +8,6 @@
 package com.sitewhere.web.rest.controllers;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -35,9 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sitewhere.device.marshaling.AreaMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
-import com.sitewhere.rest.model.area.Zone;
 import com.sitewhere.rest.model.area.request.AreaCreateRequest;
-import com.sitewhere.rest.model.area.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.asset.DeviceAlertWithAsset;
 import com.sitewhere.rest.model.device.asset.DeviceCommandInvocationWithAsset;
@@ -45,7 +41,6 @@ import com.sitewhere.rest.model.device.asset.DeviceCommandResponseWithAsset;
 import com.sitewhere.rest.model.device.asset.DeviceLocationWithAsset;
 import com.sitewhere.rest.model.device.asset.DeviceMeasurementsWithAsset;
 import com.sitewhere.rest.model.device.asset.DeviceStateChangeWithAsset;
-import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.area.AreaSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
@@ -53,7 +48,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.IAreaType;
-import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -521,108 +515,6 @@ public class Areas extends RestControllerBase {
 	    converted.add(helper.convert(assignment, getAssetManagement()));
 	}
 	return new SearchResults<DeviceAssignment>(converted, matches.getNumResults());
-    }
-
-    @RequestMapping(value = "/{areaToken}/assignments/lastinteraction", method = RequestMethod.GET)
-    @ApiOperation(value = "List device assignments for area with qualifying last interaction date")
-    @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<DeviceAssignment> listAssignmentsWithLastInteractionDate(
-	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
-	    @ApiParam(value = "Interactions after", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-	    @ApiParam(value = "Interactions before", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
-	    throws SiteWhereException {
-	// DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page,
-	// pageSize, startDate, endDate);
-	// ISearchResults<IDeviceAssignment> matches =
-	// SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-	// .getDeviceAssignmentsWithLastInteraction(siteToken, criteria);
-	// DeviceAssignmentMarshalHelper helper = new
-	// DeviceAssignmentMarshalHelper(getTenant(servletRequest));
-	// helper.setIncludeAsset(false);
-	// List<DeviceAssignment> converted = new ArrayList<DeviceAssignment>();
-	// for (IDeviceAssignment assignment : matches.getResults()) {
-	// converted.add(
-	// helper.convert(assignment,
-	// SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
-	// }
-	// return new SearchResults<DeviceAssignment>(converted,
-	// matches.getNumResults());
-	return null;
-    }
-
-    /**
-     * List device assignments marked as missing by the presence manager.
-     * 
-     * @param siteToken
-     * @param page
-     * @param pageSize
-     * @param servletRequest
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/{areaToken}/assignments/missing", method = RequestMethod.GET)
-    @ApiOperation(value = "List device assignments marked as missing")
-    @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<DeviceAssignment> listMissingDeviceAssignments(
-	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize)
-	    throws SiteWhereException {
-	// SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	// ISearchResults<IDeviceAssignment> matches =
-	// SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
-	// .getMissingDeviceAssignments(siteToken, criteria);
-	// DeviceAssignmentMarshalHelper helper = new
-	// DeviceAssignmentMarshalHelper(getTenant(servletRequest));
-	// helper.setIncludeAsset(false);
-	// List<DeviceAssignment> converted = new ArrayList<DeviceAssignment>();
-	// for (IDeviceAssignment assignment : matches.getResults()) {
-	// converted.add(
-	// helper.convert(assignment,
-	// SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
-	// }
-	// return new SearchResults<DeviceAssignment>(converted,
-	// matches.getNumResults());
-	return null;
-    }
-
-    /**
-     * Create a new zone for an area.
-     * 
-     * @param input
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/{areaToken}/zones", method = RequestMethod.POST)
-    @ApiOperation(value = "Create new zone for site")
-    @Secured({ SiteWhereRoles.REST })
-    public Zone createZone(
-	    @ApiParam(value = "Token that identifies an area", required = true) @PathVariable String areaToken,
-	    @RequestBody ZoneCreateRequest request) throws SiteWhereException {
-	IArea existing = assertArea(areaToken);
-	IZone zone = getDeviceManagement().createZone(existing.getId(), request);
-	return Zone.copy(zone);
-    }
-
-    /**
-     * List all zones for an area.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/{areaToken}/zones", method = RequestMethod.GET)
-    @ApiOperation(value = "List zones for an area")
-    @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IZone> listZonesForSite(
-	    @ApiParam(value = "Token that identifies an area", required = true) @PathVariable String areaToken,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize)
-	    throws SiteWhereException {
-	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	IArea existing = assertArea(areaToken);
-	return getDeviceManagement().listZones(existing.getId(), criteria);
     }
 
     /**

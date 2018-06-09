@@ -46,6 +46,7 @@ import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
+import com.sitewhere.spi.search.device.IZoneSearchCriteria;
 
 /**
  * Allows classes to inject themselves as a facade around an existing device
@@ -667,12 +668,13 @@ public class DeviceManagementDecorator extends TenantEngineLifecycleComponentDec
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#createZone(java.util.UUID,
-     * com.sitewhere.spi.area.request.IZoneCreateRequest)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createZone(com.sitewhere.spi.area.
+     * request.IZoneCreateRequest)
      */
     @Override
-    public IZone createZone(UUID siteId, IZoneCreateRequest request) throws SiteWhereException {
-	return getDelegate().createZone(siteId, request);
+    public IZone createZone(IZoneCreateRequest request) throws SiteWhereException {
+	return getDelegate().createZone(request);
     }
 
     /*
@@ -702,12 +704,13 @@ public class DeviceManagementDecorator extends TenantEngineLifecycleComponentDec
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#listZones(java.util.UUID,
-     * com.sitewhere.spi.search.ISearchCriteria)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listZones(com.sitewhere.spi.search
+     * .device.IZoneSearchCriteria)
      */
     @Override
-    public ISearchResults<IZone> listZones(UUID siteId, ISearchCriteria criteria) throws SiteWhereException {
-	return getDelegate().listZones(siteId, criteria);
+    public ISearchResults<IZone> listZones(IZoneSearchCriteria criteria) throws SiteWhereException {
+	return getDelegate().listZones(criteria);
     }
 
     /*

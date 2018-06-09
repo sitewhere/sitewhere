@@ -22,8 +22,8 @@ import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.marshaling.MarshaledArea;
-import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
+import com.sitewhere.rest.model.search.device.ZoneSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.IZone;
@@ -120,7 +120,9 @@ public class AreaMarshalHelper {
 	    area.setDeviceAssignments(assignments);
 	}
 	if (isIncludeZones()) {
-	    ISearchResults<IZone> matches = getDeviceManagement().listZones(area.getId(), SearchCriteria.ALL);
+	    ZoneSearchCriteria criteria = new ZoneSearchCriteria(1, 0);
+	    criteria.setAreaId(area.getId());
+	    ISearchResults<IZone> matches = getDeviceManagement().listZones(criteria);
 	    List<Zone> zones = new ArrayList<Zone>();
 	    List<IZone> reordered = matches.getResults();
 	    Collections.sort(reordered, new Comparator<IZone>() {

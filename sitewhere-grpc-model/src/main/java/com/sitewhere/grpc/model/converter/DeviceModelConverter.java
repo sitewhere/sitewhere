@@ -111,6 +111,7 @@ import com.sitewhere.rest.model.search.area.AreaSearchCriteria;
 import com.sitewhere.rest.model.search.customer.CustomerSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
+import com.sitewhere.rest.model.search.device.ZoneSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.IAreaType;
@@ -152,6 +153,7 @@ import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
+import com.sitewhere.spi.search.device.IZoneSearchCriteria;
 
 /**
  * Convert device entities between SiteWhere API model and GRPC model.
@@ -2342,16 +2344,33 @@ public class DeviceModelConverter {
     }
 
     /**
+     * Convert zone search criteria from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ZoneSearchCriteria asApiZoneSearchCriteria(GZoneSearchCriteria grpc) throws SiteWhereException {
+	ZoneSearchCriteria api = new ZoneSearchCriteria(grpc.getPaging().getPageNumber(),
+		grpc.getPaging().getPageSize());
+	api.setAreaId(grpc.hasAreaId() ? CommonModelConverter.asApiUuid(grpc.getAreaId()) : null);
+	return api;
+    }
+
+    /**
      * Convert zone search criteria from API to GRPC.
      * 
      * @param code
      * @return
      * @throws SiteWhereException
      */
-    public static GZoneSearchCriteria asApiZoneSearchCriteria(ISearchCriteria criteria) throws SiteWhereException {
-	GZoneSearchCriteria.Builder gcriteria = GZoneSearchCriteria.newBuilder();
-	gcriteria.setPaging(CommonModelConverter.asGrpcPaging(criteria));
-	return gcriteria.build();
+    public static GZoneSearchCriteria asGrpcZoneSearchCriteria(IZoneSearchCriteria api) throws SiteWhereException {
+	GZoneSearchCriteria.Builder grpc = GZoneSearchCriteria.newBuilder();
+	if (api.getAreaId() != null) {
+	    grpc.setAreaId(CommonModelConverter.asGrpcUuid(api.getAreaId()));
+	}
+	grpc.setPaging(CommonModelConverter.asGrpcPaging(api));
+	return grpc.build();
     }
 
     /**

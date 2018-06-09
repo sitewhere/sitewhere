@@ -149,20 +149,19 @@ public class DeviceManagementRequestBuilder {
      * @param name
      * @return
      */
-    public ZoneCreateRequest.Builder newZone(String name) {
-	return new ZoneCreateRequest.Builder(name);
+    public ZoneCreateRequest.Builder newZone(String token, String name, IArea area) {
+	return new ZoneCreateRequest.Builder(token, name, area);
     }
 
     /**
      * Persist a previously created zone.
      * 
-     * @param area
      * @param builder
      * @return
      * @throws SiteWhereException
      */
-    public IZone persist(IArea area, ZoneCreateRequest.Builder builder) throws SiteWhereException {
-	return getDeviceManagement().createZone(area.getId(), builder.build());
+    public IZone persist(ZoneCreateRequest.Builder builder) throws SiteWhereException {
+	return getDeviceManagement().createZone(builder.build());
     }
 
     /**

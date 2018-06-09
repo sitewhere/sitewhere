@@ -51,6 +51,7 @@ import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
+import com.sitewhere.spi.search.device.IZoneSearchCriteria;
 import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
@@ -621,15 +622,15 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#createZone(java.util.UUID,
-     * com.sitewhere.spi.area.request.IZoneCreateRequest)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createZone(com.sitewhere.spi.area.
+     * request.IZoneCreateRequest)
      */
     @Override
-    public IZone createZone(UUID siteId, IZoneCreateRequest request) throws SiteWhereException {
+    public IZone createZone(IZoneCreateRequest request) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getCreateZoneMethod());
 	    GCreateZoneRequest.Builder grequest = GCreateZoneRequest.newBuilder();
-	    grequest.setSiteId(CommonModelConverter.asGrpcUuid(siteId));
 	    grequest.setRequest(DeviceModelConverter.asGrpcZoneCreateRequest(request));
 	    GCreateZoneResponse gresponse = getGrpcChannel().getBlockingStub().createZone(grequest.build());
 	    IZone response = (gresponse.hasZone()) ? DeviceModelConverter.asApiZone(gresponse.getZone()) : null;
@@ -686,7 +687,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getUpdateZoneMethod());
 	    GUpdateZoneRequest.Builder grequest = GUpdateZoneRequest.newBuilder();
-	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
+	    grequest.setZoneId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setRequest(DeviceModelConverter.asGrpcZoneCreateRequest(request));
 	    GUpdateZoneResponse gresponse = getGrpcChannel().getBlockingStub().updateZone(grequest.build());
 	    IZone response = (gresponse.hasZone()) ? DeviceModelConverter.asApiZone(gresponse.getZone()) : null;
@@ -698,16 +699,16 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#listZones(java.util.UUID,
-     * com.sitewhere.spi.search.ISearchCriteria)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listZones(com.sitewhere.spi.search
+     * .device.IZoneSearchCriteria)
      */
     @Override
-    public ISearchResults<IZone> listZones(UUID siteId, ISearchCriteria criteria) throws SiteWhereException {
+    public ISearchResults<IZone> listZones(IZoneSearchCriteria criteria) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getListZonesMethod());
 	    GListZonesRequest.Builder grequest = GListZonesRequest.newBuilder();
-	    grequest.setSiteId(CommonModelConverter.asGrpcUuid(siteId));
-	    grequest.setCriteria(DeviceModelConverter.asApiZoneSearchCriteria(criteria));
+	    grequest.setCriteria(DeviceModelConverter.asGrpcZoneSearchCriteria(criteria));
 	    GListZonesResponse gresponse = getGrpcChannel().getBlockingStub().listZones(grequest.build());
 	    ISearchResults<IZone> results = DeviceModelConverter.asApiZoneSearchResults(gresponse.getResults());
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getListZonesMethod(), results);

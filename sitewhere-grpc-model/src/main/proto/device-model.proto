@@ -512,17 +512,19 @@ message GArea {
 
 // Request data for creating a zone.
 message GZoneCreateRequest {
-	string name = 1;
-	repeated GLocation bounds = 2;
-	string borderColor = 3;
-	string fillColor = 4;
-	double opacity = 5;
-	map<string, string> metadata = 6;
+	GOptionalString token = 1;
+	string name = 2;
+	repeated GLocation bounds = 3;
+	string borderColor = 4;
+	string fillColor = 5;
+	double opacity = 6;
+	map<string, string> metadata = 7;
 }
 
 // Criteria for searching zones.
 message GZoneSearchCriteria {
-	GPaging paging = 1;
+	GUUID areaId = 1;
+	GPaging paging = 2;
 }
 
 // Results for zone search.
@@ -535,7 +537,7 @@ message GZoneSearchResults {
 message GZone {
 	GUUID id = 1;
 	string token = 2;
-	GUUID siteId = 3;
+	GUUID areaId = 3;
 	string name = 4;
 	repeated GLocation bounds = 5;
 	string borderColor = 6;

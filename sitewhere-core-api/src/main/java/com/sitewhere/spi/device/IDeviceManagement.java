@@ -39,6 +39,7 @@ import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
+import com.sitewhere.spi.search.device.IZoneSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
@@ -667,12 +668,11 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     /**
      * Create a new zone.
      * 
-     * @param areaId
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public IZone createZone(UUID areaId, IZoneCreateRequest request) throws SiteWhereException;
+    public IZone createZone(IZoneCreateRequest request) throws SiteWhereException;
 
     /**
      * Get zone by unique id.
@@ -703,14 +703,13 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     public IZone updateZone(UUID id, IZoneCreateRequest request) throws SiteWhereException;
 
     /**
-     * Get a list of all zones associated with an area.
+     * Get list of all zones that match the given criteria.
      * 
-     * @param areaId
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IZone> listZones(UUID areaId, ISearchCriteria criteria) throws SiteWhereException;
+    public ISearchResults<IZone> listZones(IZoneSearchCriteria criteria) throws SiteWhereException;
 
     /**
      * Delete a zone given its unique id.

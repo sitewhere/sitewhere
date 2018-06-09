@@ -103,13 +103,14 @@ ptreeSite = deviceBuilder.persist ptreeSite
 logger.info "[Create Area] ${ptreeSite.name}"
 
 // Create zone associated with construction site.
-def zone = deviceBuilder.newZone 'Construction Site' withBorderColor('#017112') withFillColor('#1db32e') withOpacity(0.4)
+def zone = deviceBuilder.newZone 'workarea', 'Work Area', ptreeSite
+zone.withBorderColor('#017112') withFillColor('#1db32e') withOpacity(0.4)
 zone.coord(34.10260138703638, -84.24412965774536) coord(34.101837372446774, -84.24243450164795)
 zone.coord(34.101517550337825, -84.24091100692749) coord(34.10154953265732, -84.23856675624847)
 zone.coord(34.10153176473365, -84.23575580120087) coord(34.10409030732968, -84.23689305782318)
 zone.coord(34.104996439280704, -84.23700034618376) coord(34.10606246444614, -84.23700034618376)
 zone.coord(34.107691680235604, -84.23690915107727)
-zone = deviceBuilder.persist ptreeSite, zone
+zone = deviceBuilder.persist zone
 
 // ################### //
 // Create Device Types //

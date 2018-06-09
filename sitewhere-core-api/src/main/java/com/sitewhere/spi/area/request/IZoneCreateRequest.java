@@ -21,6 +21,20 @@ import com.sitewhere.spi.common.ILocation;
 public interface IZoneCreateRequest extends Serializable {
 
     /**
+     * Token for referencing zone.
+     * 
+     * @return
+     */
+    public String getToken();
+
+    /**
+     * Get token of parent area.
+     * 
+     * @return
+     */
+    public String getAreaToken();
+
+    /**
      * Get zone name.
      * 
      * @return

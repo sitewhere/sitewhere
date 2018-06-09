@@ -57,6 +57,7 @@ import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
+import com.sitewhere.spi.search.device.IZoneSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -760,13 +761,13 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#createZone(java.util.UUID,
-     * com.sitewhere.spi.device.request.IZoneCreateRequest)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createZone(com.sitewhere.spi.area.
+     * request.IZoneCreateRequest)
      */
     @Override
-    public IZone createZone(UUID areaId, IZoneCreateRequest request) throws SiteWhereException {
-	IArea area = getArea(areaId);
-	return HBaseZone.createZone(context, area, request);
+    public IZone createZone(IZoneCreateRequest request) throws SiteWhereException {
+	return null;
     }
 
     /*
@@ -797,13 +798,13 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#listZones(java.util.UUID,
-     * com.sitewhere.spi.search.ISearchCriteria)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listZones(com.sitewhere.spi.search
+     * .device.IZoneSearchCriteria)
      */
     @Override
-    public SearchResults<IZone> listZones(UUID areaId, ISearchCriteria criteria) throws SiteWhereException {
-	IArea area = getArea(areaId);
-	return HBaseArea.listZonesForArea(context, area, criteria);
+    public SearchResults<IZone> listZones(IZoneSearchCriteria criteria) throws SiteWhereException {
+	return null;
     }
 
     /*

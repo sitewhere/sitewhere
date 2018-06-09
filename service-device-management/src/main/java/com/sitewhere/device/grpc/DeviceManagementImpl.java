@@ -759,8 +759,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getCreateZoneMethod());
 	    IZoneCreateRequest apiRequest = DeviceModelConverter.asApiZoneCreateRequest(request.getRequest());
-	    IZone apiResult = getDeviceManagement().createZone(CommonModelConverter.asApiUuid(request.getSiteId()),
-		    apiRequest);
+	    IZone apiResult = getDeviceManagement().createZone(apiRequest);
 	    GCreateZoneResponse.Builder response = GCreateZoneResponse.newBuilder();
 	    response.setZone(DeviceModelConverter.asGrpcZone(apiResult));
 	    responseObserver.onNext(response.build());
@@ -836,7 +835,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getUpdateZoneMethod());
 	    IZoneCreateRequest update = DeviceModelConverter.asApiZoneCreateRequest(request.getRequest());
-	    IZone apiResult = getDeviceManagement().updateZone(CommonModelConverter.asApiUuid(request.getSiteId()),
+	    IZone apiResult = getDeviceManagement().updateZone(CommonModelConverter.asApiUuid(request.getZoneId()),
 		    update);
 	    GUpdateZoneResponse.Builder response = GUpdateZoneResponse.newBuilder();
 	    if (apiResult != null) {
@@ -863,9 +862,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void listZones(GListZonesRequest request, StreamObserver<GListZonesResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListZonesMethod());
-	    ISearchResults<IZone> apiResult = getDeviceManagement().listZones(
-		    CommonModelConverter.asApiUuid(request.getSiteId()),
-		    CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
+	    ISearchResults<IZone> apiResult = getDeviceManagement()
+		    .listZones(DeviceModelConverter.asApiZoneSearchCriteria(request.getCriteria()));
 	    GListZonesResponse.Builder response = GListZonesResponse.newBuilder();
 	    GZoneSearchResults.Builder results = GZoneSearchResults.newBuilder();
 	    for (IZone api : apiResult.getResults()) {

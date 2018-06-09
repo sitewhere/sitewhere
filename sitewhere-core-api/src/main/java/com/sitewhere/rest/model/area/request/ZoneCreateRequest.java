@@ -15,6 +15,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.Location;
+import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
 
 /**
@@ -27,6 +28,12 @@ public class ZoneCreateRequest implements IZoneCreateRequest {
 
     /** Serial version UID */
     private static final long serialVersionUID = -2226478978161539653L;
+
+    /** Zone token */
+    private String token;
+
+    /** Area token */
+    private String areaToken;
 
     /** Zone name */
     private String name;
@@ -45,6 +52,30 @@ public class ZoneCreateRequest implements IZoneCreateRequest {
 
     /** Metadata values */
     private Map<String, String> metadata;
+
+    /*
+     * @see com.sitewhere.spi.area.request.IZoneCreateRequest#getToken()
+     */
+    @Override
+    public String getToken() {
+	return token;
+    }
+
+    public void setToken(String token) {
+	this.token = token;
+    }
+
+    /*
+     * @see com.sitewhere.spi.area.request.IZoneCreateRequest#getAreaToken()
+     */
+    @Override
+    public String getAreaToken() {
+	return areaToken;
+    }
+
+    public void setAreaToken(String areaToken) {
+	this.areaToken = areaToken;
+    }
 
     /*
      * @see com.sitewhere.spi.area.request.IZoneCreateRequest#getName()
@@ -123,8 +154,10 @@ public class ZoneCreateRequest implements IZoneCreateRequest {
 	/** Request being built */
 	private ZoneCreateRequest request = new ZoneCreateRequest();
 
-	public Builder(String name) {
+	public Builder(String token, String name, IArea area) {
+	    request.setToken(token);
 	    request.setName(name);
+	    request.setAreaToken(area.getToken());
 	}
 
 	public Builder withBorderColor(String borderColor) {
