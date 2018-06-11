@@ -43,7 +43,11 @@ dependencies {
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
     
     // Reactive streams (until swap to Java 9).
-    compile 'io.projectreactor:reactor-core'
+    compile 'io.projectreactor:reactor-core'    
+    
+    // SLF4J Extension for i18n
+    compile group: 'org.slf4j', name: 'slf4j-ext', version: '1.7.25'
+    compile group: 'ch.qos.cal10n', name: 'cal10n-api', version: '0.7.7'    
 }
 
 // Publish jar.

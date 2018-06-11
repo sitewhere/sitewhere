@@ -7,11 +7,14 @@
  */
 package com.sitewhere.server.lifecycle;
 
+import java.util.Locale;
 import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
+import org.slf4j.cal10n.LocLogger;
+import org.slf4j.cal10n.LocLoggerFactory;
 
 import com.sitewhere.rest.model.microservice.logging.LoggedException;
 import com.sitewhere.rest.model.microservice.logging.MicroserviceLogMessage;
@@ -22,6 +25,10 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponentLogger;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+
 
 /**
  * Logger that supports gathering extra microservice metadata in addition to
@@ -42,10 +49,31 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
 
     /** Log level override */
     private LogLevel logLevelOverride = null;
-
+    
+    /**
+     * Locale used for i18n
+     */
+    private Locale locale = Locale.getDefault();
+    
+    /**
+     * message conveyor for a given locale
+     */
+    private IMessageConveyor  messageConveyor = new MessageConveyor(locale);
+    
+    /**
+     * Localize Logger Factory
+     */
+    private LocLoggerFactory locLoggerFactory = new LocLoggerFactory(messageConveyor);
+    
+    /**
+     * Localize Logger
+     */
+    private LocLogger localizeLogger = locLoggerFactory.getLocLogger(this.getClass());
+    
     public LifecycleComponentLogger(ILifecycleComponent lifecycleComponent) {
 	this.lifecycleComponent = lifecycleComponent;
 	this.logger = LoggerFactory.getLogger(lifecycleComponent.getClass());
+	this.localizeLogger = locLoggerFactory.getLocLogger(lifecycleComponent.getClass());
     }
 
     /**
@@ -654,4 +682,68 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
     public void setLogger(Logger logger) {
 	this.logger = logger;
     }
+    
+    public LocLogger getLocalizeLogger() {
+        return localizeLogger;
+    }
+
+    public void setLocalizeLogger(LocLogger localizeLogger) {
+        this.localizeLogger = localizeLogger;
+    }
+
+    @Override
+    public void trace(Enum<?> key, Object... args) {
+	getLocalizeLogger().trace(key, args);
+    }
+
+    @Override
+    public void trace(Throwable e, Enum<?> key, Object... args) {
+	trace(key, args);
+	getLogger().trace("Throwable: ", e);
+    }
+    
+    @Override
+    public void debug(Enum<?> key, Object... args) {
+	getLocalizeLogger().debug(key, args);
+    }
+
+    @Override
+    public void debug(Throwable e, Enum<?> key, Object... args) {
+	debug(key, args);
+	getLogger().debug("Throwable: ", e);
+    }
+
+    @Override
+    public void info(Enum<?> key, Object... args) {
+	getLocalizeLogger().info(key, args);
+    }
+
+    @Override
+    public void info(Throwable e, Enum<?> key, Object... args) {
+	info(key, args);
+	getLogger().info("Throwable: ", e);
+    }
+
+    @Override
+    public void warn(Enum<?> key, Object... args) {
+	getLocalizeLogger().warn(key, args);
+    }
+
+    @Override
+    public void warn(Throwable e, Enum<?> key, Object... args) {
+	warn(key, args);
+	getLogger().warn("Throwable: ", e);
+    }
+
+    @Override
+    public void error(Enum<?> key, Object... args) {
+	getLocalizeLogger().error(key, args);
+    }
+
+    @Override
+    public void error(Throwable e, Enum<?> key, Object... args) {
+	error(key, args);
+	getLogger().error("Throwable: ", e);
+    }
+    
 }

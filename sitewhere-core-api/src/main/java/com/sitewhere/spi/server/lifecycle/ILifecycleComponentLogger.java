@@ -10,7 +10,6 @@ package com.sitewhere.spi.server.lifecycle;
 import org.slf4j.Logger;
 
 import com.sitewhere.spi.microservice.logging.LogLevel;
-
 /**
  * Logging interface which allows lifecycle component metadata to be captured
  * along with other logging information.
@@ -33,4 +32,80 @@ public interface ILifecycleComponentLogger extends Logger {
      * @param level
      */
     public void setLogLevelOverride(LogLevel level);
+
+    /**
+     * Trace log internationalization message.
+     * @param key
+     * @param args
+     */
+    public void trace(Enum<?> key, Object... args);
+
+    /**
+     * Trace log internationalization message.
+     * @param e
+     * @param key
+     * @param args
+     */
+    public void trace(Throwable e, Enum<?> key, Object... args);
+    
+    /**
+     * Debug log internationalization message.
+     * @param key
+     * @param args
+     */
+    public void debug(Enum<?> key, Object... args);
+
+    /**
+     * Debug log internationalization message.
+     * @param e
+     * @param key
+     * @param args
+     */
+    public void debug(Throwable e, Enum<?> key, Object... args);
+    
+    /**
+     * Information log internationalization message.
+     * @param key
+     * @param args
+     */
+    public void info(Enum<?> key, Object... args);
+
+    /**
+     * Information log internationalization message.
+     * @param e
+     * @param key
+     * @param args
+     */
+    public void info(Throwable e, Enum<?> key, Object... args);
+    
+    /**
+     * Warning log internationalization message.
+     * @param key
+     * @param args
+     */
+    public void warn(Enum<?> key, Object... args);
+
+    /**
+     * Warning log internationalization message.
+     * @param e
+     * @param key
+     * @param args
+     */
+    public void warn(Throwable e, Enum<?> key, Object... args);
+    
+    /**
+     * Error log internationalization message.
+     * @param key
+     * @param args
+     */
+    public void error(Enum<?> key, Object... args);
+
+    /**
+     * Error log internationalization message.
+     * @param e
+     * @param key
+     * @param args
+     */
+    public void error(Throwable e, Enum<?> key, Object... args);
+
 }

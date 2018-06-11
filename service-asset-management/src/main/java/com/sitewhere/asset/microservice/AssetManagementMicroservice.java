@@ -19,6 +19,7 @@ import com.sitewhere.microservice.hazelcast.HazelcastManager;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.messages.SiteWhereMessage;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.hazelcast.IHazelcastManager;
@@ -103,7 +104,7 @@ public class AssetManagementMicroservice
 	    waitForDependenciesAvailable();
 	    getLogger().debug("All required microservices detected as available.");
 	} catch (ApiNotAvailableException e) {
-	    getLogger().error("Required microservices not available.", e);
+	    getLogger().error(e, SiteWhereMessage.MICROSERVICE_NOT_AVAILABLE);
 	}
     }
 
@@ -128,7 +129,7 @@ public class AssetManagementMicroservice
     public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create Hazelcast manager.
 	this.hazelcastManager = new HazelcastManager();
-
+	
 	// Create GRPC components.
 	createGrpcComponents();
 
