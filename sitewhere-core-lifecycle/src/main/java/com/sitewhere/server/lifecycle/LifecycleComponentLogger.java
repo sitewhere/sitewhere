@@ -70,7 +70,6 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      */
     private LocLogger localizeLogger = locLoggerFactory.getLocLogger(this.getClass());
     
-
     public LifecycleComponentLogger(ILifecycleComponent lifecycleComponent) {
 	this.lifecycleComponent = lifecycleComponent;
 	this.logger = LoggerFactory.getLogger(lifecycleComponent.getClass());
@@ -683,30 +682,68 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
     public void setLogger(Logger logger) {
 	this.logger = logger;
     }
+    
+    public LocLogger getLocalizeLogger() {
+        return localizeLogger;
+    }
 
-    @Override
-    public void trace(Enum<?> key, Object... args) {
-	this.localizeLogger.trace(key, args);
+    public void setLocalizeLogger(LocLogger localizeLogger) {
+        this.localizeLogger = localizeLogger;
     }
 
     @Override
+    public void trace(Enum<?> key, Object... args) {
+	getLocalizeLogger().trace(key, args);
+    }
+
+    @Override
+    public void trace(Throwable e, Enum<?> key, Object... args) {
+	trace(key, args);
+	getLogger().trace("Throwable: ", e);
+    }
+    
+    @Override
     public void debug(Enum<?> key, Object... args) {
-	this.localizeLogger.debug(key, args);
+	getLocalizeLogger().debug(key, args);
+    }
+
+    @Override
+    public void debug(Throwable e, Enum<?> key, Object... args) {
+	debug(key, args);
+	getLogger().debug("Throwable: ", e);
     }
 
     @Override
     public void info(Enum<?> key, Object... args) {
-	this.localizeLogger.info(key, args);
+	getLocalizeLogger().info(key, args);
+    }
+
+    @Override
+    public void info(Throwable e, Enum<?> key, Object... args) {
+	info(key, args);
+	getLogger().info("Throwable: ", e);
     }
 
     @Override
     public void warn(Enum<?> key, Object... args) {
-	this.localizeLogger.error(key, args);
+	getLocalizeLogger().warn(key, args);
+    }
+
+    @Override
+    public void warn(Throwable e, Enum<?> key, Object... args) {
+	warn(key, args);
+	getLogger().warn("Throwable: ", e);
     }
 
     @Override
     public void error(Enum<?> key, Object... args) {
-	this.localizeLogger.error(key, args);
+	getLocalizeLogger().error(key, args);
+    }
+
+    @Override
+    public void error(Throwable e, Enum<?> key, Object... args) {
+	error(key, args);
+	getLogger().error("Throwable: ", e);
     }
     
 }

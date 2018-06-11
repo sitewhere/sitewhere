@@ -90,7 +90,7 @@ public class DeviceRegistrationMicroservice
 	    waitForDependenciesAvailable();
 	    getLogger().debug("All required microservices detected as available.");
 	} catch (ApiNotAvailableException e) {
-	    getLogger().error(SiteWhereMessage.MICROSERVICE_NOT_AVAILABLE);
+	    getLogger().error(e, SiteWhereMessage.MICROSERVICE_NOT_AVAILABLE);
 
 	}
     }

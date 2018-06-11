@@ -39,6 +39,14 @@ public interface ILifecycleComponentLogger extends Logger {
      * @param args
      */
     public void trace(Enum<?> key, Object... args);
+
+    /**
+     * Trace log internationalization message.
+     * @param e
+     * @param key
+     * @param args
+     */
+    public void trace(Throwable e, Enum<?> key, Object... args);
     
     /**
      * Debug log internationalization message.
@@ -46,6 +54,14 @@ public interface ILifecycleComponentLogger extends Logger {
      * @param args
      */
     public void debug(Enum<?> key, Object... args);
+
+    /**
+     * Debug log internationalization message.
+     * @param e
+     * @param key
+     * @param args
+     */
+    public void debug(Throwable e, Enum<?> key, Object... args);
     
     /**
      * Information log internationalization message.
@@ -53,6 +69,14 @@ public interface ILifecycleComponentLogger extends Logger {
      * @param args
      */
     public void info(Enum<?> key, Object... args);
+
+    /**
+     * Information log internationalization message.
+     * @param e
+     * @param key
+     * @param args
+     */
+    public void info(Throwable e, Enum<?> key, Object... args);
     
     /**
      * Warning log internationalization message.
@@ -60,6 +84,14 @@ public interface ILifecycleComponentLogger extends Logger {
      * @param args
      */
     public void warn(Enum<?> key, Object... args);
+
+    /**
+     * Warning log internationalization message.
+     * @param e
+     * @param key
+     * @param args
+     */
+    public void warn(Throwable e, Enum<?> key, Object... args);
     
     /**
      * Error log internationalization message.
@@ -67,5 +99,13 @@ public interface ILifecycleComponentLogger extends Logger {
      * @param args
      */
     public void error(Enum<?> key, Object... args);
+
+    /**
+     * Error log internationalization message.
+     * @param e
+     * @param key
+     * @param args
+     */
+    public void error(Throwable e, Enum<?> key, Object... args);
 
 }
