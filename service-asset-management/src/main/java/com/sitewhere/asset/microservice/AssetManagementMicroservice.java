@@ -9,6 +9,7 @@ package com.sitewhere.asset.microservice;
 
 import com.sitewhere.asset.configuration.AssetManagementModelProvider;
 import com.sitewhere.asset.grpc.AssetManagementGrpcServer;
+import com.sitewhere.asset.messages.AssetManagementMessages;
 import com.sitewhere.asset.spi.grpc.IAssetManagementGrpcServer;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
@@ -103,7 +104,7 @@ public class AssetManagementMicroservice
 	    waitForDependenciesAvailable();
 	    getLogger().debug("All required microservices detected as available.");
 	} catch (ApiNotAvailableException e) {
-	    getLogger().error("Required microservices not available.", e);
+	    getLogger().error(AssetManagementMessages.MICROSERVICE_NOT_AVAILABLE);
 	}
     }
 
@@ -128,7 +129,7 @@ public class AssetManagementMicroservice
     public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create Hazelcast manager.
 	this.hazelcastManager = new HazelcastManager();
-
+	
 	// Create GRPC components.
 	createGrpcComponents();
 
