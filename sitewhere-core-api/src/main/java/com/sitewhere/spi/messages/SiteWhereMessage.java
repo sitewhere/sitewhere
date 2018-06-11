@@ -7,12 +7,18 @@
  */
 package com.sitewhere.spi.messages;
 
+import ch.qos.cal10n.BaseName;
+import ch.qos.cal10n.Locale;
+import ch.qos.cal10n.LocaleData;
+
 /**
- *
+ * 
  * @author Jorge Villaverde
  */
-public interface SiteWhereMessage {
+@BaseName("sitewhere-messages")
+@LocaleData( { @Locale("en_US") })
+public enum SiteWhereMessage {
 
-    String getMessage();
+    MICROSERVICE_NOT_AVAILABLE;
 
 }

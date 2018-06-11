@@ -18,6 +18,7 @@ import com.sitewhere.sources.configuration.EventSourcesModelProvider;
 import com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice;
 import com.sitewhere.sources.spi.microservice.IEventSourcesTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.messages.SiteWhereMessage;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -97,7 +98,8 @@ public class EventSourcesMicroservice extends MultitenantMicroservice<Microservi
 	    waitForDependenciesAvailable();
 	    getLogger().debug("All required microservices detected as available.");
 	} catch (ApiNotAvailableException e) {
-	    getLogger().error("Required microservices not available.", e);
+	    getLogger().error(SiteWhereMessage.MICROSERVICE_NOT_AVAILABLE);
+
 	}
     }
 

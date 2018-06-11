@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.asset.messages;
+package com.sitewhere.instance.messages;
 
 import ch.qos.cal10n.BaseName;
 import ch.qos.cal10n.Locale;
@@ -15,9 +15,8 @@ import ch.qos.cal10n.LocaleData;
  *
  * @author Jorge Villaverde
  */
-@BaseName("asset-management")
+@BaseName("instance-management")
 @LocaleData( { @Locale("en_US") })
-public enum AssetManagementMessages {
-    
+public enum InstanceManagementMessages {
 
 }

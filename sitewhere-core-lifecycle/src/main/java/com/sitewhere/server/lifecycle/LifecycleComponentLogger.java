@@ -686,20 +686,17 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
 
     @Override
     public void trace(Enum<?> key, Object... args) {
-	if (this.localizeLogger.isTraceEnabled())
-	    this.localizeLogger.trace(key, args);
+	this.localizeLogger.trace(key, args);
     }
 
     @Override
     public void debug(Enum<?> key, Object... args) {
-	if (this.localizeLogger.isDebugEnabled())
-	    this.localizeLogger.debug(key, args);
+	this.localizeLogger.debug(key, args);
     }
 
     @Override
     public void info(Enum<?> key, Object... args) {
-	if (this.isInfoEnabled())
-	    this.localizeLogger.info(key, args);
+	this.localizeLogger.info(key, args);
     }
 
     @Override

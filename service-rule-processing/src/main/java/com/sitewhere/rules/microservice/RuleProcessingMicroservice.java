@@ -18,6 +18,7 @@ import com.sitewhere.rules.spi.microservice.IRuleProcessingMicroservice;
 import com.sitewhere.rules.spi.microservice.IRuleProcessingTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.messages.SiteWhereMessage;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -94,7 +95,8 @@ public class RuleProcessingMicroservice
 	    waitForDependenciesAvailable();
 	    getLogger().debug("All required microservices detected as available.");
 	} catch (ApiNotAvailableException e) {
-	    getLogger().error("Required microservices not available.", e);
+	    getLogger().error(SiteWhereMessage.MICROSERVICE_NOT_AVAILABLE);
+
 	}
     }
 
