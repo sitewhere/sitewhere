@@ -17,7 +17,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.command.CommandParameter;
 import com.sitewhere.spi.device.command.ICommandParameter;
-import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.command.ParameterType;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 
@@ -34,6 +33,9 @@ public class DeviceCommandCreateRequest implements IDeviceCommandCreateRequest, 
 
     /** Unqiue token */
     private String token;
+
+    /** Token for device type */
+    private String deviceTypeToken;
 
     /** Optional namespace */
     private String namespace;
@@ -53,9 +55,9 @@ public class DeviceCommandCreateRequest implements IDeviceCommandCreateRequest, 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.request.IDeviceCommandCreateRequest#getToken()
+     * @see com.sitewhere.spi.device.request.IDeviceCommandCreateRequest#getToken()
      */
+    @Override
     public String getToken() {
 	return token;
     }
@@ -65,11 +67,23 @@ public class DeviceCommandCreateRequest implements IDeviceCommandCreateRequest, 
     }
 
     /*
+     * @see com.sitewhere.spi.device.request.IDeviceCommandCreateRequest#
+     * getDeviceTypeToken()
+     */
+    @Override
+    public String getDeviceTypeToken() {
+	return deviceTypeToken;
+    }
+
+    public void setDeviceTypeToken(String deviceTypeToken) {
+	this.deviceTypeToken = deviceTypeToken;
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.device.request.IDeviceCommandCreateRequest#getNamespace
-     * ()
+     * com.sitewhere.spi.device.request.IDeviceCommandCreateRequest#getNamespace ()
      */
     @Override
     public String getNamespace() {
@@ -83,8 +97,7 @@ public class DeviceCommandCreateRequest implements IDeviceCommandCreateRequest, 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.request.IDeviceCommandCreateRequest#getName()
+     * @see com.sitewhere.spi.device.request.IDeviceCommandCreateRequest#getName()
      */
     @Override
     public String getName() {
@@ -130,8 +143,7 @@ public class DeviceCommandCreateRequest implements IDeviceCommandCreateRequest, 
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.device.request.IDeviceCommandCreateRequest#getMetadata(
-     * )
+     * com.sitewhere.spi.device.request.IDeviceCommandCreateRequest#getMetadata( )
      */
     public Map<String, String> getMetadata() {
 	return metadata;
@@ -146,17 +158,8 @@ public class DeviceCommandCreateRequest implements IDeviceCommandCreateRequest, 
 	/** Request being built */
 	private DeviceCommandCreateRequest request = new DeviceCommandCreateRequest();
 
-	public Builder(IDeviceCommand api) {
-	    request.setToken(api.getToken());
-	    request.setName(api.getName());
-	    request.setDescription(api.getDescription());
-	    request.setNamespace(api.getNamespace());
-	    request.getParameters().addAll(api.getParameters());
-	    request.setMetadata(new HashMap<String, String>());
-	    request.getMetadata().putAll(api.getMetadata());
-	}
-
-	public Builder(String token, String namespace, String name) {
+	public Builder(String deviceTypeToken, String token, String namespace, String name) {
+	    request.setDeviceTypeToken(deviceTypeToken);
 	    request.setToken(token);
 	    request.setNamespace(namespace);
 	    request.setName(name);

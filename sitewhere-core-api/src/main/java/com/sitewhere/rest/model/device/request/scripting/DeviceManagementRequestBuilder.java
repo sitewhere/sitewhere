@@ -194,21 +194,20 @@ public class DeviceManagementRequestBuilder {
      * @param name
      * @return
      */
-    public DeviceCommandCreateRequest.Builder newCommand(String token, String namespace, String name) {
-	return new DeviceCommandCreateRequest.Builder(token, namespace, name);
+    public DeviceCommandCreateRequest.Builder newCommand(String deviceTypeToken, String token, String namespace,
+	    String name) {
+	return new DeviceCommandCreateRequest.Builder(deviceTypeToken, token, namespace, name);
     }
 
     /**
      * Persist a previously created command.
      * 
-     * @param type
      * @param builder
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceCommand persist(IDeviceType type, DeviceCommandCreateRequest.Builder builder)
-	    throws SiteWhereException {
-	return getDeviceManagement().createDeviceCommand(type.getId(), builder.build());
+    public IDeviceCommand persist(DeviceCommandCreateRequest.Builder builder) throws SiteWhereException {
+	return getDeviceManagement().createDeviceCommand(builder.build());
     }
 
     /**

@@ -7,7 +7,6 @@
  */
 package com.sitewhere.rest.model.device.command;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -22,7 +21,7 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
  * 
  * @author Derek
  */
-public class DeviceCommand extends MetadataProviderEntity implements IDeviceCommand, Serializable {
+public class DeviceCommand extends MetadataProviderEntity implements IDeviceCommand {
 
     /** For Java serialization */
     private static final long serialVersionUID = -9098150828821813365L;

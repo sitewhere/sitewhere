@@ -8,8 +8,6 @@
 package com.sitewhere.web.rest.controllers;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,19 +29,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.communication.protobuf.DeviceTypeProtoBuilder;
 import com.sitewhere.device.marshaling.DeviceTypeMarshalHelper;
-import com.sitewhere.rest.model.device.command.DeviceCommandNamespace;
-import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
-import com.sitewhere.rest.model.device.request.DeviceStatusCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceTypeCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.device.command.IDeviceCommand;
-import com.sitewhere.spi.device.command.IDeviceCommandNamespace;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.label.ILabel;
@@ -230,7 +222,7 @@ public class DeviceTypes extends RestControllerBase {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}", method = RequestMethod.DELETE)
-    @ApiOperation(value = "Delete existing device specification")
+    @ApiOperation(value = "Delete existing device type")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceType deleteDeviceType(@ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
@@ -239,194 +231,6 @@ public class DeviceTypes extends RestControllerBase {
 	IDeviceType result = getDeviceManagement().deleteDeviceType(existing.getId(), force);
 	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getDeviceManagement());
 	return helper.convert(result);
-    }
-
-    /**
-     * Create a new command for a device specification.
-     * 
-     * @param token
-     * @param request
-     * @param servletRequest
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/{token}/commands", method = RequestMethod.POST)
-    @ApiOperation(value = "Create device command for specification.")
-    @Secured({ SiteWhereRoles.REST })
-    public IDeviceCommand createDeviceCommand(
-	    @ApiParam(value = "Specification token", required = true) @PathVariable String token,
-	    @RequestBody DeviceCommandCreateRequest request, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	IDeviceType existing = assertDeviceTypeByToken(token);
-	IDeviceCommand result = getDeviceManagement().createDeviceCommand(existing.getId(), request);
-	return result;
-    }
-
-    /**
-     * List commands for a device specification.
-     * 
-     * @param token
-     * @param includeDeleted
-     * @param servletRequest
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/{token}/commands", method = RequestMethod.GET)
-    @ApiOperation(value = "List device commands for specification")
-    @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IDeviceCommand> listDeviceCommands(
-	    @ApiParam(value = "Specification token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDeviceType existing = assertDeviceTypeByToken(token);
-	List<IDeviceCommand> results = getDeviceManagement().listDeviceCommands(existing.getId(), includeDeleted);
-	Collections.sort(results, new Comparator<IDeviceCommand>() {
-	    public int compare(IDeviceCommand o1, IDeviceCommand o2) {
-		if (o1.getName().equals(o2.getName())) {
-		    return o1.getNamespace().compareTo(o2.getNamespace());
-		}
-		return o1.getName().compareTo(o2.getName());
-	    }
-	});
-	return new SearchResults<IDeviceCommand>(results);
-    }
-
-    /**
-     * List commands grouped by namespace.
-     * 
-     * @param token
-     * @param includeDeleted
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/{token}/namespaces", method = RequestMethod.GET)
-    @ApiOperation(value = "List device commands by namespace")
-    @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IDeviceCommandNamespace> listDeviceCommandsByNamespace(
-	    @ApiParam(value = "Token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDeviceType existing = assertDeviceTypeByToken(token);
-	List<IDeviceCommand> results = getDeviceManagement().listDeviceCommands(existing.getId(), includeDeleted);
-	Collections.sort(results, new Comparator<IDeviceCommand>() {
-	    public int compare(IDeviceCommand o1, IDeviceCommand o2) {
-		if ((o1.getNamespace() == null) && (o2.getNamespace() != null)) {
-		    return -1;
-		}
-		if ((o1.getNamespace() != null) && (o2.getNamespace() == null)) {
-		    return 1;
-		}
-		if ((o1.getNamespace() == null) && (o2.getNamespace() == null)) {
-		    return o1.getName().compareTo(o2.getName());
-		}
-		if (!o1.getNamespace().equals(o2.getNamespace())) {
-		    return o1.getNamespace().compareTo(o2.getNamespace());
-		}
-		return o1.getName().compareTo(o2.getName());
-	    }
-	});
-	List<IDeviceCommandNamespace> namespaces = new ArrayList<IDeviceCommandNamespace>();
-	DeviceCommandNamespace current = null;
-	for (IDeviceCommand command : results) {
-	    if ((current == null) || ((current.getValue() == null) && (command.getNamespace() != null))
-		    || ((current.getValue() != null) && (!current.getValue().equals(command.getNamespace())))) {
-		current = new DeviceCommandNamespace();
-		current.setValue(command.getNamespace());
-		namespaces.add(current);
-	    }
-	    current.getCommands().add(command);
-	}
-	return new SearchResults<IDeviceCommandNamespace>(namespaces);
-    }
-
-    /**
-     * Create a device status for a device specification.
-     * 
-     * @param request
-     * @return
-     */
-    @RequestMapping(value = "/{token}/statuses", method = RequestMethod.POST)
-    @ApiOperation(value = "Create device status for specification.")
-    @Secured({ SiteWhereRoles.REST })
-    public IDeviceStatus createDeviceStatus(@ApiParam(value = "Token", required = true) @PathVariable String token,
-	    @RequestBody DeviceStatusCreateRequest request, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	IDeviceType existing = assertDeviceTypeByToken(token);
-	return getDeviceManagement().createDeviceStatus(existing.getId(), request);
-    }
-
-    /**
-     * Get device status by unique status code.
-     * 
-     * @param token
-     * @param code
-     * @param servletRequest
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/{token}/statuses/{code}", method = RequestMethod.GET)
-    @ApiOperation(value = "Get device status by unique code")
-    @Secured({ SiteWhereRoles.REST })
-    public IDeviceStatus getDeviceStatus(@ApiParam(value = "Token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Code", required = true) @PathVariable String code, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	IDeviceType existing = assertDeviceTypeByToken(token);
-	return getDeviceManagement().getDeviceStatusByCode(existing.getId(), code);
-    }
-
-    /**
-     * Update information for an existing device status entry.
-     * 
-     * @param token
-     * @param code
-     * @param servletRequest
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/{token}/statuses/{code}", method = RequestMethod.PUT)
-    @ApiOperation(value = "Update existing device status entry")
-    @Secured({ SiteWhereRoles.REST })
-    public IDeviceStatus updateDeviceStatus(@ApiParam(value = "Token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Code", required = true) @PathVariable String code,
-	    @RequestBody DeviceStatusCreateRequest request, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	IDeviceType existing = assertDeviceTypeByToken(token);
-	return getDeviceManagement().updateDeviceStatus(existing.getId(), code, request);
-    }
-
-    @RequestMapping(value = "/{token}/statuses", method = RequestMethod.GET)
-    @ApiOperation(value = "List device statuses for specification")
-    @Secured({ SiteWhereRoles.REST })
-    public List<IDeviceStatus> listDeviceStatuses(
-	    @ApiParam(value = "Token", required = true) @PathVariable String token, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	IDeviceType existing = assertDeviceTypeByToken(token);
-	List<IDeviceStatus> results = getDeviceManagement().listDeviceStatuses(existing.getId());
-	Collections.sort(results, new Comparator<IDeviceStatus>() {
-	    public int compare(IDeviceStatus o1, IDeviceStatus o2) {
-		return o1.getName().compareTo(o2.getName());
-	    }
-	});
-	return results;
-    }
-
-    /**
-     * Delete information for an existing device status entry.
-     * 
-     * @param token
-     * @param code
-     * @param servletRequest
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/{token}/statuses/{code}", method = RequestMethod.DELETE)
-    @ApiOperation(value = "Update existing device status entry")
-    @Secured({ SiteWhereRoles.REST })
-    public IDeviceStatus deleteDeviceStatus(@ApiParam(value = "Token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Code", required = true) @PathVariable String code, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	IDeviceType existing = assertDeviceTypeByToken(token);
-	return getDeviceManagement().deleteDeviceStatus(existing.getId(), code);
     }
 
     /**

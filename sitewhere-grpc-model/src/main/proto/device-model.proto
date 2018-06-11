@@ -85,17 +85,24 @@ message GCommandParameter {
 // Request for creating a device command.
 message GDeviceCommandCreateRequest {
 	GOptionalString token = 1;
-	string namespace = 2;
-	string name = 3;
-	string description = 4;
-	repeated GCommandParameter parameters = 5;
-	map<string, string> metadata = 6;
+	GOptionalString deviceTypeToken = 2;
+	GOptionalString namespace = 3;
+	GOptionalString name = 4;
+	GOptionalString description = 5;
+	repeated GCommandParameter parameters = 6;
+	map<string, string> metadata = 7;
 }
 
 // Criteria for searching device commands.
 message GDeviceCommandSearchCriteria {
 	GUUID deviceTypeId = 1;
-	GOptionalBoolean includeDeleted = 2;
+	GPaging paging = 2;
+}
+
+// Results for device command search.
+message GDeviceCommandSearchResults {
+	uint64 count = 1;
+	repeated GDeviceCommand deviceCommands = 2;
 }
 
 // Device command.
@@ -117,32 +124,42 @@ message GDeviceCommand {
 
 // Request for creating a device status.
 message GDeviceStatusCreateRequest {
-	string code = 1;
-	string name = 2;
-	string backgroundColor = 3;
-	string foregroundColor = 4;
-	string borderColor = 5;
-	string icon = 6;
-	map<string, string> metadata = 7;
+	GOptionalString token = 1;
+	GOptionalString deviceTypeToken = 2;
+	GOptionalString code = 3;
+	GOptionalString name = 4;
+	GOptionalString backgroundColor = 5;
+	GOptionalString foregroundColor = 6;
+	GOptionalString borderColor = 7;
+	GOptionalString icon = 8;
+	map<string, string> metadata = 9;
 }
 
 // Criteria for searching device statuses.
 message GDeviceStatusSearchCriteria {
 	GUUID deviceTypeId = 1;
 	GOptionalString code = 2;
+	GPaging paging = 3;
+}
+
+// Results for device status search.
+message GDeviceStatusSearchResults {
+	uint64 count = 1;
+	repeated GDeviceStatus deviceStatuses = 2;
 }
 
 // Device status.
 message GDeviceStatus {
 	GUUID id = 1;
-	string code = 2;
+	string token = 2;
 	GUUID deviceTypeId = 3;
-	string name = 4;
-	string backgroundColor = 5;
-	string foregroundColor = 6;
-	string borderColor = 7;
-	string icon = 8;
-	map<string, string> metadata = 9;
+	string code = 4;
+	string name = 5;
+	string backgroundColor = 6;
+	string foregroundColor = 7;
+	string borderColor = 8;
+	string icon = 9;
+	map<string, string> metadata = 10;
 }
 
 // ###############

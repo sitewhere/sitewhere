@@ -179,8 +179,11 @@ service DeviceManagement {
 	// Create a new device status.
 	rpc CreateDeviceStatus (GCreateDeviceStatusRequest) returns (GCreateDeviceStatusResponse) {}
 	
-	// Get device status by unique code.
-	rpc GetDeviceStatusByCode (GGetDeviceStatusByCodeRequest) returns (GGetDeviceStatusByCodeResponse) {}
+	// Get device status.
+	rpc GetDeviceStatus (GGetDeviceStatusRequest) returns (GGetDeviceStatusResponse) {}
+	
+	// Get device status by token.
+	rpc GetDeviceStatusByToken (GGetDeviceStatusByTokenRequest) returns (GGetDeviceStatusByTokenResponse) {}
 	
 	// Update an existing device status.
 	rpc UpdateDeviceStatus (GUpdateDeviceStatusRequest) returns (GUpdateDeviceStatusResponse) {}
@@ -720,8 +723,7 @@ message GDeleteDeviceTypeResponse {
 	
 // Request for creating a device command.
 message GCreateDeviceCommandRequest {
-	com.sitewhere.grpc.model.GUUID deviceTypeId = 1;
-	com.sitewhere.grpc.model.GDeviceCommandCreateRequest request = 2;
+	com.sitewhere.grpc.model.GDeviceCommandCreateRequest request = 1;
 }
 
 // Response from creating a device command.
@@ -767,7 +769,7 @@ message GListDeviceCommandsRequest {
 	
 // Response for listing device commands that meet criteria.
 message GListDeviceCommandsResponse {
-	repeated com.sitewhere.grpc.model.GDeviceCommand commands = 1;
+	com.sitewhere.grpc.model.GDeviceCommandSearchResults results = 1;
 }
 	
 // Request for deleting a device command.
@@ -787,7 +789,6 @@ message GDeleteDeviceCommandResponse {
 	
 // Request for creating a device status.
 message GCreateDeviceStatusRequest {
-	com.sitewhere.grpc.model.GUUID deviceTypeId = 1;
 	com.sitewhere.grpc.model.GDeviceStatusCreateRequest request = 2;
 }
 
@@ -796,22 +797,30 @@ message GCreateDeviceStatusResponse {
 	com.sitewhere.grpc.model.GDeviceStatus status = 1;
 }
 
-// Request for getting a device status by code.
-message GGetDeviceStatusByCodeRequest {
-	com.sitewhere.grpc.model.GUUID deviceTypeId = 1;
-	string code = 2;
+// Request for getting a device status by id.
+message GGetDeviceStatusRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
 }
 	
-// Response for getting a device status by code.
-message GGetDeviceStatusByCodeResponse {
+// Response for getting a device status by id.
+message GGetDeviceStatusResponse {
+	com.sitewhere.grpc.model.GDeviceStatus status = 1;
+}
+
+// Request for getting a device status by token.
+message GGetDeviceStatusByTokenRequest {
+	string token = 2;
+}
+	
+// Response for getting a device status by token.
+message GGetDeviceStatusByTokenResponse {
 	com.sitewhere.grpc.model.GDeviceStatus status = 1;
 }
 	
 // Request for updating an existing device status.
 message GUpdateDeviceStatusRequest {
-	com.sitewhere.grpc.model.GUUID deviceTypeId = 1;
-	string code = 2;
-	com.sitewhere.grpc.model.GDeviceStatusCreateRequest request = 3;
+	com.sitewhere.grpc.model.GUUID id = 1;
+	com.sitewhere.grpc.model.GDeviceStatusCreateRequest request = 2;
 }
 	
 // Response for updating an existing device status.
@@ -826,13 +835,12 @@ message GListDeviceStatusesRequest {
 	
 // Response for listing device statuses that meet criteria.
 message GListDeviceStatusesResponse {
-	repeated com.sitewhere.grpc.model.GDeviceStatus status = 1;
+	com.sitewhere.grpc.model.GDeviceStatusSearchResults results = 1;
 }
 	
 // Request for deleting a device status.
 message GDeleteDeviceStatusRequest {
-	com.sitewhere.grpc.model.GUUID deviceTypeId = 1;
-	string code = 2;
+	com.sitewhere.grpc.model.GUUID id = 1;
 }
 	
 // Response for deleting a device status.

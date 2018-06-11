@@ -27,6 +27,13 @@ public interface IDeviceCommandCreateRequest {
     public String getToken();
 
     /**
+     * Get token for device type command belongs to.
+     * 
+     * @return
+     */
+    public String getDeviceTypeToken();
+
+    /**
      * Optional namespace for distinguishing commands.
      * 
      * @return

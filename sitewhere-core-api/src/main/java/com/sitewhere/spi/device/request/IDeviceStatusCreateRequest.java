@@ -17,6 +17,20 @@ import com.sitewhere.spi.common.IMetadataProvider;
 public interface IDeviceStatusCreateRequest extends IMetadataProvider {
 
     /**
+     * Get unique command token.
+     * 
+     * @return
+     */
+    public String getToken();
+
+    /**
+     * Get token for device type command belongs to.
+     * 
+     * @return
+     */
+    public String getDeviceTypeToken();
+
+    /**
      * Get the unique status code.
      * 
      * @return

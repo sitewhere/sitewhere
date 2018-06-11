@@ -62,8 +62,7 @@ public class HBaseDeviceCommand {
 
 	// Use common logic so all backend implementations work the same.
 	List<IDeviceCommand> existing = listDeviceCommands(context, deviceType, false);
-	DeviceCommand command = DeviceManagementPersistence.deviceCommandCreateLogic(deviceType, request, uuid,
-		existing);
+	DeviceCommand command = DeviceManagementPersistence.deviceCommandCreateLogic(deviceType, request, existing);
 
 	// Create unique row for new device.
 	Long nextId = HBaseDeviceType.allocateNextCommandId(context, deviceTypeId);
@@ -197,7 +196,7 @@ public class HBaseDeviceCommand {
 	    IDeviceCommand command, IDeviceCommandCreateRequest request) throws SiteWhereException {
 	DeviceCommand updated = assertDeviceCommand(context, command.getToken());
 	List<IDeviceCommand> existing = listDeviceCommands(context, deviceType, false);
-	DeviceManagementPersistence.deviceCommandUpdateLogic(request, updated, existing);
+	DeviceManagementPersistence.deviceCommandUpdateLogic(null, request, updated, existing);
 	return putDeviceCommandPayload(context, updated);
     }
 

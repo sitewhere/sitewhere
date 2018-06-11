@@ -158,7 +158,7 @@ def addDeviceType = { type ->
 	return type;
 }
 def addCommand = { type, command ->
-	command = deviceBuilder.persist type, command
+	command = deviceBuilder.persist command
 	logger.info "[Create Command] ${type.name} ${command.name}"
 	return command;
 }
@@ -169,7 +169,7 @@ android.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/misc/
 android.withDescription 'This thin, lightweight Android tablet features a 7-inch touch display along with the same familiar interface as other Samsung Galaxy devices, making it easy to use. Use it to quickly browse the web, watch movies, read e-books, or download apps from Google Play.'
 android.metadata 'manufacturer', 'Samsung' metadata 'cpu', '1.2ghz' metadata 'memory', '1gb'
 android = addDeviceType android
-def android_bgcolor = deviceBuilder.newCommand randomId(), 'http://android/example', 'changeBackground' withDescription 'Change background color of application.' withStringParameter('color', true)
+def android_bgcolor = deviceBuilder.newCommand android.token, randomId(), 'http://android/example', 'changeBackground' withDescription 'Change background color of application.' withStringParameter('color', true)
 addCommand android, android_bgcolor
 personnel << android
 
@@ -187,7 +187,7 @@ arduino.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/ardui
 arduino.withDescription 'The Arduino Mega 2560 is a microcontroller board based on the ATmega2560.'
 arduino.metadata 'manufacturer', 'Arduino'
 arduino = addDeviceType arduino
-def arduinohm_serial = deviceBuilder.newCommand randomId(), 'http://arduino/example', 'serialPrintln' withDescription 'Print a message to the serial output.' withStringParameter('message', true)
+def arduinohm_serial = deviceBuilder.newCommand arduino.token, randomId(), 'http://arduino/example', 'serialPrintln' withDescription 'Print a message to the serial output.' withStringParameter('message', true)
 addCommand arduino, arduinohm_serial
 sensors << arduino
 
@@ -197,7 +197,7 @@ rpi.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/misc/rasp
 rpi.withDescription 'The Raspberry Pi is a credit-card-sized single-board computer developed in the UK by the Raspberry Pi Foundation with the intention of promoting the teaching of basic computer science in schools.'
 rpi.metadata 'manufacturer', 'Raspberry Pi Foundation' metadata 'weight', '1.000' metadata 'memory', '2kb'
 rpi = addDeviceType rpi
-def rpi_hello = deviceBuilder.newCommand randomId(), 'http://raspberrypi/example', 'helloWorld' withDescription 'Request a hello world response from device.' withStringParameter('greeting', true) withBooleanParameter('loud', true)
+def rpi_hello = deviceBuilder.newCommand rpi.token, randomId(), 'http://raspberrypi/example', 'helloWorld' withDescription 'Request a hello world response from device.' withStringParameter('greeting', true) withBooleanParameter('loud', true)
 addCommand rpi, rpi_hello
 sensors << rpi
 
@@ -228,9 +228,9 @@ openhab.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/gateway/openhab.pn
 openhab.withDescription 'This is a virual device type for testing openHAB functionality.'
 openhab.metadata 'manufacturer', 'openHAB'
 openhab = addDeviceType openhab
-def openhab_onoff = deviceBuilder.newCommand randomId(), ns, 'sendOnOffCommand' withDescription 'Send on/off command to an openHAB item.' withStringParameter('itemName', true) withStringParameter('command', true)
+def openhab_onoff = deviceBuilder.newCommand openhab.token, randomId(), ns, 'sendOnOffCommand' withDescription 'Send on/off command to an openHAB item.' withStringParameter('itemName', true) withStringParameter('command', true)
 addCommand openhab, openhab_onoff
-def openhab_openclose = deviceBuilder.newCommand randomId(), ns, 'sendOpenCloseCommand' withDescription 'Send open/close command to an openHAB item.' withStringParameter('itemName', true) withStringParameter('command', true)
+def openhab_openclose = deviceBuilder.newCommand openhab.token, randomId(), ns, 'sendOpenCloseCommand' withDescription 'Send open/close command to an openHAB item.' withStringParameter('itemName', true) withStringParameter('command', true)
 addCommand openhab, openhab_openclose
 sensors << openhab
 
@@ -269,9 +269,9 @@ personnel << ipad
 // Add common commands.
 allDeviceTypes.each { type ->
 	if (type != android) {
-		def ping = deviceBuilder.newCommand randomId(), ns, 'ping' withDescription 'Send a ping request to the device to verify it can be reached.'
+		def ping = deviceBuilder.newCommand type.token, randomId(), ns, 'ping' withDescription 'Send a ping request to the device to verify it can be reached.'
 		addCommand type, ping
-		def testEvents = deviceBuilder.newCommand randomId(), ns, 'testEvents' withDescription 'Send a ping request to the device to verify it can be reached.'
+		def testEvents = deviceBuilder.newCommand type.token, randomId(), ns, 'testEvents' withDescription 'Send a ping request to the device to verify it can be reached.'
 		addCommand type, testEvents
 	}
 }

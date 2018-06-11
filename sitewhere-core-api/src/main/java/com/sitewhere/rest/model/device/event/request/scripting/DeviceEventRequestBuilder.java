@@ -7,13 +7,12 @@
  */
 package com.sitewhere.rest.model.device.event.request.scripting;
 
-import java.util.List;
-
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.rest.model.device.event.scripting.DeviceEventSupport;
+import com.sitewhere.rest.model.search.device.DeviceCommandSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -21,6 +20,7 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
+import com.sitewhere.spi.search.ISearchResults;
 
 /**
  * Exposes builders for creating SiteWhere events.
@@ -59,9 +59,11 @@ public class DeviceEventRequestBuilder {
 		throw new SiteWhereException("Target assignment not found: " + target);
 	    }
 	    IDevice targetDevice = deviceManagement.getDevice(targetAssignment.getDeviceId());
-	    List<IDeviceCommand> commands = deviceManagement.listDeviceCommands(targetDevice.getDeviceTypeId(), false);
+	    DeviceCommandSearchCriteria criteria = new DeviceCommandSearchCriteria(1, 0);
+	    criteria.setDeviceTypeId(targetDevice.getDeviceTypeId());
+	    ISearchResults<IDeviceCommand> commands = deviceManagement.listDeviceCommands(criteria);
 	    IDeviceCommand match = null;
-	    for (IDeviceCommand command : commands) {
+	    for (IDeviceCommand command : commands.getResults()) {
 		if (command.getName().equals(commandName)) {
 		    match = command;
 		}

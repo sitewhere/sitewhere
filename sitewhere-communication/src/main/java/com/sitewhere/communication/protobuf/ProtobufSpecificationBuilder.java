@@ -12,12 +12,14 @@ import java.util.List;
 import com.google.protobuf.DescriptorProtos;
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Type;
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto;
+import com.sitewhere.rest.model.search.device.DeviceCommandSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.command.ParameterType;
+import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -53,14 +55,17 @@ public class ProtobufSpecificationBuilder {
      */
     public static DescriptorProtos.DescriptorProto createDeviceTypeMessage(IDeviceType deviceType, ITenant tenant)
 	    throws SiteWhereException {
-	List<IDeviceCommand> commands = getDeviceManagement(tenant).listDeviceCommands(deviceType.getId(), false);
+	DeviceCommandSearchCriteria criteria = new DeviceCommandSearchCriteria(1, 0);
+	criteria.setDeviceTypeId(deviceType.getId());
+	ISearchResults<IDeviceCommand> commands = getDeviceManagement().listDeviceCommands(criteria);
+
 	DescriptorProtos.DescriptorProto.Builder builder = DescriptorProtos.DescriptorProto.newBuilder();
 	builder.setName(ProtobufNaming.getDeviceTypeIdentifier(deviceType));
-	builder.addEnumType(createCommandsEnum(commands));
+	builder.addEnumType(createCommandsEnum(commands.getResults()));
 	builder.addNestedType(createUuidMessage());
 	builder.addNestedType(createHeaderMessage());
 
-	for (IDeviceCommand command : commands) {
+	for (IDeviceCommand command : commands.getResults()) {
 	    builder.addNestedType(createCommandMessage(command)).build();
 	}
 
@@ -212,7 +217,7 @@ public class ProtobufSpecificationBuilder {
 	}
     }
 
-    private static IDeviceManagement getDeviceManagement(ITenant tenant) {
+    private static IDeviceManagement getDeviceManagement() {
 	return null;
     }
 }

@@ -8,11 +8,11 @@
 package com.sitewhere.device;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
+import com.sitewhere.rest.model.search.device.DeviceCommandSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceActions;
@@ -22,6 +22,7 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
+import com.sitewhere.spi.search.ISearchResults;
 
 /**
  * Handles underlying logic to make common actions simpler to invoke from
@@ -71,9 +72,11 @@ public class DeviceActions implements IDeviceActions {
     public void sendCommand(IDeviceAssignment assignment, String commandName, Map<String, String> parameters)
 	    throws SiteWhereException {
 	IDevice device = getDeviceManagement().getDevice(assignment.getDeviceId());
-	List<IDeviceCommand> commands = getDeviceManagement().listDeviceCommands(device.getDeviceTypeId(), false);
+	DeviceCommandSearchCriteria criteria = new DeviceCommandSearchCriteria(1, 0);
+	criteria.setDeviceTypeId(device.getDeviceTypeId());
+	ISearchResults<IDeviceCommand> commands = getDeviceManagement().listDeviceCommands(criteria);
 	IDeviceCommand match = null;
-	for (IDeviceCommand command : commands) {
+	for (IDeviceCommand command : commands.getResults()) {
 	    if (command.getName().equals(commandName)) {
 		match = command;
 	    }

@@ -723,15 +723,30 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getDeviceStatusByCode(com.sitewhere.grpc.service.
-     * GGetDeviceStatusByCodeRequest, io.grpc.stub.StreamObserver)
+     * getDeviceStatus(com.sitewhere.grpc.service.GGetDeviceStatusRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void getDeviceStatusByCode(GGetDeviceStatusByCodeRequest request,
-	    StreamObserver<GGetDeviceStatusByCodeResponse> responseObserver) {
+    public void getDeviceStatus(GGetDeviceStatusRequest request,
+	    StreamObserver<GGetDeviceStatusResponse> responseObserver) {
 	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
 	if (engine != null) {
-	    engine.getDeviceStatusByCode(request, responseObserver);
+	    engine.getDeviceStatus(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getDeviceStatusByToken(com.sitewhere.grpc.service.
+     * GGetDeviceStatusByTokenRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getDeviceStatusByToken(GGetDeviceStatusByTokenRequest request,
+	    StreamObserver<GGetDeviceStatusByTokenResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getDeviceStatusByToken(request, responseObserver);
 	}
     }
 

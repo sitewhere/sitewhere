@@ -138,8 +138,11 @@ public enum ErrorCode {
     /** Invalid device command id */
     InvalidDeviceCommandId(4090, "Device command not found."),
 
-    /** Invalid device status code */
-    InvalidDeviceStatusCode(4100, "Device status not found."),
+    /** Invalid device status id */
+    InvalidDeviceStatusId(4100, "Device status not found."),
+
+    /** Invalid device command token */
+    InvalidDeviceStatusToken(4105, "Device status not found."),
 
     /** Duplicate area type token */
     DuplicateAreaTypeToken(4110, "Area type token already in use."),

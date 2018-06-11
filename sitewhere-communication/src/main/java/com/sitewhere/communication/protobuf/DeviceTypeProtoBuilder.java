@@ -11,11 +11,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import com.sitewhere.rest.model.search.device.DeviceCommandSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
+import com.sitewhere.spi.search.ISearchResults;
 
 /**
  * Builds the Google Protocol Buffer '.proto' file for a device type.
@@ -37,8 +39,12 @@ public class DeviceTypeProtoBuilder {
     public static String getProtoForDeviceType(IDeviceType deviceType, IDeviceManagement deviceManagement)
 	    throws SiteWhereException {
 	StringBuffer buffer = new StringBuffer();
-	List<IDeviceCommand> commands = deviceManagement.listDeviceCommands(deviceType.getId(), false);
-	generateProto(deviceType, commands, buffer);
+
+	DeviceCommandSearchCriteria criteria = new DeviceCommandSearchCriteria(1, 0);
+	criteria.setDeviceTypeId(deviceType.getId());
+	ISearchResults<IDeviceCommand> commands = deviceManagement.listDeviceCommands(criteria);
+
+	generateProto(deviceType, commands.getResults(), buffer);
 	return buffer.toString();
     }
 

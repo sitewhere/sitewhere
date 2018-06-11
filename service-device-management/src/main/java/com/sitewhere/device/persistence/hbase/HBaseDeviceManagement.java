@@ -56,7 +56,9 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria;
+import com.sitewhere.spi.search.device.IDeviceCommandSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
+import com.sitewhere.spi.search.device.IDeviceStatusSearchCriteria;
 import com.sitewhere.spi.search.device.IZoneSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
@@ -185,14 +187,12 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createDeviceCommand(java.util.
-     * UUID, com.sitewhere.spi.device.request.IDeviceCommandCreateRequest)
+     * com.sitewhere.spi.device.IDeviceManagement#createDeviceCommand(com.sitewhere.
+     * spi.device.request.IDeviceCommandCreateRequest)
      */
     @Override
-    public IDeviceCommand createDeviceCommand(UUID deviceTypeId, IDeviceCommandCreateRequest request)
-	    throws SiteWhereException {
-	IDeviceType deviceType = getDeviceType(deviceTypeId);
-	return HBaseDeviceCommand.createDeviceCommand(context, deviceType, request);
+    public IDeviceCommand createDeviceCommand(IDeviceCommandCreateRequest request) throws SiteWhereException {
+	return HBaseDeviceCommand.createDeviceCommand(context, null, request);
     }
 
     /*
@@ -229,14 +229,13 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listDeviceCommands(java.util.UUID,
-     * boolean)
+     * com.sitewhere.spi.device.IDeviceManagement#listDeviceCommands(com.sitewhere.
+     * spi.search.device.IDeviceCommandSearchCriteria)
      */
     @Override
-    public List<IDeviceCommand> listDeviceCommands(UUID deviceTypeId, boolean includeDeleted)
+    public ISearchResults<IDeviceCommand> listDeviceCommands(IDeviceCommandSearchCriteria criteria)
 	    throws SiteWhereException {
-	IDeviceType deviceType = getDeviceType(deviceTypeId);
-	return HBaseDeviceCommand.listDeviceCommands(context, deviceType, includeDeleted);
+	throw new SiteWhereException("Not implemented yet for HBase device managment.");
     }
 
     /*
@@ -246,59 +245,65 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
      */
     @Override
     public IDeviceCommand deleteDeviceCommand(UUID id, boolean force) throws SiteWhereException {
-	IDeviceCommand command = getDeviceCommand(id);
-	return HBaseDeviceCommand.deleteDeviceCommand(context, command, force);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createDeviceStatus(java.util.UUID,
-     * com.sitewhere.spi.device.request.IDeviceStatusCreateRequest)
-     */
-    @Override
-    public IDeviceStatus createDeviceStatus(UUID deviceTypeId, IDeviceStatusCreateRequest request)
-	    throws SiteWhereException {
 	throw new SiteWhereException("Not implemented yet for HBase device managment.");
     }
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStatusByCode(java.util.
-     * UUID, java.lang.String)
+     * com.sitewhere.spi.device.IDeviceManagement#createDeviceStatus(com.sitewhere.
+     * spi.device.request.IDeviceStatusCreateRequest)
      */
     @Override
-    public IDeviceStatus getDeviceStatusByCode(UUID deviceTypeId, String code) throws SiteWhereException {
+    public IDeviceStatus createDeviceStatus(IDeviceStatusCreateRequest request) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase device managment.");
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStatus(java.util.UUID)
+     */
+    @Override
+    public IDeviceStatus getDeviceStatus(UUID id) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase device managment.");
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStatusByToken(java.lang.
+     * String)
+     */
+    @Override
+    public IDeviceStatus getDeviceStatusByToken(String token) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented yet for HBase device managment.");
     }
 
     /*
      * @see
      * com.sitewhere.spi.device.IDeviceManagement#updateDeviceStatus(java.util.UUID,
-     * java.lang.String,
      * com.sitewhere.spi.device.request.IDeviceStatusCreateRequest)
      */
     @Override
-    public IDeviceStatus updateDeviceStatus(UUID deviceTypeId, String code, IDeviceStatusCreateRequest request)
+    public IDeviceStatus updateDeviceStatus(UUID id, IDeviceStatusCreateRequest request) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase device managment.");
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listDeviceStatuses(com.sitewhere.
+     * spi.search.device.IDeviceStatusSearchCriteria)
+     */
+    @Override
+    public ISearchResults<IDeviceStatus> listDeviceStatuses(IDeviceStatusSearchCriteria criteria)
 	    throws SiteWhereException {
 	throw new SiteWhereException("Not implemented yet for HBase device managment.");
     }
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listDeviceStatuses(java.util.UUID)
+     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceStatus(java.util.UUID)
      */
     @Override
-    public List<IDeviceStatus> listDeviceStatuses(UUID deviceTypeId) throws SiteWhereException {
-	throw new SiteWhereException("Not implemented yet for HBase device managment.");
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceStatus(java.util.UUID,
-     * java.lang.String)
-     */
-    @Override
-    public IDeviceStatus deleteDeviceStatus(UUID deviceTypeId, String code) throws SiteWhereException {
+    public IDeviceStatus deleteDeviceStatus(UUID id) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented yet for HBase device managment.");
     }
 

@@ -20,6 +20,12 @@ public class DeviceStatusCreateRequest extends MetadataProvider implements IDevi
     /** Serial version UID */
     private static final long serialVersionUID = -1667891345754538713L;
 
+    /** Unqiue token */
+    private String token;
+
+    /** Token for device type */
+    private String deviceTypeToken;
+
     /** Status code */
     private String code;
 
@@ -39,11 +45,36 @@ public class DeviceStatusCreateRequest extends MetadataProvider implements IDevi
     private String icon;
 
     /*
+     * @see com.sitewhere.spi.device.request.IDeviceStatusCreateRequest#getToken()
+     */
+    @Override
+    public String getToken() {
+	return token;
+    }
+
+    public void setToken(String token) {
+	this.token = token;
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.request.IDeviceStatusCreateRequest#
+     * getDeviceTypeToken()
+     */
+    @Override
+    public String getDeviceTypeToken() {
+	return deviceTypeToken;
+    }
+
+    public void setDeviceTypeToken(String deviceTypeToken) {
+	this.deviceTypeToken = deviceTypeToken;
+    }
+
+    /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.request.IDeviceStatusCreateRequest#getCode()
+     * @see com.sitewhere.spi.device.request.IDeviceStatusCreateRequest#getCode()
      */
+    @Override
     public String getCode() {
 	return code;
     }
@@ -55,9 +86,9 @@ public class DeviceStatusCreateRequest extends MetadataProvider implements IDevi
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.request.IDeviceStatusCreateRequest#getName()
+     * @see com.sitewhere.spi.device.request.IDeviceStatusCreateRequest#getName()
      */
+    @Override
     public String getName() {
 	return name;
     }
@@ -72,6 +103,7 @@ public class DeviceStatusCreateRequest extends MetadataProvider implements IDevi
      * @see com.sitewhere.spi.device.request.IDeviceStatusCreateRequest#
      * getBackgroundColor()
      */
+    @Override
     public String getBackgroundColor() {
 	return backgroundColor;
     }
@@ -86,6 +118,7 @@ public class DeviceStatusCreateRequest extends MetadataProvider implements IDevi
      * @see com.sitewhere.spi.device.request.IDeviceStatusCreateRequest#
      * getForegroundColor()
      */
+    @Override
     public String getForegroundColor() {
 	return foregroundColor;
     }
@@ -100,6 +133,7 @@ public class DeviceStatusCreateRequest extends MetadataProvider implements IDevi
      * @see com.sitewhere.spi.device.request.IDeviceStatusCreateRequest#
      * getBorderColor()
      */
+    @Override
     public String getBorderColor() {
 	return borderColor;
     }
@@ -111,9 +145,9 @@ public class DeviceStatusCreateRequest extends MetadataProvider implements IDevi
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.request.IDeviceStatusCreateRequest#getIcon()
+     * @see com.sitewhere.spi.device.request.IDeviceStatusCreateRequest#getIcon()
      */
+    @Override
     public String getIcon() {
 	return icon;
     }

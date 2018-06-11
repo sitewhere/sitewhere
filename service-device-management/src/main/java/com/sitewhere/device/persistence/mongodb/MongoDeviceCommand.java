@@ -33,7 +33,7 @@ public class MongoDeviceCommand implements MongoConverter<IDeviceCommand> {
     public static final String PROP_ID = "_id";
 
     /** Property for token */
-    public static final String PROP_TOKEN = "rokn";
+    public static final String PROP_TOKEN = "tokn";
 
     /** Property for device type id */
     public static final String PROP_DEVICE_TYPE_ID = "dtid";

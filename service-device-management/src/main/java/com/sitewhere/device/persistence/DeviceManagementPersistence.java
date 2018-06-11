@@ -444,15 +444,14 @@ public class DeviceManagementPersistence extends Persistence {
     /**
      * Common logic for creating new device command and populating it from request.
      * 
-     * @param spec
+     * @param deviceType
      * @param request
-     * @param token
      * @param existing
      * @return
      * @throws SiteWhereException
      */
     public static DeviceCommand deviceCommandCreateLogic(IDeviceType deviceType, IDeviceCommandCreateRequest request,
-	    String token, List<IDeviceCommand> existing) throws SiteWhereException {
+	    List<IDeviceCommand> existing) throws SiteWhereException {
 	DeviceCommand command = new DeviceCommand();
 	command.setId(UUID.randomUUID());
 
@@ -511,13 +510,20 @@ public class DeviceManagementPersistence extends Persistence {
     /**
      * Common logic for updating a device command from request.
      * 
+     * @param deviceType
      * @param request
      * @param target
      * @param existing
      * @throws SiteWhereException
      */
-    public static void deviceCommandUpdateLogic(IDeviceCommandCreateRequest request, DeviceCommand target,
-	    List<IDeviceCommand> existing) throws SiteWhereException {
+    public static void deviceCommandUpdateLogic(IDeviceType deviceType, IDeviceCommandCreateRequest request,
+	    DeviceCommand target, List<IDeviceCommand> existing) throws SiteWhereException {
+	if (request.getToken() != null) {
+	    target.setToken(request.getToken());
+	}
+	if (request.getDeviceTypeToken() != null) {
+	    target.setDeviceTypeId(deviceType.getId());
+	}
 	if (request.getName() != null) {
 	    target.setName(request.getName());
 	}
@@ -556,6 +562,13 @@ public class DeviceManagementPersistence extends Persistence {
 	DeviceStatus status = new DeviceStatus();
 	status.setId(UUID.randomUUID());
 
+	// Use token if provided, otherwise generate one.
+	if (request.getToken() != null) {
+	    status.setToken(request.getToken());
+	} else {
+	    status.setToken(UUID.randomUUID().toString());
+	}
+
 	// Code is required.
 	require("Code", request.getCode());
 	status.setCode(request.getCode());
@@ -584,8 +597,14 @@ public class DeviceManagementPersistence extends Persistence {
      * @param existing
      * @throws SiteWhereException
      */
-    public static void deviceStatusUpdateLogic(IDeviceStatusCreateRequest request, DeviceStatus target,
-	    List<IDeviceStatus> existing) throws SiteWhereException {
+    public static void deviceStatusUpdateLogic(IDeviceType deviceType, IDeviceStatusCreateRequest request,
+	    DeviceStatus target, List<IDeviceStatus> existing) throws SiteWhereException {
+	if (request.getToken() != null) {
+	    target.setToken(request.getToken());
+	}
+	if (request.getDeviceTypeToken() != null) {
+	    target.setDeviceTypeId(deviceType.getId());
+	}
 	if (isUpdated(request.getCode(), target.getCode())) {
 	    target.setCode(request.getCode());
 	    checkDuplicateStatus(target, existing);

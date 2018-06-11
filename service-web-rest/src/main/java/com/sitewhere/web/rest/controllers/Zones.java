@@ -107,7 +107,7 @@ public class Zones extends RestControllerBase {
     @RequestMapping(method = RequestMethod.GET)
     @ApiOperation(value = "List zones that match criteria")
     @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IZone> listZonesForArea(
+    public ISearchResults<IZone> listZones(
 	    @ApiParam(value = "Token that identifies an area", required = false) @RequestParam(required = false) String areaToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize)

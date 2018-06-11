@@ -8,7 +8,6 @@
 package com.sitewhere.device.grpc;
 
 import java.util.List;
-import java.util.UUID;
 
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.grpc.client.GrpcUtils;
@@ -18,9 +17,11 @@ import com.sitewhere.grpc.model.DeviceModel.GAreaTypeSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GCustomerSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GCustomerTypeSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceAssignmentSearchResults;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceCommandSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupElementsSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceSearchResults;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceStatusSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceStreamSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceTypeSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GZoneSearchResults;
@@ -57,6 +58,7 @@ import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.device.IDeviceCommandSearchCriteria;
 
 import io.grpc.stub.StreamObserver;
 
@@ -1081,8 +1083,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getCreateDeviceCommandMethod());
 	    IDeviceCommandCreateRequest apiRequest = DeviceModelConverter
 		    .asApiDeviceCommandCreateRequest(request.getRequest());
-	    IDeviceCommand apiResult = getDeviceManagement()
-		    .createDeviceCommand(CommonModelConverter.asApiUuid(request.getDeviceTypeId()), apiRequest);
+	    IDeviceCommand apiResult = getDeviceManagement().createDeviceCommand(apiRequest);
 	    GCreateDeviceCommandResponse.Builder response = GCreateDeviceCommandResponse.newBuilder();
 	    response.setCommand(DeviceModelConverter.asGrpcDeviceCommand(apiResult));
 	    responseObserver.onNext(response.build());
@@ -1192,16 +1193,17 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GListDeviceCommandsResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDeviceCommandsMethod());
-	    boolean includeDeleted = request.getCriteria().hasIncludeDeleted()
-		    ? request.getCriteria().getIncludeDeleted().getValue()
-		    : false;
 
-	    UUID deviceTypeId = CommonModelConverter.asApiUuid(request.getCriteria().getDeviceTypeId());
-	    List<IDeviceCommand> apiResult = getDeviceManagement().listDeviceCommands(deviceTypeId, includeDeleted);
+	    IDeviceCommandSearchCriteria criteria = DeviceModelConverter
+		    .asApiDeviceCommandSearchCriteria(request.getCriteria());
+	    ISearchResults<IDeviceCommand> apiResult = getDeviceManagement().listDeviceCommands(criteria);
 	    GListDeviceCommandsResponse.Builder response = GListDeviceCommandsResponse.newBuilder();
-	    for (IDeviceCommand api : apiResult) {
-		response.addCommands(DeviceModelConverter.asGrpcDeviceCommand(api));
+	    GDeviceCommandSearchResults.Builder results = GDeviceCommandSearchResults.newBuilder();
+	    for (IDeviceCommand apiType : apiResult.getResults()) {
+		results.addDeviceCommands(DeviceModelConverter.asGrpcDeviceCommand(apiType));
 	    }
+	    results.setCount(apiResult.getNumResults());
+	    response.setResults(results.build());
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
@@ -1252,10 +1254,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GCreateDeviceStatusResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getCreateDeviceStatusMethod());
-	    IDeviceStatusCreateRequest apiRequest = DeviceModelConverter
-		    .asApiDeviceStatusCreateRequest(request.getRequest());
 	    IDeviceStatus apiResult = getDeviceManagement()
-		    .createDeviceStatus(CommonModelConverter.asApiUuid(request.getDeviceTypeId()), apiRequest);
+		    .createDeviceStatus(DeviceModelConverter.asApiDeviceStatusCreateRequest(request.getRequest()));
 	    GCreateDeviceStatusResponse.Builder response = GCreateDeviceStatusResponse.newBuilder();
 	    response.setStatus(DeviceModelConverter.asGrpcDeviceStatus(apiResult));
 	    responseObserver.onNext(response.build());
@@ -1269,31 +1269,54 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getDeviceStatusByCode(com.sitewhere.grpc.service.
-     * GGetDeviceStatusByCodeRequest, io.grpc.stub.StreamObserver)
+     * getDeviceStatus(com.sitewhere.grpc.service.GGetDeviceStatusRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void getDeviceStatusByCode(GGetDeviceStatusByCodeRequest request,
-	    StreamObserver<GGetDeviceStatusByCodeResponse> responseObserver) {
+    public void getDeviceStatus(GGetDeviceStatusRequest request,
+	    StreamObserver<GGetDeviceStatusResponse> responseObserver) {
 	try {
-	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetDeviceStatusByCodeMethod());
-	    IDeviceStatus apiResult = getDeviceManagement().getDeviceStatusByCode(
-		    CommonModelConverter.asApiUuid(request.getDeviceTypeId()), request.getCode());
-	    GGetDeviceStatusByCodeResponse.Builder response = GGetDeviceStatusByCodeResponse.newBuilder();
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetDeviceStatusMethod());
+	    IDeviceStatus apiResult = getDeviceManagement()
+		    .getDeviceStatus(CommonModelConverter.asApiUuid(request.getId()));
+	    GGetDeviceStatusResponse.Builder response = GGetDeviceStatusResponse.newBuilder();
 	    if (apiResult != null) {
 		response.setStatus(DeviceModelConverter.asGrpcDeviceStatus(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetDeviceStatusByCodeMethod(), e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetDeviceStatusMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetDeviceStatusMethod());
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getDeviceStatusByToken(com.sitewhere.grpc.service.
+     * GGetDeviceStatusByTokenRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getDeviceStatusByToken(GGetDeviceStatusByTokenRequest request,
+	    StreamObserver<GGetDeviceStatusByTokenResponse> responseObserver) {
+	try {
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetDeviceStatusByTokenMethod());
+	    IDeviceStatus apiResult = getDeviceManagement().getDeviceStatusByToken(request.getToken());
+	    GGetDeviceStatusByTokenResponse.Builder response = GGetDeviceStatusByTokenResponse.newBuilder();
+	    if (apiResult != null) {
+		response.setStatus(DeviceModelConverter.asGrpcDeviceStatus(apiResult));
+	    }
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetDeviceStatusByTokenMethod(), e,
 		    responseObserver);
 	} finally {
-	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetDeviceStatusByCodeMethod());
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetDeviceStatusByTokenMethod());
 	}
     }
 
@@ -1312,8 +1335,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getUpdateDeviceStatusMethod());
 	    IDeviceStatusCreateRequest apiRequest = DeviceModelConverter
 		    .asApiDeviceStatusCreateRequest(request.getRequest());
-	    IDeviceStatus apiResult = getDeviceManagement().updateDeviceStatus(
-		    CommonModelConverter.asApiUuid(request.getDeviceTypeId()), request.getCode(), apiRequest);
+	    IDeviceStatus apiResult = getDeviceManagement()
+		    .updateDeviceStatus(CommonModelConverter.asApiUuid(request.getId()), apiRequest);
 	    GUpdateDeviceStatusResponse.Builder response = GUpdateDeviceStatusResponse.newBuilder();
 	    response.setStatus(DeviceModelConverter.asGrpcDeviceStatus(apiResult));
 	    responseObserver.onNext(response.build());
@@ -1339,12 +1362,15 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GListDeviceStatusesResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDeviceStatusesMethod());
-	    List<IDeviceStatus> apiResult = getDeviceManagement()
-		    .listDeviceStatuses(CommonModelConverter.asApiUuid(request.getCriteria().getDeviceTypeId()));
+	    ISearchResults<IDeviceStatus> apiResult = getDeviceManagement()
+		    .listDeviceStatuses(DeviceModelConverter.asApiDeviceStatusSearchCriteria(request.getCriteria()));
 	    GListDeviceStatusesResponse.Builder response = GListDeviceStatusesResponse.newBuilder();
-	    for (IDeviceStatus api : apiResult) {
-		response.addStatus(DeviceModelConverter.asGrpcDeviceStatus(api));
+	    GDeviceStatusSearchResults.Builder results = GDeviceStatusSearchResults.newBuilder();
+	    for (IDeviceStatus apiType : apiResult.getResults()) {
+		results.addDeviceStatuses(DeviceModelConverter.asGrpcDeviceStatus(apiType));
 	    }
+	    results.setCount(apiResult.getNumResults());
+	    response.setResults(results.build());
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
@@ -1369,7 +1395,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceStatusMethod());
 	    IDeviceStatus apiResult = getDeviceManagement()
-		    .deleteDeviceStatus(CommonModelConverter.asApiUuid(request.getDeviceTypeId()), request.getCode());
+		    .deleteDeviceStatus(CommonModelConverter.asApiUuid(request.getId()));
 	    GDeleteDeviceStatusResponse.Builder response = GDeleteDeviceStatusResponse.newBuilder();
 	    response.setStatus(DeviceModelConverter.asGrpcDeviceStatus(apiResult));
 	    responseObserver.onNext(response.build());

@@ -38,7 +38,9 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria;
+import com.sitewhere.spi.search.device.IDeviceCommandSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
+import com.sitewhere.spi.search.device.IDeviceStatusSearchCriteria;
 import com.sitewhere.spi.search.device.IZoneSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
@@ -120,15 +122,13 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     public IDeviceType deleteDeviceType(UUID id, boolean force) throws SiteWhereException;
 
     /**
-     * Creates a device command associated with an existing device type.
+     * Create a device command.
      * 
-     * @param deviceTypeId
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceCommand createDeviceCommand(UUID deviceTypeId, IDeviceCommandCreateRequest request)
-	    throws SiteWhereException;
+    public IDeviceCommand createDeviceCommand(IDeviceCommandCreateRequest request) throws SiteWhereException;
 
     /**
      * Get device command by unique id.
@@ -159,14 +159,14 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     public IDeviceCommand updateDeviceCommand(UUID id, IDeviceCommandCreateRequest request) throws SiteWhereException;
 
     /**
-     * List device command objects associated with a device type.
+     * List device commands that match the given criteria.
      * 
-     * @param deviceTypeId
-     * @param includeDeleted
+     * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public List<IDeviceCommand> listDeviceCommands(UUID deviceTypeId, boolean includeDeleted) throws SiteWhereException;
+    public ISearchResults<IDeviceCommand> listDeviceCommands(IDeviceCommandSearchCriteria criteria)
+	    throws SiteWhereException;
 
     /**
      * Delete an existing device command.
@@ -179,56 +179,60 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     public IDeviceCommand deleteDeviceCommand(UUID id, boolean force) throws SiteWhereException;
 
     /**
-     * Creates a device status associated with an existing device device type.
+     * Create a device status.
      * 
-     * @param deviceTypeId
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceStatus createDeviceStatus(UUID deviceTypeId, IDeviceStatusCreateRequest request)
-	    throws SiteWhereException;
+    public IDeviceStatus createDeviceStatus(IDeviceStatusCreateRequest request) throws SiteWhereException;
 
     /**
-     * Get a device status by unique code.
+     * Get device status by unique id.
      * 
-     * @param deviceTypeId
-     * @param code
+     * @param id
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceStatus getDeviceStatusByCode(UUID deviceTypeId, String code) throws SiteWhereException;
+    public IDeviceStatus getDeviceStatus(UUID id) throws SiteWhereException;
+
+    /**
+     * Get a device status by unique token.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    public IDeviceStatus getDeviceStatusByToken(String token) throws SiteWhereException;
 
     /**
      * Update an existing device status.
      * 
-     * @param deviceTypeId
-     * @param code
+     * @param id
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceStatus updateDeviceStatus(UUID deviceTypeId, String code, IDeviceStatusCreateRequest request)
-	    throws SiteWhereException;
+    public IDeviceStatus updateDeviceStatus(UUID id, IDeviceStatusCreateRequest request) throws SiteWhereException;
 
     /**
-     * List device statuses associated with a device type.
+     * List device statuses that match criteria.
      * 
-     * @param deviceTypeId
+     * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public List<IDeviceStatus> listDeviceStatuses(UUID deviceTypeId) throws SiteWhereException;
+    public ISearchResults<IDeviceStatus> listDeviceStatuses(IDeviceStatusSearchCriteria criteria)
+	    throws SiteWhereException;
 
     /**
      * Delete an existing device status.
      * 
-     * @param deviceTypeId
-     * @param code
+     * @param id
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceStatus deleteDeviceStatus(UUID deviceTypeId, String code) throws SiteWhereException;
+    public IDeviceStatus deleteDeviceStatus(UUID id) throws SiteWhereException;
 
     /**
      * Create a new device.

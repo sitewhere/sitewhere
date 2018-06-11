@@ -26,11 +26,14 @@ public class MongoDeviceStatus implements MongoConverter<IDeviceStatus> {
     /** Property for id */
     public static final String PROP_ID = "_id";
 
-    /** Property for status code */
-    public static final String PROP_CODE = "code";
+    /** Property for token */
+    public static final String PROP_TOKEN = "tokn";
 
     /** Property for device type id */
     public static final String PROP_DEVICE_TYPE_ID = "dtid";
+
+    /** Property for status code */
+    public static final String PROP_CODE = "code";
 
     /** Property for command name */
     public static final String PROP_NAME = "name";
@@ -75,8 +78,9 @@ public class MongoDeviceStatus implements MongoConverter<IDeviceStatus> {
      */
     public static void toDocument(IDeviceStatus source, Document target) {
 	target.append(PROP_ID, source.getId());
-	target.append(PROP_CODE, source.getCode());
+	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_DEVICE_TYPE_ID, source.getDeviceTypeId());
+	target.append(PROP_CODE, source.getCode());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_BACKGROUND_COLOR, source.getBackgroundColor());
 	target.append(PROP_FOREGROUND_COLOR, source.getForegroundColor());
@@ -94,8 +98,9 @@ public class MongoDeviceStatus implements MongoConverter<IDeviceStatus> {
      */
     public static void fromDocument(Document source, DeviceStatus target) {
 	UUID id = (UUID) source.get(PROP_ID);
+	String token = (String) source.get(PROP_TOKEN);
+	UUID deviceTypeId = (UUID) source.get(PROP_DEVICE_TYPE_ID);
 	String code = (String) source.get(PROP_CODE);
-	UUID typeId = (UUID) source.get(PROP_DEVICE_TYPE_ID);
 	String name = (String) source.get(PROP_NAME);
 	String bgcolor = (String) source.get(PROP_BACKGROUND_COLOR);
 	String fgcolor = (String) source.get(PROP_FOREGROUND_COLOR);
@@ -103,8 +108,9 @@ public class MongoDeviceStatus implements MongoConverter<IDeviceStatus> {
 	String icon = (String) source.get(PROP_ICON);
 
 	target.setId(id);
+	target.setToken(token);
+	target.setDeviceTypeId(deviceTypeId);
 	target.setCode(code);
-	target.setDeviceTypeId(typeId);
 	target.setName(name);
 	target.setBackgroundColor(bgcolor);
 	target.setForegroundColor(fgcolor);

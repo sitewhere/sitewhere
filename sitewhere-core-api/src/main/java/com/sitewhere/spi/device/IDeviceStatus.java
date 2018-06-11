@@ -9,22 +9,15 @@ package com.sitewhere.spi.device;
 
 import java.util.UUID;
 
-import com.sitewhere.spi.common.IMetadataProvider;
+import com.sitewhere.spi.common.IMetadataProviderEntity;
 
 /**
  * Indicates a possible status for a device. A device status is tied to a device
- * specification and can be used for customizing user interfaces.
+ * type and can be used for customizing user interfaces.
  * 
  * @author Derek
  */
-public interface IDeviceStatus extends IMetadataProvider {
-
-    /**
-     * Get unique device status id.
-     * 
-     * @return
-     */
-    public UUID getId();
+public interface IDeviceStatus extends IMetadataProviderEntity {
 
     /**
      * Get the unique status code.
