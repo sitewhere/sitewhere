@@ -7,7 +7,10 @@
  */
 package com.sitewhere.grpc.client;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.sitewhere.grpc.client.spi.IApiDemuxRoutingStrategy;
@@ -25,17 +28,26 @@ public class RoundRobinDemuxRoutingStrategy<T extends ApiChannel> implements IAp
 
     /*
      * @see
-     * com.sitewhere.grpc.model.spi.IApiDemuxRoutingStrategy#chooseApiChannel(java.
-     * util.List)
+     * com.sitewhere.grpc.client.spi.IApiDemuxRoutingStrategy#chooseApiChannel(java.
+     * util.Map)
      */
     @Override
-    public T chooseApiChannel(List<T> apiChannels) {
+    public T chooseApiChannel(Map<String, T> apiChannels) {
 	if (apiChannels.size() == 0) {
 	    throw new ApiChannelNotAvailableException();
 	}
+	List<T> sortedByHostname = new ArrayList<>();
+	sortedByHostname.addAll(apiChannels.values());
+	sortedByHostname.sort(new Comparator<T>() {
+
+	    @Override
+	    public int compare(T o1, T o2) {
+		return o1.getHostname().compareTo(o2.getHostname());
+	    }
+	});
 	long current = getIndex().incrementAndGet();
-	int mod = (int) (current % apiChannels.size());
-	return apiChannels.get(mod);
+	int mod = (int) (current % sortedByHostname.size());
+	return sortedByHostname.get(mod);
     }
 
     protected AtomicLong getIndex() {

@@ -9,6 +9,8 @@ package com.sitewhere.grpc.client;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -50,8 +52,8 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
     /** Amount of time to wait before logging warnings about missing API channel */
     protected static final int API_CHANNEL_WARN_INTERVAL_IN_SECS = 30;
 
-    /** List of API channels */
-    private List<T> apiChannels = new ArrayList<>();
+    /** Map of API channels indexed by hostname */
+    private Map<String, T> apiChannels = new ConcurrentHashMap<>();
 
     /** Routing strategy */
     @SuppressWarnings("unchecked")
@@ -146,13 +148,12 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 	    throw new ApiChannelNotAvailableException("No API Channels found.");
 	}
 
-	T selectedChannel = getRoutingStrategy().chooseApiChannel(getApiChannels());
 	while (channelCount > 0) {
+	    T selectedChannel = getRoutingStrategy().chooseApiChannel(getApiChannels());
+	    selectedChannel.waitForChannelAvailable();
 	    if (isApiChannelMatch(tenant, selectedChannel)) {
 		return selectedChannel;
 	    }
-
-	    selectedChannel = getRoutingStrategy().chooseApiChannel(getApiChannels());
 	    channelCount--;
 	}
 
@@ -214,9 +215,8 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
      */
     @Override
     public T removeApiChannel(String host) throws SiteWhereException {
-	T toRemove = getApiChannelForHost(host);
+	T toRemove = getApiChannels().remove(host);
 	if (toRemove != null) {
-	    getApiChannels().remove(toRemove);
 	    stopNestedComponent(toRemove, new LifecycleProgressMonitor(
 		    new LifecycleProgressContext(1, "Shut down API channel."), getMicroservice()));
 	}
@@ -230,12 +230,7 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
      * @return
      */
     protected T getApiChannelForHost(String host) {
-	for (T channel : getApiChannels()) {
-	    if (channel.getGrpcChannel().getHostname().equals(host)) {
-		return channel;
-	    }
-	}
-	return null;
+	return getApiChannels().get(host);
     }
 
     /*
@@ -325,7 +320,7 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
      */
     protected void detectServiceRemoved(IMicroserviceDetails microservice) {
 	List<String> missing = new ArrayList<String>();
-	for (T channel : getApiChannels()) {
+	for (T channel : getApiChannels().values()) {
 	    if (microservice.getHostname().equals(channel.getHostname())) {
 		missing.add(channel.getHostname());
 	    }
@@ -378,7 +373,10 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 		    return;
 		}
 
-		getApiChannels().add(channel);
+		T existing = getApiChannels().putIfAbsent(channel.getHostname(), channel);
+		if (existing != null) {
+		    getLogger().error("Creating API channel for hostname when one already existed.");
+		}
 	    } catch (SiteWhereException e) {
 		getLogger().error(e, GrpcClientMessages.API_CHANNEL_EXCEPTION_ON_CREATE, getHost());
 	    } catch (Throwable t) {
@@ -392,14 +390,14 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
     }
 
     /*
-     * @see com.sitewhere.grpc.model.spi.IApiDemux#getApiChannels()
+     * @see com.sitewhere.grpc.client.spi.IApiDemux#getApiChannels()
      */
     @Override
-    public List<T> getApiChannels() {
+    public Map<String, T> getApiChannels() {
 	return apiChannels;
     }
 
-    public void setApiChannels(List<T> apiChannels) {
+    public void setApiChannels(Map<String, T> apiChannels) {
 	this.apiChannels = apiChannels;
     }
 

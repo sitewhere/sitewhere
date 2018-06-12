@@ -122,8 +122,8 @@ public class DeviceStatuses extends RestControllerBase {
     @Secured({ SiteWhereRoles.REST })
     public IDeviceStatus updateDeviceStatus(@ApiParam(value = "Token", required = true) @PathVariable String token,
 	    @RequestBody DeviceStatusCreateRequest request) throws SiteWhereException {
-	IDeviceStatus command = assertDeviceStatusByToken(token);
-	return getDeviceManagement().updateDeviceStatus(command.getId(), request);
+	IDeviceStatus status = assertDeviceStatusByToken(token);
+	return getDeviceManagement().updateDeviceStatus(status.getId(), request);
     }
 
     /**

@@ -7,7 +7,7 @@
  */
 package com.sitewhere.grpc.client.spi;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * Get strategy used to demulitplex API calls across multiple
@@ -19,10 +19,10 @@ import java.util.List;
 public interface IApiDemuxRoutingStrategy<T extends IApiChannel> {
 
     /**
-     * Choose an API channel from the list of available channels.
+     * Choose an API channel from the map of available channels.
      * 
      * @param apiChannels
      * @return
      */
-    public T chooseApiChannel(List<T> apiChannels);
+    public T chooseApiChannel(Map<String, T> apiChannels);
 }

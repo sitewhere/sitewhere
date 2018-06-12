@@ -12,12 +12,10 @@ import java.util.concurrent.TimeUnit;
 import com.sitewhere.grpc.client.spi.IApiChannel;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
-import com.sitewhere.server.lifecycle.TracerUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 import io.grpc.ConnectivityState;
-import io.opentracing.ActiveSpan;
 
 /**
  * Base class for channels that uses SiteWhere APIs to communicate with GRPC
@@ -91,66 +89,54 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.model.spi.IApiChannel#waitForApiAvailable()
+     * @see com.sitewhere.grpc.client.spi.IApiChannel#waitForChannelAvailable()
      */
     @Override
-    public void waitForApiAvailable() throws ApiChannelNotAvailableException {
-	waitForApiAvailable(5 * 60, TimeUnit.SECONDS, 60);
+    public void waitForChannelAvailable() throws ApiChannelNotAvailableException {
+	waitForChannelAvailable(5 * 60, TimeUnit.SECONDS, 60);
     }
 
     /*
-     * @see com.sitewhere.grpc.model.spi.IApiChannel#waitForApiAvailable(long,
+     * @see com.sitewhere.grpc.client.spi.IApiChannel#waitForChannelAvailable(long,
      * java.util.concurrent.TimeUnit, long)
      */
     @Override
-    public void waitForApiAvailable(long duration, TimeUnit unit, long logMessageDelay)
+    public void waitForChannelAvailable(long duration, TimeUnit unit, long logMessageDelay)
 	    throws ApiChannelNotAvailableException {
 	if (getGrpcChannel() == null) {
 	    throw new ApiChannelNotAvailableException("GRPC channel not found. Unable to access API.");
 	}
 
-	ActiveSpan span = null;
-	try {
-	    span = getGrpcChannel().getTracer().buildSpan("Wait for " + getGrpcChannel().getComponentName())
-		    .startActive();
-
-	    long start = System.currentTimeMillis();
-	    long deadline = start + unit.toMillis(duration);
-	    long logAfter = start + unit.toMillis(logMessageDelay);
-	    while ((System.currentTimeMillis() - deadline) < 0) {
-		try {
-		    if (getGrpcChannel().getChannel() == null) {
+	long start = System.currentTimeMillis();
+	long deadline = start + unit.toMillis(duration);
+	long logAfter = start + unit.toMillis(logMessageDelay);
+	while ((System.currentTimeMillis() - deadline) < 0) {
+	    try {
+		if (getGrpcChannel().getChannel() == null) {
+		    if ((System.currentTimeMillis() - logAfter) > 0) {
+			getLogger().info("Waiting for GRPC channel to be initialized.");
+		    }
+		    Thread.sleep(CONNECTION_CHECK_INTERVAL);
+		} else {
+		    ConnectivityState state = getGrpcChannel().getChannel().getState(true);
+		    if (ConnectivityState.READY != state) {
 			if ((System.currentTimeMillis() - logAfter) > 0) {
-			    getLogger().info("Waiting for GRPC channel to be initialized.");
+			    getLogger().info(
+				    "Waiting for GRPC service to become available. (status:" + state.name() + ")");
 			}
 			Thread.sleep(CONNECTION_CHECK_INTERVAL);
 		    } else {
-			ConnectivityState state = getGrpcChannel().getChannel().getState(true);
-			if (ConnectivityState.READY != state) {
-			    if ((System.currentTimeMillis() - logAfter) > 0) {
-				getLogger().info(
-					"Waiting for GRPC service to become available. (status:" + state.name() + ")");
-			    }
-			    Thread.sleep(CONNECTION_CHECK_INTERVAL);
-			} else {
-			    return;
-			}
+			return;
 		    }
-		} catch (Exception e) {
-		    TracerUtils.handleErrorInTracerSpan(span, e);
-		    throw new ApiChannelNotAvailableException(
-			    "Unhandled exception waiting for API to become available.", e);
 		}
+	    } catch (Exception e) {
+		throw new ApiChannelNotAvailableException("Unhandled exception waiting for API to become available.",
+			e);
 	    }
-	    ApiChannelNotAvailableException e = new ApiChannelNotAvailableException(
-		    "API not available within timeout period.");
-	    TracerUtils.handleErrorInTracerSpan(span, e);
-	    throw e;
-	} finally {
-	    TracerUtils.finishTracerSpan(span);
 	}
+	ApiChannelNotAvailableException e = new ApiChannelNotAvailableException(
+		"API not available within timeout period.");
+	throw e;
     }
 
     /*

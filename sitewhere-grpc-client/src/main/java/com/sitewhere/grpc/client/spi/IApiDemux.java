@@ -7,7 +7,7 @@
  */
 package com.sitewhere.grpc.client.spi;
 
-import java.util.List;
+import java.util.Map;
 
 import com.sitewhere.grpc.client.ApiChannel;
 import com.sitewhere.spi.SiteWhereException;
@@ -36,11 +36,12 @@ public interface IApiDemux<T extends IApiChannel> extends ITenantEngineLifecycle
     public void waitForMicroserviceAvailable();
 
     /**
-     * List of available {@link IApiChannel} that can be used for routing.
+     * Map of available {@link IApiChannel} that can be used for routing, indexed by
+     * hostname.
      * 
      * @return
      */
-    public List<T> getApiChannels();
+    public Map<String, T> getApiChannels();
 
     /**
      * Get an API channel based on the routing strategy.

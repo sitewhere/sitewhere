@@ -454,6 +454,7 @@ public class DeviceManagementPersistence extends Persistence {
 	    List<IDeviceCommand> existing) throws SiteWhereException {
 	DeviceCommand command = new DeviceCommand();
 	command.setId(UUID.randomUUID());
+	command.setDeviceTypeId(deviceType.getId());
 
 	// Use token if provided, otherwise generate one.
 	if (request.getToken() != null) {
@@ -466,7 +467,6 @@ public class DeviceManagementPersistence extends Persistence {
 	require("Name", request.getName());
 	command.setName(request.getName());
 
-	command.setDeviceTypeId(deviceType.getId());
 	command.setNamespace(request.getNamespace());
 	command.setDescription(request.getDescription());
 	command.getParameters().addAll(request.getParameters());
@@ -564,6 +564,7 @@ public class DeviceManagementPersistence extends Persistence {
 	    List<IDeviceStatus> existing) throws SiteWhereException {
 	DeviceStatus status = new DeviceStatus();
 	status.setId(UUID.randomUUID());
+	status.setDeviceTypeId(deviceType.getId());
 
 	// Use token if provided, otherwise generate one.
 	if (request.getToken() != null) {
@@ -580,10 +581,20 @@ public class DeviceManagementPersistence extends Persistence {
 	require("Name", request.getName());
 	status.setName(request.getName());
 
-	status.setDeviceTypeId(deviceType.getId());
+	// Background color is required.
+	require("Background color", request.getBackgroundColor());
 	status.setBackgroundColor(request.getBackgroundColor());
+
+	// Foreground color is required.
+	require("Foreground color", request.getForegroundColor());
 	status.setForegroundColor(request.getForegroundColor());
+
+	// Border color is required.
+	require("Border color", request.getBorderColor());
 	status.setBorderColor(request.getBorderColor());
+
+	// Icon is required.
+	require("Icon", request.getIcon());
 	status.setIcon(request.getIcon());
 
 	checkDuplicateStatus(status, existing);

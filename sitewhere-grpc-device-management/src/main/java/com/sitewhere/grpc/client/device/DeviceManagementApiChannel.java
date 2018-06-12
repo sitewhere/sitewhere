@@ -1088,6 +1088,7 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getUpdateDeviceStatusMethod());
 	    GUpdateDeviceStatusRequest.Builder grequest = GUpdateDeviceStatusRequest.newBuilder();
+	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
 	    grequest.setRequest(DeviceModelConverter.asGrpcDeviceStatusCreateRequest(request));
 	    GUpdateDeviceStatusResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .updateDeviceStatus(grequest.build());
