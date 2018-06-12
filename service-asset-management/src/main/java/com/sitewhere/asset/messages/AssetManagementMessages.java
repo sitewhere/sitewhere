@@ -12,12 +12,15 @@ import ch.qos.cal10n.Locale;
 import ch.qos.cal10n.LocaleData;
 
 /**
- *
+ * Localized messages for the asset managment microservice.
+ * 
  * @author Jorge Villaverde
  */
 @BaseName("asset-management")
-@LocaleData( { @Locale("en_US") })
+@LocaleData({ @Locale("en_US") })
 public enum AssetManagementMessages {
-    
 
+    ALL_REQUIRED_MS_AVAILABLE,
+
+    DEVICE_MANAGEMENT_MS_AVAILABLE;
 }

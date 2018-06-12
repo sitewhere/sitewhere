@@ -213,7 +213,7 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 		    .convertDurationsTo(TimeUnit.MILLISECONDS).build();
 	    getMetricsReporter().start(20, TimeUnit.SECONDS);
 	} else {
-	    getLogger().info("Metrics reporting is disabled.");
+	    getLogger().info(MicroserviceMessages.METRICS_REPORTING_DISABLED);
 	}
     }
 
@@ -294,15 +294,16 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	ActiveSpan span = null;
 	try {
 	    span = getTracer().buildSpan("Wait for instance to be bootstrapped").startActive();
-	    getLogger().info("Verifying that instance has been bootstrapped...");
+	    getLogger().info(MicroserviceMessages.INSTANCE_VERIFY_BOOTSTRAPPED);
 	    while (true) {
 		if (getZookeeperManager().getCurator().checkExists().forPath(getInstanceBootstrappedMarker()) != null) {
 		    break;
 		}
-		getLogger().info("Bootstrap marker not found at '" + getInstanceBootstrappedMarker() + "'. Waiting...");
+		getLogger().info(MicroserviceMessages.INSTANCE_BOOTSTRAP_MARKER_NOT_FOUND,
+			getInstanceBootstrappedMarker());
 		Thread.sleep(1000);
 	    }
-	    getLogger().info("Confirmed that instance was bootstrapped.");
+	    getLogger().info(MicroserviceMessages.INSTANCE_BOOTSTRAP_CONFIRMED);
 	} catch (Exception e) {
 	    TracerUtils.handleErrorInTracerSpan(span, e);
 	    throw new SiteWhereException("Error waiting on instance to be bootstrapped.", e);
@@ -381,7 +382,7 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     @Override
     public void setLifecycleStatus(LifecycleStatus lifecycleStatus) {
 	super.setLifecycleStatus(lifecycleStatus);
-	getLogger().info("Sending state update for lifecycle status change (" + getLifecycleStatus().name() + ").");
+	getLogger().info(MicroserviceMessages.LIFECYCLE_STATUS_SENDING, getLifecycleStatus().name());
 	sendCurrentState();
     }
 
@@ -395,10 +396,10 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 		IMicroserviceState state = getCurrentState();
 		getStateUpdatesKafkaProducer().send(state);
 	    } catch (SiteWhereException e) {
-		getLogger().error("Unable to report microservice state.", e);
+		getLogger().error(e, MicroserviceMessages.LIFECYCLE_STATUS_SEND_EXCEPTION);
 	    }
 	} else {
-	    getLogger().warn("Unable to report state. Waiting on Kafka producer to become available.");
+	    getLogger().warn(MicroserviceMessages.LIFECYCLE_STATUS_FAILED_NO_KAFKA);
 	}
     }
 

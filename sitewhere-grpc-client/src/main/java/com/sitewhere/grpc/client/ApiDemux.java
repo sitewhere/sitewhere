@@ -186,15 +186,15 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 		return;
 	    } catch (ApiChannelNotAvailableException e) {
 		if ((System.currentTimeMillis() - deadline) < 0) {
-		    getLogger().debug("Waiting for '" + getTargetIdentifier() + "' API channel to become available.");
+		    getLogger().debug(GrpcClientMessages.API_CHANNEL_WAITING_FOR_AVAILABLE, getTargetIdentifier());
 		} else {
-		    getLogger().warn("Waiting for '" + getTargetIdentifier() + "' API channel to become available.");
+		    getLogger().warn(GrpcClientMessages.API_CHANNEL_WAITING_FOR_AVAILABLE, getTargetIdentifier());
 		}
 	    }
 	    try {
 		Thread.sleep(API_CHANNEL_WAIT_INTERVAL_IN_SECS * 1000);
 	    } catch (InterruptedException e) {
-		getLogger().warn("Interrupted while waiting for microservice to become available.");
+		getLogger().warn(GrpcClientMessages.API_CHANNEL_INTERRUPTED_WAITING_FOR_MS);
 	    }
 	}
     }
@@ -305,15 +305,15 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 	if (getTargetIdentifier().equals(microservice.getIdentifier())) {
 	    T existing = getApiChannelForHost(microservice.getHostname());
 	    if (existing == null) {
-		getLogger().debug("Microservice for '" + getTargetIdentifier() + "' at hostname "
-			+ microservice.getHostname() + " added. Initializing API channel.");
+		getLogger().debug(GrpcClientMessages.API_CHANNEL_INIT_AFTER_MS_ADDED, getTargetIdentifier(),
+			microservice.getHostname());
 		try {
 		    initializeApiChannel(microservice.getHostname());
 		} catch (SiteWhereException e) {
-		    getLogger().error("Unable to initialize API channel for " + microservice.getHostname() + ".");
+		    getLogger().error(GrpcClientMessages.API_CHANNEL_UNABLE_TO_INIT, microservice.getHostname());
 		}
 	    } else {
-		getLogger().info("API channel already active for host " + microservice.getHostname() + ".");
+		getLogger().info(GrpcClientMessages.API_CHANNEL_ALREADY_ACTIVE, microservice.getHostname());
 	    }
 	}
     }
@@ -331,11 +331,11 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 	    }
 	}
 	for (String hostname : missing) {
-	    getLogger().info("Detected removal of remote microservice (" + hostname + "). Dropping API channel.");
+	    getLogger().info(GrpcClientMessages.API_CHANNEL_REMOVED_AFTER_MS_REMOVED, hostname);
 	    try {
 		removeApiChannel(hostname);
 	    } catch (SiteWhereException e) {
-		getLogger().error("Unable to remove API channel for " + hostname + ".");
+		getLogger().error(GrpcClientMessages.API_CHANNEL_UNABLE_TO_REMOVE, hostname);
 	    }
 	}
     }
@@ -367,22 +367,22 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 		// Initialize channel.
 		initializeNestedComponent(channel, monitor, true);
 		if (channel.getLifecycleStatus() == LifecycleStatus.InitializationError) {
-		    getLogger().error("Unable to initialize API channel to " + getHost() + ".");
+		    getLogger().error(GrpcClientMessages.API_CHANNEL_FAILED_INIT, getHost());
 		    return;
 		}
 
 		// Start channel.
 		startNestedComponent(channel, monitor, true);
 		if (channel.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
-		    getLogger().error("Unable to start API channel to " + getHost() + ".");
+		    getLogger().error(GrpcClientMessages.API_CHANNEL_FAILED_START, getHost());
 		    return;
 		}
 
 		getApiChannels().add(channel);
 	    } catch (SiteWhereException e) {
-		getLogger().error("Unable to create API channel to " + getHost() + ".", e);
+		getLogger().error(e, GrpcClientMessages.API_CHANNEL_EXCEPTION_ON_CREATE, getHost());
 	    } catch (Throwable t) {
-		getLogger().error("Unhandled exception creating API channel to " + getHost() + ".", t);
+		getLogger().error(t, GrpcClientMessages.API_CHANNEL_UNHANDLED_EXCEPTION_ON_CREATE, getHost());
 	    }
 	}
 

@@ -10,6 +10,7 @@ package com.sitewhere.spi.server.lifecycle;
 import org.slf4j.Logger;
 
 import com.sitewhere.spi.microservice.logging.LogLevel;
+
 /**
  * Logging interface which allows lifecycle component metadata to be captured
  * along with other logging information.
@@ -35,6 +36,7 @@ public interface ILifecycleComponentLogger extends Logger {
 
     /**
      * Trace log internationalization message.
+     * 
      * @param key
      * @param args
      */
@@ -42,14 +44,16 @@ public interface ILifecycleComponentLogger extends Logger {
 
     /**
      * Trace log internationalization message.
+     * 
      * @param e
      * @param key
      * @param args
      */
     public void trace(Throwable e, Enum<?> key, Object... args);
-    
+
     /**
      * Debug log internationalization message.
+     * 
      * @param key
      * @param args
      */
@@ -57,14 +61,16 @@ public interface ILifecycleComponentLogger extends Logger {
 
     /**
      * Debug log internationalization message.
+     * 
      * @param e
      * @param key
      * @param args
      */
     public void debug(Throwable e, Enum<?> key, Object... args);
-    
+
     /**
      * Information log internationalization message.
+     * 
      * @param key
      * @param args
      */
@@ -72,14 +78,16 @@ public interface ILifecycleComponentLogger extends Logger {
 
     /**
      * Information log internationalization message.
+     * 
      * @param e
      * @param key
      * @param args
      */
     public void info(Throwable e, Enum<?> key, Object... args);
-    
+
     /**
      * Warning log internationalization message.
+     * 
      * @param key
      * @param args
      */
@@ -87,14 +95,16 @@ public interface ILifecycleComponentLogger extends Logger {
 
     /**
      * Warning log internationalization message.
+     * 
      * @param e
      * @param key
      * @param args
      */
     public void warn(Throwable e, Enum<?> key, Object... args);
-    
+
     /**
      * Error log internationalization message.
+     * 
      * @param key
      * @param args
      */
@@ -102,10 +112,46 @@ public interface ILifecycleComponentLogger extends Logger {
 
     /**
      * Error log internationalization message.
+     * 
      * @param e
      * @param key
      * @param args
      */
     public void error(Throwable e, Enum<?> key, Object... args);
 
+    /**
+     * Use localized version instead.
+     */
+    // @Deprecated
+    public void debug(String message);
+
+    /**
+     * Use localized version instead.
+     */
+    // @Deprecated
+    public void info(String message);
+
+    /**
+     * Use localized version instead.
+     */
+    // @Deprecated
+    public void warn(String message, Throwable t);
+
+    /**
+     * Use localized version instead.
+     */
+    // @Deprecated
+    public void warn(String message);
+
+    /**
+     * Use localized version instead.
+     */
+    // @Deprecated
+    public void error(String message, Throwable t);
+
+    /**
+     * Use localized version instead.
+     */
+    // @Deprecated
+    public void error(String message);
 }

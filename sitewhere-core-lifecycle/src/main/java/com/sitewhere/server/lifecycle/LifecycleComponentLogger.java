@@ -29,7 +29,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 
-
 /**
  * Logger that supports gathering extra microservice metadata in addition to
  * standard logging.
@@ -49,27 +48,27 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
 
     /** Log level override */
     private LogLevel logLevelOverride = null;
-    
+
     /**
      * Locale used for i18n
      */
     private Locale locale = Locale.getDefault();
-    
+
     /**
      * message conveyor for a given locale
      */
-    private IMessageConveyor  messageConveyor = new MessageConveyor(locale);
-    
+    private IMessageConveyor messageConveyor = new MessageConveyor(locale);
+
     /**
      * Localize Logger Factory
      */
     private LocLoggerFactory locLoggerFactory = new LocLoggerFactory(messageConveyor);
-    
+
     /**
      * Localize Logger
      */
     private LocLogger localizeLogger = locLoggerFactory.getLocLogger(this.getClass());
-    
+
     public LifecycleComponentLogger(ILifecycleComponent lifecycleComponent) {
 	this.lifecycleComponent = lifecycleComponent;
 	this.logger = LoggerFactory.getLogger(lifecycleComponent.getClass());
@@ -682,13 +681,13 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
     public void setLogger(Logger logger) {
 	this.logger = logger;
     }
-    
+
     public LocLogger getLocalizeLogger() {
-        return localizeLogger;
+	return localizeLogger;
     }
 
     public void setLocalizeLogger(LocLogger localizeLogger) {
-        this.localizeLogger = localizeLogger;
+	this.localizeLogger = localizeLogger;
     }
 
     @Override
@@ -701,7 +700,7 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
 	trace(key, args);
 	getLogger().trace("Throwable: ", e);
     }
-    
+
     @Override
     public void debug(Enum<?> key, Object... args) {
 	getLocalizeLogger().debug(key, args);
@@ -745,5 +744,5 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
 	error(key, args);
 	getLogger().error("Throwable: ", e);
     }
-    
+
 }
