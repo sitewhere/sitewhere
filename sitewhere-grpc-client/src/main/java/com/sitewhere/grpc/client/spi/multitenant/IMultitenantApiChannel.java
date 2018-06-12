@@ -10,8 +10,8 @@ package com.sitewhere.grpc.client.spi.multitenant;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
 import com.sitewhere.grpc.client.MultitenantGrpcChannel;
-import com.sitewhere.grpc.client.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.client.spi.IApiChannel;
 
 /**
@@ -36,9 +36,9 @@ public interface IMultitenantApiChannel<T extends MultitenantGrpcChannel<?, ?>> 
      * tenant.
      * 
      * @param tenantId
-     * @throws ApiNotAvailableException
+     * @throws ApiChannelNotAvailableException
      */
-    public void waitForTenantApiAvailable(UUID tenantId) throws ApiNotAvailableException;
+    public void waitForTenantApiAvailable(UUID tenantId) throws ApiChannelNotAvailableException;
 
     /**
      * Wait for a maximum amount of time for the API to become available for a given
@@ -48,8 +48,8 @@ public interface IMultitenantApiChannel<T extends MultitenantGrpcChannel<?, ?>> 
      * @param duration
      * @param unit
      * @param logMessageDelay
-     * @throws ApiNotAvailableException
+     * @throws ApiChannelNotAvailableException
      */
     public void waitForTenantApiAvailable(UUID tenantId, long duration, TimeUnit unit, long logMessageDelay)
-	    throws ApiNotAvailableException;
+	    throws ApiChannelNotAvailableException;
 }

@@ -525,14 +525,17 @@ public class DeviceManagementPersistence extends Persistence {
 	    target.setDeviceTypeId(deviceType.getId());
 	}
 	if (request.getName() != null) {
-	    target.setName(request.getName());
+	    if (!request.getName().equals(target.getName())) {
+		checkDuplicateCommand(target, existing);
+		target.setName(request.getName());
+	    }
 	}
 	if (request.getNamespace() != null) {
-	    target.setNamespace(request.getNamespace());
+	    if (!request.getNamespace().equals(target.getNamespace())) {
+		checkDuplicateCommand(target, existing);
+		target.setNamespace(request.getNamespace());
+	    }
 	}
-
-	// Make sure the update will not result in a duplicate.
-	checkDuplicateCommand(target, existing);
 
 	if (request.getDescription() != null) {
 	    target.setDescription(request.getDescription());
@@ -586,6 +589,7 @@ public class DeviceManagementPersistence extends Persistence {
 	checkDuplicateStatus(status, existing);
 
 	MetadataProvider.copy(request.getMetadata(), status);
+	DeviceManagementPersistence.initializeEntityMetadata(status);
 	return status;
     }
 
@@ -628,6 +632,7 @@ public class DeviceManagementPersistence extends Persistence {
 	    target.getMetadata().clear();
 	    MetadataProvider.copy(request.getMetadata(), target);
 	}
+	DeviceManagementPersistence.setUpdatedEntityMetadata(target);
     }
 
     /**

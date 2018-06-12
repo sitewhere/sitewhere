@@ -9,7 +9,6 @@ package com.sitewhere.grpc.client;
 
 import java.util.concurrent.TimeUnit;
 
-import com.sitewhere.grpc.client.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.client.spi.IApiChannel;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -97,7 +96,7 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
      * @see com.sitewhere.grpc.model.spi.IApiChannel#waitForApiAvailable()
      */
     @Override
-    public void waitForApiAvailable() throws ApiNotAvailableException {
+    public void waitForApiAvailable() throws ApiChannelNotAvailableException {
 	waitForApiAvailable(5 * 60, TimeUnit.SECONDS, 60);
     }
 
@@ -107,9 +106,9 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
      */
     @Override
     public void waitForApiAvailable(long duration, TimeUnit unit, long logMessageDelay)
-	    throws ApiNotAvailableException {
+	    throws ApiChannelNotAvailableException {
 	if (getGrpcChannel() == null) {
-	    throw new ApiNotAvailableException("GRPC channel not found. Unable to access API.");
+	    throw new ApiChannelNotAvailableException("GRPC channel not found. Unable to access API.");
 	}
 
 	ActiveSpan span = null;
@@ -141,10 +140,12 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
 		    }
 		} catch (Exception e) {
 		    TracerUtils.handleErrorInTracerSpan(span, e);
-		    throw new ApiNotAvailableException("Unhandled exception waiting for API to become available.", e);
+		    throw new ApiChannelNotAvailableException(
+			    "Unhandled exception waiting for API to become available.", e);
 		}
 	    }
-	    ApiNotAvailableException e = new ApiNotAvailableException("API not available within timeout period.");
+	    ApiChannelNotAvailableException e = new ApiChannelNotAvailableException(
+		    "API not available within timeout period.");
 	    TracerUtils.handleErrorInTracerSpan(span, e);
 	    throw e;
 	} finally {

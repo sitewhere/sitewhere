@@ -95,7 +95,7 @@ public class DeviceCommands extends RestControllerBase {
     @ApiOperation(value = "List device commands that match criteria.")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceCommand> listDeviceCommands(
-	    @ApiParam(value = "Device type token", required = false) @RequestParam(defaultValue = "false") String deviceTypeToken,
+	    @ApiParam(value = "Device type token", required = false) @RequestParam(required = false) String deviceTypeToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize)
 	    throws SiteWhereException {
@@ -126,8 +126,20 @@ public class DeviceCommands extends RestControllerBase {
     @ApiOperation(value = "List device commands by namespace")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceCommandNamespace> listAllDeviceCommandsByNamespace(
-	    @RequestBody DeviceCommandSearchCriteria request) throws SiteWhereException {
+	    @ApiParam(value = "Device type token", required = false) @RequestParam(defaultValue = "false") String deviceTypeToken)
+	    throws SiteWhereException {
 	DeviceCommandSearchCriteria criteria = new DeviceCommandSearchCriteria(1, 0);
+
+	// Look up device type if specified.
+	IDeviceType deviceType = null;
+	if (deviceTypeToken != null) {
+	    deviceType = getDeviceManagement().getDeviceTypeByToken(deviceTypeToken);
+	    if (deviceType == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidDeviceTypeToken, ErrorLevel.ERROR);
+	    }
+	    criteria.setDeviceTypeId(deviceType.getId());
+	}
+
 	List<IDeviceCommand> results = getDeviceManagement().listDeviceCommands(criteria).getResults();
 	Collections.sort(results, new Comparator<IDeviceCommand>() {
 	    public int compare(IDeviceCommand o1, IDeviceCommand o2) {

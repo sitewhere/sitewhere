@@ -13,7 +13,7 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
-import com.sitewhere.grpc.client.spi.ApiNotAvailableException;
+import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
 import com.sitewhere.rest.model.microservice.state.InstanceMicroservice;
 import com.sitewhere.rest.model.microservice.state.InstanceTenantEngine;
 import com.sitewhere.rest.model.microservice.state.InstanceTopologyEntry;
@@ -96,11 +96,11 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
 		}
 		Thread.sleep(TENANT_ENGINE_CHECK_INTERVAL);
 	    } catch (Exception e) {
-		throw new ApiNotAvailableException("Unhandled exception waiting for tenant engine to become available.",
-			e);
+		throw new ApiChannelNotAvailableException(
+			"Unhandled exception waiting for tenant engine to become available.", e);
 	    }
 	}
-	throw new ApiNotAvailableException("Tenant engine not available within timeout period.");
+	throw new ApiChannelNotAvailableException("Tenant engine not available within timeout period.");
     }
 
     /*

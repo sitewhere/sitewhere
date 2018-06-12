@@ -160,6 +160,7 @@ message GDeviceStatus {
 	string borderColor = 8;
 	string icon = 9;
 	map<string, string> metadata = 10;
+	GEntityInformation entityInformation = 11;
 }
 
 // ###############

@@ -9,6 +9,7 @@ package com.sitewhere.grpc.client.spi;
 
 import java.util.concurrent.TimeUnit;
 
+import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
 import com.sitewhere.grpc.client.GrpcChannel;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 import com.sitewhere.spi.tracing.ITracerProvider;
@@ -54,9 +55,9 @@ public interface IApiChannel<T extends GrpcChannel<?, ?>> extends ITenantEngineL
     /**
      * Wait the default amount of time for API to become available.
      * 
-     * @throws ApiNotAvailableException
+     * @throws ApiChannelNotAvailableException
      */
-    public void waitForApiAvailable() throws ApiNotAvailableException;
+    public void waitForApiAvailable() throws ApiChannelNotAvailableException;
 
     /**
      * Wait for a maximum amount of time for the API to become available. Displays
@@ -65,9 +66,10 @@ public interface IApiChannel<T extends GrpcChannel<?, ?>> extends ITenantEngineL
      * @param duration
      * @param unit
      * @param logMessageDelay
-     * @throws ApiNotAvailableException
+     * @throws ApiChannelNotAvailableException
      */
-    public void waitForApiAvailable(long duration, TimeUnit unit, long logMessageDelay) throws ApiNotAvailableException;
+    public void waitForApiAvailable(long duration, TimeUnit unit, long logMessageDelay)
+	    throws ApiChannelNotAvailableException;
 
     /**
      * Get parent demulitplexer.

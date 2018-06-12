@@ -13,6 +13,7 @@ import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
+import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.device.DeviceStatus;
 import com.sitewhere.spi.device.IDeviceStatus;
 
@@ -87,6 +88,7 @@ public class MongoDeviceStatus implements MongoConverter<IDeviceStatus> {
 	target.append(PROP_BORDER_COLOR, source.getBorderColor());
 	target.append(PROP_ICON, source.getIcon());
 
+	MongoSiteWhereEntity.toDocument(source, target);
 	MongoMetadataProvider.toDocument(source, target);
     }
 
@@ -117,6 +119,7 @@ public class MongoDeviceStatus implements MongoConverter<IDeviceStatus> {
 	target.setBorderColor(bdColor);
 	target.setIcon(icon);
 
+	MongoSiteWhereEntity.fromDocument(source, target);
 	MongoMetadataProvider.fromDocument(source, target);
     }
 

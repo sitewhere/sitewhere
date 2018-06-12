@@ -657,12 +657,13 @@ public class DeviceModelConverter {
      * @return
      * @throws SiteWhereException
      */
-    public static GDeviceCommandSearchCriteria asGrpcDeviceCommandSearchCriteria(IDeviceCommandSearchCriteria criteria)
+    public static GDeviceCommandSearchCriteria asGrpcDeviceCommandSearchCriteria(IDeviceCommandSearchCriteria api)
 	    throws SiteWhereException {
 	GDeviceCommandSearchCriteria.Builder gcriteria = GDeviceCommandSearchCriteria.newBuilder();
-	if (criteria.getDeviceTypeId() != null) {
-	    gcriteria.setDeviceTypeId(CommonModelConverter.asGrpcUuid(criteria.getDeviceTypeId()));
+	if (api.getDeviceTypeId() != null) {
+	    gcriteria.setDeviceTypeId(CommonModelConverter.asGrpcUuid(api.getDeviceTypeId()));
 	}
+	gcriteria.setPaging(CommonModelConverter.asGrpcPaging(api));
 	return gcriteria.build();
     }
 
@@ -810,6 +811,7 @@ public class DeviceModelConverter {
 	if (api.getCode() != null) {
 	    gcriteria.setCode(GOptionalString.newBuilder().setValue(api.getCode()).build());
 	}
+	gcriteria.setPaging(CommonModelConverter.asGrpcPaging(api));
 	return gcriteria.build();
     }
 
@@ -911,6 +913,7 @@ public class DeviceModelConverter {
 	api.setBorderColor(grpc.getBorderColor());
 	api.setIcon(grpc.getIcon());
 	api.setMetadata(grpc.getMetadataMap());
+	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
 	return api;
     }
 
@@ -936,6 +939,7 @@ public class DeviceModelConverter {
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
 	}
+	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
 	return grpc.build();
     }
 

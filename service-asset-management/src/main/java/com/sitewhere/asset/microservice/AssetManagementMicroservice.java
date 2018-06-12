@@ -13,8 +13,8 @@ import com.sitewhere.asset.messages.AssetManagementMessages;
 import com.sitewhere.asset.spi.grpc.IAssetManagementGrpcServer;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
+import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
 import com.sitewhere.grpc.client.device.DeviceManagementApiDemux;
-import com.sitewhere.grpc.client.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
 import com.sitewhere.microservice.hazelcast.HazelcastManager;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
@@ -104,7 +104,7 @@ public class AssetManagementMicroservice
 	try {
 	    waitForDependenciesAvailable();
 	    getLogger().debug(AssetManagementMessages.ALL_REQUIRED_MS_AVAILABLE);
-	} catch (ApiNotAvailableException e) {
+	} catch (ApiChannelNotAvailableException e) {
 	    getLogger().error(e, SiteWhereMessage.MICROSERVICE_NOT_AVAILABLE);
 	}
     }
@@ -112,9 +112,9 @@ public class AssetManagementMicroservice
     /**
      * Wait for required microservices to become available.
      * 
-     * @throws ApiNotAvailableException
+     * @throws ApiChannelNotAvailableException
      */
-    protected void waitForDependenciesAvailable() throws ApiNotAvailableException {
+    protected void waitForDependenciesAvailable() throws ApiChannelNotAvailableException {
 	getDeviceManagementApiDemux().waitForMicroserviceAvailable();
 	getLogger().debug(AssetManagementMessages.DEVICE_MANAGEMENT_MS_AVAILABLE);
     }

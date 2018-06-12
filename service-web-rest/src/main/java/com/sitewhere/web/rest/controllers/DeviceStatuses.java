@@ -84,8 +84,8 @@ public class DeviceStatuses extends RestControllerBase {
     @ApiOperation(value = "List device statuses that match criteria.")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceStatus> listDeviceStatuses(
-	    @ApiParam(value = "Device type token", required = false) @RequestParam(defaultValue = "false") String deviceTypeToken,
-	    @ApiParam(value = "Status code", required = false) @RequestParam(defaultValue = "false") String code,
+	    @ApiParam(value = "Device type token", required = false) @RequestParam(required = false) String deviceTypeToken,
+	    @ApiParam(value = "Status code", required = false) @RequestParam(required = false) String code,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize)
 	    throws SiteWhereException {

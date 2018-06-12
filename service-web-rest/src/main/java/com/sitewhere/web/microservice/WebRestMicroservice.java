@@ -7,13 +7,13 @@
  */
 package com.sitewhere.web.microservice;
 
+import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
 import com.sitewhere.grpc.client.asset.AssetManagementApiDemux;
 import com.sitewhere.grpc.client.batch.BatchManagementApiDemux;
 import com.sitewhere.grpc.client.device.DeviceManagementApiDemux;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiDemux;
 import com.sitewhere.grpc.client.label.LabelGenerationApiDemux;
 import com.sitewhere.grpc.client.schedule.ScheduleManagementApiDemux;
-import com.sitewhere.grpc.client.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IBatchManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
@@ -131,7 +131,7 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 	try {
 	    waitForDependenciesAvailable();
 	    getLogger().debug("All required microservices detected as available.");
-	} catch (ApiNotAvailableException e) {
+	} catch (ApiChannelNotAvailableException e) {
 	    getLogger().error(e, SiteWhereMessage.MICROSERVICE_NOT_AVAILABLE);
 
 	}
@@ -140,9 +140,9 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
     /**
      * Wait for required microservices to become available.
      * 
-     * @throws ApiNotAvailableException
+     * @throws ApiChannelNotAvailableException
      */
-    protected void waitForDependenciesAvailable() throws ApiNotAvailableException {
+    protected void waitForDependenciesAvailable() throws ApiChannelNotAvailableException {
 	getUserManagementApiDemux().waitForMicroserviceAvailable();
 	getLogger().info("User management microservice detected as available.");
 	getTenantManagementApiDemux().waitForMicroserviceAvailable();

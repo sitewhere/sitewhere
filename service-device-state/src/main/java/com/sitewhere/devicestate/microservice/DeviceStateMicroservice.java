@@ -12,9 +12,9 @@ import com.sitewhere.devicestate.grpc.DeviceStateGrpcServer;
 import com.sitewhere.devicestate.spi.grpc.IDeviceStateGrpcServer;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
+import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
 import com.sitewhere.grpc.client.device.DeviceManagementApiDemux;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiDemux;
-import com.sitewhere.grpc.client.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
@@ -98,7 +98,7 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
 	try {
 	    waitForDependenciesAvailable();
 	    getLogger().debug("All required microservices detected as available.");
-	} catch (ApiNotAvailableException e) {
+	} catch (ApiChannelNotAvailableException e) {
 	    getLogger().error(e, SiteWhereMessage.MICROSERVICE_NOT_AVAILABLE);
 
 	}
@@ -109,7 +109,7 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
      * 
      * @throws ApiNotAvailableException
      */
-    protected void waitForDependenciesAvailable() throws ApiNotAvailableException {
+    protected void waitForDependenciesAvailable() throws ApiChannelNotAvailableException {
 	getDeviceManagementApiDemux().waitForMicroserviceAvailable();
 	getLogger().debug("Device management microservice detected as available.");
 	getDeviceEventManagementApiDemux().waitForMicroserviceAvailable();

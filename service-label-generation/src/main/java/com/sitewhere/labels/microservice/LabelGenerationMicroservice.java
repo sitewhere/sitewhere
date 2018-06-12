@@ -7,9 +7,9 @@
  */
 package com.sitewhere.labels.microservice;
 
+import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
 import com.sitewhere.grpc.client.asset.AssetManagementApiDemux;
 import com.sitewhere.grpc.client.device.DeviceManagementApiDemux;
-import com.sitewhere.grpc.client.spi.ApiNotAvailableException;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
 import com.sitewhere.labels.configuration.LabelGenerationModelProvider;
@@ -98,7 +98,7 @@ public class LabelGenerationMicroservice
 	try {
 	    waitForDependenciesAvailable();
 	    getLogger().debug("All required microservices detected as available.");
-	} catch (ApiNotAvailableException e) {
+	} catch (ApiChannelNotAvailableException e) {
 	    getLogger().error("Required APIs not available.", e);
 	}
     }
@@ -108,7 +108,7 @@ public class LabelGenerationMicroservice
      * 
      * @throws ApiNotAvailableException
      */
-    protected void waitForDependenciesAvailable() throws ApiNotAvailableException {
+    protected void waitForDependenciesAvailable() throws ApiChannelNotAvailableException {
 	getDeviceManagementApiDemux().waitForMicroserviceAvailable();
 	getLogger().debug("Device management microservice detected as available.");
 	getAssetManagementApiDemux().waitForMicroserviceAvailable();

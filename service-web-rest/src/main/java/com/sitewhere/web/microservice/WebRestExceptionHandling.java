@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
 import com.sitewhere.grpc.model.security.NotAuthorizedException;
 import com.sitewhere.grpc.model.security.UnauthenticatedException;
 import com.sitewhere.microservice.security.JwtExpiredException;
@@ -56,6 +57,18 @@ public class WebRestExceptionHandling extends ResponseEntityExceptionHandler {
 	} catch (IOException e1) {
 	    LOGGER.error(e1);
 	}
+    }
+
+    /**
+     * Handle exception where microservice for API is not available.
+     * 
+     * @param e
+     * @param request
+     * @return
+     */
+    @ExceptionHandler(value = { ApiChannelNotAvailableException.class })
+    protected ResponseEntity<Object> handleApiNotAvailable(ApiChannelNotAvailableException e, WebRequest request) {
+	return handleExceptionInternal(e, e.getMessage(), new HttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE, request);
     }
 
     /**
