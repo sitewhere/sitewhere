@@ -52,8 +52,14 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
     /** Amount of time to wait before logging warnings about missing API channel */
     protected static final int API_CHANNEL_WARN_INTERVAL_IN_SECS = 30;
 
+    /** Interval at which channels are re-verified */
+    protected static final long CHANNEL_VALID_CHECK_INTERVAL_IN_MS = 5 * 1000;
+
     /** Map of API channels indexed by hostname */
     private Map<String, T> apiChannels = new ConcurrentHashMap<>();
+
+    /** Map of last access to API channels indexed by hostname */
+    private Map<String, Long> apiChannelLastAccess = new ConcurrentHashMap<>();
 
     /** Routing strategy */
     @SuppressWarnings("unchecked")
@@ -150,7 +156,12 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 
 	while (channelCount > 0) {
 	    T selectedChannel = getRoutingStrategy().chooseApiChannel(getApiChannels());
-	    selectedChannel.waitForChannelAvailable();
+	    Long lastAccess = getApiChannelLastAccess().get(selectedChannel.getHostname());
+	    if ((lastAccess == null)
+		    || (System.currentTimeMillis() - lastAccess > CHANNEL_VALID_CHECK_INTERVAL_IN_MS)) {
+		selectedChannel.waitForChannelAvailable();
+		getApiChannelLastAccess().put(selectedChannel.getHostname(), System.currentTimeMillis());
+	    }
 	    if (isApiChannelMatch(tenant, selectedChannel)) {
 		return selectedChannel;
 	    }
@@ -411,5 +422,9 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 
     public void setRoutingStrategy(IApiDemuxRoutingStrategy<T> routingStrategy) {
 	this.routingStrategy = routingStrategy;
+    }
+
+    protected Map<String, Long> getApiChannelLastAccess() {
+	return apiChannelLastAccess;
     }
 }
