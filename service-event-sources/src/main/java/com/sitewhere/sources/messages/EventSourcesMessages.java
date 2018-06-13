@@ -18,5 +18,5 @@ import ch.qos.cal10n.LocaleData;
 @BaseName("event-sources")
 @LocaleData( { @Locale("en_US") })
 public enum EventSourcesMessages {
-
+    SUBSCRIBED_TO_EVENTS_MQTT
 }

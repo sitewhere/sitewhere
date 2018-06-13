@@ -22,6 +22,7 @@ import org.fusesource.mqtt.client.Topic;
 
 import com.codahale.metrics.Meter;
 import com.sitewhere.communication.mqtt.MqttLifecycleComponent;
+import com.sitewhere.sources.messages.EventSourcesMessages;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.sources.spi.IInboundEventSource;
 import com.sitewhere.spi.SiteWhereException;
@@ -42,6 +43,9 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
     /** Number of threads used for processing events */
     public static final int DEFAULT_NUM_THREADS = 5;
 
+    /** MQTT Topic Quality of Service */
+    public static final QoS DEFAULT_QoS = QoS.AT_LEAST_ONCE;
+    
     /** Parent event source */
     private IInboundEventSource<byte[]> eventSource;
 
@@ -88,20 +92,37 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 	connection = getConnection();
 	getLogger().info("Receiver connected to MQTT broker.");
 
+	getLogger().info("Suscribing using QoS: " + getQos());
+	QoS qos = qosFromConfig(getQos());
+	
 	// Subscribe to chosen topic.
-	Topic[] topics = { new Topic(getTopic(), QoS.AT_LEAST_ONCE) };
+	Topic[] topics = { new Topic(getTopic(), qos) };
 	try {
 	    Future<byte[]> future = connection.subscribe(topics);
 	    future.await();
 
-	    getLogger().info("Subscribed to events on MQTT topic '" + getTopic() + "' using " + getNumThreads()
-		    + " processing threads.");
+	    getLogger().info(EventSourcesMessages.SUBSCRIBED_TO_EVENTS_MQTT, getTopic(), getNumThreads());
 	} catch (Exception e) {
 	    throw new SiteWhereException("Exception while attempting to subscribe to MQTT topic: " + getTopic(), e);
 	}
 
 	// Handle message processing in separate thread.
 	subscriptionExecutor.execute(new MqttSubscriptionProcessor());
+    }
+
+    /**
+     * Transform configuration to MQTT QoS
+     * @param qos
+     * @return
+     */
+    private static QoS qosFromConfig(String qos) {
+	if ("0".equals(qos) || "AT_MOST_ONCE".equals(qos))
+	    return QoS.AT_MOST_ONCE;
+	if ("1".equals(qos) || "AT_LEAST_ONCE".equals(qos))
+	    return QoS.AT_LEAST_ONCE;
+	if ("2".equals(qos) || "EXACTLY_ONCE".equals(qos))
+	    return QoS.EXACTLY_ONCE;
+	return DEFAULT_QoS;
     }
 
     /**
