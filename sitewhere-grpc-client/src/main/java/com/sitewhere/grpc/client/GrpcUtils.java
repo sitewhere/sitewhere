@@ -101,12 +101,11 @@ public class GrpcUtils {
 	try {
 	    if (api.getMicroservice() instanceof IMultitenantMicroservice) {
 		String tenantId = GrpcContextKeys.TENANT_ID_KEY.get();
-		if (tenantId == null) {
-		    throw new RuntimeException("Tenant id not found in server request.");
+		if (tenantId != null) {
+		    IMicroserviceTenantEngine engine = ((IMultitenantMicroservice<?, ?>) api.getMicroservice())
+			    .assureTenantEngineAvailable(UUID.fromString(tenantId));
+		    tenant = engine.getTenant();
 		}
-		IMicroserviceTenantEngine engine = ((IMultitenantMicroservice<?, ?>) api.getMicroservice())
-			.assureTenantEngineAvailable(UUID.fromString(tenantId));
-		tenant = engine.getTenant();
 	    }
 	    Claims claims = getClaimsForJwt(api, jwt);
 	    String username = api.getMicroservice().getTokenManagement().getUsernameFromClaims(claims);

@@ -78,4 +78,25 @@ public interface IMqttComponent extends ILifecycleComponent {
      * @return
      */
     public String getKeyStorePassword();
+
+    /**
+     * Get client id.
+     * 
+     * @return
+     */
+    public String getClientId();
+
+    /**
+     * Get clean session flag.
+     * 
+     * @return
+     */
+    public boolean isCleanSession();
+
+    /**
+     * Get quality of service setting.
+     * 
+     * @return
+     */
+    public String getQos();
 }

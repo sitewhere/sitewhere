@@ -6,40 +6,54 @@
 	targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/common/connector"
 	elementFormDefault="qualified" attributeFormDefault="unqualified">
 
-	<xsd:import namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
+	<xsd:import
+		namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
 		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
+
+	<xsd:simpleType name="mqttQOS">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="AT_LEAST_ONCE" />
+			<xsd:enumeration value="AT_MOST_ONCE" />
+			<xsd:enumeration value="EXACTLY_ONCE" />
+		</xsd:restriction>
+	</xsd:simpleType>
 
 	<!-- Attributes for MQTT broker connectivity -->
 	<xsd:attributeGroup name="mqtt-broker-attributes">
-		<xsd:attribute name="protocol" type="xsd:string" use="optional">
+		<xsd:attribute name="protocol" type="xsd:string"
+			use="optional">
 			<xsd:annotation>
 				<xsd:documentation>
 					MQTT protocol (defaults to tcp).
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="hostname" type="xsd:string" use="optional">
+		<xsd:attribute name="hostname" type="xsd:string"
+			use="optional">
 			<xsd:annotation>
 				<xsd:documentation>
 					MQTT broker hostname.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="port" type="sw:substitutableInt" use="optional">
+		<xsd:attribute name="port" type="sw:substitutableInt"
+			use="optional">
 			<xsd:annotation>
 				<xsd:documentation>
 					MQTT broker port.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="username" type="xsd:string" use="optional">
+		<xsd:attribute name="username" type="xsd:string"
+			use="optional">
 			<xsd:annotation>
 				<xsd:documentation>
 					MQTT broker username.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="password" type="xsd:string" use="optional">
+		<xsd:attribute name="password" type="xsd:string"
+			use="optional">
 			<xsd:annotation>
 				<xsd:documentation>
 					MQTT broker password.
@@ -56,8 +70,8 @@
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="trustStorePassword" type="xsd:string"
-			use="optional">
+		<xsd:attribute name="trustStorePassword"
+			type="xsd:string" use="optional">
 			<xsd:annotation>
 				<xsd:documentation>
 					For secured connections. Provides the password to
@@ -81,6 +95,28 @@
 				<xsd:documentation>
 					For secured connections. Provides the password to
 					the Java keystore used for the secure connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="clientId" type="xsd:string"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					Client id to use for session.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="cleanSession" type="xsd:boolean">
+			<xsd:annotation>
+				<xsd:documentation>
+					Sets whether to use clean session.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="qos" type="mqttQOS" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					MQTT quality of service setting.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>

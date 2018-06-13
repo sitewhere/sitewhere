@@ -98,8 +98,26 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
      */
     protected void processPayloads(List<ConsumerRecord<String, byte[]>> records) throws SiteWhereException {
 	for (ConsumerRecord<String, byte[]> record : records) {
-	    GInboundEventPayload payload = decodeRequest(record);
-	    IDeviceAssignment assignment = validateAssignment(payload);
+	    try {
+		processRecord(record);
+	    } catch (SiteWhereException e) {
+		getLogger().error("Unable to process inbound record.", e);
+	    } catch (Throwable e) {
+		getLogger().error("Unhandled exception while processing inbound record.", e);
+	    }
+	}
+    }
+
+    /**
+     * Process a single record.
+     * 
+     * @param record
+     * @throws SiteWhereException
+     */
+    protected void processRecord(ConsumerRecord<String, byte[]> record) throws SiteWhereException {
+	GInboundEventPayload payload = decodeRequest(record);
+	IDeviceAssignment assignment = validateAssignment(payload);
+	if (assignment != null) {
 	    final Timer.Context eventStorageTime = getEventStorageTimer().time();
 	    try {
 		getEventStorageStrategy().storeDeviceEvent(assignment, payload);
@@ -162,7 +180,6 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	    assignmentLookupTime.stop();
 	}
 	if (assignment == null) {
-	    getLogger().info("Assignment information for " + payload.getDeviceToken() + " is invalid.");
 	    handleUnassignedDevice(payload);
 	    return null;
 	}

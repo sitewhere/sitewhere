@@ -22,6 +22,7 @@ import org.fusesource.hawtdispatch.DispatchQueue;
 import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
+import org.fusesource.mqtt.client.QoS;
 import org.springframework.util.StringUtils;
 
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -75,6 +76,15 @@ public class MqttLifecycleComponent extends TenantEngineLifecycleComponent imple
     /** Password */
     private String password;
 
+    /** Client id */
+    private String clientId;
+
+    /** Clean session flag */
+    private boolean cleanSession = true;
+
+    /** Quality of service */
+    private String qos = QoS.AT_LEAST_ONCE.name();
+
     /** MQTT client */
     private MQTT mqtt;
 
@@ -122,7 +132,7 @@ public class MqttLifecycleComponent extends TenantEngineLifecycleComponent imple
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	this.queue = Dispatch.createQueue(getComponentId());
-	this.mqtt = configure(this, queue);
+	this.mqtt = MqttLifecycleComponent.configure(this, queue);
     }
 
     /**
@@ -144,6 +154,16 @@ public class MqttLifecycleComponent extends TenantEngineLifecycleComponent imple
 	return tmf;
     }
 
+    /**
+     * Configure key store.
+     * 
+     * @param component
+     * @param sslContext
+     * @param keyStorePath
+     * @param keyStorePassword
+     * @return
+     * @throws Exception
+     */
     protected static KeyManagerFactory configureKeyStore(IMqttComponent component, SSLContext sslContext,
 	    String keyStorePath, String keyStorePassword) throws Exception {
 	component.getLogger().info("MQTT client using keystore path: " + keyStorePath);
@@ -208,6 +228,15 @@ public class MqttLifecycleComponent extends TenantEngineLifecycleComponent imple
 
 	boolean usingSSL = component.getProtocol().startsWith("ssl");
 	boolean usingTLS = component.getProtocol().startsWith("tls");
+
+	// Optionally set client id.
+	if (component.getClientId() != null) {
+	    mqtt.setClientId(component.getClientId());
+	    component.getLogger().info("MQTT connection will use client id '" + component.getClientId() + "'.");
+	}
+	// Set flag for clean session.
+	mqtt.setCleanSession(component.isCleanSession());
+	component.getLogger().info("MQTT clean session flag being set to '" + component.isCleanSession() + "'.");
 
 	if (usingSSL || usingTLS) {
 	    handleSecureTransport(component, mqtt);
@@ -367,5 +396,44 @@ public class MqttLifecycleComponent extends TenantEngineLifecycleComponent imple
 
     public void setKeyStorePassword(String keyStorePassword) {
 	this.keyStorePassword = keyStorePassword;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getClientId()
+     */
+    public String getClientId() {
+	return clientId;
+    }
+
+    public void setClientId(String clientId) {
+	this.clientId = clientId;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#isCleanSession()
+     */
+    public boolean isCleanSession() {
+	return cleanSession;
+    }
+
+    public void setCleanSession(boolean cleanSession) {
+	this.cleanSession = cleanSession;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getQos()
+     */
+    public String getQos() {
+	return qos;
+    }
+
+    public void setQos(String qos) {
+	this.qos = qos;
     }
 }

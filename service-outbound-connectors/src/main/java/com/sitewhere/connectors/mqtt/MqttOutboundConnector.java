@@ -73,6 +73,15 @@ public class MqttOutboundConnector extends FilteredOutboundConnector
     /** Broker password */
     private String password;
 
+    /** Client id */
+    private String clientId;
+
+    /** Clean session flag */
+    private boolean cleanSession = true;
+
+    /** Quality of service */
+    private String qos = QoS.AT_LEAST_ONCE.name();
+
     /** MQTT client */
     private MQTT mqtt;
 
@@ -381,6 +390,42 @@ public class MqttOutboundConnector extends FilteredOutboundConnector
 
     public void setKeyStorePassword(String keyStorePassword) {
 	this.keyStorePassword = keyStorePassword;
+    }
+
+    /*
+     * @see com.sitewhere.communication.mqtt.IMqttComponent#getClientId()
+     */
+    @Override
+    public String getClientId() {
+	return clientId;
+    }
+
+    public void setClientId(String clientId) {
+	this.clientId = clientId;
+    }
+
+    /*
+     * @see com.sitewhere.communication.mqtt.IMqttComponent#isCleanSession()
+     */
+    @Override
+    public boolean isCleanSession() {
+	return cleanSession;
+    }
+
+    public void setCleanSession(boolean cleanSession) {
+	this.cleanSession = cleanSession;
+    }
+
+    /*
+     * @see com.sitewhere.communication.mqtt.IMqttComponent#getQos()
+     */
+    @Override
+    public String getQos() {
+	return qos;
+    }
+
+    public void setQos(String qos) {
+	this.qos = qos;
     }
 
     public String getTopic() {

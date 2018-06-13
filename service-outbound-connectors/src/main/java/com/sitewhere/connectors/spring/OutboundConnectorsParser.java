@@ -203,6 +203,20 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
 	    processor.addPropertyValue("trustStorePassword", trustStorePassword.getValue());
 	}
 
+	Attr clientId = element.getAttributeNode("clientId");
+	if (clientId != null) {
+	    processor.addPropertyValue("clientId", clientId.getValue());
+	}
+
+	Attr cleanSession = element.getAttributeNode("cleanSession");
+	if (cleanSession != null) {
+	    processor.addPropertyValue("cleanSession", cleanSession.getValue());
+	}
+
+	Attr qos = element.getAttributeNode("qos");
+	if (qos != null) {
+	    processor.addPropertyValue("qos", qos.getValue());
+	}
 	Attr topic = element.getAttributeNode("topic");
 	if (topic != null) {
 	    processor.addPropertyValue("topic", topic.getValue());
