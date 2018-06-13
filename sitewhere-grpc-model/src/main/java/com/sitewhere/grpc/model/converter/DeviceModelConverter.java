@@ -15,6 +15,7 @@ import java.util.List;
 import com.sitewhere.grpc.model.CommonModel.GDeviceAssignmentStatus;
 import com.sitewhere.grpc.model.CommonModel.GDeviceContainerPolicy;
 import com.sitewhere.grpc.model.CommonModel.GOptionalBoolean;
+import com.sitewhere.grpc.model.CommonModel.GOptionalDouble;
 import com.sitewhere.grpc.model.CommonModel.GOptionalString;
 import com.sitewhere.grpc.model.CommonModel.GParameterType;
 import com.sitewhere.grpc.model.DeviceModel.GArea;
@@ -2383,11 +2384,13 @@ public class DeviceModelConverter {
      */
     public static ZoneCreateRequest asApiZoneCreateRequest(GZoneCreateRequest grpc) throws SiteWhereException {
 	ZoneCreateRequest api = new ZoneCreateRequest();
-	api.setName(grpc.getName());
+	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
+	api.setAreaToken(grpc.hasAreaToken() ? grpc.getAreaToken().getValue() : null);
+	api.setName(grpc.hasName() ? grpc.getName().getValue() : null);
 	api.setBounds(CommonModelConverter.asApiLocations(grpc.getBoundsList()));
-	api.setFillColor(grpc.getFillColor());
-	api.setBorderColor(grpc.getBorderColor());
-	api.setOpacity(grpc.getOpacity());
+	api.setFillColor(grpc.hasFillColor() ? grpc.getFillColor().getValue() : null);
+	api.setBorderColor(grpc.hasBorderColor() ? grpc.getBorderColor().getValue() : null);
+	api.setOpacity(grpc.hasOpacity() ? grpc.getOpacity().getValue() : null);
 	api.setMetadata(grpc.getMetadataMap());
 	return api;
     }
@@ -2401,11 +2404,25 @@ public class DeviceModelConverter {
      */
     public static GZoneCreateRequest asGrpcZoneCreateRequest(IZoneCreateRequest api) throws SiteWhereException {
 	GZoneCreateRequest.Builder grpc = GZoneCreateRequest.newBuilder();
-	grpc.setName(api.getName());
+	if (api.getToken() != null) {
+	    grpc.setToken(GOptionalString.newBuilder().setValue(api.getToken()));
+	}
+	if (api.getAreaToken() != null) {
+	    grpc.setAreaToken(GOptionalString.newBuilder().setValue(api.getAreaToken()));
+	}
+	if (api.getName() != null) {
+	    grpc.setName(GOptionalString.newBuilder().setValue(api.getName()));
+	}
 	grpc.addAllBounds(CommonModelConverter.asGrpcLocations(api.getBounds()));
-	grpc.setFillColor(api.getFillColor());
-	grpc.setBorderColor(api.getBorderColor());
-	grpc.setOpacity(api.getOpacity());
+	if (api.getFillColor() != null) {
+	    grpc.setFillColor(GOptionalString.newBuilder().setValue(api.getFillColor()));
+	}
+	if (api.getBorderColor() != null) {
+	    grpc.setBorderColor(GOptionalString.newBuilder().setValue(api.getBorderColor()));
+	}
+	if (api.getOpacity() != null) {
+	    grpc.setOpacity(GOptionalDouble.newBuilder().setValue(api.getOpacity()));
+	}
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
 	}

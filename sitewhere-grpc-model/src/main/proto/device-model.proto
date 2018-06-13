@@ -531,12 +531,13 @@ message GArea {
 // Request data for creating a zone.
 message GZoneCreateRequest {
 	GOptionalString token = 1;
-	string name = 2;
-	repeated GLocation bounds = 3;
-	string borderColor = 4;
-	string fillColor = 5;
-	double opacity = 6;
-	map<string, string> metadata = 7;
+	GOptionalString areaToken = 2;
+	GOptionalString name = 3;
+	repeated GLocation bounds = 4;
+	GOptionalString borderColor = 5;
+	GOptionalString fillColor = 6;
+	GOptionalDouble opacity = 7;
+	map<string, string> metadata = 8;
 }
 
 // Criteria for searching zones.
