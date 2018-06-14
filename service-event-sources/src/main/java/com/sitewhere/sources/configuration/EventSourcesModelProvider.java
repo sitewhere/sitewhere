@@ -135,19 +135,20 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 	builder.description("Listen for events on an MQTT topic.");
 	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_AUTHENTICATION);
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_PERFORMANCE);
 	addEventSourceAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
 	// Only accept binary event decoders.
 	builder.specializes(EventSourcesRoleKeys.EventDecoder, EventSourcesRoleKeys.BinaryEventDecoder);
 
 	// Add common MQTT connectivity attributes.
-	CommonConnectorModel.addMqttCommonAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY,
-		ConfigurationModelProvider.ATTR_GROUP_AUTHENTICATION);
 	builder.attribute((new AttributeNode.Builder("MQTT topic", "topic", AttributeType.String,
 		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
 			.description("MQTT topic event source uses for inbound messages.").build()));
+	CommonConnectorModel.addMqttCommonAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY,
+		ConfigurationModelProvider.ATTR_GROUP_AUTHENTICATION);
 	builder.attribute((new AttributeNode.Builder("Processing threads", "numThreads", AttributeType.Integer,
-		ATTR_GROUP_CONNECTIVITY).defaultValue("5")
+		ATTR_GROUP_PERFORMANCE).defaultValue("5")
 			.description("Number of threads used for processing MQTT payloads.").build()));
 
 	return builder.build();
