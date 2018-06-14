@@ -86,19 +86,22 @@ public class DeviceRegistrationModelProvider extends ConfigurationModelProvider 
 		DeviceRegistrationRoleKeys.DeviceRegistrationManager, this);
 
 	builder.description("Provides device registration management functionality.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+
 	builder.attribute((new AttributeNode.Builder("Allow registration of new devices", "allowNewDevices",
-		AttributeType.Boolean)
+		AttributeType.Boolean, ConfigurationModelProvider.ATTR_GROUP_GENERAL)
 			.description("Indicates whether new devices should be allowed to register with the system")
 			.defaultValue("true").build()));
-	builder.attribute(
-		(new AttributeNode.Builder("Automatically assign site", "autoAssignSite", AttributeType.Boolean)
+	builder.attribute((new AttributeNode.Builder("Automatically assign site", "autoAssignSite",
+		AttributeType.Boolean, ConfigurationModelProvider.ATTR_GROUP_GENERAL)
 			.description("Indicates if a site should automatically be assigned if no site token is "
 				+ "passed in registration request.")
 			.build()));
-	builder.attribute((new AttributeNode.Builder("Site token", "autoAssignSiteToken", AttributeType.String)
-		.description("Site token used for registering new devices if auto-assign is enabled "
-			+ "and no site token is passed.")
-		.build()));
+	builder.attribute((new AttributeNode.Builder("Site token", "autoAssignSiteToken", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL)
+			.description("Site token used for registering new devices if auto-assign is enabled "
+				+ "and no site token is passed.")
+			.build()));
 	return builder.build();
     }
 }

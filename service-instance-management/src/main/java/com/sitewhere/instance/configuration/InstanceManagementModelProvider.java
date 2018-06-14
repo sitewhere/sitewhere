@@ -141,10 +141,12 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
 		InstanceManagementRoleKeys.MongoDBConfiguration, this);
 
 	builder.description("Global configuration for MongoDB data persistence.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
-	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String)
-		.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
-	CommonDatastoreProvider.addMongoDbAttributes(builder);
+	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
+	CommonDatastoreProvider.addMongoDbAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
 	return builder.build();
     }
@@ -177,10 +179,14 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
 		InstanceManagementRoleKeys.InfluxDBConfiguration, this);
 
 	builder.description("Global configuration for InfluxDB data persistence.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_BATCH);
 
-	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String)
-		.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
-	CommonDatastoreProvider.addInfluxDbAttributes(builder);
+	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
+	CommonDatastoreProvider.addInfluxDbAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY,
+		ConfigurationModelProvider.ATTR_GROUP_BATCH);
 
 	return builder.build();
     }
@@ -214,10 +220,12 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
 		InstanceManagementRoleKeys.CassandraConfiguration, this);
 
 	builder.description("Global configuration for Apache Cassandra data persistence.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
-	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String)
-		.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
-	CommonDatastoreProvider.addCassandraAttributes(builder);
+	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
+	CommonDatastoreProvider.addCassandraAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
 	return builder.build();
     }
@@ -266,7 +274,9 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
 		InstanceManagementRoleKeys.DefaultSolrConfiguration, this);
 
 	builder.description("Provides default Solr configuration for tenants.");
-	CommonConnectorModel.adSolrConnectivityAttributes(builder);
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+
+	CommonConnectorModel.adSolrConnectivityAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
 	return builder.build();
     }
@@ -283,9 +293,12 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
 		InstanceManagementRoleKeys.AltSolrConfiguration, this);
 
 	builder.description("Provides alternate Solr configuration for tenants.");
-	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String)
-		.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
-	CommonConnectorModel.adSolrConnectivityAttributes(builder);
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+
+	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
+	CommonConnectorModel.adSolrConnectivityAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
 	return builder.build();
     }

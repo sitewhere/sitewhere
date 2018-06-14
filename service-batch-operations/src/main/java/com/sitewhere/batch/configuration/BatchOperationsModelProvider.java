@@ -94,10 +94,13 @@ public class BatchOperationsModelProvider extends ConfigurationModelProvider {
 		BatchOperationsRoleKeys.BatchOperationManager, this);
 
 	builder.description("Manages how batch operations are processed.");
-	builder.attribute((new AttributeNode.Builder("Throttle delay (ms)", "throttleDelayMs", AttributeType.Integer)
-		.description("Number of milliseconds to wait between processing elements in a "
-			+ "batch operation. This throttles the output to prevent overloading the system.")
-		.defaultValue("0").build()));
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+
+	builder.attribute((new AttributeNode.Builder("Throttle delay (ms)", "throttleDelayMs", AttributeType.Integer,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL)
+			.description("Number of milliseconds to wait between processing elements in a "
+				+ "batch operation. This throttles the output to prevent overloading the system.")
+			.defaultValue("0").build()));
 	return builder.build();
     }
 }

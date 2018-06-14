@@ -11,9 +11,11 @@ import com.sitewhere.configuration.CommonConnectorModel;
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.configuration.old.ICommandRoutingParser;
 import com.sitewhere.configuration.parser.ICommandDeliveryParser;
+import com.sitewhere.rest.model.configuration.AttributeGroup;
 import com.sitewhere.rest.model.configuration.AttributeNode;
 import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
+import com.sitewhere.spi.microservice.configuration.model.IAttributeGroup;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
@@ -22,6 +24,18 @@ import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProv
  * @author Derek
  */
 public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
+
+    // Command destination settings attribute group.
+    public static final IAttributeGroup ATTR_GROUP_CMDDEST = new AttributeGroup("cdst", "Command Destination Settings");
+
+    // Router settings attribute group.
+    public static final IAttributeGroup ATTR_GROUP_ROUTER = new AttributeGroup("rout", "Router Settings");
+
+    // Command encoder attribute group.
+    public static final IAttributeGroup ATTR_GROUP_CMDENC = new AttributeGroup("cenc", "Command Encoder Settings");
+
+    // Command extractor attribute group.
+    public static final IAttributeGroup ATTR_GROUP_CMDEXT = new AttributeGroup("cext", "Command Extractor Settings");
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.model.
@@ -112,9 +126,12 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
 	builder.description("Routes commands based on a direct mapping from device specification token "
 		+ "to a command desitination. Commands for specifications not in the mapping list are routed to "
 		+ "the default destination.");
-	builder.attribute((new AttributeNode.Builder("Default destination", "defaultDestination", AttributeType.String)
-		.description("Identifier for default destination commands should be routed to if no mapping is found.")
-		.build()));
+	builder.attributeGroup(CommandDeliveryModelProvider.ATTR_GROUP_ROUTER);
+
+	builder.attribute((new AttributeNode.Builder("Default destination", "defaultDestination", AttributeType.String,
+		CommandDeliveryModelProvider.ATTR_GROUP_ROUTER).description(
+			"Identifier for default destination commands should be routed to if no mapping is found.")
+			.build()));
 	return builder.build();
     }
 
@@ -131,8 +148,11 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
 	builder.description("Routes commands to command destinations based on routing logic "
 		+ "contained in a Groovy script. The script returns the id of the command "
 		+ "destination to be used for delivering the command.");
-	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
-		.description("Path to Groovy script which executes routing logic.").makeRequired().build()));
+	builder.attributeGroup(CommandDeliveryModelProvider.ATTR_GROUP_ROUTER);
+
+	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String,
+		CommandDeliveryModelProvider.ATTR_GROUP_ROUTER)
+			.description("Path to Groovy script which executes routing logic.").makeRequired().build()));
 	return builder.build();
     }
 
@@ -146,11 +166,14 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
 		CommandDeliveryRoleKeys.SpecificationMappingRouterMapping, this);
 
 	builder.description("Maps a specification token to a command destination that should process it.");
-	builder.attribute(
-		(new AttributeNode.Builder("Specification", "specification", AttributeType.SpecificationReference)
+	builder.attributeGroup(CommandDeliveryModelProvider.ATTR_GROUP_ROUTER);
+
+	builder.attribute((new AttributeNode.Builder("Specification", "specification",
+		AttributeType.SpecificationReference, CommandDeliveryModelProvider.ATTR_GROUP_ROUTER)
 			.description("Device specification for the mapping.").makeIndex().build()));
-	builder.attribute((new AttributeNode.Builder("Destination id", "destination", AttributeType.String)
-		.description("Unique id of command destination for the mapping.").makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Destination id", "destination", AttributeType.String,
+		CommandDeliveryModelProvider.ATTR_GROUP_ROUTER)
+			.description("Unique id of command destination for the mapping.").makeRequired().build()));
 	return builder.build();
     }
 
@@ -158,9 +181,10 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
      * Add attributes common to all command destinations.
      * 
      * @param builder
+     * @param group
      */
-    protected void addCommandDestinationAttributes(ElementNode.Builder builder) {
-	builder.attribute((new AttributeNode.Builder("Destination id", "destinationId", AttributeType.String)
+    protected void addCommandDestinationAttributes(ElementNode.Builder builder, IAttributeGroup group) {
+	builder.attribute((new AttributeNode.Builder("Destination id", "destinationId", AttributeType.String, group)
 		.description("Unique identifier for command destination.").makeIndex().build()));
     }
 
@@ -177,9 +201,11 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
 	builder.description("Sends commands to remote devices using the MQTT protocol. Commands are first encoded "
 		+ "using a binary encoder, then a parameter extractor is used to determine the topic used "
 		+ "to deliver the payload to the subscriber.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_AUTHENTICATION);
 
 	// Add common command destination attributes.
-	addCommandDestinationAttributes(builder);
+	addCommandDestinationAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
 	// Only allow binary command encoders.
 	builder.specializes(CommandDeliveryRoleKeys.CommandEncoder, CommandDeliveryRoleKeys.BinaryCommandEncoder);
@@ -188,7 +214,8 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
 	builder.specializes(CommandDeliveryRoleKeys.ParameterExtractor, CommandDeliveryRoleKeys.MqttParameterExtractor);
 
 	// Add common MQTT connectivity attributes.
-	CommonConnectorModel.addMqttConnectivityAttributes(builder);
+	CommonConnectorModel.addMqttCommonAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY,
+		ConfigurationModelProvider.ATTR_GROUP_AUTHENTICATION);
 
 	return builder.build();
     }
@@ -206,9 +233,10 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
 	builder.description("Sends commands to remote devices using the CoAP protocol. Commands are first encoded "
 		+ "using a binary encoder, then a parameter extractor is used to determine the connection "
 		+ "information to make a client request to the device.");
+	builder.attributeGroup(CommandDeliveryModelProvider.ATTR_GROUP_CMDDEST);
 
 	// Add common command destination attributes.
-	addCommandDestinationAttributes(builder);
+	addCommandDestinationAttributes(builder, CommandDeliveryModelProvider.ATTR_GROUP_CMDDEST);
 
 	// Only allow binary command encoders.
 	builder.specializes(CommandDeliveryRoleKeys.CommandEncoder, CommandDeliveryRoleKeys.BinaryCommandEncoder);
@@ -230,9 +258,10 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
 		CommandDeliveryRoleKeys.CommandDestination, this);
 
 	builder.description("Destination that delivers commands via Twilio SMS messages.");
+	builder.attributeGroup(CommandDeliveryModelProvider.ATTR_GROUP_CMDDEST);
 
 	// Add common command destination attributes.
-	addCommandDestinationAttributes(builder);
+	addCommandDestinationAttributes(builder, CommandDeliveryModelProvider.ATTR_GROUP_CMDDEST);
 
 	// Only allow String command encoders.
 	builder.specializes(CommandDeliveryRoleKeys.CommandEncoder, CommandDeliveryRoleKeys.StringCommandEncoder);
@@ -240,12 +269,13 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
 	// Only allow SMS parameter extractors
 	builder.specializes(CommandDeliveryRoleKeys.ParameterExtractor, CommandDeliveryRoleKeys.SmsParameterExtractor);
 
-	builder.attribute((new AttributeNode.Builder("Account SID", "accountSid", AttributeType.String)
-		.description("Twilio account SID.").build()));
-	builder.attribute((new AttributeNode.Builder("Authorization token", "authToken", AttributeType.String)
-		.description("Twilio authorization token.").build()));
-	builder.attribute((new AttributeNode.Builder("From phone number", "fromPhoneNumber", AttributeType.String)
-		.description("Twilio phone number that originates message.").build()));
+	builder.attribute((new AttributeNode.Builder("Account SID", "accountSid", AttributeType.String,
+		CommandDeliveryModelProvider.ATTR_GROUP_CMDDEST).description("Twilio account SID.").build()));
+	builder.attribute((new AttributeNode.Builder("Authorization token", "authToken", AttributeType.String,
+		CommandDeliveryModelProvider.ATTR_GROUP_CMDDEST).description("Twilio authorization token.").build()));
+	builder.attribute((new AttributeNode.Builder("From phone number", "fromPhoneNumber", AttributeType.String,
+		CommandDeliveryModelProvider.ATTR_GROUP_CMDDEST)
+			.description("Twilio phone number that originates message.").build()));
 
 	return builder.build();
     }
@@ -312,8 +342,11 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
 
 	builder.description("Command encoder that encodes both system and custom commands using a groovy "
 		+ "script for the encoding logic.");
-	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
-		.description("Path to Groovy script which encodes commands.").makeRequired().build()));
+	builder.attributeGroup(CommandDeliveryModelProvider.ATTR_GROUP_CMDENC);
+
+	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String,
+		CommandDeliveryModelProvider.ATTR_GROUP_CMDENC)
+			.description("Path to Groovy script which encodes commands.").makeRequired().build()));
 
 	return builder.build();
     }
@@ -331,8 +364,11 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
 	builder.description("Command encoder that encodes both system and custom commands using a groovy "
 		+ "script for the encoding logic. The script is expected to return a String which will be used "
 		+ "as the command payload.");
-	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
-		.description("Path to Groovy script which encodes commands.").makeRequired().build()));
+	builder.attributeGroup(CommandDeliveryModelProvider.ATTR_GROUP_CMDENC);
+
+	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String,
+		CommandDeliveryModelProvider.ATTR_GROUP_CMDENC)
+			.description("Path to Groovy script which encodes commands.").makeRequired().build()));
 
 	return builder.build();
     }
@@ -349,15 +385,18 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
 	builder.description("Calculates MQTT topic for publishing commands by substituting the device "
 		+ "hardware id into parameterized strings. The resulting values are used by the command "
 		+ "destination to send the encoded command payload to the device.");
-	builder.attribute(
-		(new AttributeNode.Builder("Command topic expression", "commandTopicExpr", AttributeType.String)
+	builder.attributeGroup(CommandDeliveryModelProvider.ATTR_GROUP_CMDEXT);
+
+	builder.attribute((new AttributeNode.Builder("Command topic expression", "commandTopicExpr",
+		AttributeType.String, CommandDeliveryModelProvider.ATTR_GROUP_CMDEXT)
 			.description("Expression for building topic name to which custom commands are sent. "
 				+ "Add a '%s' where the hardware id should be inserted.")
 			.defaultValue("SiteWhere/commands/%s").build()));
-	builder.attribute((new AttributeNode.Builder("System topic expression", "systemTopicExpr", AttributeType.String)
-		.description("Expression for building topic name to which system commands are sent. "
-			+ "Add a '%s' where the hardware id should be inserted.")
-		.defaultValue("SiteWhere/system/%s").build()));
+	builder.attribute((new AttributeNode.Builder("System topic expression", "systemTopicExpr", AttributeType.String,
+		CommandDeliveryModelProvider.ATTR_GROUP_CMDEXT)
+			.description("Expression for building topic name to which system commands are sent. "
+				+ "Add a '%s' where the hardware id should be inserted.")
+			.defaultValue("SiteWhere/system/%s").build()));
 
 	return builder.build();
     }
@@ -372,16 +411,20 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
 		"metadata-coap-parameter-extractor", "cogs", CommandDeliveryRoleKeys.CoapParameterExtractor, this);
 
 	builder.description("Extracts CoAP connection information from metadata associated with a device.");
-	builder.attribute((new AttributeNode.Builder("Hostname metadata", "hostnameMetadataField", AttributeType.String)
-		.description("Metadata field that holds hostname information for the CoAP connection.")
-		.defaultValue("hostname").build()));
-	builder.attribute((new AttributeNode.Builder("Port metadata", "portMetadataField", AttributeType.String)
-		.description("Metadata field that holds port information for the CoAP connection.").defaultValue("port")
-		.build()));
-	builder.attribute((new AttributeNode.Builder("URL metadata", "urlMetadataField", AttributeType.String)
-		.description(
+	builder.attributeGroup(CommandDeliveryModelProvider.ATTR_GROUP_CMDEXT);
+
+	builder.attribute((new AttributeNode.Builder("Hostname metadata", "hostnameMetadataField", AttributeType.String,
+		CommandDeliveryModelProvider.ATTR_GROUP_CMDEXT)
+			.description("Metadata field that holds hostname information for the CoAP connection.")
+			.defaultValue("hostname").build()));
+	builder.attribute((new AttributeNode.Builder("Port metadata", "portMetadataField", AttributeType.String,
+		CommandDeliveryModelProvider.ATTR_GROUP_CMDEXT)
+			.description("Metadata field that holds port information for the CoAP connection.")
+			.defaultValue("port").build()));
+	builder.attribute((new AttributeNode.Builder("URL metadata", "urlMetadataField", AttributeType.String,
+		CommandDeliveryModelProvider.ATTR_GROUP_CMDEXT).description(
 			"Metadata field that holds information about the relative URL for the CoAP client request.")
-		.build()));
+			.build()));
 
 	return builder.build();
     }
@@ -396,8 +439,11 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
 		"groovy-sms-parameter-extractor", "cogs", CommandDeliveryRoleKeys.SmsParameterExtractor, this);
 
 	builder.description("Uses a Groovy script to extract SMS parameter information for delivering a command.");
-	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
-		.description("Path to Groovy script which encodes commands.").makeRequired().build()));
+	builder.attributeGroup(CommandDeliveryModelProvider.ATTR_GROUP_CMDEXT);
+
+	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String,
+		CommandDeliveryModelProvider.ATTR_GROUP_CMDEXT)
+			.description("Path to Groovy script which encodes commands.").makeRequired().build()));
 
 	return builder.build();
     }

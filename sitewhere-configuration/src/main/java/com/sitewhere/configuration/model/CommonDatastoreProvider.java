@@ -11,6 +11,7 @@ import com.sitewhere.configuration.parser.IDatastoreCommonParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
 import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
+import com.sitewhere.spi.microservice.configuration.model.IAttributeGroup;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
@@ -114,7 +115,9 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 		CommonDatastoreRoleKeys.MongoDBDatastore, this);
 
 	builder.description("Use a locally-defined MongoDB datastore.");
-	addMongoDbAttributes(builder);
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+
+	addMongoDbAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
 	return builder.build();
     }
@@ -130,9 +133,11 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 		CommonDatastoreRoleKeys.MongoDBReference, this);
 
 	builder.description("Use a globally-defined MongoDB datastore.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
-	builder.attribute((new AttributeNode.Builder("Configuration Id", "id", AttributeType.String)
-		.description("Unique id for global configuration").makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Configuration Id", "id", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("Unique id for global configuration")
+			.makeRequired().build()));
 
 	return builder.build();
     }
@@ -149,7 +154,11 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 		CommonDatastoreRoleKeys.InfluxDBDatastore, this);
 
 	builder.description("Use a locally-defined InfluxDB datastore.");
-	addMongoDbAttributes(builder);
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_BATCH);
+
+	addInfluxDbAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY,
+		ConfigurationModelProvider.ATTR_GROUP_BATCH);
 
 	return builder.build();
     }
@@ -166,9 +175,11 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 		CommonDatastoreRoleKeys.InfluxDBReference, this);
 
 	builder.description("Use a globally-defined InfluxDB datastore.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
-	builder.attribute((new AttributeNode.Builder("Configuration Id", "id", AttributeType.String)
-		.description("Unique id for global configuration").makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Configuration Id", "id", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("Unique id for global configuration")
+			.makeRequired().build()));
 
 	return builder.build();
     }
@@ -185,7 +196,9 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 		CommonDatastoreRoleKeys.CassandraDatastore, this);
 
 	builder.description("Use a locally-defined Apache Cassandra datastore.");
-	addCassandraAttributes(builder);
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+
+	addCassandraAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
 	return builder.build();
     }
@@ -202,9 +215,11 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 		CommonDatastoreRoleKeys.CassandraReference, this);
 
 	builder.description("Use a globally-defined Cassandra datastore.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
-	builder.attribute((new AttributeNode.Builder("Configuration Id", "id", AttributeType.String)
-		.description("Unique id for global configuration").makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Configuration Id", "id", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("Unique id for global configuration")
+			.makeRequired().build()));
 
 	return builder.build();
     }
@@ -224,25 +239,28 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
      * Adds MongoDB configuration attributes.
      * 
      * @param builder
+     * @param connectivity
      */
-    public static void addMongoDbAttributes(ElementNode.Builder builder) {
-	builder.attribute((new AttributeNode.Builder("Hostname", "hostname", AttributeType.String)
+    public static void addMongoDbAttributes(ElementNode.Builder builder, IAttributeGroup connectivity) {
+	builder.attribute((new AttributeNode.Builder("Hostname", "hostname", AttributeType.String, connectivity)
 		.description("Hostname for MongoDB instance").defaultValue("${mongodb.host:mongodb}").build()));
-	builder.attribute((new AttributeNode.Builder("Port", "port", AttributeType.Integer)
+	builder.attribute((new AttributeNode.Builder("Port", "port", AttributeType.Integer, connectivity)
 		.description("Port on which MongoDB is running").defaultValue("${mongodb.port:27017}").build()));
-	builder.attribute((new AttributeNode.Builder("Database name", "databaseName", AttributeType.String)
-		.description("Database name").defaultValue("${mongodb.database:sitewhere}").build()));
-	builder.attribute((new AttributeNode.Builder("Username", "username", AttributeType.String)
+	builder.attribute(
+		(new AttributeNode.Builder("Database name", "databaseName", AttributeType.String, connectivity)
+			.description("Database name").defaultValue("${mongodb.database:sitewhere}").build()));
+	builder.attribute((new AttributeNode.Builder("Username", "username", AttributeType.String, connectivity)
 		.description("Database authentication username").build()));
-	builder.attribute((new AttributeNode.Builder("Password", "password", AttributeType.String)
+	builder.attribute((new AttributeNode.Builder("Password", "password", AttributeType.String, connectivity)
 		.description("Database authentication password").build()));
-	builder.attribute((new AttributeNode.Builder("Authentication DB name", "authDatabaseName", AttributeType.String)
-		.description("Authentication database name").build()));
-	builder.attribute((new AttributeNode.Builder("Replica set name", "replicaSetName", AttributeType.String)
-		.description("Name of replica set if using replication.").defaultValue("${mongodb.replicaset:}")
-		.build()));
+	builder.attribute((new AttributeNode.Builder("Authentication DB name", "authDatabaseName", AttributeType.String,
+		connectivity).description("Authentication database name").build()));
+	builder.attribute(
+		(new AttributeNode.Builder("Replica set name", "replicaSetName", AttributeType.String, connectivity)
+			.description("Name of replica set if using replication.").defaultValue("${mongodb.replicaset:}")
+			.build()));
 	builder.attribute((new AttributeNode.Builder("Auto-configure replication", "autoConfigureReplication",
-		AttributeType.Boolean)
+		AttributeType.Boolean, connectivity)
 			.description("Indicates whether replication should be configured automatically "
 				+ "when multiple hosts/ports are specified.")
 			.build()));
@@ -252,52 +270,56 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
      * Adds InfluxDB configuration attributes.
      * 
      * @param builder
+     * @param connectivity
+     * @param batch
      */
-    public static void addInfluxDbAttributes(ElementNode.Builder builder) {
-	builder.attributeGroup("conn", "InfluxDB Connectivity");
-	builder.attribute((new AttributeNode.Builder("Hostname", "hostname", AttributeType.String)
-		.description("Specifies hostname for InfluxDB instance.").group("conn").defaultValue("influxdb")
-		.build()));
-	builder.attribute((new AttributeNode.Builder("Port", "port", AttributeType.Integer)
-		.description("Port on which InfluxDB is running").group("conn").defaultValue("${influxdb.port:8086}")
-		.build()));
-	builder.attribute((new AttributeNode.Builder("Username", "username", AttributeType.String)
-		.description("Username for InfluxDB authentication.").group("conn").defaultValue("root").build()));
-	builder.attribute((new AttributeNode.Builder("Password", "password", AttributeType.String)
-		.description("Password for InfluxDB authentication.").group("conn").defaultValue("root").build()));
-	builder.attribute((new AttributeNode.Builder("Database", "database", AttributeType.String)
-		.description("InfluxDB database name.").group("conn").defaultValue("sitewhere").build()));
-	builder.attribute((new AttributeNode.Builder("Retention policy", "retention", AttributeType.String)
-		.description("InfluxDB retention policy name.").group("conn").defaultValue("autogen").build()));
-	builder.attribute((new AttributeNode.Builder("Log level", "logLevel", AttributeType.String)
-		.description("Log level for debugging InfluxDB interactions.").group("conn").choice("None", "none")
+    public static void addInfluxDbAttributes(ElementNode.Builder builder, IAttributeGroup connectivity,
+	    IAttributeGroup batch) {
+	// Connectivity attributes.
+	builder.attribute((new AttributeNode.Builder("Hostname", "hostname", AttributeType.String, connectivity)
+		.description("Specifies hostname for InfluxDB instance.").defaultValue("influxdb").build()));
+	builder.attribute((new AttributeNode.Builder("Port", "port", AttributeType.Integer, connectivity)
+		.description("Port on which InfluxDB is running").defaultValue("${influxdb.port:8086}").build()));
+	builder.attribute((new AttributeNode.Builder("Username", "username", AttributeType.String, connectivity)
+		.description("Username for InfluxDB authentication.").defaultValue("root").build()));
+	builder.attribute((new AttributeNode.Builder("Password", "password", AttributeType.String, connectivity)
+		.description("Password for InfluxDB authentication.").defaultValue("root").build()));
+	builder.attribute((new AttributeNode.Builder("Database", "database", AttributeType.String, connectivity)
+		.description("InfluxDB database name.").defaultValue("sitewhere").build()));
+	builder.attribute(
+		(new AttributeNode.Builder("Retention policy", "retention", AttributeType.String, connectivity)
+			.description("InfluxDB retention policy name.").defaultValue("autogen").build()));
+	builder.attribute((new AttributeNode.Builder("Log level", "logLevel", AttributeType.String, connectivity)
+		.description("Log level for debugging InfluxDB interactions.").choice("None", "none")
 		.choice("Basic", "basic").choice("Headers", "headers").choice("Full", "full").defaultValue("none")
 		.build()));
 
-	builder.attributeGroup("batch", "InfluxDB Batch Event Processing");
-	builder.attribute((new AttributeNode.Builder("Enable batch processing", "enableBatch", AttributeType.Boolean)
-		.description("Enable delivery of events in batches.").group("batch").defaultValue("true").build()));
-	builder.attribute((new AttributeNode.Builder("Max batch chunk size", "batchChunkSize", AttributeType.Integer)
-		.description("Maximum number of events to send in a batch.").group("batch").defaultValue("1000")
-		.build()));
+	// Batch attributes.
 	builder.attribute(
-		(new AttributeNode.Builder("Max batch send interval (ms)", "batchIntervalMs", AttributeType.Integer)
-			.description("Maximum amount of time (in ms) to wait before sending a batch.").group("batch")
-			.defaultValue("100").build()));
+		(new AttributeNode.Builder("Enable batch processing", "enableBatch", AttributeType.Boolean, batch)
+			.description("Enable delivery of events in batches.").defaultValue("true").build()));
+	builder.attribute(
+		(new AttributeNode.Builder("Max batch chunk size", "batchChunkSize", AttributeType.Integer, batch)
+			.description("Maximum number of events to send in a batch.").defaultValue("1000").build()));
+	builder.attribute(
+		(new AttributeNode.Builder("Max batch send interval (ms)", "batchIntervalMs", AttributeType.Integer,
+			batch).description("Maximum amount of time (in ms) to wait before sending a batch.")
+				.defaultValue("100").build()));
     }
 
     /**
      * Adds Apache Cassandra configuration attributes.
      * 
      * @param builder
+     * @param connectivity
      */
-    public static void addCassandraAttributes(ElementNode.Builder builder) {
-	builder.attributeGroup("conn", "Apache Cassandra Connectivity");
-	builder.attribute((new AttributeNode.Builder("Contact Points", "contactPoints", AttributeType.String)
-		.description("Comma-delimited list of contact points for Cassandra cluster.").group("conn")
-		.defaultValue("${cassandra.contact.points:cassandra}").build()));
-	builder.attribute((new AttributeNode.Builder("Keyspace", "keyspace", AttributeType.String)
-		.description("Keyspace used for accessing data.").group("conn")
-		.defaultValue("${cassandra.keyspace:sitewhere}").build()));
+    public static void addCassandraAttributes(ElementNode.Builder builder, IAttributeGroup connectivity) {
+	builder.attribute(
+		(new AttributeNode.Builder("Contact Points", "contactPoints", AttributeType.String, connectivity)
+			.description("Comma-delimited list of contact points for Cassandra cluster.")
+			.defaultValue("${cassandra.contact.points:cassandra}").build()));
+	builder.attribute((new AttributeNode.Builder("Keyspace", "keyspace", AttributeType.String, connectivity)
+		.description("Keyspace used for accessing data.").defaultValue("${cassandra.keyspace:sitewhere}")
+		.build()));
     }
 }

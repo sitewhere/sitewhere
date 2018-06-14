@@ -13,8 +13,9 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
-import com.sitewhere.spi.microservice.configuration.model.IAttributeNode;
 import com.sitewhere.spi.microservice.configuration.model.IAttributeChoice;
+import com.sitewhere.spi.microservice.configuration.model.IAttributeGroup;
+import com.sitewhere.spi.microservice.configuration.model.IAttributeNode;
 import com.sitewhere.spi.microservice.configuration.model.NodeType;
 
 /**
@@ -136,11 +137,12 @@ public class AttributeNode extends XmlNode implements IAttributeNode {
 
 	private AttributeNode attribute;
 
-	public Builder(String name, String localName, AttributeType type) {
+	public Builder(String name, String localName, AttributeType type, IAttributeGroup group) {
 	    this.attribute = new AttributeNode();
 	    attribute.setName(name);
 	    attribute.setLocalName(localName);
 	    attribute.setType(type);
+	    attribute.setGroup(group.getId());
 	}
 
 	public Builder description(String description) {
@@ -169,11 +171,6 @@ public class AttributeNode extends XmlNode implements IAttributeNode {
 		attribute.setChoices(new ArrayList<IAttributeChoice>());
 	    }
 	    attribute.getChoices().add(new AttributeChoice(name, value));
-	    return this;
-	}
-
-	public Builder group(String group) {
-	    attribute.setGroup(group);
 	    return this;
 	}
 

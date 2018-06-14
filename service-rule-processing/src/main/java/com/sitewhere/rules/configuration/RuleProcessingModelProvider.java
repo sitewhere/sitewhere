@@ -12,6 +12,7 @@ import com.sitewhere.configuration.parser.IRuleProcessingParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
 import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
+import com.sitewhere.spi.microservice.configuration.model.IAttributeGroup;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
@@ -88,8 +89,9 @@ public class RuleProcessingModelProvider extends ConfigurationModelProvider {
 		RuleProcessingRoleKeys.ZoneTestProcessor, this);
 	builder.description("Allows alerts to be generated if location events are inside "
 		+ "or outside of a zone based on criteria.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
 
-	addCommonRuleProcessorAttributes(builder);
+	addCommonRuleProcessorAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_GENERAL);
 
 	return builder.build();
     }
@@ -103,19 +105,24 @@ public class RuleProcessingModelProvider extends ConfigurationModelProvider {
 	ElementNode.Builder builder = new ElementNode.Builder("Zone Test", "zone-test", "map-pin",
 		RuleProcessingRoleKeys.ZoneTestElement, this);
 	builder.description("Describes zone test criteria and alert to be generated in case of a match.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
 
-	builder.attribute((new AttributeNode.Builder("Zone token", "zoneToken", AttributeType.String)
-		.description("Unique token for zone locations are to be tested against.").build()));
-	builder.attribute((new AttributeNode.Builder("Condition", "condition", AttributeType.String)
-		.description("Condition under which alert should be generated.")
-		.choice("Location Inside Zone", "inside").choice("Location Outside Zone", "outside").build()));
-	builder.attribute((new AttributeNode.Builder("Alert type", "alertType", AttributeType.String)
-		.description("Identifier that indicates alert type.").build()));
-	builder.attribute((new AttributeNode.Builder("Alert level", "alertLevel", AttributeType.String)
-		.description("Level value of alert.").choice("Information", "info").choice("Warning", "warning")
-		.choice("Error", "error").choice("Critical", "critical").build()));
-	builder.attribute((new AttributeNode.Builder("Alert message", "alertMessage", AttributeType.String)
-		.description("Message shown for alert.").build()));
+	builder.attribute((new AttributeNode.Builder("Zone token", "zoneToken", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL)
+			.description("Unique token for zone locations are to be tested against.").build()));
+	builder.attribute((new AttributeNode.Builder("Condition", "condition", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL)
+			.description("Condition under which alert should be generated.")
+			.choice("Location Inside Zone", "inside").choice("Location Outside Zone", "outside").build()));
+	builder.attribute((new AttributeNode.Builder("Alert type", "alertType", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Identifier that indicates alert type.")
+			.build()));
+	builder.attribute((new AttributeNode.Builder("Alert level", "alertLevel", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Level value of alert.")
+			.choice("Information", "info").choice("Warning", "warning").choice("Error", "error")
+			.choice("Critical", "critical").build()));
+	builder.attribute((new AttributeNode.Builder("Alert message", "alertMessage", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Message shown for alert.").build()));
 	return builder.build();
     }
 
@@ -124,14 +131,12 @@ public class RuleProcessingModelProvider extends ConfigurationModelProvider {
      * 
      * @param builder
      */
-    public static void addCommonRuleProcessorAttributes(ElementNode.Builder builder) {
-	builder.attributeGroup("common", "Rule Processor Attributes");
-	builder.attribute((new AttributeNode.Builder("Processor id", "processorId", AttributeType.String)
-		.description("Unique id used for referencing this processor.").group("common").makeIndex()
-		.makeRequired().build()));
+    public static void addCommonRuleProcessorAttributes(ElementNode.Builder builder, IAttributeGroup group) {
+	builder.attribute((new AttributeNode.Builder("Processor id", "processorId", AttributeType.String, group)
+		.description("Unique id used for referencing this processor.").makeIndex().makeRequired().build()));
 	builder.attribute((new AttributeNode.Builder("Number of processing threads", "numProcessingThreads",
-		AttributeType.Integer)
+		AttributeType.Integer, group)
 			.description("Number of processing threads used to pull events from Kafka into rule processor.")
-			.group("common").makeRequired().build()));
+			.makeRequired().build()));
     }
 }

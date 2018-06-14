@@ -14,6 +14,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.spi.microservice.configuration.model.IAttributeGroup;
 import com.sitewhere.spi.microservice.configuration.model.IAttributeNode;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModelProvider;
 import com.sitewhere.spi.microservice.configuration.model.IElementNode;
@@ -191,11 +192,11 @@ public class ElementNode extends XmlNode implements IElementNode {
 	    return this;
 	}
 
-	public Builder attributeGroup(String id, String name) {
+	public Builder attributeGroup(IAttributeGroup group) {
 	    if (element.getAttributeGroups() == null) {
 		element.setAttributeGroups(new HashMap<String, String>());
 	    }
-	    element.getAttributeGroups().put(id, name);
+	    element.getAttributeGroups().put(group.getId(), group.getName());
 	    return this;
 	}
 

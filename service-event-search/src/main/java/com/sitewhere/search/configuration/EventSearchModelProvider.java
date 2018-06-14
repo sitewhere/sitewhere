@@ -83,10 +83,14 @@ public class EventSearchModelProvider extends ConfigurationModelProvider {
 		EventSearchRoleKeys.SearchProvider, this);
 
 	builder.description("Provider that delegates search tasks to a linked Solr instance.");
-	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String)
-		.description("Unique id for search provider.").defaultValue("solr").makeIndex().build()));
-	builder.attribute((new AttributeNode.Builder("Name", "name", AttributeType.String)
-		.description("Name shown for search provider.").defaultValue(" Apache Solr").build()));
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+
+	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Unique id for search provider.")
+			.defaultValue("solr").makeIndex().build()));
+	builder.attribute((new AttributeNode.Builder("Name", "name", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Name shown for search provider.")
+			.defaultValue(" Apache Solr").build()));
 
 	return builder.build();
     }

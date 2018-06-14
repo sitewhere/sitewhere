@@ -13,6 +13,7 @@ import com.sitewhere.configuration.parser.IEventSourcesParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
 import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
+import com.sitewhere.spi.microservice.configuration.model.IAttributeGroup;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
@@ -112,6 +113,16 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     }
 
     /**
+     * Add common event source attributes.
+     * 
+     * @param builder
+     */
+    public static void addEventSourceAttributes(ElementNode.Builder builder, IAttributeGroup group) {
+	builder.attribute((new AttributeNode.Builder("Source id", "sourceId", AttributeType.String, group)
+		.description("Unique id used for referencing this event source.").makeIndex().makeRequired().build()));
+    }
+
+    /**
      * Create element configuration for MQTT event source.
      * 
      * @return
@@ -122,17 +133,22 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 		EventSourcesRoleKeys.EventSource, this);
 
 	builder.description("Listen for events on an MQTT topic.");
-	addEventSourceAttributes(builder);
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_AUTHENTICATION);
+	addEventSourceAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
 	// Only accept binary event decoders.
 	builder.specializes(EventSourcesRoleKeys.EventDecoder, EventSourcesRoleKeys.BinaryEventDecoder);
 
 	// Add common MQTT connectivity attributes.
-	CommonConnectorModel.addMqttConnectivityAttributes(builder);
-	builder.attribute((new AttributeNode.Builder("MQTT topic", "topic", AttributeType.String)
-		.description("MQTT topic event source uses for inbound messages.").build()));
-	builder.attribute((new AttributeNode.Builder("Processing threads", "numThreads", AttributeType.Integer)
-		.defaultValue("5").description("Number of threads used for processing MQTT payloads.").build()));
+	CommonConnectorModel.addMqttCommonAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY,
+		ConfigurationModelProvider.ATTR_GROUP_AUTHENTICATION);
+	builder.attribute((new AttributeNode.Builder("MQTT topic", "topic", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("MQTT topic event source uses for inbound messages.").build()));
+	builder.attribute((new AttributeNode.Builder("Processing threads", "numThreads", AttributeType.Integer,
+		ATTR_GROUP_CONNECTIVITY).defaultValue("5")
+			.description("Number of threads used for processing MQTT payloads.").build()));
 
 	return builder.build();
     }
@@ -148,36 +164,28 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 		EventSourcesRoleKeys.EventSource, this);
 
 	builder.description("Listen for events on an RabbitMQ queue.");
-	addEventSourceAttributes(builder);
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+	addEventSourceAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
 	// Only accept binary event decoders.
 	builder.specializes(EventSourcesRoleKeys.EventDecoder, EventSourcesRoleKeys.BinaryEventDecoder);
 
-	builder.attribute((new AttributeNode.Builder("Connection URI", "connectionUri", AttributeType.String)
-		.defaultValue("amqp://localhost").description("URI that specifies RabbitMQ connectivity settings.")
-		.build()));
-	builder.attribute((new AttributeNode.Builder("Queue name", "queueName", AttributeType.String)
-		.defaultValue("sitewhere.input").description("Name of queue that will be consumed.").build()));
-	builder.attribute(
-		(new AttributeNode.Builder("Durable queue", "durable", AttributeType.Boolean).defaultValue("false")
+	builder.attribute((new AttributeNode.Builder("Connection URI", "connectionUri", AttributeType.String,
+		ATTR_GROUP_CONNECTIVITY).defaultValue("amqp://localhost")
+			.description("URI that specifies RabbitMQ connectivity settings.").build()));
+	builder.attribute((new AttributeNode.Builder("Queue name", "queueName", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).defaultValue("sitewhere.input")
+			.description("Name of queue that will be consumed.").build()));
+	builder.attribute((new AttributeNode.Builder("Durable queue", "durable", AttributeType.Boolean,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).defaultValue("false")
 			.description("Indicates if queue should survive broker restart. If queue exists, this "
 				+ "should agree with the existing configuration.")
 			.build()));
-	builder.attribute(
-		(new AttributeNode.Builder("Consumer threads", "numConsumers", AttributeType.Integer).defaultValue("5")
+	builder.attribute((new AttributeNode.Builder("Consumer threads", "numConsumers", AttributeType.Integer,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).defaultValue("5")
 			.description("Number of thread used by consumers to pull data from the queue.").build()));
 
 	return builder.build();
-    }
-
-    /**
-     * Add common event source attributes.
-     * 
-     * @param builder
-     */
-    public static void addEventSourceAttributes(ElementNode.Builder builder) {
-	builder.attribute((new AttributeNode.Builder("Source id", "sourceId", AttributeType.String)
-		.description("Unique id used for referencing this event source.").makeIndex().makeRequired().build()));
     }
 
     /**
@@ -192,25 +200,29 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 
 	builder.description(
 		"Event source that pulls binary information from an Azure EventHub endpoint and decodes it.");
-	addEventSourceAttributes(builder);
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+	addEventSourceAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
 	// Only accept binary event decoders.
 	builder.specializes(EventSourcesRoleKeys.EventDecoder, EventSourcesRoleKeys.BinaryEventDecoder);
 
-	builder.attribute((new AttributeNode.Builder("Target FQN", "targetFqn", AttributeType.String)
-		.description("EventHub targetFqn address.").build()));
-	builder.attribute((new AttributeNode.Builder("Namespace", "namespace", AttributeType.String)
-		.description("EventHub namespace.").build()));
-	builder.attribute((new AttributeNode.Builder("Entity path", "entityPath", AttributeType.String)
-		.description("EventHub entityPath.").build()));
-	builder.attribute((new AttributeNode.Builder("Partition count", "partitionCount", AttributeType.Integer)
-		.description("EventHub partition count.").build()));
-	builder.attribute((new AttributeNode.Builder("Zookeeper state store", "zkStateStore", AttributeType.String)
-		.description("Zookeeper store url for EventHub state persistence.").build()));
-	builder.attribute((new AttributeNode.Builder("Username", "username", AttributeType.String)
-		.description("Username for EventHub connection.").build()));
-	builder.attribute((new AttributeNode.Builder("Password", "password", AttributeType.String)
-		.description("Password for EventHub connection.").build()));
+	builder.attribute((new AttributeNode.Builder("Target FQN", "targetFqn", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("EventHub targetFqn address.")
+			.build()));
+	builder.attribute((new AttributeNode.Builder("Namespace", "namespace", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("EventHub namespace.").build()));
+	builder.attribute((new AttributeNode.Builder("Entity path", "entityPath", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("EventHub entityPath.").build()));
+	builder.attribute((new AttributeNode.Builder("Partition count", "partitionCount", AttributeType.Integer,
+		ATTR_GROUP_CONNECTIVITY).description("EventHub partition count.").build()));
+	builder.attribute((new AttributeNode.Builder("Zookeeper state store", "zkStateStore", AttributeType.String,
+		ATTR_GROUP_CONNECTIVITY).description("Zookeeper store url for EventHub state persistence.").build()));
+	builder.attribute((new AttributeNode.Builder("Username", "username", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("Username for EventHub connection.")
+			.build()));
+	builder.attribute((new AttributeNode.Builder("Password", "password", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("Password for EventHub connection.")
+			.build()));
 
 	return builder.build();
     }
@@ -227,18 +239,22 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 
 	builder.description("Event source that starts an ActiveMQ broker and listens on the transport "
 		+ "via an ActiveMQ queue and decodes it.");
-	addEventSourceAttributes(builder);
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+	addEventSourceAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
 	// Only accept binary event decoders.
 	builder.specializes(EventSourcesRoleKeys.EventDecoder, EventSourcesRoleKeys.BinaryEventDecoder);
 
-	builder.attribute((new AttributeNode.Builder("Transport URI", "transportUri", AttributeType.String)
-		.description("URI used to configure the trasport for the embedded ActiveMQ broker.").makeRequired()
-		.build()));
-	builder.attribute((new AttributeNode.Builder("Queue name", "queueName", AttributeType.String)
-		.description("Name of JMS queue for consumers to pull messages from.").makeRequired().build()));
-	builder.attribute((new AttributeNode.Builder("Number of consumers", "numConsumers", AttributeType.Integer)
-		.description("Number of consumers used to read data from the queue into SiteWhere.").build()));
+	builder.attribute((new AttributeNode.Builder("Transport URI", "transportUri", AttributeType.String,
+		ATTR_GROUP_CONNECTIVITY)
+			.description("URI used to configure the trasport for the embedded ActiveMQ broker.")
+			.makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Queue name", "queueName", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("Name of JMS queue for consumers to pull messages from.").makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Number of consumers", "numConsumers", AttributeType.Integer,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("Number of consumers used to read data from the queue into SiteWhere.").build()));
 
 	return builder.build();
     }
@@ -255,17 +271,21 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 
 	builder.description("Event source that uses ActiveMQ consumers to ingest "
 		+ "messages from a remote broker and decodes them.");
-	addEventSourceAttributes(builder);
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+	addEventSourceAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
 	// Only accept binary event decoders.
 	builder.specializes(EventSourcesRoleKeys.EventDecoder, EventSourcesRoleKeys.BinaryEventDecoder);
 
-	builder.attribute((new AttributeNode.Builder("Remote URI", "remoteUri", AttributeType.String)
-		.description("URI used to connect to remote message broker.").makeRequired().build()));
-	builder.attribute((new AttributeNode.Builder("Queue name", "queueName", AttributeType.String)
-		.description("Name of JMS queue for consumers to pull messages from.").makeRequired().build()));
-	builder.attribute((new AttributeNode.Builder("Number of consumers", "numConsumers", AttributeType.Integer)
-		.description("Number of consumers used to read data from the queue into SiteWhere.").build()));
+	builder.attribute((new AttributeNode.Builder("Remote URI", "remoteUri", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("URI used to connect to remote message broker.").makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Queue name", "queueName", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("Name of JMS queue for consumers to pull messages from.").makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Number of consumers", "numConsumers", AttributeType.Integer,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("Number of consumers used to read data from the queue into SiteWhere.").build()));
 
 	return builder.build();
     }
@@ -315,8 +335,12 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 		"cog", EventSourcesRoleKeys.SocketInteractionHandlerFactory, this);
 
 	builder.description("Interaction handler uses a Groovy script to handle socket interactions.");
-	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script)
-		.description("Script which handles socket interactions.").makeRequired().build()));
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+	addEventSourceAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+
+	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Script which handles socket interactions.")
+			.makeRequired().build()));
 
 	return builder.build();
     }
@@ -332,17 +356,20 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 		EventSourcesRoleKeys.SocketEventSource, this);
 
 	builder.description("Event source that pulls binary information from connections to a TCP/IP server socket.");
-	addEventSourceAttributes(builder);
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+	addEventSourceAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
 	// Only accept binary event decoders.
 	builder.specializes(EventSourcesRoleKeys.EventDecoder, EventSourcesRoleKeys.BinaryEventDecoder);
 
-	builder.attribute((new AttributeNode.Builder("Port", "port", AttributeType.Integer)
-		.description("Port on which the server socket will listen.").defaultValue("8484").makeRequired()
-		.build()));
-	builder.attribute((new AttributeNode.Builder("Number of threads", "numThreads", AttributeType.Integer)
-		.description("Number of threads used to handle client connections to the server socket.")
-		.defaultValue("5").build()));
+	builder.attribute((new AttributeNode.Builder("Port", "port", AttributeType.Integer,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("Port on which the server socket will listen.").defaultValue("8484").makeRequired()
+			.build()));
+	builder.attribute((new AttributeNode.Builder("Number of threads", "numThreads", AttributeType.Integer,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("Number of threads used to handle client connections to the server socket.")
+			.defaultValue("5").build()));
 
 	return builder.build();
     }
@@ -357,11 +384,14 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 		EventSourcesRoleKeys.WebSocketHeader, this);
 
 	builder.description("Header that is passed to the web socket for configuration.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+	addEventSourceAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_GENERAL);
 
-	builder.attribute((new AttributeNode.Builder("Header name", "name", AttributeType.String)
-		.description("Header name.").makeRequired().makeIndex().build()));
-	builder.attribute((new AttributeNode.Builder("Header value", "value", AttributeType.String)
-		.description("Header value.").makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Header name", "name", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Header name.").makeRequired().makeIndex()
+			.build()));
+	builder.attribute((new AttributeNode.Builder("Header value", "value", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Header value.").makeRequired().build()));
 
 	return builder.build();
     }
@@ -378,13 +408,15 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 
 	builder.description("Event source that pulls data from a web socket. Note that the event decoder needs "
 		+ "to correspond to the payload type chosen.");
-	addEventSourceAttributes(builder);
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+	addEventSourceAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
-	builder.attribute((new AttributeNode.Builder("Web socket URL", "webSocketUrl", AttributeType.String)
-		.description("URL of the web socket to connect to.").makeRequired().build()));
-	builder.attribute((new AttributeNode.Builder("Payload type", "payloadType", AttributeType.String)
-		.description("Chooses whether payload is processed as binary or string.").choice("Binary", "binary")
-		.choice("String", "string").defaultValue("binary").build()));
+	builder.attribute((new AttributeNode.Builder("Web socket URL", "webSocketUrl", AttributeType.String,
+		ATTR_GROUP_CONNECTIVITY).description("URL of the web socket to connect to.").makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Payload type", "payloadType", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("Chooses whether payload is processed as binary or string.")
+			.choice("Binary", "binary").choice("String", "string").defaultValue("binary").build()));
 
 	return builder.build();
     }
@@ -401,15 +433,18 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 
 	builder.description("Event source that acts as a CoAP server, allowing events to be created "
 		+ "by posting data to well-known system URLs.");
-	addEventSourceAttributes(builder);
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+	addEventSourceAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
 	// Only accept binary event decoders.
 	builder.specializes(EventSourcesRoleKeys.EventDecoder, EventSourcesRoleKeys.BinaryEventDecoder);
 
-	builder.attribute((new AttributeNode.Builder("Hostname", "hostname", AttributeType.String)
-		.description("Host name used when binding server socket.").defaultValue("localhost").build()));
-	builder.attribute((new AttributeNode.Builder("Port", "port", AttributeType.Integer)
-		.description("Port used when binding server socket.").defaultValue("5683").build()));
+	builder.attribute((new AttributeNode.Builder("Hostname", "hostname", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("Host name used when binding server socket.").defaultValue("localhost").build()));
+	builder.attribute((new AttributeNode.Builder("Port", "port", AttributeType.Integer,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("Port used when binding server socket.")
+			.defaultValue("5683").build()));
 
 	return builder.build();
     }
@@ -427,20 +462,26 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 	builder.description("Event source that polls a REST service at a given interval to generate payloads. "
 		+ "A groovy script is used to make the REST call(s) and parse the responses "
 		+ "into payloads to be decoded.");
-	addEventSourceAttributes(builder);
-	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script)
-		.description("Script which makes REST calls and parses responses.").makeRequired().build()));
-	builder.attribute((new AttributeNode.Builder("Base REST url", "baseUrl", AttributeType.String)
-		.description(
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+	addEventSourceAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+
+	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("Script which makes REST calls and parses responses.").makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Base REST url", "baseUrl", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description(
 			"Base URL for REST calls. All calls in the Groovy script are made " + "relative to this URL.")
-		.makeRequired().build()));
-	builder.attribute((new AttributeNode.Builder("Polling interval (ms)", "pollIntervalMs", AttributeType.Integer)
-		.description("Time interval (in milliseconds) to wait between script executions.").makeRequired()
-		.defaultValue("10000").build()));
-	builder.attribute((new AttributeNode.Builder("Username", "username", AttributeType.String)
-		.description("Username used for basic authentication.").build()));
-	builder.attribute((new AttributeNode.Builder("Password", "password", AttributeType.String)
-		.description("Password used for basic authentication.").build()));
+			.makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Polling interval (ms)", "pollIntervalMs", AttributeType.Integer,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("Time interval (in milliseconds) to wait between script executions.")
+			.makeRequired().defaultValue("10000").build()));
+	builder.attribute((new AttributeNode.Builder("Username", "username", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("Username used for basic authentication.").build()));
+	builder.attribute((new AttributeNode.Builder("Password", "password", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("Password used for basic authentication.").build()));
 
 	// Only accept binary event decoders.
 	builder.specializes(EventSourcesRoleKeys.EventDecoder, EventSourcesRoleKeys.BinaryEventDecoder);
@@ -505,8 +546,12 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 		EventSourcesRoleKeys.BinaryEventDecoder, this);
 
 	builder.description("Decoder that uses a Groovy script to parse a binary payload into decoded events.");
-	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script)
-		.description("Script used for decoding payload.").makeRequired().build()));
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+	addEventSourceAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+
+	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Script used for decoding payload.")
+			.makeRequired().build()));
 	return builder.build();
     }
 
@@ -521,8 +566,12 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 		EventSourcesRoleKeys.StringEventDecoder, this);
 
 	builder.description("Decoder that uses a Groovy script to parse a String payload into decoded events.");
-	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script)
-		.description("Script used for decoding payload.").makeRequired().build()));
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+	addEventSourceAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+
+	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Script used for decoding payload.")
+			.makeRequired().build()));
 	return builder.build();
     }
 
@@ -583,8 +632,11 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 	builder.description("Composite event decoder choice that applies when the device specification from the "
 		+ " extracted metadata matches the specified value. This allows payload processing to be directly "
 		+ " based on the specification assigned in SiteWhere device management.");
-	builder.attribute(
-		(new AttributeNode.Builder("Specification token", "token", AttributeType.SpecificationReference)
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+	addEventSourceAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+
+	builder.attribute((new AttributeNode.Builder("Specification token", "token",
+		AttributeType.SpecificationReference, ConfigurationModelProvider.ATTR_GROUP_GENERAL)
 			.description("Specification token to match.").makeIndex().makeRequired().build()));
 	return builder.build();
     }
@@ -603,8 +655,12 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 	builder.description("Metadata extractor that uses a Groovy script to parse a binary payload and extract "
 		+ " information such as the unique hardware id and payload. This data will be forwarded to the list "
 		+ " of nested decoder choices for further processing.");
-	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script)
-		.description("Script used for extracting metadata.").makeRequired().build()));
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+	addEventSourceAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+
+	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Script used for extracting metadata.")
+			.makeRequired().build()));
 	return builder.build();
     }
 
@@ -633,8 +689,12 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 		EventSourcesRoleKeys.EventDeduplicator, this);
 
 	builder.description("Deduplicator that uses a Groovy script to check for duplicate events.");
-	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script)
-		.description("Script used for testing for duplicates.").makeRequired().build()));
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+	addEventSourceAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+
+	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Script used for testing for duplicates.")
+			.makeRequired().build()));
 	return builder.build();
     }
 }

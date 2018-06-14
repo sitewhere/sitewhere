@@ -16,8 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sitewhere.common.MarshalUtils;
+import com.sitewhere.rest.model.configuration.AttributeGroup;
 import com.sitewhere.rest.model.configuration.ConfigurationModel;
 import com.sitewhere.rest.model.configuration.ElementRole;
+import com.sitewhere.spi.microservice.configuration.model.IAttributeGroup;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModelProvider;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRole;
@@ -33,6 +35,21 @@ import com.sitewhere.spi.microservice.configuration.model.IRoleKey;
  * @author Derek
  */
 public abstract class ConfigurationModelProvider implements IConfigurationModelProvider {
+
+    // General attribute group.
+    public static final IAttributeGroup ATTR_GROUP_GENERAL = new AttributeGroup("genr", "General");
+
+    // Connectivity attribute group.
+    public static final IAttributeGroup ATTR_GROUP_CONNECTIVITY = new AttributeGroup("conn", "Connectivity");
+
+    // Authentication attribute group.
+    public static final IAttributeGroup ATTR_GROUP_AUTHENTICATION = new AttributeGroup("auth", "Authentication");
+
+    // Performance attribute group.
+    public static final IAttributeGroup ATTR_GROUP_PERFORMANCE = new AttributeGroup("perf", "Performance");
+
+    // Batch attribute group.
+    public static final IAttributeGroup ATTR_GROUP_BATCH = new AttributeGroup("btch", "Batch Settings");
 
     /** Static logger instance */
     private static Logger LOGGER = LoggerFactory.getLogger(ConfigurationModelProvider.class);

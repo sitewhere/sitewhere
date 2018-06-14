@@ -105,20 +105,28 @@ public class LabelGenerationModelProvider extends ConfigurationModelProvider {
 
 	builder.description("Generates QR-Codes for devices and other SiteWhere entities. The generated "
 		+ "images are available via the REST services.");
-	builder.attribute((new AttributeNode.Builder("Unique generator id", "id", AttributeType.String)
-		.description("Each symbol generator must have a unique id").build()));
-	builder.attribute((new AttributeNode.Builder("Generator name", "name", AttributeType.String).makeIndex()
-		.description("Name shown in user interface for symbol generator.").build()));
-	builder.attribute((new AttributeNode.Builder("QR-Code image width", "width", AttributeType.Integer)
-		.description("Width of QR-code image in pixels.").defaultValue("200").build()));
-	builder.attribute((new AttributeNode.Builder("QR-Code image height", "height", AttributeType.Integer)
-		.description("Height of QR-code image in pixels.").defaultValue("200").build()));
-	builder.attribute((new AttributeNode.Builder("Background color", "backgroundColor", AttributeType.String)
-		.description("Background color of QR-Code image in AARRGGBB format.").defaultValue("FFFFFFFF")
-		.build()));
-	builder.attribute((new AttributeNode.Builder("Foreground color", "foregroundColor", AttributeType.String)
-		.description("Foreground color of QR-Code image in AARRGGBB format.").defaultValue("FF333333")
-		.build()));
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+
+	builder.attribute((new AttributeNode.Builder("Unique generator id", "id", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL)
+			.description("Each symbol generator must have a unique id").build()));
+	builder.attribute((new AttributeNode.Builder("Generator name", "name", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).makeIndex()
+			.description("Name shown in user interface for symbol generator.").build()));
+	builder.attribute((new AttributeNode.Builder("QR-Code image width", "width", AttributeType.Integer,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Width of QR-code image in pixels.")
+			.defaultValue("200").build()));
+	builder.attribute((new AttributeNode.Builder("QR-Code image height", "height", AttributeType.Integer,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Height of QR-code image in pixels.")
+			.defaultValue("200").build()));
+	builder.attribute((new AttributeNode.Builder("Background color", "backgroundColor", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL)
+			.description("Background color of QR-Code image in AARRGGBB format.").defaultValue("FFFFFFFF")
+			.build()));
+	builder.attribute((new AttributeNode.Builder("Foreground color", "foregroundColor", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL)
+			.description("Foreground color of QR-Code image in AARRGGBB format.").defaultValue("FF333333")
+			.build()));
 	return builder.build();
     }
 }

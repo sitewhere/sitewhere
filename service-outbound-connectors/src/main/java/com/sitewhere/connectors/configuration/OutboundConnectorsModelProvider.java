@@ -13,6 +13,7 @@ import com.sitewhere.configuration.parser.IOutboundConnectorsParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
 import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
+import com.sitewhere.spi.microservice.configuration.model.IAttributeGroup;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 
 /**
@@ -105,11 +106,13 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 		IOutboundConnectorsParser.Elements.OutboundConnector.getLocalName(), "sign-out",
 		OutboundConnectorsRoleKeys.OutboundConnector, this);
 	builder.description("Configures an outbound connector that is declared in an external Spring bean.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
 
-	addCommonConnectorAttributes(builder);
-	builder.attribute((new AttributeNode.Builder("Bean reference name", "ref", AttributeType.String).description(
-		"Name of Spring bean that will be referenced as an outbound connector. The bean should implement the expected SiteWhere outbound connector APIs")
-		.build()));
+	addCommonConnectorAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+	builder.attribute((new AttributeNode.Builder("Bean reference name", "ref", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description(
+			"Name of Spring bean that will be referenced as an outbound connector. The bean should implement the expected SiteWhere outbound connector APIs")
+			.build()));
 	return builder.build();
     }
 
@@ -124,10 +127,11 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 		OutboundConnectorsRoleKeys.GroovyRouteBuilder, this);
 	builder.description(
 		"Route builder which executes a Groovy script to choose routes where events will be delivered.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
 
-	addCommonConnectorAttributes(builder);
-	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
-		.description("Relative path to Groovy script.").build()));
+	addCommonConnectorAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Relative path to Groovy script.").build()));
 	return builder.build();
     }
 
@@ -143,11 +147,15 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 	builder.description("Allows events to be forwarded to any number of MQTT topics based on configuration "
 		+ "of filters and (optionally) a route builder. If no route builder is specified, the MQTT topic "
 		+ "field determines where events are delivered.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_AUTHENTICATION);
 
-	addCommonConnectorAttributes(builder);
-	CommonConnectorModel.addMqttConnectivityAttributes(builder);
-	builder.attribute((new AttributeNode.Builder("MQTT topic", "topic", AttributeType.String)
-		.description("MQTT topic used if no route builder is specified.").build()));
+	addCommonConnectorAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+	CommonConnectorModel.addMqttCommonAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY,
+		ConfigurationModelProvider.ATTR_GROUP_AUTHENTICATION);
+	builder.attribute((new AttributeNode.Builder("MQTT topic", "topic", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("MQTT topic used if no route builder is specified.").build()));
 	return builder.build();
     }
 
@@ -163,13 +171,16 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 	builder.description("Allows events to be forwarded to any number of RabbitMQ exchanges based on configuration "
 		+ "of filters and (optionally) a route builder. If no route builder is specified, the exchange "
 		+ "field determines where events are delivered.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
-	addCommonConnectorAttributes(builder);
-	builder.attribute((new AttributeNode.Builder("Connection URI", "connectionUri", AttributeType.String)
-		.defaultValue("amqp://localhost")
-		.description("URI that provides information about the RabbitMQ instance to connect to.").build()));
-	builder.attribute((new AttributeNode.Builder("Topic", "topic", AttributeType.String)
-		.defaultValue("sitewhere.output").description("Topic used if no route builder is specified.").build()));
+	addCommonConnectorAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+	builder.attribute((new AttributeNode.Builder("Connection URI", "connectionUri", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).defaultValue("amqp://localhost")
+			.description("URI that provides information about the RabbitMQ instance to connect to.")
+			.build()));
+	builder.attribute((new AttributeNode.Builder("Topic", "topic", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).defaultValue("sitewhere.output")
+			.description("Topic used if no route builder is specified.").build()));
 	return builder.build();
     }
 
@@ -185,8 +196,9 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 	builder.description("Forwards outbound events to Apache Solr for indexing in the search engine. This "
 		+ "event processor relies on the global Solr properties to determine the Solr instance the "
 		+ "client will connect with.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
-	addCommonConnectorAttributes(builder);
+	addCommonConnectorAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 	return builder.build();
     }
 
@@ -200,17 +212,22 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 		IOutboundConnectorsParser.Elements.AzureEventHubConnector.getLocalName(), "cloud",
 		OutboundConnectorsRoleKeys.FilteredConnector, this);
 	builder.description("Forwards outbound events to a Microsoft Azure EventHub for further processing.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
-	addCommonConnectorAttributes(builder);
-	builder.attribute((new AttributeNode.Builder("SAS Name", "sasName", AttributeType.String)
-		.description("Sets the identity used for SAS authentication.").makeRequired().build()));
-	builder.attribute((new AttributeNode.Builder("SAS Key", "sasKey", AttributeType.String)
-		.description("Sets the key used for SAS authentication.").makeRequired().build()));
-	builder.attribute((new AttributeNode.Builder("Service bus name", "serviceBusName", AttributeType.String)
-		.description("Set the service bus to connect to (e.g. xxx.servicebus.windows.net).").makeRequired()
-		.build()));
-	builder.attribute((new AttributeNode.Builder("Event hub name", "eventHubName", AttributeType.String)
-		.description("Name of EventHub to connect to.").makeRequired().build()));
+	addCommonConnectorAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+	builder.attribute((new AttributeNode.Builder("SAS Name", "sasName", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("Sets the identity used for SAS authentication.").makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("SAS Key", "sasKey", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("Sets the key used for SAS authentication.").makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Service bus name", "serviceBusName", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("Set the service bus to connect to (e.g. xxx.servicebus.windows.net).")
+			.makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Event hub name", "eventHubName", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("Name of EventHub to connect to.")
+			.makeRequired().build()));
 	return builder.build();
     }
 
@@ -224,14 +241,18 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 		IOutboundConnectorsParser.Elements.AmazonSqsConnector.getLocalName(), "cloud",
 		OutboundConnectorsRoleKeys.FilteredConnector, this);
 	builder.description("Forwards outbound events to an Amazon SQS queue for further processing.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
-	addCommonConnectorAttributes(builder);
-	builder.attribute((new AttributeNode.Builder("Access key", "accessKey", AttributeType.String)
-		.description("Amazon AWS access key for account owning SQS queue.").makeRequired().build()));
-	builder.attribute((new AttributeNode.Builder("Secret key", "secretKey", AttributeType.String)
-		.description("Amazon AWS secret key for account owning SQS queue.").makeRequired().build()));
-	builder.attribute((new AttributeNode.Builder("SQS queue URL", "queueUrl", AttributeType.String)
-		.description("Unique URL for SQS queue.").makeRequired().build()));
+	addCommonConnectorAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+	builder.attribute((new AttributeNode.Builder("Access key", "accessKey", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("Amazon AWS access key for account owning SQS queue.").makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Secret key", "secretKey", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("Amazon AWS secret key for account owning SQS queue.").makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("SQS queue URL", "queueUrl", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("Unique URL for SQS queue.")
+			.makeRequired().build()));
 	return builder.build();
     }
 
@@ -245,12 +266,13 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 		IOutboundConnectorsParser.Elements.InitialStateConnector.getLocalName(), "cloud",
 		OutboundConnectorsRoleKeys.FilteredConnector, this);
 	builder.description("Forwards outbound events to InitialState.com for advanced visualization.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
-	addCommonConnectorAttributes(builder);
-	builder.attribute((new AttributeNode.Builder("Streaming access key", "streamingAccessKey", AttributeType.String)
-		.description(
+	addCommonConnectorAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+	builder.attribute((new AttributeNode.Builder("Streaming access key", "streamingAccessKey", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description(
 			"Access key obtained from the InitialState.com website that specifies the account that the events will be associated with.")
-		.makeRequired().build()));
+			.makeRequired().build()));
 	return builder.build();
     }
 
@@ -266,8 +288,9 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 	builder.description(
 		"Sends events to the Dweet.io cloud service where they can be viewed and integrated with other services. "
 			+ "The unique 'thing' name will be the unique token for the device assignment the event is associated with.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
-	addCommonConnectorAttributes(builder);
+	addCommonConnectorAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 	return builder.build();
     }
 
@@ -282,10 +305,12 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 		OutboundConnectorsRoleKeys.FilteredConnector, this);
 	builder.description("Delegates event processing to a Groovy script which can execute "
 		+ "conditional logic, create new events, or carry out other tasks.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
 
-	addCommonConnectorAttributes(builder);
-	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
-		.description("Script path relative to Groovy script root.").makeRequired().build()));
+	addCommonConnectorAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL)
+			.description("Script path relative to Groovy script root.").makeRequired().build()));
 	return builder.build();
     }
 
@@ -293,15 +318,15 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
      * Add common connector attributes.
      * 
      * @param builder
+     * @param group
      */
-    public static void addCommonConnectorAttributes(ElementNode.Builder builder) {
-	builder.attributeGroup("common", "Outbound Connector Attributes");
-	builder.attribute((new AttributeNode.Builder("Connector id", "connectorId", AttributeType.String)
-		.description("Unique id used for referencing this connector.").group("common").makeIndex()
-		.makeRequired().build()));
+    public static void addCommonConnectorAttributes(ElementNode.Builder builder, IAttributeGroup group) {
+	builder.attribute((new AttributeNode.Builder("Connector id", "connectorId", AttributeType.String, group)
+		.description("Unique id used for referencing this connector.").makeIndex().makeRequired().build()));
 	builder.attribute((new AttributeNode.Builder("Number of processing threads", "numProcessingThreads",
-		AttributeType.Integer).description("Number of threads used to load inbound events into connector.")
-			.group("common").makeRequired().build()));
+		AttributeType.Integer, group)
+			.description("Number of threads used to load inbound events into connector.").makeRequired()
+			.build()));
     }
 
     /**
@@ -328,11 +353,15 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 		IOutboundConnectorsParser.Filters.AreaFilter.getLocalName(), "filter",
 		OutboundConnectorsRoleKeys.OutboundFilters, this);
 	builder.description("Allows events from a given area to be included or excluded for an outbound processor.");
-	builder.attribute((new AttributeNode.Builder("Area", "area", AttributeType.AreaReference)
-		.description("Area filter applies to.").makeIndex().build()));
-	builder.attribute((new AttributeNode.Builder("Include/Exclude", "operation", AttributeType.String)
-		.description("Indicates whether events from the area should be included or excluded from processing.")
-		.choice("Include", "include").choice("Exclude", "exclude").defaultValue("include").build()));
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+
+	builder.attribute((new AttributeNode.Builder("Area", "area", AttributeType.AreaReference,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Area filter applies to.").makeIndex()
+			.build()));
+	builder.attribute((new AttributeNode.Builder("Include/Exclude", "operation", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description(
+			"Indicates whether events from the area should be included or excluded from processing.")
+			.choice("Include", "include").choice("Exclude", "exclude").defaultValue("include").build()));
 	return builder.build();
     }
 
@@ -347,12 +376,15 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 		OutboundConnectorsRoleKeys.OutboundFilters, this);
 	builder.description("Allows events for devices using a given specification to be included or "
 		+ "excluded for an outbound processor.");
-	builder.attribute(
-		(new AttributeNode.Builder("Specification", "specification", AttributeType.SpecificationReference)
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+
+	builder.attribute((new AttributeNode.Builder("Specification", "specification",
+		AttributeType.SpecificationReference, ConfigurationModelProvider.ATTR_GROUP_GENERAL)
 			.description("Specification filter applies to.").makeIndex().build()));
-	builder.attribute((new AttributeNode.Builder("Include/Exclude", "operation", AttributeType.String).description(
-		"Indicates whether events from the specification should be included or excluded from processing.")
-		.choice("Include", "include").choice("Exclude", "exclude").defaultValue("include").build()));
+	builder.attribute((new AttributeNode.Builder("Include/Exclude", "operation", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description(
+			"Indicates whether events from the specification should be included or excluded from processing.")
+			.choice("Include", "include").choice("Exclude", "exclude").defaultValue("include").build()));
 	return builder.build();
     }
 
@@ -368,8 +400,11 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 	builder.description("Allows events to be filtered based on the return value of a Groovy script. "
 		+ "If the script returns false, the event is filtered. See the SiteWhere documentation for "
 		+ "a description of the variable bindings provided by the system.");
-	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String)
-		.description("Script path relative to Groovy script root.").makeRequired().build()));
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+
+	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL)
+			.description("Script path relative to Groovy script root.").makeRequired().build()));
 	return builder.build();
     }
 }
