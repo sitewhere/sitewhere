@@ -20,6 +20,8 @@ import com.sitewhere.grpc.service.GCreateTenantRequest;
 import com.sitewhere.grpc.service.GCreateTenantResponse;
 import com.sitewhere.grpc.service.GDeleteTenantRequest;
 import com.sitewhere.grpc.service.GDeleteTenantResponse;
+import com.sitewhere.grpc.service.GGetDatasetTemplatesRequest;
+import com.sitewhere.grpc.service.GGetDatasetTemplatesResponse;
 import com.sitewhere.grpc.service.GGetTenantByIdRequest;
 import com.sitewhere.grpc.service.GGetTenantByIdResponse;
 import com.sitewhere.grpc.service.GGetTenantByTokenRequest;
@@ -32,6 +34,7 @@ import com.sitewhere.grpc.service.GUpdateTenantRequest;
 import com.sitewhere.grpc.service.GUpdateTenantResponse;
 import com.sitewhere.grpc.service.TenantManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.user.ITenantSearchCriteria;
@@ -198,6 +201,25 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
 	    return response;
 	} catch (Throwable t) {
 	    throw GrpcUtils.handleClientMethodException(TenantManagementGrpc.getGetTenantTemplatesMethod(), t);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.tenant.ITenantAdministration#getDatasetTemplates()
+     */
+    @Override
+    public List<IDatasetTemplate> getDatasetTemplates() throws SiteWhereException {
+	try {
+	    GrpcUtils.handleClientMethodEntry(this, TenantManagementGrpc.getGetDatasetTemplatesMethod());
+	    GGetDatasetTemplatesRequest.Builder grequest = GGetDatasetTemplatesRequest.newBuilder();
+	    GGetDatasetTemplatesResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .getDatasetTemplates(grequest.build());
+	    List<IDatasetTemplate> response = TenantModelConverter
+		    .asApiDatasetTemplateList(gresponse.getTemplateList());
+	    GrpcUtils.logClientMethodResponse(TenantManagementGrpc.getGetDatasetTemplatesMethod(), response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(TenantManagementGrpc.getGetDatasetTemplatesMethod(), t);
 	}
     }
 }

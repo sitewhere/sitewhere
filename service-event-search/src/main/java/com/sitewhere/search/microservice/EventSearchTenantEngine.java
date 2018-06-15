@@ -10,8 +10,8 @@ package com.sitewhere.search.microservice;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.search.spi.microservice.IEventSearchTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -46,11 +46,12 @@ public class EventSearchTenantEngine extends MicroserviceTenantEngine implements
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * tenantBootstrap(com.sitewhere.spi.microservice.multitenant.ITenantTemplate,
+     * tenantBootstrap(com.sitewhere.spi.microservice.multitenant.IDatasetTemplate,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void tenantBootstrap(ITenantTemplate template, ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void tenantBootstrap(IDatasetTemplate template, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException {
     }
 
     /*

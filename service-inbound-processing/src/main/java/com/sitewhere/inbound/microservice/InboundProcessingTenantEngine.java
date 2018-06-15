@@ -22,8 +22,8 @@ import com.sitewhere.inbound.spi.processing.IInboundProcessingConfiguration;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.microservice.spring.InboundProcessingBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -125,11 +125,12 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * tenantBootstrap(com.sitewhere.spi.microservice.multitenant. ITenantTemplate,
+     * tenantBootstrap(com.sitewhere.spi.microservice.multitenant.IDatasetTemplate,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void tenantBootstrap(ITenantTemplate template, ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void tenantBootstrap(IDatasetTemplate template, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException {
     }
 
     /*

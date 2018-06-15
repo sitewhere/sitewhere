@@ -40,6 +40,9 @@ service TenantManagement {
 
 	// Get list of available tenant templates.
 	rpc GetTenantTemplates (GGetTenantTemplatesRequest) returns (GGetTenantTemplatesResponse) {}
+
+	// Get list of available dataset templates.
+	rpc GetDatasetTemplates (GGetDatasetTemplatesRequest) returns (GGetDatasetTemplatesResponse) {}
 }
 
 // ###############
@@ -119,4 +122,13 @@ message GGetTenantTemplatesRequest {
 // Response for getting a list of available tenant templates.
 message GGetTenantTemplatesResponse {
 	repeated com.sitewhere.grpc.model.GTenantTemplate template = 1;
+}
+	
+// Request for getting a list of available dataset templates.
+message GGetDatasetTemplatesRequest {
+}
+
+// Response for getting a list of available dataset templates.
+message GGetDatasetTemplatesResponse {
+	repeated com.sitewhere.grpc.model.GDatasetTemplate template = 1;
 }

@@ -1,0 +1,5 @@
+{
+	"id": "mongodb",
+	"name": "MongoDB ",
+	"description": "MongoDB persistence for all management interfaces"
+}

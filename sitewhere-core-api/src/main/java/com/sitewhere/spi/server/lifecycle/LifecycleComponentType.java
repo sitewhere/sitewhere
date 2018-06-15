@@ -122,6 +122,9 @@ public enum LifecycleComponentType {
     /** Tenant template manager */
     TenantTemplateManager,
 
+    /** Dataset template manager */
+    DatasetTemplateManager,
+
     /** Unclassified component */
     Other,
 }

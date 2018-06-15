@@ -15,7 +15,6 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
-import com.sitewhere.spi.server.ITenantRuntimeState;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -50,8 +49,8 @@ public class Tenant extends MetadataProviderEntity implements ITenant, Serializa
     /** Tenant template id */
     private String tenantTemplateId;
 
-    /** Runtime state of tenant engine */
-    private ITenantRuntimeState engineState;
+    /** Dataset template id */
+    private String datasetTemplateId;
 
     /*
      * @see com.sitewhere.spi.common.ISiteWhereEntity#getId()
@@ -148,16 +147,14 @@ public class Tenant extends MetadataProviderEntity implements ITenant, Serializa
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.user.ITenant#getEngineState()
+     * @see com.sitewhere.spi.tenant.ITenant#getDatasetTemplateId()
      */
     @Override
-    public ITenantRuntimeState getEngineState() {
-	return engineState;
+    public String getDatasetTemplateId() {
+	return datasetTemplateId;
     }
 
-    public void setEngineState(ITenantRuntimeState engineState) {
-	this.engineState = engineState;
+    public void setDatasetTemplateId(String datasetTemplateId) {
+	this.datasetTemplateId = datasetTemplateId;
     }
 }

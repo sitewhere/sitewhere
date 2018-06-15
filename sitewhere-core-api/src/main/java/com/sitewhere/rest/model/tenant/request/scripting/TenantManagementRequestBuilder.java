@@ -19,8 +19,11 @@ import com.sitewhere.spi.tenant.ITenantManagement;
  */
 public class TenantManagementRequestBuilder {
 
-    /** Template that does not load any device data */
-    private static final String EMPTY_TEMPLATE_NAME = "empty";
+    /** Template that uses MongoDB for all persistence */
+    private static final String MONGODB_TENANT_TEMPLATE_NAME = "mongodb";
+
+    /** Template that does not load any data */
+    private static final String EMPTY_DATASET_TEMPLATE_NAME = "empty";
 
     /** Device management implementation */
     private ITenantManagement tenantManagement;
@@ -40,23 +43,26 @@ public class TenantManagementRequestBuilder {
      * @return
      */
     public TenantCreateRequest.Builder newTenant(String id, String name, String authenticationToken, String logoUrl) {
-	return newTenant(id, name, authenticationToken, logoUrl, EMPTY_TEMPLATE_NAME);
+	return newTenant(id, name, authenticationToken, logoUrl, MONGODB_TENANT_TEMPLATE_NAME,
+		EMPTY_DATASET_TEMPLATE_NAME);
     }
 
     /**
      * Create builder for new tenant request. Allows tenant template to be
      * specified.
      * 
-     * @param id
      * @param token
+     * @param name
      * @param authenticationToken
      * @param logoUrl
      * @param tenantTemplateId
+     * @param datasetTemplateId
      * @return
      */
     public TenantCreateRequest.Builder newTenant(String token, String name, String authenticationToken, String logoUrl,
-	    String tenantTemplateId) {
-	return new TenantCreateRequest.Builder(token, name, authenticationToken, logoUrl, tenantTemplateId);
+	    String tenantTemplateId, String datasetTemplateId) {
+	return new TenantCreateRequest.Builder(token, name, authenticationToken, logoUrl, tenantTemplateId,
+		datasetTemplateId);
     }
 
     /**

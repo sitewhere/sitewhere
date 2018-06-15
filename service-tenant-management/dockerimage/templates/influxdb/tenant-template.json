@@ -1,0 +1,5 @@
+{
+	"id": "influxdb",
+	"name": "InfluxDB ",
+	"description": "MongoDB device management + InfluxDB event management"
+}

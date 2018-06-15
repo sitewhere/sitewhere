@@ -17,6 +17,7 @@ import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.tenant.spi.grpc.ITenantManagementGrpcServer;
 import com.sitewhere.tenant.spi.kafka.ITenantBootstrapModelConsumer;
 import com.sitewhere.tenant.spi.kafka.ITenantModelProducer;
+import com.sitewhere.tenant.spi.templates.IDatasetTemplateManager;
 import com.sitewhere.tenant.spi.templates.ITenantTemplateManager;
 
 /**
@@ -41,6 +42,21 @@ public interface ITenantManagementMicroservice<T extends IFunctionIdentifier>
      * @return
      */
     public ITenantTemplateManager getTenantTemplateManager();
+
+    /**
+     * Get dataset templates file handle on filesystem.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public File getDatasetTemplatesRoot() throws SiteWhereException;
+
+    /**
+     * Get tenant template manager.
+     * 
+     * @return
+     */
+    public IDatasetTemplateManager getDatasetTemplateManager();
 
     /**
      * Get GRPC server for tenant managment APIS.

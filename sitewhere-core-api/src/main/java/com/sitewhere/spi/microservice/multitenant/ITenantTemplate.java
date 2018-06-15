@@ -7,10 +7,8 @@
  */
 package com.sitewhere.spi.microservice.multitenant;
 
-import java.util.List;
-
 /**
- * Contains information about a template that can be used to populate a new
+ * Contains information about a template that can be used to configure a new
  * tenant.
  * 
  * @author Derek
@@ -32,38 +30,9 @@ public interface ITenantTemplate {
     public String getName();
 
     /**
-     * Get model initializer information.
+     * Get template description.
      * 
      * @return
      */
-    public Initializers getInitializers();
-
-    /**
-     * Model initializers information.
-     * 
-     * @author Derek
-     */
-    public static interface Initializers {
-
-	/**
-	 * Get device management initializer Groovy script locations.
-	 * 
-	 * @return
-	 */
-	public List<String> getDeviceManagement();
-
-	/**
-	 * Get asset management initializer Groovy script locations.
-	 * 
-	 * @return
-	 */
-	public List<String> getAssetManagement();
-
-	/**
-	 * Get schedule management initializer Groovy script locations.
-	 * 
-	 * @return
-	 */
-	public List<String> getScheduleManagement();
-    }
+    public String getDescription();
 }

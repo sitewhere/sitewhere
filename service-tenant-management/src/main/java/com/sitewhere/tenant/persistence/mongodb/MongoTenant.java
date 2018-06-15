@@ -43,8 +43,11 @@ public class MongoTenant implements MongoConverter<ITenant> {
     /** Property for authorized users */
     public static final String PROP_AUTH_USERS = "users";
 
-    /** Property for authorized users */
-    public static final String PROP_TEMPLATE_ID = "templateId";
+    /** Property for tenant template id */
+    public static final String PROP_TENANT_TEMPLATE_ID = "ttpl";
+
+    /** Property for dataset template id */
+    public static final String PROP_DATASET_TEMPLATE_ID = "dtpl";
 
     /*
      * (non-Javadoc)
@@ -79,7 +82,8 @@ public class MongoTenant implements MongoConverter<ITenant> {
 	target.append(PROP_AUTH_TOKEN, source.getAuthenticationToken());
 	target.append(PROP_LOGO_URL, source.getLogoUrl());
 	target.append(PROP_AUTH_USERS, source.getAuthorizedUserIds());
-	target.append(PROP_TEMPLATE_ID, source.getTenantTemplateId());
+	target.append(PROP_TENANT_TEMPLATE_ID, source.getTenantTemplateId());
+	target.append(PROP_DATASET_TEMPLATE_ID, source.getDatasetTemplateId());
 
 	MongoSiteWhereEntity.toDocument(source, target);
 	MongoMetadataProvider.toDocument(source, target);
@@ -99,7 +103,8 @@ public class MongoTenant implements MongoConverter<ITenant> {
 	String authToken = (String) source.get(PROP_AUTH_TOKEN);
 	String logo = (String) source.get(PROP_LOGO_URL);
 	List<String> authUsers = (List<String>) source.get(PROP_AUTH_USERS);
-	String templateId = (String) source.get(PROP_TEMPLATE_ID);
+	String tenantTemplateId = (String) source.get(PROP_TENANT_TEMPLATE_ID);
+	String datasetTemplateId = (String) source.get(PROP_DATASET_TEMPLATE_ID);
 
 	target.setId(id);
 	target.setToken(token);
@@ -107,7 +112,8 @@ public class MongoTenant implements MongoConverter<ITenant> {
 	target.setAuthenticationToken(authToken);
 	target.setLogoUrl(logo);
 	target.setAuthorizedUserIds(authUsers);
-	target.setTenantTemplateId(templateId);
+	target.setTenantTemplateId(tenantTemplateId);
+	target.setDatasetTemplateId(datasetTemplateId);
 
 	MongoSiteWhereEntity.fromDocument(source, target);
 	MongoMetadataProvider.fromDocument(source, target);

@@ -21,6 +21,7 @@ import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.scripting.TenantEngineScriptManager;
 import com.sitewhere.microservice.scripting.TenantEngineScriptSynchronizer;
 import com.sitewhere.rest.model.microservice.state.TenantEngineState;
+import com.sitewhere.rest.model.tenant.DatasetTemplate;
 import com.sitewhere.rest.model.tenant.TenantTemplate;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
@@ -28,6 +29,7 @@ import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
+import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
@@ -58,7 +60,10 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     public static final String MODULE_BOOTSTRAPPED_NAME = "bootstrapped";
 
     /** Tenant template path (relative to configuration root) */
-    public static final String TENANT_TEMPLATE_PATH = "/template.json";
+    public static final String TENANT_TEMPLATE_PATH = "tenant-template.json";
+
+    /** Dataset template path (relative to configuration root) */
+    public static final String DATASET_TEMPLATE_PATH = "dataset-template.json";
 
     /** Hosted tenant */
     private ITenant tenant;
@@ -470,11 +475,27 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
      */
     @Override
     public ITenantTemplate getTenantTemplate() throws SiteWhereException {
-	String templatePath = getTenantConfigurationPath() + TENANT_TEMPLATE_PATH;
+	String templatePath = getTenantConfigurationPath() + "/" + TENANT_TEMPLATE_PATH;
 	CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
 	try {
 	    byte[] data = curator.getData().forPath(templatePath);
 	    return MarshalUtils.unmarshalJson(data, TenantTemplate.class);
+	} catch (Exception e) {
+	    throw new SiteWhereException("Unable to load tenant template from Zk.", e);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getDatasetTemplate()
+     */
+    @Override
+    public IDatasetTemplate getDatasetTemplate() throws SiteWhereException {
+	String templatePath = getTenantConfigurationPath() + "/" + DATASET_TEMPLATE_PATH;
+	CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
+	try {
+	    byte[] data = curator.getData().forPath(templatePath);
+	    return MarshalUtils.unmarshalJson(data, DatasetTemplate.class);
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to load tenant template from Zk.", e);
 	}

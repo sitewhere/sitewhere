@@ -10,6 +10,7 @@ package com.sitewhere.spi.tenant;
 import java.util.List;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 
 /**
@@ -20,10 +21,18 @@ import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 public interface ITenantAdministration {
 
     /**
-     * Get list of templates available for creating a new tenant.
+     * Get list of tenant templates available for creating a new tenant.
      * 
      * @return
      * @throws SiteWhereException
      */
     public List<ITenantTemplate> getTenantTemplates() throws SiteWhereException;
+
+    /**
+     * Get list of dataset templates available for creating a new tenant.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public List<IDatasetTemplate> getDatasetTemplates() throws SiteWhereException;
 }

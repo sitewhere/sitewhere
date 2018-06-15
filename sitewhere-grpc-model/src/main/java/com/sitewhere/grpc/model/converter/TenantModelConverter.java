@@ -15,6 +15,7 @@ import com.sitewhere.grpc.model.CommonModel.GPaging;
 import com.sitewhere.grpc.model.CommonModel.GSearchText;
 import com.sitewhere.grpc.model.CommonModel.GUserReference;
 import com.sitewhere.grpc.model.TenantModel;
+import com.sitewhere.grpc.model.TenantModel.GDatasetTemplate;
 import com.sitewhere.grpc.model.TenantModel.GTenant;
 import com.sitewhere.grpc.model.TenantModel.GTenantCreateRequest;
 import com.sitewhere.grpc.model.TenantModel.GTenantSearchCriteria;
@@ -22,10 +23,12 @@ import com.sitewhere.grpc.model.TenantModel.GTenantSearchResults;
 import com.sitewhere.grpc.model.TenantModel.GTenantTemplate;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
+import com.sitewhere.rest.model.tenant.DatasetTemplate;
 import com.sitewhere.rest.model.tenant.Tenant;
 import com.sitewhere.rest.model.tenant.TenantTemplate;
 import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.user.ITenantSearchCriteria;
@@ -49,11 +52,12 @@ public class TenantModelConverter {
     public static ITenantCreateRequest asApiTenantCreateRequest(GTenantCreateRequest grpc) throws SiteWhereException {
 	TenantCreateRequest api = new TenantCreateRequest();
 	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
-	api.setName(grpc.getName());
-	api.setAuthenticationToken(grpc.getAuthenticationToken());
+	api.setName(grpc.hasName() ? grpc.getName().getValue() : null);
+	api.setAuthenticationToken(grpc.hasAuthenticationToken() ? grpc.getAuthenticationToken().getValue() : null);
 	api.setAuthorizedUserIds(grpc.getAuthorizedUserIdsList());
-	api.setLogoUrl(grpc.getLogoUrl());
-	api.setTenantTemplateId(grpc.getTenantTemplateId());
+	api.setLogoUrl(grpc.hasLogoUrl() ? grpc.getLogoUrl().getValue() : null);
+	api.setTenantTemplateId(grpc.hasTenantTemplateId() ? grpc.getTenantTemplateId().getValue() : null);
+	api.setDatasetTemplateId(grpc.hasDatasetTemplateId() ? grpc.getDatasetTemplateId().getValue() : null);
 	api.setMetadata(grpc.getMetadataMap());
 	return api;
     }
@@ -70,11 +74,22 @@ public class TenantModelConverter {
 	if (api.getToken() != null) {
 	    builder.setToken(GOptionalString.newBuilder().setValue(api.getToken()));
 	}
-	builder.setName(api.getName());
-	builder.setAuthenticationToken(api.getAuthenticationToken());
+	if (api.getName() != null) {
+	    builder.setName(GOptionalString.newBuilder().setValue(api.getName()));
+	}
+	if (api.getAuthenticationToken() != null) {
+	    builder.setAuthenticationToken(GOptionalString.newBuilder().setValue(api.getAuthenticationToken()));
+	}
 	builder.addAllAuthorizedUserIds(api.getAuthorizedUserIds());
-	builder.setLogoUrl(api.getLogoUrl());
-	builder.setTenantTemplateId(api.getTenantTemplateId());
+	if (api.getLogoUrl() != null) {
+	    builder.setLogoUrl(GOptionalString.newBuilder().setValue(api.getLogoUrl()));
+	}
+	if (api.getTenantTemplateId() != null) {
+	    builder.setTenantTemplateId(GOptionalString.newBuilder().setValue(api.getTenantTemplateId()));
+	}
+	if (api.getDatasetTemplateId() != null) {
+	    builder.setDatasetTemplateId(GOptionalString.newBuilder().setValue(api.getDatasetTemplateId()));
+	}
 	builder.putAllMetadata(api.getMetadata());
 	return builder.build();
     }
@@ -95,6 +110,7 @@ public class TenantModelConverter {
 	api.setAuthorizedUserIds(grpc.getAuthorizedUserIdsList());
 	api.setLogoUrl(grpc.getLogoUrl());
 	api.setTenantTemplateId(grpc.getTenantTemplateId());
+	api.setDatasetTemplateId(grpc.getDatasetTemplateId());
 	api.setMetadata(grpc.getMetadataMap());
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
 	return api;
@@ -146,6 +162,7 @@ public class TenantModelConverter {
 	builder.addAllAuthorizedUserIds(api.getAuthorizedUserIds());
 	builder.setLogoUrl(api.getLogoUrl());
 	builder.setTenantTemplateId(api.getTenantTemplateId());
+	builder.setDatasetTemplateId(api.getDatasetTemplateId());
 	builder.putAllMetadata(api.getMetadata());
 	builder.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
 	return builder.build();
@@ -284,6 +301,66 @@ public class TenantModelConverter {
 	List<GTenantTemplate> grpc = new ArrayList<GTenantTemplate>();
 	for (ITenantTemplate atemplate : api) {
 	    grpc.add(TenantModelConverter.asGrpcTenantTemplate(atemplate));
+	}
+	return grpc;
+    }
+
+    /**
+     * Convert dataset template from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DatasetTemplate asApiDatasetTemplate(GDatasetTemplate grpc) throws SiteWhereException {
+	DatasetTemplate api = new DatasetTemplate();
+	api.setId(grpc.getId());
+	api.setName(grpc.getName());
+	return api;
+    }
+
+    /**
+     * Convert dataset templates list from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<IDatasetTemplate> asApiDatasetTemplateList(List<GDatasetTemplate> grpc)
+	    throws SiteWhereException {
+	List<IDatasetTemplate> api = new ArrayList<>();
+	for (GDatasetTemplate gtemplate : grpc) {
+	    api.add(TenantModelConverter.asApiDatasetTemplate(gtemplate));
+	}
+	return api;
+    }
+
+    /**
+     * Convert dataset template from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDatasetTemplate asGrpcDatasetTemplate(IDatasetTemplate api) throws SiteWhereException {
+	GDatasetTemplate.Builder grpc = GDatasetTemplate.newBuilder();
+	grpc.setId(api.getId());
+	grpc.setName(api.getName());
+	return grpc.build();
+    }
+
+    /**
+     * Convert dataset templates list from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<GDatasetTemplate> asGrpcDatasetTemplateList(List<IDatasetTemplate> api)
+	    throws SiteWhereException {
+	List<GDatasetTemplate> grpc = new ArrayList<GDatasetTemplate>();
+	for (IDatasetTemplate atemplate : api) {
+	    grpc.add(TenantModelConverter.asGrpcDatasetTemplate(atemplate));
 	}
 	return grpc;
     }

@@ -13,7 +13,9 @@ import org.springframework.context.annotation.Configuration;
 import com.sitewhere.microservice.instance.InstanceSettings;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice;
+import com.sitewhere.tenant.spi.templates.IDatasetTemplateManager;
 import com.sitewhere.tenant.spi.templates.ITenantTemplateManager;
+import com.sitewhere.tenant.templates.DatasetTemplateManager;
 import com.sitewhere.tenant.templates.TenantTemplateManager;
 
 @Configuration
@@ -27,6 +29,11 @@ public class TenantManagementMicroserviceConfiguration {
     @Bean
     public ITenantTemplateManager tenantTemplateManager() {
 	return new TenantTemplateManager();
+    }
+
+    @Bean
+    public IDatasetTemplateManager datasetTemplateManager() {
+	return new DatasetTemplateManager();
     }
 
     @Bean

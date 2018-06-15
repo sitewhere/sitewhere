@@ -197,6 +197,9 @@ public class TenantBootstrapModelConsumer extends DirectKafkaConsumer implements
 		getLogger().info("Copying tenant template contents into Zk node...");
 		((ITenantManagementMicroservice<?>) getMicroservice()).getTenantTemplateManager()
 			.copyTemplateContentsToZk(getTenant().getTenantTemplateId(), curator, tenantPath);
+		getLogger().info("Copying dataset template contents into Zk node...");
+		((ITenantManagementMicroservice<?>) getMicroservice()).getDatasetTemplateManager()
+			.copyTemplateContentsToZk(getTenant().getDatasetTemplateId(), curator, tenantPath);
 		curator.create().forPath(((ITenantManagementMicroservice<?>) getMicroservice())
 			.getInstanceTenantBootstrappedIndicatorPath(getTenant().getId()));
 		getLogger().info("Tenant '" + getTenant().getName() + "' bootstrapped with template data.");

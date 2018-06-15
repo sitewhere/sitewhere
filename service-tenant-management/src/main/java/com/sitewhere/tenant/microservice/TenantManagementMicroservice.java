@@ -21,6 +21,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.hazelcast.IHazelcastManager;
+import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.microservice.spring.TenantManagementBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -38,6 +39,7 @@ import com.sitewhere.tenant.spi.grpc.ITenantManagementGrpcServer;
 import com.sitewhere.tenant.spi.kafka.ITenantBootstrapModelConsumer;
 import com.sitewhere.tenant.spi.kafka.ITenantModelProducer;
 import com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice;
+import com.sitewhere.tenant.spi.templates.IDatasetTemplateManager;
 import com.sitewhere.tenant.spi.templates.ITenantTemplateManager;
 
 /**
@@ -54,8 +56,11 @@ public class TenantManagementMicroservice extends GlobalMicroservice<Microservic
     /** Tenant management configuration file name */
     private static final String CONFIGURATION_PATH = MicroserviceIdentifier.TenantManagement.getPath() + ".xml";
 
-    /** Root folder for instance templates */
+    /** Root folder for tenant templates */
     private static final String TEMPLATES_ROOT = "/templates";
+
+    /** Root folder for dataset templates */
+    private static final String DATASETS_ROOT = "/datasets";
 
     /** Responds to tenant management GRPC requests */
     private ITenantManagementGrpcServer tenantManagementGrpcServer;
@@ -72,6 +77,10 @@ public class TenantManagementMicroservice extends GlobalMicroservice<Microservic
     /** Tenant template manager */
     @Autowired
     private ITenantTemplateManager tenantTemplateManager;
+
+    /** Dataset template manager */
+    @Autowired
+    private IDatasetTemplateManager datasetTemplateManager;
 
     /** Reflects tenant model updates to Kafka topic */
     private ITenantModelProducer tenantModelProducer;
@@ -230,6 +239,9 @@ public class TenantManagementMicroservice extends GlobalMicroservice<Microservic
 	// Initialize tenant template manager.
 	init.addInitializeStep(this, getTenantTemplateManager(), true);
 
+	// Initialize dataset template manager.
+	init.addInitializeStep(this, getDatasetTemplateManager(), true);
+
 	// Initialize tenant management GRPC server.
 	init.addInitializeStep(this, getTenantManagementGrpcServer(), true);
 
@@ -271,6 +283,9 @@ public class TenantManagementMicroservice extends GlobalMicroservice<Microservic
 	// Start tenant template manager.
 	start.addStartStep(this, getTenantTemplateManager(), true);
 
+	// Start dataset template manager.
+	start.addStartStep(this, getDatasetTemplateManager(), true);
+
 	// Start GRPC server.
 	start.addStartStep(this, getTenantManagementGrpcServer(), true);
 
@@ -304,6 +319,9 @@ public class TenantManagementMicroservice extends GlobalMicroservice<Microservic
 	// Stop GRPC manager.
 	stop.addStopStep(this, getTenantManagementGrpcServer());
 
+	// Stop dataset template manager.
+	stop.addStopStep(this, getDatasetTemplateManager());
+
 	// Stop tenant template manager.
 	stop.addStopStep(this, getTenantTemplateManager());
 
@@ -324,7 +342,7 @@ public class TenantManagementMicroservice extends GlobalMicroservice<Microservic
     public File getTenantTemplatesRoot() throws SiteWhereException {
 	File templates = new File(TEMPLATES_ROOT);
 	if (!templates.exists()) {
-	    throw new SiteWhereException("Templates folder not found in Docker image.");
+	    throw new SiteWhereException("Tenant templates folder not found in Docker image.");
 	}
 	return templates;
     }
@@ -335,6 +353,27 @@ public class TenantManagementMicroservice extends GlobalMicroservice<Microservic
     @Override
     public List<ITenantTemplate> getTenantTemplates() throws SiteWhereException {
 	return getTenantTemplateManager().getTenantTemplates();
+    }
+
+    /*
+     * @see com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice#
+     * getDatasetTemplatesRoot()
+     */
+    @Override
+    public File getDatasetTemplatesRoot() throws SiteWhereException {
+	File datasets = new File(DATASETS_ROOT);
+	if (!datasets.exists()) {
+	    throw new SiteWhereException("Dataset templates folder not found in Docker image.");
+	}
+	return datasets;
+    }
+
+    /*
+     * @see com.sitewhere.spi.tenant.ITenantAdministration#getDatasetTemplates()
+     */
+    @Override
+    public List<IDatasetTemplate> getDatasetTemplates() throws SiteWhereException {
+	return getDatasetTemplateManager().getDatasetTemplates();
     }
 
     /*
@@ -391,6 +430,19 @@ public class TenantManagementMicroservice extends GlobalMicroservice<Microservic
 
     public void setTenantTemplateManager(ITenantTemplateManager tenantTemplateManager) {
 	this.tenantTemplateManager = tenantTemplateManager;
+    }
+
+    /*
+     * @see com.sitewhere.tenant.spi.microservice.ITenantManagementMicroservice#
+     * getDatasetTemplateManager()
+     */
+    @Override
+    public IDatasetTemplateManager getDatasetTemplateManager() {
+	return datasetTemplateManager;
+    }
+
+    public void setDatasetTemplateManager(IDatasetTemplateManager datasetTemplateManager) {
+	this.datasetTemplateManager = datasetTemplateManager;
     }
 
     /*

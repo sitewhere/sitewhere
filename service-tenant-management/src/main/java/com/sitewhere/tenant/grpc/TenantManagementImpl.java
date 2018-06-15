@@ -17,6 +17,8 @@ import com.sitewhere.grpc.service.GCreateTenantRequest;
 import com.sitewhere.grpc.service.GCreateTenantResponse;
 import com.sitewhere.grpc.service.GDeleteTenantRequest;
 import com.sitewhere.grpc.service.GDeleteTenantResponse;
+import com.sitewhere.grpc.service.GGetDatasetTemplatesRequest;
+import com.sitewhere.grpc.service.GGetDatasetTemplatesResponse;
 import com.sitewhere.grpc.service.GGetTenantByIdRequest;
 import com.sitewhere.grpc.service.GGetTenantByIdResponse;
 import com.sitewhere.grpc.service.GGetTenantByTokenRequest;
@@ -29,6 +31,7 @@ import com.sitewhere.grpc.service.GUpdateTenantRequest;
 import com.sitewhere.grpc.service.GUpdateTenantResponse;
 import com.sitewhere.grpc.service.TenantManagementGrpc;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.tenant.ITenant;
@@ -237,6 +240,30 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
 		    responseObserver);
 	} finally {
 	    GrpcUtils.handleServerMethodExit(TenantManagementGrpc.getGetTenantTemplatesMethod());
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.TenantManagementGrpc.TenantManagementImplBase#
+     * getDatasetTemplates(com.sitewhere.grpc.service.GGetDatasetTemplatesRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getDatasetTemplates(GGetDatasetTemplatesRequest request,
+	    StreamObserver<GGetDatasetTemplatesResponse> responseObserver) {
+	try {
+	    GrpcUtils.handleServerMethodEntry(this, TenantManagementGrpc.getGetDatasetTemplatesMethod());
+	    List<IDatasetTemplate> apiResult = getTenantAdministration().getDatasetTemplates();
+	    GGetDatasetTemplatesResponse.Builder response = GGetDatasetTemplatesResponse.newBuilder();
+	    response.addAllTemplate(TenantModelConverter.asGrpcDatasetTemplateList(apiResult));
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.getGetDatasetTemplatesMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(TenantManagementGrpc.getGetDatasetTemplatesMethod());
 	}
     }
 

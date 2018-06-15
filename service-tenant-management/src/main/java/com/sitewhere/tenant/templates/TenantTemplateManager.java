@@ -21,6 +21,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.curator.framework.CuratorFramework;
 
 import com.sitewhere.common.MarshalUtils;
+import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.microservice.zookeeper.ZkUtils;
 import com.sitewhere.rest.model.tenant.TenantTemplate;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
@@ -37,9 +38,6 @@ import com.sitewhere.tenant.spi.templates.ITenantTemplateManager;
  * @author Derek
  */
 public class TenantTemplateManager extends LifecycleComponent implements ITenantTemplateManager {
-
-    /** Name for template descriptor */
-    private static final String TEMPLATE_JSON_FILE_NAME = "template.json";
 
     /** Folder that contains default content shared by all tenants */
     private static final String DEFAULT_TENANT_CONTENT_FOLDER = "default";
@@ -66,7 +64,7 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
 	File root = ((ITenantManagementMicroservice<?>) getMicroservice()).getTenantTemplatesRoot();
 	File[] folders = root.listFiles(File::isDirectory);
 	for (File folder : folders) {
-	    File tfile = new File(folder, TEMPLATE_JSON_FILE_NAME);
+	    File tfile = new File(folder, MicroserviceTenantEngine.TENANT_TEMPLATE_PATH);
 	    if (tfile.exists()) {
 		InputStream input;
 		try {
@@ -84,7 +82,7 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
 	    templatesById.putAll(updated);
 	}
 
-	getLogger().info("Template manager found the following templates:");
+	getLogger().info("Tenant template manager found the following templates:");
 	for (ITenantTemplate template : getTenantTemplates()) {
 	    getLogger().info("[" + template.getId() + "] " + template.getName());
 	}
@@ -98,7 +96,7 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
      */
     @Override
     public List<ITenantTemplate> getTenantTemplates() throws SiteWhereException {
-	List<ITenantTemplate> list = new ArrayList<ITenantTemplate>();
+	List<ITenantTemplate> list = new ArrayList<>();
 	list.addAll(getTemplatesById().values());
 
 	// Sort by template name.
@@ -139,16 +137,17 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
 	// Copy template contents on top of default.
 	File templateFolder = new File(root, templateId);
 	if (!templateFolder.exists()) {
-	    throw new SiteWhereException("Template folder not found at '" + templateFolder.getAbsolutePath() + "'.");
+	    throw new SiteWhereException(
+		    "Tenant template folder not found at '" + templateFolder.getAbsolutePath() + "'.");
 	}
 	ZkUtils.copyFolderRecursivelytoZk(curator, tenantPath, templateFolder, templateFolder);
     }
 
-    public Map<String, ITenantTemplate> getTemplatesById() {
+    protected Map<String, ITenantTemplate> getTemplatesById() {
 	return templatesById;
     }
 
-    public void setTemplatesById(Map<String, ITenantTemplate> templatesById) {
+    protected void setTemplatesById(Map<String, ITenantTemplate> templatesById) {
 	this.templatesById = templatesById;
     }
 }

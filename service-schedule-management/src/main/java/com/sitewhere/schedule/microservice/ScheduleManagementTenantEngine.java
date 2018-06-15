@@ -23,8 +23,8 @@ import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.microservice.spring.ScheduleManagementBeans;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -97,11 +97,12 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * tenantBootstrap(com.sitewhere.spi.microservice.multitenant. ITenantTemplate,
+     * tenantBootstrap(com.sitewhere.spi.microservice.multitenant.IDatasetTemplate,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void tenantBootstrap(ITenantTemplate template, ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void tenantBootstrap(IDatasetTemplate template, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException {
 	List<String> scripts = template.getInitializers().getScheduleManagement();
 	for (String script : scripts) {
 	    getTenantScriptSynchronizer().add(script);

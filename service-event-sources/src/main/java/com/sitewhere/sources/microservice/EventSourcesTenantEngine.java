@@ -12,8 +12,8 @@ import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.sources.spi.IEventSourcesManager;
 import com.sitewhere.sources.spi.microservice.IEventSourcesTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.microservice.spring.EventSourcesBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -75,14 +75,13 @@ public class EventSourcesTenantEngine extends MicroserviceTenantEngine implement
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
-     * tenantBootstrap(com.sitewhere.microservice.spi.multitenant. ITenantTemplate,
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * tenantBootstrap(com.sitewhere.spi.microservice.multitenant.IDatasetTemplate,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void tenantBootstrap(ITenantTemplate template, ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void tenantBootstrap(IDatasetTemplate template, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException {
     }
 
     /*

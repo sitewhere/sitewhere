@@ -53,6 +53,14 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
     public ITenantTemplate getTenantTemplate() throws SiteWhereException;
 
     /**
+     * Get dataset template.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public IDatasetTemplate getDatasetTemplate() throws SiteWhereException;
+
+    /**
      * Get script synchronizer for copying/locating scripts.
      * 
      * @return
@@ -182,13 +190,13 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException;
 
     /**
-     * Bootstrap a tenant with data provided in tenant template.
+     * Bootstrap a tenant with data provided in dataset template.
      * 
      * @param template
      * @param monitor
      * @throws SiteWhereException
      */
-    public void tenantBootstrap(ITenantTemplate template, ILifecycleProgressMonitor monitor) throws SiteWhereException;
+    public void tenantBootstrap(IDatasetTemplate template, ILifecycleProgressMonitor monitor) throws SiteWhereException;
 
     /**
      * Executes tenant shutdown code.

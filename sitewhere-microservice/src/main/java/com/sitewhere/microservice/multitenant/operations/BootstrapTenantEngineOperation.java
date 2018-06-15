@@ -19,8 +19,8 @@ import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.TracerUtils;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 import io.opentracing.ActiveSpan;
@@ -104,13 +104,13 @@ public class BootstrapTenantEngineOperation<T extends IMicroserviceTenantEngine>
 	long start = System.currentTimeMillis();
 
 	// Execute tenant bootstrap.
-	ITenantTemplate template = getTenantEngine().getTenantTemplate();
+	IDatasetTemplate template = getTenantEngine().getDatasetTemplate();
 	getTenantEngine().tenantBootstrap(template, monitor);
 
 	try {
 	    curator.create().forPath(getTenantEngine().getModuleBootstrappedPath());
-	    LOGGER.info("Tenant engine for '" + getTenantEngine().getTenant().getName() + "' bootstrapped in "
-		    + (System.currentTimeMillis() - start) + "ms.");
+	    LOGGER.info("Tenant engine for '" + tenantName + "' bootstrapped in " + (System.currentTimeMillis() - start)
+		    + "ms.");
 	} catch (Exception e) {
 	    LOGGER.info("Error marking tenant engine '" + tenantName + "' as bootstrapped.");
 	}

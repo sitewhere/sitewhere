@@ -60,8 +60,12 @@ public class TenantManagementPersistenceLogic extends Persistence {
 	tenant.setAuthenticationToken(request.getAuthenticationToken());
 
 	// Tenant template is required.
-	require("Template Id", request.getTenantTemplateId());
+	require("Tenant template Id", request.getTenantTemplateId());
 	tenant.setTenantTemplateId(request.getTenantTemplateId());
+
+	// Tenant template is required.
+	require("Dataset template Id", request.getDatasetTemplateId());
+	tenant.setDatasetTemplateId(request.getDatasetTemplateId());
 
 	tenant.getAuthorizedUserIds().addAll(request.getAuthorizedUserIds());
 
@@ -82,7 +86,12 @@ public class TenantManagementPersistenceLogic extends Persistence {
     public static Tenant tenantUpdateLogic(ITenantCreateRequest request, Tenant existing) throws SiteWhereException {
 	if (request.getTenantTemplateId() != null) {
 	    if (!request.getTenantTemplateId().equals(existing.getTenantTemplateId())) {
-		throw new SiteWhereException("Can not change the template of an existing tenant.");
+		throw new SiteWhereException("Can not change the tenant template of an existing tenant.");
+	    }
+	}
+	if (request.getDatasetTemplateId() != null) {
+	    if (!request.getDatasetTemplateId().equals(existing.getDatasetTemplateId())) {
+		throw new SiteWhereException("Can not change the dataset template of an existing tenant.");
 	    }
 	}
 

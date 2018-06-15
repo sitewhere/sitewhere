@@ -60,4 +60,11 @@ public interface ITenantCreateRequest extends IMetadataProvider, Serializable {
      * @return
      */
     public String getTenantTemplateId();
+
+    /**
+     * Get id of dataset template used to populate tenant.
+     * 
+     * @return
+     */
+    public String getDatasetTemplateId();
 }
