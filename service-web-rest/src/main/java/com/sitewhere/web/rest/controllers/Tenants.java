@@ -27,6 +27,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.tenant.ITenant;
@@ -178,6 +179,22 @@ public class Tenants extends RestControllerBase {
 		|| checkAuthFor(SiteWhereAuthority.AdminOwnTenant, false)) {
 	}
 	return getTenantAdministration().getTenantTemplates();
+    }
+
+    /**
+     * Lists all available dataset templates.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/datasets", method = RequestMethod.GET)
+    @ApiOperation(value = "List datasets available for creating tenants")
+    public List<IDatasetTemplate> listDatasetTemplates() throws SiteWhereException {
+	checkAuthFor(SiteWhereAuthority.REST, true);
+	if (checkAuthFor(SiteWhereAuthority.AdminTenants, false)
+		|| checkAuthFor(SiteWhereAuthority.AdminOwnTenant, false)) {
+	}
+	return getTenantAdministration().getDatasetTemplates();
     }
 
     /**
