@@ -7,6 +7,7 @@
  */
 package com.sitewhere.sources.mqtt;
 
+import java.io.EOFException;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,7 +46,7 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 
     /** MQTT Topic Quality of Service */
     public static final QoS DEFAULT_QoS = QoS.AT_LEAST_ONCE;
-    
+
     /** Parent event source */
     private IInboundEventSource<byte[]> eventSource;
 
@@ -94,7 +95,7 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 
 	getLogger().info("Suscribing using QoS: " + getQos());
 	QoS qos = qosFromConfig(getQos());
-	
+
 	// Subscribe to chosen topic.
 	Topic[] topics = { new Topic(getTopic(), qos) };
 	try {
@@ -112,6 +113,7 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 
     /**
      * Transform configuration to MQTT QoS
+     * 
      * @param qos
      * @return
      */
@@ -171,6 +173,12 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 		    Future<Message> future = connection.receive();
 		    Message message = future.await();
 		    processorsExecutor.execute(new MqttPayloadProcessor(message));
+		} catch (EOFException e) {
+		    getLogger().error("Connection terminated by remote. Subscription processor terminating.", e);
+		    return;
+		} catch (InterruptedException e) {
+		    getLogger().info("Subcription processor shutdown requested.");
+		    return;
 		} catch (Throwable e) {
 		    getLogger().error("Error in MQTT subscription processing.", e);
 		}
