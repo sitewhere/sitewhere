@@ -22,6 +22,7 @@ import com.sitewhere.inbound.spi.kafka.IUnregisteredEventsProducer;
 import com.sitewhere.inbound.spi.microservice.IInboundEventStorageStrategy;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
+import com.sitewhere.inbound.spi.processing.IInboundPayloadProcessingLogic;
 import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -41,7 +42,8 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponent {
+public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponent
+	implements IInboundPayloadProcessingLogic {
 
     /** Meter for counting processed events */
     private Meter processedEvents;
@@ -80,12 +82,12 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 		this);
     }
 
-    /**
-     * Process a batch of inbound event records.
-     * 
-     * @param records
-     * @throws SiteWhereException
+    /*
+     * @see
+     * com.sitewhere.inbound.spi.processing.IInboundPayloadProcessingLogic#process(
+     * java.util.List)
      */
+    @Override
     public void process(List<ConsumerRecord<String, byte[]>> records) throws SiteWhereException {
 	processPayloads(records);
     }
@@ -244,27 +246,27 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 		.getDeviceEventManagementApiDemux().getApiChannel());
     }
 
-    public Meter getProcessedEvents() {
+    protected Meter getProcessedEvents() {
 	return processedEvents;
     }
 
-    public Meter getFailedEvents() {
+    protected Meter getFailedEvents() {
 	return failedEvents;
     }
 
-    public Timer getEventStorageTimer() {
+    protected Timer getEventStorageTimer() {
 	return eventStorageTimer;
     }
 
-    public Timer getDeviceLookupTimer() {
+    protected Timer getDeviceLookupTimer() {
 	return deviceLookupTimer;
     }
 
-    public Timer getAssignmentLookupTimer() {
+    protected Timer getAssignmentLookupTimer() {
 	return assignmentLookupTimer;
     }
 
-    public IInboundEventStorageStrategy getEventStorageStrategy() {
+    protected IInboundEventStorageStrategy getEventStorageStrategy() {
 	return eventStorageStrategy;
     }
 }

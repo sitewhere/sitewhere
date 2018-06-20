@@ -51,14 +51,6 @@ public interface IDeviceEventCreateRequest extends Serializable {
     public boolean isUpdateState();
 
     /**
-     * Set indicator for whether state information on the device assignment should
-     * be updated.
-     * 
-     * @param update
-     */
-    public void setUpdateState(boolean update);
-
-    /**
      * Get metadata values.
      * 
      * @return

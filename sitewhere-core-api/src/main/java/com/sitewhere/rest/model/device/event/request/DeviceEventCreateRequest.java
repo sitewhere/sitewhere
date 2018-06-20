@@ -96,13 +96,6 @@ public class DeviceEventCreateRequest implements IDeviceEventCreateRequest {
 	return updateState;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest#
-     * setUpdateState (boolean)
-     */
-    @Override
     public void setUpdateState(boolean updateState) {
 	this.updateState = updateState;
     }

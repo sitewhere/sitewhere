@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.inbound.kafka;
+package com.sitewhere.devicestate.kafka;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +17,9 @@ import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.consumer.OffsetCommitCallback;
 import org.apache.kafka.common.TopicPartition;
 
-import com.sitewhere.inbound.processing.InboundPayloadProcessingLogic;
-import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
-import com.sitewhere.inbound.spi.processing.IInboundPayloadProcessingLogic;
-import com.sitewhere.inbound.spi.processing.IInboundProcessingConfiguration;
+import com.sitewhere.devicestate.processing.DeviceStateProcessingLogic;
+import com.sitewhere.devicestate.spi.kafka.IDeviceStateEnrichedEventsConsumer;
+import com.sitewhere.devicestate.spi.processing.IDeviceStateProcessingLogic;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
@@ -30,28 +29,22 @@ import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
- * Listens on Kafka topic for decoded events, making them available for inbound
- * processing.
+ * Kafka consumer that consumes records from the inbound enriched events topic
+ * and applies device state management logic to the events.
  * 
  * @author Derek
  */
-public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements IDecodedEventsConsumer {
+public class DeviceStateEnrichedEventsConsumer extends MicroserviceKafkaConsumer
+	implements IDeviceStateEnrichedEventsConsumer {
 
     /** Consumer id */
     private static String CONSUMER_ID = UUID.randomUUID().toString();
 
     /** Suffix for group id */
-    private static String GROUP_ID_SUFFIX = "decoded-event-consumers";
+    private static String GROUP_ID_SUFFIX = "device-state-consumers";
 
-    /** Get settings for inbound processing */
-    private IInboundProcessingConfiguration configuration;
-
-    /** Inbound payload processing logic */
-    private IInboundPayloadProcessingLogic inboundPayloadProcessingLogic = new InboundPayloadProcessingLogic();
-
-    public DecodedEventsConsumer(IInboundProcessingConfiguration configuration) {
-	this.configuration = configuration;
-    }
+    /** Device state processing logic */
+    private IDeviceStateProcessingLogic deviceStateProcessingLogic;
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#
@@ -78,10 +71,8 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
     @Override
     public List<String> getSourceTopicNames() throws SiteWhereException {
 	List<String> topics = new ArrayList<String>();
-	topics.add(getMicroservice().getKafkaTopicNaming()
-		.getEventSourceDecodedEventsTopic(getTenantEngine().getTenant()));
 	topics.add(
-		getMicroservice().getKafkaTopicNaming().getInboundReprocessEventsTopic(getTenantEngine().getTenant()));
+		getMicroservice().getKafkaTopicNaming().getInboundEnrichedEventsTopic(getTenantEngine().getTenant()));
 	return topics;
     }
 
@@ -94,11 +85,14 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.initialize(monitor);
 
+	// Create processing logic component.
+	this.deviceStateProcessingLogic = new DeviceStateProcessingLogic();
+
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
 
-	// Initialize inbound processing logic.
-	init.addInitializeStep(this, getInboundPayloadProcessingLogic(), true);
+	// Initialize device state processing logic.
+	init.addInitializeStep(this, getDeviceStateProcessingLogic(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -115,14 +109,12 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
 
-	// Start inbound processing logic.
-	start.addStartStep(this, getInboundPayloadProcessingLogic(), true);
+	// Start device state processing logic.
+	start.addStartStep(this, getDeviceStateProcessingLogic(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
 
-	getLogger().info("Allocating " + getConfiguration().getProcessingThreadCount()
-		+ " threads for inbound event processing.");
 	super.start(monitor);
     }
 
@@ -139,8 +131,8 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
 
-	// Stop inbound processing logic.
-	stop.addStopStep(this, getInboundPayloadProcessingLogic());
+	// Stop device state logic.
+	stop.addStopStep(this, getDeviceStateProcessingLogic());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -153,34 +145,34 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
      */
     @Override
     public void process(TopicPartition topicPartition, List<ConsumerRecord<String, byte[]>> records) {
-	new InboundEventPayloadProcessor(getTenantEngine(), records).run();
+	new DeviceStateProcessor(getTenantEngine(), records).run();
     }
 
     /*
-     * @see com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer#
-     * getInboundPayloadProcessingLogic()
+     * @see com.sitewhere.devicestate.spi.kafka.IDeviceStateEnrichedEventsConsumer#
+     * getDeviceStateProcessingLogic()
      */
     @Override
-    public IInboundPayloadProcessingLogic getInboundPayloadProcessingLogic() {
-	return inboundPayloadProcessingLogic;
+    public IDeviceStateProcessingLogic getDeviceStateProcessingLogic() {
+	return deviceStateProcessingLogic;
     }
 
-    public void setInboundPayloadProcessingLogic(IInboundPayloadProcessingLogic inboundPayloadProcessingLogic) {
-	this.inboundPayloadProcessingLogic = inboundPayloadProcessingLogic;
+    public void setDeviceStateProcessingLogic(IDeviceStateProcessingLogic deviceStateProcessingLogic) {
+	this.deviceStateProcessingLogic = deviceStateProcessingLogic;
     }
 
     /**
-     * Processor that unmarshals a decoded event and forwards it for registration
-     * verification.
+     * Processor that unmarshals an enriched event and forwards it to outbound
+     * connector implementation.
      * 
      * @author Derek
      */
-    protected class InboundEventPayloadProcessor extends SystemUserRunnable {
+    protected class DeviceStateProcessor extends SystemUserRunnable {
 
 	/** List of records to process for partition */
 	private List<ConsumerRecord<String, byte[]>> records;
 
-	public InboundEventPayloadProcessor(IMicroserviceTenantEngine tenantEngine,
+	public DeviceStateProcessor(IMicroserviceTenantEngine tenantEngine,
 		List<ConsumerRecord<String, byte[]>> records) {
 	    super(tenantEngine.getMicroservice(), tenantEngine.getTenant());
 	    this.records = records;
@@ -192,7 +184,7 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 	 */
 	@Override
 	public void runAsSystemUser() throws SiteWhereException {
-	    getInboundPayloadProcessingLogic().process(records);
+	    getDeviceStateProcessingLogic().process(records);
 	    getConsumer().commitAsync(new OffsetCommitCallback() {
 		public void onComplete(Map<TopicPartition, OffsetAndMetadata> offsets, Exception e) {
 		    if (e != null) {
@@ -201,13 +193,5 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 		}
 	    });
 	}
-    }
-
-    public IInboundProcessingConfiguration getConfiguration() {
-	return configuration;
-    }
-
-    public void setConfiguration(IInboundProcessingConfiguration configuration) {
-	this.configuration = configuration;
     }
 }

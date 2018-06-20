@@ -8,6 +8,8 @@
 package com.sitewhere.devicestate.microservice;
 
 import com.sitewhere.devicestate.grpc.DeviceStateImpl;
+import com.sitewhere.devicestate.kafka.DeviceStateEnrichedEventsConsumer;
+import com.sitewhere.devicestate.spi.kafka.IDeviceStateEnrichedEventsConsumer;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
 import com.sitewhere.grpc.service.DeviceStateGrpc;
@@ -36,6 +38,9 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine implements
     /** Responds to device state GRPC requests */
     private DeviceStateGrpc.DeviceStateImplBase deviceStateImpl;
 
+    /** Kafka consumer for processing enriched events for device state */
+    private IDeviceStateEnrichedEventsConsumer deviceStateEnrichedEventsConsumer;
+
     public DeviceStateTenantEngine(ITenant tenant) {
 	super(tenant);
     }
@@ -53,6 +58,7 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine implements
 	this.deviceStateManagement = implementation;
 	this.deviceStateImpl = new DeviceStateImpl((IDeviceStateMicroservice) getMicroservice(),
 		getDeviceStateManagement());
+	this.deviceStateEnrichedEventsConsumer = new DeviceStateEnrichedEventsConsumer();
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
@@ -62,6 +68,9 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine implements
 
 	// Initialize device state management persistence.
 	init.addInitializeStep(this, getDeviceStateManagement(), true);
+
+	// Initialize device state enriched events consumer.
+	init.addInitializeStep(this, getDeviceStateEnrichedEventsConsumer(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -81,6 +90,9 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine implements
 
 	// Start device state management persistence.
 	start.addStartStep(this, getDeviceStateManagement(), true);
+
+	// Start device state enriched events consumer.
+	start.addStartStep(this, getDeviceStateEnrichedEventsConsumer(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -104,6 +116,9 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine implements
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
+
+	// Stop device state enriched events consumer.
+	stop.addStopStep(this, getDeviceStateEnrichedEventsConsumer());
 
 	// Stop device state management persistence.
 	stop.addStopStep(this, getDeviceStateManagement());
@@ -139,5 +154,19 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine implements
 
     public void setDeviceStateImpl(DeviceStateGrpc.DeviceStateImplBase deviceStateImpl) {
 	this.deviceStateImpl = deviceStateImpl;
+    }
+
+    /*
+     * @see com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine#
+     * getDeviceStateEnrichedEventsConsumer()
+     */
+    @Override
+    public IDeviceStateEnrichedEventsConsumer getDeviceStateEnrichedEventsConsumer() {
+	return deviceStateEnrichedEventsConsumer;
+    }
+
+    public void setDeviceStateEnrichedEventsConsumer(
+	    IDeviceStateEnrichedEventsConsumer deviceStateEnrichedEventsConsumer) {
+	this.deviceStateEnrichedEventsConsumer = deviceStateEnrichedEventsConsumer;
     }
 }
