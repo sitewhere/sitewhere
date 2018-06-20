@@ -46,8 +46,8 @@ public class CommonConnectorModel {
 			.description("Indicates if 'clean session' flag should be set.").defaultValue("true").build()));
 	builder.attribute((new AttributeNode.Builder("Quality of service", "qos", AttributeType.String, connectivity)
 		.description("Quality of service for connection").defaultValue("AT_LEAST_ONCE")
-		.choice("At Most Once (QoS 0)", "AT_MOST_ONCE").choice("At Least Once (QoS 1)", "AT_LEAST_ONCE")
-		.choice("Exactly Once (QoS 2)", "EXACTLY_ONCE").build()));
+		.choice("QoS 0 (At Most Once)", "AT_MOST_ONCE").choice("QoS 1 (At Least Once)", "AT_LEAST_ONCE")
+		.choice("QoS 2 (Exactly Once)", "EXACTLY_ONCE").build()));
 
 	builder.attribute(
 		(new AttributeNode.Builder("MQTT broker username", "username", AttributeType.String, authentication)
