@@ -65,10 +65,10 @@ public class DeviceStatePersistence {
 	    target.setLastLocationEventId(request.getLastLocationEventId());
 	}
 	if (request.getLastMeasurementEventIds() != null) {
-	    target.setLastMeasurementEventIds(request.getLastMeasurementEventIds());
+	    target.getLastMeasurementEventIds().putAll(request.getLastMeasurementEventIds());
 	}
 	if (request.getLastAlertEventIds() != null) {
-	    target.setLastAlertEventIds(request.getLastAlertEventIds());
+	    target.getLastAlertEventIds().putAll(request.getLastAlertEventIds());
 	}
     }
 }
