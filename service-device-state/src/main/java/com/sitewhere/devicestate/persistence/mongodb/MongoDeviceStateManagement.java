@@ -16,6 +16,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.IndexOptions;
 import com.sitewhere.devicestate.microservice.DeviceStateMicroservice;
 import com.sitewhere.devicestate.persistence.DeviceStatePersistence;
+import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.device.state.DeviceState;
@@ -30,6 +31,8 @@ import com.sitewhere.spi.device.state.IDeviceStateManagement;
 import com.sitewhere.spi.device.state.request.IDeviceStateCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.device.IDeviceStateSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -39,6 +42,9 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * @author Derek
  */
 public class MongoDeviceStateManagement extends TenantEngineLifecycleComponent implements IDeviceStateManagement {
+
+    /** Converter lookup */
+    private static IMongoConverterLookup LOOKUP = new MongoConverters();
 
     /** MongoDB client */
     private IDeviceStateManagementMongoClient mongoClient;
@@ -154,6 +160,25 @@ public class MongoDeviceStateManagement extends TenantEngineLifecycleComponent i
 	MongoPersistence.update(states, query, updated);
 
 	return MongoDeviceState.fromDocument(updated);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.state.IDeviceStateManagement#listDeviceStates(com.
+     * sitewhere.spi.search.device.IDeviceStateSearchCriteria)
+     */
+    @Override
+    public ISearchResults<IDeviceState> listDeviceStates(IDeviceStateSearchCriteria criteria)
+	    throws SiteWhereException {
+	MongoCollection<Document> states = getMongoClient().getDeviceStatesCollection();
+	Document dbCriteria = new Document();
+	if (criteria.getLastInteractionDateBefore() != null) {
+	    Document dateClause = new Document();
+	    dateClause.append("$lte", criteria.getLastInteractionDateBefore());
+	    dbCriteria.put(MongoDeviceState.PROP_LAST_INTERACTION_DATE, dateClause);
+	}
+	Document sort = new Document(MongoDeviceState.PROP_LAST_INTERACTION_DATE, 1);
+	return MongoPersistence.search(IDeviceState.class, states, dbCriteria, sort, criteria, LOOKUP);
     }
 
     /*

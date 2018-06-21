@@ -12,11 +12,14 @@ import java.util.Map;
 import com.sitewhere.grpc.model.CommonModel.GUUID;
 import com.sitewhere.grpc.model.DeviceStateModel.GDeviceState;
 import com.sitewhere.grpc.model.DeviceStateModel.GDeviceStateCreateRequest;
+import com.sitewhere.grpc.model.DeviceStateModel.GDeviceStateSearchCriteria;
 import com.sitewhere.rest.model.device.state.DeviceState;
 import com.sitewhere.rest.model.device.state.request.DeviceStateCreateRequest;
+import com.sitewhere.rest.model.search.device.DeviceStateSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.state.IDeviceState;
 import com.sitewhere.spi.device.state.request.IDeviceStateCreateRequest;
+import com.sitewhere.spi.search.device.IDeviceStateSearchCriteria;
 
 /**
  * Convert device state entities between SiteWhere API model and GRPC model.
@@ -90,6 +93,36 @@ public class DeviceStateModelConverter {
 		grpc.putLastAlertEventIds(key, CommonModelConverter.asGrpcUuid(api.getLastAlertEventIds().get(key)));
 	    }
 	}
+	return grpc.build();
+    }
+
+    /**
+     * Convert device state search criteria from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceStateSearchCriteria asApiDeviceStateSearchCriteria(GDeviceStateSearchCriteria grpc)
+	    throws SiteWhereException {
+	DeviceStateSearchCriteria api = new DeviceStateSearchCriteria(grpc.getPaging().getPageNumber(),
+		grpc.getPaging().getPageSize());
+	api.setLastInteractionDateBefore(CommonModelConverter.asApiDate(grpc.getLastInteractionDateBefore()));
+	return api;
+    }
+
+    /**
+     * Convert device state search criteria from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceStateSearchCriteria asGrpcDeviceStateSearchCriteria(IDeviceStateSearchCriteria api)
+	    throws SiteWhereException {
+	GDeviceStateSearchCriteria.Builder grpc = GDeviceStateSearchCriteria.newBuilder();
+	grpc.setLastInteractionDateBefore(CommonModelConverter.asGrpcDate(api.getLastInteractionDateBefore()));
+	grpc.setPaging(CommonModelConverter.asGrpcPaging(api));
 	return grpc.build();
     }
 

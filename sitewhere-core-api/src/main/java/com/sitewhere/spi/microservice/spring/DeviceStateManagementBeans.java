@@ -19,4 +19,7 @@ public class DeviceStateManagementBeans {
 
     /** Bean id for device state management in server configuration */
     public static final String BEAN_DEVICE_STATE_MANAGEMENT = "deviceStateManagement";
+
+    /** Bean id for presence manager in server configuration */
+    public static final String BEAN_PRESENCE_MANAGER = "presenceManager";
 }

@@ -8,8 +8,8 @@
 package com.sitewhere.devicestate.spi;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
+import com.sitewhere.spi.device.state.IDeviceState;
 
 /**
  * Indicates how often events should be generated for non-present devices.
@@ -19,17 +19,14 @@ import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 public interface IPresenceNotificationStrategy {
 
     /**
-     * Based on the given data, chooses whether to store an event which will in
-     * turn fire notifications to the outbound processing chain.
+     * Based on the given data, chooses whether to trigger a state change event
+     * based on the given device state information.
      * 
-     * @param assignment
-     *            affected device assignment
+     * @param deviceState
      * @param request
-     *            state change request
-     * @return true if event should be generated, false if not
+     * @return
      * @throws SiteWhereException
-     *             if error in implementation
      */
-    public boolean shouldGenerateEvent(IDeviceAssignment assignment, IDeviceStateChangeCreateRequest request)
+    public boolean shouldGenerateEvent(IDeviceState deviceState, IDeviceStateChangeCreateRequest request)
 	    throws SiteWhereException;
 }

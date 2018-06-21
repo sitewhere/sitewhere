@@ -115,6 +115,8 @@ public class DeviceStateProcessingLogic extends TenantEngineLifecycleComponent i
     protected void processDeviceStateEvent(EnrichedEventPayload payload) throws SiteWhereException {
 	// Only process events that affect state.
 	IDeviceEvent event = payload.getEvent();
+	IDeviceState original = getDeviceStateManagement()
+		.getDeviceStateByDeviceAssignmentId(event.getDeviceAssignmentId());
 	switch (event.getEventType()) {
 	case Alert:
 	case Location:
@@ -122,15 +124,17 @@ public class DeviceStateProcessingLogic extends TenantEngineLifecycleComponent i
 	    break;
 	}
 	default: {
-	    return;
+	    // Allow other events to trigger presence detected.
+	    if ((original == null) || (original.getPresenceMissingDate() == null)) {
+		return;
+	    }
 	}
 	}
-	IDeviceState original = getDeviceStateManagement()
-		.getDeviceStateByDeviceAssignmentId(event.getDeviceAssignmentId());
 	DeviceStateCreateRequest request = new DeviceStateCreateRequest();
 	request.setDeviceId(event.getDeviceId());
 	request.setDeviceAssignmentId(event.getDeviceAssignmentId());
 	request.setLastInteractionDate(new Date());
+	request.setPresenceMissingDate(null);
 
 	// Merge alert information.
 	if (event instanceof IDeviceLocation) {

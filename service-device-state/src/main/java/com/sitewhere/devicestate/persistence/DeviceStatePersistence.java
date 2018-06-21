@@ -55,12 +55,8 @@ public class DeviceStatePersistence {
      */
     public static void deviceStateUpdateLogic(IDeviceStateCreateRequest request, DeviceState target)
 	    throws SiteWhereException {
-	if (request.getLastInteractionDate() != null) {
-	    target.setLastInteractionDate(request.getLastInteractionDate());
-	}
-	if (request.getPresenceMissingDate() != null) {
-	    target.setPresenceMissingDate(request.getPresenceMissingDate());
-	}
+	target.setLastInteractionDate(request.getLastInteractionDate());
+	target.setPresenceMissingDate(request.getPresenceMissingDate());
 	if (request.getLastLocationEventId() != null) {
 	    target.setLastLocationEventId(request.getLastLocationEventId());
 	}

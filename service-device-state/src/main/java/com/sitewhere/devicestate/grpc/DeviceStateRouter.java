@@ -26,6 +26,8 @@ import com.sitewhere.grpc.service.GGetDeviceStateByDeviceAssignmentIdRequest;
 import com.sitewhere.grpc.service.GGetDeviceStateByDeviceAssignmentIdResponse;
 import com.sitewhere.grpc.service.GGetDeviceStateRequest;
 import com.sitewhere.grpc.service.GGetDeviceStateResponse;
+import com.sitewhere.grpc.service.GListDeviceStatesRequest;
+import com.sitewhere.grpc.service.GListDeviceStatesResponse;
 import com.sitewhere.grpc.service.GUpdateDeviceStateRequest;
 import com.sitewhere.grpc.service.GUpdateDeviceStateResponse;
 import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
@@ -109,6 +111,20 @@ public class DeviceStateRouter extends DeviceStateGrpc.DeviceStateImplBase
 	DeviceStateGrpc.DeviceStateImplBase engine = getTenantImplementation(responseObserver);
 	if (engine != null) {
 	    engine.getDeviceStateByDeviceAssignmentId(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.DeviceStateGrpc.DeviceStateImplBase#
+     * listDeviceStates(com.sitewhere.grpc.service.GListDeviceStatesRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void listDeviceStates(GListDeviceStatesRequest request,
+	    StreamObserver<GListDeviceStatesResponse> responseObserver) {
+	DeviceStateGrpc.DeviceStateImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.listDeviceStates(request, responseObserver);
 	}
     }
 

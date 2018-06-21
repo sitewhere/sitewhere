@@ -21,6 +21,18 @@ message GDeviceStateCreateRequest {
 	map<string, GUUID> lastAlertEventIds = 7;
 }
 
+// Criteria for searching device states.
+message GDeviceStateSearchCriteria {
+	uint64 lastInteractionDateBefore = 1;
+	GPaging paging = 2;
+}
+
+// Results for device state search.
+message GDeviceStateSearchResults {
+	uint64 count = 1;
+	repeated GDeviceState deviceStates = 2;
+}
+
 // Device state.
 message GDeviceState {
 	GUUID id = 1;

@@ -11,6 +11,8 @@ import java.util.UUID;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.state.request.IDeviceStateCreateRequest;
+import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.device.IDeviceStateSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
@@ -46,6 +48,15 @@ public interface IDeviceStateManagement extends ITenantEngineLifecycleComponent 
      * @throws SiteWhereException
      */
     public IDeviceState getDeviceStateByDeviceAssignmentId(UUID assignmentId) throws SiteWhereException;
+
+    /**
+     * List device states that match the given criteria.
+     * 
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    public ISearchResults<IDeviceState> listDeviceStates(IDeviceStateSearchCriteria criteria) throws SiteWhereException;
 
     /**
      * Update existing device state.

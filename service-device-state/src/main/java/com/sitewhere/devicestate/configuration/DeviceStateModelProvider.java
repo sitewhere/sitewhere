@@ -9,8 +9,7 @@ package com.sitewhere.devicestate.configuration;
 
 import com.sitewhere.configuration.model.CommonDatastoreProvider;
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
-import com.sitewhere.configuration.old.IDeviceServicesParser;
-import com.sitewhere.configuration.parser.IPresenceManagementParser;
+import com.sitewhere.configuration.parser.IDeviceStateManagementParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
 import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.spi.microservice.configuration.model.AttributeType;
@@ -49,7 +48,7 @@ public class DeviceStateModelProvider extends ConfigurationModelProvider {
     public void initializeElements() {
 	addElement(createDeviceStateElement());
 
-	addElement(createDefaultPresenceManagerElement());
+	addElement(createPresenceManagerElement());
     }
 
     /*
@@ -78,7 +77,7 @@ public class DeviceStateModelProvider extends ConfigurationModelProvider {
      * @return
      */
     protected ElementNode createDeviceStateElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Device State", IPresenceManagementParser.ROOT,
+	ElementNode.Builder builder = new ElementNode.Builder("Device State", IDeviceStateManagementParser.ROOT,
 		"question-circle", DeviceStateRoleKeys.DeviceState, this);
 
 	builder.description("Records device state persistence and presence management.");
@@ -87,13 +86,13 @@ public class DeviceStateModelProvider extends ConfigurationModelProvider {
     }
 
     /**
-     * Create element configuration for default presence manager.
+     * Create element configuration for presence manager.
      * 
      * @return
      */
-    protected ElementNode createDefaultPresenceManagerElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Default Presence Manager",
-		IDeviceServicesParser.Elements.DefaultPresenceManager.getLocalName(), "bullseye",
+    protected ElementNode createPresenceManagerElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Presence Manager",
+		IDeviceStateManagementParser.Elements.PresenceManager.getLocalName(), "bullseye",
 		DeviceStateRoleKeys.PresenceManager, this);
 
 	builder.description("Determines device presence information by monitoring the last interaction date"

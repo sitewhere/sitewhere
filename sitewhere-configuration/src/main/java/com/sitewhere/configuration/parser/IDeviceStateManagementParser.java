@@ -15,12 +15,15 @@ package com.sitewhere.configuration.parser;
 public interface IDeviceStateManagementParser {
 
     // Root element name.
-    public static final String ROOT = "state-management";
+    public static final String ROOT = "device-state";
 
     public static enum Elements {
 
 	/** Device state datastore */
-	DeviceStateDatastore("device-state-datastore");
+	DeviceStateDatastore("device-state-datastore"),
+
+	/** Presence manager */
+	PresenceManager("presence-manager");
 
 	/** Event code */
 	private String localName;

@@ -28,6 +28,58 @@
 	<xsd:complexType name="deviceStateType">
 		<xsd:all>
 			<xsd:element ref="ds:device-state-datastore" />
+			<xsd:element ref="abstract-presence-manager" />
 		</xsd:all>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for presence manager elements to allow substitutionGroups -->
+	<xsd:element name="abstract-presence-manager"
+		abstract="true" type="abstractPresenceManagerType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for presence manager elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Common presence manager element information -->
+	<xsd:complexType name="abstractPresenceManagerType" />
+
+	<!-- Default presence manager implementation -->
+	<xsd:element name="presence-manager"
+		type="defaultPresenceManagerType"
+		substitutionGroup="abstract-presence-manager">
+		<xsd:annotation>
+			<xsd:documentation>
+				Default presence manager implementation.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="defaultPresenceManagerType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractPresenceManagerType">
+				<xsd:attribute name="checkInterval" type="xsd:string"
+					use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Amount of time to wait between presence check
+							cycles. Uses ISO8601 duration format. (e.g. T1H30M is 1 hour and
+							30 minutes)
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="presenceMissingInterval"
+					type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Amount of time since last interaction date at
+							which a device is considered non-present. Uses ISO8601 duration
+							format. (e.g. P2DT3H5M20S is 2 days, 3 hours, 5 minutes, and 20
+							seconds)
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 </xsd:schema>

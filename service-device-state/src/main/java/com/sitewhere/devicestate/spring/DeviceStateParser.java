@@ -16,6 +16,7 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.sitewhere.configuration.datastore.DatastoreConfiguration;
@@ -23,6 +24,7 @@ import com.sitewhere.configuration.datastore.DatastoreConfigurationParser;
 import com.sitewhere.configuration.parser.IDeviceStateManagementParser.Elements;
 import com.sitewhere.devicestate.persistence.mongodb.DeviceStateManagementMongoClient;
 import com.sitewhere.devicestate.persistence.mongodb.MongoDeviceStateManagement;
+import com.sitewhere.devicestate.presence.DevicePresenceManager;
 import com.sitewhere.spi.microservice.spring.DeviceStateManagementBeans;
 
 /**
@@ -54,6 +56,10 @@ public class DeviceStateParser extends AbstractBeanDefinitionParser {
 	    switch (type) {
 	    case DeviceStateDatastore: {
 		parseDeviceStateDatastore(child, context);
+		break;
+	    }
+	    case PresenceManager: {
+		parsePresenceManager(element, context);
 		break;
 	    }
 	    }
@@ -97,5 +103,28 @@ public class DeviceStateParser extends AbstractBeanDefinitionParser {
 
 	context.getRegistry().registerBeanDefinition(DeviceStateManagementBeans.BEAN_DEVICE_STATE_MANAGEMENT,
 		management.getBeanDefinition());
+    }
+
+    /**
+     * Parse configuration for presence manager.
+     * 
+     * @param element
+     * @param context
+     */
+    protected void parsePresenceManager(Element element, ParserContext context) {
+	BeanDefinitionBuilder presence = BeanDefinitionBuilder.rootBeanDefinition(DevicePresenceManager.class);
+
+	Attr checkInterval = element.getAttributeNode("checkInterval");
+	if (checkInterval != null) {
+	    presence.addPropertyValue("presenceCheckInterval", checkInterval.getValue());
+	}
+
+	Attr presenceMissingInterval = element.getAttributeNode("presenceMissingInterval");
+	if (presenceMissingInterval != null) {
+	    presence.addPropertyValue("presenceMissingInterval", presenceMissingInterval.getValue());
+	}
+
+	context.getRegistry().registerBeanDefinition(DeviceStateManagementBeans.BEAN_PRESENCE_MANAGER,
+		presence.getBeanDefinition());
     }
 }

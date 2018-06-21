@@ -9,6 +9,7 @@ package com.sitewhere.devicestate.microservice;
 
 import com.sitewhere.devicestate.grpc.DeviceStateImpl;
 import com.sitewhere.devicestate.kafka.DeviceStateEnrichedEventsConsumer;
+import com.sitewhere.devicestate.spi.IDevicePresenceManager;
 import com.sitewhere.devicestate.spi.kafka.IDeviceStateEnrichedEventsConsumer;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
@@ -41,6 +42,9 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine implements
     /** Kafka consumer for processing enriched events for device state */
     private IDeviceStateEnrichedEventsConsumer deviceStateEnrichedEventsConsumer;
 
+    /** Presence manager implementation */
+    private IDevicePresenceManager devicePresenceManager;
+
     public DeviceStateTenantEngine(ITenant tenant) {
 	super(tenant);
     }
@@ -58,7 +62,13 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine implements
 	this.deviceStateManagement = implementation;
 	this.deviceStateImpl = new DeviceStateImpl((IDeviceStateMicroservice) getMicroservice(),
 		getDeviceStateManagement());
+
+	// Create enriched events consumer for building device state.
 	this.deviceStateEnrichedEventsConsumer = new DeviceStateEnrichedEventsConsumer();
+
+	// Create presence manager.
+	this.devicePresenceManager = (IDevicePresenceManager) getModuleContext()
+		.getBean(DeviceStateManagementBeans.BEAN_PRESENCE_MANAGER);
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
@@ -71,6 +81,9 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine implements
 
 	// Initialize device state enriched events consumer.
 	init.addInitializeStep(this, getDeviceStateEnrichedEventsConsumer(), true);
+
+	// Initialize device presence manager.
+	init.addInitializeStep(this, getDevicePresenceManager(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -93,6 +106,9 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine implements
 
 	// Start device state enriched events consumer.
 	start.addStartStep(this, getDeviceStateEnrichedEventsConsumer(), true);
+
+	// Start device presence manager.
+	start.addStartStep(this, getDevicePresenceManager(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -117,6 +133,9 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine implements
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
 
+	// Stop device presence manager.
+	stop.addStopStep(this, getDevicePresenceManager());
+
 	// Stop device state enriched events consumer.
 	stop.addStopStep(this, getDeviceStateEnrichedEventsConsumer());
 
@@ -139,7 +158,7 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine implements
 	return deviceStateManagement;
     }
 
-    public void setDeviceStateManagement(IDeviceStateManagement deviceStateManagement) {
+    protected void setDeviceStateManagement(IDeviceStateManagement deviceStateManagement) {
 	this.deviceStateManagement = deviceStateManagement;
     }
 
@@ -152,7 +171,7 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine implements
 	return deviceStateImpl;
     }
 
-    public void setDeviceStateImpl(DeviceStateGrpc.DeviceStateImplBase deviceStateImpl) {
+    protected void setDeviceStateImpl(DeviceStateGrpc.DeviceStateImplBase deviceStateImpl) {
 	this.deviceStateImpl = deviceStateImpl;
     }
 
@@ -165,8 +184,21 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine implements
 	return deviceStateEnrichedEventsConsumer;
     }
 
-    public void setDeviceStateEnrichedEventsConsumer(
+    protected void setDeviceStateEnrichedEventsConsumer(
 	    IDeviceStateEnrichedEventsConsumer deviceStateEnrichedEventsConsumer) {
 	this.deviceStateEnrichedEventsConsumer = deviceStateEnrichedEventsConsumer;
+    }
+
+    /*
+     * @see com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine#
+     * getDevicePresenceManager()
+     */
+    @Override
+    public IDevicePresenceManager getDevicePresenceManager() {
+	return devicePresenceManager;
+    }
+
+    protected void setDevicePresenceManager(IDevicePresenceManager devicePresenceManager) {
+	this.devicePresenceManager = devicePresenceManager;
     }
 }

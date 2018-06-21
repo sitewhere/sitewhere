@@ -22,6 +22,9 @@
 			<data:mongodb-datastore-reference
 				id="tenant" />
 		</data:device-state-datastore>
+		
+		<!-- Configure presence manager -->
+		<ds:presence-manager checkInterval="10m" presenceMissingInterval="8h"/>
 
 	</ds:device-state>
 
