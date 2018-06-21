@@ -7,6 +7,8 @@
  */
 package com.sitewhere.microservice;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -18,6 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.ComponentScan;
 
+import com.sitewhere.core.Boilerplate;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.TracerUtils;
@@ -94,6 +97,7 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
 	 */
 	protected void startMicroservice() throws SiteWhereException {
 	    T service = getMicroservice();
+	    long start = System.currentTimeMillis();
 
 	    ActiveSpan span = null;
 	    try {
@@ -116,6 +120,14 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
 		    TracerUtils.handleErrorInTracerSpan(span, service.getLifecycleError());
 		    throw service.getLifecycleError();
 		}
+
+		long total = System.currentTimeMillis() - start;
+		List<String> messages = new ArrayList<String>();
+		messages.add(service.getName() + " Microservice");
+		messages.add("Hostname: " + service.getHostname());
+		messages.add("Startup time: " + total + "ms");
+		String message = Boilerplate.boilerplate(messages, "*");
+		service.getLogger().info("\n" + message + "\n");
 
 		// Execute any post-startup code.
 		service.afterMicroserviceStarted();
