@@ -75,6 +75,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     /** Relative path to instance bootstrap marker */
     private static final String INSTANCE_BOOTSTRAP_MARKER = "/bootstrapped";
 
+    /** Number of seconds to wait between checks for isntance bootstrap marker */
+    private static final int INSTANCE_BOOTSTRAP_CHECK_INTERVAL_SECS = 3;
+
     /** Heartbeat interval in seconds */
     private static final int HEARTBEAT_INTERVAL_SECS = 20;
 
@@ -301,7 +304,7 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 		}
 		getLogger().info(MicroserviceMessages.INSTANCE_BOOTSTRAP_MARKER_NOT_FOUND,
 			getInstanceBootstrappedMarker());
-		Thread.sleep(1000);
+		Thread.sleep(INSTANCE_BOOTSTRAP_CHECK_INTERVAL_SECS * 1000);
 	    }
 	    getLogger().info(MicroserviceMessages.INSTANCE_BOOTSTRAP_CONFIRMED);
 	} catch (Exception e) {

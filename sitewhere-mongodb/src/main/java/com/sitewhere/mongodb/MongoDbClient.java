@@ -23,7 +23,6 @@ import com.mongodb.MongoTimeoutException;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
 import com.sitewhere.configuration.instance.mongodb.MongoConfiguration;
-import com.sitewhere.core.Boilerplate;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.server.lifecycle.parameters.StringComponentParameter;
 import com.sitewhere.spi.SiteWhereException;
@@ -86,10 +85,9 @@ public abstract class MongoDbClient extends TenantEngineLifecycleComponent
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -272,12 +270,8 @@ public abstract class MongoDbClient extends TenantEngineLifecycleComponent
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	List<String> messages = new ArrayList<String>();
-	messages.add("Hostname: " + getHostname().getValue());
-	messages.add("Port: " + getConfiguration().getPort());
-	messages.add("Database Name: " + getDatabaseName().getValue());
-	String message = Boilerplate.boilerplate(messages, "*");
-	getLogger().info("\n" + message + "\n");
+	getLogger().info("MongoDB client will connect to " + getHostname().getValue() + ":"
+		+ getConfiguration().getPort() + " for database '" + getDatabaseName().getValue() + "'");
     }
 
     /*
