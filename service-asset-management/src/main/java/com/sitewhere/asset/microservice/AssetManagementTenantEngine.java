@@ -7,6 +7,7 @@
  */
 package com.sitewhere.asset.microservice;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.security.core.Authentication;
@@ -120,9 +121,12 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
     @Override
     public void tenantBootstrap(IDatasetTemplate template, ILifecycleProgressMonitor monitor)
 	    throws SiteWhereException {
-	List<String> scripts = template.getInitializers().getAssetManagement();
-	for (String script : scripts) {
-	    getTenantScriptSynchronizer().add(script);
+	List<String> scripts = Collections.emptyList();
+	if (template.getInitializers() != null) {
+	    scripts = template.getInitializers().getAssetManagement();
+	    for (String script : scripts) {
+		getTenantScriptSynchronizer().add(script);
+	    }
 	}
 
 	// Execute remote calls as superuser.

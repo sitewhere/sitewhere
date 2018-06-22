@@ -7,6 +7,7 @@
  */
 package com.sitewhere.schedule.microservice;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.security.core.Authentication;
@@ -103,9 +104,12 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine
     @Override
     public void tenantBootstrap(IDatasetTemplate template, ILifecycleProgressMonitor monitor)
 	    throws SiteWhereException {
-	List<String> scripts = template.getInitializers().getScheduleManagement();
-	for (String script : scripts) {
-	    getTenantScriptSynchronizer().add(script);
+	List<String> scripts = Collections.emptyList();
+	if (template.getInitializers() != null) {
+	    scripts = template.getInitializers().getScheduleManagement();
+	    for (String script : scripts) {
+		getTenantScriptSynchronizer().add(script);
+	    }
 	}
 
 	// Execute calls as superuser.

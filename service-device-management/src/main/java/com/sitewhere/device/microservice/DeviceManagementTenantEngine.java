@@ -7,6 +7,7 @@
  */
 package com.sitewhere.device.microservice;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -116,9 +117,12 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
     @Override
     public void tenantBootstrap(IDatasetTemplate template, ILifecycleProgressMonitor monitor)
 	    throws SiteWhereException {
-	List<String> scripts = template.getInitializers().getDeviceManagement();
-	for (String script : scripts) {
-	    getTenantScriptSynchronizer().add(script);
+	List<String> scripts = Collections.emptyList();
+	if (template.getInitializers() != null) {
+	    scripts = template.getInitializers().getDeviceManagement();
+	    for (String script : scripts) {
+		getTenantScriptSynchronizer().add(script);
+	    }
 	}
 
 	// Wait for event management API to become available.

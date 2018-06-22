@@ -52,8 +52,15 @@ public abstract class ScriptSynchronizer extends LifecycleComponent implements I
 	super.start(monitor);
 
 	// Copy all scipts from Zk to local.
-	ZkUtils.copyFolderRecursivelyFromZk(getMicroservice().getZookeeperManager().getCurator(), getZkScriptRootPath(),
-		getFileSystemRoot(), getZkScriptRootPath());
+	try {
+	    if (getMicroservice().getZookeeperManager().getCurator().checkExists()
+		    .forPath(getZkScriptRootPath()) != null) {
+		ZkUtils.copyFolderRecursivelyFromZk(getMicroservice().getZookeeperManager().getCurator(),
+			getZkScriptRootPath(), getFileSystemRoot(), getZkScriptRootPath());
+	    }
+	} catch (Exception e) {
+	    throw new SiteWhereException("Unable to copy scripts from Zookeeper.", e);
+	}
     }
 
     /*
