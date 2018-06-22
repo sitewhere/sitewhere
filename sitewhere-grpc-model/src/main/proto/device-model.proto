@@ -176,7 +176,7 @@ message GDeviceElementMapping {
 // Request for creating a device.
 message GDeviceCreateRequest {
 	GOptionalString token = 1;
-	string deviceTypeToken = 2;
+	GOptionalString deviceTypeToken = 2;
 	GOptionalString parentDeviceToken = 3;
 	repeated GDeviceElementMapping deviceElementMappings = 4;
 	GOptionalString comments = 5;
@@ -371,9 +371,9 @@ message GDeviceStream {
 // Request data for creating a customer type.
 message GCustomerTypeCreateRequest {
 	GOptionalString token = 1;
-	string name = 2;
-	string description = 3;
-	string icon = 4;
+	GOptionalString name = 2;
+	GOptionalString description = 3;
+	GOptionalString icon = 4;
 	repeated string containedCustomerTypeTokens = 5;
 	map<string, string> metadata = 6;
 }
@@ -408,11 +408,11 @@ message GCustomerType {
 // Request data for creating a customer.
 message GCustomerCreateRequest {
 	GOptionalString token = 1;
-	string customerTypeToken = 2;
+	GOptionalString customerTypeToken = 2;
 	GOptionalString parentCustomerToken = 3;
-	string name = 4;
-	string description = 5;
-	string imageUrl = 6;
+	GOptionalString name = 4;
+	GOptionalString description = 5;
+	GOptionalString imageUrl = 6;
 	map<string, string> metadata = 8;
 }
 
@@ -487,11 +487,11 @@ message GAreaType {
 // Request data for creating an area.
 message GAreaCreateRequest {
 	GOptionalString token = 1;
-	string areaTypeToken = 2;
+	GOptionalString areaTypeToken = 2;
 	GOptionalString parentAreaToken = 3;
-	string name = 4;
-	string description = 5;
-	string imageUrl = 6;
+	GOptionalString name = 4;
+	GOptionalString description = 5;
+	GOptionalString imageUrl = 6;
 	repeated GLocation bounds = 7;
 	map<string, string> metadata = 8;
 }

@@ -100,6 +100,9 @@ public class Location implements ILocation {
      * @return
      */
     public static List<Location> copy(List<? extends ILocation> input) {
+	if ((input == null) || (input.size() == 0)) {
+	    return null;
+	}
 	List<Location> result = new ArrayList<>();
 	for (ILocation location : input) {
 	    result.add(Location.copy(location));
