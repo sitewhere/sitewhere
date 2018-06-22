@@ -17,7 +17,7 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
 import com.sitewhere.cassandra.CassandraClient;
-import com.sitewhere.configuration.datastore.DatastoreConfiguration;
+import com.sitewhere.configuration.datastore.DatastoreConfigurationChoice;
 import com.sitewhere.configuration.datastore.DatastoreConfigurationParser;
 import com.sitewhere.configuration.parser.IEventManagementParser.Elements;
 import com.sitewhere.event.persistence.cassandra.CassandraDeviceEventManagement;
@@ -66,7 +66,8 @@ public class EventManagementParser extends AbstractBeanDefinitionParser {
      * @param context
      */
     protected void parseEventManagementDatastore(Element element, ParserContext context) {
-	DatastoreConfiguration config = DatastoreConfigurationParser.parseEventManagementDatastore(element, context);
+	DatastoreConfigurationChoice config = DatastoreConfigurationParser.parseEventManagementDatastoreChoice(element,
+		context);
 	switch (config.getType()) {
 	case MongoDB: {
 	    BeanDefinitionBuilder client = BeanDefinitionBuilder

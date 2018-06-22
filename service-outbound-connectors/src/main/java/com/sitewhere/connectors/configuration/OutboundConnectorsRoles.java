@@ -8,6 +8,7 @@
 package com.sitewhere.connectors.configuration;
 
 import com.sitewhere.configuration.ConfigurationRole;
+import com.sitewhere.configuration.model.CommonConnectorRoleKeys;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRole;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 import com.sitewhere.spi.microservice.configuration.model.IRoleKey;
@@ -43,8 +44,9 @@ public enum OutboundConnectorsRoles implements IConfigurationRoleProvider {
 
     /** Outbound connector. */
     OutboundConnector(ConfigurationRole.build(OutboundConnectorsRoleKeys.OutboundConnector, "Outbound Connector", true,
-	    true, true, new IRoleKey[0], new IRoleKey[] { OutboundConnectorsRoleKeys.FilteredConnector,
-		    OutboundConnectorsRoleKeys.MqttConnector, OutboundConnectorsRoleKeys.RabbitMqConnector })),
+	    true, true, new IRoleKey[0],
+	    new IRoleKey[] { OutboundConnectorsRoleKeys.FilteredConnector, OutboundConnectorsRoleKeys.MqttConnector,
+		    OutboundConnectorsRoleKeys.SolrConnector, OutboundConnectorsRoleKeys.RabbitMqConnector })),
 
     /** Filtered connector. */
     FilteredConnector(ConfigurationRole.build(OutboundConnectorsRoleKeys.FilteredConnector, "Filtered Connector", true,
@@ -52,22 +54,26 @@ public enum OutboundConnectorsRoles implements IConfigurationRoleProvider {
 
     /** Processor filter criteria. */
     Filters(ConfigurationRole.build(OutboundConnectorsRoleKeys.Filters, "Filters", true, false, false,
-	    new IRoleKey[] { OutboundConnectorsRoleKeys.OutboundFilters })),
+	    new IRoleKey[] { OutboundConnectorsRoleKeys.OutboundFilter })),
 
-    /** Processor filters. */
-    OutboundFilters(
-	    ConfigurationRole.build(OutboundConnectorsRoleKeys.OutboundFilters, "Outbound Filter", true, true, true)),
+    /** Processor filter. */
+    OutboundFilter(
+	    ConfigurationRole.build(OutboundConnectorsRoleKeys.OutboundFilter, "Outbound Filter", true, true, true)),
 
-    /** MQTT event processor. */
-    MqttEventProcessor(ConfigurationRole.build(OutboundConnectorsRoleKeys.MqttConnector, "MQTT Connector", true, true,
-	    true, new IRoleKey[] { OutboundConnectorsRoleKeys.Filters, OutboundConnectorsRoleKeys.RouteBuilder })),
+    /** Solr outbound connector. */
+    SolrConnector(ConfigurationRole.build(OutboundConnectorsRoleKeys.SolrConnector, "Solr Connector", true, true, true,
+	    new IRoleKey[] { CommonConnectorRoleKeys.SolrConfigurationChoice, OutboundConnectorsRoleKeys.Filters })),
 
-    /** MQTT event processsor. Route builder. */
+    /** MQTT outbound connector. */
+    MqttConnector(ConfigurationRole.build(OutboundConnectorsRoleKeys.MqttConnector, "MQTT Connector", true, true, true,
+	    new IRoleKey[] { OutboundConnectorsRoleKeys.Filters, OutboundConnectorsRoleKeys.RouteBuilder })),
+
+    /** MQTT outbound connector. Route builder. */
     RouteBuilder(ConfigurationRole.build(OutboundConnectorsRoleKeys.RouteBuilder, "Route Builder", true, false, false)),
 
-    /** Outbound processing chain. RabbitMQ event processor. */
-    RabbitMqEventProcessor(ConfigurationRole.build(OutboundConnectorsRoleKeys.RabbitMqConnector, "RabbitMQ Connector",
-	    true, true, true,
+    /** RabbitMQ outbound connector. */
+    RabbitMqConnector(ConfigurationRole.build(OutboundConnectorsRoleKeys.RabbitMqConnector, "RabbitMQ Connector", true,
+	    true, true,
 	    new IRoleKey[] { OutboundConnectorsRoleKeys.Filters, OutboundConnectorsRoleKeys.RouteBuilder }));
 
     private ConfigurationRole role;

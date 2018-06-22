@@ -18,7 +18,7 @@ import org.w3c.dom.Element;
 
 import com.sitewhere.asset.persistence.mongodb.AssetManagementMongoClient;
 import com.sitewhere.asset.persistence.mongodb.MongoAssetManagement;
-import com.sitewhere.configuration.datastore.DatastoreConfiguration;
+import com.sitewhere.configuration.datastore.DatastoreConfigurationChoice;
 import com.sitewhere.configuration.datastore.DatastoreConfigurationParser;
 import com.sitewhere.configuration.parser.IAssetManagementParser.Elements;
 import com.sitewhere.spi.microservice.spring.AssetManagementBeans;
@@ -62,7 +62,8 @@ public class AssetManagementParser extends AbstractBeanDefinitionParser {
      * @param context
      */
     protected void parseDeviceManagementDatastore(Element element, ParserContext context) {
-	DatastoreConfiguration config = DatastoreConfigurationParser.parseDeviceManagementDatastore(element, context);
+	DatastoreConfigurationChoice config = DatastoreConfigurationParser.parseDeviceManagementDatastoreChoice(element,
+		context);
 	switch (config.getType()) {
 	case MongoDB: {
 	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(AssetManagementMongoClient.class);

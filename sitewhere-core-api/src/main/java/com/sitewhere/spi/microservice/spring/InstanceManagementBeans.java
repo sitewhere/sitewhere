@@ -23,13 +23,6 @@ public interface InstanceManagementBeans {
     /** Bean id base for Cassandra configurations */
     public static final String BEAN_CASSANDRA_CONFIGURATION_BASE = "cassandra_";
 
-    /** Suffix used for default configuration */
-    public static final String BEAN_SOLR_SUFFIX_DEFAULT = "_default";
-
     /** Bean id base for Solr configurations */
     public static final String BEAN_SOLR_CONFIGURATION_BASE = "solr_";
-
-    /** Bean id for default Solr configuration */
-    public static final String BEAN_SOLR_CONFIGURATION_DEFAULT = BEAN_SOLR_CONFIGURATION_BASE
-	    + BEAN_SOLR_SUFFIX_DEFAULT;
 }

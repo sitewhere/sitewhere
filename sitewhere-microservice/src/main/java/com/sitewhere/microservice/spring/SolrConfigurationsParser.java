@@ -42,12 +42,8 @@ public class SolrConfigurationsParser extends AbstractBeanDefinitionParser {
 		throw new RuntimeException("Unknown Solr configuration element: " + child.getLocalName());
 	    }
 	    switch (type) {
-	    case DefaultSolrConfiguration: {
-		parseDefaultSolrConfiguration(child, context);
-		break;
-	    }
-	    case AlternateSolrConfiguration: {
-		parseAlternateSolrConfiguration(child, context);
+	    case SolrConfiguration: {
+		parseSolrConfiguration(child, context);
 		break;
 	    }
 	    }
@@ -56,31 +52,18 @@ public class SolrConfigurationsParser extends AbstractBeanDefinitionParser {
     }
 
     /**
-     * Parse the default Solr configuration element.
+     * Parse a Solr configuration element.
      * 
      * @param element
      * @param context
      */
-    protected void parseDefaultSolrConfiguration(Element element, ParserContext context) {
-	BeanDefinitionBuilder configuration = BeanDefinitionBuilder.rootBeanDefinition(SolrConfiguration.class);
-	parseSolrAttributes(element, context, configuration);
-	context.getRegistry().registerBeanDefinition(InstanceManagementBeans.BEAN_SOLR_CONFIGURATION_DEFAULT,
-		configuration.getBeanDefinition());
-    }
-
-    /**
-     * Parse an alternate Solr configuration element.
-     * 
-     * @param element
-     * @param context
-     */
-    protected void parseAlternateSolrConfiguration(Element element, ParserContext context) {
+    protected void parseSolrConfiguration(Element element, ParserContext context) {
 	BeanDefinitionBuilder configuration = BeanDefinitionBuilder.rootBeanDefinition(SolrConfiguration.class);
 	parseSolrAttributes(element, context, configuration);
 
 	Attr id = element.getAttributeNode("id");
 	if (id == null) {
-	    throw new RuntimeException("No id specified for Solr alternate configuation.");
+	    throw new RuntimeException("No id specified for Solr configuation.");
 	}
 
 	// Register bean using id as part of name.

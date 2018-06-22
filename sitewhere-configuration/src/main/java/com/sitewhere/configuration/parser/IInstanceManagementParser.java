@@ -208,11 +208,8 @@ public interface IInstanceManagementParser {
 
     public static enum SolrElements {
 
-	/** Default Solr configuration */
-	DefaultSolrConfiguration("default-solr-configuration"),
-
-	/** Alternate Solr configuration */
-	AlternateSolrConfiguration("alternate-solr-configuration");
+	/** Solr configuration */
+	SolrConfiguration("solr-configuration");
 
 	/** Event code */
 	private String localName;

@@ -37,7 +37,8 @@ public class DatastoreConfigurationParser {
      * @param context
      * @return
      */
-    public static DatastoreConfiguration parseDeviceManagementDatastore(Element element, ParserContext context) {
+    public static DatastoreConfigurationChoice parseDeviceManagementDatastoreChoice(Element element,
+	    ParserContext context) {
 	List<Element> children = DomUtils.getChildElements(element);
 	for (Element child : children) {
 	    DeviceManagementDatastoreElements type = DeviceManagementDatastoreElements
@@ -65,7 +66,8 @@ public class DatastoreConfigurationParser {
      * @param context
      * @return
      */
-    public static DatastoreConfiguration parseEventManagementDatastore(Element element, ParserContext context) {
+    public static DatastoreConfigurationChoice parseEventManagementDatastoreChoice(Element element,
+	    ParserContext context) {
 	List<Element> children = DomUtils.getChildElements(element);
 	for (Element child : children) {
 	    EventManagementDatastoreElements type = EventManagementDatastoreElements
@@ -105,7 +107,7 @@ public class DatastoreConfigurationParser {
      * @param context
      * @return
      */
-    public static DatastoreConfiguration parseDeviceStateDatastore(Element element, ParserContext context) {
+    public static DatastoreConfigurationChoice parseDeviceStateDatastoreChoice(Element element, ParserContext context) {
 	List<Element> children = DomUtils.getChildElements(element);
 	for (Element child : children) {
 	    DeviceManagementDatastoreElements type = DeviceManagementDatastoreElements
@@ -132,10 +134,10 @@ public class DatastoreConfigurationParser {
      * @param context
      * @return
      */
-    protected static DatastoreConfiguration parseMongoDbDatastore(Element element, ParserContext context) {
+    protected static DatastoreConfigurationChoice parseMongoDbDatastore(Element element, ParserContext context) {
 	BeanDefinitionBuilder configuration = BeanDefinitionBuilder.rootBeanDefinition(MongoConfiguration.class);
 	parseMongoAttributes(element, context, configuration);
-	return new DatastoreConfiguration(DatastoreConfigurationType.MongoDB, configuration.getBeanDefinition());
+	return new DatastoreConfigurationChoice(DatastoreConfigurationType.MongoDB, configuration.getBeanDefinition());
     }
 
     /**
@@ -145,13 +147,13 @@ public class DatastoreConfigurationParser {
      * @param context
      * @return
      */
-    protected static DatastoreConfiguration parseMongoDbReference(Element element, ParserContext context) {
+    protected static DatastoreConfigurationChoice parseMongoDbReference(Element element, ParserContext context) {
 	Attr id = element.getAttributeNode("id");
 	if (id == null) {
 	    throw new RuntimeException("No id specified for MongoDB configuration.");
 	}
 	String reference = InstanceManagementBeans.BEAN_MONGO_CONFIGURATION_BASE + id.getValue();
-	return new DatastoreConfiguration(DatastoreConfigurationType.MongoDBReference, reference);
+	return new DatastoreConfigurationChoice(DatastoreConfigurationType.MongoDBReference, reference);
     }
 
     /**
@@ -214,10 +216,10 @@ public class DatastoreConfigurationParser {
      * @param context
      * @return
      */
-    protected static DatastoreConfiguration parseInfluxDbDatastore(Element element, ParserContext context) {
+    protected static DatastoreConfigurationChoice parseInfluxDbDatastore(Element element, ParserContext context) {
 	BeanDefinitionBuilder configuration = BeanDefinitionBuilder.rootBeanDefinition(InfluxConfiguration.class);
 	parseInfluxAttributes(element, context, configuration);
-	return new DatastoreConfiguration(DatastoreConfigurationType.InfluxDB, configuration.getBeanDefinition());
+	return new DatastoreConfigurationChoice(DatastoreConfigurationType.InfluxDB, configuration.getBeanDefinition());
     }
 
     /**
@@ -227,13 +229,13 @@ public class DatastoreConfigurationParser {
      * @param context
      * @return
      */
-    protected static DatastoreConfiguration parseInfluxDbReference(Element element, ParserContext context) {
+    protected static DatastoreConfigurationChoice parseInfluxDbReference(Element element, ParserContext context) {
 	Attr id = element.getAttributeNode("id");
 	if (id == null) {
 	    throw new RuntimeException("No id specified for InfluxDB configuration.");
 	}
 	String reference = InstanceManagementBeans.BEAN_INFLUX_CONFIGURATION_BASE + id.getValue();
-	return new DatastoreConfiguration(DatastoreConfigurationType.InfluxDBReference, reference);
+	return new DatastoreConfigurationChoice(DatastoreConfigurationType.InfluxDBReference, reference);
     }
 
     /**
@@ -293,10 +295,11 @@ public class DatastoreConfigurationParser {
      * @param context
      * @return
      */
-    protected static DatastoreConfiguration parseCassandraDatastore(Element element, ParserContext context) {
+    protected static DatastoreConfigurationChoice parseCassandraDatastore(Element element, ParserContext context) {
 	BeanDefinitionBuilder configuration = BeanDefinitionBuilder.rootBeanDefinition(CassandraConfiguration.class);
 	parseCassandraAttributes(element, context, configuration);
-	return new DatastoreConfiguration(DatastoreConfigurationType.Cassandra, configuration.getBeanDefinition());
+	return new DatastoreConfigurationChoice(DatastoreConfigurationType.Cassandra,
+		configuration.getBeanDefinition());
     }
 
     /**
@@ -306,13 +309,13 @@ public class DatastoreConfigurationParser {
      * @param context
      * @return
      */
-    protected static DatastoreConfiguration parseCassandraReference(Element element, ParserContext context) {
+    protected static DatastoreConfigurationChoice parseCassandraReference(Element element, ParserContext context) {
 	Attr id = element.getAttributeNode("id");
 	if (id == null) {
 	    throw new RuntimeException("No id specified for Cassandra configuration.");
 	}
 	String reference = InstanceManagementBeans.BEAN_CASSANDRA_CONFIGURATION_BASE + id.getValue();
-	return new DatastoreConfiguration(DatastoreConfigurationType.CassandraReference, reference);
+	return new DatastoreConfigurationChoice(DatastoreConfigurationType.CassandraReference, reference);
     }
 
     /**

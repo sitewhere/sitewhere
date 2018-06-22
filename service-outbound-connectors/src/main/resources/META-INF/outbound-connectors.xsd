@@ -10,7 +10,8 @@
 		namespace="http://sitewhere.io/schema/sitewhere/microservice/common/connector"
 		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/connector-common.xsd" />
 
-	<xsd:element name="outbound-connectors" type="outboundConnectorsType">
+	<xsd:element name="outbound-connectors"
+		type="outboundConnectorsType">
 		<xsd:annotation>
 			<xsd:documentation>
 				Provides configuration information for the
@@ -22,8 +23,8 @@
 	<!-- Contains information about outbound connectors -->
 	<xsd:complexType name="outboundConnectorsType">
 		<xsd:sequence>
-			<xsd:element ref="abstract-outbound-connector" minOccurs="0"
-				maxOccurs="unbounded" />
+			<xsd:element ref="abstract-outbound-connector"
+				minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -40,7 +41,8 @@
 	</xsd:element>
 
 	<!-- Common outbound connector filter element information -->
-	<xsd:complexType name="abstractOutboundConnectorFilterType" />
+	<xsd:complexType
+		name="abstractOutboundConnectorFilterType" />
 
 	<!-- Filter operation type -->
 	<xsd:simpleType name="filterOperationType">
@@ -63,16 +65,18 @@
 	</xsd:element>
 	<xsd:complexType name="siteFilterType">
 		<xsd:complexContent>
-			<xsd:extension base="abstractOutboundConnectorFilterType">
-				<xsd:attribute name="site" type="xsd:string" use="required">
+			<xsd:extension
+				base="abstractOutboundConnectorFilterType">
+				<xsd:attribute name="site" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Unique token for the site to be filtered.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="operation" type="filterOperationType"
-					use="optional">
+				<xsd:attribute name="operation"
+					type="filterOperationType" use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
 							Indicates whether matches should be included or
@@ -86,7 +90,8 @@
 	</xsd:complexType>
 
 	<!-- Filters outbound events associated with a device specification -->
-	<xsd:element name="specification-filter" type="specificationFilterType"
+	<xsd:element name="specification-filter"
+		type="specificationFilterType"
 		substitutionGroup="abstract-outbound-connector-filter">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -98,7 +103,8 @@
 	</xsd:element>
 	<xsd:complexType name="specificationFilterType">
 		<xsd:complexContent>
-			<xsd:extension base="abstractOutboundConnectorFilterType">
+			<xsd:extension
+				base="abstractOutboundConnectorFilterType">
 				<xsd:attribute name="specification" type="xsd:string"
 					use="required">
 					<xsd:annotation>
@@ -108,8 +114,8 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="operation" type="filterOperationType"
-					use="optional">
+				<xsd:attribute name="operation"
+					type="filterOperationType" use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
 							Indicates whether matches should be included or
@@ -137,7 +143,8 @@
 	</xsd:element>
 	<xsd:complexType name="groovyFilterType">
 		<xsd:complexContent>
-			<xsd:extension base="abstractOutboundConnectorFilterType">
+			<xsd:extension
+				base="abstractOutboundConnectorFilterType">
 				<xsd:attribute name="scriptPath" type="xsd:string"
 					use="required">
 					<xsd:annotation>
@@ -163,8 +170,8 @@
 	</xsd:complexType>
 
 	<!-- Used as a placeholder for outbound multicaster elements to allow substitutionGroups -->
-	<xsd:element name="abstract-outbound-multicaster" abstract="true"
-		type="abstractOutboundMulticasterType">
+	<xsd:element name="abstract-outbound-multicaster"
+		abstract="true" type="abstractOutboundMulticasterType">
 		<xsd:annotation>
 			<xsd:documentation>
 				A placeholder for outbound multicaster elements.
@@ -177,7 +184,8 @@
 
 	<!-- Multicasts events to all devices that use a given specification -->
 	<xsd:element name="all-with-specification-multicaster"
-		type="allWithSpecificationMulticasterType" substitutionGroup="abstract-outbound-multicaster">
+		type="allWithSpecificationMulticasterType"
+		substitutionGroup="abstract-outbound-multicaster">
 		<xsd:annotation>
 			<xsd:documentation>
 				Multicasts to all devices that use a given
@@ -185,7 +193,8 @@
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:complexType name="allWithSpecificationMulticasterType">
+	<xsd:complexType
+		name="allWithSpecificationMulticasterType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractOutboundMulticasterType">
 				<xsd:attribute name="specification" type="xsd:string"
@@ -223,10 +232,12 @@
 	</xsd:element>
 
 	<!-- Common route builder element information -->
-	<xsd:complexType name="abstractOutboundRouteBuilderType" />
+	<xsd:complexType
+		name="abstractOutboundRouteBuilderType" />
 
 	<!-- Routes events based on results from a Groovy script -->
-	<xsd:element name="groovy-route-builder" type="groovyRouteBuilderType"
+	<xsd:element name="groovy-route-builder"
+		type="groovyRouteBuilderType"
 		substitutionGroup="abstract-outbound-route-builder">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -252,8 +263,8 @@
 	</xsd:complexType>
 
 	<!-- Used as a placeholder for outbound connector elements to allow substitutionGroups -->
-	<xsd:element name="abstract-outbound-connector" abstract="true"
-		type="abstractOutboundConnectorType">
+	<xsd:element name="abstract-outbound-connector"
+		abstract="true" type="abstractOutboundConnectorType">
 		<xsd:annotation>
 			<xsd:documentation>
 				A placeholder for outbound connector elements.
@@ -263,19 +274,23 @@
 
 	<!-- Common outbound connector element information -->
 	<xsd:complexType name="abstractOutboundConnectorType">
-		<xsd:attributeGroup ref="outbound-connector-attributes" />
+		<xsd:attributeGroup
+			ref="outbound-connector-attributes" />
 	</xsd:complexType>
 
 	<!-- Attributes common to all outbound connectors -->
-	<xsd:attributeGroup name="outbound-connector-attributes">
-		<xsd:attribute name="connectorId" type="xsd:token" use="required">
+	<xsd:attributeGroup
+		name="outbound-connector-attributes">
+		<xsd:attribute name="connectorId" type="xsd:token"
+			use="required">
 			<xsd:annotation>
 				<xsd:documentation>
 					Unique identifier for outbound connector.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="numProcessingThreads" type="xsd:int">
+		<xsd:attribute name="numProcessingThreads"
+			type="xsd:int">
 			<xsd:annotation>
 				<xsd:documentation>
 					Number of processing threads used to pull events
@@ -290,8 +305,8 @@
 		<xsd:complexContent>
 			<xsd:extension base="abstractOutboundConnectorType">
 				<xsd:sequence>
-					<xsd:element name="filters" type="outboundConnectorFilterList"
-						minOccurs="0">
+					<xsd:element name="filters"
+						type="outboundConnectorFilterList" minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation>
 								List of filters that will be applied to
@@ -340,7 +355,8 @@
 						</xsd:annotation>
 					</xsd:element>
 				</xsd:sequence>
-				<xsd:attributeGroup ref="cn:mqtt-broker-attributes" />
+				<xsd:attributeGroup
+					ref="cn:mqtt-broker-attributes" />
 				<xsd:attribute name="topic" type="xsd:string">
 					<xsd:annotation>
 						<xsd:documentation>
@@ -354,7 +370,8 @@
 	</xsd:complexType>
 
 	<!-- RabbitMQ outbound event connector -->
-	<xsd:element name="rabbit-mq-connector" type="rabbitMqConnectorType"
+	<xsd:element name="rabbit-mq-connector"
+		type="rabbitMqConnectorType"
 		substitutionGroup="abstract-outbound-connector">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -408,7 +425,8 @@
 	</xsd:complexType>
 
 	<!-- Groovy outbound event connector -->
-	<xsd:element name="groovy-connector" type="groovyConnectorType"
+	<xsd:element name="groovy-connector"
+		type="groovyConnectorType"
 		substitutionGroup="abstract-outbound-connector">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -445,12 +463,16 @@
 	<xsd:complexType name="solrConnectorType">
 		<xsd:complexContent>
 			<xsd:extension base="filteredOutboundConnectorType">
+				<xsd:sequence>
+					<xsd:element ref="cn:solr-configuration-choice" />
+				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
 
 	<!-- Azure EventHub outbound connector -->
-	<xsd:element name="azure-eventhub-connector" type="azureEventHubConnectorType"
+	<xsd:element name="azure-eventhub-connector"
+		type="azureEventHubConnectorType"
 		substitutionGroup="abstract-outbound-connector">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -462,14 +484,16 @@
 	<xsd:complexType name="azureEventHubConnectorType">
 		<xsd:complexContent>
 			<xsd:extension base="filteredOutboundConnectorType">
-				<xsd:attribute name="sasName" type="xsd:string" use="required">
+				<xsd:attribute name="sasName" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Sets the identity used for SAS authentication.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="sasKey" type="xsd:string" use="required">
+				<xsd:attribute name="sasKey" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Sets the key used for SAS authentication.
@@ -498,7 +522,8 @@
 	</xsd:complexType>
 
 	<!-- InitialState.com outbound connector -->
-	<xsd:element name="initial-state-connector" type="initialStateConnectorType"
+	<xsd:element name="initial-state-connector"
+		type="initialStateConnectorType"
 		substitutionGroup="abstract-outbound-connector">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -511,8 +536,8 @@
 	<xsd:complexType name="initialStateConnectorType">
 		<xsd:complexContent>
 			<xsd:extension base="filteredOutboundConnectorType">
-				<xsd:attribute name="streamingAccessKey" type="xsd:string"
-					use="required">
+				<xsd:attribute name="streamingAccessKey"
+					type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Access key obtained from the InitialState.com
@@ -527,7 +552,8 @@
 	</xsd:complexType>
 
 	<!-- Dweet.io outbound connector -->
-	<xsd:element name="dweet-io-connector" type="dweetIoConnectorType"
+	<xsd:element name="dweet-io-connector"
+		type="dweetIoConnectorType"
 		substitutionGroup="abstract-outbound-connector">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -545,7 +571,8 @@
 	</xsd:complexType>
 
 	<!-- Amazon SQS outbound connector -->
-	<xsd:element name="amazon-sqs-connector" type="amazonSqsConnectorType"
+	<xsd:element name="amazon-sqs-connector"
+		type="amazonSqsConnectorType"
 		substitutionGroup="abstract-outbound-connector">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -556,7 +583,8 @@
 	<xsd:complexType name="amazonSqsConnectorType">
 		<xsd:complexContent>
 			<xsd:extension base="filteredOutboundConnectorType">
-				<xsd:attribute name="accessKey" type="xsd:string" use="required">
+				<xsd:attribute name="accessKey" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Amazon AWS access key for account owning SQS
@@ -564,7 +592,8 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="secretKey" type="xsd:string" use="required">
+				<xsd:attribute name="secretKey" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Amazon AWS secret key for account owning SQS
@@ -572,7 +601,8 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="queueUrl" type="xsd:string" use="required">
+				<xsd:attribute name="queueUrl" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Unique URL for SQS queue.
@@ -584,7 +614,8 @@
 	</xsd:complexType>
 
 	<!-- WSO2 CEP connector -->
-	<xsd:element name="wso2-cep-connector" type="wso2CepConnectorType"
+	<xsd:element name="wso2-cep-connector"
+		type="wso2CepConnectorType"
 		substitutionGroup="abstract-outbound-connector">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -597,28 +628,32 @@
 	<xsd:complexType name="wso2CepConnectorType">
 		<xsd:complexContent>
 			<xsd:extension base="filteredOutboundConnectorType">
-				<xsd:attribute name="hostname" type="xsd:string" use="optional">
+				<xsd:attribute name="hostname" type="xsd:string"
+					use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
 							Hostname for external WSO2 CEP instance.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="port" type="xsd:int" use="optional">
+				<xsd:attribute name="port" type="xsd:int"
+					use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
 							Port number for external WSO2 CEP instance.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="username" type="xsd:string" use="optional">
+				<xsd:attribute name="username" type="xsd:string"
+					use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
 							Username for external WSO2 CEP instance.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="password" type="xsd:string" use="optional">
+				<xsd:attribute name="password" type="xsd:string"
+					use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
 							Password for external WSO2 CEP instance.
@@ -630,7 +665,8 @@
 	</xsd:complexType>
 
 	<!-- Siddhi CEP outbound connector -->
-	<xsd:element name="siddhi-connector" type="siddhiConnectorType"
+	<xsd:element name="siddhi-connector"
+		type="siddhiConnectorType"
 		substitutionGroup="abstract-outbound-connector">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -644,8 +680,8 @@
 		<xsd:complexContent>
 			<xsd:extension base="filteredOutboundConnectorType">
 				<xsd:sequence>
-					<xsd:element minOccurs="1" maxOccurs="unbounded" name="siddhi-query"
-						type="siddhiQueryType">
+					<xsd:element minOccurs="1" maxOccurs="unbounded"
+						name="siddhi-query" type="siddhiQueryType">
 						<xsd:annotation>
 							<xsd:documentation>
 								A Siddhi query that executes selector logic.
@@ -658,8 +694,8 @@
 	</xsd:complexType>
 
 	<!-- Used as a placeholder for Siddhi callbacks to allow substitutionGroups -->
-	<xsd:element name="abstract-siddhi-callback" abstract="true"
-		type="abstractSiddhiCallbackType">
+	<xsd:element name="abstract-siddhi-callback"
+		abstract="true" type="abstractSiddhiCallbackType">
 		<xsd:annotation>
 			<xsd:documentation>
 				A placeholder for Siddhi callback elements.
@@ -669,7 +705,8 @@
 
 	<!-- Common Siddhi callback element information -->
 	<xsd:complexType name="abstractSiddhiCallbackType">
-		<xsd:attribute name="stream" type="xsd:string" use="required">
+		<xsd:attribute name="stream" type="xsd:string"
+			use="required">
 			<xsd:annotation>
 				<xsd:documentation>
 					Name of stream for which a callback will be
@@ -680,7 +717,8 @@
 	</xsd:complexType>
 
 	<!-- Siddhi debug callback -->
-	<xsd:element name="stream-debugger" type="siddhiStreamDebuggerType"
+	<xsd:element name="stream-debugger"
+		type="siddhiStreamDebuggerType"
 		substitutionGroup="abstract-siddhi-callback">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -697,7 +735,8 @@
 	</xsd:complexType>
 
 	<!-- Siddhi Groovy stream processor -->
-	<xsd:element name="groovy-stream-processor" type="siddhiGroovyStreamProcessorType"
+	<xsd:element name="groovy-stream-processor"
+		type="siddhiGroovyStreamProcessorType"
 		substitutionGroup="abstract-siddhi-callback">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -726,7 +765,8 @@
 			<xsd:element minOccurs="0" maxOccurs="unbounded"
 				ref="abstract-siddhi-callback" />
 		</xsd:sequence>
-		<xsd:attribute name="selector" type="xsd:string" use="required">
+		<xsd:attribute name="selector" type="xsd:string"
+			use="required">
 			<xsd:annotation>
 				<xsd:documentation>
 					Selector expression that contains processing

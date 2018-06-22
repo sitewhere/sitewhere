@@ -20,6 +20,9 @@ public enum OutboundConnectorsRoleKeys implements IRoleKey {
     /** Groovy route builder */
     GroovyRouteBuilder("grvy_rte_bld"),
 
+    /** Solr connector */
+    SolrConnector("solr_conn"),
+
     /** MQTT connector */
     MqttConnector("mqtt_conn"),
 
@@ -33,7 +36,10 @@ public enum OutboundConnectorsRoleKeys implements IRoleKey {
     FilteredConnector("filter_conn"),
 
     /** Filters list */
-    Filters("filters"), OutboundFilters("ob_filters");
+    Filters("filters"),
+
+    /** Single filter instance */
+    OutboundFilter("filter");
 
     private String id;
 

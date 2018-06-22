@@ -67,8 +67,7 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
 	// Connector configurations.
 	addElement(createConnectorConfigurationsElement());
 	addElement(createSolrConnectorConfigurationsElement());
-	addElement(createDefaultSolrConfigurationElement());
-	addElement(createAlternateSolrConfigurationElement());
+	addElement(createSolrConfigurationElement());
     }
 
     /*
@@ -263,42 +262,23 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
     }
 
     /**
-     * Create element which defines the default Apache Solr configuration.
+     * Create element which defines an Apache Solr configuration.
      * 
      * @return
      */
-    protected ElementNode createDefaultSolrConfigurationElement() {
+    protected ElementNode createSolrConfigurationElement() {
 	ElementNode.Builder builder = new ElementNode.Builder(
-		InstanceManagementRoles.DefaultSolrConfiguration.getRole().getName(),
-		IInstanceManagementParser.SolrElements.DefaultSolrConfiguration.getLocalName(), "search-plus",
-		InstanceManagementRoleKeys.DefaultSolrConfiguration, this);
+		InstanceManagementRoles.SolrConfiguration.getRole().getName(),
+		IInstanceManagementParser.SolrElements.SolrConfiguration.getLocalName(), "search-plus",
+		InstanceManagementRoleKeys.SolrConfiguration, this);
 
-	builder.description("Provides default Solr configuration for tenants.");
-	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
-
-	CommonConnectorModel.adSolrConnectivityAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
-
-	return builder.build();
-    }
-
-    /**
-     * Create element which defines an alternate Apache Solr configuration.
-     * 
-     * @return
-     */
-    protected ElementNode createAlternateSolrConfigurationElement() {
-	ElementNode.Builder builder = new ElementNode.Builder(
-		InstanceManagementRoles.AltSolrConfiguration.getRole().getName(),
-		IInstanceManagementParser.SolrElements.AlternateSolrConfiguration.getLocalName(), "search-plus",
-		InstanceManagementRoleKeys.AltSolrConfiguration, this);
-
-	builder.description("Provides alternate Solr configuration for tenants.");
+	builder.description("Provides Solr configuration that may be referenced in Solr connectors.");
 	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
 	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String,
 		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
 			.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
-	CommonConnectorModel.adSolrConnectivityAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+	CommonConnectorModel.addSolrConnectivityAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
 	return builder.build();
     }

@@ -46,8 +46,11 @@ import com.sitewhere.spi.tenant.ITenant;
 public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecycleComponent
 	implements IApiDemux<T>, IInstanceTopologyUpdatesListener {
 
-    /** Amount of time to wait between check for available API channel */
-    protected static final int API_CHANNEL_WAIT_INTERVAL_IN_SECS = 3;
+    /** Min of time to wait between checks for available API channel */
+    protected static final long API_CHANNEL_WAIT_INTERVAL_MS_MIN = 100;
+
+    /** Max of time to wait between checks for available API channel */
+    protected static final long API_CHANNEL_WAIT_INTERVAL_MS_MAX = 3 * 1000;
 
     /** Amount of time to wait before logging warnings about missing API channel */
     protected static final int API_CHANNEL_WARN_INTERVAL_IN_SECS = 30;
@@ -192,6 +195,7 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
      */
     protected void waitForApiChannelAvailable(ITenant tenant) throws SiteWhereException {
 	long deadline = System.currentTimeMillis() + (API_CHANNEL_WARN_INTERVAL_IN_SECS * 1000);
+	long waitPeriod = API_CHANNEL_WAIT_INTERVAL_MS_MIN;
 	while (true) {
 	    try {
 		getApiChannelWithConstraints(tenant);
@@ -204,9 +208,13 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 		}
 	    }
 	    try {
-		Thread.sleep(API_CHANNEL_WAIT_INTERVAL_IN_SECS * 1000);
+		Thread.sleep(waitPeriod);
 	    } catch (InterruptedException e) {
 		getLogger().warn(GrpcClientMessages.API_CHANNEL_INTERRUPTED_WAITING_FOR_MS);
+	    }
+	    waitPeriod *= 2;
+	    if (waitPeriod > API_CHANNEL_WAIT_INTERVAL_MS_MAX) {
+		waitPeriod = API_CHANNEL_WAIT_INTERVAL_MS_MAX;
 	    }
 	}
     }

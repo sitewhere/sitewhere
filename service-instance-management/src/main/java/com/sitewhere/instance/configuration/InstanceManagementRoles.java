@@ -66,17 +66,12 @@ public enum InstanceManagementRoles implements IConfigurationRoleProvider {
 
     /** Solr connector configurations. */
     SolrConfigurations(
-	    ConfigurationRole.build(InstanceManagementRoleKeys.SolrConfigurations, "Solr Connector Configuration", true,
-		    false, false, new IRoleKey[] { InstanceManagementRoleKeys.DefaultSolrConfiguration,
-			    InstanceManagementRoleKeys.AltSolrConfiguration })),
-
-    /** Solr connector default configuration. */
-    DefaultSolrConfiguration(ConfigurationRole.build(InstanceManagementRoleKeys.DefaultSolrConfiguration,
-	    "Default Solr Configuration", false, false, false)),
+	    ConfigurationRole.build(InstanceManagementRoleKeys.SolrConfigurations, "Solr Connector Configurations",
+		    true, false, false, new IRoleKey[] { InstanceManagementRoleKeys.SolrConfiguration })),
 
     /** Solr connector alternate configuration. */
-    AltSolrConfiguration(ConfigurationRole.build(InstanceManagementRoleKeys.AltSolrConfiguration,
-	    "Alternate Solr Configuration", true, true, true));
+    SolrConfiguration(ConfigurationRole.build(InstanceManagementRoleKeys.SolrConfiguration, "Solr Configuration", true,
+	    true, true));
 
     private ConfigurationRole role;
 

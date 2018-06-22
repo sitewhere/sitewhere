@@ -47,11 +47,8 @@ public enum InstanceManagementRoleKeys implements IRoleKey {
     /** Apache Solr connector configurations */
     SolrConfigurations("solr_confs"),
 
-    /** Solr default configuration element */
-    DefaultSolrConfiguration("def_solr_conf"),
-
-    /** Solr alternate configuration element */
-    AltSolrConfiguration("alt_solr_conf");
+    /** Solr configuration element */
+    SolrConfiguration("solr_conf");
 
     private String id;
 

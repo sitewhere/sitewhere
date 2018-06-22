@@ -19,7 +19,7 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
-import com.sitewhere.configuration.datastore.DatastoreConfiguration;
+import com.sitewhere.configuration.datastore.DatastoreConfigurationChoice;
 import com.sitewhere.configuration.datastore.DatastoreConfigurationParser;
 import com.sitewhere.configuration.parser.IDeviceStateManagementParser.Elements;
 import com.sitewhere.devicestate.persistence.mongodb.DeviceStateManagementMongoClient;
@@ -74,7 +74,8 @@ public class DeviceStateParser extends AbstractBeanDefinitionParser {
      * @param context
      */
     protected void parseDeviceStateDatastore(Element element, ParserContext context) {
-	DatastoreConfiguration config = DatastoreConfigurationParser.parseDeviceStateDatastore(element, context);
+	DatastoreConfigurationChoice config = DatastoreConfigurationParser.parseDeviceStateDatastoreChoice(element,
+		context);
 	switch (config.getType()) {
 	case MongoDB: {
 	    BeanDefinitionBuilder client = BeanDefinitionBuilder

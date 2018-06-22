@@ -8,6 +8,7 @@
 package com.sitewhere.connectors.configuration;
 
 import com.sitewhere.configuration.CommonConnectorModel;
+import com.sitewhere.configuration.model.CommonConnectorProvider;
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.configuration.parser.IOutboundConnectorsParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
@@ -50,7 +51,6 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 	addElement(createOutboundConnectorsElement());
 
 	// Outbound connectors.
-	addElement(createOutboundConnectorElement());
 	addElement(createSolrConnectorElement());
 	addElement(createAzureEventHubConnectorElement());
 	addElement(createAmazonSqsConnectorElement());
@@ -81,6 +81,15 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 	}
     }
 
+    /*
+     * @see com.sitewhere.configuration.model.ConfigurationModelProvider#
+     * initializeDependencies()
+     */
+    @Override
+    public void initializeDependencies() {
+	getDependencies().add(new CommonConnectorProvider());
+    }
+
     /**
      * Create outbound processing element.
      * 
@@ -93,45 +102,6 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 
 	builder.description("Manages a list of connectors used to forward events to external systems.");
 
-	return builder.build();
-    }
-
-    /**
-     * Create a generic outbound event connector reference.
-     * 
-     * @return
-     */
-    protected ElementNode createOutboundConnectorElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Outbound Connector Bean Reference",
-		IOutboundConnectorsParser.Elements.OutboundConnector.getLocalName(), "sign-out",
-		OutboundConnectorsRoleKeys.OutboundConnector, this);
-	builder.description("Configures an outbound connector that is declared in an external Spring bean.");
-	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
-
-	addCommonConnectorAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_GENERAL);
-	builder.attribute((new AttributeNode.Builder("Bean reference name", "ref", AttributeType.String,
-		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description(
-			"Name of Spring bean that will be referenced as an outbound connector. The bean should implement the expected SiteWhere outbound connector APIs")
-			.build()));
-	return builder.build();
-    }
-
-    /**
-     * Create a Groovy route builder.
-     * 
-     * @return
-     */
-    protected ElementNode createGroovyRouteBuilderElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Groovy Route Builder",
-		IOutboundConnectorsParser.RouteBuilders.GroovyRouteBuilder.getLocalName(), "sign-out",
-		OutboundConnectorsRoleKeys.GroovyRouteBuilder, this);
-	builder.description(
-		"Route builder which executes a Groovy script to choose routes where events will be delivered.");
-	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
-
-	addCommonConnectorAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_GENERAL);
-	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String,
-		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Relative path to Groovy script.").build()));
 	return builder.build();
     }
 
@@ -192,10 +162,8 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
     protected ElementNode createSolrConnectorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Apache Solr Connector",
 		IOutboundConnectorsParser.Elements.SolrConnector.getLocalName(), "sign-out",
-		OutboundConnectorsRoleKeys.FilteredConnector, this);
-	builder.description("Forwards outbound events to Apache Solr for indexing in the search engine. This "
-		+ "event processor relies on the global Solr properties to determine the Solr instance the "
-		+ "client will connect with.");
+		OutboundConnectorsRoleKeys.SolrConnector, this);
+	builder.description("Forwards outbound events to Apache Solr for indexing in the search engine.");
 	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
 	addCommonConnectorAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
@@ -330,6 +298,25 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
     }
 
     /**
+     * Create a Groovy route builder.
+     * 
+     * @return
+     */
+    protected ElementNode createGroovyRouteBuilderElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Groovy Route Builder",
+		IOutboundConnectorsParser.RouteBuilders.GroovyRouteBuilder.getLocalName(), "sign-out",
+		OutboundConnectorsRoleKeys.GroovyRouteBuilder, this);
+	builder.description(
+		"Route builder which executes a Groovy script to choose routes where events will be delivered.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+
+	addCommonConnectorAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Relative path to Groovy script.").build()));
+	return builder.build();
+    }
+
+    /**
      * Create filter criteria element.
      * 
      * @return
@@ -351,7 +338,7 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
     protected ElementNode createAreaFilterElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Area Filter",
 		IOutboundConnectorsParser.Filters.AreaFilter.getLocalName(), "filter",
-		OutboundConnectorsRoleKeys.OutboundFilters, this);
+		OutboundConnectorsRoleKeys.OutboundFilter, this);
 	builder.description("Allows events from a given area to be included or excluded for an outbound processor.");
 	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
 
@@ -373,9 +360,9 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
     protected ElementNode createSpecificationFilterElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Specification Filter",
 		IOutboundConnectorsParser.Filters.SpecificationFilter.getLocalName(), "filter",
-		OutboundConnectorsRoleKeys.OutboundFilters, this);
-	builder.description("Allows events for devices using a given specification to be included or "
-		+ "excluded for an outbound processor.");
+		OutboundConnectorsRoleKeys.OutboundFilter, this);
+	builder.description(
+		"Allows events for devices of a given type to be included or excluded for an outbound processor.");
 	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
 
 	builder.attribute((new AttributeNode.Builder("Specification", "specification",
@@ -396,7 +383,7 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
     protected ElementNode createGroovyFilterElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy Filter",
 		IOutboundConnectorsParser.Filters.GroovyFilter.getLocalName(), "filter",
-		OutboundConnectorsRoleKeys.OutboundFilters, this);
+		OutboundConnectorsRoleKeys.OutboundFilter, this);
 	builder.description("Allows events to be filtered based on the return value of a Groovy script. "
 		+ "If the script returns false, the event is filtered. See the SiteWhere documentation for "
 		+ "a description of the variable bindings provided by the system.");

@@ -73,7 +73,7 @@ public class CommonConnectorModel {
      * @param builder
      * @param connectivity
      */
-    public static void adSolrConnectivityAttributes(ElementNode.Builder builder, IAttributeGroup connectivity) {
+    public static void addSolrConnectivityAttributes(ElementNode.Builder builder, IAttributeGroup connectivity) {
 	builder.attribute(
 		(new AttributeNode.Builder("Solr server URL", "solrServerUrl", AttributeType.String, connectivity)
 			.description("URL used by Solr client to access server.").build()));

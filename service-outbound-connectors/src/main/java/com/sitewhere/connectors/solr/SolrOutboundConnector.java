@@ -37,7 +37,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public class SolrDeviceEventProcessor extends FilteredOutboundConnector {
+public class SolrOutboundConnector extends FilteredOutboundConnector {
 
     /** Number of documents to buffer before blocking calls */
     private static final int BUFFER_SIZE = 1000;
@@ -65,11 +65,9 @@ public class SolrDeviceEventProcessor extends FilteredOutboundConnector {
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#start
-     * (com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.connectors.FilteredOutboundConnector#start(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -99,8 +97,9 @@ public class SolrDeviceEventProcessor extends FilteredOutboundConnector {
     }
 
     /*
-     * @see com.sitewhere.outbound.FilteredOutboundEventProcessor#
-     * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceEventContext,
+     * @see
+     * com.sitewhere.connectors.FilteredOutboundConnector#onMeasurementsNotFiltered(
+     * com.sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceMeasurements)
      */
     @Override
@@ -132,7 +131,7 @@ public class SolrDeviceEventProcessor extends FilteredOutboundConnector {
 
     /*
      * @see
-     * com.sitewhere.outbound.FilteredOutboundEventProcessor#onAlertNotFiltered(com.
+     * com.sitewhere.connectors.FilteredOutboundConnector#onAlertNotFiltered(com.
      * sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceAlert)
      */

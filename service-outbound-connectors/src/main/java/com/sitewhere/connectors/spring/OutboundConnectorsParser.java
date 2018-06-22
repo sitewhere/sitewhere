@@ -21,6 +21,9 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import com.sitewhere.configuration.instance.solr.SolrConfigurationChoice;
+import com.sitewhere.configuration.instance.solr.SolrConfigurationParser;
+import com.sitewhere.configuration.parser.IConnectorCommonParser.Solr;
 import com.sitewhere.configuration.parser.IOutboundConnectorsParser.Elements;
 import com.sitewhere.configuration.parser.IOutboundConnectorsParser.Filters;
 import com.sitewhere.configuration.parser.IOutboundConnectorsParser.Multicasters;
@@ -39,7 +42,7 @@ import com.sitewhere.connectors.groovy.routing.GroovyRouteBuilder;
 import com.sitewhere.connectors.initialstate.InitialStateEventProcessor;
 import com.sitewhere.connectors.mqtt.MqttOutboundConnector;
 import com.sitewhere.connectors.rabbitmq.RabbitMqOutboundEventProcessor;
-import com.sitewhere.connectors.solr.SolrDeviceEventProcessor;
+import com.sitewhere.connectors.solr.SolrOutboundConnector;
 import com.sitewhere.spi.microservice.spring.OutboundConnectorsBeans;
 
 /**
@@ -279,17 +282,42 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
      * @return
      */
     protected AbstractBeanDefinition parseSolrConnector(Element element, ParserContext context) {
-	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(SolrDeviceEventProcessor.class);
-	// processor.addPropertyReference("solr",
-	// SolrConnection.SOLR_CONFIGURATION_BEAN);
+	List<Element> children = DomUtils.getChildElements(element);
+	BeanDefinitionBuilder connector = BeanDefinitionBuilder.rootBeanDefinition(SolrOutboundConnector.class);
+
+	for (Element child : children) {
+	    Solr type = Solr.getByLocalName(child.getLocalName());
+	    if (type == null) {
+		throw new RuntimeException("Unknown outbound connectors element: " + child.getLocalName());
+	    }
+	    switch (type) {
+	    case SolrConfigurationChoice: {
+		SolrConfigurationChoice config = SolrConfigurationParser.parseSolrConfigurationChoice(child, context);
+		switch (config.getType()) {
+		case SolrConfiguration: {
+		    connector.addPropertyValue("solr", config.getConfiguration());
+		    break;
+		}
+		case SolrConfigurationReference: {
+		    connector.addPropertyReference("solr", (String) config.getConfiguration());
+		    break;
+		}
+		default: {
+		    throw new RuntimeException("Invalid Solr configuration specified: " + config.getType());
+		}
+		}
+		break;
+	    }
+	    }
+	}
 
 	// Parse common outbound connector attributes.
-	parseCommonOutboundConnectorAttributes(element, processor);
+	parseCommonOutboundConnectorAttributes(element, connector);
 
 	// Parse nested filters.
-	processor.addPropertyValue("filters", parseFilters(element, context));
+	connector.addPropertyValue("filters", parseFilters(element, context));
 
-	return processor.getBeanDefinition();
+	return connector.getBeanDefinition();
     }
 
     /**

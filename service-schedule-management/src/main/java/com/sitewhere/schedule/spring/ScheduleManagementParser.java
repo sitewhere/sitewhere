@@ -18,7 +18,7 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
-import com.sitewhere.configuration.datastore.DatastoreConfiguration;
+import com.sitewhere.configuration.datastore.DatastoreConfigurationChoice;
 import com.sitewhere.configuration.datastore.DatastoreConfigurationParser;
 import com.sitewhere.configuration.parser.IScheduleManagementParser.Elements;
 import com.sitewhere.schedule.persistence.mongodb.MongoScheduleManagement;
@@ -68,7 +68,8 @@ public class ScheduleManagementParser extends AbstractBeanDefinitionParser {
      * @param context
      */
     protected void parseDeviceManagementDatastore(Element element, ParserContext context) {
-	DatastoreConfiguration config = DatastoreConfigurationParser.parseDeviceManagementDatastore(element, context);
+	DatastoreConfigurationChoice config = DatastoreConfigurationParser.parseDeviceManagementDatastoreChoice(element,
+		context);
 	switch (config.getType()) {
 	case MongoDB: {
 	    BeanDefinitionBuilder client = BeanDefinitionBuilder

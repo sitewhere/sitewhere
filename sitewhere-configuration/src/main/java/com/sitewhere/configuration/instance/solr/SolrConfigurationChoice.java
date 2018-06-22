@@ -5,31 +5,31 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.configuration.datastore;
+package com.sitewhere.configuration.instance.solr;
 
 /**
- * Provides information about datastore configuration after it is parsed.
+ * Provides information about chosen Solr configuration after it is parsed.
  * 
  * @author Derek
  */
-public class DatastoreConfiguration {
+public class SolrConfigurationChoice {
 
     /** Configuration type */
-    private DatastoreConfigurationType type;
+    private SolrConfigurationType type;
 
     /** Configuration object */
     private Object configuration;
 
-    public DatastoreConfiguration(DatastoreConfigurationType type, Object configuration) {
+    public SolrConfigurationChoice(SolrConfigurationType type, Object configuration) {
 	this.type = type;
 	this.configuration = configuration;
     }
 
-    public DatastoreConfigurationType getType() {
+    public SolrConfigurationType getType() {
 	return type;
     }
 
-    public void setType(DatastoreConfigurationType type) {
+    public void setType(SolrConfigurationType type) {
 	this.type = type;
     }
 

@@ -14,7 +14,8 @@
 		namespace="http://sitewhere.io/schema/sitewhere/microservice/common/connector"
 		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/connector-common.xsd" />
 
-	<xsd:element name="instance-management" type="instanceManagementType">
+	<xsd:element name="instance-management"
+		type="instanceManagementType">
 		<xsd:annotation>
 			<xsd:documentation>
 				Provides global instance management configuration
@@ -26,7 +27,8 @@
 	<!-- Top-level instance management elements -->
 	<xsd:complexType name="instanceManagementType">
 		<xsd:all>
-			<xsd:element name="persistence-configurations" type="persistenceConfigurationsType">
+			<xsd:element name="persistence-configurations"
+				type="persistenceConfigurationsType">
 				<xsd:annotation>
 					<xsd:documentation>
 						Captures reusable configuration information that
@@ -34,7 +36,8 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="connector-configurations" type="connectorConfigurationsType">
+			<xsd:element name="connector-configurations"
+				type="connectorConfigurationsType">
 				<xsd:annotation>
 					<xsd:documentation>
 						Captures reusable configuration information that
@@ -71,11 +74,13 @@
 	</xsd:element>
 
 	<!-- Common datastore configuration information -->
-	<xsd:complexType name="abstractPersistenceConfigurationType">
+	<xsd:complexType
+		name="abstractPersistenceConfigurationType">
 	</xsd:complexType>
 
 	<!-- MongoDB persistence configuration elements -->
-	<xsd:element name="mongodb-configurations" type="mongoConfigurationsType"
+	<xsd:element name="mongodb-configurations"
+		type="mongoConfigurationsType"
 		substitutionGroup="abstract-persistence-configuration">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -86,10 +91,12 @@
 	</xsd:element>
 	<xsd:complexType name="mongoConfigurationsType">
 		<xsd:complexContent>
-			<xsd:extension base="abstractPersistenceConfigurationType">
+			<xsd:extension
+				base="abstractPersistenceConfigurationType">
 				<xsd:sequence>
-					<xsd:element name="mongodb-configuration" type="mongoDatastoreConfigurationType"
-						minOccurs="0" maxOccurs="unbounded">
+					<xsd:element name="mongodb-configuration"
+						type="mongoDatastoreConfigurationType" minOccurs="0"
+						maxOccurs="unbounded">
 						<xsd:annotation>
 							<xsd:documentation>
 								Configuration data for MongoDB datastores.
@@ -103,7 +110,8 @@
 
 	<!-- Alternate MongoDB datastore configuration -->
 	<xsd:complexType name="mongoDatastoreConfigurationType">
-		<xsd:attribute name="id" type="xsd:string" use="required">
+		<xsd:attribute name="id" type="xsd:string"
+			use="required">
 			<xsd:annotation>
 				<xsd:documentation>
 					Unique id for datastore configuration.
@@ -114,7 +122,8 @@
 	</xsd:complexType>
 
 	<!-- InfluxDB persistence configuration elements -->
-	<xsd:element name="influxdb-configurations" type="influxConfigurationsType"
+	<xsd:element name="influxdb-configurations"
+		type="influxConfigurationsType"
 		substitutionGroup="abstract-persistence-configuration">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -125,10 +134,12 @@
 	</xsd:element>
 	<xsd:complexType name="influxConfigurationsType">
 		<xsd:complexContent>
-			<xsd:extension base="abstractPersistenceConfigurationType">
+			<xsd:extension
+				base="abstractPersistenceConfigurationType">
 				<xsd:sequence>
-					<xsd:element name="influxdb-configuration" type="influxDatastoreConfigurationType"
-						minOccurs="0" maxOccurs="unbounded">
+					<xsd:element name="influxdb-configuration"
+						type="influxDatastoreConfigurationType" minOccurs="0"
+						maxOccurs="unbounded">
 						<xsd:annotation>
 							<xsd:documentation>
 								Configuration data for MongoDB datastores.
@@ -141,8 +152,10 @@
 	</xsd:complexType>
 
 	<!-- InfluxDB datastore configuration -->
-	<xsd:complexType name="influxDatastoreConfigurationType">
-		<xsd:attribute name="id" type="xsd:string" use="required">
+	<xsd:complexType
+		name="influxDatastoreConfigurationType">
+		<xsd:attribute name="id" type="xsd:string"
+			use="required">
 			<xsd:annotation>
 				<xsd:documentation>
 					Unique id for datastore configuration.
@@ -153,7 +166,8 @@
 	</xsd:complexType>
 
 	<!-- Apache Cassandra persistence configuration elements -->
-	<xsd:element name="cassandra-configurations" type="cassandraConfigurationsType"
+	<xsd:element name="cassandra-configurations"
+		type="cassandraConfigurationsType"
 		substitutionGroup="abstract-persistence-configuration">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -164,10 +178,12 @@
 	</xsd:element>
 	<xsd:complexType name="cassandraConfigurationsType">
 		<xsd:complexContent>
-			<xsd:extension base="abstractPersistenceConfigurationType">
+			<xsd:extension
+				base="abstractPersistenceConfigurationType">
 				<xsd:sequence>
-					<xsd:element name="cassandra-configuration" type="cassandraDatastoreConfigurationType"
-						minOccurs="0" maxOccurs="unbounded">
+					<xsd:element name="cassandra-configuration"
+						type="cassandraDatastoreConfigurationType" minOccurs="0"
+						maxOccurs="unbounded">
 						<xsd:annotation>
 							<xsd:documentation>
 								Configuration data for Apache Cassandra
@@ -181,8 +197,10 @@
 	</xsd:complexType>
 
 	<!-- Apache Cassandra datastore configuration -->
-	<xsd:complexType name="cassandraDatastoreConfigurationType">
-		<xsd:attribute name="id" type="xsd:string" use="required">
+	<xsd:complexType
+		name="cassandraDatastoreConfigurationType">
+		<xsd:attribute name="id" type="xsd:string"
+			use="required">
 			<xsd:annotation>
 				<xsd:documentation>
 					Unique id for datastore configuration.
@@ -218,36 +236,30 @@
 	</xsd:element>
 
 	<!-- Common connector configuration information -->
-	<xsd:complexType name="abstractConnectorConfigurationType">
+	<xsd:complexType
+		name="abstractConnectorConfigurationType">
 	</xsd:complexType>
 
-	<!-- Configuration data for Solr services -->
-	<xsd:element name="solr-configurations" type="solrConfigurationType"
+	<!-- List of configurations for Solr connectors -->
+	<xsd:element name="solr-configurations"
+		type="solrConfigurationsType"
 		substitutionGroup="abstract-connector-configuration">
 		<xsd:annotation>
 			<xsd:documentation>Global configuration settings for Apache Solr.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:complexType name="solrConfigurationType">
+	<xsd:complexType name="solrConfigurationsType">
 		<xsd:complexContent>
-			<xsd:extension base="abstractConnectorConfigurationType">
+			<xsd:extension
+				base="abstractConnectorConfigurationType">
 				<xsd:sequence>
-					<xsd:element name="default-solr-configuration" type="defaultSolrConfigurationType"
-						minOccurs="1">
+					<xsd:element name="solr-configuration"
+						type="solrConfigurationType" minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation>
-								Default configuration settings for Apache Solr
+								Configuration settings for Apache Solr
 								connectors.
-							</xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
-					<xsd:element name="alternate-solr-configuration" type="alternateSolrConfigurationType"
-						minOccurs="0">
-						<xsd:annotation>
-							<xsd:documentation>
-								Alternate configuration settings for Apache
-								Solr connectors.
 							</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
@@ -256,14 +268,10 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
-	<!-- Default configuration for Solr connector -->
-	<xsd:complexType name="defaultSolrConfigurationType">
-		<xsd:attributeGroup ref="cn:solr-attributes" />
-	</xsd:complexType>
-
-	<!-- Alternate configuration for Solr connector -->
-	<xsd:complexType name="alternateSolrConfigurationType">
-		<xsd:attribute name="id" type="xsd:string">
+	<!-- Configuration for Solr connector -->
+	<xsd:complexType name="solrConfigurationType">
+		<xsd:attribute name="id" type="xsd:string"
+			use="required">
 			<xsd:annotation>
 				<xsd:documentation>
 					Unique id for Solr configuration.
