@@ -40,10 +40,14 @@ public class OutboundConnectorsManager extends TenantEngineLifecycleComponent im
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getConnectorHosts().clear();
 	for (IOutboundConnector processor : getOutboundConnectors()) {
-	    // Create host for managing outbound connector.
-	    KafkaOutboundConnectorHost host = new KafkaOutboundConnectorHost(processor);
-	    initializeNestedComponent(host, monitor, true);
-	    getConnectorHosts().add(host);
+	    try {
+		// Create host for managing outbound connector.
+		KafkaOutboundConnectorHost host = new KafkaOutboundConnectorHost(processor);
+		initializeNestedComponent(host, monitor, true);
+		getConnectorHosts().add(host);
+	    } catch (SiteWhereException e) {
+		getLogger().error("Error initializing outbound connector.", e);
+	    }
 	}
     }
 
@@ -55,7 +59,11 @@ public class OutboundConnectorsManager extends TenantEngineLifecycleComponent im
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	for (KafkaOutboundConnectorHost host : getConnectorHosts()) {
-	    startNestedComponent(host, monitor, true);
+	    try {
+		startNestedComponent(host, monitor, true);
+	    } catch (SiteWhereException e) {
+		getLogger().error("Error starting outbound connector.", e);
+	    }
 	}
     }
 
@@ -67,7 +75,11 @@ public class OutboundConnectorsManager extends TenantEngineLifecycleComponent im
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	for (KafkaOutboundConnectorHost host : getConnectorHosts()) {
-	    stopNestedComponent(host, monitor);
+	    try {
+		stopNestedComponent(host, monitor);
+	    } catch (SiteWhereException e) {
+		getLogger().error("Error stopping outbound connector.", e);
+	    }
 	}
     }
 
