@@ -10,9 +10,11 @@ package com.sitewhere.server.lifecycle;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.state.ILifecycleComponentState;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponentLogger;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponentParameter;
@@ -37,12 +39,10 @@ public class LifecycleComponentDecorator<T extends ILifecycleComponent> implemen
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentId()
      */
     @Override
-    public String getComponentId() {
+    public UUID getComponentId() {
 	return getDelegate().getComponentId();
     }
 
@@ -136,13 +136,12 @@ public class LifecycleComponentDecorator<T extends ILifecycleComponent> implemen
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
-     * getLifecycleComponents()
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleComponents
+     * ()
      */
     @Override
-    public Map<String, ILifecycleComponent> getLifecycleComponents() {
+    public Map<UUID, ILifecycleComponent> getLifecycleComponents() {
 	return getDelegate().getLifecycleComponents();
     }
 
@@ -396,13 +395,12 @@ public class LifecycleComponentDecorator<T extends ILifecycleComponent> implemen
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#logState()
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentState()
      */
     @Override
-    public void logState() {
-	getDelegate().logState();
+    public ILifecycleComponentState getComponentState() {
+	return getDelegate().getComponentState();
     }
 
     /**

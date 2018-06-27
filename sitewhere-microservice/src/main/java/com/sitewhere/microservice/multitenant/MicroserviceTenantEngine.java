@@ -7,8 +7,6 @@
  */
 package com.sitewhere.microservice.multitenant;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -368,20 +366,9 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     public ITenantEngineState getCurrentState() throws SiteWhereException {
 	TenantEngineState state = new TenantEngineState();
 	state.setMicroservice(getMicroservice().getMicroserviceDetails());
-	state.setLifecycleStatus(getLifecycleStatus());
-	state.setLifecycleErrorStack(getLifecycleError() != null ? parseErrors(getLifecycleError()) : null);
 	state.setTenantId(getTenant().getId());
+	state.setComponentState(getComponentState());
 	return state;
-    }
-
-    protected List<String> parseErrors(SiteWhereException e) {
-	List<String> errors = new ArrayList<>();
-	Throwable current = e;
-	while (current != null) {
-	    errors.add(current.getLocalizedMessage());
-	    current = current.getCause();
-	}
-	return errors;
     }
 
     /*

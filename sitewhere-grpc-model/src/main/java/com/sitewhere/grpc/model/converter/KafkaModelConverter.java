@@ -12,6 +12,7 @@ import java.util.List;
 
 import com.sitewhere.grpc.kafka.model.KafkaModel.GEnrichedEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
+import com.sitewhere.grpc.kafka.model.KafkaModel.GLifecycleComponentState;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GLifecycleStatus;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GLogLevel;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GLoggedException;
@@ -28,6 +29,7 @@ import com.sitewhere.rest.model.microservice.kafka.payload.PersistedEventPayload
 import com.sitewhere.rest.model.microservice.logging.LoggedException;
 import com.sitewhere.rest.model.microservice.logging.LoggedStackTraceElement;
 import com.sitewhere.rest.model.microservice.logging.MicroserviceLogMessage;
+import com.sitewhere.rest.model.microservice.state.LifecycleComponentState;
 import com.sitewhere.rest.model.microservice.state.MicroserviceState;
 import com.sitewhere.rest.model.microservice.state.TenantEngineState;
 import com.sitewhere.spi.SiteWhereException;
@@ -38,6 +40,7 @@ import com.sitewhere.spi.microservice.logging.ILoggedException;
 import com.sitewhere.spi.microservice.logging.ILoggedStackTraceElement;
 import com.sitewhere.spi.microservice.logging.IMicroserviceLogMessage;
 import com.sitewhere.spi.microservice.logging.LogLevel;
+import com.sitewhere.spi.microservice.state.ILifecycleComponentState;
 import com.sitewhere.spi.microservice.state.IMicroserviceState;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
@@ -223,6 +226,58 @@ public class KafkaModelConverter {
     }
 
     /**
+     * Convert lifecycle component state from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static LifecycleComponentState asApiLifecycleComponentState(GLifecycleComponentState grpc)
+	    throws SiteWhereException {
+	LifecycleComponentState api = new LifecycleComponentState();
+	api.setComponentId(CommonModelConverter.asApiUuid(grpc.getId()));
+	api.setComponentName(grpc.getName());
+	api.setStatus(KafkaModelConverter.asApiLifecycleStatus(grpc.getStatus()));
+
+	if (grpc.getErrorFramesCount() > 0) {
+	    api.setErrorStack(grpc.getErrorFramesList());
+	}
+
+	if (grpc.getChildComponentStatesCount() > 0) {
+	    api.setChildComponentStates(new ArrayList<>());
+	    for (GLifecycleComponentState child : grpc.getChildComponentStatesList()) {
+		api.getChildComponentStates().add(KafkaModelConverter.asApiLifecycleComponentState(child));
+	    }
+	}
+
+	return api;
+    }
+
+    /**
+     * Convert lifecycle component state from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GLifecycleComponentState asGrpcLifecycleComponentState(ILifecycleComponentState api)
+	    throws SiteWhereException {
+	GLifecycleComponentState.Builder grpc = GLifecycleComponentState.newBuilder();
+	grpc.setId(CommonModelConverter.asGrpcUuid(api.getComponentId()));
+	grpc.setName(api.getComponentName());
+	grpc.setStatus(KafkaModelConverter.asGrpcLifecycleStatus(api.getStatus()));
+	if (api.getErrorStack() != null) {
+	    grpc.addAllErrorFrames(api.getErrorStack());
+	}
+	if (api.getChildComponentStates() != null) {
+	    for (ILifecycleComponentState child : api.getChildComponentStates()) {
+		grpc.addChildComponentStates(KafkaModelConverter.asGrpcLifecycleComponentState(child));
+	    }
+	}
+	return grpc.build();
+    }
+
+    /**
      * Convert microservice state from GRPC to API.
      * 
      * @param grpc
@@ -261,13 +316,7 @@ public class KafkaModelConverter {
 	TenantEngineState api = new TenantEngineState();
 	api.setMicroservice(MicroserviceModelConverter.asApiMicroserviceDetails(grpc.getMicroservice()));
 	api.setTenantId(CommonModelConverter.asApiUuid(grpc.getTenantId()));
-	api.setLifecycleStatus(KafkaModelConverter.asApiLifecycleStatus(grpc.getStatus()));
-	if (grpc.getErrorList().size() > 0) {
-	    api.setLifecycleErrorStack(new ArrayList<String>());
-	    for (String error : grpc.getErrorList()) {
-		api.getLifecycleErrorStack().add(error);
-	    }
-	}
+	api.setComponentState(KafkaModelConverter.asApiLifecycleComponentState(grpc.getState()));
 	return api;
     }
 
@@ -282,12 +331,7 @@ public class KafkaModelConverter {
 	GTenantEngineState.Builder grpc = GTenantEngineState.newBuilder();
 	grpc.setMicroservice(MicroserviceModelConverter.asGrpcMicroserviceDetails(api.getMicroservice()));
 	grpc.setTenantId(CommonModelConverter.asGrpcUuid(api.getTenantId()));
-	grpc.setStatus(KafkaModelConverter.asGrpcLifecycleStatus(api.getLifecycleStatus()));
-	if (api.getLifecycleErrorStack() != null) {
-	    for (String error : api.getLifecycleErrorStack()) {
-		grpc.addError(error);
-	    }
-	}
+	grpc.setState(KafkaModelConverter.asGrpcLifecycleComponentState(api.getComponentState()));
 	return grpc.build();
     }
 

@@ -10,9 +10,11 @@ package com.sitewhere.spi.server.lifecycle;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.state.ILifecycleComponentState;
 
 /**
  * Lifecycle methods used in SiteWhere components.
@@ -26,7 +28,7 @@ public interface ILifecycleComponent {
      * 
      * @return
      */
-    public String getComponentId();
+    public UUID getComponentId();
 
     /**
      * Get human-readable name shown for component.
@@ -89,7 +91,7 @@ public interface ILifecycleComponent {
      * 
      * @return
      */
-    public Map<String, ILifecycleComponent> getLifecycleComponents();
+    public Map<UUID, ILifecycleComponent> getLifecycleComponents();
 
     /**
      * Initializes the component while keeping up with lifeycle information.
@@ -273,7 +275,9 @@ public interface ILifecycleComponent {
     public ILifecycleComponentLogger getLogger();
 
     /**
-     * Logs the state of this component and all nested components.
+     * Captures the state of this component and nested components recursively.
+     * 
+     * @return
      */
-    public void logState();
+    public ILifecycleComponentState getComponentState();
 }

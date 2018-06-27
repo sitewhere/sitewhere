@@ -16,9 +16,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.sitewhere.rest.model.microservice.state.LifecycleComponentState;
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.state.ILifecycleComponentState;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponentLogger;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponentParameter;
@@ -38,7 +40,7 @@ import io.opentracing.ActiveSpan;
 public class LifecycleComponent implements ILifecycleComponent {
 
     /** Unique component id */
-    private String componentId = UUID.randomUUID().toString();
+    private UUID componentId = UUID.randomUUID();
 
     /** Component type */
     private LifecycleComponentType componentType;
@@ -62,7 +64,7 @@ public class LifecycleComponent implements ILifecycleComponent {
     private List<ILifecycleComponentParameter<?>> parameters = new ArrayList<>();
 
     /** Map of contained lifecycle components */
-    private Map<String, ILifecycleComponent> lifecycleComponents = new HashMap<String, ILifecycleComponent>();
+    private Map<UUID, ILifecycleComponent> lifecycleComponents = new HashMap<>();
 
     public LifecycleComponent() {
 	this(LifecycleComponentType.Other);
@@ -74,11 +76,10 @@ public class LifecycleComponent implements ILifecycleComponent {
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentId()
      */
-    public String getComponentId() {
+    @Override
+    public UUID getComponentId() {
 	return componentId;
     }
 
@@ -258,7 +259,7 @@ public class LifecycleComponent implements ILifecycleComponent {
 	    }
 
 	    LifecycleStatus status = LifecycleStatus.Started;
-	    for (String id : getLifecycleComponents().keySet()) {
+	    for (UUID id : getLifecycleComponents().keySet()) {
 		ILifecycleComponent sub = getLifecycleComponents().get(id);
 		if ((sub.getLifecycleStatus() == LifecycleStatus.LifecycleError)
 			|| (sub.getLifecycleStatus() == LifecycleStatus.StartedWithErrors)) {
@@ -414,7 +415,7 @@ public class LifecycleComponent implements ILifecycleComponent {
 	    }
 
 	    LifecycleStatus status = LifecycleStatus.Stopped;
-	    for (String id : getLifecycleComponents().keySet()) {
+	    for (UUID id : getLifecycleComponents().keySet()) {
 		ILifecycleComponent sub = getLifecycleComponents().get(id);
 		if ((sub.getLifecycleStatus() == LifecycleStatus.LifecycleError)
 			|| (sub.getLifecycleStatus() == LifecycleStatus.StoppedWithErrors)) {
@@ -540,6 +541,52 @@ public class LifecycleComponent implements ILifecycleComponent {
     }
 
     /*
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentState()
+     */
+    @Override
+    public ILifecycleComponentState getComponentState() {
+	LifecycleComponentState state = new LifecycleComponentState();
+	state.setComponentId(getComponentId());
+	state.setComponentName(getComponentName());
+	state.setStatus(getLifecycleStatus());
+	if (getLifecycleError() != null) {
+	    state.setErrorStack(parseErrors(getLifecycleError()));
+	}
+	if (getLifecycleComponents().size() > 0) {
+	    List<LifecycleComponentState> childStates = new ArrayList<>();
+	    for (ILifecycleComponent child : getLifecycleComponents().values()) {
+		childStates.add((LifecycleComponentState) child.getComponentState());
+	    }
+	    Collections.sort(childStates, new Comparator<LifecycleComponentState>() {
+
+		@Override
+		public int compare(LifecycleComponentState o1, LifecycleComponentState o2) {
+		    return o1.getComponentName().compareTo(o2.getComponentName());
+		}
+	    });
+	    state.setChildComponentStates(childStates);
+	}
+	return state;
+    }
+
+    /**
+     * Parse an exception into an error message stack.
+     * 
+     * @param e
+     * @return
+     */
+    protected List<String> parseErrors(SiteWhereException e) {
+	List<String> errors = new ArrayList<>();
+	Throwable current = e;
+	while (current != null) {
+	    errors.add(current.getLocalizedMessage());
+	    current = current.getCause();
+	}
+	return errors;
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
@@ -571,12 +618,6 @@ public class LifecycleComponent implements ILifecycleComponent {
 	}
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#logState()
-     */
-    @Override
     public void logState() {
 	getLogger().info("\n\n" + getComponentName() + " State:\n" + logState("", this) + "\n");
     }
@@ -611,8 +652,8 @@ public class LifecycleComponent implements ILifecycleComponent {
      * 
      * @return
      */
-    protected Map<String, ILifecycleComponent> buildComponentMap() {
-	Map<String, ILifecycleComponent> map = new HashMap<String, ILifecycleComponent>();
+    protected Map<UUID, ILifecycleComponent> buildComponentMap() {
+	Map<UUID, ILifecycleComponent> map = new HashMap<>();
 	buildComponentMap(this, map);
 	return map;
     }
@@ -624,7 +665,7 @@ public class LifecycleComponent implements ILifecycleComponent {
      * @param current
      * @param map
      */
-    protected static void buildComponentMap(ILifecycleComponent current, Map<String, ILifecycleComponent> map) {
+    protected static void buildComponentMap(ILifecycleComponent current, Map<UUID, ILifecycleComponent> map) {
 	map.put(current.getComponentId(), current);
 	for (ILifecycleComponent sub : current.getLifecycleComponents().values()) {
 	    // Root components have a separate hierarchy.
@@ -700,17 +741,16 @@ public class LifecycleComponent implements ILifecycleComponent {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
-     * getLifecycleComponents()
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleComponents
+     * ()
      */
     @Override
-    public Map<String, ILifecycleComponent> getLifecycleComponents() {
+    public Map<UUID, ILifecycleComponent> getLifecycleComponents() {
 	return lifecycleComponents;
     }
 
-    public void setLifecycleComponents(Map<String, ILifecycleComponent> lifecycleComponents) {
+    public void setLifecycleComponents(Map<UUID, ILifecycleComponent> lifecycleComponents) {
 	this.lifecycleComponents = lifecycleComponents;
     }
 }

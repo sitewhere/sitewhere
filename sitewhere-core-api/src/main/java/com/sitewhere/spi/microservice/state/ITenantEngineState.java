@@ -7,10 +7,7 @@
  */
 package com.sitewhere.spi.microservice.state;
 
-import java.util.List;
 import java.util.UUID;
-
-import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
  * Contains information about the current state of a microservice tenant engine.
@@ -34,16 +31,9 @@ public interface ITenantEngineState {
     public UUID getTenantId();
 
     /**
-     * Get current lifeycle status of tenant engine.
+     * Get state of component tree.
      * 
      * @return
      */
-    public LifecycleStatus getLifecycleStatus();
-
-    /**
-     * If in an error state, returns the stack of error messages.
-     * 
-     * @return
-     */
-    public List<String> getLifecycleErrorStack();
+    public ILifecycleComponentState getComponentState();
 }

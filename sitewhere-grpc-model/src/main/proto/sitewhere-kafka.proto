@@ -72,6 +72,15 @@ enum GLifecycleStatus {
 	LIFECYCLE_STATUS_ERROR = 12;
 }
 
+// Lifecycle component state.
+message GLifecycleComponentState {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	string name = 2;
+	GLifecycleStatus status = 3;
+	repeated string errorFrames = 4;
+	repeated GLifecycleComponentState childComponentStates = 5;
+}
+
 // Microservice state.
 message GMicroserviceState {
 	com.sitewhere.grpc.model.GMicroserviceDetails microservice = 1;
@@ -82,8 +91,7 @@ message GMicroserviceState {
 message GTenantEngineState {
 	com.sitewhere.grpc.model.GMicroserviceDetails microservice = 1;
 	com.sitewhere.grpc.model.GUUID tenantId = 2;
-	GLifecycleStatus status = 3;
-	repeated string error = 4;
+	GLifecycleComponentState state = 3;
 }
 
 // Wrapper for state update types.

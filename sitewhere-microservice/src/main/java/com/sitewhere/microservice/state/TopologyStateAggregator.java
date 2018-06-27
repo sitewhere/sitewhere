@@ -83,7 +83,7 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
 	    try {
 		List<ITenantEngineState> engines = getTenantEngineState(identifier, tenantId);
 		for (ITenantEngineState engine : engines) {
-		    if (engine.getLifecycleStatus() == LifecycleStatus.Started) {
+		    if (engine.getComponentState().getStatus() == LifecycleStatus.Started) {
 			return;
 		    }
 		}
@@ -149,11 +149,11 @@ public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsum
 	    ((InstanceTenantEngine) engine).setLastUpdated(System.currentTimeMillis());
 
 	    // Handle terminated tenant engine.
-	    if ((updated.getLifecycleStatus() == LifecycleStatus.Terminating)
-		    || (updated.getLifecycleStatus() == LifecycleStatus.Terminated)) {
+	    if ((updated.getComponentState().getStatus() == LifecycleStatus.Terminating)
+		    || (updated.getComponentState().getStatus() == LifecycleStatus.Terminated)) {
 		microservice.getTenantEngines().remove(existing.getTenantId());
 		onTenantEngineRemoved(microservice.getLatestState(), existing);
-	    } else if (existing.getLifecycleStatus() != updated.getLifecycleStatus()) {
+	    } else if (existing.getComponentState().getStatus() != updated.getComponentState().getStatus()) {
 		onTenantEngineUpdated(microservice.getLatestState(), existing, updated);
 	    }
 	}

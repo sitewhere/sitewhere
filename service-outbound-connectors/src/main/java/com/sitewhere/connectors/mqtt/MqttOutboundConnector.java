@@ -122,7 +122,7 @@ public class MqttOutboundConnector extends FilteredOutboundConnector
 	}
 
 	// Use common MQTT configuration setup.
-	this.queue = Dispatch.createQueue(getComponentId());
+	this.queue = Dispatch.createQueue(getComponentId().toString());
 	this.mqtt = MqttLifecycleComponent.configure(this, queue);
 
 	getLogger().info("Connecting to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");

@@ -131,7 +131,7 @@ public class MqttLifecycleComponent extends TenantEngineLifecycleComponent imple
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.queue = Dispatch.createQueue(getComponentId());
+	this.queue = Dispatch.createQueue(getComponentId().toString());
 	this.mqtt = MqttLifecycleComponent.configure(this, queue);
     }
 

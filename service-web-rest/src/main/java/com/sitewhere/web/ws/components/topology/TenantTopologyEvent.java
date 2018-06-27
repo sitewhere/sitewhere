@@ -7,14 +7,13 @@
  */
 package com.sitewhere.web.ws.components.topology;
 
-import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.spi.microservice.state.ILifecycleComponentState;
 import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
-import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
  * Captures event information for a topology change that involves a tenant
@@ -34,18 +33,14 @@ public class TenantTopologyEvent implements ITenantEngineState {
     /** Tenant id */
     private UUID tenantId;
 
-    /** Status of tenant */
-    private LifecycleStatus lifecycleStatus;
-
-    /** Lifecycle error message stack */
-    private List<String> lifecycleErrorStack;
+    /** Component state tree */
+    private ILifecycleComponentState componentState;
 
     public TenantTopologyEvent(TopologyEventType type, ITenantEngineState state) {
 	this.type = type;
 	this.microservice = state.getMicroservice();
 	this.tenantId = state.getTenantId();
-	this.lifecycleStatus = state.getLifecycleStatus();
-	this.lifecycleErrorStack = state.getLifecycleErrorStack();
+	this.componentState = state.getComponentState();
     }
 
     public TopologyEventType getType() {
@@ -83,27 +78,14 @@ public class TenantTopologyEvent implements ITenantEngineState {
 
     /*
      * @see
-     * com.sitewhere.spi.microservice.state.ITenantEngineState#getLifecycleStatus()
+     * com.sitewhere.spi.microservice.state.ITenantEngineState#getComponentState()
      */
     @Override
-    public LifecycleStatus getLifecycleStatus() {
-	return lifecycleStatus;
+    public ILifecycleComponentState getComponentState() {
+	return componentState;
     }
 
-    public void setLifecycleStatus(LifecycleStatus lifecycleStatus) {
-	this.lifecycleStatus = lifecycleStatus;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.state.ITenantEngineState#
-     * getLifecycleErrorStack()
-     */
-    @Override
-    public List<String> getLifecycleErrorStack() {
-	return lifecycleErrorStack;
-    }
-
-    public void setLifecycleErrorStack(List<String> lifecycleErrorStack) {
-	this.lifecycleErrorStack = lifecycleErrorStack;
+    public void setComponentState(ILifecycleComponentState componentState) {
+	this.componentState = componentState;
     }
 }
