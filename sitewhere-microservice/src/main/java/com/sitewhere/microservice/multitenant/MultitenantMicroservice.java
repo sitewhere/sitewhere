@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -382,8 +383,10 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
 	    try {
 		// Detect global configuration update and inform all engines.
 		if (getInstanceManagementConfigurationPath().equals(path)) {
+		    ((IMultitenantMicroservice<?, ?>) getMicroservice()).restartConfiguration().get();
 		    for (T engine : getInitializedTenantEngines().values()) {
 			engine.onGlobalConfigurationUpdated();
+			restartTenantEngine(engine.getTenant().getId());
 		    }
 		}
 
@@ -395,6 +398,10 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
 			engine.onConfigurationUpdated(pathInfo.getPath(), data);
 		    }
 		}
+	    } catch (InterruptedException e) {
+		getLogger().warn("Interrupted while waiting for global configuration to reload.");
+	    } catch (ExecutionException e) {
+		getLogger().error("Unable to reconfigure microservice based on update.", e);
 	    } catch (SiteWhereException e) {
 		getLogger().error("Error processing configuration update.", e);
 	    }

@@ -23,11 +23,17 @@ public enum LifecycleStatus {
     /** Component is stopped */
     Stopped,
 
+    /** Component stopped, but with nested errors */
+    StoppedWithErrors,
+
     /** Component is starting */
     Starting,
 
     /** Component is started */
     Started,
+
+    /** Component started, but with nested errors */
+    StartedWithErrors,
 
     /** Component is pausing */
     Pausing,
@@ -44,6 +50,6 @@ public enum LifecycleStatus {
     /** Component is terminated */
     Terminated,
 
-    /** Component errored in lifecycle transition  */
+    /** Component errored in lifecycle transition */
     LifecycleError;
 }

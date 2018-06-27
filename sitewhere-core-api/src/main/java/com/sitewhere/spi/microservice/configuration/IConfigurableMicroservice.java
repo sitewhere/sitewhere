@@ -8,6 +8,7 @@
 package com.sitewhere.spi.microservice.configuration;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.context.ApplicationContext;
 
@@ -46,6 +47,13 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
      * @return
      */
     public ConfigurationState getConfigurationState();
+
+    /**
+     * Set configuration state.
+     * 
+     * @param state
+     */
+    public void setConfigurationState(ConfigurationState state);
 
     /**
      * Wait for configuration to be loaded.
@@ -193,6 +201,14 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
 	    ILifecycleProgressMonitor monitor) throws SiteWhereException;
 
     /**
+     * Get base microservice application context.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public ApplicationContext getMicroserviceApplicationContext() throws SiteWhereException;
+
+    /**
      * Get global application context.
      * 
      * @return
@@ -201,12 +217,28 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
     public ApplicationContext getGlobalApplicationContext() throws SiteWhereException;
 
     /**
+     * Set the global application context.
+     * 
+     * @param context
+     * @throws SiteWhereException
+     */
+    public void setGlobalApplicationContext(ApplicationContext context) throws SiteWhereException;
+
+    /**
      * Get local microservice application context.
      * 
      * @return
      * @throws SiteWhereException
      */
     public ApplicationContext getLocalApplicationContext() throws SiteWhereException;
+
+    /**
+     * Set the local application context.
+     * 
+     * @param context
+     * @throws SiteWhereException
+     */
+    public void setLocalApplicationContext(ApplicationContext context) throws SiteWhereException;
 
     /**
      * Perform microservice initialization.
@@ -273,9 +305,10 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
     public ILifecycleStep terminateDiscoverableBeans(ApplicationContext context) throws SiteWhereException;
 
     /**
-     * Restart the microservice configuration.
+     * Restart the microservice configuration and return a {@link CompletableFuture}
+     * to handle results asynchronously.
      * 
-     * @throws SiteWhereException
+     * @return
      */
-    public void restartConfiguration() throws SiteWhereException;
+    public CompletableFuture<?> restartConfiguration();
 }

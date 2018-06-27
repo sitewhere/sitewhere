@@ -295,11 +295,11 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
 		SolrConfigurationChoice config = SolrConfigurationParser.parseSolrConfigurationChoice(child, context);
 		switch (config.getType()) {
 		case SolrConfiguration: {
-		    connector.addPropertyValue("solr", config.getConfiguration());
+		    connector.addPropertyValue("solrConfiguration", config.getConfiguration());
 		    break;
 		}
 		case SolrConfigurationReference: {
-		    connector.addPropertyReference("solr", (String) config.getConfiguration());
+		    connector.addPropertyReference("solrConfiguration", (String) config.getConfiguration());
 		    break;
 		}
 		default: {

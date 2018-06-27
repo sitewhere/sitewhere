@@ -12,9 +12,13 @@ import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.context.ApplicationContext;
 
+import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
+import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.configuration.ConfigurationState;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
@@ -49,8 +53,33 @@ public class InitializeConfigurationOperation<T extends IConfigurableMicroservic
     @Override
     public T call() throws Exception {
 	try {
-	    // Initialize microservice.
-	    LOGGER.info("Initializing '" + getMicroservice().getName() + "' configuration.");
+	    // Load microservice configuration.
+	    getMicroservice().setConfigurationState(ConfigurationState.Loading);
+	    byte[] global = getMicroservice().getInstanceManagementConfigurationData();
+	    if (global == null) {
+		throw new SiteWhereException("Global instance management file not found.");
+	    }
+	    ApplicationContext globalContext = ConfigurationUtils.buildGlobalContext(global,
+		    getMicroservice().getSpringProperties(), getMicroservice().getMicroserviceApplicationContext());
+
+	    String path = getMicroservice().getConfigurationPath();
+	    ApplicationContext localContext = null;
+	    if (path != null) {
+		String fullPath = getMicroservice().getInstanceConfigurationPath() + "/" + path;
+		byte[] data = getMicroservice().getConfigurationMonitor().getConfigurationDataFor(fullPath);
+		if (data != null) {
+		    localContext = ConfigurationUtils.buildSubcontext(data, getMicroservice().getSpringProperties(),
+			    globalContext);
+		} else {
+		    throw new SiteWhereException("Required microservice configuration not found: " + fullPath);
+		}
+	    }
+
+	    // Store contexts for later use.
+	    getMicroservice().setGlobalApplicationContext(globalContext);
+	    getMicroservice().setLocalApplicationContext(localContext);
+	    getMicroservice().setConfigurationState(ConfigurationState.Stopped);
+
 	    ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
 		    new LifecycleProgressContext(1, "Start microservice configuration."), getMicroservice());
 	    long start = System.currentTimeMillis();
@@ -59,12 +88,14 @@ public class InitializeConfigurationOperation<T extends IConfigurableMicroservic
 	    if (getMicroservice().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
 		throw getMicroservice().getLifecycleError();
 	    }
-	    LOGGER.info("Microservice configuration '" + getMicroservice().getName() + "' initialized in "
+	    LOGGER.debug("Microservice configuration '" + getMicroservice().getName() + "' initialized in "
 		    + (System.currentTimeMillis() - start) + "ms.");
+	    getMicroservice().setConfigurationState(ConfigurationState.Initialized);
 	    getCompletableFuture().complete(getMicroservice());
 	    return getMicroservice();
 	} catch (Throwable t) {
 	    LOGGER.error("Unable to initialize microservice configuration '" + getMicroservice().getName() + "'.", t);
+	    getMicroservice().setConfigurationState(ConfigurationState.Failed);
 	    getCompletableFuture().completeExceptionally(t);
 	    throw t;
 	}

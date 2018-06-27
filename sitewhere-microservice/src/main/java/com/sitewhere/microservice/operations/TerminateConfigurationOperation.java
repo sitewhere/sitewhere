@@ -15,6 +15,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.configuration.ConfigurationState;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
@@ -50,21 +51,24 @@ public class TerminateConfigurationOperation<T extends IConfigurableMicroservice
     public T call() throws Exception {
 	try {
 	    // Terminate microservice.
-	    LOGGER.info("Terminating '" + getMicroservice().getName() + "' configuration.");
-	    ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
-		    new LifecycleProgressContext(1, "Terminate microservice configuration."), getMicroservice());
-	    long start = System.currentTimeMillis();
-	    getMicroservice().configurationTerminate(getMicroservice().getGlobalApplicationContext(),
-		    getMicroservice().getLocalApplicationContext(), monitor);
-	    if (getMicroservice().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
-		throw getMicroservice().getLifecycleError();
+	    if (getMicroservice().getLifecycleStatus() != LifecycleStatus.Terminated) {
+		ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
+			new LifecycleProgressContext(1, "Terminate microservice configuration."), getMicroservice());
+		long start = System.currentTimeMillis();
+		getMicroservice().configurationTerminate(getMicroservice().getGlobalApplicationContext(),
+			getMicroservice().getLocalApplicationContext(), monitor);
+		if (getMicroservice().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		    throw getMicroservice().getLifecycleError();
+		}
+		LOGGER.debug("Microservice configuration '" + getMicroservice().getName() + "' terminated in "
+			+ (System.currentTimeMillis() - start) + "ms.");
 	    }
-	    LOGGER.info("Microservice configuration '" + getMicroservice().getName() + "' terminated in "
-		    + (System.currentTimeMillis() - start) + "ms.");
+	    getMicroservice().setConfigurationState(ConfigurationState.Unloaded);
 	    getCompletableFuture().complete(getMicroservice());
 	    return getMicroservice();
 	} catch (Throwable t) {
 	    LOGGER.error("Unable to terminate microservice configuration '" + getMicroservice().getName() + "'.", t);
+	    getMicroservice().setConfigurationState(ConfigurationState.Failed);
 	    getCompletableFuture().completeExceptionally(t);
 	    throw t;
 	}

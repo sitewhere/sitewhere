@@ -256,8 +256,22 @@ public class LifecycleComponent implements ILifecycleComponent {
 	    if (old != LifecycleStatus.Paused) {
 		start(monitor);
 	    }
-	    setLifecycleStatus(LifecycleStatus.Started);
-	    getLogger().debug(getComponentName() + " state transitioned to STARTED.");
+
+	    LifecycleStatus status = LifecycleStatus.Started;
+	    for (String id : getLifecycleComponents().keySet()) {
+		ILifecycleComponent sub = getLifecycleComponents().get(id);
+		if ((sub.getLifecycleStatus() == LifecycleStatus.LifecycleError)
+			|| (sub.getLifecycleStatus() == LifecycleStatus.StartedWithErrors)) {
+		    status = LifecycleStatus.StartedWithErrors;
+		}
+	    }
+
+	    setLifecycleStatus(status);
+	    if (status == LifecycleStatus.Started) {
+		getLogger().debug(getComponentName() + " state transitioned to STARTED.");
+	    } else if (status == LifecycleStatus.StartedWithErrors) {
+		getLogger().debug(getComponentName() + " state transitioned to STARTED WITH ERRORS.");
+	    }
 	} catch (SiteWhereException e) {
 	    setLifecycleError(e);
 	    setLifecycleStatus(LifecycleStatus.LifecycleError);
@@ -398,8 +412,22 @@ public class LifecycleComponent implements ILifecycleComponent {
 	    } else {
 		stop(monitor, constraints);
 	    }
-	    setLifecycleStatus(LifecycleStatus.Stopped);
-	    getLogger().debug(getComponentName() + " state transitioned to STOPPED.");
+
+	    LifecycleStatus status = LifecycleStatus.Stopped;
+	    for (String id : getLifecycleComponents().keySet()) {
+		ILifecycleComponent sub = getLifecycleComponents().get(id);
+		if ((sub.getLifecycleStatus() == LifecycleStatus.LifecycleError)
+			|| (sub.getLifecycleStatus() == LifecycleStatus.StoppedWithErrors)) {
+		    status = LifecycleStatus.StoppedWithErrors;
+		}
+	    }
+
+	    setLifecycleStatus(status);
+	    if (status == LifecycleStatus.Stopped) {
+		getLogger().debug(getComponentName() + " state transitioned to STOPPED.");
+	    } else if (status == LifecycleStatus.StoppedWithErrors) {
+		getLogger().debug(getComponentName() + " state transitioned to STOPPED WITH ERRORS.");
+	    }
 	} catch (SiteWhereException e) {
 	    setLifecycleError(e);
 	    setLifecycleStatus(LifecycleStatus.LifecycleError);

@@ -459,12 +459,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
      */
     @Override
     public void onGlobalConfigurationUpdated() throws SiteWhereException {
-	getLogger().debug("Global configuration updated.");
-	try {
-	    ((IMultitenantMicroservice<?, ?>) getMicroservice()).restartTenantEngine(getTenant().getId());
-	} catch (SiteWhereException e) {
-	    getLogger().error("Unable to restart after global configuration update.", e);
-	}
+	getLogger().debug("Tenant engine detected global configuration update.");
     }
 
     /*

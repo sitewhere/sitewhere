@@ -10,15 +10,11 @@ package com.sitewhere.microservice.configuration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
-import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.microservice.Microservice;
 import com.sitewhere.microservice.operations.InitializeConfigurationOperation;
 import com.sitewhere.microservice.operations.StartConfigurationOperation;
@@ -26,8 +22,6 @@ import com.sitewhere.microservice.operations.StopConfigurationOperation;
 import com.sitewhere.microservice.operations.TerminateConfigurationOperation;
 import com.sitewhere.microservice.scripting.ZookeeperScriptManagement;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.server.lifecycle.LifecycleProgressContext;
-import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
@@ -64,7 +58,7 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 
     /** Injected Spring context for microservice */
     @Autowired
-    private ApplicationContext microserviceContext;
+    private ApplicationContext microserviceApplicationContext;
 
     /** Configuration monitor */
     private IConfigurationMonitor configurationMonitor;
@@ -73,7 +67,7 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
     private IScriptManagement scriptManagement;
 
     /** Configuration state */
-    private ConfigurationState configurationState = ConfigurationState.NotStarted;
+    private ConfigurationState configurationState = ConfigurationState.Unloaded;
 
     /** Indicates if configuration cache is ready to use */
     private boolean configurationCacheReady = false;
@@ -83,9 +77,6 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 
     /** Local microservice application context */
     private ApplicationContext localApplicationContext;
-
-    /** Executor for loading/parsing configuration updates */
-    private ExecutorService executor = Executors.newSingleThreadExecutor(new ConfigurationLoaderThreadFactory());
 
     /*
      * (non-Javadoc)
@@ -97,9 +88,7 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
     public void onConfigurationCacheInitialized() {
 	getLogger().info("Configuration cache initialized.");
 	setConfigurationCacheReady(true);
-
-	// Load and parse configuration in separate thread.
-	executor.execute(new ConfigurationLoader());
+	restartConfiguration();
     }
 
     /*
@@ -410,8 +399,8 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
      * restartConfiguration()
      */
     @Override
-    public void restartConfiguration() throws SiteWhereException {
-	StopConfigurationOperation.createCompletableFuture(this, getMicroserviceOperationsService())
+    public CompletableFuture<?> restartConfiguration() {
+	return StopConfigurationOperation.createCompletableFuture(this, getMicroserviceOperationsService())
 		.thenCompose(m1 -> TerminateConfigurationOperation
 			.createCompletableFuture(this, getMicroserviceOperationsService())
 			.thenCompose(m2 -> InitializeConfigurationOperation
@@ -432,13 +421,13 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
      */
     @Override
     public void waitForConfigurationReady() throws SiteWhereException {
-	getLogger().info("Waiting for configuration to be loaded...");
+	getLogger().debug("Waiting for configuration to be loaded...");
 	while (true) {
 	    if (getConfigurationState() == ConfigurationState.Failed) {
 		throw new SiteWhereException("Microservice configuration failed.");
 	    }
-	    if (getConfigurationState() == ConfigurationState.Succeeded) {
-		getLogger().info("Configuration loaded successfully.");
+	    if (getConfigurationState() == ConfigurationState.Started) {
+		getLogger().debug("Configuration started successfully.");
 		return;
 	    }
 	    try {
@@ -487,7 +476,13 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 	return configurationState;
     }
 
-    protected void setConfigurationState(ConfigurationState configurationState) {
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * setConfigurationState(com.sitewhere.spi.microservice.configuration.
+     * ConfigurationState)
+     */
+    @Override
+    public void setConfigurationState(ConfigurationState configurationState) {
 	this.configurationState = configurationState;
     }
 
@@ -515,6 +510,11 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 	return globalApplicationContext;
     }
 
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * setGlobalApplicationContext(org.springframework.context.ApplicationContext)
+     */
+    @Override
     public void setGlobalApplicationContext(ApplicationContext globalApplicationContext) {
 	this.globalApplicationContext = globalApplicationContext;
     }
@@ -528,77 +528,25 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 	return localApplicationContext;
     }
 
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * setLocalApplicationContext(org.springframework.context.ApplicationContext)
+     */
+    @Override
     public void setLocalApplicationContext(ApplicationContext localApplicationContext) {
 	this.localApplicationContext = localApplicationContext;
     }
 
-    public ApplicationContext getMicroserviceContext() {
-	return microserviceContext;
-    }
-
-    public void setMicroserviceContext(ApplicationContext microserviceContext) {
-	this.microserviceContext = microserviceContext;
-    }
-
-    /**
-     * Allow configurations to be loaded and parsed in a separate thread.
-     * 
-     * @author Derek
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getMicroserviceApplicationContext()
      */
-    private class ConfigurationLoader implements Runnable {
-
-	@Override
-	public void run() {
-	    try {
-		setConfigurationState(ConfigurationState.Loading);
-		byte[] global = getInstanceManagementConfigurationData();
-		if (global == null) {
-		    throw new SiteWhereException("Global instance management file not found.");
-		}
-		ApplicationContext globalContext = ConfigurationUtils.buildGlobalContext(global, getSpringProperties(),
-			getMicroserviceContext());
-
-		String path = getConfigurationPath();
-		ApplicationContext localContext = null;
-		if (path != null) {
-		    String fullPath = getInstanceConfigurationPath() + "/" + path;
-		    getLogger().debug("Loading configuration at path: " + fullPath);
-		    byte[] data = getConfigurationMonitor().getConfigurationDataFor(fullPath);
-		    if (data != null) {
-			localContext = ConfigurationUtils.buildSubcontext(data, getSpringProperties(), globalContext);
-		    } else {
-			throw new SiteWhereException("Required microservice configuration not found: " + fullPath);
-		    }
-		}
-
-		// Store contexts for later use.
-		setGlobalApplicationContext(globalContext);
-		setLocalApplicationContext(localContext);
-
-		// Allow components depending on configuration to proceed.
-		ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
-			new LifecycleProgressContext(1, "Configure microservice"), ConfigurableMicroservice.this);
-		configurationInitialize(globalContext, localContext, monitor);
-		configurationStart(globalContext, localContext, monitor);
-		setConfigurationState(ConfigurationState.Succeeded);
-	    } catch (SiteWhereException e) {
-		getLogger().error("Unable to load configuration data.", e);
-		setConfigurationState(ConfigurationState.Failed);
-	    } catch (Throwable e) {
-		getLogger().error("Unhandled exception while loading configuration data.", e);
-		setConfigurationState(ConfigurationState.Failed);
-	    }
-	}
+    @Override
+    public ApplicationContext getMicroserviceApplicationContext() {
+	return microserviceApplicationContext;
     }
 
-    /** Used for naming configuration loader threads */
-    private class ConfigurationLoaderThreadFactory implements ThreadFactory {
-
-	/** Counts threads */
-	private AtomicInteger counter = new AtomicInteger();
-
-	public Thread newThread(Runnable r) {
-	    return new Thread(r, "Configuration Loader " + counter.incrementAndGet());
-	}
+    protected void setMicroserviceApplicationContext(ApplicationContext microserviceApplicationContext) {
+	this.microserviceApplicationContext = microserviceApplicationContext;
     }
 }

@@ -157,10 +157,14 @@ public class KafkaModelConverter {
 	    return LifecycleStatus.InitializationError;
 	case LIFECYCLE_STATUS_STOPPED:
 	    return LifecycleStatus.Stopped;
+	case LIFECYCLE_STATUS_STOPPED_WITH_ERRORS:
+	    return LifecycleStatus.StoppedWithErrors;
 	case LIFECYCLE_STATUS_STARTING:
 	    return LifecycleStatus.Starting;
 	case LIFECYCLE_STATUS_STARTED:
 	    return LifecycleStatus.Started;
+	case LIFECYCLE_STATUS_STARTED_WITH_ERRORS:
+	    return LifecycleStatus.StartedWithErrors;
 	case LIFECYCLE_STATUS_PAUSING:
 	    return LifecycleStatus.Pausing;
 	case LIFECYCLE_STATUS_PAUSED:
@@ -194,10 +198,14 @@ public class KafkaModelConverter {
 	    return GLifecycleStatus.LIFECYCLE_STATUS_INITIALIZATION_ERROR;
 	case Stopped:
 	    return GLifecycleStatus.LIFECYCLE_STATUS_STOPPED;
+	case StoppedWithErrors:
+	    return GLifecycleStatus.LIFECYCLE_STATUS_STOPPED_WITH_ERRORS;
 	case Starting:
 	    return GLifecycleStatus.LIFECYCLE_STATUS_STARTING;
 	case Started:
 	    return GLifecycleStatus.LIFECYCLE_STATUS_STARTED;
+	case StartedWithErrors:
+	    return GLifecycleStatus.LIFECYCLE_STATUS_STARTED_WITH_ERRORS;
 	case Pausing:
 	    return GLifecycleStatus.LIFECYCLE_STATUS_PAUSING;
 	case Paused:

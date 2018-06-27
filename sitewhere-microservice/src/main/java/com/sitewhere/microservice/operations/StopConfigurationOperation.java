@@ -15,6 +15,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.configuration.ConfigurationState;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
@@ -50,21 +51,24 @@ public class StopConfigurationOperation<T extends IConfigurableMicroservice<?>>
     public T call() throws Exception {
 	try {
 	    // Stop microservice.
-	    LOGGER.info("Stopping '" + getMicroservice().getName() + "' configuration.");
-	    ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
-		    new LifecycleProgressContext(1, "Stop microservice configuration."), getMicroservice());
-	    long start = System.currentTimeMillis();
-	    getMicroservice().configurationStop(getMicroservice().getGlobalApplicationContext(),
-		    getMicroservice().getLocalApplicationContext(), monitor);
-	    if (getMicroservice().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
-		throw getMicroservice().getLifecycleError();
+	    if (getMicroservice().getLifecycleStatus() != LifecycleStatus.Stopped) {
+		ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
+			new LifecycleProgressContext(1, "Stop microservice configuration."), getMicroservice());
+		long start = System.currentTimeMillis();
+		getMicroservice().configurationStop(getMicroservice().getGlobalApplicationContext(),
+			getMicroservice().getLocalApplicationContext(), monitor);
+		if (getMicroservice().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		    throw getMicroservice().getLifecycleError();
+		}
+		LOGGER.debug("Microservice configuration '" + getMicroservice().getName() + "' stopped in "
+			+ (System.currentTimeMillis() - start) + "ms.");
 	    }
-	    LOGGER.info("Microservice configuration '" + getMicroservice().getName() + "' stopped in "
-		    + (System.currentTimeMillis() - start) + "ms.");
+	    getMicroservice().setConfigurationState(ConfigurationState.Stopped);
 	    getCompletableFuture().complete(getMicroservice());
 	    return getMicroservice();
 	} catch (Throwable t) {
 	    LOGGER.error("Unable to stop microservice configuration '" + getMicroservice().getName() + "'.", t);
+	    getMicroservice().setConfigurationState(ConfigurationState.Failed);
 	    getCompletableFuture().completeExceptionally(t);
 	    throw t;
 	}

@@ -14,15 +14,24 @@ package com.sitewhere.spi.microservice.configuration;
  */
 public enum ConfigurationState {
 
-    /** Configuration has not started */
-    NotStarted,
+    /** Configuration has not been loaded */
+    Unloaded,
 
     /** Configuration loading */
     Loading,
+
+    /** Configuration has not started */
+    Stopped,
+
+    /** Configuration has been initialized */
+    Initialized,
 
     /** Configuration failed */
     Failed,
 
     /** Configuration succeeded */
-    Succeeded;
+    Started,
+
+    /** Configuration shutting down */
+    Stopping;
 }
