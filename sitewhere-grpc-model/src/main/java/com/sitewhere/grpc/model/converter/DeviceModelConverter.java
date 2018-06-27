@@ -1521,6 +1521,7 @@ public class DeviceModelConverter {
 		grpc.getPaging().getPageSize());
 	api.setStatus(DeviceModelConverter.asApiDeviceAssignmentStatus(grpc.getStatus()));
 	api.setDeviceId(grpc.hasDeviceId() ? CommonModelConverter.asApiUuid(grpc.getDeviceId()) : null);
+	api.setDeviceTypeIds(CommonModelConverter.asApiUuids(grpc.getDeviceTypeIdsList()));
 	api.setCustomerIds(CommonModelConverter.asApiUuids(grpc.getCustomerIdsList()));
 	api.setAreaIds(CommonModelConverter.asApiUuids(grpc.getAreaIdsList()));
 	api.setAssetIds(CommonModelConverter.asApiUuids(grpc.getAssetIdsList()));
@@ -1540,6 +1541,9 @@ public class DeviceModelConverter {
 	grpc.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(api.getStatus()));
 	if (api.getDeviceId() != null) {
 	    grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
+	}
+	if (api.getDeviceTypeIds() != null) {
+	    grpc.addAllDeviceTypeIds(CommonModelConverter.asGrpcUuids(api.getDeviceTypeIds()));
 	}
 	if (api.getCustomerIds() != null) {
 	    grpc.addAllCustomerIds(CommonModelConverter.asGrpcUuids(api.getCustomerIds()));
@@ -1637,6 +1641,7 @@ public class DeviceModelConverter {
 	api.setToken(grpc.getToken());
 	api.setStatus(DeviceModelConverter.asApiDeviceAssignmentStatus(grpc.getStatus()));
 	api.setDeviceId(CommonModelConverter.asApiUuid(grpc.getDeviceId()));
+	api.setDeviceTypeId(CommonModelConverter.asApiUuid(grpc.getDeviceTypeId()));
 	api.setCustomerId(grpc.hasCustomerId() ? CommonModelConverter.asApiUuid(grpc.getCustomerId()) : null);
 	api.setAreaId(grpc.hasAreaId() ? CommonModelConverter.asApiUuid(grpc.getAreaId()) : null);
 	api.setAssetId(grpc.hasAssetId() ? CommonModelConverter.asApiUuid(grpc.getAssetId()) : null);
@@ -1660,6 +1665,7 @@ public class DeviceModelConverter {
 	grpc.setToken(api.getToken());
 	grpc.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(api.getStatus()));
 	grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
+	grpc.setDeviceTypeId(CommonModelConverter.asGrpcUuid(api.getDeviceTypeId()));
 	if (api.getAreaId() != null) {
 	    grpc.setAreaId(CommonModelConverter.asGrpcUuid(api.getAreaId()));
 	}

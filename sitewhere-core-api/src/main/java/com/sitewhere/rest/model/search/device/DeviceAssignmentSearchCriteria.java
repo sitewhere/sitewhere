@@ -27,6 +27,9 @@ public class DeviceAssignmentSearchCriteria extends SearchCriteria implements ID
     /** Limit search by device */
     private UUID deviceId;
 
+    /** Limit search by device types */
+    private List<UUID> deviceTypeIds;
+
     /** Limit search by customers */
     private List<UUID> customerIds;
 
@@ -64,6 +67,19 @@ public class DeviceAssignmentSearchCriteria extends SearchCriteria implements ID
 
     public void setDeviceId(UUID deviceId) {
 	this.deviceId = deviceId;
+    }
+
+    /*
+     * @see com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria#
+     * getDeviceTypeIds()
+     */
+    @Override
+    public List<UUID> getDeviceTypeIds() {
+	return deviceTypeIds;
+    }
+
+    public void setDeviceTypeIds(List<UUID> deviceTypeIds) {
+	this.deviceTypeIds = deviceTypeIds;
     }
 
     /*

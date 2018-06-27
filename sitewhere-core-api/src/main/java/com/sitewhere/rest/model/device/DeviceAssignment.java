@@ -39,6 +39,9 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
     /** Device id */
     private UUID deviceId;
 
+    /** Device type id */
+    private UUID deviceTypeId;
+
     /** Id of assigned customer */
     private UUID customerId;
 
@@ -93,6 +96,18 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
 
     public void setDeviceId(UUID deviceId) {
 	this.deviceId = deviceId;
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceAssignment#getDeviceTypeId()
+     */
+    @Override
+    public UUID getDeviceTypeId() {
+	return deviceTypeId;
+    }
+
+    public void setDeviceTypeId(UUID deviceTypeId) {
+	this.deviceTypeId = deviceTypeId;
     }
 
     /*

@@ -305,10 +305,11 @@ message GDeviceAssignmentCreateRequest {
 message GDeviceAssignmentSearchCriteria {
 	GDeviceAssignmentStatus status = 1;
 	GUUID deviceId = 2;
-	repeated GUUID customerIds = 3;
-	repeated GUUID areaIds = 4;
-	repeated GUUID assetIds = 5;
-	GPaging paging = 6;
+	repeated GUUID deviceTypeIds = 4;
+	repeated GUUID customerIds = 5;
+	repeated GUUID areaIds = 6;
+	repeated GUUID assetIds = 7;
+	GPaging paging = 8;
 }
 
 // Results for device assignment search.
@@ -322,14 +323,15 @@ message GDeviceAssignment {
 	GUUID id = 1;
 	string token = 2;
 	GUUID deviceId = 3;
-	GUUID customerId = 4;
-	GUUID areaId = 5;
-	GUUID assetId = 6;
-	GDeviceAssignmentStatus status = 7;
-	uint64 activeDate = 8;
-	uint64 releasedDate = 9;
-	map<string, string> metadata = 10;
-	GEntityInformation entityInformation = 11;
+	GUUID deviceTypeId = 4;
+	GUUID customerId = 5;
+	GUUID areaId = 6;
+	GUUID assetId = 7;
+	GDeviceAssignmentStatus status = 8;
+	uint64 activeDate = 9;
+	uint64 releasedDate = 10;
+	map<string, string> metadata = 11;
+	GEntityInformation entityInformation = 12;
 }
 
 // ######################

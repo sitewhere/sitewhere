@@ -32,8 +32,11 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
     /** Property for token */
     public static final String PROP_TOKEN = "tokn";
 
-    /** Property for device hardware id */
+    /** Property for device id */
     public static final String PROP_DEVICE_ID = "dvid";
+
+    /** Property for device type id */
+    public static final String PROP_DEVICE_TYPE_ID = "dtid";
 
     /** Property for customer id */
     public static final String PROP_CUSTOMER_ID = "csid";
@@ -81,6 +84,7 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
 	target.append(PROP_ID, source.getId());
 	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_DEVICE_ID, source.getDeviceId());
+	target.append(PROP_DEVICE_TYPE_ID, source.getDeviceTypeId());
 	target.append(PROP_CUSTOMER_ID, source.getCustomerId());
 	target.append(PROP_AREA_ID, source.getAreaId());
 	target.append(PROP_ASSET_ID, source.getAssetId());
@@ -109,6 +113,7 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
 	UUID id = (UUID) source.get(PROP_ID);
 	String token = (String) source.get(PROP_TOKEN);
 	UUID deviceId = (UUID) source.get(PROP_DEVICE_ID);
+	UUID deviceTypeId = (UUID) source.get(PROP_DEVICE_TYPE_ID);
 	UUID customerId = (UUID) source.get(PROP_CUSTOMER_ID);
 	UUID areaId = (UUID) source.get(PROP_AREA_ID);
 	UUID assetId = (UUID) source.get(PROP_ASSET_ID);
@@ -119,6 +124,7 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
 	target.setId(id);
 	target.setToken(token);
 	target.setDeviceId(deviceId);
+	target.setDeviceTypeId(deviceTypeId);
 	target.setCustomerId(customerId);
 	target.setAreaId(areaId);
 	target.setAssetId(assetId);

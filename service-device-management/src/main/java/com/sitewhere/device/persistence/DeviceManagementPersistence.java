@@ -871,6 +871,7 @@ public class DeviceManagementPersistence extends Persistence {
 	assignment.setAreaId(area != null ? area.getId() : null);
 	assignment.setAssetId(asset != null ? asset.getId() : null);
 	assignment.setDeviceId(device.getId());
+	assignment.setDeviceTypeId(device.getDeviceTypeId());
 	assignment.setActiveDate(new Date());
 	assignment.setStatus(source.getStatus() != null ? source.getStatus() : DeviceAssignmentStatus.Active);
 
@@ -898,6 +899,7 @@ public class DeviceManagementPersistence extends Persistence {
 	}
 	if (device != null) {
 	    target.setDeviceId(device.getId());
+	    target.setDeviceTypeId(device.getDeviceTypeId());
 	}
 	if (customer != null) {
 	    target.setCustomerId(customer.getId());

@@ -28,6 +28,13 @@ public interface IDeviceAssignment extends IMetadataProviderEntity {
     public UUID getDeviceId();
 
     /**
+     * Get unique id for assigned device type at time of assignment.
+     * 
+     * @return
+     */
+    public UUID getDeviceTypeId();
+
+    /**
      * Get unqiue id for customer assigned to device.
      * 
      * @return

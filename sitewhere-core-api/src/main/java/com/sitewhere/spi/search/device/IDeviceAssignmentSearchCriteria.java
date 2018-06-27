@@ -35,6 +35,13 @@ public interface IDeviceAssignmentSearchCriteria extends ISearchCriteria {
     public UUID getDeviceId();
 
     /**
+     * Limits search the given list of device types.
+     * 
+     * @return
+     */
+    public List<UUID> getDeviceTypeIds();
+
+    /**
      * Limits search the given list of customers.
      * 
      * @return
