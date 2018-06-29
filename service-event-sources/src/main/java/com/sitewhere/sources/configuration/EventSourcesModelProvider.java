@@ -625,6 +625,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
      * 
      * @return
      */
+    // TODO: Update to device type.
     protected ElementNode createDeviceSpecificationDecoderChoiceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Match Device Specification",
 		IEventSourcesParser.CompositeDecoderChoiceElements.DeviceSpecificationDecoderChoice.getLocalName(),
@@ -636,9 +637,9 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
 	addEventSourceAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_GENERAL);
 
-	builder.attribute((new AttributeNode.Builder("Specification token", "token",
-		AttributeType.SpecificationReference, ConfigurationModelProvider.ATTR_GROUP_GENERAL)
-			.description("Specification token to match.").makeIndex().makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Device type", "deviceTypeId", AttributeType.DeviceTypeReference,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Device type to match.").makeIndex()
+			.makeRequired().build()));
 	return builder.build();
     }
 

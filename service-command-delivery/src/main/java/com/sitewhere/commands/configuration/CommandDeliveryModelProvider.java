@@ -9,7 +9,6 @@ package com.sitewhere.commands.configuration;
 
 import com.sitewhere.configuration.CommonConnectorModel;
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
-import com.sitewhere.configuration.old.ICommandRoutingParser;
 import com.sitewhere.configuration.parser.ICommandDeliveryParser;
 import com.sitewhere.rest.model.configuration.AttributeGroup;
 import com.sitewhere.rest.model.configuration.AttributeNode;
@@ -65,8 +64,8 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
 
 	// Command routers.
 	addElement(createGroovyCommandRouterElement());
-	addElement(createSpecificationMappingRouterElement());
-	addElement(createSpecificationMappingRouterMappingElement());
+	addElement(createDeviceTypeMappingRouterElement());
+	addElement(createDeviceTypeMappingRouterMappingElement());
 
 	// Command destinations.
 	addElement(createMqttCommandDestinationElement());
@@ -113,19 +112,18 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
     }
 
     /**
-     * Create element configuration for specification mapping command router.
+     * Create element configuration for device type mapping command router.
      * 
      * @return
      */
-    protected ElementNode createSpecificationMappingRouterElement() {
+    protected ElementNode createDeviceTypeMappingRouterElement() {
 	ElementNode.Builder builder = new ElementNode.Builder(
-		CommandDeliveryRoles.SpecificationMappingRouter.getRole().getName(),
-		ICommandRoutingParser.Elements.SpecificationMappingRouter.getLocalName(), "sitemap",
-		CommandDeliveryRoleKeys.SpecificationMappingRouter, this);
+		CommandDeliveryRoles.DeviceTypeMappingRouter.getRole().getName(),
+		ICommandDeliveryParser.Elements.DeviceTypeMappingRouter.getLocalName(), "sitemap",
+		CommandDeliveryRoleKeys.DeviceTypeMappingRouter, this);
 
-	builder.description("Routes commands based on a direct mapping from device specification token "
-		+ "to a command desitination. Commands for specifications not in the mapping list are routed to "
-		+ "the default destination.");
+	builder.description("Routes commands based on a direct mapping from device type to a command desitination. "
+		+ "Commands for device types not in the mapping list are routed to " + "the default destination.");
 	builder.attributeGroup(CommandDeliveryModelProvider.ATTR_GROUP_ROUTER);
 
 	builder.attribute((new AttributeNode.Builder("Default destination", "defaultDestination", AttributeType.String,
@@ -140,9 +138,30 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
      * 
      * @return
      */
+    protected ElementNode createDeviceTypeMappingRouterMappingElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Device Type Mapping", "mapping", "arrows-h",
+		CommandDeliveryRoleKeys.DeviceTypeMappingRouterMapping, this);
+
+	builder.description("Maps a device type to a command destination that should process it.");
+	builder.attributeGroup(CommandDeliveryModelProvider.ATTR_GROUP_ROUTER);
+
+	builder.attribute((new AttributeNode.Builder("Device type", "deviceType", AttributeType.DeviceTypeReference,
+		CommandDeliveryModelProvider.ATTR_GROUP_ROUTER).description("Device specification for the mapping.")
+			.makeIndex().build()));
+	builder.attribute((new AttributeNode.Builder("Destination id", "destination", AttributeType.String,
+		CommandDeliveryModelProvider.ATTR_GROUP_ROUTER)
+			.description("Unique id of command destination for the mapping.").makeRequired().build()));
+	return builder.build();
+    }
+
+    /**
+     * Create element configuration for specification mapping command router.
+     * 
+     * @return
+     */
     protected ElementNode createGroovyCommandRouterElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy Command Router",
-		ICommandRoutingParser.Elements.GroovyCommandRouter.getLocalName(), "sitemap",
+		ICommandDeliveryParser.Elements.GroovyCommandRouter.getLocalName(), "sitemap",
 		CommandDeliveryRoleKeys.CommandRouter, this);
 
 	builder.description("Routes commands to command destinations based on routing logic "
@@ -153,27 +172,6 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
 	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String,
 		CommandDeliveryModelProvider.ATTR_GROUP_ROUTER)
 			.description("Path to Groovy script which executes routing logic.").makeRequired().build()));
-	return builder.build();
-    }
-
-    /**
-     * Create element configuration for specification mapping command router.
-     * 
-     * @return
-     */
-    protected ElementNode createSpecificationMappingRouterMappingElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Specification Mapping", "mapping", "arrows-h",
-		CommandDeliveryRoleKeys.SpecificationMappingRouterMapping, this);
-
-	builder.description("Maps a specification token to a command destination that should process it.");
-	builder.attributeGroup(CommandDeliveryModelProvider.ATTR_GROUP_ROUTER);
-
-	builder.attribute((new AttributeNode.Builder("Specification", "specification",
-		AttributeType.SpecificationReference, CommandDeliveryModelProvider.ATTR_GROUP_ROUTER)
-			.description("Device specification for the mapping.").makeIndex().build()));
-	builder.attribute((new AttributeNode.Builder("Destination id", "destination", AttributeType.String,
-		CommandDeliveryModelProvider.ATTR_GROUP_ROUTER)
-			.description("Unique id of command destination for the mapping.").makeRequired().build()));
 	return builder.build();
     }
 

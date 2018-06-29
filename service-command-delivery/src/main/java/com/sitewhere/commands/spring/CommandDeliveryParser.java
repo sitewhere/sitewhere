@@ -9,9 +9,6 @@ package com.sitewhere.commands.spring;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
@@ -53,10 +50,6 @@ import com.sitewhere.spi.microservice.spring.CommandDestinationsBeans;
  */
 public class CommandDeliveryParser extends AbstractBeanDefinitionParser {
 
-    /** Static logger instance */
-    @SuppressWarnings("unused")
-    private static Log LOGGER = LogFactory.getLog(CommandDeliveryParser.class);
-
     /** Used to generate unique names for nested beans */
     private DefaultBeanNameGenerator nameGenerator = new DefaultBeanNameGenerator();
 
@@ -69,10 +62,6 @@ public class CommandDeliveryParser extends AbstractBeanDefinitionParser {
      */
     @Override
     protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
-	BeanDefinitionBuilder manager = BeanDefinitionBuilder.rootBeanDefinition(CommandDestinationsManager.class);
-	context.getRegistry().registerBeanDefinition(CommandDestinationsBeans.BEAN_COMMAND_DESTINATIONS_MANAGER,
-		manager.getBeanDefinition());
-
 	ManagedList<Object> destinations = new ManagedList<Object>();
 	List<Element> children = DomUtils.getChildElements(element);
 	for (Element child : children) {
@@ -81,17 +70,10 @@ public class CommandDeliveryParser extends AbstractBeanDefinitionParser {
 		throw new RuntimeException("Unknown command delivery element: " + child.getLocalName());
 	    }
 	    switch (type) {
-	    case CommandRouter: {
-		break;
-	    }
-	    case SpecificationMappingRouter: {
+	    case DeviceTypeMappingRouter: {
 		break;
 	    }
 	    case GroovyCommandRouter: {
-		break;
-	    }
-	    case CommandDestination: {
-		destinations.add(parseCommandDestinationReference(child, context));
 		break;
 	    }
 	    case MqttCommandDestination: {
@@ -109,22 +91,13 @@ public class CommandDeliveryParser extends AbstractBeanDefinitionParser {
 	    }
 	}
 
-	return null;
-    }
+	// Build outbound event processors manager and inject the list of beans.
+	BeanDefinitionBuilder manager = BeanDefinitionBuilder.rootBeanDefinition(CommandDestinationsManager.class);
+	manager.addPropertyValue("commandDestinations", destinations);
+	context.getRegistry().registerBeanDefinition(CommandDestinationsBeans.BEAN_COMMAND_DESTINATIONS_MANAGER,
+		manager.getBeanDefinition());
 
-    /**
-     * Parse a command destination reference.
-     * 
-     * @param element
-     * @param context
-     * @return
-     */
-    protected RuntimeBeanReference parseCommandDestinationReference(Element element, ParserContext context) {
-	Attr ref = element.getAttributeNode("ref");
-	if (ref != null) {
-	    return new RuntimeBeanReference(ref.getValue());
-	}
-	throw new RuntimeException("Command destination reference not contain ref attribute.");
+	return null;
     }
 
     /**

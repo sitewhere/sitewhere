@@ -5,12 +5,15 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.commands;
+package com.sitewhere.commands.routing;
 
 import java.util.Iterator;
+import java.util.Map;
 
 import com.sitewhere.commands.spi.ICommandDestination;
+import com.sitewhere.commands.spi.ICommandDestinationsManager;
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
+import com.sitewhere.commands.spi.microservice.ICommandDeliveryTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -66,11 +69,16 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	if (getDestinations().size() != 1) {
+	Map<String, ICommandDestination<?, ?>> destinations = getCommandDestinationsManager().getCommandDestinations();
+	if (destinations.size() != 1) {
 	    throw new SiteWhereException(
-		    "Expected exactly one destination for command routing but found " + getDestinations().size() + ".");
+		    "Expected exactly one destination for command routing but found " + destinations.size() + ".");
 	}
-	Iterator<ICommandDestination<?, ?>> it = getDestinations().values().iterator();
+	Iterator<ICommandDestination<?, ?>> it = destinations.values().iterator();
 	this.destination = it.next();
+    }
+
+    protected ICommandDestinationsManager getCommandDestinationsManager() {
+	return ((ICommandDeliveryTenantEngine) getTenantEngine()).getCommandDestinationsManager();
     }
 }

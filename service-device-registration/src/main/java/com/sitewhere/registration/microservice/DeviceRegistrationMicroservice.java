@@ -91,7 +91,6 @@ public class DeviceRegistrationMicroservice
 	    getLogger().debug("All required microservices detected as available.");
 	} catch (ApiChannelNotAvailableException e) {
 	    getLogger().error(e, SiteWhereMessage.MICROSERVICE_NOT_AVAILABLE);
-
 	}
     }
 

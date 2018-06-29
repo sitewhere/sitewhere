@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.commands;
+package com.sitewhere.commands.routing;
 
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
 import com.sitewhere.spi.SiteWhereException;

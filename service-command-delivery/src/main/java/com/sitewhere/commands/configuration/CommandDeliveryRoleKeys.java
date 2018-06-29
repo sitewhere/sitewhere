@@ -17,11 +17,11 @@ public enum CommandDeliveryRoleKeys implements IRoleKey {
     /** Command router */
     CommandRouter("cmd_router"),
 
-    /** Specification mapping router */
-    SpecificationMappingRouter("spec_map_router"),
+    /** Device type mapping router */
+    DeviceTypeMappingRouter("devtype_map_router"),
 
-    /** Specification mapping router mapping */
-    SpecificationMappingRouterMapping("smr_mapping"),
+    /** Device type mapping router mapping */
+    DeviceTypeMappingRouterMapping("dmr_mapping"),
 
     /** Command destinations */
     CommandDestinations("cmd_dests"),

@@ -7,8 +7,6 @@
  */
 package com.sitewhere.commands.spi;
 
-import java.util.List;
-
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -22,14 +20,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
  * @author Derek
  */
 public interface IOutboundCommandRouter extends ITenantEngineLifecycleComponent {
-
-    /**
-     * Initialize the router with destination information.
-     * 
-     * @param destinations
-     * @throws SiteWhereException
-     */
-    public void initialize(List<ICommandDestination<?, ?>> destinations) throws SiteWhereException;
 
     /**
      * Route a command to one of the available destinations.

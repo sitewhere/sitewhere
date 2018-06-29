@@ -26,15 +26,15 @@ public enum CommandDeliveryRoles implements IConfigurationRoleProvider {
 
     /** Command router implementation. */
     CommandRouter(ConfigurationRole.build(CommandDeliveryRoleKeys.CommandRouter, "Command Router", true, false, false,
-	    new IRoleKey[0], new IRoleKey[] { CommandDeliveryRoleKeys.SpecificationMappingRouter })),
+	    new IRoleKey[0], new IRoleKey[] { CommandDeliveryRoleKeys.DeviceTypeMappingRouter })),
 
-    /** Specification mapping router. */
-    SpecificationMappingRouter(
-	    ConfigurationRole.build(CommandDeliveryRoleKeys.SpecificationMappingRouter, "Specification Mapping Router",
-		    false, false, false, new IRoleKey[] { CommandDeliveryRoleKeys.SpecificationMappingRouterMapping })),
+    /** Device type mapping router. */
+    DeviceTypeMappingRouter(
+	    ConfigurationRole.build(CommandDeliveryRoleKeys.DeviceTypeMappingRouter, "Device Type Mapping Router",
+		    false, false, false, new IRoleKey[] { CommandDeliveryRoleKeys.DeviceTypeMappingRouterMapping })),
 
-    /** Specification mapping router mapping. */
-    SpecificationMappingRouterMapping(ConfigurationRole.build(CommandDeliveryRoleKeys.SpecificationMappingRouterMapping,
+    /** Device type mapping router mapping. */
+    DeviceTypeMappingRouterMapping(ConfigurationRole.build(CommandDeliveryRoleKeys.DeviceTypeMappingRouterMapping,
 	    "Mappings", true, true, true)),
 
     /** Command destination. */

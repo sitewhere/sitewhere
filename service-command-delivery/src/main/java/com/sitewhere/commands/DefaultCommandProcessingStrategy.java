@@ -12,20 +12,23 @@ import java.util.List;
 import com.sitewhere.commands.spi.ICommandExecutionBuilder;
 import com.sitewhere.commands.spi.ICommandProcessingStrategy;
 import com.sitewhere.commands.spi.ICommandTargetResolver;
-import com.sitewhere.commands.spi.IDeviceCommunication;
+import com.sitewhere.commands.spi.IOutboundCommandRouter;
+import com.sitewhere.commands.spi.microservice.ICommandDeliveryMicroservice;
+import com.sitewhere.commands.spi.microservice.ICommandDeliveryTenantEngine;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Default implementation of {@link ICommandProcessingStrategy}.
@@ -46,30 +49,26 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.ICommandProcessingStrategy#
-     * deliverCommand (com.sitewhere.spi.device.communication.IDeviceCommunication,
-     * com.sitewhere.spi.device.event.IDeviceCommandInvocation)
+     * @see
+     * com.sitewhere.commands.spi.ICommandProcessingStrategy#deliverCommand(com.
+     * sitewhere.spi.device.event.IDeviceCommandInvocation)
      */
     @Override
-    public void deliverCommand(IDeviceCommunication communication, IDeviceCommandInvocation invocation)
-	    throws SiteWhereException {
+    public void deliverCommand(IDeviceCommandInvocation invocation) throws SiteWhereException {
 	getLogger().debug("Command processing strategy handling invocation.");
-	IDeviceCommand command = getDeviceManagement(getTenantEngine().getTenant())
-		.getDeviceCommandByToken(invocation.getCommandToken());
+	IDeviceCommand command = getDeviceManagementApiChannel().getDeviceCommandByToken(invocation.getCommandToken());
 	if (command != null) {
 	    IDeviceCommandExecution execution = getCommandExecutionBuilder().createExecution(command, invocation);
 	    List<IDeviceAssignment> assignments = getCommandTargetResolver().resolveTargets(invocation);
 	    for (IDeviceAssignment assignment : assignments) {
-		IDevice device = getDeviceManagement(getTenantEngine().getTenant()).getDevice(assignment.getDeviceId());
+		IDevice device = getDeviceManagementApiChannel().getDevice(assignment.getDeviceId());
 		if (device == null) {
 		    throw new SiteWhereException("Targeted assignment references device that does not exist.");
 		}
 
 		IDeviceNestingContext nesting = NestedDeviceSupport.calculateNestedDeviceInformation(device,
 			getTenantEngine().getTenant());
-		communication.getOutboundCommandRouter().routeCommand(execution, nesting, assignment);
+		getOutboundCommandRouter().routeCommand(execution, nesting, assignment);
 	    }
 	} else {
 	    throw new SiteWhereException("Invalid command referenced from invocation.");
@@ -77,25 +76,42 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.ICommandProcessingStrategy#
-     * deliverSystemCommand
-     * (com.sitewhere.spi.device.communication.IDeviceCommunication,
+     * @see
+     * com.sitewhere.commands.spi.ICommandProcessingStrategy#deliverSystemCommand(
      * java.lang.String, com.sitewhere.spi.device.command.ISystemCommand)
      */
     @Override
-    public void deliverSystemCommand(IDeviceCommunication communication, String deviceToken, ISystemCommand command)
-	    throws SiteWhereException {
-	IDeviceManagement management = getDeviceManagement(getTenantEngine().getTenant());
-	IDevice device = management.getDeviceByToken(deviceToken);
+    public void deliverSystemCommand(String deviceToken, ISystemCommand command) throws SiteWhereException {
+	getLogger().debug("Command processing strategy handling system command invocation.");
+	IDevice device = getDeviceManagementApiChannel().getDeviceByToken(deviceToken);
 	if (device == null) {
 	    throw new SiteWhereException("Targeted assignment references device that does not exist.");
 	}
-	IDeviceAssignment assignment = management.getDeviceAssignment(device.getDeviceAssignmentId());
+	IDeviceAssignment assignment = getDeviceManagementApiChannel()
+		.getDeviceAssignment(device.getDeviceAssignmentId());
 	IDeviceNestingContext nesting = NestedDeviceSupport.calculateNestedDeviceInformation(device,
 		getTenantEngine().getTenant());
-	communication.getOutboundCommandRouter().routeSystemCommand(command, nesting, assignment);
+	getOutboundCommandRouter().routeSystemCommand(command, nesting, assignment);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Composite step for initializing processing strategy.
+	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
+
+	// Initialize command execution builder.
+	init.addInitializeStep(this, getCommandExecutionBuilder(), true);
+
+	// Initialize command target resolver.
+	init.addInitializeStep(this, getCommandTargetResolver(), true);
+
+	// Execute initialization steps.
+	init.execute(monitor);
     }
 
     /*
@@ -106,19 +122,17 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	getLifecycleComponents().clear();
+	// Composite step for starting processing strategy.
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
 
 	// Start command execution builder.
-	if (getCommandExecutionBuilder() == null) {
-	    throw new SiteWhereException("No command execution builder configured for command processing.");
-	}
-	startNestedComponent(getCommandExecutionBuilder(), monitor, true);
+	start.addStartStep(this, getCommandExecutionBuilder(), true);
 
 	// Start command target resolver.
-	if (getCommandTargetResolver() == null) {
-	    throw new SiteWhereException("No command target resolver configured for command processing.");
-	}
-	startNestedComponent(getCommandTargetResolver(), monitor, true);
+	start.addStartStep(this, getCommandTargetResolver(), true);
+
+	// Execute startup steps.
+	start.execute(monitor);
     }
 
     /*
@@ -130,15 +144,17 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Stop command execution builder.
-	if (getCommandExecutionBuilder() != null) {
-	    getCommandExecutionBuilder().lifecycleStop(monitor);
-	}
+	// Composite step for stopping processing strategy.
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
 
 	// Stop command target resolver.
-	if (getCommandTargetResolver() != null) {
-	    getCommandTargetResolver().lifecycleStop(monitor);
-	}
+	stop.addStopStep(this, getCommandTargetResolver());
+
+	// Stop command execution builder.
+	stop.addStopStep(this, getCommandExecutionBuilder());
+
+	// Execute shutdown steps.
+	stop.execute(monitor);
     }
 
     public ICommandTargetResolver getCommandTargetResolver() {
@@ -157,7 +173,11 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
 	this.commandExecutionBuilder = commandExecutionBuilder;
     }
 
-    private IDeviceManagement getDeviceManagement(ITenant tenant) {
-	return null;
+    private IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
+	return ((ICommandDeliveryMicroservice) getMicroservice()).getDeviceManagementApiDemux().getApiChannel();
+    }
+
+    private IOutboundCommandRouter getOutboundCommandRouter() {
+	return ((ICommandDeliveryTenantEngine) getTenantEngine()).getOutboundCommandRouter();
     }
 }

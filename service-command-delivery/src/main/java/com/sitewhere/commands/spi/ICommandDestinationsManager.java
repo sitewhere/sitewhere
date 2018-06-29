@@ -7,8 +7,8 @@
  */
 package com.sitewhere.commands.spi;
 
-import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.kafka.payload.IEnrichedEventPayload;
+import java.util.Map;
+
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
@@ -19,10 +19,9 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 public interface ICommandDestinationsManager extends ITenantEngineLifecycleComponent {
 
     /**
-     * Process a command invocation.
+     * Get map of command destinations indexed by destination id.
      * 
-     * @param payload
-     * @throws SiteWhereException
+     * @return
      */
-    public void processCommandInvocation(IEnrichedEventPayload payload) throws SiteWhereException;
+    public Map<String, ICommandDestination<?, ?>> getCommandDestinations();
 }

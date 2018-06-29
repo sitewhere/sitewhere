@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
 
+import com.sitewhere.commands.spi.ICommandProcessingStrategy;
 import com.sitewhere.commands.spi.kafka.IEnrichedCommandInvocationsConsumer;
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryTenantEngine;
 import com.sitewhere.common.MarshalUtils;
@@ -29,6 +30,7 @@ import com.sitewhere.microservice.kafka.DirectKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.rest.model.microservice.kafka.payload.EnrichedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
@@ -162,9 +164,11 @@ public class EnrichedCommandInvocationsConsumer extends DirectKafkaConsumer
 			    "Received command invocation:\n\n" + MarshalUtils.marshalJsonAsPrettyString(eventPayload));
 		}
 
-		// Pass decoded payload to command destinations manager.
-		((ICommandDeliveryTenantEngine) getTenantEngine()).getCommandDestinationsManager()
-			.processCommandInvocation(eventPayload);
+		// Pass decoded payload to processing strategy implementation.
+		ICommandProcessingStrategy strategy = ((ICommandDeliveryTenantEngine) getTenantEngine())
+			.getCommandProcessingStrategy();
+		IDeviceCommandInvocation invocation = (IDeviceCommandInvocation) eventPayload.getEvent();
+		strategy.deliverCommand(invocation);
 	    } catch (SiteWhereException e) {
 		getLogger().error("Unable to parse unregistered device event payload.", e);
 	    } catch (Throwable e) {

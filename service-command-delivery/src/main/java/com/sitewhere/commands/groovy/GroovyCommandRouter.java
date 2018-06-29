@@ -7,10 +7,10 @@
  */
 package com.sitewhere.commands.groovy;
 
-import java.util.List;
-
 import com.sitewhere.commands.spi.ICommandDestination;
+import com.sitewhere.commands.spi.ICommandDestinationsManager;
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
+import com.sitewhere.commands.spi.microservice.ICommandDeliveryTenantEngine;
 import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -30,23 +30,8 @@ import groovy.lang.Binding;
  */
 public class GroovyCommandRouter extends GroovyComponent implements IOutboundCommandRouter {
 
-    /** List of available command destinations */
-    private List<ICommandDestination<?, ?>> commandDestinations;
-
     public GroovyCommandRouter() {
 	super(LifecycleComponentType.CommandRouter);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.device.communication.IOutboundCommandRouter#initialize(
-     * java.util.List)
-     */
-    @Override
-    public void initialize(List<ICommandDestination<?, ?>> destinations) throws SiteWhereException {
-	this.commandDestinations = destinations;
     }
 
     /*
@@ -99,14 +84,16 @@ public class GroovyCommandRouter extends GroovyComponent implements IOutboundCom
 	    getLogger().debug("About to route command using script '" + getScriptId() + "'");
 	    String target = (String) run(binding);
 	    if (target != null) {
-		for (ICommandDestination<?, ?> destination : getCommandDestinations()) {
-		    if (target.equals(destination.getDestinationId())) {
-			if (execution != null) {
-			    destination.deliverCommand(execution, nesting, assignment);
-			} else if (system != null) {
-			    destination.deliverSystemCommand(system, nesting, assignment);
-			}
+		ICommandDestination<?, ?> destination = getCommandDestinationsManager().getCommandDestinations()
+			.get(target);
+		if (destination != null) {
+		    if (execution != null) {
+			destination.deliverCommand(execution, nesting, assignment);
+		    } else if (system != null) {
+			destination.deliverSystemCommand(system, nesting, assignment);
 		    }
+		} else {
+		    getLogger().warn("Command attempting to route to unknown destination: " + target);
 		}
 	    } else {
 		getLogger().warn("Groovy command router did not return a command destination id.");
@@ -116,11 +103,7 @@ public class GroovyCommandRouter extends GroovyComponent implements IOutboundCom
 	}
     }
 
-    public List<ICommandDestination<?, ?>> getCommandDestinations() {
-	return commandDestinations;
-    }
-
-    public void setCommandDestinations(List<ICommandDestination<?, ?>> commandDestinations) {
-	this.commandDestinations = commandDestinations;
+    protected ICommandDestinationsManager getCommandDestinationsManager() {
+	return ((ICommandDeliveryTenantEngine) getTenantEngine()).getCommandDestinationsManager();
     }
 }

@@ -7,6 +7,7 @@
  */
 package com.sitewhere.commands.spi.microservice;
 
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
@@ -17,4 +18,11 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
  */
 public interface ICommandDeliveryMicroservice
 	extends IMultitenantMicroservice<MicroserviceIdentifier, ICommandDeliveryTenantEngine> {
+
+    /**
+     * Get device management API access via GRPC channel.
+     * 
+     * @return
+     */
+    public IDeviceManagementApiDemux getDeviceManagementApiDemux();
 }

@@ -19,17 +19,11 @@ public interface ICommandDeliveryParser {
 
     public static enum Elements {
 
-	/** Command router */
-	CommandRouter("command-router"),
-
-	/** Specification mapping router */
-	SpecificationMappingRouter("specification-mapping-router"),
+	/** Device type mapping router */
+	DeviceTypeMappingRouter("device-type-mapping-router"),
 
 	/** Groovy command router */
 	GroovyCommandRouter("groovy-command-router"),
-
-	/** Command destination */
-	CommandDestination("command-destination"),
 
 	/** MQTT Command destination */
 	MqttCommandDestination("mqtt-command-destination"),

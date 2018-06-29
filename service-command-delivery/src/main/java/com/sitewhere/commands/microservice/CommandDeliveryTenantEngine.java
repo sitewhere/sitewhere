@@ -7,8 +7,12 @@
  */
 package com.sitewhere.commands.microservice;
 
+import com.sitewhere.commands.DefaultCommandProcessingStrategy;
 import com.sitewhere.commands.kafka.EnrichedCommandInvocationsConsumer;
+import com.sitewhere.commands.routing.NoOpCommandRouter;
 import com.sitewhere.commands.spi.ICommandDestinationsManager;
+import com.sitewhere.commands.spi.ICommandProcessingStrategy;
+import com.sitewhere.commands.spi.IOutboundCommandRouter;
 import com.sitewhere.commands.spi.kafka.IEnrichedCommandInvocationsConsumer;
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryTenantEngine;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
@@ -28,6 +32,12 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 public class CommandDeliveryTenantEngine extends MicroserviceTenantEngine implements ICommandDeliveryTenantEngine {
+
+    /** Configured command processing strategy */
+    private ICommandProcessingStrategy commandProcessingStrategy = new DefaultCommandProcessingStrategy();
+
+    /** Configured outbound command router */
+    private IOutboundCommandRouter outboundCommandRouter = new NoOpCommandRouter();
 
     /** Command destinations manager */
     private ICommandDestinationsManager commandDestinationsManager;
@@ -59,6 +69,12 @@ public class CommandDeliveryTenantEngine extends MicroserviceTenantEngine implem
 	// Initialize command destinations manager.
 	init.addInitializeStep(this, getCommandDestinationsManager(), true);
 
+	// Initialize outbound command router.
+	init.addInitializeStep(this, getOutboundCommandRouter(), true);
+
+	// Initialize command processing strategy.
+	init.addInitializeStep(this, getCommandProcessingStrategy(), true);
+
 	// Initialize enriched command invocations consumer.
 	init.addInitializeStep(this, getEnrichedCommandInvocationsConsumer(), true);
 
@@ -77,6 +93,12 @@ public class CommandDeliveryTenantEngine extends MicroserviceTenantEngine implem
 
 	// Start command destinations manager.
 	start.addStartStep(this, getCommandDestinationsManager(), true);
+
+	// Start outbound command router.
+	start.addStartStep(this, getOutboundCommandRouter(), true);
+
+	// Start command processing strategy.
+	start.addStartStep(this, getCommandProcessingStrategy(), true);
 
 	// Start command invocations consumer.
 	start.addStartStep(this, getEnrichedCommandInvocationsConsumer(), true);
@@ -107,11 +129,43 @@ public class CommandDeliveryTenantEngine extends MicroserviceTenantEngine implem
 	// Stop command invocations consumer.
 	stop.addStopStep(this, getEnrichedCommandInvocationsConsumer());
 
+	// Stop outbound command router.
+	stop.addStopStep(this, getOutboundCommandRouter());
+
+	// Stop command processing strategy.
+	stop.addStopStep(this, getCommandProcessingStrategy());
+
 	// Stop command destinations manager.
 	stop.addStopStep(this, getCommandDestinationsManager());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
+    }
+
+    /*
+     * @see com.sitewhere.commands.spi.microservice.ICommandDeliveryTenantEngine#
+     * getCommandProcessingStrategy()
+     */
+    @Override
+    public ICommandProcessingStrategy getCommandProcessingStrategy() {
+	return commandProcessingStrategy;
+    }
+
+    public void setCommandProcessingStrategy(ICommandProcessingStrategy commandProcessingStrategy) {
+	this.commandProcessingStrategy = commandProcessingStrategy;
+    }
+
+    /*
+     * @see com.sitewhere.commands.spi.microservice.ICommandDeliveryTenantEngine#
+     * getOutboundCommandRouter()
+     */
+    @Override
+    public IOutboundCommandRouter getOutboundCommandRouter() {
+	return outboundCommandRouter;
+    }
+
+    public void setOutboundCommandRouter(IOutboundCommandRouter outboundCommandRouter) {
+	this.outboundCommandRouter = outboundCommandRouter;
     }
 
     /*

@@ -8,6 +8,8 @@
 package com.sitewhere.commands.spi.microservice;
 
 import com.sitewhere.commands.spi.ICommandDestinationsManager;
+import com.sitewhere.commands.spi.ICommandProcessingStrategy;
+import com.sitewhere.commands.spi.IOutboundCommandRouter;
 import com.sitewhere.commands.spi.kafka.IEnrichedCommandInvocationsConsumer;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
@@ -18,6 +20,20 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
  * @author Derek
  */
 public interface ICommandDeliveryTenantEngine extends IMicroserviceTenantEngine {
+
+    /**
+     * Get command processing strategy.
+     * 
+     * @return
+     */
+    public ICommandProcessingStrategy getCommandProcessingStrategy();
+
+    /**
+     * Get outbound command router.
+     * 
+     * @return
+     */
+    public IOutboundCommandRouter getOutboundCommandRouter();
 
     /**
      * Get manager that executes command destination logic.

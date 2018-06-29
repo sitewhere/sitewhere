@@ -140,8 +140,8 @@ public class MicroserviceModelConverter {
 	    return AttributeType.Script;
 	case ATTRIBUTE_TYPE_AREA_REFERENCE:
 	    return AttributeType.AreaReference;
-	case ATTRIBUTE_TYPE_SPECIFICATION_REFERENCE:
-	    return AttributeType.SpecificationReference;
+	case ATTRIBUTE_TYPE_DEVICE_TYPE_REFERENCE:
+	    return AttributeType.DeviceTypeReference;
 	case ATTRIBUTE_TYPE_STRING:
 	    return AttributeType.String;
 	case UNRECOGNIZED:
@@ -169,8 +169,8 @@ public class MicroserviceModelConverter {
 	    return GAttributeType.ATTRIBUTE_TYPE_SCRIPT;
 	case AreaReference:
 	    return GAttributeType.ATTRIBUTE_TYPE_AREA_REFERENCE;
-	case SpecificationReference:
-	    return GAttributeType.ATTRIBUTE_TYPE_SPECIFICATION_REFERENCE;
+	case DeviceTypeReference:
+	    return GAttributeType.ATTRIBUTE_TYPE_DEVICE_TYPE_REFERENCE;
 	case String:
 	    return GAttributeType.ATTRIBUTE_TYPE_STRING;
 	}

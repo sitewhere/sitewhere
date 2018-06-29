@@ -5,14 +5,16 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.commands;
+package com.sitewhere.commands.routing;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import com.sitewhere.commands.spi.ICommandDestination;
+import com.sitewhere.commands.spi.ICommandDestinationsManager;
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
+import com.sitewhere.commands.spi.microservice.ICommandDeliveryTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -82,7 +84,8 @@ public class DeviceTypeMappingCommandRouter extends OutboundCommandRouter {
 		throw new SiteWhereException("No command destination mapping for device type: " + deviceTypeId);
 	    }
 	}
-	ICommandDestination<?, ?> destination = getDestinations().get(destinationId);
+	ICommandDestination<?, ?> destination = getCommandDestinationsManager().getCommandDestinations()
+		.get(destinationId);
 	if (destination == null) {
 	    throw new SiteWhereException("No destination found for destination id: " + destinationId);
 	}
@@ -103,5 +106,9 @@ public class DeviceTypeMappingCommandRouter extends OutboundCommandRouter {
 
     public void setDefaultDestination(String defaultDestination) {
 	this.defaultDestination = defaultDestination;
+    }
+
+    protected ICommandDestinationsManager getCommandDestinationsManager() {
+	return ((ICommandDeliveryTenantEngine) getTenantEngine()).getCommandDestinationsManager();
     }
 }

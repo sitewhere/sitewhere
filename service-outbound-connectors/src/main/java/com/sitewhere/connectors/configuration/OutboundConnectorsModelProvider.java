@@ -357,6 +357,7 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
      * 
      * @return
      */
+    // TODO: Update to device type.
     protected ElementNode createSpecificationFilterElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Specification Filter",
 		IOutboundConnectorsParser.Filters.SpecificationFilter.getLocalName(), "filter",
@@ -365,9 +366,9 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 		"Allows events for devices of a given type to be included or excluded for an outbound processor.");
 	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
 
-	builder.attribute((new AttributeNode.Builder("Specification", "specification",
-		AttributeType.SpecificationReference, ConfigurationModelProvider.ATTR_GROUP_GENERAL)
-			.description("Specification filter applies to.").makeIndex().build()));
+	builder.attribute((new AttributeNode.Builder("Device type", "deviceTypeId", AttributeType.DeviceTypeReference,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Device type filter applies to.").makeIndex()
+			.makeRequired().build()));
 	builder.attribute((new AttributeNode.Builder("Include/Exclude", "operation", AttributeType.String,
 		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description(
 			"Indicates whether events from the specification should be included or excluded from processing.")

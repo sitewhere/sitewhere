@@ -29,22 +29,18 @@ public interface ICommandProcessingStrategy extends ITenantEngineLifecycleCompon
     /**
      * Send a command using the given communication subsystem implementation.
      * 
-     * @param communication
      * @param invocation
      * @throws SiteWhereException
      */
-    public void deliverCommand(IDeviceCommunication communication, IDeviceCommandInvocation invocation)
-	    throws SiteWhereException;
+    public void deliverCommand(IDeviceCommandInvocation invocation) throws SiteWhereException;
 
     /**
      * Delivers a system command using the given communication subsystem
      * implementation.
      * 
-     * @param communication
      * @param deviceToken
      * @param command
      * @throws SiteWhereException
      */
-    public void deliverSystemCommand(IDeviceCommunication communication, String deviceToken, ISystemCommand command)
-	    throws SiteWhereException;
+    public void deliverSystemCommand(String deviceToken, ISystemCommand command) throws SiteWhereException;
 }

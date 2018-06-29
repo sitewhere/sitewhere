@@ -11,12 +11,14 @@ import com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor;
 import com.sitewhere.commands.spi.ICommandDeliveryProvider;
 import com.sitewhere.commands.spi.ICommandDestination;
 import com.sitewhere.commands.spi.ICommandExecutionEncoder;
+import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.command.ISystemCommand;
+import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -87,33 +89,49 @@ public class CommandDestination<T, P> extends TenantEngineLifecycleComponent imp
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Composite step for initializing processing strategy.
+	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
+
+	// Initialize execution encoder.
+	init.addInitializeStep(this, getCommandExecutionEncoder(), true);
+
+	// Initialize parameter extractor.
+	init.addInitializeStep(this, getCommandDeliveryParameterExtractor(), true);
+
+	// Initialize delivery provider.
+	init.addInitializeStep(this, getCommandDeliveryProvider(), true);
+
+	// Execute initialization steps.
+	init.execute(monitor);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Clear the component list.
-	getLifecycleComponents().clear();
+	// Composite step for starting processing strategy.
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
 
-	// Start command execution encoder.
-	if (getCommandExecutionEncoder() == null) {
-	    throw new SiteWhereException("No command execution encoder configured for destination.");
-	}
-	startNestedComponent(getCommandExecutionEncoder(), monitor, true);
+	// Start execution encoder.
+	start.addStartStep(this, getCommandExecutionEncoder(), true);
 
-	// Start command execution encoder.
-	if (getCommandDeliveryParameterExtractor() == null) {
-	    throw new SiteWhereException("No command delivery parameter extractor configured for destination.");
-	}
-	startNestedComponent(getCommandDeliveryParameterExtractor(), monitor, true);
+	// Start parameter extractor.
+	start.addStartStep(this, getCommandDeliveryParameterExtractor(), true);
 
-	// Start command delivery provider.
-	if (getCommandDeliveryProvider() == null) {
-	    throw new SiteWhereException("No command delivery provider configured for destination.");
-	}
-	startNestedComponent(getCommandDeliveryProvider(), monitor, true);
+	// Start delivery provider.
+	start.addStartStep(this, getCommandDeliveryProvider(), true);
+
+	// Execute startup steps.
+	start.execute(monitor);
     }
 
     /*
@@ -135,15 +153,20 @@ public class CommandDestination<T, P> extends TenantEngineLifecycleComponent imp
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Stop command execution encoder.
-	if (getCommandExecutionEncoder() != null) {
-	    getCommandExecutionEncoder().lifecycleStop(monitor);
-	}
+	// Composite step for stopping processing strategy.
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
 
-	// Stop command delivery provider.
-	if (getCommandDeliveryProvider() != null) {
-	    getCommandDeliveryProvider().lifecycleStop(monitor);
-	}
+	// Stop delivery provider.
+	stop.addStopStep(this, getCommandDeliveryProvider());
+
+	// Stop parameter extractor.
+	stop.addStopStep(this, getCommandDeliveryParameterExtractor());
+
+	// Stop execution encoder.
+	stop.addStopStep(this, getCommandExecutionEncoder());
+
+	// Execute shutdown steps.
+	stop.execute(monitor);
     }
 
     /*

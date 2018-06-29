@@ -19,8 +19,9 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
  * target devices, then using a delivery provider to send the encoded commands.
  * 
  * @author Derek
- * 
+ *
  * @param <T>
+ * @param <P>
  */
 public interface ICommandDestination<T, P> extends ITenantEngineLifecycleComponent {
 
