@@ -9,7 +9,7 @@ package com.sitewhere.commands.microservice;
 
 import com.sitewhere.commands.DefaultCommandProcessingStrategy;
 import com.sitewhere.commands.kafka.EnrichedCommandInvocationsConsumer;
-import com.sitewhere.commands.routing.NoOpCommandRouter;
+import com.sitewhere.commands.kafka.UndeliveredCommandInvocationsProducer;
 import com.sitewhere.commands.spi.ICommandDestinationsManager;
 import com.sitewhere.commands.spi.ICommandProcessingStrategy;
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
@@ -38,7 +38,7 @@ public class CommandDeliveryTenantEngine extends MicroserviceTenantEngine implem
     private ICommandProcessingStrategy commandProcessingStrategy = new DefaultCommandProcessingStrategy();
 
     /** Configured outbound command router */
-    private IOutboundCommandRouter outboundCommandRouter = new NoOpCommandRouter();
+    private IOutboundCommandRouter outboundCommandRouter;
 
     /** Command destinations manager */
     private ICommandDestinationsManager commandDestinationsManager;
@@ -63,9 +63,16 @@ public class CommandDeliveryTenantEngine extends MicroserviceTenantEngine implem
 	// Listener for enriched command invocations.
 	this.enrichedCommandInvocationsConsumer = new EnrichedCommandInvocationsConsumer();
 
-	// Load configured registration manager.
+	// Listener for enriched command invocations.
+	this.undeliveredCommandInvocationsProducer = new UndeliveredCommandInvocationsProducer();
+
+	// Load configured command destinations manager.
 	this.commandDestinationsManager = (ICommandDestinationsManager) getModuleContext()
 		.getBean(CommandDestinationsBeans.BEAN_COMMAND_DESTINATIONS_MANAGER);
+
+	// Load configured command router.
+	this.outboundCommandRouter = (IOutboundCommandRouter) getModuleContext()
+		.getBean(CommandDestinationsBeans.BEAN_COMMAND_ROUTER);
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());

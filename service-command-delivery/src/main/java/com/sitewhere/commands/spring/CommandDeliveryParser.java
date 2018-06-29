@@ -13,6 +13,7 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.beans.factory.support.ManagedList;
+import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
@@ -34,8 +35,10 @@ import com.sitewhere.commands.encoding.json.JsonCommandExecutionEncoder;
 import com.sitewhere.commands.encoding.protobuf.JavaHybridProtobufExecutionEncoder;
 import com.sitewhere.commands.encoding.protobuf.ProtobufExecutionEncoder;
 import com.sitewhere.commands.groovy.GroovyCommandExecutionEncoder;
+import com.sitewhere.commands.groovy.GroovyCommandRouter;
 import com.sitewhere.commands.groovy.GroovySmsParameterExtractor;
 import com.sitewhere.commands.groovy.GroovyStringCommandExecutionEncoder;
+import com.sitewhere.commands.routing.DeviceTypeMappingCommandRouter;
 import com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor;
 import com.sitewhere.commands.twilio.TwilioCommandDeliveryProvider;
 import com.sitewhere.configuration.parser.ICommandDeliveryParser.BinaryCommandEncoders;
@@ -71,9 +74,11 @@ public class CommandDeliveryParser extends AbstractBeanDefinitionParser {
 	    }
 	    switch (type) {
 	    case DeviceTypeMappingRouter: {
+		parseDeviceTypeMappingRouter(child, context);
 		break;
 	    }
 	    case GroovyCommandRouter: {
+		parseGroovyCommandRouter(child, context);
 		break;
 	    }
 	    case MqttCommandDestination: {
@@ -98,6 +103,57 @@ public class CommandDeliveryParser extends AbstractBeanDefinitionParser {
 		manager.getBeanDefinition());
 
 	return null;
+    }
+
+    /**
+     * Parse the configuration for a {@link DeviceTypeMappingCommandRouter}.
+     * 
+     * @param element
+     * @param context
+     */
+    protected void parseDeviceTypeMappingRouter(Element element, ParserContext context) {
+	BeanDefinitionBuilder router = BeanDefinitionBuilder.rootBeanDefinition(DeviceTypeMappingCommandRouter.class);
+
+	Attr defaultDestination = element.getAttributeNode("defaultDestination");
+	if (defaultDestination != null) {
+	    router.addPropertyValue("defaultDestination", defaultDestination.getValue());
+	}
+
+	ManagedMap<String, String> map = new ManagedMap<String, String>();
+	List<Element> mappings = DomUtils.getChildElementsByTagName(element, "mapping");
+	for (Element mapping : mappings) {
+	    Attr deviceTypeId = mapping.getAttributeNode("deviceTypeId");
+	    if (deviceTypeId == null) {
+		throw new RuntimeException("Device type mapping missing device type id.");
+	    }
+	    Attr destination = mapping.getAttributeNode("destination");
+	    if (destination == null) {
+		throw new RuntimeException("Device type mapping missing destination id.");
+	    }
+	    map.put(deviceTypeId.getValue(), destination.getValue());
+	}
+	router.addPropertyValue("mappings", map);
+
+	context.getRegistry().registerBeanDefinition(CommandDestinationsBeans.BEAN_COMMAND_ROUTER,
+		router.getBeanDefinition());
+    }
+
+    /**
+     * Parse the configuration for a {@link GroovyCommandRouter}.
+     * 
+     * @param element
+     * @param context
+     */
+    protected void parseGroovyCommandRouter(Element element, ParserContext context) {
+	BeanDefinitionBuilder router = BeanDefinitionBuilder.rootBeanDefinition(GroovyCommandRouter.class);
+
+	Attr scriptPath = element.getAttributeNode("scriptPath");
+	if (scriptPath != null) {
+	    router.addPropertyValue("scriptPath", scriptPath.getValue());
+	}
+
+	context.getRegistry().registerBeanDefinition(CommandDestinationsBeans.BEAN_COMMAND_ROUTER,
+		router.getBeanDefinition());
     }
 
     /**

@@ -16,4 +16,7 @@ public class CommandDestinationsBeans {
 
     /** Bean id for command destinations manager configuration */
     public static final String BEAN_COMMAND_DESTINATIONS_MANAGER = "commandDestinationsManager";
+
+    /** Bean id for command router */
+    public static final String BEAN_COMMAND_ROUTER = "commandRouter";
 }

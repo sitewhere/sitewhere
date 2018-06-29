@@ -7,6 +7,7 @@
  */
 package com.sitewhere.commands.kafka;
 
+import com.sitewhere.commands.spi.kafka.IUndeliveredCommandInvocationsProducer;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 
@@ -16,7 +17,8 @@ import com.sitewhere.spi.SiteWhereException;
  * 
  * @author Derek
  */
-public class UndeliveredCommandInvocationsProducer extends MicroserviceKafkaProducer {
+public class UndeliveredCommandInvocationsProducer extends MicroserviceKafkaProducer
+	implements IUndeliveredCommandInvocationsProducer {
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer#
