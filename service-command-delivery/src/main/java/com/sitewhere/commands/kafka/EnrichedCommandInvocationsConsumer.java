@@ -168,7 +168,7 @@ public class EnrichedCommandInvocationsConsumer extends DirectKafkaConsumer
 		ICommandProcessingStrategy strategy = ((ICommandDeliveryTenantEngine) getTenantEngine())
 			.getCommandProcessingStrategy();
 		IDeviceCommandInvocation invocation = (IDeviceCommandInvocation) eventPayload.getEvent();
-		strategy.deliverCommand(invocation);
+		strategy.deliverCommand(eventPayload.getEventContext(), invocation);
 	    } catch (SiteWhereException e) {
 		getLogger().error("Unable to parse unregistered device event payload.", e);
 	    } catch (Throwable e) {

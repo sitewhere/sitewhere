@@ -7,6 +7,8 @@
  */
 package com.sitewhere.commands.spi;
 
+import java.util.List;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -22,24 +24,26 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 public interface IOutboundCommandRouter extends ITenantEngineLifecycleComponent {
 
     /**
-     * Route a command to one of the available destinations.
+     * Compute list of destinations for the given command invocation.
      * 
      * @param execution
      * @param nesting
      * @param assignment
+     * @return
      * @throws SiteWhereException
      */
-    public void routeCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
-	    IDeviceAssignment assignment) throws SiteWhereException;
+    public List<ICommandDestination<?, ?>> getDestinationsFor(IDeviceCommandExecution execution,
+	    IDeviceNestingContext nesting, IDeviceAssignment assignment) throws SiteWhereException;
 
     /**
-     * Route a system command to one of the available destinations.
+     * Compute list of destinations for the given system command.
      * 
      * @param command
      * @param nesting
      * @param assignment
+     * @return
      * @throws SiteWhereException
      */
-    public void routeSystemCommand(ISystemCommand command, IDeviceNestingContext nesting, IDeviceAssignment assignment)
-	    throws SiteWhereException;
+    public List<ICommandDestination<?, ?>> getDestinationsFor(ISystemCommand command, IDeviceNestingContext nesting,
+	    IDeviceAssignment assignment) throws SiteWhereException;
 }

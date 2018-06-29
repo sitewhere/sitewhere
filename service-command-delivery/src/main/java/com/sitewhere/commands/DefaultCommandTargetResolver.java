@@ -11,14 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sitewhere.commands.spi.ICommandTargetResolver;
+import com.sitewhere.commands.spi.microservice.ICommandDeliveryMicroservice;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Uses information in an {@link IDeviceCommandInvocation} to determine a list
@@ -41,36 +40,14 @@ public class DefaultCommandTargetResolver extends TenantEngineLifecycleComponent
      */
     @Override
     public List<IDeviceAssignment> resolveTargets(IDeviceCommandInvocation invocation) throws SiteWhereException {
-	getLogger().debug("Resolving target for invocation.");
-	IDeviceAssignment assignment = getDeviceManagement(getTenantEngine().getTenant())
+	IDeviceAssignment assignment = getDeviceManagementApiChannel()
 		.getDeviceAssignment(invocation.getDeviceAssignmentId());
 	List<IDeviceAssignment> results = new ArrayList<IDeviceAssignment>();
 	results.add(assignment);
 	return results;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
-     * .spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-    }
-
-    private IDeviceManagement getDeviceManagement(ITenant tenant) {
-	return null;
+    private IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
+	return ((ICommandDeliveryMicroservice) getMicroservice()).getDeviceManagementApiDemux().getApiChannel();
     }
 }

@@ -7,7 +7,9 @@
  */
 package com.sitewhere.commands.routing;
 
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import com.sitewhere.commands.spi.ICommandDestination;
@@ -30,34 +32,32 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public class SingleChoiceCommandRouter extends OutboundCommandRouter {
 
     /** Destinations that will deliver all commands */
-    private ICommandDestination<?, ?> destination;
+    private List<ICommandDestination<?, ?>> destinations;
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IOutboundCommandRouter#
-     * routeCommand(com. sitewhere.spi.device.command.IDeviceCommandExecution,
+     * @see
+     * com.sitewhere.commands.spi.IOutboundCommandRouter#getDestinationsFor(com.
+     * sitewhere.spi.device.command.IDeviceCommandExecution,
      * com.sitewhere.spi.device.IDeviceNestingContext,
      * com.sitewhere.spi.device.IDeviceAssignment)
      */
     @Override
-    public void routeCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
-	    IDeviceAssignment assignment) throws SiteWhereException {
-	destination.deliverCommand(execution, nesting, assignment);
+    public List<ICommandDestination<?, ?>> getDestinationsFor(IDeviceCommandExecution execution,
+	    IDeviceNestingContext nesting, IDeviceAssignment assignment) throws SiteWhereException {
+	return destinations;
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IOutboundCommandRouter#
-     * routeSystemCommand (com.sitewhere.spi.device.command.ISystemCommand,
+     * @see
+     * com.sitewhere.commands.spi.IOutboundCommandRouter#getDestinationsFor(com.
+     * sitewhere.spi.device.command.ISystemCommand,
      * com.sitewhere.spi.device.IDeviceNestingContext,
      * com.sitewhere.spi.device.IDeviceAssignment)
      */
     @Override
-    public void routeSystemCommand(ISystemCommand command, IDeviceNestingContext nesting, IDeviceAssignment assignment)
-	    throws SiteWhereException {
-	destination.deliverSystemCommand(command, nesting, assignment);
+    public List<ICommandDestination<?, ?>> getDestinationsFor(ISystemCommand command, IDeviceNestingContext nesting,
+	    IDeviceAssignment assignment) throws SiteWhereException {
+	return destinations;
     }
 
     /*
@@ -69,13 +69,15 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+
 	Map<String, ICommandDestination<?, ?>> destinations = getCommandDestinationsManager().getCommandDestinations();
 	if (destinations.size() != 1) {
 	    throw new SiteWhereException(
 		    "Expected exactly one destination for command routing but found " + destinations.size() + ".");
 	}
 	Iterator<ICommandDestination<?, ?>> it = destinations.values().iterator();
-	this.destination = it.next();
+	this.destinations = Collections.singletonList(it.next());
     }
 
     protected ICommandDestinationsManager getCommandDestinationsManager() {

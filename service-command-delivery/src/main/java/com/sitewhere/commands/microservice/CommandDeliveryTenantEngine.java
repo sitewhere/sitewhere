@@ -14,6 +14,7 @@ import com.sitewhere.commands.spi.ICommandDestinationsManager;
 import com.sitewhere.commands.spi.ICommandProcessingStrategy;
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
 import com.sitewhere.commands.spi.kafka.IEnrichedCommandInvocationsConsumer;
+import com.sitewhere.commands.spi.kafka.IUndeliveredCommandInvocationsProducer;
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryTenantEngine;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
@@ -45,6 +46,9 @@ public class CommandDeliveryTenantEngine extends MicroserviceTenantEngine implem
     /** Kafka consumer for enriched command invocations */
     private IEnrichedCommandInvocationsConsumer enrichedCommandInvocationsConsumer;
 
+    /** Kafka producer for undelivered command invocations */
+    private IUndeliveredCommandInvocationsProducer undeliveredCommandInvocationsProducer;
+
     public CommandDeliveryTenantEngine(ITenant tenant) {
 	super(tenant);
     }
@@ -75,6 +79,9 @@ public class CommandDeliveryTenantEngine extends MicroserviceTenantEngine implem
 	// Initialize command processing strategy.
 	init.addInitializeStep(this, getCommandProcessingStrategy(), true);
 
+	// Initialize undelivered command invocations producer.
+	init.addInitializeStep(this, getUndeliveredCommandInvocationsProducer(), true);
+
 	// Initialize enriched command invocations consumer.
 	init.addInitializeStep(this, getEnrichedCommandInvocationsConsumer(), true);
 
@@ -99,6 +106,9 @@ public class CommandDeliveryTenantEngine extends MicroserviceTenantEngine implem
 
 	// Start command processing strategy.
 	start.addStartStep(this, getCommandProcessingStrategy(), true);
+
+	// Start undelivered command invocations producer.
+	start.addStartStep(this, getUndeliveredCommandInvocationsProducer(), true);
 
 	// Start command invocations consumer.
 	start.addStartStep(this, getEnrichedCommandInvocationsConsumer(), true);
@@ -128,6 +138,9 @@ public class CommandDeliveryTenantEngine extends MicroserviceTenantEngine implem
 
 	// Stop command invocations consumer.
 	stop.addStopStep(this, getEnrichedCommandInvocationsConsumer());
+
+	// Stop undelivered command invocations producer.
+	stop.addStopStep(this, getUndeliveredCommandInvocationsProducer());
 
 	// Stop outbound command router.
 	stop.addStopStep(this, getOutboundCommandRouter());
@@ -193,5 +206,19 @@ public class CommandDeliveryTenantEngine extends MicroserviceTenantEngine implem
     public void setEnrichedCommandInvocationsConsumer(
 	    IEnrichedCommandInvocationsConsumer enrichedCommandInvocationsConsumer) {
 	this.enrichedCommandInvocationsConsumer = enrichedCommandInvocationsConsumer;
+    }
+
+    /*
+     * @see com.sitewhere.commands.spi.microservice.ICommandDeliveryTenantEngine#
+     * getUndeliveredCommandInvocationsProducer()
+     */
+    @Override
+    public IUndeliveredCommandInvocationsProducer getUndeliveredCommandInvocationsProducer() {
+	return undeliveredCommandInvocationsProducer;
+    }
+
+    public void setUndeliveredCommandInvocationsProducer(
+	    IUndeliveredCommandInvocationsProducer undeliveredCommandInvocationsProducer) {
+	this.undeliveredCommandInvocationsProducer = undeliveredCommandInvocationsProducer;
     }
 }

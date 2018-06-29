@@ -141,7 +141,7 @@ public class CommandDestination<T, P> extends TenantEngineLifecycleComponent imp
      */
     @Override
     public String getComponentName() {
-	return "Command Destination (" + getDestinationId() + ")";
+	return getClass().getSimpleName() + " (" + getDestinationId() + ")";
     }
 
     /*

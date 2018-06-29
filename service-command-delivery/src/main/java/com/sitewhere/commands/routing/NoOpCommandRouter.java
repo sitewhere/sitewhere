@@ -7,6 +7,10 @@
  */
 package com.sitewhere.commands.routing;
 
+import java.util.Collections;
+import java.util.List;
+
+import com.sitewhere.commands.spi.ICommandDestination;
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -23,32 +27,28 @@ import com.sitewhere.spi.device.command.ISystemCommand;
 public class NoOpCommandRouter extends OutboundCommandRouter {
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IOutboundCommandRouter#
-     * routeCommand(com. sitewhere.spi.device.command.IDeviceCommandExecution,
+     * @see
+     * com.sitewhere.commands.spi.IOutboundCommandRouter#getDestinationsFor(com.
+     * sitewhere.spi.device.command.IDeviceCommandExecution,
      * com.sitewhere.spi.device.IDeviceNestingContext,
      * com.sitewhere.spi.device.IDeviceAssignment)
      */
     @Override
-    public void routeCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
-	    IDeviceAssignment assignment) throws SiteWhereException {
-	getLogger().warn(
-		"Ignoring routing of command. Add a command router to allow commands to be sent to destinations.");
+    public List<ICommandDestination<?, ?>> getDestinationsFor(IDeviceCommandExecution execution,
+	    IDeviceNestingContext nesting, IDeviceAssignment assignment) throws SiteWhereException {
+	return Collections.emptyList();
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IOutboundCommandRouter#
-     * routeSystemCommand (com.sitewhere.spi.device.command.ISystemCommand,
+     * @see
+     * com.sitewhere.commands.spi.IOutboundCommandRouter#getDestinationsFor(com.
+     * sitewhere.spi.device.command.ISystemCommand,
      * com.sitewhere.spi.device.IDeviceNestingContext,
      * com.sitewhere.spi.device.IDeviceAssignment)
      */
     @Override
-    public void routeSystemCommand(ISystemCommand command, IDeviceNestingContext nesting, IDeviceAssignment assignment)
-	    throws SiteWhereException {
-	getLogger().warn(
-		"Ignoring routing of system command. Add a command router to allow commands to be sent to destinations.");
+    public List<ICommandDestination<?, ?>> getDestinationsFor(ISystemCommand command, IDeviceNestingContext nesting,
+	    IDeviceAssignment assignment) throws SiteWhereException {
+	return Collections.emptyList();
     }
 }

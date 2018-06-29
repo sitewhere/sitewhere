@@ -7,7 +7,9 @@
  */
 package com.sitewhere.commands.routing;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -36,33 +38,29 @@ public class DeviceTypeMappingCommandRouter extends OutboundCommandRouter {
     private String defaultDestination = null;
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IOutboundCommandRouter#
-     * routeCommand(com. sitewhere.spi.device.command.IDeviceCommandExecution,
+     * @see
+     * com.sitewhere.commands.spi.IOutboundCommandRouter#getDestinationsFor(com.
+     * sitewhere.spi.device.command.IDeviceCommandExecution,
      * com.sitewhere.spi.device.IDeviceNestingContext,
      * com.sitewhere.spi.device.IDeviceAssignment)
      */
     @Override
-    public void routeCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
-	    IDeviceAssignment assignment) throws SiteWhereException {
-	ICommandDestination<?, ?> destination = getDestinationForDevice(nesting);
-	destination.deliverCommand(execution, nesting, assignment);
+    public List<ICommandDestination<?, ?>> getDestinationsFor(IDeviceCommandExecution execution,
+	    IDeviceNestingContext nesting, IDeviceAssignment assignment) throws SiteWhereException {
+	return Collections.singletonList(getDestinationForDevice(nesting));
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IOutboundCommandRouter#
-     * routeSystemCommand (com.sitewhere.spi.device.command.ISystemCommand,
+     * @see
+     * com.sitewhere.commands.spi.IOutboundCommandRouter#getDestinationsFor(com.
+     * sitewhere.spi.device.command.ISystemCommand,
      * com.sitewhere.spi.device.IDeviceNestingContext,
      * com.sitewhere.spi.device.IDeviceAssignment)
      */
     @Override
-    public void routeSystemCommand(ISystemCommand command, IDeviceNestingContext nesting, IDeviceAssignment assignment)
-	    throws SiteWhereException {
-	ICommandDestination<?, ?> destination = getDestinationForDevice(nesting);
-	destination.deliverSystemCommand(command, nesting, assignment);
+    public List<ICommandDestination<?, ?>> getDestinationsFor(ISystemCommand command, IDeviceNestingContext nesting,
+	    IDeviceAssignment assignment) throws SiteWhereException {
+	return Collections.singletonList(getDestinationForDevice(nesting));
     }
 
     /**

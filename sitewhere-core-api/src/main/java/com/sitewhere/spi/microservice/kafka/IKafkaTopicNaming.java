@@ -127,4 +127,12 @@ public interface IKafkaTopicNaming {
      * @return
      */
     public String getInboundEnrichedCommandInvocationsTopic(ITenant tenant);
+
+    /**
+     * Get topic for device command invocations that could not be delievered.
+     * 
+     * @param tenant
+     * @return
+     */
+    public String getUndeliveredCommandInvocationsTopic(ITenant tenant);
 }

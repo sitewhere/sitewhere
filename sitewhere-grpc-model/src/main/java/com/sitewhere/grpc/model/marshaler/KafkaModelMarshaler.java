@@ -25,6 +25,7 @@ import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdateType;
 import com.sitewhere.grpc.model.converter.KafkaModelConverter;
 import com.sitewhere.grpc.model.converter.TenantModelConverter;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.kafka.payload.IEnrichedEventPayload;
 import com.sitewhere.spi.microservice.kafka.payload.IInboundEventPayload;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -174,6 +175,18 @@ public class KafkaModelMarshaler {
 	} finally {
 	    closeQuietly(output);
 	}
+    }
+
+    /**
+     * Build binary message for API enriched event payload.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static byte[] buildEnrichedEventPayloadMessage(IEnrichedEventPayload api) throws SiteWhereException {
+	GEnrichedEventPayload grpc = KafkaModelConverter.asGrpcEnrichedEventPayload(api);
+	return buildEnrichedEventPayloadMessage(grpc);
     }
 
     /**

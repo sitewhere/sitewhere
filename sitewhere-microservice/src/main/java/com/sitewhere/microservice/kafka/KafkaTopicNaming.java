@@ -62,6 +62,9 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     /** Topic suffix for persisted and enriched command invocations */
     protected static final String TENANT_TOPIC_INBOUND_ENRICHED_COMMAND_INVOCATIONS = "inbound-enriched-command-invocations";
 
+    /** Topic suffix for undelivered command invocations */
+    protected static final String TENANT_TOPIC_UNDELIVERED_COMMAND_INVOCATIONS = "undelivered-command-invocations";
+
     @Autowired
     private IInstanceSettings instanceSettings;
 
@@ -192,6 +195,15 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     @Override
     public String getInboundEnrichedCommandInvocationsTopic(ITenant tenant) {
 	return getTenantPrefix(tenant) + TENANT_TOPIC_INBOUND_ENRICHED_COMMAND_INVOCATIONS;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#
+     * getUndeliveredCommandInvocationsTopic(com.sitewhere.spi.tenant.ITenant)
+     */
+    @Override
+    public String getUndeliveredCommandInvocationsTopic(ITenant tenant) {
+	return getTenantPrefix(tenant) + TENANT_TOPIC_UNDELIVERED_COMMAND_INVOCATIONS;
     }
 
     protected IInstanceSettings getInstanceSettings() {

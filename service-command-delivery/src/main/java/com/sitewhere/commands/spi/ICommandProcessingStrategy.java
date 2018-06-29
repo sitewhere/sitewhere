@@ -10,6 +10,7 @@ package com.sitewhere.commands.spi;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
@@ -27,20 +28,23 @@ public interface ICommandProcessingStrategy extends ITenantEngineLifecycleCompon
     public ICommandTargetResolver getCommandTargetResolver();
 
     /**
-     * Send a command using the given communication subsystem implementation.
+     * Deliver a command invocation.
      * 
+     * @param eventContext
      * @param invocation
      * @throws SiteWhereException
      */
-    public void deliverCommand(IDeviceCommandInvocation invocation) throws SiteWhereException;
+    public void deliverCommand(IDeviceEventContext eventContext, IDeviceCommandInvocation invocation)
+	    throws SiteWhereException;
 
     /**
-     * Delivers a system command using the given communication subsystem
-     * implementation.
+     * Deliver a system command.
      * 
+     * @param eventContext
      * @param deviceToken
      * @param command
      * @throws SiteWhereException
      */
-    public void deliverSystemCommand(String deviceToken, ISystemCommand command) throws SiteWhereException;
+    public void deliverSystemCommand(IDeviceEventContext eventContext, String deviceToken, ISystemCommand command)
+	    throws SiteWhereException;
 }

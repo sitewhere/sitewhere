@@ -18,7 +18,6 @@ import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -45,7 +44,6 @@ public class DefaultCommandExecutionBuilder extends LifecycleComponent implement
     @Override
     public IDeviceCommandExecution createExecution(IDeviceCommand command, IDeviceCommandInvocation invocation)
 	    throws SiteWhereException {
-	getLogger().debug("Building default command execution for invocation.");
 	DeviceCommandExecution execution = new DeviceCommandExecution();
 	execution.setCommand(command);
 	execution.setInvocation(invocation);
@@ -153,26 +151,5 @@ public class DefaultCommandExecutionBuilder extends LifecycleComponent implement
 		execution.getParameters().put(parameter.getName(), converted);
 	    }
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
-     * .spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
     }
 }

@@ -7,6 +7,9 @@
  */
 package com.sitewhere.commands.groovy;
 
+import java.util.Collections;
+import java.util.List;
+
 import com.sitewhere.commands.spi.ICommandDestination;
 import com.sitewhere.commands.spi.ICommandDestinationsManager;
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
@@ -35,31 +38,57 @@ public class GroovyCommandRouter extends GroovyComponent implements IOutboundCom
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IOutboundCommandRouter#
-     * routeCommand(com.sitewhere.spi.device.command.IDeviceCommandExecution,
+     * @see
+     * com.sitewhere.commands.spi.IOutboundCommandRouter#getDestinationsFor(com.
+     * sitewhere.spi.device.command.IDeviceCommandExecution,
      * com.sitewhere.spi.device.IDeviceNestingContext,
      * com.sitewhere.spi.device.IDeviceAssignment)
      */
     @Override
-    public void routeCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
-	    IDeviceAssignment assignment) throws SiteWhereException {
-	route(execution, null, nesting, assignment);
+    public List<ICommandDestination<?, ?>> getDestinationsFor(IDeviceCommandExecution execution,
+	    IDeviceNestingContext nesting, IDeviceAssignment assignment) throws SiteWhereException {
+	return findAndResolveCommandDestinations(execution, null, nesting, assignment);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IOutboundCommandRouter#
-     * routeSystemCommand(com.sitewhere.spi.device.command.ISystemCommand,
+     * @see
+     * com.sitewhere.commands.spi.IOutboundCommandRouter#getDestinationsFor(com.
+     * sitewhere.spi.device.command.ISystemCommand,
      * com.sitewhere.spi.device.IDeviceNestingContext,
      * com.sitewhere.spi.device.IDeviceAssignment)
      */
     @Override
-    public void routeSystemCommand(ISystemCommand command, IDeviceNestingContext nesting, IDeviceAssignment assignment)
+    public List<ICommandDestination<?, ?>> getDestinationsFor(ISystemCommand command, IDeviceNestingContext nesting,
+	    IDeviceAssignment assignment) throws SiteWhereException {
+	return findAndResolveCommandDestinations(null, command, nesting, assignment);
+    }
+
+    /**
+     * Execute Groovy script and resolve the destination id to a command
+     * destination.
+     * 
+     * @param execution
+     * @param system
+     * @param nesting
+     * @param assignment
+     * @return
+     * @throws SiteWhereException
+     */
+    protected List<ICommandDestination<?, ?>> findAndResolveCommandDestinations(IDeviceCommandExecution execution,
+	    ISystemCommand system, IDeviceNestingContext nesting, IDeviceAssignment assignment)
 	    throws SiteWhereException {
-	route(null, command, nesting, assignment);
+	String target = findCommandDestination(execution, system, nesting, assignment);
+	if (target != null) {
+	    ICommandDestination<?, ?> destination = getCommandDestinationsManager().getCommandDestinations()
+		    .get(target);
+	    if (destination == null) {
+		throw new SiteWhereException(
+			"Groovy command router returned invalid command destination: " + destination);
+	    }
+	    return Collections.singletonList(destination);
+	} else {
+	    throw new SiteWhereException("Groovy command router did not return a command destination id.");
+	}
     }
 
     /**
@@ -72,8 +101,8 @@ public class GroovyCommandRouter extends GroovyComponent implements IOutboundCom
      * @param assignment
      * @throws SiteWhereException
      */
-    protected void route(IDeviceCommandExecution execution, ISystemCommand system, IDeviceNestingContext nesting,
-	    IDeviceAssignment assignment) throws SiteWhereException {
+    protected String findCommandDestination(IDeviceCommandExecution execution, ISystemCommand system,
+	    IDeviceNestingContext nesting, IDeviceAssignment assignment) throws SiteWhereException {
 	try {
 	    Binding binding = new Binding();
 	    binding.setVariable(IGroovyVariables.VAR_COMMAND_EXECUTION, execution);
@@ -82,22 +111,7 @@ public class GroovyCommandRouter extends GroovyComponent implements IOutboundCom
 	    binding.setVariable(IGroovyVariables.VAR_ASSIGNMENT, assignment);
 	    binding.setVariable(IGroovyVariables.VAR_LOGGER, getLogger());
 	    getLogger().debug("About to route command using script '" + getScriptId() + "'");
-	    String target = (String) run(binding);
-	    if (target != null) {
-		ICommandDestination<?, ?> destination = getCommandDestinationsManager().getCommandDestinations()
-			.get(target);
-		if (destination != null) {
-		    if (execution != null) {
-			destination.deliverCommand(execution, nesting, assignment);
-		    } else if (system != null) {
-			destination.deliverSystemCommand(system, nesting, assignment);
-		    }
-		} else {
-		    getLogger().warn("Command attempting to route to unknown destination: " + target);
-		}
-	    } else {
-		getLogger().warn("Groovy command router did not return a command destination id.");
-	    }
+	    return (String) run(binding);
 	} catch (SiteWhereException e) {
 	    throw new SiteWhereException("Unable to run router script.", e);
 	}

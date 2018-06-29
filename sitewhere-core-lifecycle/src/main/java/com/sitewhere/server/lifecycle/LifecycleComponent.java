@@ -580,7 +580,7 @@ public class LifecycleComponent implements ILifecycleComponent {
 	List<String> errors = new ArrayList<>();
 	Throwable current = e;
 	while (current != null) {
-	    errors.add(current.getLocalizedMessage());
+	    errors.add(current.toString());
 	    current = current.getCause();
 	}
 	return errors;
