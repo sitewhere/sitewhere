@@ -14,10 +14,7 @@ package com.sitewhere.spi.device.event;
  */
 public enum DeviceEventType {
 
-    /** Group of measurements */
-    Measurements,
-
-    /** Single measurement */
+    /** Measurement */
     Measurement,
 
     /** Geospatial location */

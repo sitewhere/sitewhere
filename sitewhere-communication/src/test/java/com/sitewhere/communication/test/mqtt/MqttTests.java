@@ -30,7 +30,7 @@ import com.sitewhere.rest.model.device.communication.DeviceRequest;
 import com.sitewhere.rest.model.device.communication.DeviceRequest.Type;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
-import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceMappingCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.AlertLevel;
@@ -170,13 +170,14 @@ public class MqttTests {
 	    DeviceRequest request = new DeviceRequest();
 	    request.setHardwareId("123-TEST-4567890");
 	    request.setType(Type.DeviceMeasurements);
-	    DeviceMeasurementsCreateRequest mxs = new DeviceMeasurementsCreateRequest();
-	    mxs.addOrReplaceMeasurement("normal", 1.234);
+	    DeviceMeasurementCreateRequest mx = new DeviceMeasurementCreateRequest();
+	    mx.setName("normal");
+	    mx.setValue(1.234);
 	    Map<String, String> metadata = new HashMap<String, String>();
 	    metadata.put("fromMQTT", "true");
-	    mxs.setMetadata(metadata);
-	    mxs.setUpdateState(true);
-	    request.setRequest(mxs);
+	    mx.setMetadata(metadata);
+	    mx.setUpdateState(true);
+	    request.setRequest(mx);
 	    try {
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode json = mapper.convertValue(request, JsonNode.class);

@@ -7,21 +7,23 @@
  */
 package com.sitewhere.rest.model.device.event;
 
-import java.io.Serializable;
-
-import com.sitewhere.spi.SiteWhereException;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 
 /**
- * Model object for a single measurement.
+ * Implementation of device measurements.
  * 
- * @author Derek
+ * @author dadams
  */
-public class DeviceMeasurement extends DeviceEvent implements IDeviceMeasurement, Serializable {
+@JsonIgnoreProperties
+@JsonInclude(Include.NON_NULL)
+public class DeviceMeasurement extends DeviceEvent implements IDeviceMeasurement {
 
-    /** For Java serialization */
-    private static final long serialVersionUID = 5255345217091668945L;
+    /** Serial version UID */
+    private static final long serialVersionUID = 8280584663755620411L;
 
     /** Measurement name */
     private String name;
@@ -34,9 +36,7 @@ public class DeviceMeasurement extends DeviceEvent implements IDeviceMeasurement
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.common.IMeasurementEntry#getName()
+     * @see com.sitewhere.spi.device.event.IDeviceMeasurement#getName()
      */
     @Override
     public String getName() {
@@ -48,9 +48,7 @@ public class DeviceMeasurement extends DeviceEvent implements IDeviceMeasurement
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.common.IMeasurementEntry#getValue()
+     * @see com.sitewhere.spi.device.event.IDeviceMeasurement#getValue()
      */
     @Override
     public Double getValue() {
@@ -59,19 +57,5 @@ public class DeviceMeasurement extends DeviceEvent implements IDeviceMeasurement
 
     public void setValue(Double value) {
 	this.value = value;
-    }
-
-    /**
-     * Create a copy of an SPI object. Used by web services for marshaling.
-     * 
-     * @param input
-     * @return
-     */
-    public static DeviceMeasurement copy(IDeviceMeasurement input) throws SiteWhereException {
-	DeviceMeasurement result = new DeviceMeasurement();
-	DeviceEvent.copy(input, result);
-	result.setName(input.getName());
-	result.setValue(input.getValue());
-	return result;
     }
 }

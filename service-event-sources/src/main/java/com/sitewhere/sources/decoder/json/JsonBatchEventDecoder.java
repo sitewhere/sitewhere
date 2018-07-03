@@ -23,7 +23,7 @@ import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IDeviceEventDecoder;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -63,8 +63,8 @@ public class JsonBatchEventDecoder extends TenantEngineLifecycleComponent implem
 		decoded.setRequest(lc);
 		events.add(decoded);
 	    }
-	    for (IDeviceMeasurementsCreateRequest mc : batch.getMeasurements()) {
-		DecodedDeviceRequest<IDeviceMeasurementsCreateRequest> decoded = new DecodedDeviceRequest<IDeviceMeasurementsCreateRequest>();
+	    for (IDeviceMeasurementCreateRequest mc : batch.getMeasurements()) {
+		DecodedDeviceRequest<IDeviceMeasurementCreateRequest> decoded = new DecodedDeviceRequest<IDeviceMeasurementCreateRequest>();
 		decoded.setDeviceToken(batch.getHardwareId());
 		decoded.setRequest(mc);
 		events.add(decoded);

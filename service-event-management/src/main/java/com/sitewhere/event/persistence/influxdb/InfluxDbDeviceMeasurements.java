@@ -11,7 +11,7 @@ import java.util.Map;
 
 import org.influxdb.dto.Point;
 
-import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
@@ -21,8 +21,11 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public class InfluxDbDeviceMeasurements {
 
-    /** Measurement name tag prefix */
-    public static final String MEASUREMENT_PREFIX = "mx:";
+    /** Measurement name field */
+    public static final String MX_NAME = "mxname";
+
+    /** Measurement value field */
+    public static final String MX_VALUE = "mxvalue";
 
     /**
      * Parse domain object from a value map.
@@ -31,8 +34,8 @@ public class InfluxDbDeviceMeasurements {
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceMeasurements parse(Map<String, Object> values) throws SiteWhereException {
-	DeviceMeasurements mxs = new DeviceMeasurements();
+    public static DeviceMeasurement parse(Map<String, Object> values) throws SiteWhereException {
+	DeviceMeasurement mxs = new DeviceMeasurement();
 	InfluxDbDeviceMeasurements.loadFromMap(mxs, values);
 	return mxs;
     }
@@ -44,14 +47,9 @@ public class InfluxDbDeviceMeasurements {
      * @param values
      * @throws SiteWhereException
      */
-    public static void loadFromMap(DeviceMeasurements event, Map<String, Object> values) throws SiteWhereException {
-	for (String key : values.keySet()) {
-	    if (key.startsWith(MEASUREMENT_PREFIX)) {
-		String name = key.substring(MEASUREMENT_PREFIX.length());
-		Double value = (Double) values.get(key);
-		event.addOrReplaceMeasurement(name, value);
-	    }
-	}
+    public static void loadFromMap(DeviceMeasurement event, Map<String, Object> values) throws SiteWhereException {
+	event.setName((String) values.get(MX_NAME));
+	event.setValue((Double) values.get(MX_VALUE));
 	InfluxDbDeviceEvent.loadFromMap(event, values);
     }
 
@@ -62,11 +60,9 @@ public class InfluxDbDeviceMeasurements {
      * @param builder
      * @throws SiteWhereException
      */
-    public static void saveToBuilder(DeviceMeasurements event, Point.Builder builder) throws SiteWhereException {
-	for (String key : event.getMeasurements().keySet()) {
-	    Double value = event.getMeasurement(key);
-	    builder.addField(MEASUREMENT_PREFIX + key, value);
-	}
+    public static void saveToBuilder(DeviceMeasurement event, Point.Builder builder) throws SiteWhereException {
+	builder.addField(MX_NAME, event.getName());
+	builder.addField(MX_VALUE, event.getValue());
 	InfluxDbDeviceEvent.saveToBuilder(event, builder);
     }
 }

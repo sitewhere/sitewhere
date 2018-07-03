@@ -21,7 +21,7 @@ public interface IDeviceEventBatchResponse {
      * 
      * @return
      */
-    public List<IDeviceMeasurements> getCreatedMeasurements();
+    public List<IDeviceMeasurement> getCreatedMeasurements();
 
     /**
      * List of locations that were created.

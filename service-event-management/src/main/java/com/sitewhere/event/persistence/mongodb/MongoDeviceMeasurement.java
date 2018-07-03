@@ -20,10 +20,16 @@ import com.sitewhere.spi.device.event.IDeviceMeasurement;
  */
 public class MongoDeviceMeasurement implements MongoConverter<IDeviceMeasurement> {
 
+    /** Attribute name for measurement name */
+    public static final String PROP_NAME = "mxnm";
+
+    /** Attribute name for measurement value */
+    public static final String PROP_VALUE = "mxvl";
+
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
+     * @see com.sitewhere.dao.mongodb.MongoConverter#convert(java.lang.Object)
      */
     @Override
     public Document convert(IDeviceMeasurement source) {
@@ -36,7 +42,7 @@ public class MongoDeviceMeasurement implements MongoConverter<IDeviceMeasurement
      * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
      */
     @Override
-    public IDeviceMeasurement convert(Document source) {
+    public DeviceMeasurement convert(Document source) {
 	return MongoDeviceMeasurement.fromDocument(source, false);
     }
 
@@ -45,13 +51,12 @@ public class MongoDeviceMeasurement implements MongoConverter<IDeviceMeasurement
      * 
      * @param source
      * @param target
-     * @param isNested
      */
     public static void toDocument(IDeviceMeasurement source, Document target, boolean isNested) {
 	MongoDeviceEvent.toDocument(source, target, isNested);
 
-	target.put(MongoDeviceMeasurements.PROP_NAME, source.getName());
-	target.put(MongoDeviceMeasurements.PROP_VALUE, source.getValue());
+	target.append(PROP_NAME, source.getName());
+	target.append(PROP_VALUE, source.getValue());
     }
 
     /**
@@ -64,8 +69,9 @@ public class MongoDeviceMeasurement implements MongoConverter<IDeviceMeasurement
     public static void fromDocument(Document source, DeviceMeasurement target, boolean isNested) {
 	MongoDeviceEvent.fromDocument(source, target, isNested);
 
-	String name = (String) source.get(MongoDeviceMeasurements.PROP_NAME);
-	Double value = (Double) source.get(MongoDeviceMeasurements.PROP_VALUE);
+	String name = (String) source.get(PROP_NAME);
+	Double value = (Double) source.get(PROP_VALUE);
+
 	target.setName(name);
 	target.setValue(value);
     }

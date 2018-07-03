@@ -96,7 +96,7 @@ public class CassandraDeviceEvent {
      */
     public static Byte getIndicatorForEventType(DeviceEventType type) throws SiteWhereException {
 	switch (type) {
-	case Measurements: {
+	case Measurement: {
 	    return 0;
 	}
 	case Location: {
@@ -129,7 +129,7 @@ public class CassandraDeviceEvent {
      */
     public static DeviceEventType getEventTypeForIndicator(Byte value) throws SiteWhereException {
 	if (value == 0) {
-	    return DeviceEventType.Measurements;
+	    return DeviceEventType.Measurement;
 	} else if (value == 1) {
 	    return DeviceEventType.Location;
 	} else if (value == 2) {

@@ -58,7 +58,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
@@ -274,7 +274,7 @@ public class Areas extends RestControllerBase {
     @RequestMapping(value = "/{areaToken}/measurements", method = RequestMethod.GET)
     @ApiOperation(value = "List measurements for an area")
     @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForArea(
+    public ISearchResults<IDeviceMeasurement> listDeviceMeasurementsForArea(
 	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
@@ -284,15 +284,15 @@ public class Areas extends RestControllerBase {
 	List<UUID> areas = resolveAreaIds(areaToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
 		endDate, response);
-	ISearchResults<IDeviceMeasurements> results = getDeviceEventManagement()
+	ISearchResults<IDeviceMeasurement> results = getDeviceEventManagement()
 		.listDeviceMeasurementsForIndex(DeviceEventIndex.Area, areas, criteria);
 
 	// Marshal with asset info since multiple assignments might match.
-	List<IDeviceMeasurements> wrapped = new ArrayList<IDeviceMeasurements>();
-	for (IDeviceMeasurements result : results.getResults()) {
+	List<IDeviceMeasurement> wrapped = new ArrayList<IDeviceMeasurement>();
+	for (IDeviceMeasurement result : results.getResults()) {
 	    wrapped.add(new DeviceMeasurementsWithAsset(result, getAssetManagement()));
 	}
-	return new SearchResults<IDeviceMeasurements>(wrapped, results.getNumResults());
+	return new SearchResults<IDeviceMeasurement>(wrapped, results.getNumResults());
     }
 
     /**

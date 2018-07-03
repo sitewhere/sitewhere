@@ -29,8 +29,8 @@ import com.sitewhere.grpc.service.GAddDeviceEventBatchRequest;
 import com.sitewhere.grpc.service.GAddDeviceEventBatchResponse;
 import com.sitewhere.grpc.service.GAddLocationRequest;
 import com.sitewhere.grpc.service.GAddLocationResponse;
-import com.sitewhere.grpc.service.GAddMeasurementsRequest;
-import com.sitewhere.grpc.service.GAddMeasurementsResponse;
+import com.sitewhere.grpc.service.GAddMeasurementRequest;
+import com.sitewhere.grpc.service.GAddMeasurementResponse;
 import com.sitewhere.grpc.service.GAddStateChangeRequest;
 import com.sitewhere.grpc.service.GAddStateChangeResponse;
 import com.sitewhere.grpc.service.GAddStreamDataForAssignmentRequest;
@@ -66,14 +66,14 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
@@ -245,29 +245,29 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void addDeviceMeasurements(UUID deviceAssignmentId, IDeviceMeasurementsCreateRequest measurements,
-	    StreamObserver<IDeviceMeasurements> observer) throws SiteWhereException {
-	GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getAddMeasurementsMethod(),
+    public void addDeviceMeasurements(UUID deviceAssignmentId, IDeviceMeasurementCreateRequest measurements,
+	    StreamObserver<IDeviceMeasurement> observer) throws SiteWhereException {
+	GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getAddMeasurementMethod(),
 		DebugParameter.create("Assignment Id", deviceAssignmentId),
 		DebugParameter.create("Request", measurements));
-	GAddMeasurementsRequest.Builder grequest = GAddMeasurementsRequest.newBuilder();
+	GAddMeasurementRequest.Builder grequest = GAddMeasurementRequest.newBuilder();
 	grequest.setDeviceAssignmentId(CommonModelConverter.asGrpcUuid(deviceAssignmentId));
-	grequest.setRequest(EventModelConverter.asGrpcDeviceMeasurementsCreateRequest(measurements));
-	getGrpcChannel().getAsyncStub().addMeasurements(
-		GrpcUtils.logGrpcClientRequest(DeviceEventManagementGrpc.getAddMeasurementsMethod(), grequest.build()),
-		new StreamObserver<GAddMeasurementsResponse>() {
+	grequest.setRequest(EventModelConverter.asGrpcDeviceMeasurementCreateRequest(measurements));
+	getGrpcChannel().getAsyncStub().addMeasurement(
+		GrpcUtils.logGrpcClientRequest(DeviceEventManagementGrpc.getAddMeasurementMethod(), grequest.build()),
+		new StreamObserver<GAddMeasurementResponse>() {
 
 		    @Override
-		    public void onNext(GAddMeasurementsResponse gresponse) {
+		    public void onNext(GAddMeasurementResponse gresponse) {
 			try {
-			    IDeviceMeasurements response = EventModelConverter
-				    .asApiDeviceMeasurements(gresponse.getMeasurements());
-			    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.getAddMeasurementsMethod(),
+			    IDeviceMeasurement response = EventModelConverter
+				    .asApiDeviceMeasurement(gresponse.getMeasurement());
+			    GrpcUtils.logClientMethodResponse(DeviceEventManagementGrpc.getAddMeasurementMethod(),
 				    response);
 			    observer.onNext(response);
 			} catch (Throwable t) {
 			    observer.onError(GrpcUtils.handleClientMethodException(
-				    DeviceEventManagementGrpc.getAddMeasurementsMethod(), t));
+				    DeviceEventManagementGrpc.getAddMeasurementMethod(), t));
 			}
 		    }
 
@@ -292,7 +292,7 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
      */
     @Override
     public void listDeviceMeasurementsForIndex(DeviceEventIndex index, List<UUID> entityIds,
-	    IDateRangeSearchCriteria criteria, StreamObserver<ISearchResults<IDeviceMeasurements>> observer)
+	    IDateRangeSearchCriteria criteria, StreamObserver<ISearchResults<IDeviceMeasurement>> observer)
 	    throws SiteWhereException {
 	GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getListMeasurementsForIndexMethod(),
 		DebugParameter.create("Index", index), DebugParameter.create("Entity Ids", entityIds),
@@ -308,8 +308,8 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
 		    @Override
 		    public void onNext(GListMeasurementsForIndexResponse gresponse) {
 			try {
-			    ISearchResults<IDeviceMeasurements> response = EventModelConverter
-				    .asApiDeviceMeasurementsSearchResults(gresponse.getResults());
+			    ISearchResults<IDeviceMeasurement> response = EventModelConverter
+				    .asApiDeviceMeasurementSearchResults(gresponse.getResults());
 			    GrpcUtils.logClientMethodResponse(
 				    DeviceEventManagementGrpc.getListMeasurementsForIndexMethod(), response);
 			    observer.onNext(response);

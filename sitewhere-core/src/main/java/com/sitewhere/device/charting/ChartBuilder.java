@@ -18,7 +18,7 @@ import java.util.Map;
 import com.sitewhere.rest.model.device.charting.ChartEntry;
 import com.sitewhere.rest.model.device.charting.ChartSeries;
 import com.sitewhere.spi.device.charting.IChartSeries;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 
 /**
  * Builds chart series from measurements.
@@ -36,7 +36,7 @@ public class ChartBuilder {
      * @param matches
      * @return
      */
-    public List<IChartSeries<Double>> process(List<IDeviceMeasurements> matches, String[] measurementIds) {
+    public List<IChartSeries<Double>> process(List<IDeviceMeasurement> matches, String[] measurementIds) {
 	seriesByMeasurementName = new HashMap<String, IChartSeries<Double>>();
 	List<String> mxids = null;
 	if ((measurementIds != null) && (measurementIds.length > 0)) {
@@ -44,10 +44,8 @@ public class ChartBuilder {
 	}
 
 	// Add all measurements.
-	for (IDeviceMeasurements measurements : matches) {
-	    for (String key : measurements.getMeasurements().keySet()) {
-		addSeriesEntry(key, measurements.getMeasurement(key), measurements.getEventDate());
-	    }
+	for (IDeviceMeasurement mx : matches) {
+	    addSeriesEntry(mx.getName(), mx.getValue(), mx.getEventDate());
 	}
 	// Sort entries by date.
 	List<IChartSeries<Double>> results = new ArrayList<IChartSeries<Double>>();

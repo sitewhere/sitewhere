@@ -13,7 +13,7 @@ import java.util.concurrent.Callable;
 import com.sitewhere.rest.client.SiteWhereClient;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
-import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
 import com.sitewhere.rest.test.SiteWhereClientTester.TestResults;
 import com.sitewhere.spi.ISiteWhereClient;
 import com.sitewhere.spi.device.event.AlertLevel;
@@ -69,10 +69,8 @@ public class SiteWhereClientTester implements Callable<TestResults> {
 		request.setUpdateState(updateState);
 		client.createDeviceLocation(getAssignmentToken(), request);
 	    } else if (random == 2) {
-		DeviceMeasurementsCreateRequest request = new DeviceMeasurementsCreateRequest();
+		DeviceMeasurementCreateRequest request = new DeviceMeasurementCreateRequest();
 		request.setEventDate(new Date());
-		request.addOrReplaceMeasurement("first", 123.45);
-		request.addOrReplaceMeasurement("second", 987.65);
 		request.setUpdateState(updateState);
 		client.createDeviceMeasurements(getAssignmentToken(), request);
 	    }

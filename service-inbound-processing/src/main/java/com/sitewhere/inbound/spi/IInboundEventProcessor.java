@@ -10,14 +10,14 @@ package com.sitewhere.inbound.spi;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
@@ -57,7 +57,7 @@ public interface IInboundEventProcessor extends ITenantEngineLifecycleComponent 
 	    IDeviceCommandResponseCreateRequest request) throws SiteWhereException;
 
     /**
-     * Called to request the creation of a new {@link IDeviceMeasurements} based
+     * Called to request the creation of a new {@link IDeviceMeasurement} based
      * on the given information.
      * 
      * @param hardwareId
@@ -66,7 +66,7 @@ public interface IInboundEventProcessor extends ITenantEngineLifecycleComponent 
      * @throws SiteWhereException
      */
     public void onDeviceMeasurementsCreateRequest(String hardwareId, String originator,
-	    IDeviceMeasurementsCreateRequest request) throws SiteWhereException;
+	    IDeviceMeasurementCreateRequest request) throws SiteWhereException;
 
     /**
      * Called to request the creation of a new {@link IDeviceLocation} based on

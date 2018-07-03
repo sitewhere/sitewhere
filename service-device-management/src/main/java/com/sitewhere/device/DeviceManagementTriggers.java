@@ -52,7 +52,7 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
 
 	updateTenantAuthentication();
 	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest();
-	state.setCategory(IDeviceStateChangeCreateRequest.CATEGORY_ASSIGNMENT);
+	state.setAttribute(IDeviceStateChangeCreateRequest.ATTRIBUTE_ASSIGNMENT);
 	state.setType("create");
 	getDeviceEventManagement().addDeviceStateChange(created.getId(), state);
 	return created;
@@ -70,7 +70,7 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
 
 	updateTenantAuthentication();
 	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest();
-	state.setCategory(IDeviceStateChangeCreateRequest.CATEGORY_ASSIGNMENT);
+	state.setAttribute(IDeviceStateChangeCreateRequest.ATTRIBUTE_ASSIGNMENT);
 	state.setType("update");
 	getDeviceEventManagement().addDeviceStateChange(updated.getId(), state);
 	return updated;
@@ -87,7 +87,7 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
 
 	updateTenantAuthentication();
 	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest();
-	state.setCategory(IDeviceStateChangeCreateRequest.CATEGORY_ASSIGNMENT);
+	state.setAttribute(IDeviceStateChangeCreateRequest.ATTRIBUTE_ASSIGNMENT);
 	state.setType("end");
 	getDeviceEventManagement().addDeviceStateChange(updated.getId(), state);
 	return updated;

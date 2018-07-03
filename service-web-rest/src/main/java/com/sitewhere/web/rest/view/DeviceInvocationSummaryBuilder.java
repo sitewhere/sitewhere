@@ -22,7 +22,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 
 /**
  * Used to build a {@link DeviceCommandInvocationSummary}.
@@ -84,9 +84,9 @@ public class DeviceInvocationSummaryBuilder {
      * @throws SiteWhereException
      */
     public static String getDeviceEventDescription(IDeviceEvent event) throws SiteWhereException {
-	if (event instanceof IDeviceMeasurements) {
-	    IDeviceMeasurements m = (IDeviceMeasurements) event;
-	    return "Measurements (" + m.getMeasurementsSummary() + ")";
+	if (event instanceof IDeviceMeasurement) {
+	    IDeviceMeasurement mx = (IDeviceMeasurement) event;
+	    return "Measurement (" + mx.getName() + "/" + mx.getValue() + ")";
 	} else if (event instanceof IDeviceLocation) {
 	    IDeviceLocation l = (IDeviceLocation) event;
 	    return "Location (" + l.getLatitude() + "/" + l.getLongitude() + "/" + l.getElevation() + ")";

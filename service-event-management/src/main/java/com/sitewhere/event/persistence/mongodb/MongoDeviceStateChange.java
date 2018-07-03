@@ -20,10 +20,10 @@ import com.sitewhere.spi.device.event.IDeviceStateChange;
  */
 public class MongoDeviceStateChange implements MongoConverter<IDeviceStateChange> {
 
-    /** Property for state category */
-    public static final String PROP_CATEGORY = "catg";
+    /** Property for state attribute */
+    public static final String PROP_ATTRIBUTE = "attr";
 
-    /** Property for state type */
+    /** Property for state change type */
     public static final String PROP_TYPE = "type";
 
     /** Property for previous state value */
@@ -61,7 +61,7 @@ public class MongoDeviceStateChange implements MongoConverter<IDeviceStateChange
     public static void toDocument(IDeviceStateChange source, Document target) {
 	MongoDeviceEvent.toDocument(source, target, false);
 
-	target.append(PROP_CATEGORY, source.getCategory());
+	target.append(PROP_ATTRIBUTE, source.getAttribute());
 	target.append(PROP_TYPE, source.getType());
 	target.append(PROP_PREVIOUS_STATE, source.getPreviousState());
 	target.append(PROP_NEW_STATE, source.getNewState());
@@ -76,12 +76,12 @@ public class MongoDeviceStateChange implements MongoConverter<IDeviceStateChange
     public static void fromDocument(Document source, DeviceStateChange target) {
 	MongoDeviceEvent.fromDocument(source, target, false);
 
-	String category = (String) source.get(PROP_CATEGORY);
+	String attribute = (String) source.get(PROP_ATTRIBUTE);
 	String type = (String) source.get(PROP_TYPE);
 	String previousState = (String) source.get(PROP_PREVIOUS_STATE);
 	String newState = (String) source.get(PROP_NEW_STATE);
 
-	target.setCategory(category);
+	target.setAttribute(attribute);
 	target.setType(type);
 	target.setPreviousState(previousState);
 	target.setNewState(newState);

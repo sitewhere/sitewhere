@@ -268,7 +268,7 @@ public class InfluxDbDeviceEvent {
 				results.add(InfluxDbDeviceLocation.parse(valueMap));
 				break;
 			    }
-			    case Measurements: {
+			    case Measurement: {
 				results.add(InfluxDbDeviceMeasurements.parse(valueMap));
 				break;
 			    }

@@ -25,8 +25,9 @@ import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEvent;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.state.IDeviceState;
 import com.sitewhere.spi.device.state.IDeviceStateManagement;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -115,12 +116,13 @@ public class DeviceStateProcessingLogic extends TenantEngineLifecycleComponent i
     protected void processDeviceStateEvent(EnrichedEventPayload payload) throws SiteWhereException {
 	// Only process events that affect state.
 	IDeviceEvent event = payload.getEvent();
+	IDeviceEventContext context = payload.getEventContext();
 	IDeviceState original = getDeviceStateManagement()
 		.getDeviceStateByDeviceAssignmentId(event.getDeviceAssignmentId());
 	switch (event.getEventType()) {
 	case Alert:
 	case Location:
-	case Measurements: {
+	case Measurement: {
 	    break;
 	}
 	default: {
@@ -132,7 +134,11 @@ public class DeviceStateProcessingLogic extends TenantEngineLifecycleComponent i
 	}
 	DeviceStateCreateRequest request = new DeviceStateCreateRequest();
 	request.setDeviceId(event.getDeviceId());
+	request.setDeviceTypeId(context.getDeviceTypeId());
 	request.setDeviceAssignmentId(event.getDeviceAssignmentId());
+	request.setCustomerId(event.getCustomerId());
+	request.setAreaId(event.getAreaId());
+	request.setAssetId(event.getAssetId());
 	request.setLastInteractionDate(new Date());
 	request.setPresenceMissingDate(null);
 
@@ -141,8 +147,8 @@ public class DeviceStateProcessingLogic extends TenantEngineLifecycleComponent i
 	    mergeDeviceLocation((IDeviceLocation) event, original, request);
 	} else if (event instanceof IDeviceAlert) {
 	    mergeDeviceAlert((IDeviceAlert) event, original, request);
-	} else if (event instanceof IDeviceMeasurements) {
-	    mergeDeviceMeasurements((IDeviceMeasurements) event, original, request);
+	} else if (event instanceof IDeviceMeasurement) {
+	    mergeDeviceMeasurements((IDeviceMeasurement) event, original, request);
 	}
 
 	// Create or update device state.
@@ -180,20 +186,18 @@ public class DeviceStateProcessingLogic extends TenantEngineLifecycleComponent i
     }
 
     /**
-     * Merge measurements information.
+     * Merge measurement information.
      * 
-     * @param mxs
+     * @param mx
      * @param original
      * @param request
      */
-    protected void mergeDeviceMeasurements(IDeviceMeasurements mxs, IDeviceState original,
+    protected void mergeDeviceMeasurements(IDeviceMeasurement mx, IDeviceState original,
 	    DeviceStateCreateRequest request) {
 	if (original != null) {
 	    request.getLastMeasurementEventIds().putAll(original.getLastMeasurementEventIds());
 	}
-	for (String mxKey : mxs.getMeasurements().keySet()) {
-	    request.getLastMeasurementEventIds().put(mxKey, mxs.getId());
-	}
+	request.getLastMeasurementEventIds().put(mx.getName(), mx.getId());
     }
 
     protected Meter getProcessedEvents() {

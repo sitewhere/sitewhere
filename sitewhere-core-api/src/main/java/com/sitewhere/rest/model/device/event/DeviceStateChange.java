@@ -21,7 +21,7 @@ public class DeviceStateChange extends DeviceEvent implements IDeviceStateChange
     private static final long serialVersionUID = 7635022335783458408L;
 
     /** State change category */
-    private String category;
+    private String attribute;
 
     /** State change type */
     private String type;
@@ -37,15 +37,15 @@ public class DeviceStateChange extends DeviceEvent implements IDeviceStateChange
     }
 
     /*
-     * @see com.sitewhere.spi.device.event.IDeviceStateChange#getCategory()
+     * @see com.sitewhere.spi.device.event.IDeviceStateChange#getAttribute()
      */
     @Override
-    public String getCategory() {
-	return category;
+    public String getAttribute() {
+	return attribute;
     }
 
-    public void setCategory(String category) {
-	this.category = category;
+    public void setAttribute(String attribute) {
+	this.attribute = attribute;
     }
 
     /*

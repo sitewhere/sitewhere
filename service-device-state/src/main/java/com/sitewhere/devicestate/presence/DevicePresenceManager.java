@@ -177,8 +177,8 @@ public class DevicePresenceManager extends TenantEngineLifecycleComponent implem
 	 */
 	protected boolean sendPresenceMissing(IDeviceState deviceState) {
 	    DeviceStateChangeCreateRequest create = new DeviceStateChangeCreateRequest();
-	    create.setCategory(IDeviceStateChangeCreateRequest.CATEGORY_PRESENCE);
-	    create.setType("presenceUpdated");
+	    create.setAttribute(IDeviceStateChangeCreateRequest.ATTRIBUTE_PRESENCE);
+	    create.setType("automated");
 	    create.setPreviousState(PresenceState.PRESENT.name());
 	    create.setNewState(PresenceState.NOT_PRESENT.name());
 

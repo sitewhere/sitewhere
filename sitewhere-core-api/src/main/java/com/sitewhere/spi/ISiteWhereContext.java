@@ -14,10 +14,10 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 
 /**
  * Holds SiteWhere information associated with a reqeust.
@@ -38,7 +38,7 @@ public interface ISiteWhereContext {
      * 
      * @return
      */
-    public List<IDeviceMeasurementsCreateRequest> getUnsavedDeviceMeasurements();
+    public List<IDeviceMeasurementCreateRequest> getUnsavedDeviceMeasurements();
 
     /**
      * Get a list of device locations that have not been persisted.
@@ -55,11 +55,11 @@ public interface ISiteWhereContext {
     public List<IDeviceAlertCreateRequest> getUnsavedDeviceAlerts();
 
     /**
-     * Get the {@link IDeviceMeasurements} events.
+     * Get the {@link IDeviceMeasurement} events.
      * 
      * @return
      */
-    public List<IDeviceMeasurements> getDeviceMeasurements();
+    public List<IDeviceMeasurement> getDeviceMeasurements();
 
     /**
      * Get the {@link IDeviceLocation} events.

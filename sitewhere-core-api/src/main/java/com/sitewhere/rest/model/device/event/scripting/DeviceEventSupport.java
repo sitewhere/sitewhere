@@ -11,7 +11,6 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEvent;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
 
 /**
  * Provides support for common operations on device events in scripting
@@ -42,12 +41,12 @@ public class DeviceEventSupport {
     }
 
     /**
-     * Indicates a measurements event.
+     * Indicates a measurement event.
      * 
      * @return
      */
-    public boolean isMeasurements() {
-	return event.getEventType() == DeviceEventType.Measurements;
+    public boolean isMeasurement() {
+	return event.getEventType() == DeviceEventType.Measurement;
     }
 
     /**
@@ -66,35 +65,6 @@ public class DeviceEventSupport {
      */
     public boolean isCommandResponse() {
 	return event.getEventType() == DeviceEventType.CommandResponse;
-    }
-
-    /**
-     * Indicates if event has a measurement with the given name.
-     * 
-     * @param name
-     * @return
-     */
-    public boolean hasMeasurement(String name) {
-	return (getMeasurement(name) != null);
-    }
-
-    /**
-     * Attempts to get the named measurement if the event is a measurements
-     * event.
-     * 
-     * @param name
-     * @return
-     */
-    public Double getMeasurement(String name) {
-	if (event.getEventType() != DeviceEventType.Measurements) {
-	    return null;
-	}
-	IDeviceMeasurements mxs = (IDeviceMeasurements) event;
-	Double mx = mxs.getMeasurement(name);
-	if (mx == null) {
-	    return null;
-	}
-	return mx;
     }
 
     /**

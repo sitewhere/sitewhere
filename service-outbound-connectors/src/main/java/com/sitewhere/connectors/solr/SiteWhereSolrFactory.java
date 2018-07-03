@@ -19,14 +19,14 @@ import org.apache.solr.common.SolrInputDocument;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
-import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 
 /**
  * Factory that creates indexable Solr objects from SiteWhere objects.
@@ -37,20 +37,18 @@ public class SiteWhereSolrFactory {
 
     /**
      * Create a {@link SolrInputDocument} based on information in
-     * {@link IDeviceMeasurements}.
+     * {@link IDeviceMeasurement}.
      * 
-     * @param measurements
+     * @param mx
      * @return
      * @throws SiteWhereException
      */
-    public static SolrInputDocument createDocumentFromMeasurements(IDeviceMeasurements measurements)
-	    throws SiteWhereException {
+    public static SolrInputDocument createDocumentFromMeasurement(IDeviceMeasurement mx) throws SiteWhereException {
 	SolrInputDocument document = new SolrInputDocument();
 	document.addField(ISolrFields.EVENT_TYPE, SolrEventType.Measurements.name());
-	addFieldsForEvent(document, measurements);
-	for (String key : measurements.getMeasurements().keySet()) {
-	    document.addField(ISolrFields.MEASUREMENT_PREFIX + key, measurements.getMeasurement(key));
-	}
+	addFieldsForEvent(document, mx);
+	document.addField(ISolrFields.MX_NAME, mx.getName());
+	document.addField(ISolrFields.MX_VALUE, mx.getValue());
 	return document;
     }
 
@@ -109,7 +107,7 @@ public class SiteWhereSolrFactory {
 	    return parseLocationFromDocument(document);
 	}
 	case Measurements: {
-	    return parseMeasurementsFromDocument(document);
+	    return parseMeasurementFromDocument(document);
 	}
 	case Alert: {
 	    return parseAlertFromDocument(document);
@@ -149,29 +147,23 @@ public class SiteWhereSolrFactory {
     }
 
     /**
-     * Parse an {@link IDeviceMeasurements} record from a {@link SolrDocument}.
+     * Parse an {@link IDeviceMeasurement} record from a {@link SolrDocument}.
      * 
      * @param document
      * @return
      * @throws SiteWhereException
      */
-    protected static IDeviceMeasurements parseMeasurementsFromDocument(SolrDocument document)
-	    throws SiteWhereException {
-	DeviceMeasurements measurements = new DeviceMeasurements();
+    protected static IDeviceMeasurement parseMeasurementFromDocument(SolrDocument document) throws SiteWhereException {
+	DeviceMeasurement mx = new DeviceMeasurement();
 
-	Iterator<String> names = document.getFieldNames().iterator();
-	int mxLength = ISolrFields.MEASUREMENT_PREFIX.length();
-	while (names.hasNext()) {
-	    String name = names.next();
-	    if (name.startsWith(ISolrFields.MEASUREMENT_PREFIX)) {
-		String metaName = name.substring(mxLength);
-		Double metaValue = (Double) document.get(name);
-		measurements.addOrReplaceMeasurement(metaName, metaValue);
-	    }
-	}
+	String name = (String) document.get(ISolrFields.MX_NAME);
+	Double value = (Double) document.get(ISolrFields.MX_VALUE);
 
-	addFieldsFromEventDocument(document, measurements);
-	return measurements;
+	mx.setName(name);
+	mx.setValue(value);
+
+	addFieldsFromEventDocument(document, mx);
+	return mx;
     }
 
     /**

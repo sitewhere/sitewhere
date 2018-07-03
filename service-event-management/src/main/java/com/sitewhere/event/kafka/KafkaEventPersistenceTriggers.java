@@ -29,14 +29,14 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
@@ -85,14 +85,14 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
 
     /*
      * @see
-     * com.sitewhere.event.DeviceEventManagementDecorator#addDeviceMeasurements(java
-     * .util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest)
+     * com.sitewhere.event.DeviceEventManagementDecorator#addDeviceMeasurement(java.
+     * util.UUID,
+     * com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest)
      */
     @Override
-    public IDeviceMeasurements addDeviceMeasurements(UUID deviceAssignmentId,
-	    IDeviceMeasurementsCreateRequest measurements) throws SiteWhereException {
-	return forwardEvent(deviceAssignmentId, super.addDeviceMeasurements(deviceAssignmentId, measurements));
+    public IDeviceMeasurement addDeviceMeasurement(UUID deviceAssignmentId,
+	    IDeviceMeasurementCreateRequest measurements) throws SiteWhereException {
+	return forwardEvent(deviceAssignmentId, super.addDeviceMeasurement(deviceAssignmentId, measurements));
     }
 
     /*

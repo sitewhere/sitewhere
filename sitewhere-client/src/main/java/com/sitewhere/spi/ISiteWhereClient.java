@@ -25,11 +25,11 @@ import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.rest.model.device.event.DeviceEventBatchResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
-import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
-import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
@@ -55,6 +55,7 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.ZoneSearchResults;
 import com.sitewhere.rest.model.system.Version;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 
 /**
@@ -347,8 +348,8 @@ public interface ISiteWhereClient {
      * @return
      * @throws SiteWhereException
      */
-    public DeviceMeasurements createDeviceMeasurements(String assignmentToken,
-	    DeviceMeasurementsCreateRequest measurements) throws SiteWhereException;
+    public DeviceMeasurement createDeviceMeasurements(String assignmentToken,
+	    DeviceMeasurementCreateRequest measurements) throws SiteWhereException;
 
     /**
      * Get most recent device measurements for a given assignment.
@@ -358,7 +359,7 @@ public interface ISiteWhereClient {
      * @return
      * @throws SiteWhereException
      */
-    public SearchResults<DeviceMeasurements> listDeviceMeasurements(String assignmentToken,
+    public SearchResults<IDeviceMeasurement> listDeviceMeasurements(String assignmentToken,
 	    DateRangeSearchCriteria searchCriteria) throws SiteWhereException;
 
     /**

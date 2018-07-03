@@ -11,7 +11,7 @@ import java.util.List;
 
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 
 /**
  * Used to create multiple events for a given device.
@@ -32,7 +32,7 @@ public interface IDeviceEventBatch {
      * 
      * @return
      */
-    public List<IDeviceMeasurementsCreateRequest> getMeasurements();
+    public List<IDeviceMeasurementCreateRequest> getMeasurements();
 
     /**
      * Get a list of device location create requests.

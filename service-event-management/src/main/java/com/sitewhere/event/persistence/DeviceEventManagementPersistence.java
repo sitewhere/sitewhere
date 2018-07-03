@@ -19,7 +19,7 @@ import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.device.event.DeviceEventBatchResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
-import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.device.event.DeviceStreamData;
 import com.sitewhere.spi.SiteWhereException;
@@ -34,7 +34,7 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequ
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 
@@ -57,8 +57,8 @@ public class DeviceEventManagementPersistence extends Persistence {
     public static DeviceEventBatchResponse deviceEventBatchLogic(IDeviceAssignment assignment, IDeviceEventBatch batch,
 	    IDeviceEventManagement management) throws SiteWhereException {
 	DeviceEventBatchResponse response = new DeviceEventBatchResponse();
-	for (IDeviceMeasurementsCreateRequest measurements : batch.getMeasurements()) {
-	    response.getCreatedMeasurements().add(management.addDeviceMeasurements(assignment.getId(), measurements));
+	for (IDeviceMeasurementCreateRequest mx : batch.getMeasurements()) {
+	    response.getCreatedMeasurements().add(management.addDeviceMeasurement(assignment.getId(), mx));
 	}
 	for (IDeviceLocationCreateRequest location : batch.getLocations()) {
 	    response.getCreatedLocations().add(management.addDeviceLocation(assignment.getId(), location));
@@ -96,21 +96,20 @@ public class DeviceEventManagementPersistence extends Persistence {
     }
 
     /**
-     * Common logic for creating {@link DeviceMeasurements} from
-     * {@link IDeviceMeasurementsCreateRequest}.
+     * Common logic for creating {@link DeviceMeasurement} from
+     * {@link IDeviceMeasurementCreateRequest}.
      * 
      * @param request
      * @param assignment
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceMeasurements deviceMeasurementsCreateLogic(IDeviceMeasurementsCreateRequest request,
+    public static DeviceMeasurement deviceMeasurementCreateLogic(IDeviceMeasurementCreateRequest request,
 	    IDeviceAssignment assignment) throws SiteWhereException {
-	DeviceMeasurements measurements = new DeviceMeasurements();
+	DeviceMeasurement measurements = new DeviceMeasurement();
 	deviceEventCreateLogic(request, assignment, measurements);
-	for (String key : request.getMeasurements().keySet()) {
-	    measurements.addOrReplaceMeasurement(key, request.getMeasurement(key));
-	}
+	measurements.setName(request.getName());
+	measurements.setValue(request.getValue());
 	return measurements;
     }
 
@@ -313,12 +312,12 @@ public class DeviceEventManagementPersistence extends Persistence {
      */
     public static DeviceStateChange deviceStateChangeCreateLogic(IDeviceAssignment assignment,
 	    IDeviceStateChangeCreateRequest request) throws SiteWhereException {
-	require("Category", request.getCategory());
+	require("Attribute", request.getAttribute());
 	require("Type", request.getType());
 
 	DeviceStateChange state = new DeviceStateChange();
 	deviceEventCreateLogic(request, assignment, state);
-	state.setCategory(request.getCategory());
+	state.setAttribute(request.getAttribute());
 	state.setType(request.getType());
 	state.setPreviousState(request.getPreviousState());
 	state.setNewState(request.getNewState());

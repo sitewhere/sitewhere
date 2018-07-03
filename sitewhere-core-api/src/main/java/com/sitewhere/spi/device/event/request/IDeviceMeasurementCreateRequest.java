@@ -5,16 +5,16 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.device.event;
+package com.sitewhere.spi.device.event.request;
 
 import java.io.Serializable;
 
 /**
- * Measurement associated with a device assignment at a point in time.
+ * Interface for arguments needed to create a device measurement.
  * 
  * @author Derek
  */
-public interface IDeviceMeasurement extends IDeviceEvent, Serializable {
+public interface IDeviceMeasurementCreateRequest extends IDeviceEventCreateRequest, Serializable {
 
     /**
      * Get measurement name.
@@ -28,5 +28,5 @@ public interface IDeviceMeasurement extends IDeviceEvent, Serializable {
      * 
      * @return
      */
-    public Double getValue();
+    public double getValue();
 }

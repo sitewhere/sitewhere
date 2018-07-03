@@ -37,6 +37,12 @@ public interface ISolrFields {
 
     /** Event received date */
     public static final String RECEIVED_DATE = "receivedDate";
+    
+    /** Measurement name */
+    public static final String MX_NAME = "mxName";
+    
+    /** Measurement value */
+    public static final String MX_VALUE = "mxValue";
 
     /** Location */
     public static final String LOCATION = "location";
@@ -58,7 +64,4 @@ public interface ISolrFields {
 
     /** Prefix for metadata fields */
     public static final String META_PREFIX = "meta.";
-
-    /** Location latitude */
-    public static final String MEASUREMENT_PREFIX = "mx.";
 }

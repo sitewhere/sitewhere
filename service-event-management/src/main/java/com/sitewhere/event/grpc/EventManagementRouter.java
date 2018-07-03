@@ -28,8 +28,8 @@ import com.sitewhere.grpc.service.GAddDeviceEventBatchRequest;
 import com.sitewhere.grpc.service.GAddDeviceEventBatchResponse;
 import com.sitewhere.grpc.service.GAddLocationRequest;
 import com.sitewhere.grpc.service.GAddLocationResponse;
-import com.sitewhere.grpc.service.GAddMeasurementsRequest;
-import com.sitewhere.grpc.service.GAddMeasurementsResponse;
+import com.sitewhere.grpc.service.GAddMeasurementRequest;
+import com.sitewhere.grpc.service.GAddMeasurementResponse;
 import com.sitewhere.grpc.service.GAddStateChangeRequest;
 import com.sitewhere.grpc.service.GAddStateChangeResponse;
 import com.sitewhere.grpc.service.GAddStreamDataForAssignmentRequest;
@@ -149,15 +149,15 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
 
     /*
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#addMeasurements(com.sitewhere.grpc.service.
-     * GAddMeasurementsRequest, io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#addMeasurement(com.sitewhere.grpc.service.
+     * GAddMeasurementRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void addMeasurements(GAddMeasurementsRequest request,
-	    StreamObserver<GAddMeasurementsResponse> responseObserver) {
+    public void addMeasurement(GAddMeasurementRequest request,
+	    StreamObserver<GAddMeasurementResponse> responseObserver) {
 	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
 	if (engine != null) {
-	    engine.addMeasurements(request, responseObserver);
+	    engine.addMeasurement(request, responseObserver);
 	}
     }
 

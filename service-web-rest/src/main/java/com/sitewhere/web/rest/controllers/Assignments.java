@@ -49,7 +49,7 @@ import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
-import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceStateChangeCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceStreamDataCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
@@ -74,7 +74,7 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
@@ -312,7 +312,7 @@ public class Assignments extends RestControllerBase {
     @RequestMapping(value = "/{token}/measurements", method = RequestMethod.GET)
     @ApiOperation(value = "List measurement events for device assignment")
     @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IDeviceMeasurements> listMeasurementsForAssignment(
+    public ISearchResults<IDeviceMeasurement> listMeasurementsForAssignment(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
@@ -345,7 +345,7 @@ public class Assignments extends RestControllerBase {
 	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	ISearchResults<IDeviceMeasurements> measurements = new BlockingDeviceEventManagement(getDeviceEventManagement())
+	ISearchResults<IDeviceMeasurement> measurements = new BlockingDeviceEventManagement(getDeviceEventManagement())
 		.listDeviceMeasurementsForIndex(DeviceEventIndex.Assignment,
 			Collections.singletonList(assignment.getId()), criteria);
 	ChartBuilder builder = new ChartBuilder();
@@ -364,11 +364,11 @@ public class Assignments extends RestControllerBase {
     @RequestMapping(value = "/{token}/measurements", method = RequestMethod.POST)
     @ApiOperation(value = "Create measurements event for device assignment")
     @Secured({ SiteWhereRoles.REST })
-    public IDeviceMeasurements createMeasurements(@RequestBody DeviceMeasurementsCreateRequest input,
+    public IDeviceMeasurement createMeasurements(@RequestBody DeviceMeasurementCreateRequest input,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return new BlockingDeviceEventManagement(getDeviceEventManagement()).addDeviceMeasurements(assignment.getId(),
+	return new BlockingDeviceEventManagement(getDeviceEventManagement()).addDeviceMeasurement(assignment.getId(),
 		input);
     }
 

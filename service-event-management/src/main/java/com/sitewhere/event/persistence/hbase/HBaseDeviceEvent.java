@@ -38,7 +38,7 @@ import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
-import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.device.event.DeviceStreamData;
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
@@ -53,7 +53,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
@@ -61,7 +61,7 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequ
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
@@ -105,8 +105,8 @@ public class HBaseDeviceEvent {
      * @return
      * @throws SiteWhereException
      */
-    public static IDeviceMeasurements createDeviceMeasurements(IHBaseContext context, IDeviceAssignment assignment,
-	    IDeviceMeasurementsCreateRequest request) throws SiteWhereException {
+    public static IDeviceMeasurement createDeviceMeasurements(IHBaseContext context, IDeviceAssignment assignment,
+	    IDeviceMeasurementCreateRequest request) throws SiteWhereException {
 	long time = getEventTime(request);
 	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assignment.getToken());
 	if (assnKey == null) {
@@ -116,7 +116,7 @@ public class HBaseDeviceEvent {
 	byte[] qualifier = getQualifier(EventRecordType.Measurement, time, context.getPayloadMarshaler().getEncoding());
 
 	// Create measurements object and marshal to JSON.
-	DeviceMeasurements measurements = DeviceEventManagementPersistence.deviceMeasurementsCreateLogic(request,
+	DeviceMeasurement measurements = DeviceEventManagementPersistence.deviceMeasurementCreateLogic(request,
 		assignment);
 	byte[] payload = context.getPayloadMarshaler().encodeDeviceMeasurements(measurements);
 
@@ -136,7 +136,7 @@ public class HBaseDeviceEvent {
      * @return
      * @throws SiteWhereException
      */
-    public static SearchResults<IDeviceMeasurements> listDeviceMeasurements(IHBaseContext context,
+    public static SearchResults<IDeviceMeasurement> listDeviceMeasurements(IHBaseContext context,
 	    IDeviceAssignment assignment, IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	Pager<EventMatch> matches = getEventRowsForAssignment(context, assignment, EventRecordType.Measurement,
 		criteria);
@@ -152,7 +152,7 @@ public class HBaseDeviceEvent {
      * @return
      * @throws SiteWhereException
      */
-    public static SearchResults<IDeviceMeasurements> listDeviceMeasurementsForArea(IHBaseContext context, IArea area,
+    public static SearchResults<IDeviceMeasurement> listDeviceMeasurementsForArea(IHBaseContext context, IArea area,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	Pager<EventMatch> matches = getEventRowsForArea(context, area, EventRecordType.Measurement, criteria);
 	return convertMatches(context, matches);
@@ -1082,7 +1082,7 @@ public class HBaseDeviceEvent {
 	EventRecordType eventType = EventRecordType.decode(indicator);
 	switch (eventType) {
 	case Measurement: {
-	    return DeviceMeasurements.class;
+	    return DeviceMeasurement.class;
 	}
 	case Location: {
 	    return DeviceLocation.class;

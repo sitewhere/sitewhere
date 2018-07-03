@@ -15,7 +15,7 @@ import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
@@ -62,15 +62,15 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
     public IDeviceEvent getDeviceEventByAlternateId(UUID deviceId, String alternateId) throws SiteWhereException;
 
     /**
-     * Add measurements for a given device assignment.
+     * Add measurement for a given device assignment.
      * 
      * @param deviceAssignmentId
-     * @param measurements
+     * @param measurement
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceMeasurements addDeviceMeasurements(UUID deviceAssignmentId,
-	    IDeviceMeasurementsCreateRequest measurements) throws SiteWhereException;
+    public IDeviceMeasurement addDeviceMeasurement(UUID deviceAssignmentId, IDeviceMeasurementCreateRequest measurement)
+	    throws SiteWhereException;
 
     /**
      * List device measurement entries for an index based on criteria.
@@ -81,7 +81,7 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForIndex(DeviceEventIndex index,
+    public ISearchResults<IDeviceMeasurement> listDeviceMeasurementsForIndex(DeviceEventIndex index,
 	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
     /**

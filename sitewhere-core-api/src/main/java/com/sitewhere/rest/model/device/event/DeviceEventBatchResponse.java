@@ -14,7 +14,7 @@ import java.util.List;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 
 /**
  * Response from device event batch create operation.
@@ -27,7 +27,7 @@ public class DeviceEventBatchResponse implements IDeviceEventBatchResponse, Seri
     private static final long serialVersionUID = -5564589917811891744L;
 
     /** List of measurements that were created */
-    private List<DeviceMeasurements> createdMeasurements = new ArrayList<DeviceMeasurements>();
+    private List<DeviceMeasurement> createdMeasurements = new ArrayList<DeviceMeasurement>();
 
     /** List of locations that were created */
     private List<DeviceLocation> createdLocations = new ArrayList<DeviceLocation>();
@@ -43,11 +43,11 @@ public class DeviceEventBatchResponse implements IDeviceEventBatchResponse, Seri
      * ()
      */
     @SuppressWarnings("unchecked")
-    public List<IDeviceMeasurements> getCreatedMeasurements() {
-	return (List<IDeviceMeasurements>) (List<? extends IDeviceMeasurements>) createdMeasurements;
+    public List<IDeviceMeasurement> getCreatedMeasurements() {
+	return (List<IDeviceMeasurement>) (List<? extends IDeviceMeasurement>) createdMeasurements;
     }
 
-    public void setCreatedMeasurements(List<DeviceMeasurements> createdMeasurements) {
+    public void setCreatedMeasurements(List<DeviceMeasurement> createdMeasurements) {
 	this.createdMeasurements = createdMeasurements;
     }
 

@@ -33,8 +33,20 @@ public class MongoDeviceState implements MongoConverter<IDeviceState> {
     /** Property for device id */
     public static final String PROP_DEVICE_ID = "dvid";
 
+    /** Property for device type id */
+    public static final String PROP_DEVICE_TYPE_ID = "dtid";
+
     /** Property for device assignment id */
     public static final String PROP_DEVICE_ASSIGNMENT_ID = "asid";
+
+    /** Property for customer id */
+    public static final String PROP_CUSTOMER_ID = "csid";
+
+    /** Property for area id */
+    public static final String PROP_AREA_ID = "arid";
+
+    /** Property for asset id */
+    public static final String PROP_ASSET_ID = "assd";
 
     /** Property for last interaction date */
     public static final String PROP_LAST_INTERACTION_DATE = "last";
@@ -86,7 +98,11 @@ public class MongoDeviceState implements MongoConverter<IDeviceState> {
     public static void toDocument(IDeviceState source, Document target) {
 	target.append(PROP_ID, source.getId());
 	target.append(PROP_DEVICE_ID, source.getDeviceId());
+	target.append(PROP_DEVICE_TYPE_ID, source.getDeviceTypeId());
 	target.append(PROP_DEVICE_ASSIGNMENT_ID, source.getDeviceAssignmentId());
+	target.append(PROP_CUSTOMER_ID, source.getCustomerId());
+	target.append(PROP_AREA_ID, source.getAreaId());
+	target.append(PROP_ASSET_ID, source.getAssetId());
 	target.append(PROP_LAST_INTERACTION_DATE, source.getLastInteractionDate());
 	target.append(PROP_PRESENCE_MISSING_DATE, source.getPresenceMissingDate());
 	target.append(PROP_LAST_LOCATION_ID, source.getLastLocationEventId());
@@ -120,13 +136,21 @@ public class MongoDeviceState implements MongoConverter<IDeviceState> {
     public static void fromDocument(Document source, DeviceState target) {
 	UUID id = (UUID) source.get(PROP_ID);
 	UUID deviceId = (UUID) source.get(PROP_DEVICE_ID);
+	UUID deviceTypeId = (UUID) source.get(PROP_DEVICE_TYPE_ID);
 	UUID deviceAssignmentId = (UUID) source.get(PROP_DEVICE_ASSIGNMENT_ID);
+	UUID customerId = (UUID) source.get(PROP_CUSTOMER_ID);
+	UUID areaId = (UUID) source.get(PROP_AREA_ID);
+	UUID assetId = (UUID) source.get(PROP_ASSET_ID);
 	Date lastInteractionDate = (Date) source.get(PROP_LAST_INTERACTION_DATE);
 	Date presenceMissingDate = (Date) source.get(PROP_PRESENCE_MISSING_DATE);
 
 	target.setId(id);
 	target.setDeviceId(deviceId);
+	target.setDeviceTypeId(deviceTypeId);
 	target.setDeviceAssignmentId(deviceAssignmentId);
+	target.setCustomerId(customerId);
+	target.setAreaId(areaId);
+	target.setAssetId(assetId);
 	target.setLastInteractionDate(lastInteractionDate);
 	target.setPresenceMissingDate(presenceMissingDate);
 

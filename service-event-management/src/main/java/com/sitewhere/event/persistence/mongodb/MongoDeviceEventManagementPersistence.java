@@ -21,7 +21,6 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 
@@ -61,9 +60,6 @@ public class MongoDeviceEventManagementPersistence extends MongoPersistence {
      */
     public static Document marshalEvent(IDeviceEvent event) throws SiteWhereException {
 	switch (event.getEventType()) {
-	case Measurements: {
-	    return MongoDeviceMeasurements.toDocument((IDeviceMeasurements) event, false);
-	}
 	case Measurement: {
 	    return MongoDeviceMeasurement.toDocument((IDeviceMeasurement) event, false);
 	}
@@ -92,8 +88,8 @@ public class MongoDeviceEventManagementPersistence extends MongoPersistence {
     }
 
     /**
-     * Given a {@link Document} that contains event information, unmarhal it to
-     * the correct type.
+     * Given a {@link Document} that contains event information, unmarhal it to the
+     * correct type.
      * 
      * @param found
      * @return
@@ -110,9 +106,6 @@ public class MongoDeviceEventManagementPersistence extends MongoPersistence {
 	}
 
 	switch (eventType) {
-	case Measurements: {
-	    return MongoDeviceMeasurements.fromDocument(found, false);
-	}
 	case Measurement: {
 	    return MongoDeviceMeasurement.fromDocument(found, false);
 	}

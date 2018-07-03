@@ -35,7 +35,7 @@ service DeviceEventManagement {
 	// ####################
 	
 	// Add measurements.
-	rpc AddMeasurements (GAddMeasurementsRequest) returns (GAddMeasurementsResponse) {}
+	rpc AddMeasurement (GAddMeasurementRequest) returns (GAddMeasurementResponse) {}
 	
 	// List measurements for an index.
 	rpc ListMeasurementsForIndex (GListMeasurementsForIndexRequest) returns (GListMeasurementsForIndexResponse) {}
@@ -152,15 +152,15 @@ message GGetDeviceEventByAlternateIdResponse {
 // ### MEASUREMENTS ###
 // ####################
 	
-// Request for adding measurements.
-message GAddMeasurementsRequest {
+// Request for adding measurement.
+message GAddMeasurementRequest {
 	com.sitewhere.grpc.model.GUUID deviceAssignmentId = 1;
-	com.sitewhere.grpc.model.GDeviceMeasurementsCreateRequest request = 2;
+	com.sitewhere.grpc.model.GDeviceMeasurementCreateRequest request = 2;
 }
 	
-// Response for adding measurements.
-message GAddMeasurementsResponse {
-	com.sitewhere.grpc.model.GDeviceMeasurements measurements = 1;
+// Response for adding measurement.
+message GAddMeasurementResponse {
+	com.sitewhere.grpc.model.GDeviceMeasurement measurement = 1;
 }
 	
 // Request for list of measurements.
@@ -172,7 +172,7 @@ message GListMeasurementsForIndexRequest {
 	
 // Response for list of measurements.
 message GListMeasurementsForIndexResponse {
-	com.sitewhere.grpc.model.GDeviceMeasurementsSearchResults results = 1;
+	com.sitewhere.grpc.model.GDeviceMeasurementSearchResults results = 1;
 }
 
 // #################

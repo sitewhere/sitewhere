@@ -22,14 +22,14 @@ import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
@@ -86,8 +86,8 @@ public interface IDeviceEventManagementApiChannel<T extends MultitenantGrpcChann
      * @param observer
      * @throws SiteWhereException
      */
-    public void addDeviceMeasurements(UUID deviceAssignmentId, IDeviceMeasurementsCreateRequest measurements,
-	    StreamObserver<IDeviceMeasurements> observer) throws SiteWhereException;
+    public void addDeviceMeasurements(UUID deviceAssignmentId, IDeviceMeasurementCreateRequest measurements,
+	    StreamObserver<IDeviceMeasurement> observer) throws SiteWhereException;
 
     /**
      * List device measurement entries for an index based on criteria.
@@ -99,7 +99,7 @@ public interface IDeviceEventManagementApiChannel<T extends MultitenantGrpcChann
      * @throws SiteWhereException
      */
     public void listDeviceMeasurementsForIndex(DeviceEventIndex index, List<UUID> entityIds,
-	    IDateRangeSearchCriteria criteria, StreamObserver<ISearchResults<IDeviceMeasurements>> observer)
+	    IDateRangeSearchCriteria criteria, StreamObserver<ISearchResults<IDeviceMeasurement>> observer)
 	    throws SiteWhereException;
 
     /**

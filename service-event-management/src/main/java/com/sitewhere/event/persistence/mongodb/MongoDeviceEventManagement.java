@@ -24,7 +24,7 @@ import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
-import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.device.event.DeviceStreamData;
 import com.sitewhere.rest.model.search.SearchResults;
@@ -43,14 +43,14 @@ import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
@@ -189,21 +189,21 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceMeasurements(
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceMeasurement(
      * java.util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest)
+     * com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest)
      */
     @Override
-    public IDeviceMeasurements addDeviceMeasurements(UUID deviceAssignmentId, IDeviceMeasurementsCreateRequest request)
+    public IDeviceMeasurement addDeviceMeasurement(UUID deviceAssignmentId, IDeviceMeasurementCreateRequest request)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
-	DeviceMeasurements measurements = DeviceEventManagementPersistence.deviceMeasurementsCreateLogic(request,
+	DeviceMeasurement measurements = DeviceEventManagementPersistence.deviceMeasurementCreateLogic(request,
 		assignment);
 
 	MongoCollection<Document> events = getMongoClient().getEventsCollection();
-	Document mObject = MongoDeviceMeasurements.toDocument(measurements, false);
+	Document mObject = MongoDeviceMeasurement.toDocument(measurements, false);
 	MongoDeviceEventManagementPersistence.insertEvent(events, mObject, isUseBulkEventInserts(), getEventBuffer());
-	return MongoDeviceMeasurements.fromDocument(mObject, false);
+	return MongoDeviceMeasurement.fromDocument(mObject, false);
     }
 
     /*
@@ -213,14 +213,14 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public SearchResults<IDeviceMeasurements> listDeviceMeasurementsForIndex(DeviceEventIndex index,
+    public SearchResults<IDeviceMeasurement> listDeviceMeasurementsForIndex(DeviceEventIndex index,
 	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> events = getMongoClient().getEventsCollection();
 	Document query = new Document(getFieldForIndex(index), new Document("$in", entityIds))
-		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Measurements.name());
+		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Measurement.name());
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1);
-	return MongoPersistence.search(IDeviceMeasurements.class, events, query, sort, criteria, LOOKUP);
+	return MongoPersistence.search(IDeviceMeasurement.class, events, query, sort, criteria, LOOKUP);
     }
 
     /*

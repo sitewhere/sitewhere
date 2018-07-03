@@ -32,7 +32,7 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
@@ -77,23 +77,20 @@ public class InitialStateEventProcessor extends FilteredOutboundConnector {
     }
 
     /*
-     * @see com.sitewhere.outbound.FilteredOutboundEventProcessor#
-     * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceEventContext,
-     * com.sitewhere.spi.device.event.IDeviceMeasurements)
+     * @see
+     * com.sitewhere.connectors.FilteredOutboundConnector#onMeasurementNotFiltered(
+     * com.sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceMeasurement)
      */
     @Override
-    public void onMeasurementsNotFiltered(IDeviceEventContext context, IDeviceMeasurements measurements)
-	    throws SiteWhereException {
-	Map<String, Double> mx = measurements.getMeasurements();
+    public void onMeasurementNotFiltered(IDeviceEventContext context, IDeviceMeasurement mx) throws SiteWhereException {
 	List<EventCreateRequest> events = new ArrayList<EventCreateRequest>();
-	for (String name : mx.keySet()) {
-	    EventCreateRequest event = new EventCreateRequest();
-	    event.setKey(name);
-	    event.setValue(String.valueOf(mx.get(name)));
-	    event.setEpoch(((double) System.currentTimeMillis()) / ((double) 1000));
-	    events.add(event);
-	}
-	DeviceAssignment assignment = assureBucket(measurements.getDeviceAssignmentId());
+	EventCreateRequest event = new EventCreateRequest();
+	event.setKey(mx.getName());
+	event.setValue(String.valueOf(mx.getValue()));
+	event.setEpoch(((double) System.currentTimeMillis()) / ((double) 1000));
+	events.add(event);
+	DeviceAssignment assignment = assureBucket(mx.getDeviceAssignmentId());
 	createEvents(assignment.getToken(), events);
     }
 

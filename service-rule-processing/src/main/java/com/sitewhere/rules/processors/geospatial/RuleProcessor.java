@@ -19,7 +19,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 
 /**
@@ -40,13 +40,13 @@ public class RuleProcessor extends TenantEngineLifecycleComponent implements IRu
     private int numProcessingThreads = DEFAULT_NUM_PROCESSING_THREADS;
 
     /*
-     * @see com.sitewhere.rules.spi.IRuleProcessor#onMeasurements(com.sitewhere.spi.
-     * device.event.IDeviceEventContext,
-     * com.sitewhere.spi.device.event.IDeviceMeasurements)
+     * @see
+     * com.sitewhere.rules.spi.IRuleProcessor#onMeasurement(com.sitewhere.spi.device
+     * .event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceMeasurement)
      */
     @Override
-    public void onMeasurements(IDeviceEventContext context, IDeviceMeasurements measurements)
-	    throws SiteWhereException {
+    public void onMeasurement(IDeviceEventContext context, IDeviceMeasurement measurements) throws SiteWhereException {
     }
 
     /*

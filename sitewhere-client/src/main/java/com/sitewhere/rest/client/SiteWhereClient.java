@@ -46,11 +46,11 @@ import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.rest.model.device.event.DeviceEventBatchResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
-import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
-import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
@@ -80,6 +80,7 @@ import com.sitewhere.spi.ISiteWhereClient;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 
 /**
@@ -562,22 +563,21 @@ public class SiteWhereClient implements ISiteWhereClient {
      * com.sitewhere.rest.model.device.request.DeviceMeasurementsCreateRequest)
      */
     @Override
-    public DeviceMeasurements createDeviceMeasurements(String assignmentToken, DeviceMeasurementsCreateRequest request)
+    public DeviceMeasurement createDeviceMeasurements(String assignmentToken, DeviceMeasurementCreateRequest request)
 	    throws SiteWhereException {
 	Map<String, String> vars = new HashMap<String, String>();
 	vars.put("token", assignmentToken);
 	return sendRest(getBaseUrl() + "assignments/{token}/measurements", HttpMethod.POST, request,
-		DeviceMeasurements.class, vars);
+		DeviceMeasurement.class, vars);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.ISiteWhereClient#listDeviceMeasurements(java.lang.
-     * String, int)
+     * @see
+     * com.sitewhere.spi.ISiteWhereClient#listDeviceMeasurements(java.lang.String,
+     * com.sitewhere.rest.model.search.DateRangeSearchCriteria)
      */
     @Override
-    public SearchResults<DeviceMeasurements> listDeviceMeasurements(String assignmentToken,
+    public SearchResults<IDeviceMeasurement> listDeviceMeasurements(String assignmentToken,
 	    DateRangeSearchCriteria searchCriteria) throws SiteWhereException {
 	Map<String, String> vars = new HashMap<String, String>();
 	vars.put("token", assignmentToken);

@@ -16,7 +16,7 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 
@@ -33,7 +33,7 @@ public class MongoConverters implements IMongoConverterLookup {
     /** Create a list of converters for various types */
     static {
 	// Converters for device management.
-	CONVERTERS.put(IDeviceMeasurements.class, new MongoDeviceMeasurements());
+	CONVERTERS.put(IDeviceMeasurement.class, new MongoDeviceMeasurement());
 	CONVERTERS.put(IDeviceAlert.class, new MongoDeviceAlert());
 	CONVERTERS.put(IDeviceLocation.class, new MongoDeviceLocation());
 	CONVERTERS.put(IDeviceStreamData.class, new MongoDeviceStreamData());

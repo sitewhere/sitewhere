@@ -19,7 +19,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
@@ -63,25 +63,24 @@ public abstract class FilteredOutboundConnector extends OutboundConnector implem
 
     /*
      * @see
-     * com.sitewhere.connectors.OutboundConnector#onMeasurements(com.sitewhere.spi.
+     * com.sitewhere.connectors.OutboundConnector#onMeasurement(com.sitewhere.spi.
      * device.event.IDeviceEventContext,
-     * com.sitewhere.spi.device.event.IDeviceMeasurements)
+     * com.sitewhere.spi.device.event.IDeviceMeasurement)
      */
     @Override
-    public final void onMeasurements(IDeviceEventContext context, IDeviceMeasurements measurements)
-	    throws SiteWhereException {
-	if (!isFiltered(context, measurements)) {
-	    onMeasurementsNotFiltered(context, measurements);
+    public final void onMeasurement(IDeviceEventContext context, IDeviceMeasurement mx) throws SiteWhereException {
+	if (!isFiltered(context, mx)) {
+	    onMeasurementNotFiltered(context, mx);
 	}
     }
 
     /*
      * @see com.sitewhere.connectors.spi.IFilteredOutboundConnector#
-     * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceEventContext,
-     * com.sitewhere.spi.device.event.IDeviceMeasurements)
+     * onMeasurementNotFiltered(com.sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceMeasurement)
      */
     @Override
-    public void onMeasurementsNotFiltered(IDeviceEventContext context, IDeviceMeasurements measurements)
+    public void onMeasurementNotFiltered(IDeviceEventContext context, IDeviceMeasurement measurements)
 	    throws SiteWhereException {
     }
 

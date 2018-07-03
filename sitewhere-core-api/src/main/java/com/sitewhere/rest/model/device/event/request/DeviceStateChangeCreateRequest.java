@@ -25,8 +25,8 @@ public class DeviceStateChangeCreateRequest extends DeviceEventCreateRequest
     /** Serialization version identifier */
     private static final long serialVersionUID = -2789928889465310950L;
 
-    /** State change category */
-    private String category;
+    /** Attribute being updated */
+    private String attribute;
 
     /** State change type */
     private String type;
@@ -43,15 +43,15 @@ public class DeviceStateChangeCreateRequest extends DeviceEventCreateRequest
 
     /*
      * @see com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest#
-     * getCategory()
+     * getAttribute()
      */
     @Override
-    public String getCategory() {
-	return category;
+    public String getAttribute() {
+	return attribute;
     }
 
-    public void setCategory(String category) {
-	this.category = category;
+    public void setAttribute(String attribute) {
+	this.attribute = attribute;
     }
 
     /*

@@ -32,7 +32,7 @@ import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
-import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
@@ -193,9 +193,10 @@ public class ApiTests {
 	SiteWhereClient client = new SiteWhereClient("http://localhost:9090/sitewhere/api/", "admin", "password");
 	DeviceEventBatch batch = new DeviceEventBatch();
 	batch.setHardwareId("5a95f3f2-96f0-47f9-b98d-f5c081d01948");
-	DeviceMeasurementsCreateRequest mx = new DeviceMeasurementsCreateRequest();
+	DeviceMeasurementCreateRequest mx = new DeviceMeasurementCreateRequest();
+	mx.setName("test");
+	mx.setValue(123.4);
 	mx.setEventDate(new Date());
-	mx.addOrReplaceMeasurement("test", 123.4);
 	Map<String, String> metadata = new HashMap<String, String>();
 	metadata.put("test", "value");
 	mx.setMetadata(metadata);
@@ -257,9 +258,10 @@ public class ApiTests {
 	location.setElevation(0.0);
 	json(client.createDeviceLocation(assignment, location));
 
-	DeviceMeasurementsCreateRequest mxs = new DeviceMeasurementsCreateRequest();
-	mxs.addOrReplaceMeasurement("fuel.level", 77.0);
-	json(client.createDeviceMeasurements(assignment, mxs));
+	DeviceMeasurementCreateRequest mx = new DeviceMeasurementCreateRequest();
+	mx.setName("fuel.level");
+	mx.setValue(77.0);
+	json(client.createDeviceMeasurements(assignment, mx));
 
 	DeviceAlertCreateRequest alert = new DeviceAlertCreateRequest();
 	alert.setType("engine.overheat");

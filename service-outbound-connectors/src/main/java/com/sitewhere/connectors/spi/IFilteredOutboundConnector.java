@@ -15,7 +15,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 
 /**
@@ -33,14 +33,13 @@ public interface IFilteredOutboundConnector extends IOutboundConnector {
     public List<IDeviceEventFilter> getFilters();
 
     /**
-     * Called if measurements data was not filtered.
+     * Called if measurement data was not filtered.
      * 
      * @param context
-     * @param measurements
+     * @param mx
      * @throws SiteWhereException
      */
-    public void onMeasurementsNotFiltered(IDeviceEventContext context, IDeviceMeasurements measurements)
-	    throws SiteWhereException;
+    public void onMeasurementNotFiltered(IDeviceEventContext context, IDeviceMeasurement mx) throws SiteWhereException;
 
     /**
      * Called if location data was not filtered.

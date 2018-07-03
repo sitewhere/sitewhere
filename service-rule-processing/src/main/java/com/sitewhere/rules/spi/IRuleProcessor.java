@@ -15,7 +15,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
@@ -41,13 +41,13 @@ public interface IRuleProcessor extends ITenantEngineLifecycleComponent {
     public int getNumProcessingThreads();
 
     /**
-     * Responds to a measurements event.
+     * Responds to a measurement event.
      * 
      * @param context
-     * @param measurements
+     * @param measurement
      * @throws SiteWhereException
      */
-    public void onMeasurements(IDeviceEventContext context, IDeviceMeasurements measurements) throws SiteWhereException;
+    public void onMeasurement(IDeviceEventContext context, IDeviceMeasurement measurement) throws SiteWhereException;
 
     /**
      * Responds to a location event.

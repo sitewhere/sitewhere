@@ -15,11 +15,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
-import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 
 /**
  * A batch of new events to create for a given device.
@@ -36,7 +36,7 @@ public class DeviceEventBatch implements IDeviceEventBatch, Serializable {
     private String hardwareId;
 
     /** List of measurements requests */
-    private List<DeviceMeasurementsCreateRequest> measurements = new ArrayList<DeviceMeasurementsCreateRequest>();
+    private List<DeviceMeasurementCreateRequest> measurements = new ArrayList<DeviceMeasurementCreateRequest>();
 
     /** List of location requests */
     private List<DeviceLocationCreateRequest> locations = new ArrayList<DeviceLocationCreateRequest>();
@@ -63,11 +63,11 @@ public class DeviceEventBatch implements IDeviceEventBatch, Serializable {
      * @see com.sitewhere.spi.device.IDeviceEventBatch#getMeasurements()
      */
     @SuppressWarnings("unchecked")
-    public List<IDeviceMeasurementsCreateRequest> getMeasurements() {
-	return (List<IDeviceMeasurementsCreateRequest>) (List<? extends IDeviceMeasurementsCreateRequest>) measurements;
+    public List<IDeviceMeasurementCreateRequest> getMeasurements() {
+	return (List<IDeviceMeasurementCreateRequest>) (List<? extends IDeviceMeasurementCreateRequest>) measurements;
     }
 
-    public void setMeasurements(List<DeviceMeasurementsCreateRequest> measurements) {
+    public void setMeasurements(List<DeviceMeasurementCreateRequest> measurements) {
 	this.measurements = measurements;
     }
 

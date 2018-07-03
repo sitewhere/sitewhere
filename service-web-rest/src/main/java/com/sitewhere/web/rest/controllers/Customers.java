@@ -61,7 +61,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
@@ -319,7 +319,7 @@ public class Customers extends RestControllerBase {
     @RequestMapping(value = "/{customerToken}/measurements", method = RequestMethod.GET)
     @ApiOperation(value = "List measurements for a customer")
     @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForCustomer(
+    public ISearchResults<IDeviceMeasurement> listDeviceMeasurementsForCustomer(
 	    @ApiParam(value = "Token that identifies customer", required = true) @PathVariable String customerToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
@@ -329,14 +329,14 @@ public class Customers extends RestControllerBase {
 	List<UUID> customers = resolveCustomerIds(customerToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
 		endDate, response);
-	ISearchResults<IDeviceMeasurements> results = getDeviceEventManagement()
+	ISearchResults<IDeviceMeasurement> results = getDeviceEventManagement()
 		.listDeviceMeasurementsForIndex(DeviceEventIndex.Customer, customers, criteria);
 
-	List<IDeviceMeasurements> wrapped = new ArrayList<IDeviceMeasurements>();
-	for (IDeviceMeasurements result : results.getResults()) {
+	List<IDeviceMeasurement> wrapped = new ArrayList<IDeviceMeasurement>();
+	for (IDeviceMeasurement result : results.getResults()) {
 	    wrapped.add(new DeviceMeasurementsWithAsset(result, getAssetManagement()));
 	}
-	return new SearchResults<IDeviceMeasurements>(wrapped, results.getNumResults());
+	return new SearchResults<IDeviceMeasurement>(wrapped, results.getNumResults());
     }
 
     /**

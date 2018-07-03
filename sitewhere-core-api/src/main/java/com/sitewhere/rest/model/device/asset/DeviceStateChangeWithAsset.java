@@ -28,11 +28,11 @@ public class DeviceStateChangeWithAsset extends DeviceEventWithAsset implements 
     }
 
     /*
-     * @see com.sitewhere.spi.device.event.IDeviceStateChange#getCategory()
+     * @see com.sitewhere.spi.device.event.IDeviceStateChange#getAttribute()
      */
     @Override
-    public String getCategory() {
-	return ((IDeviceStateChange) getWrapped()).getCategory();
+    public String getAttribute() {
+	return ((IDeviceStateChange) getWrapped()).getAttribute();
     }
 
     /*

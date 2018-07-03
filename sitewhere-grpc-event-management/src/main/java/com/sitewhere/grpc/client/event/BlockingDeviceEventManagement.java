@@ -22,14 +22,14 @@ import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
@@ -88,14 +88,14 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
 
     /*
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceMeasurements(
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceMeasurement(
      * java.util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest)
+     * com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest)
      */
     @Override
-    public IDeviceMeasurements addDeviceMeasurements(UUID deviceAssignmentId,
-	    IDeviceMeasurementsCreateRequest measurements) throws SiteWhereException {
-	BlockingStreamObserver<IDeviceMeasurements> observer = new BlockingStreamObserver<>();
+    public IDeviceMeasurement addDeviceMeasurement(UUID deviceAssignmentId,
+	    IDeviceMeasurementCreateRequest measurements) throws SiteWhereException {
+	BlockingStreamObserver<IDeviceMeasurement> observer = new BlockingStreamObserver<>();
 	api.addDeviceMeasurements(deviceAssignmentId, measurements, observer);
 	return observer.getResult();
     }
@@ -107,9 +107,9 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForIndex(DeviceEventIndex index,
+    public ISearchResults<IDeviceMeasurement> listDeviceMeasurementsForIndex(DeviceEventIndex index,
 	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	BlockingStreamObserver<ISearchResults<IDeviceMeasurements>> observer = new BlockingStreamObserver<>();
+	BlockingStreamObserver<ISearchResults<IDeviceMeasurement>> observer = new BlockingStreamObserver<>();
 	api.listDeviceMeasurementsForIndex(index, entityIds, criteria, observer);
 	return observer.getResult();
     }

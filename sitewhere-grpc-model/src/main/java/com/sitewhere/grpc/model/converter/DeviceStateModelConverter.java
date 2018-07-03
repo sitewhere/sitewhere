@@ -39,7 +39,11 @@ public class DeviceStateModelConverter {
 	    throws SiteWhereException {
 	DeviceStateCreateRequest api = new DeviceStateCreateRequest();
 	api.setDeviceId(CommonModelConverter.asApiUuid(grpc.getDeviceId()));
+	api.setDeviceTypeId(CommonModelConverter.asApiUuid(grpc.getDeviceTypeId()));
 	api.setDeviceAssignmentId(CommonModelConverter.asApiUuid(grpc.getDeviceAssignmentId()));
+	api.setCustomerId(CommonModelConverter.asApiUuid(grpc.getCustomerId()));
+	api.setAreaId(CommonModelConverter.asApiUuid(grpc.getAreaId()));
+	api.setAssetId(CommonModelConverter.asApiUuid(grpc.getAssetId()));
 	api.setLastInteractionDate(CommonModelConverter.asApiDate(grpc.getLastInteractionDate()));
 	api.setPresenceMissingDate(CommonModelConverter.asApiDate(grpc.getPresenceMissingDate()));
 	api.setLastLocationEventId(CommonModelConverter.asApiUuid(grpc.getLastLocationEventId()));
@@ -70,8 +74,20 @@ public class DeviceStateModelConverter {
 	if (api.getDeviceId() != null) {
 	    grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
 	}
+	if (api.getDeviceTypeId() != null) {
+	    grpc.setDeviceTypeId(CommonModelConverter.asGrpcUuid(api.getDeviceTypeId()));
+	}
 	if (api.getDeviceAssignmentId() != null) {
 	    grpc.setDeviceAssignmentId(CommonModelConverter.asGrpcUuid(api.getDeviceAssignmentId()));
+	}
+	if (api.getCustomerId() != null) {
+	    grpc.setCustomerId(CommonModelConverter.asGrpcUuid(api.getCustomerId()));
+	}
+	if (api.getAreaId() != null) {
+	    grpc.setAreaId(CommonModelConverter.asGrpcUuid(api.getAreaId()));
+	}
+	if (api.getAssetId() != null) {
+	    grpc.setAssetId(CommonModelConverter.asGrpcUuid(api.getAssetId()));
 	}
 	if (api.getLastInteractionDate() != null) {
 	    grpc.setLastInteractionDate(CommonModelConverter.asGrpcDate(api.getLastInteractionDate()));
@@ -108,6 +124,18 @@ public class DeviceStateModelConverter {
 	DeviceStateSearchCriteria api = new DeviceStateSearchCriteria(grpc.getPaging().getPageNumber(),
 		grpc.getPaging().getPageSize());
 	api.setLastInteractionDateBefore(CommonModelConverter.asApiDate(grpc.getLastInteractionDateBefore()));
+	if (grpc.getDeviceTypeIdCount() > 0) {
+	    api.setDeviceTypeIds(CommonModelConverter.asApiUuids(grpc.getDeviceTypeIdList()));
+	}
+	if (grpc.getCustomerIdCount() > 0) {
+	    api.setCustomerIds(CommonModelConverter.asApiUuids(grpc.getCustomerIdList()));
+	}
+	if (grpc.getAreaIdCount() > 0) {
+	    api.setAreaIds(CommonModelConverter.asApiUuids(grpc.getAreaIdList()));
+	}
+	if (grpc.getAssetIdCount() > 0) {
+	    api.setAssetIds(CommonModelConverter.asApiUuids(grpc.getAssetIdList()));
+	}
 	return api;
     }
 
@@ -122,6 +150,18 @@ public class DeviceStateModelConverter {
 	    throws SiteWhereException {
 	GDeviceStateSearchCriteria.Builder grpc = GDeviceStateSearchCriteria.newBuilder();
 	grpc.setLastInteractionDateBefore(CommonModelConverter.asGrpcDate(api.getLastInteractionDateBefore()));
+	if (api.getDeviceTypeIds() != null) {
+	    grpc.addAllDeviceTypeId(CommonModelConverter.asGrpcUuids(api.getDeviceTypeIds()));
+	}
+	if (api.getCustomerIds() != null) {
+	    grpc.addAllCustomerId(CommonModelConverter.asGrpcUuids(api.getCustomerIds()));
+	}
+	if (api.getAreaIds() != null) {
+	    grpc.addAllAreaId(CommonModelConverter.asGrpcUuids(api.getAreaIds()));
+	}
+	if (api.getAssetIds() != null) {
+	    grpc.addAllAssetId(CommonModelConverter.asGrpcUuids(api.getAssetIds()));
+	}
 	grpc.setPaging(CommonModelConverter.asGrpcPaging(api));
 	return grpc.build();
     }
@@ -137,7 +177,11 @@ public class DeviceStateModelConverter {
 	DeviceState api = new DeviceState();
 	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
 	api.setDeviceId(CommonModelConverter.asApiUuid(grpc.getDeviceId()));
+	api.setDeviceTypeId(CommonModelConverter.asApiUuid(grpc.getDeviceTypeId()));
 	api.setDeviceAssignmentId(CommonModelConverter.asApiUuid(grpc.getDeviceAssignmentId()));
+	api.setCustomerId(CommonModelConverter.asApiUuid(grpc.getCustomerId()));
+	api.setAreaId(CommonModelConverter.asApiUuid(grpc.getAreaId()));
+	api.setAssetId(CommonModelConverter.asApiUuid(grpc.getAssetId()));
 	api.setLastInteractionDate(CommonModelConverter.asApiDate(grpc.getLastInteractionDate()));
 	api.setPresenceMissingDate(CommonModelConverter.asApiDate(grpc.getPresenceMissingDate()));
 	api.setLastLocationEventId(CommonModelConverter.asApiUuid(grpc.getLastLocationEventId()));
@@ -170,8 +214,20 @@ public class DeviceStateModelConverter {
 	if (api.getDeviceId() != null) {
 	    grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
 	}
+	if (api.getDeviceTypeId() != null) {
+	    grpc.setDeviceTypeId(CommonModelConverter.asGrpcUuid(api.getDeviceTypeId()));
+	}
 	if (api.getDeviceAssignmentId() != null) {
 	    grpc.setDeviceAssignmentId(CommonModelConverter.asGrpcUuid(api.getDeviceAssignmentId()));
+	}
+	if (api.getCustomerId() != null) {
+	    grpc.setCustomerId(CommonModelConverter.asGrpcUuid(api.getCustomerId()));
+	}
+	if (api.getAreaId() != null) {
+	    grpc.setAreaId(CommonModelConverter.asGrpcUuid(api.getAreaId()));
+	}
+	if (api.getAssetId() != null) {
+	    grpc.setAssetId(CommonModelConverter.asGrpcUuid(api.getAssetId()));
 	}
 	if (api.getLastInteractionDate() != null) {
 	    grpc.setLastInteractionDate(CommonModelConverter.asGrpcDate(api.getLastInteractionDate()));

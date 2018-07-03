@@ -17,7 +17,7 @@ import com.sitewhere.sources.spi.IDeviceEventEncoder;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 
 /**
@@ -37,8 +37,8 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
     @Override
     @SuppressWarnings("unchecked")
     public byte[] encode(IDecodedDeviceRequest<?> event) throws SiteWhereException {
-	if (event.getRequest() instanceof IDeviceMeasurementsCreateRequest) {
-	    return encodeDeviceMeasurements((IDecodedDeviceRequest<IDeviceMeasurementsCreateRequest>) event);
+	if (event.getRequest() instanceof IDeviceMeasurementCreateRequest) {
+	    return encodeDeviceMeasurements((IDecodedDeviceRequest<IDeviceMeasurementCreateRequest>) event);
 	} else if (event.getRequest() instanceof IDeviceAlertCreateRequest) {
 	    return encodeDeviceAlert((IDecodedDeviceRequest<IDeviceAlertCreateRequest>) event);
 	} else if (event.getRequest() instanceof IDeviceLocationCreateRequest) {
@@ -57,10 +57,10 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
      * @return
      * @throws SiteWhereException
      */
-    protected byte[] encodeDeviceMeasurements(IDecodedDeviceRequest<IDeviceMeasurementsCreateRequest> event)
+    protected byte[] encodeDeviceMeasurements(IDecodedDeviceRequest<IDeviceMeasurementCreateRequest> event)
 	    throws SiteWhereException {
 	try {
-	    IDeviceMeasurementsCreateRequest measurements = (IDeviceMeasurementsCreateRequest) event.getRequest();
+	    IDeviceMeasurementCreateRequest measurements = (IDeviceMeasurementCreateRequest) event.getRequest();
 	    Model.DeviceMeasurements.Builder mb = Model.DeviceMeasurements.newBuilder();
 	    mb.setHardwareId(event.getDeviceToken());
 	    mb.setEventDate(measurements.getEventDate().getTime());
@@ -74,11 +74,8 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
 		}
 	    }
 
-	    Set<String> mxKeys = measurements.getMeasurements().keySet();
-	    for (String key : mxKeys) {
-		mb.addMeasurement(Model.Measurement.newBuilder().setMeasurementId(key)
-			.setMeasurementValue(measurements.getMeasurement(key)).build());
-	    }
+	    mb.addMeasurement(Model.Measurement.newBuilder().setMeasurementId(measurements.getName())
+		    .setMeasurementValue(measurements.getValue()).build());
 
 	    ByteArrayOutputStream out = new ByteArrayOutputStream();
 	    SiteWhere.Header.Builder builder = SiteWhere.Header.newBuilder();

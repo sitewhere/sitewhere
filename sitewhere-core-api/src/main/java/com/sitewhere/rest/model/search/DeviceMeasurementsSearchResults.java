@@ -10,22 +10,21 @@ package com.sitewhere.rest.model.search;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 
 /**
  * Search results that contain device measurements.
  * 
  * @author dadams
  */
-public class DeviceMeasurementsSearchResults extends SearchResults<DeviceMeasurements> {
+public class DeviceMeasurementsSearchResults extends SearchResults<IDeviceMeasurement> {
 
     public DeviceMeasurementsSearchResults() {
-	super(new ArrayList<DeviceMeasurements>());
+	super(new ArrayList<IDeviceMeasurement>());
     }
 
-    public DeviceMeasurementsSearchResults(List<DeviceMeasurements> results) {
+    public DeviceMeasurementsSearchResults(List<IDeviceMeasurement> results) {
 	super(results);
     }
 
@@ -35,15 +34,11 @@ public class DeviceMeasurementsSearchResults extends SearchResults<DeviceMeasure
      * @param source
      * @return
      */
-    public static DeviceMeasurementsSearchResults copy(SearchResults<IDeviceMeasurements> source)
+    public static DeviceMeasurementsSearchResults copy(SearchResults<IDeviceMeasurement> source)
 	    throws SiteWhereException {
 	DeviceMeasurementsSearchResults result = new DeviceMeasurementsSearchResults();
-	List<DeviceMeasurements> converted = new ArrayList<DeviceMeasurements>();
-	for (IDeviceMeasurements measurement : source.getResults()) {
-	    converted.add(DeviceMeasurements.copy(measurement));
-	}
 	result.setNumResults(source.getNumResults());
-	result.setResults(converted);
+	result.setResults(source.getResults());
 	return result;
     }
 }

@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
-import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
 
 /**
  * Test methods for sending messages over the Stomp protocol.
@@ -54,9 +54,10 @@ public class StompTest {
     protected String createMeasurementsJson(String hardwareId) throws Exception {
 	DeviceEventBatch batch = new DeviceEventBatch();
 	batch.setHardwareId(hardwareId);
-	DeviceMeasurementsCreateRequest request = new DeviceMeasurementsCreateRequest();
+	DeviceMeasurementCreateRequest request = new DeviceMeasurementCreateRequest();
 	request.setEventDate(new Date());
-	request.addOrReplaceMeasurement("engine.temp", 98.76);
+	request.setName("engine.temp");
+	request.setValue(98.76);
 	batch.getMeasurements().add(request);
 	return MAPPER.writeValueAsString(batch);
     }

@@ -26,7 +26,7 @@ public class CassandraDeviceStateChange {
     public static final String FIELD_STATE_CHANGE = "state_change";
 
     // Category field.
-    public static final String FIELD_CATEGORY = "category";
+    public static final String FIELD_ATTRIBUTE = "attribute";
 
     // Type field.
     public static final String FIELD_TYPE = "type";
@@ -50,7 +50,7 @@ public class CassandraDeviceStateChange {
 	CassandraDeviceEvent.bindEventFields(bound, state);
 
 	UDTValue udt = client.getStateChangeType().newValue();
-	udt.setString(FIELD_CATEGORY, state.getCategory());
+	udt.setString(FIELD_ATTRIBUTE, state.getAttribute());
 	udt.setString(FIELD_TYPE, state.getType());
 	udt.setString(FIELD_PREVIOUS_STATE, state.getPreviousState());
 	udt.setString(FIELD_NEW_STATE, state.getNewState());
@@ -69,7 +69,7 @@ public class CassandraDeviceStateChange {
 	CassandraDeviceEvent.loadEventFields(state, row);
 
 	UDTValue udt = row.getUDTValue(FIELD_STATE_CHANGE);
-	state.setCategory(udt.getString(FIELD_CATEGORY));
+	state.setAttribute(udt.getString(FIELD_ATTRIBUTE));
 	state.setType(udt.getString(FIELD_TYPE));
 	state.setPreviousState(udt.getString(FIELD_PREVIOUS_STATE));
 	state.setNewState(udt.getString(FIELD_NEW_STATE));

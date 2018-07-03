@@ -9,11 +9,11 @@ package com.sitewhere.sources;
 
 import java.util.Date;
 
-import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
 import com.sitewhere.sources.decoder.protobuf.ProtobufDeviceEventEncoder;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 
 /**
@@ -31,12 +31,13 @@ public class EventsHelper {
      * @throws SiteWhereException
      */
     public static byte[] generateEncodedMeasurementsMessage(String deviceToken) throws SiteWhereException {
-	DecodedDeviceRequest<IDeviceMeasurementsCreateRequest> request = new DecodedDeviceRequest<IDeviceMeasurementsCreateRequest>();
+	DecodedDeviceRequest<IDeviceMeasurementCreateRequest> request = new DecodedDeviceRequest<IDeviceMeasurementCreateRequest>();
 	request.setDeviceToken(deviceToken);
 
-	DeviceMeasurementsCreateRequest mx = new DeviceMeasurementsCreateRequest();
+	DeviceMeasurementCreateRequest mx = new DeviceMeasurementCreateRequest();
 	mx.setEventDate(new Date());
-	mx.addOrReplaceMeasurement("fuel.level", 123.4);
+	mx.setName("fuel.level");
+	mx.setValue(123.4);
 	request.setRequest(mx);
 
 	return (new ProtobufDeviceEventEncoder()).encode(request);

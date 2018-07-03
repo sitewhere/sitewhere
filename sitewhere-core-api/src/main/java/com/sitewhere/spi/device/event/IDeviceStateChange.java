@@ -18,11 +18,11 @@ import java.io.Serializable;
 public interface IDeviceStateChange extends IDeviceEvent, Serializable {
 
     /**
-     * Get category of state change.
+     * Get attribute that is being updated.
      * 
      * @return
      */
-    public String getCategory();
+    public String getAttribute();
 
     /**
      * Get type of state change.

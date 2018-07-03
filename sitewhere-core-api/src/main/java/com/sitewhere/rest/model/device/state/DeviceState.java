@@ -34,8 +34,20 @@ public class DeviceState implements IDeviceState {
     /** Device id */
     private UUID deviceId;
 
+    /** Device type id */
+    private UUID deviceTypeId;
+
     /** Device assignment id */
     private UUID deviceAssignmentId;
+
+    /** Customer id */
+    private UUID customerId;
+
+    /** Area id */
+    private UUID areaId;
+
+    /** Asset id */
+    private UUID assetId;
 
     /** Date of last interaction with assignment */
     private Date lastInteractionDate;
@@ -77,6 +89,18 @@ public class DeviceState implements IDeviceState {
     }
 
     /*
+     * @see com.sitewhere.spi.device.state.IDeviceState#getDeviceTypeId()
+     */
+    @Override
+    public UUID getDeviceTypeId() {
+	return deviceTypeId;
+    }
+
+    public void setDeviceTypeId(UUID deviceTypeId) {
+	this.deviceTypeId = deviceTypeId;
+    }
+
+    /*
      * @see com.sitewhere.spi.device.state.IDeviceState#getDeviceAssignmentId()
      */
     @Override
@@ -86,6 +110,42 @@ public class DeviceState implements IDeviceState {
 
     public void setDeviceAssignmentId(UUID deviceAssignmentId) {
 	this.deviceAssignmentId = deviceAssignmentId;
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.state.IDeviceState#getCustomerId()
+     */
+    @Override
+    public UUID getCustomerId() {
+	return customerId;
+    }
+
+    public void setCustomerId(UUID customerId) {
+	this.customerId = customerId;
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.state.IDeviceState#getAreaId()
+     */
+    @Override
+    public UUID getAreaId() {
+	return areaId;
+    }
+
+    public void setAreaId(UUID areaId) {
+	this.areaId = areaId;
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.state.IDeviceState#getAssetId()
+     */
+    @Override
+    public UUID getAssetId() {
+	return assetId;
+    }
+
+    public void setAssetId(UUID assetId) {
+	this.assetId = assetId;
     }
 
     /*

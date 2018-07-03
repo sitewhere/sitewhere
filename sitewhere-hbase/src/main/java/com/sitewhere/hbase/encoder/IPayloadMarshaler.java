@@ -19,7 +19,7 @@ import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
-import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.device.event.DeviceStreamData;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
@@ -42,7 +42,7 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.group.IDeviceGroup;
@@ -214,22 +214,22 @@ public interface IPayloadMarshaler {
     public DeviceState decodeDeviceAssignmentState(byte[] payload) throws SiteWhereException;
 
     /**
-     * Encode an {@link IDeviceMeasurements}.
+     * Encode an {@link IDeviceMeasurement}.
      * 
      * @param measurements
      * @return
      * @throws SiteWhereException
      */
-    public byte[] encodeDeviceMeasurements(IDeviceMeasurements measurements) throws SiteWhereException;
+    public byte[] encodeDeviceMeasurements(IDeviceMeasurement measurements) throws SiteWhereException;
 
     /**
-     * Decode a {@link DeviceMeasurements} from the binary payload.
+     * Decode a {@link DeviceMeasurement} from the binary payload.
      * 
      * @param payload
      * @return
      * @throws SiteWhereException
      */
-    public DeviceMeasurements decodeDeviceMeasurements(byte[] payload) throws SiteWhereException;
+    public DeviceMeasurement decodeDeviceMeasurements(byte[] payload) throws SiteWhereException;
 
     /**
      * Encode an {@link IDeviceLocation}.

@@ -23,7 +23,7 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequ
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
@@ -57,9 +57,9 @@ public class UnaryEventStorageStrategy implements IInboundEventStorageStrategy {
 	GAnyDeviceEventCreateRequest grpc = payload.getEvent();
 	IDeviceEventCreateRequest request = EventModelConverter.asApiDeviceEventCreateRequest(grpc);
 	switch (request.getEventType()) {
-	case Measurements:
+	case Measurement:
 	    getDeviceEventManagement().addDeviceMeasurements(assignment.getId(),
-		    (IDeviceMeasurementsCreateRequest) request,
+		    (IDeviceMeasurementCreateRequest) request,
 		    new AlertHandlerStreamObserver<>(getInboundPayloadProcessingLogic()));
 	    break;
 	case Alert:

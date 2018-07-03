@@ -39,7 +39,7 @@ import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
-import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
@@ -54,7 +54,7 @@ import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
@@ -435,9 +435,9 @@ public class Devices extends RestControllerBase {
 		((DeviceLocationCreateRequest) locReq).setEventDate(new Date());
 	    }
 	}
-	for (IDeviceMeasurementsCreateRequest measReq : batch.getMeasurements()) {
+	for (IDeviceMeasurementCreateRequest measReq : batch.getMeasurements()) {
 	    if (measReq.getEventDate() == null) {
-		((DeviceMeasurementsCreateRequest) measReq).setEventDate(new Date());
+		((DeviceMeasurementCreateRequest) measReq).setEventDate(new Date());
 	    }
 	}
 	for (IDeviceAlertCreateRequest alertReq : batch.getAlerts()) {

@@ -34,7 +34,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
@@ -222,8 +222,8 @@ public class KafkaRuleProcessorHost extends DirectKafkaConsumer {
 		getRuleProcessor().onLocation(context, (IDeviceLocation) event);
 		break;
 	    }
-	    case Measurements: {
-		getRuleProcessor().onMeasurements(context, (IDeviceMeasurements) event);
+	    case Measurement: {
+		getRuleProcessor().onMeasurement(context, (IDeviceMeasurement) event);
 		break;
 	    }
 	    case StateChange: {

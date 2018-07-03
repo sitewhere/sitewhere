@@ -19,7 +19,7 @@ import com.hazelcast.core.Message;
 import com.hazelcast.core.MessageListener;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
-import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 
 /**
@@ -104,7 +104,7 @@ public class SiteWhereReceiver extends Receiver<IDeviceEvent> {
      * @author Derek
      */
     @SuppressWarnings("unused")
-    private class MeasurementsEventListener implements MessageListener<DeviceMeasurements> {
+    private class MeasurementsEventListener implements MessageListener<DeviceMeasurement> {
 
 	/*
 	 * (non-Javadoc)
@@ -113,9 +113,9 @@ public class SiteWhereReceiver extends Receiver<IDeviceEvent> {
 	 * Message)
 	 */
 	@Override
-	public void onMessage(Message<DeviceMeasurements> message) {
+	public void onMessage(Message<DeviceMeasurement> message) {
 	    try {
-		DeviceMeasurements mx = message.getMessageObject();
+		DeviceMeasurement mx = message.getMessageObject();
 		SiteWhereReceiver.this.store(mx);
 		LOGGER.debug("Stored a measurements event.");
 	    } catch (Exception e) {

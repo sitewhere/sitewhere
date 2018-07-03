@@ -19,7 +19,7 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
@@ -52,12 +52,13 @@ public class DweetIoEventProcessor extends FilteredOutboundConnector {
     }
 
     /*
-     * @see com.sitewhere.outbound.FilteredOutboundEventProcessor#
-     * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceEventContext,
-     * com.sitewhere.spi.device.event.IDeviceMeasurements)
+     * @see
+     * com.sitewhere.connectors.FilteredOutboundConnector#onMeasurementNotFiltered(
+     * com.sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceMeasurement)
      */
     @Override
-    public void onMeasurementsNotFiltered(IDeviceEventContext context, IDeviceMeasurements measurements)
+    public void onMeasurementNotFiltered(IDeviceEventContext context, IDeviceMeasurement measurements)
 	    throws SiteWhereException {
 	sendDweet(measurements);
     }

@@ -18,10 +18,10 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 
 /**
  * Default context implementation.
@@ -34,7 +34,7 @@ public class SiteWhereContext implements ISiteWhereContext {
     private IDeviceAssignment deviceAssignment;
 
     /** Measurements that have not been persisted */
-    private List<IDeviceMeasurementsCreateRequest> unsavedDeviceMeasurements = new ArrayList<IDeviceMeasurementsCreateRequest>();
+    private List<IDeviceMeasurementCreateRequest> unsavedDeviceMeasurements = new ArrayList<IDeviceMeasurementCreateRequest>();
 
     /** Locations that have not been persisted */
     private List<IDeviceLocationCreateRequest> unsavedDeviceLocations = new ArrayList<IDeviceLocationCreateRequest>();
@@ -43,7 +43,7 @@ public class SiteWhereContext implements ISiteWhereContext {
     private List<IDeviceAlertCreateRequest> unsavedDeviceAlerts = new ArrayList<IDeviceAlertCreateRequest>();
 
     /** Measurements that have been persisted */
-    private List<IDeviceMeasurements> deviceMeasurements = new ArrayList<IDeviceMeasurements>();
+    private List<IDeviceMeasurement> deviceMeasurements = new ArrayList<IDeviceMeasurement>();
 
     /** Locations that have been persisted */
     private List<IDeviceLocation> deviceLocations = new ArrayList<IDeviceLocation>();
@@ -78,11 +78,11 @@ public class SiteWhereContext implements ISiteWhereContext {
      * 
      * @see com.sitewhere.spi.ISiteWhereContext#getUnsavedDeviceMeasurements()
      */
-    public List<IDeviceMeasurementsCreateRequest> getUnsavedDeviceMeasurements() {
+    public List<IDeviceMeasurementCreateRequest> getUnsavedDeviceMeasurements() {
 	return unsavedDeviceMeasurements;
     }
 
-    public void setUnsavedDeviceMeasurements(List<IDeviceMeasurementsCreateRequest> unsavedDeviceMeasurements) {
+    public void setUnsavedDeviceMeasurements(List<IDeviceMeasurementCreateRequest> unsavedDeviceMeasurements) {
 	this.unsavedDeviceMeasurements = unsavedDeviceMeasurements;
     }
 
@@ -117,11 +117,11 @@ public class SiteWhereContext implements ISiteWhereContext {
      * 
      * @see com.sitewhere.spi.ISiteWhereContext#getDeviceMeasurements()
      */
-    public List<IDeviceMeasurements> getDeviceMeasurements() {
+    public List<IDeviceMeasurement> getDeviceMeasurements() {
 	return deviceMeasurements;
     }
 
-    public void setDeviceMeasurements(List<IDeviceMeasurements> deviceMeasurements) {
+    public void setDeviceMeasurements(List<IDeviceMeasurement> deviceMeasurements) {
 	this.deviceMeasurements = deviceMeasurements;
     }
 
@@ -197,8 +197,8 @@ public class SiteWhereContext implements ISiteWhereContext {
      * @throws SiteWhereException
      */
     public void addDeviceEvent(IDeviceEvent event) throws SiteWhereException {
-	if (event instanceof IDeviceMeasurements) {
-	    getDeviceMeasurements().add((IDeviceMeasurements) event);
+	if (event instanceof IDeviceMeasurement) {
+	    getDeviceMeasurements().add((IDeviceMeasurement) event);
 	} else if (event instanceof IDeviceLocation) {
 	    getDeviceLocations().add((IDeviceLocation) event);
 	} else if (event instanceof IDeviceAlert) {

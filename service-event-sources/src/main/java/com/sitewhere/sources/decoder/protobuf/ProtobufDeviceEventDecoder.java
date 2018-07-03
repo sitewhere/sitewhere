@@ -31,7 +31,7 @@ import com.sitewhere.communication.protobuf.proto.Sitewhere.SiteWhere.RegisterDe
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
-import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceStreamDataCreateRequest;
 import com.sitewhere.rest.model.device.event.request.SendDeviceStreamDataRequest;
@@ -46,7 +46,7 @@ import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
@@ -124,36 +124,37 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 	    case SEND_DEVICE_MEASUREMENTS: {
 		DeviceMeasurements dm = DeviceMeasurements.parseDelimitedFrom(stream);
 		getLogger().debug("Decoded measurement for: " + dm.getHardwareId());
-		DeviceMeasurementsCreateRequest request = new DeviceMeasurementsCreateRequest();
 		List<Measurement> measurements = dm.getMeasurementList();
 		for (Measurement current : measurements) {
-		    request.addOrReplaceMeasurement(current.getMeasurementId(), current.getMeasurementValue());
-		}
+		    DeviceMeasurementCreateRequest request = new DeviceMeasurementCreateRequest();
+		    request.setName(current.getMeasurementId());
+		    request.setValue(current.getMeasurementValue());
 
-		if (dm.hasUpdateState()) {
-		    request.setUpdateState(dm.getUpdateState());
-		}
+		    if (dm.hasUpdateState()) {
+			request.setUpdateState(dm.getUpdateState());
+		    }
 
-		List<Metadata> pbmeta = dm.getMetadataList();
-		Map<String, String> metadata = new HashMap<String, String>();
-		for (Metadata meta : pbmeta) {
-		    metadata.put(meta.getName(), meta.getValue());
-		}
-		request.setMetadata(metadata);
+		    List<Metadata> pbmeta = dm.getMetadataList();
+		    Map<String, String> metadata = new HashMap<String, String>();
+		    for (Metadata meta : pbmeta) {
+			metadata.put(meta.getName(), meta.getValue());
+		    }
+		    request.setMetadata(metadata);
 
-		if (dm.hasEventDate()) {
-		    request.setEventDate(new Date(dm.getEventDate()));
-		} else {
-		    request.setEventDate(new Date());
-		}
+		    if (dm.hasEventDate()) {
+			request.setEventDate(new Date(dm.getEventDate()));
+		    } else {
+			request.setEventDate(new Date());
+		    }
 
-		DecodedDeviceRequest<IDeviceMeasurementsCreateRequest> decoded = new DecodedDeviceRequest<IDeviceMeasurementsCreateRequest>();
-		if (header.hasOriginator()) {
-		    decoded.setOriginator(header.getOriginator());
+		    DecodedDeviceRequest<IDeviceMeasurementCreateRequest> decoded = new DecodedDeviceRequest<IDeviceMeasurementCreateRequest>();
+		    if (header.hasOriginator()) {
+			decoded.setOriginator(header.getOriginator());
+		    }
+		    decoded.setDeviceToken(dm.getHardwareId());
+		    decoded.setRequest(request);
+		    results.add(decoded);
 		}
-		results.add(decoded);
-		decoded.setDeviceToken(dm.getHardwareId());
-		decoded.setRequest(request);
 		return results;
 	    }
 	    case SEND_DEVICE_LOCATION: {

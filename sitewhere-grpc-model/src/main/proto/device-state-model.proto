@@ -13,18 +13,26 @@ import "sitewhere-common.proto";
 // Request for creating device state.
 message GDeviceStateCreateRequest {
 	GUUID deviceId = 1;
-	GUUID deviceAssignmentId = 2;
-	uint64 lastInteractionDate = 3;
-	uint64 presenceMissingDate = 4;
-	GUUID lastLocationEventId = 5;
-	map<string, GUUID> lastMeasurementEventIds = 6;
-	map<string, GUUID> lastAlertEventIds = 7;
+	GUUID deviceTypeId = 2;
+	GUUID deviceAssignmentId = 3;
+	GUUID customerId = 4;
+	GUUID areaId = 5;
+	GUUID assetId = 6;
+	uint64 lastInteractionDate = 7;
+	uint64 presenceMissingDate = 8;
+	GUUID lastLocationEventId = 9;
+	map<string, GUUID> lastMeasurementEventIds = 10;
+	map<string, GUUID> lastAlertEventIds = 11;
 }
 
 // Criteria for searching device states.
 message GDeviceStateSearchCriteria {
 	uint64 lastInteractionDateBefore = 1;
-	GPaging paging = 2;
+	repeated GUUID deviceTypeId = 2;
+	repeated GUUID customerId = 3;
+	repeated GUUID areaId = 4;
+	repeated GUUID assetId = 5;
+	GPaging paging = 6;
 }
 
 // Results for device state search.
@@ -37,10 +45,14 @@ message GDeviceStateSearchResults {
 message GDeviceState {
 	GUUID id = 1;
 	GUUID deviceId = 2;
-	GUUID deviceAssignmentId = 3;
-	uint64 lastInteractionDate = 4;
-	uint64 presenceMissingDate = 5;
-	GUUID lastLocationEventId = 6;
-	map<string, GUUID> lastMeasurementEventIds = 7;
-	map<string, GUUID> lastAlertEventIds = 8;
+	GUUID deviceTypeId = 3;
+	GUUID deviceAssignmentId = 4;
+	GUUID customerId = 5;
+	GUUID areaId = 6;
+	GUUID assetId = 7;
+	uint64 lastInteractionDate = 8;
+	uint64 presenceMissingDate = 9;
+	GUUID lastLocationEventId = 10;
+	map<string, GUUID> lastMeasurementEventIds = 11;
+	map<string, GUUID> lastAlertEventIds = 12;
 }

@@ -37,7 +37,11 @@ public class DeviceStatePersistence {
 	DeviceState state = new DeviceState();
 	state.setId(UUID.randomUUID());
 	state.setDeviceId(device.getId());
+	state.setDeviceTypeId(request.getDeviceTypeId());
 	state.setDeviceAssignmentId(deviceAssignment.getId());
+	state.setCustomerId(request.getCustomerId());
+	state.setAreaId(request.getAreaId());
+	state.setAssetId(request.getAssetId());
 	state.setLastInteractionDate(request.getLastInteractionDate());
 	state.setPresenceMissingDate(request.getPresenceMissingDate());
 	state.setLastLocationEventId(request.getLastLocationEventId());
@@ -57,6 +61,18 @@ public class DeviceStatePersistence {
 	    throws SiteWhereException {
 	target.setLastInteractionDate(request.getLastInteractionDate());
 	target.setPresenceMissingDate(request.getPresenceMissingDate());
+	if (request.getDeviceTypeId() != null) {
+	    target.setDeviceTypeId(request.getDeviceTypeId());
+	}
+	if (request.getCustomerId() != null) {
+	    target.setCustomerId(request.getCustomerId());
+	}
+	if (request.getAreaId() != null) {
+	    target.setAreaId(request.getAreaId());
+	}
+	if (request.getAssetId() != null) {
+	    target.setAssetId(request.getAssetId());
+	}
 	if (request.getLastLocationEventId() != null) {
 	    target.setLastLocationEventId(request.getLastLocationEventId());
 	}

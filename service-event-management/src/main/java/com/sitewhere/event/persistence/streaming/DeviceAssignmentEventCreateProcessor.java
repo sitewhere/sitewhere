@@ -22,7 +22,7 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequ
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.streaming.IEventStreamAck;
 
@@ -85,9 +85,9 @@ public class DeviceAssignmentEventCreateProcessor extends BaseSubscriber<IDevice
 		getDeviceEventManagement().addDeviceLocation(assignmentId, (IDeviceLocationCreateRequest) request);
 		break;
 	    }
-	    case Measurements: {
-		getDeviceEventManagement().addDeviceMeasurements(assignmentId,
-			(IDeviceMeasurementsCreateRequest) request);
+	    case Measurement: {
+		getDeviceEventManagement().addDeviceMeasurement(assignmentId,
+			(IDeviceMeasurementCreateRequest) request);
 		break;
 	    }
 	    case StateChange: {

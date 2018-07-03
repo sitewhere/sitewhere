@@ -7,111 +7,45 @@
  */
 package com.sitewhere.rest.model.device.asset;
 
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 
 /**
- * Wraps a {@link DeviceMeasurements} so that information about the asset
+ * Wraps a {@link DeviceMeasurement} so that information about the asset
  * associated with its assignment is available.
  * 
  * @author Derek
  */
 @JsonIgnoreProperties
 @JsonInclude(Include.NON_NULL)
-public class DeviceMeasurementsWithAsset extends DeviceEventWithAsset implements IDeviceMeasurements {
+public class DeviceMeasurementsWithAsset extends DeviceEventWithAsset implements IDeviceMeasurement {
 
     /** Serial version UID */
     private static final long serialVersionUID = -732056996257170342L;
 
-    public DeviceMeasurementsWithAsset(IDeviceMeasurements wrapped, IAssetManagement assetManagement)
+    public DeviceMeasurementsWithAsset(IDeviceMeasurement wrapped, IAssetManagement assetManagement)
 	    throws SiteWhereException {
 	super(wrapped, assetManagement);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IMeasurementsProvider#addOrReplaceMeasurement(
-     * java.lang .String, java.lang.Double)
+     * @see com.sitewhere.spi.device.event.IDeviceMeasurement#getName()
      */
     @Override
-    public void addOrReplaceMeasurement(String name, Double value) {
-	((IDeviceMeasurements) getWrapped()).addOrReplaceMeasurement(name, value);
+    public String getName() {
+	return ((IDeviceMeasurement) getWrapped()).getName();
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IMeasurementsProvider#removeMeasurement(java.
-     * lang.String)
+     * @see com.sitewhere.spi.device.event.IDeviceMeasurement#getValue()
      */
     @Override
-    public Double removeMeasurement(String name) {
-	return ((IDeviceMeasurements) getWrapped()).removeMeasurement(name);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IMeasurementsProvider#getMeasurement(java.lang.
-     * String)
-     */
-    @Override
-    public Double getMeasurement(String name) {
-	return ((IDeviceMeasurements) getWrapped()).getMeasurement(name);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IMeasurementsProvider#getMeasurements()
-     */
-    @Override
-    public Map<String, Double> getMeasurements() {
-	return ((IDeviceMeasurements) getWrapped()).getMeasurements();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IMeasurementsProvider#clearMeasurements()
-     */
-    @Override
-    public void clearMeasurements() {
-	((IDeviceMeasurements) getWrapped()).clearMeasurements();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceMeasurements#getMeasurementsSummary()
-     */
-    public String getMeasurementsSummary() {
-	String result = "";
-	boolean isFirst = true;
-	for (String key : getMeasurements().keySet()) {
-	    if (!isFirst) {
-		result += ", ";
-	    } else {
-		isFirst = false;
-	    }
-	    result += key + ": " + getMeasurement(key);
-	}
-	return result;
-    }
-
-    /**
-     * For Jackson marshalling.
-     * 
-     * @param value
-     */
-    public void setMeasurementsSummary(String value) {
+    public Double getValue() {
+	return ((IDeviceMeasurement) getWrapped()).getValue();
     }
 }

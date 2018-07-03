@@ -27,8 +27,20 @@ public class DeviceStateCreateRequest implements IDeviceStateCreateRequest {
     /** Device id */
     private UUID deviceId;
 
+    /** Device type id */
+    private UUID deviceTypeId;
+
     /** Device assignment id */
     private UUID deviceAssignmentId;
+
+    /** Customer id */
+    private UUID customerId;
+
+    /** Area id */
+    private UUID areaId;
+
+    /** Asset id */
+    private UUID assetId;
 
     /** Date of last interaction with assignment */
     private Date lastInteractionDate;
@@ -61,6 +73,19 @@ public class DeviceStateCreateRequest implements IDeviceStateCreateRequest {
 
     /*
      * @see com.sitewhere.spi.device.state.request.IDeviceStateCreateRequest#
+     * getDeviceTypeId()
+     */
+    @Override
+    public UUID getDeviceTypeId() {
+	return deviceTypeId;
+    }
+
+    public void setDeviceTypeId(UUID deviceTypeId) {
+	this.deviceTypeId = deviceTypeId;
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.state.request.IDeviceStateCreateRequest#
      * getDeviceAssignmentId()
      */
     @Override
@@ -70,6 +95,45 @@ public class DeviceStateCreateRequest implements IDeviceStateCreateRequest {
 
     public void setDeviceAssignmentId(UUID deviceAssignmentId) {
 	this.deviceAssignmentId = deviceAssignmentId;
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.state.request.IDeviceStateCreateRequest#
+     * getCustomerId()
+     */
+    @Override
+    public UUID getCustomerId() {
+	return customerId;
+    }
+
+    public void setCustomerId(UUID customerId) {
+	this.customerId = customerId;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.state.request.IDeviceStateCreateRequest#getAreaId()
+     */
+    @Override
+    public UUID getAreaId() {
+	return areaId;
+    }
+
+    public void setAreaId(UUID areaId) {
+	this.areaId = areaId;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.state.request.IDeviceStateCreateRequest#getAssetId()
+     */
+    @Override
+    public UUID getAssetId() {
+	return assetId;
+    }
+
+    public void setAssetId(UUID assetId) {
+	this.assetId = assetId;
     }
 
     /*

@@ -22,7 +22,7 @@ import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
-import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
 
 public class CoapTests {
@@ -62,11 +62,11 @@ public class CoapTests {
     @Test
     public void testAddDeviceMeasurements() {
 	CoapClient client = createClientFor("devices/111-COAP-TEST-444/measurements");
-	DeviceMeasurementsCreateRequest mxs = new DeviceMeasurementsCreateRequest();
-	mxs.addOrReplaceMeasurement("pwr", 38.23);
-	mxs.addOrReplaceMeasurement("fln", 59.95);
-	mxs.setEventDate(new Date());
-	CoapResponse response = client.post(MarshalUtils.marshalJson(mxs), MediaTypeRegistry.APPLICATION_JSON);
+	DeviceMeasurementCreateRequest mx = new DeviceMeasurementCreateRequest();
+	mx.setName("pwr");
+	mx.setValue(38.23);
+	mx.setEventDate(new Date());
+	CoapResponse response = client.post(MarshalUtils.marshalJson(mx), MediaTypeRegistry.APPLICATION_JSON);
 	System.out.println(response.getCode());
 	System.out.println(response.getOptions());
 	System.out.println(response.getResponseText());

@@ -22,8 +22,8 @@ import com.sitewhere.spi.device.event.DeviceEventType;
  */
 public class InfluxDbDeviceStateChange {
 
-    /** State change category field */
-    public static final String STATE_CHANGE_CATEGORY = "sc_category";
+    /** State change attribute field */
+    public static final String STATE_CHANGE_ATTRIBUTE = "sc_attribute";
 
     /** State change type field */
     public static final String STATE_CHANGE_TYPE = "sc_type";
@@ -56,7 +56,7 @@ public class InfluxDbDeviceStateChange {
      */
     public static void loadFromMap(DeviceStateChange event, Map<String, Object> values) throws SiteWhereException {
 	event.setEventType(DeviceEventType.StateChange);
-	event.setCategory((String) values.get(STATE_CHANGE_CATEGORY));
+	event.setAttribute((String) values.get(STATE_CHANGE_ATTRIBUTE));
 	event.setType((String) values.get(STATE_CHANGE_TYPE));
 	event.setPreviousState((String) values.get(PREVIOUS_VALUE));
 	event.setNewState((String) values.get(UPDATED_VALUE));
@@ -71,7 +71,7 @@ public class InfluxDbDeviceStateChange {
      * @throws SiteWhereException
      */
     public static void saveToBuilder(DeviceStateChange event, Point.Builder builder) throws SiteWhereException {
-	builder.tag(STATE_CHANGE_CATEGORY, event.getCategory());
+	builder.tag(STATE_CHANGE_ATTRIBUTE, event.getAttribute());
 	builder.tag(STATE_CHANGE_TYPE, event.getType());
 	if (event.getPreviousState() != null) {
 	    builder.addField(PREVIOUS_VALUE, event.getPreviousState());

@@ -8,6 +8,8 @@
 package com.sitewhere.spi.search.device;
 
 import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 import com.sitewhere.spi.search.ISearchCriteria;
 
@@ -25,4 +27,32 @@ public interface IDeviceStateSearchCriteria extends ISearchCriteria {
      * @return
      */
     public Date getLastInteractionDateBefore();
+
+    /**
+     * List of device types to be included in results.
+     * 
+     * @return
+     */
+    public List<UUID> getDeviceTypeIds();
+
+    /**
+     * List of customers to be included in results.
+     * 
+     * @return
+     */
+    public List<UUID> getCustomerIds();
+
+    /**
+     * List of areas to be included in results.
+     * 
+     * @return
+     */
+    public List<UUID> getAreaIds();
+
+    /**
+     * List of assets to be included in results.
+     * 
+     * @return
+     */
+    public List<UUID> getAssetIds();
 }

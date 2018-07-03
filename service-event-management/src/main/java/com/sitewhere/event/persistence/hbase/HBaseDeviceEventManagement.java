@@ -34,14 +34,14 @@ import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
@@ -165,13 +165,13 @@ public class HBaseDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceMeasurements(
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceMeasurement(
      * java.util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest)
+     * com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest)
      */
     @Override
-    public IDeviceMeasurements addDeviceMeasurements(UUID deviceAssignmentId,
-	    IDeviceMeasurementsCreateRequest measurements) throws SiteWhereException {
+    public IDeviceMeasurement addDeviceMeasurement(UUID deviceAssignmentId,
+	    IDeviceMeasurementCreateRequest measurements) throws SiteWhereException {
 	return HBaseDeviceEvent.createDeviceMeasurements(context, null, measurements);
     }
 
@@ -182,7 +182,7 @@ public class HBaseDeviceEventManagement extends TenantEngineLifecycleComponent i
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public SearchResults<IDeviceMeasurements> listDeviceMeasurementsForIndex(DeviceEventIndex index,
+    public SearchResults<IDeviceMeasurement> listDeviceMeasurementsForIndex(DeviceEventIndex index,
 	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	return HBaseDeviceEvent.listDeviceMeasurements(context, null, criteria);
     }

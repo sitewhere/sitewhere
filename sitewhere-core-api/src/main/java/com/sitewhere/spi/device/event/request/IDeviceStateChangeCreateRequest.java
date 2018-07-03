@@ -15,20 +15,20 @@ package com.sitewhere.spi.device.event.request;
 public interface IDeviceStateChangeCreateRequest extends IDeviceEventCreateRequest {
 
     /** State change category for registration */
-    public static final String CATEGORY_REGISTRATION = "registration";
+    public static final String ATTRIBUTE_REGISTRATION = "registration";
 
     /** State change category for device assignment */
-    public static final String CATEGORY_ASSIGNMENT = "assignment";
+    public static final String ATTRIBUTE_ASSIGNMENT = "assignment";
 
     /** State change category for presence management */
-    public static final String CATEGORY_PRESENCE = "presence";
+    public static final String ATTRIBUTE_PRESENCE = "presence";
 
     /**
-     * Get category of state change.
+     * Get attribute being changed.
      * 
      * @return
      */
-    public String getCategory();
+    public String getAttribute();
 
     /**
      * Get type of state change.

@@ -19,7 +19,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -45,13 +45,12 @@ public abstract class OutboundConnector extends TenantEngineLifecycleComponent i
 
     /*
      * @see
-     * com.sitewhere.connectors.spi.IOutboundConnector#onMeasurements(com.sitewhere.
+     * com.sitewhere.connectors.spi.IOutboundConnector#onMeasurement(com.sitewhere.
      * spi.device.event.IDeviceEventContext,
-     * com.sitewhere.spi.device.event.IDeviceMeasurements)
+     * com.sitewhere.spi.device.event.IDeviceMeasurement)
      */
     @Override
-    public void onMeasurements(IDeviceEventContext context, IDeviceMeasurements measurements)
-	    throws SiteWhereException {
+    public void onMeasurement(IDeviceEventContext context, IDeviceMeasurement measurements) throws SiteWhereException {
     }
 
     /*

@@ -21,7 +21,7 @@ import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
-import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -39,14 +39,14 @@ import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
@@ -180,16 +180,15 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
 
     /*
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceMeasurements(
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceMeasurement(
      * java.util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest)
+     * com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest)
      */
     @Override
-    public IDeviceMeasurements addDeviceMeasurements(UUID deviceAssignmentId,
-	    IDeviceMeasurementsCreateRequest measurements) throws SiteWhereException {
+    public IDeviceMeasurement addDeviceMeasurement(UUID deviceAssignmentId,
+	    IDeviceMeasurementCreateRequest measurements) throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
-	DeviceMeasurements mxs = DeviceEventManagementPersistence.deviceMeasurementsCreateLogic(measurements,
-		assignment);
+	DeviceMeasurement mxs = DeviceEventManagementPersistence.deviceMeasurementCreateLogic(measurements, assignment);
 	Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	InfluxDbDeviceMeasurements.saveToBuilder(mxs, builder);
 	addUserDefinedTags(assignment, builder);
@@ -205,10 +204,10 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForIndex(DeviceEventIndex index,
+    public ISearchResults<IDeviceMeasurement> listDeviceMeasurementsForIndex(DeviceEventIndex index,
 	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return InfluxDbDeviceEvent.searchByIndex(index, entityIds, DeviceEventType.Measurements, criteria, getClient(),
-		IDeviceMeasurements.class);
+	return InfluxDbDeviceEvent.searchByIndex(index, entityIds, DeviceEventType.Measurement, criteria, getClient(),
+		IDeviceMeasurement.class);
     }
 
     /*

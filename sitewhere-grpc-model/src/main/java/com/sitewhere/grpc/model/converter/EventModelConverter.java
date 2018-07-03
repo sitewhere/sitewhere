@@ -43,9 +43,9 @@ import com.sitewhere.grpc.model.DeviceEventModel.GDeviceEventType;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceLocation;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceLocationCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceLocationSearchResults;
-import com.sitewhere.grpc.model.DeviceEventModel.GDeviceMeasurements;
-import com.sitewhere.grpc.model.DeviceEventModel.GDeviceMeasurementsCreateRequest;
-import com.sitewhere.grpc.model.DeviceEventModel.GDeviceMeasurementsSearchResults;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceMeasurement;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceMeasurementCreateRequest;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceMeasurementSearchResults;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStateChange;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStateChangeCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStateChangeSearchResults;
@@ -61,7 +61,7 @@ import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.rest.model.device.event.DeviceEventBatchResponse;
 import com.sitewhere.rest.model.device.event.DeviceEventContext;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
-import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.device.event.DeviceStreamData;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
@@ -70,7 +70,7 @@ import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCrea
 import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceEventCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
-import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceStateChangeCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceStreamDataCreateRequest;
 import com.sitewhere.rest.model.device.event.streaming.EventStreamAck;
@@ -91,7 +91,7 @@ import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
@@ -100,7 +100,7 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequ
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.event.streaming.IEventStreamAck;
@@ -243,8 +243,6 @@ public class EventModelConverter {
 	    return DeviceEventType.Location;
 	case EVENT_TYPE_MEASUREMENT:
 	    return DeviceEventType.Measurement;
-	case EVENT_TYPE_MEASUREMENTS:
-	    return DeviceEventType.Measurements;
 	case EVENT_TYPE_STATE_CHANGE:
 	    return DeviceEventType.StateChange;
 	case EVENT_TYPE_STREAM_DATA:
@@ -274,8 +272,6 @@ public class EventModelConverter {
 	    return GDeviceEventType.EVENT_TYPE_LOCATION;
 	case Measurement:
 	    return GDeviceEventType.EVENT_TYPE_MEASUREMENT;
-	case Measurements:
-	    return GDeviceEventType.EVENT_TYPE_MEASUREMENTS;
 	case StateChange:
 	    return GDeviceEventType.EVENT_TYPE_STATE_CHANGE;
 	case StreamData:
@@ -297,6 +293,7 @@ public class EventModelConverter {
 	api.setEventType(EventModelConverter.asApiDeviceEventType(grpc.getEventType()));
 	api.setDeviceId(CommonModelConverter.asApiUuid(grpc.getDeviceId()));
 	api.setDeviceAssignmentId(CommonModelConverter.asApiUuid(grpc.getDeviceAssignmentId()));
+	api.setCustomerId(CommonModelConverter.asApiUuid(grpc.getCustomerId()));
 	api.setAreaId(CommonModelConverter.asApiUuid(grpc.getAreaId()));
 	api.setAssetId(CommonModelConverter.asApiUuid(grpc.getAssetId()));
 	api.setEventDate(CommonModelConverter.asApiDate(grpc.getEventDate()));
@@ -320,6 +317,9 @@ public class EventModelConverter {
 	grpc.setEventType(EventModelConverter.asGrpcDeviceEventType(api.getEventType()));
 	grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
 	grpc.setDeviceAssignmentId(CommonModelConverter.asGrpcUuid(api.getDeviceAssignmentId()));
+	if (api.getCustomerId() != null) {
+	    grpc.setCustomerId(CommonModelConverter.asGrpcUuid(api.getCustomerId()));
+	}
 	if (api.getAreaId() != null) {
 	    grpc.setAreaId(CommonModelConverter.asGrpcUuid(api.getAreaId()));
 	}
@@ -335,63 +335,65 @@ public class EventModelConverter {
     }
 
     /**
-     * Convert device measurements create request from GRPC to API.
+     * Convert device measurement create request from GRPC to API.
      * 
      * @param grpc
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceMeasurementsCreateRequest asApiDeviceMeasurementsCreateRequest(
-	    GDeviceMeasurementsCreateRequest grpc) throws SiteWhereException {
-	DeviceMeasurementsCreateRequest api = new DeviceMeasurementsCreateRequest();
-	api.getMeasurements().putAll(grpc.getMeasurementsMap());
+    public static DeviceMeasurementCreateRequest asApiDeviceMeasurementCreateRequest(
+	    GDeviceMeasurementCreateRequest grpc) throws SiteWhereException {
+	DeviceMeasurementCreateRequest api = new DeviceMeasurementCreateRequest();
+	api.setName(grpc.getName());
+	api.setValue(grpc.getValue());
 	EventModelConverter.copyApiDeviceEventCreateRequest(grpc.getEvent(), api);
 	return api;
     }
 
     /**
-     * Convert device measurements create request from API to GRPC.
+     * Convert device measurement create request from API to GRPC.
      * 
      * @param api
      * @return
      * @throws SiteWhereException
      */
-    public static GDeviceMeasurementsCreateRequest asGrpcDeviceMeasurementsCreateRequest(
-	    IDeviceMeasurementsCreateRequest api) throws SiteWhereException {
-	GDeviceMeasurementsCreateRequest.Builder grpc = GDeviceMeasurementsCreateRequest.newBuilder();
-	grpc.putAllMeasurements(api.getMeasurements());
+    public static GDeviceMeasurementCreateRequest asGrpcDeviceMeasurementCreateRequest(
+	    IDeviceMeasurementCreateRequest api) throws SiteWhereException {
+	GDeviceMeasurementCreateRequest.Builder grpc = GDeviceMeasurementCreateRequest.newBuilder();
+	grpc.setName(api.getName());
+	grpc.setValue(api.getValue());
 	grpc.setEvent(EventModelConverter.createGrpcDeviceEventCreateRequest(api));
 	return grpc.build();
     }
 
     /**
-     * Convert device measurements create requests from GRPC to API.
+     * Convert device measurement create requests from GRPC to API.
      * 
      * @param grpcs
      * @return
      * @throws SiteWhereException
      */
-    public static List<DeviceMeasurementsCreateRequest> asApiDeviceMeasurementsCreateRequests(
-	    List<GDeviceMeasurementsCreateRequest> grpcs) throws SiteWhereException {
-	List<DeviceMeasurementsCreateRequest> api = new ArrayList<DeviceMeasurementsCreateRequest>();
-	for (GDeviceMeasurementsCreateRequest grpc : grpcs) {
-	    api.add(EventModelConverter.asApiDeviceMeasurementsCreateRequest(grpc));
+    public static List<DeviceMeasurementCreateRequest> asApiDeviceMeasurementCreateRequests(
+	    List<GDeviceMeasurementCreateRequest> grpcs) throws SiteWhereException {
+	List<DeviceMeasurementCreateRequest> api = new ArrayList<DeviceMeasurementCreateRequest>();
+	for (GDeviceMeasurementCreateRequest grpc : grpcs) {
+	    api.add(EventModelConverter.asApiDeviceMeasurementCreateRequest(grpc));
 	}
 	return api;
     }
 
     /**
-     * Convert device measurements create requests from API to GRPC.
+     * Convert device measurement create requests from API to GRPC.
      * 
      * @param apis
      * @return
      * @throws SiteWhereException
      */
-    public static List<GDeviceMeasurementsCreateRequest> asGrpcDeviceMeasurementsCreateRequests(
-	    List<IDeviceMeasurementsCreateRequest> apis) throws SiteWhereException {
-	List<GDeviceMeasurementsCreateRequest> grpcs = new ArrayList<GDeviceMeasurementsCreateRequest>();
-	for (IDeviceMeasurementsCreateRequest api : apis) {
-	    grpcs.add(EventModelConverter.asGrpcDeviceMeasurementsCreateRequest(api));
+    public static List<GDeviceMeasurementCreateRequest> asGrpcDeviceMeasurementsCreateRequests(
+	    List<IDeviceMeasurementCreateRequest> apis) throws SiteWhereException {
+	List<GDeviceMeasurementCreateRequest> grpcs = new ArrayList<GDeviceMeasurementCreateRequest>();
+	for (IDeviceMeasurementCreateRequest api : apis) {
+	    grpcs.add(EventModelConverter.asGrpcDeviceMeasurementCreateRequest(api));
 	}
 	return grpcs;
     }
@@ -403,39 +405,41 @@ public class EventModelConverter {
      * @return
      * @throws SiteWhereException
      */
-    public static ISearchResults<IDeviceMeasurements> asApiDeviceMeasurementsSearchResults(
-	    GDeviceMeasurementsSearchResults response) throws SiteWhereException {
-	List<IDeviceMeasurements> results = new ArrayList<IDeviceMeasurements>();
-	for (GDeviceMeasurements grpc : response.getMeasurementsList()) {
-	    results.add(EventModelConverter.asApiDeviceMeasurements(grpc));
+    public static ISearchResults<IDeviceMeasurement> asApiDeviceMeasurementSearchResults(
+	    GDeviceMeasurementSearchResults response) throws SiteWhereException {
+	List<IDeviceMeasurement> results = new ArrayList<IDeviceMeasurement>();
+	for (GDeviceMeasurement grpc : response.getMeasurementsList()) {
+	    results.add(EventModelConverter.asApiDeviceMeasurement(grpc));
 	}
-	return new SearchResults<IDeviceMeasurements>(results, response.getCount());
+	return new SearchResults<IDeviceMeasurement>(results, response.getCount());
     }
 
     /**
-     * Convert device measurements event from GRPC to API.
+     * Convert device measurement event from GRPC to API.
      * 
      * @param grpc
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceMeasurements asApiDeviceMeasurements(GDeviceMeasurements grpc) throws SiteWhereException {
-	DeviceMeasurements api = new DeviceMeasurements();
-	api.getMeasurements().putAll(grpc.getMeasurementsMap());
+    public static DeviceMeasurement asApiDeviceMeasurement(GDeviceMeasurement grpc) throws SiteWhereException {
+	DeviceMeasurement api = new DeviceMeasurement();
+	api.setName(grpc.getName());
+	api.setValue(grpc.getValue());
 	EventModelConverter.copyApiDeviceEvent(grpc.getEvent(), api);
 	return api;
     }
 
     /**
-     * Convert device measurements event from API to GRPC.
+     * Convert device measurement event from API to GRPC.
      * 
      * @param api
      * @return
      * @throws SiteWhereException
      */
-    public static GDeviceMeasurements asGrpcDeviceMeasurements(IDeviceMeasurements api) throws SiteWhereException {
-	GDeviceMeasurements.Builder grpc = GDeviceMeasurements.newBuilder();
-	grpc.putAllMeasurements(api.getMeasurements());
+    public static GDeviceMeasurement asGrpcDeviceMeasurement(IDeviceMeasurement api) throws SiteWhereException {
+	GDeviceMeasurement.Builder grpc = GDeviceMeasurement.newBuilder();
+	grpc.setName(api.getName());
+	grpc.setValue(api.getValue());
 	grpc.setEvent(EventModelConverter.createGrpcDeviceEvent(api));
 	return grpc.build();
     }
@@ -447,11 +451,11 @@ public class EventModelConverter {
      * @return
      * @throws SiteWhereException
      */
-    public static List<DeviceMeasurements> asApiDeviceMeasurements(List<GDeviceMeasurements> grpcs)
+    public static List<DeviceMeasurement> asApiDeviceMeasurements(List<GDeviceMeasurement> grpcs)
 	    throws SiteWhereException {
-	List<DeviceMeasurements> api = new ArrayList<DeviceMeasurements>();
-	for (GDeviceMeasurements grpc : grpcs) {
-	    api.add(EventModelConverter.asApiDeviceMeasurements(grpc));
+	List<DeviceMeasurement> api = new ArrayList<DeviceMeasurement>();
+	for (GDeviceMeasurement grpc : grpcs) {
+	    api.add(EventModelConverter.asApiDeviceMeasurement(grpc));
 	}
 	return api;
     }
@@ -463,11 +467,11 @@ public class EventModelConverter {
      * @return
      * @throws SiteWhereException
      */
-    public static List<GDeviceMeasurements> asGrpcDeviceMeasurements(List<IDeviceMeasurements> apis)
+    public static List<GDeviceMeasurement> asGrpcDeviceMeasurements(List<IDeviceMeasurement> apis)
 	    throws SiteWhereException {
-	List<GDeviceMeasurements> grpcs = new ArrayList<GDeviceMeasurements>();
-	for (IDeviceMeasurements api : apis) {
-	    grpcs.add(EventModelConverter.asGrpcDeviceMeasurements(api));
+	List<GDeviceMeasurement> grpcs = new ArrayList<GDeviceMeasurement>();
+	for (IDeviceMeasurement api : apis) {
+	    grpcs.add(EventModelConverter.asGrpcDeviceMeasurement(api));
 	}
 	return grpcs;
     }
@@ -1464,7 +1468,7 @@ public class EventModelConverter {
     public static DeviceStateChangeCreateRequest asApiDeviceStateChangeCreateRequest(
 	    GDeviceStateChangeCreateRequest grpc) throws SiteWhereException {
 	DeviceStateChangeCreateRequest api = new DeviceStateChangeCreateRequest();
-	api.setCategory(grpc.getCategory());
+	api.setAttribute(grpc.getAttribute());
 	api.setType(grpc.getType());
 	api.setPreviousState(grpc.hasPreviousState() ? grpc.getPreviousState().getValue() : null);
 	api.setNewState(grpc.hasNewState() ? grpc.getNewState().getValue() : null);
@@ -1482,7 +1486,7 @@ public class EventModelConverter {
     public static GDeviceStateChangeCreateRequest asGrpcDeviceStateChangeCreateRequest(
 	    IDeviceStateChangeCreateRequest api) throws SiteWhereException {
 	GDeviceStateChangeCreateRequest.Builder grpc = GDeviceStateChangeCreateRequest.newBuilder();
-	grpc.setCategory(api.getCategory());
+	grpc.setAttribute(api.getAttribute());
 	grpc.setType(api.getType());
 	if (api.getPreviousState() != null) {
 	    grpc.setPreviousState(GOptionalString.newBuilder().setValue(api.getPreviousState()));
@@ -1551,7 +1555,7 @@ public class EventModelConverter {
      */
     public static DeviceStateChange asApiDeviceStateChange(GDeviceStateChange grpc) throws SiteWhereException {
 	DeviceStateChange api = new DeviceStateChange();
-	api.setCategory(grpc.getCategory());
+	api.setAttribute(grpc.getAttribute());
 	api.setType(grpc.getType());
 	api.setPreviousState(grpc.hasPreviousState() ? grpc.getPreviousState().getValue() : null);
 	api.setNewState(grpc.hasNewState() ? grpc.getNewState().getValue() : null);
@@ -1568,7 +1572,7 @@ public class EventModelConverter {
      */
     public static GDeviceStateChange asGrpcDeviceStateChange(IDeviceStateChange api) throws SiteWhereException {
 	GDeviceStateChange.Builder grpc = GDeviceStateChange.newBuilder();
-	grpc.setCategory(api.getCategory());
+	grpc.setAttribute(api.getAttribute());
 	grpc.setType(api.getType());
 	if (api.getPreviousState() != null) {
 	    grpc.setPreviousState(GOptionalString.newBuilder().setValue(api.getPreviousState()));
@@ -1623,7 +1627,7 @@ public class EventModelConverter {
 	    throws SiteWhereException {
 	DeviceEventBatch api = new DeviceEventBatch();
 	api.setHardwareId(grpc.getHardwareId());
-	api.setMeasurements(EventModelConverter.asApiDeviceMeasurementsCreateRequests(grpc.getMeasurementsList()));
+	api.setMeasurements(EventModelConverter.asApiDeviceMeasurementCreateRequests(grpc.getMeasurementsList()));
 	api.setAlerts(EventModelConverter.asApiDeviceAlertCreateRequests(grpc.getAlertsList()));
 	api.setLocations(EventModelConverter.asApiDeviceLocationCreateRequests(grpc.getLocationsList()));
 	return api;
@@ -1694,8 +1698,8 @@ public class EventModelConverter {
 	case LOCATION: {
 	    return EventModelConverter.asApiDeviceLocationCreateRequest(grpc.getLocation());
 	}
-	case MEASUREMENTS: {
-	    return EventModelConverter.asApiDeviceMeasurementsCreateRequest(grpc.getMeasurements());
+	case MEASUREMENT: {
+	    return EventModelConverter.asApiDeviceMeasurementCreateRequest(grpc.getMeasurement());
 	}
 	case STREAMDATA: {
 	    return EventModelConverter.asApiDeviceStreamDataCreateRequest(grpc.getStreamData());
@@ -1728,9 +1732,9 @@ public class EventModelConverter {
 	    throws SiteWhereException {
 	GAnyDeviceEventCreateRequest.Builder grpc = GAnyDeviceEventCreateRequest.newBuilder();
 	switch (api.getEventType()) {
-	case Measurements:
-	    grpc.setMeasurements(
-		    EventModelConverter.asGrpcDeviceMeasurementsCreateRequest((IDeviceMeasurementsCreateRequest) api));
+	case Measurement:
+	    grpc.setMeasurement(
+		    EventModelConverter.asGrpcDeviceMeasurementCreateRequest((IDeviceMeasurementCreateRequest) api));
 	    break;
 	case Alert:
 	    grpc.setAlert(EventModelConverter.asGrpcDeviceAlertCreateRequest((IDeviceAlertCreateRequest) api));
@@ -1780,8 +1784,8 @@ public class EventModelConverter {
 	case LOCATION: {
 	    return EventModelConverter.asApiDeviceLocation(grpc.getLocation());
 	}
-	case MEASUREMENTS: {
-	    return EventModelConverter.asApiDeviceMeasurements(grpc.getMeasurements());
+	case MEASUREMENT: {
+	    return EventModelConverter.asApiDeviceMeasurement(grpc.getMeasurement());
 	}
 	case STREAMDATA: {
 	    return EventModelConverter.asApiDeviceStreamData(grpc.getStreamData());
@@ -1828,8 +1832,8 @@ public class EventModelConverter {
     public static GAnyDeviceEvent asGrpcGenericDeviceEvent(IDeviceEvent api) throws SiteWhereException {
 	GAnyDeviceEvent.Builder grpc = GAnyDeviceEvent.newBuilder();
 	switch (api.getEventType()) {
-	case Measurements:
-	    grpc.setMeasurements(EventModelConverter.asGrpcDeviceMeasurements((IDeviceMeasurements) api));
+	case Measurement:
+	    grpc.setMeasurement(EventModelConverter.asGrpcDeviceMeasurement((IDeviceMeasurement) api));
 	    break;
 	case Alert:
 	    grpc.setAlert(EventModelConverter.asGrpcDeviceAlert((IDeviceAlert) api));

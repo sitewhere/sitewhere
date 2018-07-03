@@ -305,8 +305,11 @@ def createMeasurements = { assn, start ->
 			fuel = 0
 		}
 		
-		def newmx = eventBuilder.newMeasurements() measurement('engine.temperature', temp) measurement('fuel.level', fuel) on(new Date(current)) trackState()
-		eventBuilder.forAssignment assn.token persist newmx
+		def fuellevel = eventBuilder.newMeasurements() measurement('fuel.level', fuel) on(new Date(current)) trackState()
+		eventBuilder.forAssignment assn.token persist fuellevel
+		
+		def engtemp = eventBuilder.newMeasurements() measurement('engine.temperature', temp) on(new Date(current)) trackState()
+		eventBuilder.forAssignment assn.token persist engtemp
 		
 		if (temp > warnTemp) {
 			def alert = eventBuilder.newAlert 'engine.overheat', 'Engine temperature is at top of operating range.' on(new Date(current)) warning() trackState()

@@ -35,7 +35,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
@@ -142,14 +142,14 @@ public class EventHubOutboundEventProcessor extends FilteredOutboundConnector {
     }
 
     /*
-     * @see com.sitewhere.outbound.FilteredOutboundEventProcessor#
-     * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceEventContext,
-     * com.sitewhere.spi.device.event.IDeviceMeasurements)
+     * @see
+     * com.sitewhere.connectors.FilteredOutboundConnector#onMeasurementNotFiltered(
+     * com.sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceMeasurement)
      */
     @Override
-    public void onMeasurementsNotFiltered(IDeviceEventContext context, IDeviceMeasurements measurements)
-	    throws SiteWhereException {
-	sendEvent(measurements);
+    public void onMeasurementNotFiltered(IDeviceEventContext context, IDeviceMeasurement mx) throws SiteWhereException {
+	sendEvent(mx);
     }
 
     /*

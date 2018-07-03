@@ -20,7 +20,7 @@ import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
-import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.device.event.DeviceStreamData;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
@@ -43,7 +43,7 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.group.IDeviceGroup;
@@ -246,7 +246,7 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
      * com.sitewhere .spi.device.event.IDeviceMeasurements)
      */
     @Override
-    public byte[] encodeDeviceMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
+    public byte[] encodeDeviceMeasurements(IDeviceMeasurement measurements) throws SiteWhereException {
 	return MarshalUtils.marshalJson(measurements);
     }
 
@@ -257,8 +257,8 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
      * byte[])
      */
     @Override
-    public DeviceMeasurements decodeDeviceMeasurements(byte[] payload) throws SiteWhereException {
-	return MarshalUtils.unmarshalJson(payload, DeviceMeasurements.class);
+    public DeviceMeasurement decodeDeviceMeasurements(byte[] payload) throws SiteWhereException {
+	return MarshalUtils.unmarshalJson(payload, DeviceMeasurement.class);
     }
 
     /*

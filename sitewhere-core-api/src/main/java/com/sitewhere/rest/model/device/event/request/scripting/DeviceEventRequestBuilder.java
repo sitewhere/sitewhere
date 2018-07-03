@@ -10,7 +10,7 @@ package com.sitewhere.rest.model.device.event.request.scripting;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
-import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
 import com.sitewhere.rest.model.device.event.scripting.DeviceEventSupport;
 import com.sitewhere.rest.model.search.device.DeviceCommandSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
@@ -44,8 +44,8 @@ public class DeviceEventRequestBuilder {
 	return new DeviceLocationCreateRequest.Builder(latitude, longitude);
     }
 
-    public DeviceMeasurementsCreateRequest.Builder newMeasurements() {
-	return new DeviceMeasurementsCreateRequest.Builder();
+    public DeviceMeasurementCreateRequest.Builder newMeasurements() {
+	return new DeviceMeasurementCreateRequest.Builder();
     }
 
     public DeviceAlertCreateRequest.Builder newAlert(String type, String message) {
@@ -126,9 +126,9 @@ public class DeviceEventRequestBuilder {
 	    return this;
 	}
 
-	public AssignmentScope persist(DeviceMeasurementsCreateRequest.Builder builder) throws SiteWhereException {
-	    DeviceMeasurementsCreateRequest request = builder.build();
-	    events.addDeviceMeasurements(getDeviceAssignment().getId(), request);
+	public AssignmentScope persist(DeviceMeasurementCreateRequest.Builder builder) throws SiteWhereException {
+	    DeviceMeasurementCreateRequest request = builder.build();
+	    events.addDeviceMeasurement(getDeviceAssignment().getId(), request);
 	    return this;
 	}
 
