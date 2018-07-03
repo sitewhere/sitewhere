@@ -25,8 +25,8 @@ service DeviceState {
 	// Get devicestate by device assignment id.
 	rpc GetDeviceStateByDeviceAssignmentId (GGetDeviceStateByDeviceAssignmentIdRequest) returns (GGetDeviceStateByDeviceAssignmentIdResponse) {}
 	
-	// List device states that meet criteria.
-	rpc ListDeviceStates (GListDeviceStatesRequest) returns (GListDeviceStatesResponse) {}
+	// Search for device states that meet criteria.
+	rpc SearchDeviceStates (GSearchDeviceStatesRequest) returns (GSearchDeviceStatesResponse) {}
 	
 	// Update existing device state.
 	rpc UpdateDeviceState (GUpdateDeviceStateRequest) returns (GUpdateDeviceStateResponse) {}
@@ -69,13 +69,13 @@ message GGetDeviceStateByDeviceAssignmentIdResponse {
 	com.sitewhere.grpc.model.GDeviceState deviceState = 1;
 }
 	
-// Request for listing device states that meet criteria.
-message GListDeviceStatesRequest {
+// Request for searching for device states that meet criteria.
+message GSearchDeviceStatesRequest {
 	com.sitewhere.grpc.model.GDeviceStateSearchCriteria criteria = 1;
 }
 	
-// Response for listing device states that meet criteria.
-message GListDeviceStatesResponse {
+// Response for searching for device states that meet criteria.
+message GSearchDeviceStatesResponse {
 	com.sitewhere.grpc.model.GDeviceStateSearchResults results = 1;
 }
 	

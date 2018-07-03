@@ -10,7 +10,7 @@ package com.sitewhere.device.marshaling;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sitewhere.asset.InvalidAsset;
+import com.sitewhere.device.marshaling.invalid.InvalidAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceAssignment;
 import com.sitewhere.spi.SiteWhereException;

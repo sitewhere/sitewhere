@@ -32,7 +32,8 @@ message GDeviceStateSearchCriteria {
 	repeated GUUID customerId = 3;
 	repeated GUUID areaId = 4;
 	repeated GUUID assetId = 5;
-	GPaging paging = 6;
+	int32 pageNumber = 6;
+	int32 pageSize = 7;
 }
 
 // Results for device state search.

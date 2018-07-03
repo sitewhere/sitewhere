@@ -164,21 +164,33 @@ public class MongoDeviceStateManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see
-     * com.sitewhere.spi.device.state.IDeviceStateManagement#listDeviceStates(com.
+     * com.sitewhere.spi.device.state.IDeviceStateManagement#searchDeviceStates(com.
      * sitewhere.spi.search.device.IDeviceStateSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceState> listDeviceStates(IDeviceStateSearchCriteria criteria)
+    public ISearchResults<IDeviceState> searchDeviceStates(IDeviceStateSearchCriteria criteria)
 	    throws SiteWhereException {
 	MongoCollection<Document> states = getMongoClient().getDeviceStatesCollection();
-	Document dbCriteria = new Document();
+	Document query = new Document();
 	if (criteria.getLastInteractionDateBefore() != null) {
 	    Document dateClause = new Document();
 	    dateClause.append("$lte", criteria.getLastInteractionDateBefore());
-	    dbCriteria.put(MongoDeviceState.PROP_LAST_INTERACTION_DATE, dateClause);
+	    query.put(MongoDeviceState.PROP_LAST_INTERACTION_DATE, dateClause);
+	}
+	if ((criteria.getDeviceTypeIds() != null) && (criteria.getDeviceTypeIds().size() > 0)) {
+	    query.append(MongoDeviceState.PROP_DEVICE_TYPE_ID, new Document("$in", criteria.getDeviceTypeIds()));
+	}
+	if ((criteria.getCustomerIds() != null) && (criteria.getCustomerIds().size() > 0)) {
+	    query.append(MongoDeviceState.PROP_CUSTOMER_ID, new Document("$in", criteria.getCustomerIds()));
+	}
+	if ((criteria.getAreaIds() != null) && (criteria.getAreaIds().size() > 0)) {
+	    query.append(MongoDeviceState.PROP_AREA_ID, new Document("$in", criteria.getAreaIds()));
+	}
+	if ((criteria.getAssetIds() != null) && (criteria.getAssetIds().size() > 0)) {
+	    query.append(MongoDeviceState.PROP_ASSET_ID, new Document("$in", criteria.getAssetIds()));
 	}
 	Document sort = new Document(MongoDeviceState.PROP_LAST_INTERACTION_DATE, 1);
-	return MongoPersistence.search(IDeviceState.class, states, dbCriteria, sort, criteria, LOOKUP);
+	return MongoPersistence.search(IDeviceState.class, states, query, sort, criteria, LOOKUP);
     }
 
     /*

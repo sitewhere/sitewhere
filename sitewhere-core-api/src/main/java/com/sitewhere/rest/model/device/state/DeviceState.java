@@ -8,6 +8,7 @@
 package com.sitewhere.rest.model.device.state;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -59,10 +60,10 @@ public class DeviceState implements IDeviceState {
     private UUID lastLocationEventId;
 
     /** Map of last measurement event ids by mx id */
-    private Map<String, UUID> lastMeasurementEventIds;
+    private Map<String, UUID> lastMeasurementEventIds = new HashMap<>();
 
     /** Map of last alert event ids by alert type */
-    private Map<String, UUID> lastAlertEventIds;
+    private Map<String, UUID> lastAlertEventIds = new HashMap<>();
 
     /*
      * @see com.sitewhere.spi.device.state.IDeviceState#getId()

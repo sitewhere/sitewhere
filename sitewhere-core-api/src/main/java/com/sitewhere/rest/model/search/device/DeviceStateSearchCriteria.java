@@ -36,6 +36,10 @@ public class DeviceStateSearchCriteria extends SearchCriteria implements IDevice
     /** Asset ids to be included */
     private List<UUID> assetIds;
 
+    public DeviceStateSearchCriteria() {
+	super();
+    }
+
     public DeviceStateSearchCriteria(int pageNumber, int pageSize) {
 	super(pageNumber, pageSize);
     }

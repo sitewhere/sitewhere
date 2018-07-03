@@ -7,18 +7,23 @@
  */
 package com.sitewhere.grpc.model.converter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.sitewhere.grpc.model.CommonModel.GUUID;
 import com.sitewhere.grpc.model.DeviceStateModel.GDeviceState;
 import com.sitewhere.grpc.model.DeviceStateModel.GDeviceStateCreateRequest;
 import com.sitewhere.grpc.model.DeviceStateModel.GDeviceStateSearchCriteria;
+import com.sitewhere.grpc.model.DeviceStateModel.GDeviceStateSearchResults;
 import com.sitewhere.rest.model.device.state.DeviceState;
 import com.sitewhere.rest.model.device.state.request.DeviceStateCreateRequest;
+import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.DeviceStateSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.state.IDeviceState;
 import com.sitewhere.spi.device.state.request.IDeviceStateCreateRequest;
+import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IDeviceStateSearchCriteria;
 
 /**
@@ -46,7 +51,8 @@ public class DeviceStateModelConverter {
 	api.setAssetId(CommonModelConverter.asApiUuid(grpc.getAssetId()));
 	api.setLastInteractionDate(CommonModelConverter.asApiDate(grpc.getLastInteractionDate()));
 	api.setPresenceMissingDate(CommonModelConverter.asApiDate(grpc.getPresenceMissingDate()));
-	api.setLastLocationEventId(CommonModelConverter.asApiUuid(grpc.getLastLocationEventId()));
+	api.setLastLocationEventId(
+		grpc.hasLastLocationEventId() ? CommonModelConverter.asApiUuid(grpc.getLastLocationEventId()) : null);
 
 	Map<String, GUUID> lastMeasurementIds = grpc.getLastMeasurementEventIdsMap();
 	for (String key : lastMeasurementIds.keySet()) {
@@ -121,8 +127,7 @@ public class DeviceStateModelConverter {
      */
     public static DeviceStateSearchCriteria asApiDeviceStateSearchCriteria(GDeviceStateSearchCriteria grpc)
 	    throws SiteWhereException {
-	DeviceStateSearchCriteria api = new DeviceStateSearchCriteria(grpc.getPaging().getPageNumber(),
-		grpc.getPaging().getPageSize());
+	DeviceStateSearchCriteria api = new DeviceStateSearchCriteria();
 	api.setLastInteractionDateBefore(CommonModelConverter.asApiDate(grpc.getLastInteractionDateBefore()));
 	if (grpc.getDeviceTypeIdCount() > 0) {
 	    api.setDeviceTypeIds(CommonModelConverter.asApiUuids(grpc.getDeviceTypeIdList()));
@@ -136,6 +141,8 @@ public class DeviceStateModelConverter {
 	if (grpc.getAssetIdCount() > 0) {
 	    api.setAssetIds(CommonModelConverter.asApiUuids(grpc.getAssetIdList()));
 	}
+	api.setPageNumber(grpc.getPageNumber());
+	api.setPageSize(grpc.getPageSize());
 	return api;
     }
 
@@ -162,8 +169,25 @@ public class DeviceStateModelConverter {
 	if (api.getAssetIds() != null) {
 	    grpc.addAllAssetId(CommonModelConverter.asGrpcUuids(api.getAssetIds()));
 	}
-	grpc.setPaging(CommonModelConverter.asGrpcPaging(api));
+	grpc.setPageNumber(api.getPageNumber());
+	grpc.setPageSize(api.getPageSize());
 	return grpc.build();
+    }
+
+    /**
+     * Convert device state search results from GRPC to API.
+     * 
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ISearchResults<IDeviceState> asApiDeviceStateSearchResults(GDeviceStateSearchResults response)
+	    throws SiteWhereException {
+	List<IDeviceState> results = new ArrayList<IDeviceState>();
+	for (GDeviceState grpc : response.getDeviceStatesList()) {
+	    results.add(DeviceStateModelConverter.asApiDeviceState(grpc));
+	}
+	return new SearchResults<IDeviceState>(results, response.getCount());
     }
 
     /**

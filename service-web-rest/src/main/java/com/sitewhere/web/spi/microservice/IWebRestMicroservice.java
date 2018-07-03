@@ -11,6 +11,7 @@ import com.sitewhere.grpc.client.spi.client.IAssetManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IBatchManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.IDeviceStateApiDemux;
 import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiDemux;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiDemux;
 import com.sitewhere.grpc.client.spi.provider.ITenantManagementDemuxProvider;
@@ -68,6 +69,13 @@ public interface IWebRestMicroservice<T extends IFunctionIdentifier>
      * @return
      */
     public ILabelGenerationApiDemux getLabelGenerationApiDemux();
+
+    /**
+     * Device state API access via GRPC channel.
+     * 
+     * @return
+     */
+    public IDeviceStateApiDemux getDeviceStateApiDemux();
 
     /**
      * Get microservice management coordinator.

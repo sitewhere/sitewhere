@@ -11,6 +11,7 @@ import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
 import com.sitewhere.grpc.client.asset.AssetManagementApiDemux;
 import com.sitewhere.grpc.client.batch.BatchManagementApiDemux;
 import com.sitewhere.grpc.client.device.DeviceManagementApiDemux;
+import com.sitewhere.grpc.client.devicestate.DeviceStateApiDemux;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiDemux;
 import com.sitewhere.grpc.client.label.LabelGenerationApiDemux;
 import com.sitewhere.grpc.client.schedule.ScheduleManagementApiDemux;
@@ -18,6 +19,7 @@ import com.sitewhere.grpc.client.spi.client.IAssetManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IBatchManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.IDeviceStateApiDemux;
 import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiDemux;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiDemux;
@@ -74,6 +76,9 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 
     /** Label generation API demux */
     private ILabelGenerationApiDemux labelGenerationApiDemux;
+
+    /** Device state API demux */
+    private IDeviceStateApiDemux deviceStateApiDemux;
 
     /** Microservice management coordinator */
     private IMicroserviceManagementCoordinator microserviceManagementCoordinator;
@@ -188,6 +193,9 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 	// Initialize label generation API demux.
 	init.addInitializeStep(this, getLabelGenerationApiDemux(), true);
 
+	// Initialize device state API demux.
+	init.addInitializeStep(this, getDeviceStateApiDemux(), true);
+
 	// Initialize microservice management coordinator.
 	init.addInitializeStep(this, getMicroserviceManagementCoordinator(), true);
 
@@ -224,6 +232,9 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 
 	// Label generation.
 	this.labelGenerationApiDemux = new LabelGenerationApiDemux();
+
+	// Device state.
+	this.deviceStateApiDemux = new DeviceStateApiDemux();
 
 	// Microservice management coordinator.
 	this.microserviceManagementCoordinator = new MicroserviceManagementCoordinator();
@@ -264,6 +275,9 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 
 	// Start label generation API demux.
 	start.addStartStep(this, getLabelGenerationApiDemux(), true);
+
+	// Start device state API demux.
+	start.addStartStep(this, getDeviceStateApiDemux(), true);
 
 	// Start microservice management coordinator.
 	start.addStartStep(this, getMicroserviceManagementCoordinator(), true);
@@ -306,6 +320,9 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 
 	// Stop label generation API demux.
 	stop.addStopStep(this, getLabelGenerationApiDemux());
+
+	// Stop device state API demux.
+	stop.addStopStep(this, getDeviceStateApiDemux());
 
 	// Stop microservice management coordinator.
 	stop.addStopStep(this, getMicroserviceManagementCoordinator());
@@ -416,6 +433,19 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 
     public void setLabelGenerationApiDemux(ILabelGenerationApiDemux labelGenerationApiDemux) {
 	this.labelGenerationApiDemux = labelGenerationApiDemux;
+    }
+
+    /*
+     * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
+     * getDeviceStateApiDemux()
+     */
+    @Override
+    public IDeviceStateApiDemux getDeviceStateApiDemux() {
+	return deviceStateApiDemux;
+    }
+
+    public void setDeviceStateApiDemux(IDeviceStateApiDemux deviceStateApiDemux) {
+	this.deviceStateApiDemux = deviceStateApiDemux;
     }
 
     /*

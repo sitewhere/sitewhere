@@ -50,13 +50,14 @@ public interface IDeviceStateManagement extends ITenantEngineLifecycleComponent 
     public IDeviceState getDeviceStateByDeviceAssignmentId(UUID assignmentId) throws SiteWhereException;
 
     /**
-     * List device states that match the given criteria.
+     * Search for device states that match the given criteria.
      * 
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IDeviceState> listDeviceStates(IDeviceStateSearchCriteria criteria) throws SiteWhereException;
+    public ISearchResults<IDeviceState> searchDeviceStates(IDeviceStateSearchCriteria criteria)
+	    throws SiteWhereException;
 
     /**
      * Update existing device state.

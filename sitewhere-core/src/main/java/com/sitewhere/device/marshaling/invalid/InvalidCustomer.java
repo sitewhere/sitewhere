@@ -5,22 +5,22 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.asset;
+package com.sitewhere.device.marshaling.invalid;
 
-import com.sitewhere.rest.model.asset.AssetType;
+import com.sitewhere.rest.model.customer.Customer;
 
 /**
- * Used to show broken link if referenced asset type is deleted.
+ * Used to show broken link if referenced customer is deleted.
  * 
  * @author Derek
  */
-public class InvalidAssetType extends AssetType {
+public class InvalidCustomer extends Customer {
 
     /** Serial version UID */
-    private static final long serialVersionUID = -376943314147215826L;
+    private static final long serialVersionUID = 4008685314250546242L;
 
-    public InvalidAssetType() {
-	setName("Missing Asset Type");
+    public InvalidCustomer() {
+	setName("Missing Customer");
 	setImageUrl("https://s3.amazonaws.com/sitewhere-demo/broken-link.png");
     }
 }
