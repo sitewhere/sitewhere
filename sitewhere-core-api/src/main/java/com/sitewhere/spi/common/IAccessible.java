@@ -27,11 +27,4 @@ public interface IAccessible {
      * @return
      */
     public String getDescription();
-
-    /**
-     * Get URL for image.
-     * 
-     * @return
-     */
-    public String getImageUrl();
 }

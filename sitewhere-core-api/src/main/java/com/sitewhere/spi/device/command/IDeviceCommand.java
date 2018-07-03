@@ -7,18 +7,17 @@
  */
 package com.sitewhere.spi.device.command;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
-import com.sitewhere.spi.common.IMetadataProviderEntity;
+import com.sitewhere.spi.common.ISiteWhereEntity;
 
 /**
  * A parameterized command issued to a device.
  * 
  * @author Derek
  */
-public interface IDeviceCommand extends IMetadataProviderEntity, Serializable {
+public interface IDeviceCommand extends ISiteWhereEntity {
 
     /**
      * Get unique id of parent device type.

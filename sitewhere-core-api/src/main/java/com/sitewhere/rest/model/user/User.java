@@ -16,7 +16,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.user.AccountStatus;
@@ -28,7 +28,7 @@ import com.sitewhere.spi.user.IUser;
  * @author Derek Adams
  */
 @JsonInclude(Include.NON_NULL)
-public class User extends MetadataProviderEntity implements IUser {
+public class User extends SiteWhereEntity implements IUser {
 
     /** For {@link Serializable} */
     private static final long serialVersionUID = -3322129570954465956L;
@@ -184,7 +184,7 @@ public class User extends MetadataProviderEntity implements IUser {
 	result.setLastLogin(input.getLastLogin());
 	result.setStatus(input.getStatus());
 	result.setAuthorities(new ArrayList<String>(input.getAuthorities()));
-	MetadataProviderEntity.copy(input, result);
+	SiteWhereEntity.copy(input, result);
 	return result;
     }
 }

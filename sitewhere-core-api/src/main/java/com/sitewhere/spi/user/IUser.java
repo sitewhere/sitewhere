@@ -7,18 +7,17 @@
  */
 package com.sitewhere.spi.user;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import com.sitewhere.spi.common.IMetadataProviderEntity;
+import com.sitewhere.spi.common.ISiteWhereEntity;
 
 /**
  * Interface for accessing user information.
  * 
  * @author Derek
  */
-public interface IUser extends IMetadataProviderEntity, Serializable {
+public interface IUser extends ISiteWhereEntity {
 
     /**
      * Get the username.

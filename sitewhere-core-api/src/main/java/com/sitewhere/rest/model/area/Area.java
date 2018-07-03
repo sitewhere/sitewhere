@@ -14,7 +14,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.Location;
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.spi.area.IArea;
 
 /**
@@ -23,7 +23,7 @@ import com.sitewhere.spi.area.IArea;
  * @author dadams
  */
 @JsonInclude(Include.NON_NULL)
-public class Area extends MetadataProviderEntity implements IArea {
+public class Area extends SiteWhereEntity implements IArea {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = -566693689485715028L;

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.spi.customer.ICustomerType;
 
 /**
@@ -19,7 +19,7 @@ import com.sitewhere.spi.customer.ICustomerType;
  * 
  * @author Derek
  */
-public class CustomerType extends MetadataProviderEntity implements ICustomerType {
+public class CustomerType extends SiteWhereEntity implements ICustomerType {
 
     /** Serial version UID */
     private static final long serialVersionUID = -2203663173210728449L;

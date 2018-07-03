@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.sitewhere.rest.model.batch.BatchOperation;
 import com.sitewhere.rest.model.batch.MarshaledBatchOperation;
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.IBatchOperation;
 
@@ -48,7 +48,7 @@ public class BatchOperationMarshalHelper {
 	operation.setProcessingStartedDate(source.getProcessingStartedDate());
 	operation.setProcessingEndedDate(source.getProcessingEndedDate());
 
-	MetadataProviderEntity.copy(source, operation);
+	SiteWhereEntity.copy(source, operation);
 	return operation;
     }
 }

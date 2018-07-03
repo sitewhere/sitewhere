@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sitewhere.rest.model.area.AreaType;
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.rest.model.device.marshaling.MarshaledAreaType;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IAreaType;
@@ -57,7 +57,7 @@ public class AreaTypeMarshalHelper {
 	type.setDescription(source.getDescription());
 	type.setIcon(source.getIcon());
 	type.setContainedAreaTypeIds(source.getContainedAreaTypeIds());
-	MetadataProviderEntity.copy(source, type);
+	SiteWhereEntity.copy(source, type);
 	if (isIncludeContainedAreaTypes()) {
 	    List<IAreaType> cats = new ArrayList<IAreaType>();
 	    for (UUID atid : source.getContainedAreaTypeIds()) {

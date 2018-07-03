@@ -7,18 +7,18 @@
  */
 package com.sitewhere.spi.device.group;
 
-import java.io.Serializable;
 import java.util.List;
 
 import com.sitewhere.spi.common.IAccessible;
-import com.sitewhere.spi.common.IMetadataProviderEntity;
+import com.sitewhere.spi.common.IImageProvider;
+import com.sitewhere.spi.common.ISiteWhereEntity;
 
 /**
  * Interface for a group of related devices.
  * 
  * @author Derek
  */
-public interface IDeviceGroup extends IMetadataProviderEntity, IAccessible, Serializable {
+public interface IDeviceGroup extends ISiteWhereEntity, IAccessible, IImageProvider {
 
     /**
      * Get list of roles associated with element.

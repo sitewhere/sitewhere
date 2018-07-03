@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.spi.area.IAreaType;
 
 /**
@@ -19,7 +19,7 @@ import com.sitewhere.spi.area.IAreaType;
  * 
  * @author Derek
  */
-public class AreaType extends MetadataProviderEntity implements IAreaType {
+public class AreaType extends SiteWhereEntity implements IAreaType {
 
     /** Serial version UID */
     private static final long serialVersionUID = -2894293965749361706L;

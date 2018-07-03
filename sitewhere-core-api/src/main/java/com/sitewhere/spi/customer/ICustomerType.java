@@ -7,11 +7,10 @@
  */
 package com.sitewhere.spi.customer;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
-import com.sitewhere.spi.common.IMetadataProviderEntity;
+import com.sitewhere.spi.common.ISiteWhereEntity;
 
 /**
  * Represents a domain-specific customer (device owner) type that can be used
@@ -19,7 +18,7 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
  * 
  * @author Derek
  */
-public interface ICustomerType extends IMetadataProviderEntity, Serializable {
+public interface ICustomerType extends ISiteWhereEntity {
 
     /**
      * Get the customer type name.

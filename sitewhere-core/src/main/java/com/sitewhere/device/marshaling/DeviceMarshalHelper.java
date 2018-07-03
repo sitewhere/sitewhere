@@ -10,7 +10,7 @@ package com.sitewhere.device.marshaling;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.marshaling.MarshaledDevice;
@@ -76,7 +76,7 @@ public class DeviceMarshalHelper {
 	result.setDeviceAssignmentId(source.getDeviceAssignmentId());
 	result.setParentDeviceId(source.getParentDeviceId());
 	result.setComments(source.getComments());
-	MetadataProviderEntity.copy(source, result);
+	SiteWhereEntity.copy(source, result);
 
 	// Copy device element mappings.
 	for (IDeviceElementMapping mapping : source.getDeviceElementMappings()) {

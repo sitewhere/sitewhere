@@ -7,20 +7,19 @@
  */
 package com.sitewhere.rest.model.common;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.common.IMetadataProviderEntity;
+import com.sitewhere.spi.common.ISiteWhereEntity;
 
 /**
  * Metadata provider that also contains SiteWhere entity information.
  * 
  * @author Derek Adams
  */
-public abstract class MetadataProviderEntity extends MetadataProvider implements IMetadataProviderEntity, Serializable {
+public abstract class SiteWhereEntity extends MetadataProvider implements ISiteWhereEntity {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = 1858151633970096161L;
@@ -108,7 +107,7 @@ public abstract class MetadataProviderEntity extends MetadataProvider implements
      * @param source
      * @param target
      */
-    public static void copy(IMetadataProviderEntity source, MetadataProviderEntity target) throws SiteWhereException {
+    public static void copy(ISiteWhereEntity source, SiteWhereEntity target) throws SiteWhereException {
 	target.setCreatedDate(source.getCreatedDate());
 	target.setCreatedBy(source.getCreatedBy());
 	target.setUpdatedDate(source.getUpdatedDate());

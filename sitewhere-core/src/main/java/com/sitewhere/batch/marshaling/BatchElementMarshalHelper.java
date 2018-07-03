@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.sitewhere.rest.model.batch.BatchElement;
 import com.sitewhere.rest.model.batch.MarshaledBatchElement;
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.IBatchElement;
 import com.sitewhere.spi.device.IDevice;
@@ -59,7 +59,7 @@ public class BatchElementMarshalHelper {
 	    }
 	}
 
-	MetadataProviderEntity.copy(source, element);
+	SiteWhereEntity.copy(source, element);
 	return element;
     }
 

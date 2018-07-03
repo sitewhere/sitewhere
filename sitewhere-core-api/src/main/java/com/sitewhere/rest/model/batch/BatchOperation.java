@@ -7,7 +7,6 @@
  */
 package com.sitewhere.rest.model.batch;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +15,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.spi.batch.BatchOperationStatus;
 import com.sitewhere.spi.batch.IBatchOperation;
@@ -27,7 +26,7 @@ import com.sitewhere.spi.batch.IBatchOperation;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class BatchOperation extends MetadataProviderEntity implements IBatchOperation, Serializable {
+public class BatchOperation extends SiteWhereEntity implements IBatchOperation {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = -228183022121018340L;

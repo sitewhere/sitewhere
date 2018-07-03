@@ -7,17 +7,16 @@
  */
 package com.sitewhere.spi.asset;
 
-import java.io.Serializable;
-
 import com.sitewhere.spi.common.IAccessible;
-import com.sitewhere.spi.common.IMetadataProviderEntity;
+import com.sitewhere.spi.common.IImageProvider;
+import com.sitewhere.spi.common.ISiteWhereEntity;
 
 /**
  * Information about a class of assets with common information.
  * 
  * @author Derek
  */
-public interface IAssetType extends IMetadataProviderEntity, IAccessible, Serializable {
+public interface IAssetType extends ISiteWhereEntity, IAccessible, IImageProvider {
 
     /**
      * Get category of asset type.

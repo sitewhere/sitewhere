@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.scheduling.ScheduledJobState;
 import com.sitewhere.spi.scheduling.ScheduledJobType;
@@ -24,7 +24,7 @@ import com.sitewhere.spi.scheduling.ScheduledJobType;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class ScheduledJob extends MetadataProviderEntity implements IScheduledJob {
+public class ScheduledJob extends SiteWhereEntity implements IScheduledJob {
 
     /** Serial version UID */
     private static final long serialVersionUID = -8440919585518011992L;

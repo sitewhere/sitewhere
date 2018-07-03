@@ -7,7 +7,6 @@
  */
 package com.sitewhere.rest.model.area;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -15,7 +14,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.Location;
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IZone;
 
@@ -25,7 +24,7 @@ import com.sitewhere.spi.area.IZone;
  * @author dadams
  */
 @JsonInclude(Include.NON_NULL)
-public class Zone extends MetadataProviderEntity implements IZone, Serializable {
+public class Zone extends SiteWhereEntity implements IZone {
 
     /** Serial version UID */
     private static final long serialVersionUID = 7526239754356991844L;
@@ -168,7 +167,7 @@ public class Zone extends MetadataProviderEntity implements IZone, Serializable 
 	result.setOpacity(input.getOpacity());
 	result.setBounds(Location.copy(input.getBounds()));
 
-	MetadataProviderEntity.copy(input, result);
+	SiteWhereEntity.copy(input, result);
 	return result;
     }
 }

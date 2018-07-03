@@ -7,6 +7,7 @@
  */
 package com.sitewhere.spi.common;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
@@ -15,7 +16,7 @@ import java.util.UUID;
  * 
  * @author Derek Adams
  */
-public interface ISiteWhereEntity {
+public interface ISiteWhereEntity extends IMetadataProvider, Serializable {
 
     /**
      * Get unique id.

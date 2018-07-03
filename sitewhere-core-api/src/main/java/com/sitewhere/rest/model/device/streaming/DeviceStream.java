@@ -9,7 +9,7 @@ package com.sitewhere.rest.model.device.streaming;
 
 import java.util.UUID;
 
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 
@@ -18,7 +18,7 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
  * 
  * @author Derek
  */
-public class DeviceStream extends MetadataProviderEntity implements IDeviceStream {
+public class DeviceStream extends SiteWhereEntity implements IDeviceStream {
 
     /** Serial version UID */
     private static final long serialVersionUID = -5721420122887571143L;
@@ -109,7 +109,7 @@ public class DeviceStream extends MetadataProviderEntity implements IDeviceStrea
 	result.setStreamId(input.getStreamId());
 	result.setContentType(input.getContentType());
 
-	MetadataProviderEntity.copy(input, result);
+	SiteWhereEntity.copy(input, result);
 	return result;
     }
 }

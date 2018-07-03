@@ -17,7 +17,7 @@ import com.sitewhere.device.marshaling.CommandHtmlHelper;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceTypeMarshalHelper;
 import com.sitewhere.rest.model.batch.request.BatchCommandForCriteriaRequest;
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceCommandInvocation;
 import com.sitewhere.rest.model.scheduling.ScheduledJob;
@@ -89,7 +89,7 @@ public class ScheduledJobMarshalHelper {
      */
     public ScheduledJob convert(IScheduledJob source) throws SiteWhereException {
 	ScheduledJob job = new ScheduledJob();
-	MetadataProviderEntity.copy(source, job);
+	SiteWhereEntity.copy(source, job);
 
 	job.setToken(source.getToken());
 	job.setScheduleToken(source.getScheduleToken());

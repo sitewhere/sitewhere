@@ -7,10 +7,9 @@
  */
 package com.sitewhere.spi.area;
 
-import java.io.Serializable;
 import java.util.UUID;
 
-import com.sitewhere.spi.common.IMetadataProviderEntity;
+import com.sitewhere.spi.common.ISiteWhereEntity;
 
 /**
  * An entity that represents a geographical area based on a previously defined
@@ -18,7 +17,7 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
  * 
  * @author Derek
  */
-public interface IArea extends IBoundedEntity, IMetadataProviderEntity, Serializable {
+public interface IArea extends IBoundedEntity, ISiteWhereEntity {
 
     /**
      * Get id of corresponding area type.

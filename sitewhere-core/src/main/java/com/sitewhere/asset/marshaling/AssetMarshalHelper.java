@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.sitewhere.rest.model.asset.Asset;
 import com.sitewhere.rest.model.asset.marshaling.MarshaledAsset;
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetManagement;
@@ -56,7 +56,7 @@ public class AssetMarshalHelper {
 	asset.setAssetTypeId(source.getAssetTypeId());
 	asset.setName(source.getName());
 	asset.setImageUrl(source.getImageUrl());
-	MetadataProviderEntity.copy(source, asset);
+	SiteWhereEntity.copy(source, asset);
 
 	if (isIncludeAssetType()) {
 	    IAssetType assetType = getAssetManagement().getAssetType(source.getAssetTypeId());

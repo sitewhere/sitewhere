@@ -7,11 +7,10 @@
  */
 package com.sitewhere.spi.area;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
-import com.sitewhere.spi.common.IMetadataProviderEntity;
+import com.sitewhere.spi.common.ISiteWhereEntity;
 
 /**
  * Represents a domain-specific area type that can be used for building a
@@ -19,7 +18,7 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
  * 
  * @author Derek
  */
-public interface IAreaType extends IMetadataProviderEntity, Serializable {
+public interface IAreaType extends ISiteWhereEntity {
 
     /**
      * Get the area type name.

@@ -31,7 +31,7 @@ import com.sitewhere.hbase.encoder.IPayloadMarshaler;
 import com.sitewhere.hbase.encoder.PayloadEncoding;
 import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
 import com.sitewhere.persistence.Persistence;
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.rest.model.search.Pager;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
@@ -256,7 +256,7 @@ public class HBaseUtils {
      * @return
      * @throws SiteWhereException
      */
-    public static <T extends MetadataProviderEntity> T delete(IHBaseContext context, IPayloadMarshaler marshaler,
+    public static <T extends SiteWhereEntity> T delete(IHBaseContext context, IPayloadMarshaler marshaler,
 	    byte[] tableName, String token, boolean force, IRowKeyBuilder builder, Class<T> type)
 	    throws SiteWhereException {
 	T existing = get(context, tableName, token, builder, type);

@@ -11,7 +11,7 @@ import java.util.Date;
 
 import org.bson.Document;
 
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.spi.common.ISiteWhereEntity;
 
 /**
@@ -64,7 +64,7 @@ public class MongoSiteWhereEntity {
      * @param source
      * @param target
      */
-    public static void fromDocument(Document source, MetadataProviderEntity target) {
+    public static void fromDocument(Document source, SiteWhereEntity target) {
 	Date createdDate = (Date) source.get(PROP_CREATED_DATE);
 	String createdBy = (String) source.get(PROP_CREATED_BY);
 	Date updatedDate = (Date) source.get(PROP_UPDATED_DATE);

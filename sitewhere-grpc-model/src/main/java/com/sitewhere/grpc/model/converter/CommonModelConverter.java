@@ -21,12 +21,12 @@ import com.sitewhere.grpc.model.CommonModel.GPaging;
 import com.sitewhere.grpc.model.CommonModel.GUUID;
 import com.sitewhere.grpc.model.CommonModel.GUserReference;
 import com.sitewhere.rest.model.common.Location;
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.ILocation;
-import com.sitewhere.spi.common.IMetadataProviderEntity;
+import com.sitewhere.spi.common.ISiteWhereEntity;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 
@@ -194,7 +194,7 @@ public class CommonModelConverter {
      * @return
      * @throws SiteWhereException
      */
-    public static GEntityInformation asGrpcEntityInformation(IMetadataProviderEntity api) throws SiteWhereException {
+    public static GEntityInformation asGrpcEntityInformation(ISiteWhereEntity api) throws SiteWhereException {
 	GEntityInformation.Builder grpc = CommonModel.GEntityInformation.newBuilder();
 	if (api.getCreatedBy() != null) {
 	    GUserReference.Builder ref = GUserReference.newBuilder();
@@ -219,8 +219,7 @@ public class CommonModelConverter {
      * @param grpc
      * @throws SiteWhereException
      */
-    public static void setEntityInformation(MetadataProviderEntity api, GEntityInformation grpc)
-	    throws SiteWhereException {
+    public static void setEntityInformation(SiteWhereEntity api, GEntityInformation grpc) throws SiteWhereException {
 	if (grpc != null) {
 	    api.setCreatedBy(grpc.hasCreatedBy() ? grpc.getCreatedBy().getUsername() : null);
 	    api.setCreatedDate(CommonModelConverter.asApiDate(grpc.getCreatedDate()));

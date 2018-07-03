@@ -7,12 +7,11 @@
  */
 package com.sitewhere.rest.model.device;
 
-import java.io.Serializable;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.IDeviceType;
@@ -24,7 +23,7 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceType extends MetadataProviderEntity implements IDeviceType, Serializable {
+public class DeviceType extends SiteWhereEntity implements IDeviceType {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = -2798346634280966544L;

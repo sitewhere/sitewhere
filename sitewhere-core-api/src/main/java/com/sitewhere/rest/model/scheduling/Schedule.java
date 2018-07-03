@@ -15,7 +15,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.TriggerType;
@@ -26,7 +26,7 @@ import com.sitewhere.spi.scheduling.TriggerType;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class Schedule extends MetadataProviderEntity implements ISchedule {
+public class Schedule extends SiteWhereEntity implements ISchedule {
 
     /** Serial version UID */
     private static final long serialVersionUID = -1316208751255296000L;

@@ -7,14 +7,13 @@
  */
 package com.sitewhere.rest.model.tenant;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -23,7 +22,7 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class Tenant extends MetadataProviderEntity implements ITenant, Serializable {
+public class Tenant extends SiteWhereEntity implements ITenant {
 
     /** Serial version UUID */
     private static final long serialVersionUID = -353489785570975056L;

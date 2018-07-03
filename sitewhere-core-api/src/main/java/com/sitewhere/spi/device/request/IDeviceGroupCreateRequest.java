@@ -12,13 +12,14 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitewhere.spi.common.IAccessible;
+import com.sitewhere.spi.common.IImageProvider;
 
 /**
  * Interface for arguments needed to create a device group.
  * 
  * @author Derek
  */
-public interface IDeviceGroupCreateRequest extends IAccessible, Serializable {
+public interface IDeviceGroupCreateRequest extends IAccessible, IImageProvider, Serializable {
 
     /**
      * Get the unique token.

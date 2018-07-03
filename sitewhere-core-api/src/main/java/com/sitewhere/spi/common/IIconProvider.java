@@ -8,9 +8,16 @@
 package com.sitewhere.spi.common;
 
 /**
- * Interface that merges metadata provider and base entity.
+ * Entity which may be represented visually with an icon and colored
  * 
- * @author Derek Adams
+ * @author Derek
  */
-public interface IMetadataProviderEntity extends IMetadataProvider, ISiteWhereEntity {
+public interface IIconProvider {
+
+    /**
+     * Icon for user interface.
+     * 
+     * @return
+     */
+    public String getIcon();
 }

@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import com.sitewhere.spi.common.IAccessible;
+import com.sitewhere.spi.common.IImageProvider;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 
@@ -19,7 +20,7 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
  * 
  * @author Derek
  */
-public interface IDeviceTypeCreateRequest extends IAccessible, Serializable {
+public interface IDeviceTypeCreateRequest extends IAccessible, IImageProvider, Serializable {
 
     /**
      * Allows the type token to be specified. (Optional)

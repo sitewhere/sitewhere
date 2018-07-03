@@ -10,14 +10,14 @@ package com.sitewhere.spi.batch;
 import java.util.Date;
 import java.util.Map;
 
-import com.sitewhere.spi.common.IMetadataProviderEntity;
+import com.sitewhere.spi.common.ISiteWhereEntity;
 
 /**
  * Interface for an operation that is applied to multiple devices.
  * 
  * @author Derek
  */
-public interface IBatchOperation extends IMetadataProviderEntity {
+public interface IBatchOperation extends ISiteWhereEntity {
 
     /**
      * Gets the type of operation to be performed.

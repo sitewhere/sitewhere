@@ -14,7 +14,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
@@ -25,7 +25,7 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
  * @author dadams
  */
 @JsonInclude(Include.NON_NULL)
-public class Device extends MetadataProviderEntity implements IDevice, Serializable {
+public class Device extends SiteWhereEntity implements IDevice, Serializable {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = -5409798557113797549L;

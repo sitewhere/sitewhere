@@ -9,7 +9,9 @@ package com.sitewhere.spi.device;
 
 import java.util.UUID;
 
-import com.sitewhere.spi.common.IMetadataProviderEntity;
+import com.sitewhere.spi.common.IColorProvider;
+import com.sitewhere.spi.common.IIconProvider;
+import com.sitewhere.spi.common.ISiteWhereEntity;
 
 /**
  * Indicates a possible status for a device. A device status is tied to a device
@@ -17,7 +19,7 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
  * 
  * @author Derek
  */
-public interface IDeviceStatus extends IMetadataProviderEntity {
+public interface IDeviceStatus extends ISiteWhereEntity, IColorProvider, IIconProvider {
 
     /**
      * Get the unique status code.
@@ -39,32 +41,4 @@ public interface IDeviceStatus extends IMetadataProviderEntity {
      * @return
      */
     public String getName();
-
-    /**
-     * Background color for user interface.
-     * 
-     * @return
-     */
-    public String getBackgroundColor();
-
-    /**
-     * Foreground color for user interface.
-     * 
-     * @return
-     */
-    public String getForegroundColor();
-
-    /**
-     * Border color for user interface.
-     * 
-     * @return
-     */
-    public String getBorderColor();
-
-    /**
-     * Icon for user interface.
-     * 
-     * @return
-     */
-    public String getIcon();
 }

@@ -9,7 +9,7 @@ package com.sitewhere.rest.model.device;
 
 import java.util.UUID;
 
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.spi.device.IDeviceStatus;
 
 /**
@@ -17,7 +17,7 @@ import com.sitewhere.spi.device.IDeviceStatus;
  * 
  * @author Derek
  */
-public class DeviceStatus extends MetadataProviderEntity implements IDeviceStatus {
+public class DeviceStatus extends SiteWhereEntity implements IDeviceStatus {
 
     /** Serial version UID */
     private static final long serialVersionUID = 3276455653992126853L;

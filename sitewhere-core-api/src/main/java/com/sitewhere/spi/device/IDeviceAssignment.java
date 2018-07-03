@@ -10,7 +10,7 @@ package com.sitewhere.spi.device;
 import java.util.Date;
 import java.util.UUID;
 
-import com.sitewhere.spi.common.IMetadataProviderEntity;
+import com.sitewhere.spi.common.ISiteWhereEntity;
 
 /**
  * Assigns a device to a customer, area, and/or asset so that events may be
@@ -18,7 +18,7 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
  * 
  * @author Derek
  */
-public interface IDeviceAssignment extends IMetadataProviderEntity {
+public interface IDeviceAssignment extends ISiteWhereEntity {
 
     /**
      * Get unique id for assigned device.

@@ -12,13 +12,14 @@ import java.util.Map;
 
 import com.sitewhere.spi.asset.AssetCategory;
 import com.sitewhere.spi.common.IAccessible;
+import com.sitewhere.spi.common.IImageProvider;
 
 /**
  * Information needed to create a new asset type.
  * 
  * @author Derek
  */
-public interface IAssetTypeCreateRequest extends IAccessible, Serializable {
+public interface IAssetTypeCreateRequest extends IAccessible, IImageProvider, Serializable {
 
     /**
      * Get token used to reference asset type.

@@ -10,7 +10,7 @@ package com.sitewhere.spi.device;
 import java.util.List;
 import java.util.UUID;
 
-import com.sitewhere.spi.common.IMetadataProviderEntity;
+import com.sitewhere.spi.common.ISiteWhereEntity;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 
 /**
@@ -18,7 +18,7 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
  * 
  * @author Derek
  */
-public interface IDevice extends IMetadataProviderEntity {
+public interface IDevice extends ISiteWhereEntity {
 
     /**
      * Get unique id for associated device type.

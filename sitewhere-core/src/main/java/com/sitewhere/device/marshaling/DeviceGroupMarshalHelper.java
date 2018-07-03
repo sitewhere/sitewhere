@@ -10,7 +10,7 @@ package com.sitewhere.device.marshaling;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.group.IDeviceGroup;
@@ -40,7 +40,7 @@ public class DeviceGroupMarshalHelper {
 	List<String> roles = new ArrayList<String>();
 	roles.addAll(source.getRoles());
 	group.setRoles(roles);
-	MetadataProviderEntity.copy(source, group);
+	SiteWhereEntity.copy(source, group);
 	return group;
     }
 }

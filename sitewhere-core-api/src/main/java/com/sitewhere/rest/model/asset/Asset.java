@@ -11,7 +11,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.spi.asset.IAsset;
 
 /**
@@ -20,7 +20,7 @@ import com.sitewhere.spi.asset.IAsset;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class Asset extends MetadataProviderEntity implements IAsset {
+public class Asset extends SiteWhereEntity implements IAsset {
 
     /** Serial version UID */
     private static final long serialVersionUID = -853673101089583873L;

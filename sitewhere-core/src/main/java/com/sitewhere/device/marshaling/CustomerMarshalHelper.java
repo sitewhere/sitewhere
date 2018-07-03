@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.rest.model.customer.Customer;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.marshaling.MarshaledCustomer;
@@ -79,7 +79,7 @@ public class CustomerMarshalHelper {
 	customer.setName(source.getName());
 	customer.setDescription(source.getDescription());
 	customer.setImageUrl(source.getImageUrl());
-	MetadataProviderEntity.copy(source, customer);
+	SiteWhereEntity.copy(source, customer);
 	if (isIncludeCustomerType()) {
 	    customer.setCustomerType(getDeviceManagement().getCustomerType(source.getCustomerTypeId()));
 	}

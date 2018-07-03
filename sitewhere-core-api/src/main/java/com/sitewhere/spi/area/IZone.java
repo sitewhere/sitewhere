@@ -9,14 +9,14 @@ package com.sitewhere.spi.area;
 
 import java.util.UUID;
 
-import com.sitewhere.spi.common.IMetadataProviderEntity;
+import com.sitewhere.spi.common.ISiteWhereEntity;
 
 /**
  * A polygonal area associated with a site that can be used to trigger events.
  * 
  * @author dadams
  */
-public interface IZone extends IBoundedEntity, IMetadataProviderEntity {
+public interface IZone extends IBoundedEntity, ISiteWhereEntity {
 
     /**
      * Get id for associated area.

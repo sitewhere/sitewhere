@@ -9,14 +9,14 @@ package com.sitewhere.spi.tenant;
 
 import java.util.List;
 
-import com.sitewhere.spi.common.IMetadataProviderEntity;
+import com.sitewhere.spi.common.ISiteWhereEntity;
 
 /**
  * Interface for information about a tenant.
  * 
  * @author Derek
  */
-public interface ITenant extends IMetadataProviderEntity {
+public interface ITenant extends ISiteWhereEntity {
 
     /**
      * Get tenant name.

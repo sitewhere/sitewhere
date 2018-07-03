@@ -7,17 +7,16 @@
  */
 package com.sitewhere.spi.scheduling;
 
-import java.io.Serializable;
 import java.util.Map;
 
-import com.sitewhere.spi.common.IMetadataProviderEntity;
+import com.sitewhere.spi.common.ISiteWhereEntity;
 
 /**
  * Unit of work that should be executed on a schedule.
  * 
  * @author Derek
  */
-public interface IScheduledJob extends IMetadataProviderEntity, Serializable {
+public interface IScheduledJob extends ISiteWhereEntity {
 
     /**
      * Get unique schedule token.

@@ -7,17 +7,17 @@
  */
 package com.sitewhere.spi.asset;
 
-import java.io.Serializable;
 import java.util.UUID;
 
-import com.sitewhere.spi.common.IMetadataProviderEntity;
+import com.sitewhere.spi.common.IImageProvider;
+import com.sitewhere.spi.common.ISiteWhereEntity;
 
 /**
  * Item that represents a tangible object (person, place, thing) in the world.
  * 
  * @author Derek
  */
-public interface IAsset extends IMetadataProviderEntity, Serializable {
+public interface IAsset extends ISiteWhereEntity, IImageProvider {
 
     /**
      * Get unique id of asset type.
@@ -32,11 +32,4 @@ public interface IAsset extends IMetadataProviderEntity, Serializable {
      * @return
      */
     public String getName();
-
-    /**
-     * Get URL for asset image.
-     * 
-     * @return
-     */
-    public String getImageUrl();
 }
