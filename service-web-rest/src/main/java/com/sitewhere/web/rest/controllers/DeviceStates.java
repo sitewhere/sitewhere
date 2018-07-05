@@ -52,6 +52,7 @@ public class DeviceStates extends RestControllerBase {
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceState> searchDeviceStates(
 	    @ApiParam(value = "Include device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
+	    @ApiParam(value = "Include device type information", required = false) @RequestParam(defaultValue = "false") boolean includeDeviceType,
 	    @ApiParam(value = "Include customer information", required = false) @RequestParam(defaultValue = "false") boolean includeCustomer,
 	    @ApiParam(value = "Include area information", required = false) @RequestParam(defaultValue = "false") boolean includeArea,
 	    @ApiParam(value = "Include asset information", required = false) @RequestParam(defaultValue = "false") boolean includeAsset,
@@ -63,6 +64,7 @@ public class DeviceStates extends RestControllerBase {
 	DeviceStateMarshalHelper helper = new DeviceStateMarshalHelper(getDeviceManagement(),
 		getDeviceEventManagement());
 	helper.setIncludeDevice(includeDevice);
+	helper.setIncludeDeviceType(includeDeviceType);
 	helper.setIncludeCustomer(includeCustomer);
 	helper.setIncludeArea(includeArea);
 	helper.setIncludeAsset(includeAsset);

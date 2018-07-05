@@ -23,6 +23,7 @@ import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.customer.ICustomer;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -102,11 +103,18 @@ public class DeviceStateMarshalHelper {
     protected void addAssignmentDetail(IDeviceState source, IAssetManagement assetManagement,
 	    MarshaledDeviceState result) throws SiteWhereException {
 	// Add device information.
-	result.setDeviceId(source.getDeviceId());
 	if (isIncludeDevice()) {
 	    IDevice device = getDeviceManagement().getDevice(source.getDeviceId());
 	    if (device != null) {
 		result.setDevice(getDeviceHelper().convert(device, assetManagement));
+	    }
+	}
+
+	// Add device type information.
+	if (isIncludeDeviceType()) {
+	    IDeviceType deviceType = getDeviceManagement().getDeviceType(source.getDeviceTypeId());
+	    if (deviceType != null) {
+		result.setDeviceType(deviceType);
 	    }
 	}
 
@@ -179,7 +187,7 @@ public class DeviceStateMarshalHelper {
 	if (deviceHelper == null) {
 	    deviceHelper = new DeviceMarshalHelper(getDeviceManagement());
 	    deviceHelper.setIncludeAssignment(false);
-	    deviceHelper.setIncludeDeviceType(isIncludeDeviceType());
+	    deviceHelper.setIncludeDeviceType(false);
 	}
 	return deviceHelper;
     }
