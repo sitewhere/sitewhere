@@ -222,7 +222,7 @@ public class SiteWhereSolrFactory {
 	    if (name.startsWith(ISolrFields.META_PREFIX)) {
 		String metaName = name.substring(metaLength);
 		String metaValue = (String) document.get(name);
-		event.addOrReplaceMetadata(metaName, metaValue);
+		event.getMetadata().put(metaName, metaValue);
 	    }
 	}
     }

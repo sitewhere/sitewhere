@@ -9,8 +9,6 @@ package com.sitewhere.spi.common;
 
 import java.util.Map;
 
-import com.sitewhere.spi.SiteWhereException;
-
 /**
  * Interface for an entity that has associated metadata.
  * 
@@ -19,38 +17,9 @@ import com.sitewhere.spi.SiteWhereException;
 public interface IMetadataProvider {
 
     /**
-     * Add or replace a metadata field.
-     * 
-     * @param name
-     * @param value
-     */
-    public void addOrReplaceMetadata(String name, String value) throws SiteWhereException;
-
-    /**
-     * Remove a metadata field.
-     * 
-     * @param name
-     * @return
-     */
-    public String removeMetadata(String name);
-
-    /**
-     * Get value of metadata field.
-     * 
-     * @param name
-     * @return
-     */
-    public String getMetadata(String name);
-
-    /**
      * Get a map of all metadata.
      * 
      * @return
      */
     public Map<String, String> getMetadata();
-
-    /**
-     * Clear existing metadata.
-     */
-    public void clearMetadata();
 }

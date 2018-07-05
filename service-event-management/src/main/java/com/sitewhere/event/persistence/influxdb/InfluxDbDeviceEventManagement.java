@@ -170,7 +170,7 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
      * If so, override the default one.
      */
     private String getAssignmentSpecificRetentionPolicy(IDeviceAssignment assignment) {
-	String policy = assignment.getMetadata(ASSIGNMENT_META_DATA_RETENTION_POLICY);
+	String policy = assignment.getMetadata().get(ASSIGNMENT_META_DATA_RETENTION_POLICY);
 
 	if (policy == null) {
 	    return getClient().getConfiguration().getRetention();

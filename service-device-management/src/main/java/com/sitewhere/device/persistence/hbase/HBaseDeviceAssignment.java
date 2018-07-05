@@ -185,7 +185,7 @@ public class HBaseDeviceAssignment {
     public static DeviceAssignment updateDeviceAssignmentMetadata(IHBaseContext context, IDeviceAssignment assn,
 	    Map<String, String> metadata) throws SiteWhereException {
 	DeviceAssignment updated = getDeviceAssignment(context, assn);
-	updated.clearMetadata();
+	updated.getMetadata().clear();
 	MetadataProvider.copy(metadata, updated);
 	DeviceManagementPersistence.setUpdatedEntityMetadata(updated);
 

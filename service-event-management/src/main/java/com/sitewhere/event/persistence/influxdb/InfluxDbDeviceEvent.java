@@ -419,7 +419,7 @@ public class InfluxDbDeviceEvent {
 	    if (key.startsWith(EVENT_METADATA_PREFIX)) {
 		String name = key.substring(EVENT_METADATA_PREFIX.length());
 		String value = (String) values.get(key);
-		event.addOrReplaceMetadata(name, value);
+		event.getMetadata().put(name, value);
 	    }
 	}
     }
@@ -446,7 +446,7 @@ public class InfluxDbDeviceEvent {
      * @throws SiteWhereException
      */
     protected static void saveToBuilder(DeviceEvent event, Point.Builder builder) throws SiteWhereException {
-	String timePrecision = event.getMetadata(EVENT_TIME_PRECISION_META_DATA_KEY);
+	String timePrecision = event.getMetadata().get(EVENT_TIME_PRECISION_META_DATA_KEY);
 	TimeUnit precision = TimeUnit.MILLISECONDS;
 
 	if (timePrecision != null) {
@@ -468,11 +468,11 @@ public class InfluxDbDeviceEvent {
 		break;
 	    }
 	    default: {
-		event.addOrReplaceMetadata(EVENT_TIME_PRECISION_META_DATA_KEY, "ms");
+		event.getMetadata().put(EVENT_TIME_PRECISION_META_DATA_KEY, "ms");
 	    }
 	    }
 	} else {
-	    event.addOrReplaceMetadata(EVENT_TIME_PRECISION_META_DATA_KEY, "ms");
+	    event.getMetadata().put(EVENT_TIME_PRECISION_META_DATA_KEY, "ms");
 	}
 
 	builder.time(event.getEventDate().getTime(), precision);
@@ -487,7 +487,7 @@ public class InfluxDbDeviceEvent {
 
 	// Add field for each metadata value.
 	for (String key : event.getMetadata().keySet()) {
-	    builder.addField(EVENT_METADATA_PREFIX + key, event.getMetadata(key));
+	    builder.addField(EVENT_METADATA_PREFIX + key, event.getMetadata().get(key));
 	}
     }
 

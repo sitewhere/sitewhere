@@ -33,40 +33,6 @@ public class MetadataProvider implements IMetadataProvider, Serializable {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.IMetadataProvider#addOrReplaceMetadata(java.lang
-     * .String, java.lang.String)
-     */
-    public void addOrReplaceMetadata(String name, String value) throws SiteWhereException {
-	if (!name.matches("^[\\w-]+$")) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidMetadataFieldName, ErrorLevel.ERROR);
-	}
-	entries.put(name, value);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IMetadataProvider#removeMetadata(java.lang.
-     * String)
-     */
-    public String removeMetadata(String name) {
-	return entries.remove(name);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.device.IMetadataProvider#getMetadata(java.lang.String)
-     */
-    public String getMetadata(String name) {
-	return entries.get(name);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.IMetadataProvider#getMetadata()
      */
     public Map<String, String> getMetadata() {
@@ -77,16 +43,6 @@ public class MetadataProvider implements IMetadataProvider, Serializable {
 	this.entries = entries;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.common.IMetadataProvider#clearMetadata()
-     */
-    @Override
-    public void clearMetadata() {
-	entries.clear();
-    }
-
     /**
      * Copy contents of one metadata provider to another.
      * 
@@ -95,9 +51,7 @@ public class MetadataProvider implements IMetadataProvider, Serializable {
      */
     public static void copy(IMetadataProvider source, MetadataProvider target) throws SiteWhereException {
 	if (source != null) {
-	    for (String key : source.getMetadata().keySet()) {
-		target.addOrReplaceMetadata(key, source.getMetadata(key));
-	    }
+	    copy(source.getMetadata(), target);
 	}
     }
 
@@ -111,7 +65,10 @@ public class MetadataProvider implements IMetadataProvider, Serializable {
     public static void copy(Map<String, String> source, MetadataProvider target) throws SiteWhereException {
 	if (source != null) {
 	    for (String key : source.keySet()) {
-		target.addOrReplaceMetadata(key, source.get(key));
+		if (!key.matches("^[\\w-]+$")) {
+		    throw new SiteWhereSystemException(ErrorCode.InvalidMetadataFieldName, ErrorLevel.ERROR);
+		}
+		target.getMetadata().put(key, source.get(key));
 	    }
 	}
     }

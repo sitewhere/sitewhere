@@ -63,54 +63,11 @@ public class DeviceEventWithAsset implements IDeviceEventWithAsset {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.common.IMetadataProvider#addOrReplaceMetadata(java.lang
-     * .String, java.lang.String)
-     */
-    @Override
-    public void addOrReplaceMetadata(String name, String value) throws SiteWhereException {
-	getWrapped().addOrReplaceMetadata(name, value);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.common.IMetadataProvider#removeMetadata(java.lang.
-     * String)
-     */
-    @Override
-    public String removeMetadata(String name) {
-	return getWrapped().removeMetadata(name);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.common.IMetadataProvider#getMetadata(java.lang.String)
-     */
-    @Override
-    public String getMetadata(String name) {
-	return getWrapped().getMetadata(name);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.common.IMetadataProvider#getMetadata()
      */
     @Override
     public Map<String, String> getMetadata() {
 	return getWrapped().getMetadata();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.common.IMetadataProvider#clearMetadata()
-     */
-    @Override
-    public void clearMetadata() {
-	getWrapped().clearMetadata();
     }
 
     /*
