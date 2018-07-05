@@ -7,6 +7,10 @@
  */
 package com.sitewhere.device.marshaling;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import com.sitewhere.device.marshaling.invalid.InvalidArea;
 import com.sitewhere.device.marshaling.invalid.InvalidAsset;
 import com.sitewhere.device.marshaling.invalid.InvalidCustomer;
@@ -19,6 +23,10 @@ import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.customer.ICustomer;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
+import com.sitewhere.spi.device.event.IDeviceLocation;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.state.IDeviceState;
 
 /**
@@ -33,25 +41,32 @@ public class DeviceStateMarshalHelper {
     private boolean includeDevice = false;
 
     /** Indicates whether to include device type */
-    private boolean includeDeviceType = true;
+    private boolean includeDeviceType = false;
 
     /** Indicates whether to include customer information */
-    private boolean includeCustomer = true;
+    private boolean includeCustomer = false;
 
     /** Indicates whether to include area information */
-    private boolean includeArea = true;
+    private boolean includeArea = false;
 
     /** Indicates whether device asset information is to be included */
-    private boolean includeAsset = true;
+    private boolean includeAsset = false;
+
+    /** Indicates whether event details should be included */
+    private boolean includeEventDetails = false;
 
     /** Device management */
     private IDeviceManagement deviceManagement;
 
+    /** Device event management */
+    private IDeviceEventManagement deviceEventManagement;
+
     /** Used to control marshaling of devices */
     private DeviceMarshalHelper deviceHelper;
 
-    public DeviceStateMarshalHelper(IDeviceManagement deviceManagement) {
+    public DeviceStateMarshalHelper(IDeviceManagement deviceManagement, IDeviceEventManagement deviceEventManagement) {
 	this.deviceManagement = deviceManagement;
+	this.deviceEventManagement = deviceEventManagement;
     }
 
     /**
@@ -78,6 +93,14 @@ public class DeviceStateMarshalHelper {
 	result.getLastMeasurementEventIds().putAll(source.getLastMeasurementEventIds());
 	result.getLastAlertEventIds().putAll(source.getLastAlertEventIds());
 
+	addAssignmentDetail(source, assetManagement, result);
+	addEventDetail(source, assetManagement, result);
+
+	return result;
+    }
+
+    protected void addAssignmentDetail(IDeviceState source, IAssetManagement assetManagement,
+	    MarshaledDeviceState result) throws SiteWhereException {
 	// Add device information.
 	result.setDeviceId(source.getDeviceId());
 	if (isIncludeDevice()) {
@@ -113,7 +136,38 @@ public class DeviceStateMarshalHelper {
 	    }
 	    result.setAsset(asset);
 	}
-	return result;
+    }
+
+    protected void addEventDetail(IDeviceState source, IAssetManagement assetManagement, MarshaledDeviceState result)
+	    throws SiteWhereException {
+	if (isIncludeEventDetails()) {
+	    if (source.getLastLocationEventId() != null) {
+		IDeviceLocation location = (IDeviceLocation) getDeviceEventManagement()
+			.getDeviceEventById(source.getDeviceId(), source.getLastLocationEventId());
+		result.setLastLocationEvent(location);
+	    }
+
+	    if (source.getLastMeasurementEventIds() != null) {
+		Map<String, IDeviceMeasurement> mxs = new HashMap<>();
+		for (String key : source.getLastMeasurementEventIds().keySet()) {
+		    UUID id = source.getLastMeasurementEventIds().get(key);
+		    IDeviceMeasurement mx = (IDeviceMeasurement) getDeviceEventManagement()
+			    .getDeviceEventById(source.getDeviceId(), id);
+		    mxs.put(key, mx);
+		}
+		result.setLastMeasurementEvents(mxs);
+	    }
+	    if (source.getLastAlertEventIds() != null) {
+		Map<String, IDeviceAlert> alerts = new HashMap<>();
+		for (String key : source.getLastAlertEventIds().keySet()) {
+		    UUID id = source.getLastAlertEventIds().get(key);
+		    IDeviceAlert alert = (IDeviceAlert) getDeviceEventManagement()
+			    .getDeviceEventById(source.getDeviceId(), id);
+		    alerts.put(key, alert);
+		}
+		result.setLastAlertEvents(alerts);
+	    }
+	}
     }
 
     /**
@@ -136,6 +190,14 @@ public class DeviceStateMarshalHelper {
 
     public void setDeviceManagement(IDeviceManagement deviceManagement) {
 	this.deviceManagement = deviceManagement;
+    }
+
+    public IDeviceEventManagement getDeviceEventManagement() {
+	return deviceEventManagement;
+    }
+
+    public void setDeviceEventManagement(IDeviceEventManagement deviceEventManagement) {
+	this.deviceEventManagement = deviceEventManagement;
     }
 
     public boolean isIncludeDevice() {
@@ -176,5 +238,13 @@ public class DeviceStateMarshalHelper {
 
     public void setIncludeAsset(boolean includeAsset) {
 	this.includeAsset = includeAsset;
+    }
+
+    public boolean isIncludeEventDetails() {
+	return includeEventDetails;
+    }
+
+    public void setIncludeEventDetails(boolean includeEventDetails) {
+	this.includeEventDetails = includeEventDetails;
     }
 }

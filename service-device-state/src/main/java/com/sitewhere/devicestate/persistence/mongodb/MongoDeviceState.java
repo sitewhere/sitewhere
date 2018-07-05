@@ -143,6 +143,7 @@ public class MongoDeviceState implements MongoConverter<IDeviceState> {
 	UUID assetId = (UUID) source.get(PROP_ASSET_ID);
 	Date lastInteractionDate = (Date) source.get(PROP_LAST_INTERACTION_DATE);
 	Date presenceMissingDate = (Date) source.get(PROP_PRESENCE_MISSING_DATE);
+	UUID lastLocationEventId = (UUID) source.get(PROP_LAST_LOCATION_ID);
 
 	target.setId(id);
 	target.setDeviceId(deviceId);
@@ -153,6 +154,7 @@ public class MongoDeviceState implements MongoConverter<IDeviceState> {
 	target.setAssetId(assetId);
 	target.setLastInteractionDate(lastInteractionDate);
 	target.setPresenceMissingDate(presenceMissingDate);
+	target.setLastLocationEventId(lastLocationEventId);
 
 	List<Document> mxs = (List<Document>) source.get(PROP_LAST_MEASUREMENT_IDS);
 	Map<String, UUID> lastMeasurementIds = new HashMap<>();

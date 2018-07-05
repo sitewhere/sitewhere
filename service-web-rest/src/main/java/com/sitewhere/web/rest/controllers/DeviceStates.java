@@ -18,11 +18,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.device.marshaling.DeviceStateMarshalHelper;
+import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.DeviceStateSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.state.IDeviceState;
 import com.sitewhere.spi.device.state.IDeviceStateManagement;
 import com.sitewhere.spi.search.ISearchResults;
@@ -53,15 +55,18 @@ public class DeviceStates extends RestControllerBase {
 	    @ApiParam(value = "Include customer information", required = false) @RequestParam(defaultValue = "false") boolean includeCustomer,
 	    @ApiParam(value = "Include area information", required = false) @RequestParam(defaultValue = "false") boolean includeArea,
 	    @ApiParam(value = "Include asset information", required = false) @RequestParam(defaultValue = "false") boolean includeAsset,
+	    @ApiParam(value = "Include event details", required = false) @RequestParam(defaultValue = "false") boolean includeEventDetails,
 	    @RequestBody DeviceStateSearchCriteria criteria) throws SiteWhereException {
 
 	// Perform search.
 	ISearchResults<IDeviceState> matches = getDeviceStateManagement().searchDeviceStates(criteria);
-	DeviceStateMarshalHelper helper = new DeviceStateMarshalHelper(getDeviceManagement());
+	DeviceStateMarshalHelper helper = new DeviceStateMarshalHelper(getDeviceManagement(),
+		getDeviceEventManagement());
 	helper.setIncludeDevice(includeDevice);
 	helper.setIncludeCustomer(includeCustomer);
 	helper.setIncludeArea(includeArea);
 	helper.setIncludeAsset(includeAsset);
+	helper.setIncludeEventDetails(includeEventDetails);
 
 	List<IDeviceState> results = new ArrayList<>();
 	for (IDeviceState assn : matches.getResults()) {
@@ -72,6 +77,10 @@ public class DeviceStates extends RestControllerBase {
 
     private IDeviceManagement getDeviceManagement() {
 	return getMicroservice().getDeviceManagementApiDemux().getApiChannel();
+    }
+
+    private IDeviceEventManagement getDeviceEventManagement() {
+	return new BlockingDeviceEventManagement(getMicroservice().getDeviceEventManagementApiDemux().getApiChannel());
     }
 
     private IAssetManagement getAssetManagement() {

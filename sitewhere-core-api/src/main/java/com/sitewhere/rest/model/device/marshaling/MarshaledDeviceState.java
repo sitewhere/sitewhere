@@ -7,12 +7,19 @@
  */
 package com.sitewhere.rest.model.device.marshaling;
 
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.state.DeviceState;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.customer.ICustomer;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceType;
+import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceLocation;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 
 /**
  * Extends {@link DeviceState} to support fields that can be included on REST
@@ -20,6 +27,7 @@ import com.sitewhere.spi.device.IDeviceType;
  * 
  * @author Derek
  */
+@JsonInclude(Include.NON_NULL)
 public class MarshaledDeviceState extends DeviceState {
 
     /** Serial version UID */
@@ -39,6 +47,15 @@ public class MarshaledDeviceState extends DeviceState {
 
     /** Associated asset */
     private IAsset asset;
+
+    /** Last device location */
+    private IDeviceLocation lastLocationEvent;
+
+    /** Map of last measurement events by measurement id */
+    private Map<String, IDeviceMeasurement> lastMeasurementEvents;
+
+    /** Map of last alert events by alert type */
+    private Map<String, IDeviceAlert> lastAlertEvents;
 
     public IDevice getDevice() {
 	return device;
@@ -78,5 +95,29 @@ public class MarshaledDeviceState extends DeviceState {
 
     public void setAsset(IAsset asset) {
 	this.asset = asset;
+    }
+
+    public IDeviceLocation getLastLocationEvent() {
+	return lastLocationEvent;
+    }
+
+    public void setLastLocationEvent(IDeviceLocation lastLocationEvent) {
+	this.lastLocationEvent = lastLocationEvent;
+    }
+
+    public Map<String, IDeviceMeasurement> getLastMeasurementEvents() {
+	return lastMeasurementEvents;
+    }
+
+    public void setLastMeasurementEvents(Map<String, IDeviceMeasurement> lastMeasurementEvents) {
+	this.lastMeasurementEvents = lastMeasurementEvents;
+    }
+
+    public Map<String, IDeviceAlert> getLastAlertEvents() {
+	return lastAlertEvents;
+    }
+
+    public void setLastAlertEvents(Map<String, IDeviceAlert> lastAlertEvents) {
+	this.lastAlertEvents = lastAlertEvents;
     }
 }
