@@ -25,6 +25,7 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
+import com.sitewhere.spi.device.request.IDeviceAlarmCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
@@ -37,6 +38,7 @@ import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
+import com.sitewhere.spi.search.device.IDeviceAlarmSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceCommandSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
@@ -388,6 +390,53 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
      * @throws SiteWhereException
      */
     public IDeviceAssignment deleteDeviceAssignment(UUID id, boolean force) throws SiteWhereException;
+
+    /**
+     * Create a device alarm.
+     * 
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public IDeviceAlarm createDeviceAlarm(IDeviceAlarmCreateRequest request) throws SiteWhereException;
+
+    /**
+     * Update an existing device alarm.
+     * 
+     * @param id
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public IDeviceAlarm updateDeviceAlarm(UUID id, IDeviceAlarmCreateRequest request) throws SiteWhereException;
+
+    /**
+     * Get device alarm by unique id.
+     * 
+     * @param id
+     * @return
+     * @throws SiteWhereException
+     */
+    public IDeviceAlarm getDeviceAlarm(UUID id) throws SiteWhereException;
+
+    /**
+     * Search for device alarms that match criteria.
+     * 
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    public ISearchResults<IDeviceAlarm> searchDeviceAlarms(IDeviceAlarmSearchCriteria criteria)
+	    throws SiteWhereException;
+
+    /**
+     * Delete a device alarm.
+     * 
+     * @param id
+     * @return
+     * @throws SiteWhereException
+     */
+    public IDeviceAlarm deleteDeviceAlarm(UUID id) throws SiteWhereException;
 
     /**
      * Create a new {@link IDeviceStream} associated with an assignment.

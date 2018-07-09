@@ -567,3 +567,55 @@ message GZone {
 	map<string, string> metadata = 9;
 	GEntityInformation entityInformation = 10;
 }
+
+// #####################
+// ### DEVICE ALARMS ###
+// #####################
+
+// Request data for creating a device alarm.
+message GDeviceAlarmCreateRequest {
+	GOptionalString deviceAssignmentToken = 1;
+	GOptionalString alarmMessage = 2;
+	GUUID triggeringEventId = 3;
+	GDeviceAlarmState state = 4;
+	uint64 triggeredDate = 5;
+	uint64 acknowledgedDate = 6;
+	uint64 resolvedDate = 7;
+	map<string, string> metadata = 8;
+}
+
+// Criteria for searching device alarms.
+message GDeviceAlarmSearchCriteria {
+	GUUID deviceId = 1;
+	GUUID deviceAssignmentId = 2;
+	GUUID customerId = 3;
+	GUUID areaId = 4;
+	GUUID assetId = 5;
+	GUUID triggeringEventId = 6;
+	GDeviceAlarmState state = 7;
+	int32 pageNumber = 8;
+	int32 pageSize = 9;
+}
+
+// Results for device alarm search.
+message GDeviceAlarmSearchResults {
+	int64 count = 1;
+	repeated GDeviceAlarm alarms = 2;
+}
+
+// Device alarm.
+message GDeviceAlarm {
+	GUUID id = 1;
+	GUUID deviceId = 2;
+	GUUID deviceAssignmentId = 3;
+	GUUID customerId = 4;
+	GUUID areaId = 5;
+	GUUID assetId = 6;
+	GOptionalString alarmMessage = 7;
+	GUUID triggeringEventId = 8;
+	GDeviceAlarmState state = 9;
+	uint64 triggeredDate = 10;
+	uint64 acknowledgedDate = 11;
+	uint64 resolvedDate = 12;
+	map<string, string> metadata = 13;
+}

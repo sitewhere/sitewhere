@@ -165,6 +165,9 @@ public enum ErrorCode {
     /** Invalid device assignment token */
     InvalidDeviceAssignmentToken(4170, "Device assignment token not found."),
 
+    /** Invalid device alarm id */
+    InvalidDeviceAlarmId(4050, "Device alarm id not found."),
+
     /** Invalid zone token */
     InvalidZoneToken(4180, "Zone not found."),
 

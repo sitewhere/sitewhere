@@ -11,8 +11,8 @@ Integer locationsPerAssignment = 40
 Integer minTemp = 80
 Integer warnTemp = 160
 Integer errorTemp = 180
-Integer criticalTemp = 190
-Integer maxTemp = 200
+Integer criticalTemp = 200
+Integer maxTemp = 220
 
 def randomId = { java.util.UUID.randomUUID().toString() }
 def randomDeviceToken = { type ->
@@ -315,8 +315,11 @@ def createMeasurements = { assn, start ->
 			def alert = eventBuilder.newAlert 'engine.overheat', 'Engine temperature is at top of operating range.' on(new Date(current)) warning() trackState()
 			if (temp > errorTemp) {
 				alert = eventBuilder.newAlert 'engine.overheat', 'Engine temperature is at a dangerous level.' on(new Date(current)) error() trackState()
-			} else if (temp > criticalTemp) {
+			}
+			if (temp > criticalTemp) {
 				alert = eventBuilder.newAlert 'engine.overheat', 'Engine temperature critical. Shutting down.' on(new Date(current)) critical() trackState()
+				def alarm = deviceBuilder.newDeviceAlarm assn.token, 'Engine shut down due to critical temperature of ' + temp + ' degrees' 
+				deviceBuilder.persist alarm
 			}
 			eventBuilder.forAssignment assn.token persist alert
 			

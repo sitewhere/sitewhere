@@ -296,6 +296,25 @@ service DeviceManagement {
 
 	// List devices streams that meet criteria.
 	rpc ListDeviceStreams (GListDeviceStreamsRequest) returns (GListDeviceStreamsResponse) {}
+
+	// #####################
+	// ### DEVICE ALARMS ###
+	// #####################
+	
+	// Create a new device alarm.
+	rpc CreateDeviceAlarm (GCreateDeviceAlarmRequest) returns (GCreateDeviceAlarmResponse) {}
+	
+	// Get device alarm.
+	rpc GetDeviceAlarm (GGetDeviceAlarmRequest) returns (GGetDeviceAlarmResponse) {}
+	
+	// Update an existing device alarm.
+	rpc UpdateDeviceAlarm (GUpdateDeviceAlarmRequest) returns (GUpdateDeviceAlarmResponse) {}
+
+	// Search for device alarms that meet criteria.
+	rpc SearchDeviceAlarms (GSearchDeviceAlarmsRequest) returns (GSearchDeviceAlarmsResponse) {}
+
+	// Delete an existing device alarm.
+	rpc DeleteDeviceAlarm (GDeleteDeviceAlarmRequest) returns (GDeleteDeviceAlarmResponse) {}
 }
 
 // ######################
@@ -1166,4 +1185,60 @@ message GListDeviceGroupElementsRequest {
 // Response for listing device group elements.
 message GListDeviceGroupElementsResponse {
 	com.sitewhere.grpc.model.GDeviceGroupElementsSearchResults results = 1;
+}
+
+// #####################
+// ### DEVICE ALARMS ###
+// #####################
+
+// Request for creating a device alarm.
+message GCreateDeviceAlarmRequest {
+	com.sitewhere.grpc.model.GDeviceAlarmCreateRequest request = 1;
+}
+
+// Response from creating a device alarm.
+message GCreateDeviceAlarmResponse {
+	com.sitewhere.grpc.model.GDeviceAlarm alarm = 1;
+}
+		
+// Request for getting a device alarm by id.
+message GGetDeviceAlarmRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+}
+	
+// Response for getting a device alarm by id.
+message GGetDeviceAlarmResponse {
+	com.sitewhere.grpc.model.GDeviceAlarm alarm = 1;
+}
+	
+// Request for updating an existing device alarm.
+message GUpdateDeviceAlarmRequest {
+	com.sitewhere.grpc.model.GUUID alarmId = 1;
+	com.sitewhere.grpc.model.GDeviceAlarmCreateRequest request = 2;
+}
+	
+// Response for updating an existing device alarm.
+message GUpdateDeviceAlarmResponse {
+	com.sitewhere.grpc.model.GDeviceAlarm alarm = 1;
+}
+	
+// Request for searching for device alarms that meet criteria.
+message GSearchDeviceAlarmsRequest {
+	com.sitewhere.grpc.model.GDeviceAlarmSearchCriteria criteria = 1;
+}
+	
+// Response for searching for device alarms that meet criteria.
+message GSearchDeviceAlarmsResponse {
+	com.sitewhere.grpc.model.GDeviceAlarmSearchResults results = 1;
+}
+	
+// Request for deleting a device alarm.
+message GDeleteDeviceAlarmRequest {
+	com.sitewhere.grpc.model.GUUID id = 1;
+	bool force = 2;
+}
+	
+// Response for deleting a device alarm.
+message GDeleteDeviceAlarmResponse {
+	com.sitewhere.grpc.model.GDeviceAlarm alarm = 1;
 }

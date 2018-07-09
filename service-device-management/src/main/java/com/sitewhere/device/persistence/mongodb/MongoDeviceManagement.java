@@ -33,6 +33,7 @@ import com.sitewhere.rest.model.area.Zone;
 import com.sitewhere.rest.model.customer.Customer;
 import com.sitewhere.rest.model.customer.CustomerType;
 import com.sitewhere.rest.model.device.Device;
+import com.sitewhere.rest.model.device.DeviceAlarm;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceStatus;
 import com.sitewhere.rest.model.device.DeviceType;
@@ -61,6 +62,7 @@ import com.sitewhere.spi.customer.request.ICustomerCreateRequest;
 import com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceAlarm;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -70,6 +72,7 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
+import com.sitewhere.spi.device.request.IDeviceAlarmCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
@@ -85,6 +88,7 @@ import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
+import com.sitewhere.spi.search.device.IDeviceAlarmSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceCommandSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
@@ -994,6 +998,120 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    MongoPersistence.update(assignments, query, existing);
 	    return MongoDeviceAssignment.fromDocument(existing);
 	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createDeviceAlarm(com.sitewhere.
+     * spi.device.request.IDeviceAlarmCreateRequest)
+     */
+    @Override
+    public IDeviceAlarm createDeviceAlarm(IDeviceAlarmCreateRequest request) throws SiteWhereException {
+	IDeviceAssignment assignment = getDeviceAssignmentByToken(request.getDeviceAssignmentToken());
+	if (assignment == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
+	}
+
+	// Use common logic to load alarm from request.
+	DeviceAlarm newAlarm = DeviceManagementPersistence.deviceAlarmCreateLogic(assignment, request);
+
+	MongoCollection<Document> alarms = getMongoClient().getDeviceAlarmsCollection();
+	Document created = MongoDeviceAlarm.toDocument(newAlarm);
+	MongoPersistence.insert(alarms, created, ErrorCode.DuplicateId);
+
+	return newAlarm;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAlarm(java.util.UUID,
+     * com.sitewhere.spi.device.request.IDeviceAlarmCreateRequest)
+     */
+    @Override
+    public IDeviceAlarm updateDeviceAlarm(UUID id, IDeviceAlarmCreateRequest request) throws SiteWhereException {
+	Document existing = assertDeviceAlarm(id);
+	DeviceAlarm updatedAlarm = MongoDeviceAlarm.fromDocument(existing);
+
+	IDeviceAssignment assignment = null;
+	if (request.getDeviceAssignmentToken() != null) {
+	    assignment = getDeviceAssignmentByToken(request.getDeviceAssignmentToken());
+	    if (assignment == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
+	    }
+	}
+
+	DeviceManagementPersistence.deviceAlarmUpdateLogic(assignment, request, updatedAlarm);
+	Document updated = MongoDeviceAlarm.toDocument(updatedAlarm);
+
+	MongoCollection<Document> alarms = getMongoClient().getDeviceAlarmsCollection();
+	Document query = new Document(MongoDeviceAlarm.PROP_ID, id);
+	MongoPersistence.update(alarms, query, updated);
+
+	return MongoDeviceAlarm.fromDocument(updated);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAlarm(java.util.UUID)
+     */
+    @Override
+    public IDeviceAlarm getDeviceAlarm(UUID id) throws SiteWhereException {
+	Document dbAlarm = getDeviceAlarmDocumentById(id);
+	if (dbAlarm != null) {
+	    return MongoDeviceAlarm.fromDocument(dbAlarm);
+	}
+	return null;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#searchDeviceAlarms(com.sitewhere.
+     * spi.search.device.IDeviceAlarmSearchCriteria)
+     */
+    @Override
+    public ISearchResults<IDeviceAlarm> searchDeviceAlarms(IDeviceAlarmSearchCriteria criteria)
+	    throws SiteWhereException {
+	MongoCollection<Document> alarms = getMongoClient().getDeviceAlarmsCollection();
+	Document dbCriteria = new Document();
+	if (criteria.getDeviceId() != null) {
+	    dbCriteria.put(MongoDeviceAlarm.PROP_DEVICE_ID, criteria.getDeviceId());
+	}
+	if (criteria.getDeviceAssignmentId() != null) {
+	    dbCriteria.put(MongoDeviceAlarm.PROP_DEVICE_ASSIGNMENT_ID, criteria.getDeviceAssignmentId());
+	}
+	if (criteria.getCustomerId() != null) {
+	    dbCriteria.put(MongoDeviceAlarm.PROP_CUSTOMER_ID, criteria.getCustomerId());
+	}
+	if (criteria.getAreaId() != null) {
+	    dbCriteria.put(MongoDeviceAlarm.PROP_AREA_ID, criteria.getAreaId());
+	}
+	if (criteria.getAssetId() != null) {
+	    dbCriteria.put(MongoDeviceAlarm.PROP_ASSET_ID, criteria.getAssetId());
+	}
+	if (criteria.getState() != null) {
+	    dbCriteria.put(MongoDeviceAlarm.PROP_ALARM_STATE, criteria.getState().name());
+	}
+	if (criteria.getTriggeringEventId() != null) {
+	    dbCriteria.put(MongoDeviceAlarm.PROP_TRIGGERING_EVENT_ID, criteria.getTriggeringEventId());
+	}
+
+	Document sort = new Document(MongoDeviceAlarm.PROP_TRIGGERED_DATE, -1);
+	return MongoPersistence.search(IDeviceAlarm.class, alarms, dbCriteria, sort, criteria, LOOKUP);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceAlarm(java.util.UUID)
+     */
+    @Override
+    public IDeviceAlarm deleteDeviceAlarm(UUID id) throws SiteWhereException {
+	Document existing = assertDeviceAlarm(id);
+	DeviceManagementPersistence.deviceAlarmDeleteLogic(MongoDeviceAlarm.fromDocument(existing));
+
+	Document query = new Document(MongoDeviceAlarm.PROP_ID, id);
+	MongoCollection<Document> alarms = getMongoClient().getDeviceAlarmsCollection();
+	MongoPersistence.update(alarms, query, existing);
+	return MongoDeviceAlarm.fromDocument(existing);
     }
 
     /*
@@ -2025,6 +2143,36 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     protected IDeviceAssignment assertApiDeviceAssignment(UUID id) throws SiteWhereException {
 	Document match = assertDeviceAssignment(id);
 	return MongoDeviceAssignment.fromDocument(match);
+    }
+
+    /**
+     * Get the {@link Document} containing device alarm information that matches the
+     * given id.
+     * 
+     * @param id
+     * @return
+     * @throws SiteWhereException
+     */
+    protected Document getDeviceAlarmDocumentById(UUID id) throws SiteWhereException {
+	MongoCollection<Document> alarms = getMongoClient().getDeviceAlarmsCollection();
+	Document query = new Document(MongoDeviceAlarm.PROP_ID, id);
+	return alarms.find(query).first();
+    }
+
+    /**
+     * Return the {@link Document} for the device alarm with the given id. Throws an
+     * exception if the id is not found.
+     * 
+     * @param id
+     * @return
+     * @throws SiteWhereException
+     */
+    protected Document assertDeviceAlarm(UUID id) throws SiteWhereException {
+	Document match = getDeviceAlarmDocumentById(id);
+	if (match == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAlarmId, ErrorLevel.INFO);
+	}
+	return match;
     }
 
     /**

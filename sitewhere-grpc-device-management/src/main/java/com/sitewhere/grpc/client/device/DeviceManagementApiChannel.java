@@ -29,6 +29,7 @@ import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.customer.request.ICustomerCreateRequest;
 import com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest;
 import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceAlarm;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceStatus;
@@ -37,6 +38,7 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
+import com.sitewhere.spi.device.request.IDeviceAlarmCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
@@ -49,6 +51,7 @@ import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
+import com.sitewhere.spi.search.device.IDeviceAlarmSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceCommandSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
@@ -1498,6 +1501,116 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    return response;
 	} catch (Throwable t) {
 	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getListDeviceAssignmentsMethod(), t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createDeviceAlarm(com.sitewhere.
+     * spi.device.request.IDeviceAlarmCreateRequest)
+     */
+    @Override
+    public IDeviceAlarm createDeviceAlarm(IDeviceAlarmCreateRequest request) throws SiteWhereException {
+	try {
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getCreateDeviceAlarmMethod());
+	    GCreateDeviceAlarmRequest.Builder grequest = GCreateDeviceAlarmRequest.newBuilder();
+	    grequest.setRequest(DeviceModelConverter.asGrpcDeviceAlarmCreateRequest(request));
+	    GCreateDeviceAlarmResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .createDeviceAlarm(grequest.build());
+	    IDeviceAlarm response = (gresponse.hasAlarm()) ? DeviceModelConverter.asApiDeviceAlarm(gresponse.getAlarm())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getCreateDeviceAlarmMethod(), response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getCreateDeviceAlarmMethod(), t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAlarm(java.util.UUID,
+     * com.sitewhere.spi.device.request.IDeviceAlarmCreateRequest)
+     */
+    @Override
+    public IDeviceAlarm updateDeviceAlarm(UUID id, IDeviceAlarmCreateRequest request) throws SiteWhereException {
+	try {
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getUpdateDeviceAlarmMethod());
+	    GUpdateDeviceAlarmRequest.Builder grequest = GUpdateDeviceAlarmRequest.newBuilder();
+	    grequest.setAlarmId(CommonModelConverter.asGrpcUuid(id));
+	    grequest.setRequest(DeviceModelConverter.asGrpcDeviceAlarmCreateRequest(request));
+	    GUpdateDeviceAlarmResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .updateDeviceAlarm(grequest.build());
+	    IDeviceAlarm response = (gresponse.hasAlarm()) ? DeviceModelConverter.asApiDeviceAlarm(gresponse.getAlarm())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getUpdateDeviceAlarmMethod(), response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getUpdateDeviceAlarmMethod(), t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAlarm(java.util.UUID)
+     */
+    @Override
+    public IDeviceAlarm getDeviceAlarm(UUID id) throws SiteWhereException {
+	try {
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetDeviceAlarmMethod());
+	    GGetDeviceAlarmRequest.Builder grequest = GGetDeviceAlarmRequest.newBuilder();
+	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
+	    GGetDeviceAlarmResponse gresponse = getGrpcChannel().getBlockingStub().getDeviceAlarm(grequest.build());
+	    IDeviceAlarm response = (gresponse.hasAlarm()) ? DeviceModelConverter.asApiDeviceAlarm(gresponse.getAlarm())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetDeviceAlarmMethod(), response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetDeviceAlarmMethod(), t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#searchDeviceAlarms(com.sitewhere.
+     * spi.search.device.IDeviceAlarmSearchCriteria)
+     */
+    @Override
+    public ISearchResults<IDeviceAlarm> searchDeviceAlarms(IDeviceAlarmSearchCriteria criteria)
+	    throws SiteWhereException {
+	try {
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getSearchDeviceAlarmsMethod());
+	    GSearchDeviceAlarmsRequest.Builder grequest = GSearchDeviceAlarmsRequest.newBuilder();
+	    grequest.setCriteria(DeviceModelConverter.asGrpcDeviceAlarmSearchCriteria(criteria));
+	    GSearchDeviceAlarmsResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .searchDeviceAlarms(grequest.build());
+	    ISearchResults<IDeviceAlarm> results = DeviceModelConverter
+		    .asApiDeviceAlarmSearchResults(gresponse.getResults());
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getSearchDeviceAlarmsMethod(), results);
+	    return results;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getSearchDeviceAlarmsMethod(), t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceAlarm(java.util.UUID)
+     */
+    @Override
+    public IDeviceAlarm deleteDeviceAlarm(UUID id) throws SiteWhereException {
+	try {
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceAlarmMethod());
+	    GDeleteDeviceAlarmRequest.Builder grequest = GDeleteDeviceAlarmRequest.newBuilder();
+	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
+	    grequest.setForce(true);
+	    GDeleteDeviceAlarmResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .deleteDeviceAlarm(grequest.build());
+	    IDeviceAlarm response = (gresponse.hasAlarm()) ? DeviceModelConverter.asApiDeviceAlarm(gresponse.getAlarm())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getDeleteDeviceAlarmMethod(), response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getDeleteDeviceAlarmMethod(), t);
 	}
     }
 

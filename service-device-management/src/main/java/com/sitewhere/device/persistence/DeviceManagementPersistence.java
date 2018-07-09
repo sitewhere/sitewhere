@@ -24,6 +24,7 @@ import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.customer.Customer;
 import com.sitewhere.rest.model.customer.CustomerType;
 import com.sitewhere.rest.model.device.Device;
+import com.sitewhere.rest.model.device.DeviceAlarm;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.DeviceStatus;
@@ -48,9 +49,11 @@ import com.sitewhere.spi.customer.ICustomer;
 import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.customer.request.ICustomerCreateRequest;
 import com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest;
+import com.sitewhere.spi.device.DeviceAlarmState;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceAlarm;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -61,6 +64,7 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
+import com.sitewhere.spi.device.request.IDeviceAlarmCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
@@ -930,6 +934,84 @@ public class DeviceManagementPersistence extends Persistence {
 	if (assignment.getReleasedDate() == null) {
 	    throw new SiteWhereSystemException(ErrorCode.CanNotDeleteActiveAssignment, ErrorLevel.ERROR);
 	}
+    }
+
+    /**
+     * Common logic for creating a device alarm.
+     * 
+     * @param assignment
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceAlarm deviceAlarmCreateLogic(IDeviceAssignment assignment, IDeviceAlarmCreateRequest request)
+	    throws SiteWhereException {
+	DeviceAlarm alarm = new DeviceAlarm();
+	alarm.setId(UUID.randomUUID());
+	alarm.setDeviceId(assignment.getDeviceId());
+	alarm.setDeviceAssignmentId(assignment.getId());
+	alarm.setCustomerId(assignment.getCustomerId());
+	alarm.setAreaId(assignment.getAreaId());
+	alarm.setAssetId(assignment.getAssetId());
+
+	require("Alarm message", request.getAlarmMessage());
+	alarm.setAlarmMessage(request.getAlarmMessage());
+
+	alarm.setState(request.getState() != null ? request.getState() : DeviceAlarmState.Triggered);
+	alarm.setTriggeredDate(request.getTriggeredDate() != null ? request.getTriggeredDate() : new Date());
+	alarm.setAcknowledgedDate(request.getAcknowledgedDate());
+	alarm.setResolvedDate(request.getResolvedDate());
+
+	MetadataProvider.copy(request.getMetadata(), alarm);
+
+	return alarm;
+    }
+
+    /**
+     * Common logic for updating a device alarm.
+     * 
+     * @param assignment
+     * @param request
+     * @param target
+     * @throws SiteWhereException
+     */
+    public static void deviceAlarmUpdateLogic(IDeviceAssignment assignment, IDeviceAlarmCreateRequest request,
+	    DeviceAlarm target) throws SiteWhereException {
+	if (assignment != null) {
+	    target.setDeviceId(assignment.getDeviceId());
+	    target.setDeviceAssignmentId(assignment.getId());
+	    target.setCustomerId(assignment.getCustomerId());
+	    target.setAreaId(assignment.getAreaId());
+	    target.setAssetId(assignment.getAssetId());
+	}
+	if (request.getAlarmMessage() != null) {
+	    target.setAlarmMessage(request.getAlarmMessage());
+	}
+	if (request.getState() != null) {
+	    target.setState(request.getState());
+	}
+	if (request.getTriggeredDate() != null) {
+	    target.setTriggeredDate(request.getTriggeredDate());
+	}
+	if (request.getAcknowledgedDate() != null) {
+	    target.setAcknowledgedDate(request.getAcknowledgedDate());
+	}
+	if (request.getResolvedDate() != null) {
+	    target.setResolvedDate(request.getResolvedDate());
+	}
+	if (request.getMetadata() != null) {
+	    target.getMetadata().clear();
+	    MetadataProvider.copy(request.getMetadata(), target);
+	}
+    }
+
+    /**
+     * Common logic for deleting a device alarm.
+     * 
+     * @param alarm
+     * @throws SiteWhereException
+     */
+    public static void deviceAlarmDeleteLogic(IDeviceAlarm alarm) throws SiteWhereException {
     }
 
     /**

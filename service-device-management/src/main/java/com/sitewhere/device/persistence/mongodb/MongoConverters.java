@@ -18,6 +18,7 @@ import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.customer.ICustomer;
 import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceAlarm;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.IDeviceType;
@@ -49,6 +50,7 @@ public class MongoConverters implements IMongoConverterLookup {
 	CONVERTERS.put(IDeviceStatus.class, new MongoDeviceStatus());
 	CONVERTERS.put(IDevice.class, new MongoDevice());
 	CONVERTERS.put(IDeviceAssignment.class, new MongoDeviceAssignment());
+	CONVERTERS.put(IDeviceAlarm.class, new MongoDeviceAlarm());
 	CONVERTERS.put(IDeviceStream.class, new MongoDeviceStream());
 	CONVERTERS.put(IDeviceGroup.class, new MongoDeviceGroup());
 	CONVERTERS.put(IDeviceGroupElement.class, new MongoDeviceGroupElement());

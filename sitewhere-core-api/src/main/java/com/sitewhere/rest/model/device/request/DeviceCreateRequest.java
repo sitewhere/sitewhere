@@ -7,7 +7,6 @@
  */
 package com.sitewhere.rest.model.device.request;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,12 +18,12 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 
 /**
- * Holds fields needed to create a new device.
+ * Fields needed to create/update a device.
  * 
  * @author Derek Adams
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
+public class DeviceCreateRequest implements IDeviceCreateRequest {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = 5102270168736590229L;

@@ -7,6 +7,7 @@
  */
 package com.sitewhere.spi.device.request;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
  * 
  * @author Derek
  */
-public interface IDeviceCreateRequest {
+public interface IDeviceCreateRequest extends Serializable {
 
     /**
      * Get reference token.

@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import com.sitewhere.grpc.model.CommonModel.GDeviceAlarmState;
 import com.sitewhere.grpc.model.CommonModel.GDeviceAssignmentStatus;
 import com.sitewhere.grpc.model.CommonModel.GDeviceContainerPolicy;
 import com.sitewhere.grpc.model.CommonModel.GOptionalBoolean;
@@ -36,6 +37,10 @@ import com.sitewhere.grpc.model.DeviceModel.GCustomerTypeCreateRequest;
 import com.sitewhere.grpc.model.DeviceModel.GCustomerTypeSearchCriteria;
 import com.sitewhere.grpc.model.DeviceModel.GCustomerTypeSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDevice;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceAlarm;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceAlarmCreateRequest;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceAlarmSearchCriteria;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceAlarmSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceAssignment;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceAssignmentCreateRequest;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceAssignmentSearchCriteria;
@@ -88,6 +93,7 @@ import com.sitewhere.rest.model.customer.CustomerType;
 import com.sitewhere.rest.model.customer.request.CustomerCreateRequest;
 import com.sitewhere.rest.model.customer.request.CustomerTypeCreateRequest;
 import com.sitewhere.rest.model.device.Device;
+import com.sitewhere.rest.model.device.DeviceAlarm;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.DeviceStatus;
@@ -99,6 +105,7 @@ import com.sitewhere.rest.model.device.element.DeviceSlot;
 import com.sitewhere.rest.model.device.element.DeviceUnit;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
+import com.sitewhere.rest.model.device.request.DeviceAlarmCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
@@ -111,6 +118,7 @@ import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.area.AreaSearchCriteria;
 import com.sitewhere.rest.model.search.customer.CustomerSearchCriteria;
+import com.sitewhere.rest.model.search.device.DeviceAlarmSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceCommandSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
@@ -127,9 +135,11 @@ import com.sitewhere.spi.customer.ICustomer;
 import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.customer.request.ICustomerCreateRequest;
 import com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest;
+import com.sitewhere.spi.device.DeviceAlarmState;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceAlarm;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceStatus;
@@ -143,6 +153,7 @@ import com.sitewhere.spi.device.element.IDeviceUnit;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
+import com.sitewhere.spi.device.request.IDeviceAlarmCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
@@ -155,6 +166,7 @@ import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
+import com.sitewhere.spi.search.device.IDeviceAlarmSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceCommandSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
@@ -1678,6 +1690,258 @@ public class DeviceModelConverter {
 	    grpc.putAllMetadata(api.getMetadata());
 	}
 	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
+	return grpc.build();
+    }
+
+    /**
+     * Convert device alarm state from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceAlarmState asApiDeviceAlarmState(GDeviceAlarmState grpc) throws SiteWhereException {
+	if (grpc == null) {
+	    return null;
+	}
+	switch (grpc) {
+	case ALARM_STATE_TRIGGERED:
+	    return DeviceAlarmState.Triggered;
+	case ALARM_STATE_ACKNOWLEDGED:
+	    return DeviceAlarmState.Acknowledged;
+	case ALARM_STATE_RESOLVED:
+	    return DeviceAlarmState.Resolved;
+	case UNRECOGNIZED:
+	    throw new SiteWhereException("Unknown device alarm state: " + grpc.name());
+	}
+	return null;
+    }
+
+    /**
+     * Convert device alarm state from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceAlarmState asGrpcDeviceAlarmState(DeviceAlarmState api) throws SiteWhereException {
+	if (api == null) {
+	    return null;
+	}
+	switch (api) {
+	case Triggered:
+	    return GDeviceAlarmState.ALARM_STATE_TRIGGERED;
+	case Acknowledged:
+	    return GDeviceAlarmState.ALARM_STATE_ACKNOWLEDGED;
+	case Resolved:
+	    return GDeviceAlarmState.ALARM_STATE_RESOLVED;
+	}
+	throw new SiteWhereException("Unknown device alarm state: " + api.name());
+    }
+
+    /**
+     * Convert device alarm create request from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceAlarmCreateRequest asApiDeviceAlarmCreateRequest(GDeviceAlarmCreateRequest grpc)
+	    throws SiteWhereException {
+	DeviceAlarmCreateRequest api = new DeviceAlarmCreateRequest();
+	api.setDeviceAssignmentToken(
+		grpc.hasDeviceAssignmentToken() ? grpc.getDeviceAssignmentToken().getValue() : null);
+	api.setAlarmMessage(grpc.hasAlarmMessage() ? grpc.getAlarmMessage().getValue() : null);
+	api.setTriggeringEventId(CommonModelConverter.asApiUuid(grpc.getTriggeringEventId()));
+	api.setState(DeviceModelConverter.asApiDeviceAlarmState(grpc.getState()));
+	api.setTriggeredDate(CommonModelConverter.asApiDate(grpc.getTriggeredDate()));
+	api.setAcknowledgedDate(CommonModelConverter.asApiDate(grpc.getAcknowledgedDate()));
+	api.setResolvedDate(CommonModelConverter.asApiDate(grpc.getResolvedDate()));
+	api.setMetadata(grpc.getMetadataMap());
+	return api;
+    }
+
+    /**
+     * Convert device alarm create request from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceAlarmCreateRequest asGrpcDeviceAlarmCreateRequest(IDeviceAlarmCreateRequest api)
+	    throws SiteWhereException {
+	GDeviceAlarmCreateRequest.Builder grpc = GDeviceAlarmCreateRequest.newBuilder();
+	if (api.getDeviceAssignmentToken() != null) {
+	    grpc.setDeviceAssignmentToken(GOptionalString.newBuilder().setValue(api.getDeviceAssignmentToken()));
+	}
+	if (api.getAlarmMessage() != null) {
+	    grpc.setAlarmMessage(GOptionalString.newBuilder().setValue(api.getAlarmMessage()));
+	}
+	if (api.getTriggeringEventId() != null) {
+	    grpc.setTriggeringEventId(CommonModelConverter.asGrpcUuid(api.getTriggeringEventId()));
+	}
+	if (api.getState() != null) {
+	    grpc.setState(DeviceModelConverter.asGrpcDeviceAlarmState(api.getState()));
+	}
+	if (api.getTriggeredDate() != null) {
+	    grpc.setTriggeredDate(CommonModelConverter.asGrpcDate(api.getTriggeredDate()));
+	}
+	if (api.getAcknowledgedDate() != null) {
+	    grpc.setAcknowledgedDate(CommonModelConverter.asGrpcDate(api.getAcknowledgedDate()));
+	}
+	if (api.getResolvedDate() != null) {
+	    grpc.setResolvedDate(CommonModelConverter.asGrpcDate(api.getResolvedDate()));
+	}
+	if (api.getMetadata() != null) {
+	    grpc.putAllMetadata(api.getMetadata());
+	}
+	return grpc.build();
+    }
+
+    /**
+     * Convert device alarm search criteria from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceAlarmSearchCriteria asApiDeviceAlarmSearchCriteria(GDeviceAlarmSearchCriteria grpc)
+	    throws SiteWhereException {
+	DeviceAlarmSearchCriteria api = new DeviceAlarmSearchCriteria();
+	api.setDeviceId(CommonModelConverter.asApiUuid(grpc.getDeviceId()));
+	api.setDeviceAssignmentId(CommonModelConverter.asApiUuid(grpc.getDeviceAssignmentId()));
+	api.setCustomerId(CommonModelConverter.asApiUuid(grpc.getCustomerId()));
+	api.setAreaId(CommonModelConverter.asApiUuid(grpc.getAreaId()));
+	api.setAssetId(CommonModelConverter.asApiUuid(grpc.getAssetId()));
+	api.setTriggeringEventId(CommonModelConverter.asApiUuid(grpc.getTriggeringEventId()));
+	api.setState(DeviceModelConverter.asApiDeviceAlarmState(grpc.getState()));
+	api.setPageNumber(grpc.getPageNumber());
+	api.setPageSize(grpc.getPageSize());
+	return api;
+    }
+
+    /**
+     * Convert device alarm search criteria from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceAlarmSearchCriteria asGrpcDeviceAlarmSearchCriteria(IDeviceAlarmSearchCriteria api)
+	    throws SiteWhereException {
+	GDeviceAlarmSearchCriteria.Builder grpc = GDeviceAlarmSearchCriteria.newBuilder();
+	if (api.getDeviceId() != null) {
+	    grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
+	}
+	if (api.getDeviceAssignmentId() != null) {
+	    grpc.setDeviceAssignmentId(CommonModelConverter.asGrpcUuid(api.getDeviceAssignmentId()));
+	}
+	if (api.getCustomerId() != null) {
+	    grpc.setCustomerId(CommonModelConverter.asGrpcUuid(api.getCustomerId()));
+	}
+	if (api.getAreaId() != null) {
+	    grpc.setAreaId(CommonModelConverter.asGrpcUuid(api.getAreaId()));
+	}
+	if (api.getAssetId() != null) {
+	    grpc.setAssetId(CommonModelConverter.asGrpcUuid(api.getAssetId()));
+	}
+	if (api.getTriggeringEventId() != null) {
+	    grpc.setTriggeringEventId(CommonModelConverter.asGrpcUuid(api.getTriggeringEventId()));
+	}
+	if (api.getState() != null) {
+	    grpc.setState(DeviceModelConverter.asGrpcDeviceAlarmState(api.getState()));
+	}
+	grpc.setPageNumber(api.getPageNumber());
+	grpc.setPageSize(api.getPageSize());
+	return grpc.build();
+    }
+
+    /**
+     * Convert device alarm search results from GRPC to API.
+     * 
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ISearchResults<IDeviceAlarm> asApiDeviceAlarmSearchResults(GDeviceAlarmSearchResults response)
+	    throws SiteWhereException {
+	List<IDeviceAlarm> results = new ArrayList<IDeviceAlarm>();
+	for (GDeviceAlarm grpc : response.getAlarmsList()) {
+	    results.add(DeviceModelConverter.asApiDeviceAlarm(grpc));
+	}
+	return new SearchResults<IDeviceAlarm>(results, response.getCount());
+    }
+
+    /**
+     * Convert device alarm from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceAlarm asApiDeviceAlarm(GDeviceAlarm grpc) throws SiteWhereException {
+	DeviceAlarm api = new DeviceAlarm();
+	api.setDeviceId(grpc.hasDeviceId() ? CommonModelConverter.asApiUuid(grpc.getDeviceId()) : null);
+	api.setDeviceAssignmentId(
+		grpc.hasDeviceAssignmentId() ? CommonModelConverter.asApiUuid(grpc.getDeviceAssignmentId()) : null);
+	api.setCustomerId(grpc.hasCustomerId() ? CommonModelConverter.asApiUuid(grpc.getCustomerId()) : null);
+	api.setAreaId(grpc.hasAreaId() ? CommonModelConverter.asApiUuid(grpc.getAreaId()) : null);
+	api.setAssetId(grpc.hasAssetId() ? CommonModelConverter.asApiUuid(grpc.getAssetId()) : null);
+	api.setAlarmMessage(grpc.hasAlarmMessage() ? grpc.getAlarmMessage().getValue() : null);
+	api.setTriggeringEventId(CommonModelConverter.asApiUuid(grpc.getTriggeringEventId()));
+	api.setState(DeviceModelConverter.asApiDeviceAlarmState(grpc.getState()));
+	api.setTriggeredDate(CommonModelConverter.asApiDate(grpc.getTriggeredDate()));
+	api.setAcknowledgedDate(CommonModelConverter.asApiDate(grpc.getAcknowledgedDate()));
+	api.setResolvedDate(CommonModelConverter.asApiDate(grpc.getResolvedDate()));
+	api.setMetadata(grpc.getMetadataMap());
+	return api;
+    }
+
+    /**
+     * Convert device alarm from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceAlarm asGrpcDeviceAlarm(IDeviceAlarm api) throws SiteWhereException {
+	GDeviceAlarm.Builder grpc = GDeviceAlarm.newBuilder();
+	if (api.getDeviceId() != null) {
+	    grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
+	}
+	if (api.getDeviceAssignmentId() != null) {
+	    grpc.setDeviceAssignmentId(CommonModelConverter.asGrpcUuid(api.getDeviceAssignmentId()));
+	}
+	if (api.getCustomerId() != null) {
+	    grpc.setCustomerId(CommonModelConverter.asGrpcUuid(api.getCustomerId()));
+	}
+	if (api.getAreaId() != null) {
+	    grpc.setAreaId(CommonModelConverter.asGrpcUuid(api.getAreaId()));
+	}
+	if (api.getAssetId() != null) {
+	    grpc.setAssetId(CommonModelConverter.asGrpcUuid(api.getAssetId()));
+	}
+	if (api.getAlarmMessage() != null) {
+	    grpc.setAlarmMessage(GOptionalString.newBuilder().setValue(api.getAlarmMessage()));
+	}
+	if (api.getTriggeringEventId() != null) {
+	    grpc.setTriggeringEventId(CommonModelConverter.asGrpcUuid(api.getTriggeringEventId()));
+	}
+	if (api.getState() != null) {
+	    grpc.setState(DeviceModelConverter.asGrpcDeviceAlarmState(api.getState()));
+	}
+	if (api.getTriggeredDate() != null) {
+	    grpc.setTriggeredDate(CommonModelConverter.asGrpcDate(api.getTriggeredDate()));
+	}
+	if (api.getAcknowledgedDate() != null) {
+	    grpc.setAcknowledgedDate(CommonModelConverter.asGrpcDate(api.getAcknowledgedDate()));
+	}
+	if (api.getResolvedDate() != null) {
+	    grpc.setResolvedDate(CommonModelConverter.asGrpcDate(api.getResolvedDate()));
+	}
+	if (api.getMetadata() != null) {
+	    grpc.putAllMetadata(api.getMetadata());
+	}
 	return grpc.build();
     }
 

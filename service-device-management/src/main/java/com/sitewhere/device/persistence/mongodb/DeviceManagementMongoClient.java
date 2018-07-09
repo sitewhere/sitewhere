@@ -51,6 +51,9 @@ public class DeviceManagementMongoClient extends MongoDbClient implements IDevic
     /** Injected name used for device assignments collection */
     private String deviceAssignmentsCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICE_ASSIGNMENTS_COLLECTION_NAME;
 
+    /** Injected name user for device alarms collection */
+    private String deviceAlarmsCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICE_ALARMS_COLLECTION_NAME;
+
     /** Injected name used for device groups collection */
     private String deviceGroupsCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICE_GROUPS_COLLECTION_NAME;
 
@@ -146,6 +149,15 @@ public class DeviceManagementMongoClient extends MongoDbClient implements IDevic
     @Override
     public MongoCollection<Document> getDeviceAssignmentsCollection() throws SiteWhereException {
 	return getDatabase().getCollection(getDeviceAssignmentsCollectionName());
+    }
+
+    /*
+     * @see com.sitewhere.device.persistence.mongodb.IDeviceManagementMongoClient#
+     * getDeviceAlarmsCollection()
+     */
+    @Override
+    public MongoCollection<Document> getDeviceAlarmsCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getDeviceAlarmsCollectionName());
     }
 
     /*
@@ -286,6 +298,14 @@ public class DeviceManagementMongoClient extends MongoDbClient implements IDevic
 
     public void setDeviceAssignmentsCollectionName(String deviceAssignmentsCollectionName) {
 	this.deviceAssignmentsCollectionName = deviceAssignmentsCollectionName;
+    }
+
+    public String getDeviceAlarmsCollectionName() {
+	return deviceAlarmsCollectionName;
+    }
+
+    public void setDeviceAlarmsCollectionName(String deviceAlarmsCollectionName) {
+	this.deviceAlarmsCollectionName = deviceAlarmsCollectionName;
     }
 
     public String getStreamsCollectionName() {

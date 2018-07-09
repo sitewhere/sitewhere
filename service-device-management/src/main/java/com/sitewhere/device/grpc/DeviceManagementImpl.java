@@ -16,6 +16,7 @@ import com.sitewhere.grpc.model.DeviceModel.GAreaSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GAreaTypeSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GCustomerSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GCustomerTypeSearchResults;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceAlarmSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceAssignmentSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceCommandSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupElementsSearchResults;
@@ -39,6 +40,7 @@ import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.customer.request.ICustomerCreateRequest;
 import com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest;
 import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceAlarm;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -48,6 +50,7 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
+import com.sitewhere.spi.device.request.IDeviceAlarmCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
@@ -2148,6 +2151,141 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 		    responseObserver);
 	} finally {
 	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getListDeviceAssignmentsMethod());
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * createDeviceAlarm(com.sitewhere.grpc.service.GCreateDeviceAlarmRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void createDeviceAlarm(GCreateDeviceAlarmRequest request,
+	    StreamObserver<GCreateDeviceAlarmResponse> responseObserver) {
+	try {
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getCreateDeviceAlarmMethod());
+	    IDeviceAlarmCreateRequest apiRequest = DeviceModelConverter
+		    .asApiDeviceAlarmCreateRequest(request.getRequest());
+	    IDeviceAlarm apiResult = getDeviceManagement().createDeviceAlarm(apiRequest);
+	    GCreateDeviceAlarmResponse.Builder response = GCreateDeviceAlarmResponse.newBuilder();
+	    response.setAlarm(DeviceModelConverter.asGrpcDeviceAlarm(apiResult));
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getCreateDeviceAlarmMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getCreateDeviceAlarmMethod());
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getDeviceAlarm(com.sitewhere.grpc.service.GGetDeviceAlarmRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getDeviceAlarm(GGetDeviceAlarmRequest request,
+	    StreamObserver<GGetDeviceAlarmResponse> responseObserver) {
+	try {
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetDeviceAlarmMethod());
+	    IDeviceAlarm apiResult = getDeviceManagement()
+		    .getDeviceAlarm(CommonModelConverter.asApiUuid(request.getId()));
+	    GGetDeviceAlarmResponse.Builder response = GGetDeviceAlarmResponse.newBuilder();
+	    if (apiResult != null) {
+		response.setAlarm(DeviceModelConverter.asGrpcDeviceAlarm(apiResult));
+	    }
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetDeviceAlarmMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetDeviceAlarmMethod());
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * updateDeviceAlarm(com.sitewhere.grpc.service.GUpdateDeviceAlarmRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void updateDeviceAlarm(GUpdateDeviceAlarmRequest request,
+	    StreamObserver<GUpdateDeviceAlarmResponse> responseObserver) {
+	try {
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getUpdateDeviceAlarmMethod());
+	    IDeviceAlarm apiResult = getDeviceManagement().updateDeviceAlarm(
+		    CommonModelConverter.asApiUuid(request.getAlarmId()),
+		    DeviceModelConverter.asApiDeviceAlarmCreateRequest(request.getRequest()));
+	    GUpdateDeviceAlarmResponse.Builder response = GUpdateDeviceAlarmResponse.newBuilder();
+	    if (apiResult != null) {
+		response.setAlarm(DeviceModelConverter.asGrpcDeviceAlarm(apiResult));
+	    }
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getUpdateDeviceAlarmMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getUpdateDeviceAlarmMethod());
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * searchDeviceAlarms(com.sitewhere.grpc.service.GSearchDeviceAlarmsRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void searchDeviceAlarms(GSearchDeviceAlarmsRequest request,
+	    StreamObserver<GSearchDeviceAlarmsResponse> responseObserver) {
+	try {
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getSearchDeviceAlarmsMethod());
+	    ISearchResults<IDeviceAlarm> apiResult = getDeviceManagement()
+		    .searchDeviceAlarms(DeviceModelConverter.asApiDeviceAlarmSearchCriteria(request.getCriteria()));
+	    GSearchDeviceAlarmsResponse.Builder response = GSearchDeviceAlarmsResponse.newBuilder();
+	    GDeviceAlarmSearchResults.Builder results = GDeviceAlarmSearchResults.newBuilder();
+	    for (IDeviceAlarm api : apiResult.getResults()) {
+		results.addAlarms(DeviceModelConverter.asGrpcDeviceAlarm(api));
+	    }
+	    results.setCount(apiResult.getNumResults());
+	    response.setResults(results.build());
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getSearchDeviceAlarmsMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getSearchDeviceAlarmsMethod());
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * deleteDeviceAlarm(com.sitewhere.grpc.service.GDeleteDeviceAlarmRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void deleteDeviceAlarm(GDeleteDeviceAlarmRequest request,
+	    StreamObserver<GDeleteDeviceAlarmResponse> responseObserver) {
+	try {
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceAlarmMethod());
+	    IDeviceAlarm apiResult = getDeviceManagement()
+		    .deleteDeviceAlarm(CommonModelConverter.asApiUuid(request.getId()));
+	    GDeleteDeviceAlarmResponse.Builder response = GDeleteDeviceAlarmResponse.newBuilder();
+	    response.setAlarm(DeviceModelConverter.asGrpcDeviceAlarm(apiResult));
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getDeleteDeviceAlarmMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getDeleteDeviceAlarmMethod());
 	}
     }
 

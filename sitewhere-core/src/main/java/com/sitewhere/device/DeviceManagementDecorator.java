@@ -23,6 +23,7 @@ import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.customer.request.ICustomerCreateRequest;
 import com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest;
 import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceAlarm;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -32,6 +33,7 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
+import com.sitewhere.spi.device.request.IDeviceAlarmCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
@@ -44,6 +46,7 @@ import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
+import com.sitewhere.spi.search.device.IDeviceAlarmSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceCommandSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
@@ -394,6 +397,55 @@ public class DeviceManagementDecorator extends TenantEngineLifecycleComponentDec
     @Override
     public IDeviceAssignment deleteDeviceAssignment(UUID id, boolean force) throws SiteWhereException {
 	return getDelegate().deleteDeviceAssignment(id, force);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#createDeviceAlarm(com.sitewhere.
+     * spi.device.request.IDeviceAlarmCreateRequest)
+     */
+    @Override
+    public IDeviceAlarm createDeviceAlarm(IDeviceAlarmCreateRequest request) throws SiteWhereException {
+	return getDelegate().createDeviceAlarm(request);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAlarm(java.util.UUID,
+     * com.sitewhere.spi.device.request.IDeviceAlarmCreateRequest)
+     */
+    @Override
+    public IDeviceAlarm updateDeviceAlarm(UUID id, IDeviceAlarmCreateRequest request) throws SiteWhereException {
+	return getDelegate().updateDeviceAlarm(id, request);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceAlarm(java.util.UUID)
+     */
+    @Override
+    public IDeviceAlarm getDeviceAlarm(UUID id) throws SiteWhereException {
+	return getDelegate().getDeviceAlarm(id);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#searchDeviceAlarms(com.sitewhere.
+     * spi.search.device.IDeviceAlarmSearchCriteria)
+     */
+    @Override
+    public ISearchResults<IDeviceAlarm> searchDeviceAlarms(IDeviceAlarmSearchCriteria criteria)
+	    throws SiteWhereException {
+	return getDelegate().searchDeviceAlarms(criteria);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceAlarm(java.util.UUID)
+     */
+    @Override
+    public IDeviceAlarm deleteDeviceAlarm(UUID id) throws SiteWhereException {
+	return getDelegate().deleteDeviceAlarm(id);
     }
 
     /*

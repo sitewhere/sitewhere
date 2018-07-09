@@ -1183,6 +1183,81 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * createDeviceAlarm(com.sitewhere.grpc.service.GCreateDeviceAlarmRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void createDeviceAlarm(GCreateDeviceAlarmRequest request,
+	    StreamObserver<GCreateDeviceAlarmResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.createDeviceAlarm(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getDeviceAlarm(com.sitewhere.grpc.service.GGetDeviceAlarmRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getDeviceAlarm(GGetDeviceAlarmRequest request,
+	    StreamObserver<GGetDeviceAlarmResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getDeviceAlarm(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * updateDeviceAlarm(com.sitewhere.grpc.service.GUpdateDeviceAlarmRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void updateDeviceAlarm(GUpdateDeviceAlarmRequest request,
+	    StreamObserver<GUpdateDeviceAlarmResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.updateDeviceAlarm(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * searchDeviceAlarms(com.sitewhere.grpc.service.GSearchDeviceAlarmsRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void searchDeviceAlarms(GSearchDeviceAlarmsRequest request,
+	    StreamObserver<GSearchDeviceAlarmsResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.searchDeviceAlarms(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * deleteDeviceAlarm(com.sitewhere.grpc.service.GDeleteDeviceAlarmRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void deleteDeviceAlarm(GDeleteDeviceAlarmRequest request,
+	    StreamObserver<GDeleteDeviceAlarmResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.deleteDeviceAlarm(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
      * createDeviceStream(com.sitewhere.grpc.service.GCreateDeviceStreamRequest,
      * io.grpc.stub.StreamObserver)
      */

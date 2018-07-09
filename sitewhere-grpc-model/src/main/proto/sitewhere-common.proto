@@ -166,3 +166,10 @@ enum GAssetCategory {
 	ASSET_CATEGORY_PERSON = 1;
 	ASSET_CATEGORY_HARDWARE = 2;
 }
+
+// Device alarm state.
+enum GDeviceAlarmState {
+	ALARM_STATE_TRIGGERED = 0;
+	ALARM_STATE_ACKNOWLEDGED = 1;
+	ALARM_STATE_RESOLVED = 2;
+}

@@ -55,6 +55,9 @@ public interface IDeviceManagementMongoClient {
     /** Default collection name for SiteWhere device assignments */
     public static final String DEFAULT_DEVICE_ASSIGNMENTS_COLLECTION_NAME = "assignments";
 
+    /** Default collection name for SiteWhere device alarms */
+    public static final String DEFAULT_DEVICE_ALARMS_COLLECTION_NAME = "devicealarms";
+
     /** Default collection name for SiteWhere device streams */
     public static final String DEFAULT_DEVICE_STREAMS_COLLECTION_NAME = "streams";
 
@@ -140,6 +143,14 @@ public interface IDeviceManagementMongoClient {
      * @throws SiteWhereException
      */
     public MongoCollection<Document> getDeviceAssignmentsCollection() throws SiteWhereException;
+
+    /**
+     * Collection for device alarms.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public MongoCollection<Document> getDeviceAlarmsCollection() throws SiteWhereException;
 
     /**
      * Collection for device groups.

@@ -15,6 +15,7 @@ import com.sitewhere.rest.model.area.request.AreaTypeCreateRequest;
 import com.sitewhere.rest.model.area.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.customer.request.CustomerCreateRequest;
 import com.sitewhere.rest.model.customer.request.CustomerTypeCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceAlarmCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
@@ -28,6 +29,7 @@ import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.customer.ICustomer;
 import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceAlarm;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceType;
@@ -221,10 +223,6 @@ public class DeviceManagementRequestBuilder {
 	return new DeviceCreateRequest.Builder(deviceTypeToken, hardwareId);
     }
 
-    // public DeviceCreateRequest.Builder fromDevice(IDevice device) {
-    // return new DeviceCreateRequest.Builder(device);
-    // }
-
     /**
      * Persist a previously created device.
      * 
@@ -271,6 +269,28 @@ public class DeviceManagementRequestBuilder {
      */
     public IDeviceAssignment persist(DeviceAssignmentCreateRequest.Builder builder) throws SiteWhereException {
 	return getDeviceManagement().createDeviceAssignment(builder.build());
+    }
+
+    /**
+     * Create a new device alarm.
+     * 
+     * @param deviceAssignmentToken
+     * @param message
+     * @return
+     */
+    public DeviceAlarmCreateRequest.Builder newDeviceAlarm(String deviceAssignmentToken, String message) {
+	return new DeviceAlarmCreateRequest.Builder(deviceAssignmentToken, message);
+    }
+
+    /**
+     * Persist a previously created device alarm.
+     * 
+     * @param builder
+     * @return
+     * @throws SiteWhereException
+     */
+    public IDeviceAlarm persist(DeviceAlarmCreateRequest.Builder builder) throws SiteWhereException {
+	return getDeviceManagement().createDeviceAlarm(builder.build());
     }
 
     /**
