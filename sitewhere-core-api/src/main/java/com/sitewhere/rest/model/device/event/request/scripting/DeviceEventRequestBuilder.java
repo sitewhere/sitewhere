@@ -18,8 +18,12 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.command.IDeviceCommand;
+import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
+import com.sitewhere.spi.device.event.IDeviceLocation;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.search.ISearchResults;
 
 /**
@@ -120,28 +124,25 @@ public class DeviceEventRequestBuilder {
 	    this.deviceAssignment = deviceAssignment;
 	}
 
-	public AssignmentScope persist(DeviceLocationCreateRequest.Builder builder) throws SiteWhereException {
+	public IDeviceLocation persist(DeviceLocationCreateRequest.Builder builder) throws SiteWhereException {
 	    DeviceLocationCreateRequest request = builder.build();
-	    events.addDeviceLocation(getDeviceAssignment().getId(), request);
-	    return this;
+	    return events.addDeviceLocation(getDeviceAssignment().getId(), request);
 	}
 
-	public AssignmentScope persist(DeviceMeasurementCreateRequest.Builder builder) throws SiteWhereException {
+	public IDeviceMeasurement persist(DeviceMeasurementCreateRequest.Builder builder) throws SiteWhereException {
 	    DeviceMeasurementCreateRequest request = builder.build();
-	    events.addDeviceMeasurement(getDeviceAssignment().getId(), request);
-	    return this;
+	    return events.addDeviceMeasurement(getDeviceAssignment().getId(), request);
 	}
 
-	public AssignmentScope persist(DeviceAlertCreateRequest.Builder builder) throws SiteWhereException {
+	public IDeviceAlert persist(DeviceAlertCreateRequest.Builder builder) throws SiteWhereException {
 	    DeviceAlertCreateRequest request = builder.build();
-	    events.addDeviceAlert(getDeviceAssignment().getId(), request);
-	    return this;
+	    return events.addDeviceAlert(getDeviceAssignment().getId(), request);
 	}
 
-	public AssignmentScope persist(DeviceCommandInvocationCreateRequest.Builder builder) throws SiteWhereException {
+	public IDeviceCommandInvocation persist(DeviceCommandInvocationCreateRequest.Builder builder)
+		throws SiteWhereException {
 	    DeviceCommandInvocationCreateRequest request = builder.build();
-	    events.addDeviceCommandInvocation(getDeviceAssignment().getId(), request);
-	    return this;
+	    return events.addDeviceCommandInvocation(getDeviceAssignment().getId(), request);
 	}
 
 	public IDeviceAssignment getDeviceAssignment() {

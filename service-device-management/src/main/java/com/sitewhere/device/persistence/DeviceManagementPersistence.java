@@ -957,6 +957,7 @@ public class DeviceManagementPersistence extends Persistence {
 	require("Alarm message", request.getAlarmMessage());
 	alarm.setAlarmMessage(request.getAlarmMessage());
 
+	alarm.setTriggeringEventId(request.getTriggeringEventId());
 	alarm.setState(request.getState() != null ? request.getState() : DeviceAlarmState.Triggered);
 	alarm.setTriggeredDate(request.getTriggeredDate() != null ? request.getTriggeredDate() : new Date());
 	alarm.setAcknowledgedDate(request.getAcknowledgedDate());

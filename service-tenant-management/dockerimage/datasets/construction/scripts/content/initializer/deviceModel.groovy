@@ -318,10 +318,14 @@ def createMeasurements = { assn, start ->
 			}
 			if (temp > criticalTemp) {
 				alert = eventBuilder.newAlert 'engine.overheat', 'Engine temperature critical. Shutting down.' on(new Date(current)) critical() trackState()
+			}
+			alert = eventBuilder.forAssignment assn.token persist alert
+			
+			if (temp > criticalTemp) {
 				def alarm = deviceBuilder.newDeviceAlarm assn.token, 'Engine shut down due to critical temperature of ' + temp + ' degrees' 
+				alarm.withTriggeringEventId alert.id
 				deviceBuilder.persist alarm
 			}
-			eventBuilder.forAssignment assn.token persist alert
 			
 			alertCount++;
 		}
