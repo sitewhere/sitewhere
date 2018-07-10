@@ -24,9 +24,6 @@ public interface IDeviceRegistrationParser {
      */
     public static enum Elements {
 
-	/** Custom registration manager */
-	RegistrationManager("registration-manager"),
-
 	/** Default registration manager */
 	DefaultRegistrationManager("default-registration-manager");
 

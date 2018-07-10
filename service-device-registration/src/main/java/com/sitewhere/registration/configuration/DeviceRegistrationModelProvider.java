@@ -91,17 +91,31 @@ public class DeviceRegistrationModelProvider extends ConfigurationModelProvider 
 	builder.attribute((new AttributeNode.Builder("Allow registration of new devices", "allowNewDevices",
 		AttributeType.Boolean, ConfigurationModelProvider.ATTR_GROUP_GENERAL)
 			.description("Indicates whether new devices should be allowed to register with the system")
-			.defaultValue("true").build()));
-	builder.attribute((new AttributeNode.Builder("Automatically assign site", "autoAssignSite",
-		AttributeType.Boolean, ConfigurationModelProvider.ATTR_GROUP_GENERAL)
-			.description("Indicates if a site should automatically be assigned if no site token is "
-				+ "passed in registration request.")
+			.defaultValue("false").build()));
+	builder.attribute((new AttributeNode.Builder("Use default device type", "useDefaultDeviceType",
+		AttributeType.Boolean, ConfigurationModelProvider.ATTR_GROUP_GENERAL).description(
+			"Indicates if a default device type should be used if no device type token is passed in registration request.")
 			.build()));
-	builder.attribute((new AttributeNode.Builder("Site token", "autoAssignSiteToken", AttributeType.String,
+	builder.attribute((new AttributeNode.Builder("Default device type", "defaultDeviceTypeId",
+		AttributeType.DeviceTypeReference, ConfigurationModelProvider.ATTR_GROUP_GENERAL)
+			.description(
+				"Default device type used if no device type token is passed in registration request.")
+			.build()));
+	builder.attribute((new AttributeNode.Builder("Use default customer", "useDefaultCustomer",
+		AttributeType.Boolean, ConfigurationModelProvider.ATTR_GROUP_GENERAL).description(
+			"Indicates if a default customer should be used if no customer token is passed in registration request.")
+			.build()));
+	builder.attribute((new AttributeNode.Builder("Default customer", "defaultCustomerId",
+		AttributeType.CustomerReference, ConfigurationModelProvider.ATTR_GROUP_GENERAL)
+			.description("Default customer used if no customer token is passed in registration request.")
+			.build()));
+	builder.attribute((new AttributeNode.Builder("Use default area", "useDefaultArea", AttributeType.Boolean,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description(
+			"Indicates if a default area should be used if no area token is passed in registration request.")
+			.build()));
+	builder.attribute((new AttributeNode.Builder("Default area", "defaultAreaId", AttributeType.AreaReference,
 		ConfigurationModelProvider.ATTR_GROUP_GENERAL)
-			.description("Site token used for registering new devices if auto-assign is enabled "
-				+ "and no site token is passed.")
-			.build()));
+			.description("Default area used if no area token is passed in registration request.").build()));
 	return builder.build();
     }
 }

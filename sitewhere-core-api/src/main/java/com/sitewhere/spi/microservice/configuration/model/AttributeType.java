@@ -29,9 +29,15 @@ public enum AttributeType {
     /** Script */
     Script,
 
+    /** Reference to a device type by id */
+    DeviceTypeReference,
+
+    /** Reference to a customer by id */
+    CustomerReference,
+
     /** Reference to an area by id */
     AreaReference,
 
-    /** Reference to a device type by id */
-    DeviceTypeReference;
+    /** Reference to an asset by id */
+    AssetReference;
 }

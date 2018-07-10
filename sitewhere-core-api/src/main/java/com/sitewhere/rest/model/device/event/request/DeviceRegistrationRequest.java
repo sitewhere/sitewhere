@@ -29,6 +29,9 @@ public class DeviceRegistrationRequest extends MetadataProvider implements IDevi
     /** Device type token */
     private String deviceTypeToken;
 
+    /** Customer token */
+    private String customerToken;
+
     /** Area token */
     private String areaToken;
 
@@ -56,6 +59,19 @@ public class DeviceRegistrationRequest extends MetadataProvider implements IDevi
 
     public void setDeviceTypeToken(String deviceTypeToken) {
 	this.deviceTypeToken = deviceTypeToken;
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest#
+     * getCustomerToken()
+     */
+    @Override
+    public String getCustomerToken() {
+	return customerToken;
+    }
+
+    public void setCustomerToken(String customerToken) {
+	this.customerToken = customerToken;
     }
 
     /*

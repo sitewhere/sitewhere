@@ -50,10 +50,6 @@ public class DeviceRegistrationParser extends AbstractBeanDefinitionParser {
 		throw new RuntimeException("Unknown device registration element: " + child.getLocalName());
 	    }
 	    switch (type) {
-	    case RegistrationManager: {
-		parseRegistrationManager(child, context);
-		break;
-	    }
 	    case DefaultRegistrationManager: {
 		parseDefaultRegistrationManager(child, context);
 		break;
@@ -77,32 +73,37 @@ public class DeviceRegistrationParser extends AbstractBeanDefinitionParser {
 	    manager.addPropertyValue("allowNewDevices", allowNewDevices.getValue());
 	}
 
-	Attr autoAssignSite = element.getAttributeNode("autoAssignSite");
-	if (autoAssignSite != null) {
-	    manager.addPropertyValue("autoAssignSite", autoAssignSite.getValue());
+	Attr useDefaultDeviceType = element.getAttributeNode("useDefaultDeviceType");
+	if (useDefaultDeviceType != null) {
+	    manager.addPropertyValue("useDefaultDeviceType", useDefaultDeviceType.getValue());
 	}
 
-	Attr autoAssignToken = element.getAttributeNode("autoAssignToken");
-	if (autoAssignToken != null) {
-	    manager.addPropertyValue("autoAssignToken", autoAssignToken.getValue());
+	Attr defaultDeviceTypeId = element.getAttributeNode("defaultDeviceTypeId");
+	if (defaultDeviceTypeId != null) {
+	    manager.addPropertyValue("defaultDeviceTypeId", defaultDeviceTypeId.getValue());
+	}
+
+	Attr useDefaultCustomer = element.getAttributeNode("useDefaultCustomer");
+	if (useDefaultCustomer != null) {
+	    manager.addPropertyValue("useDefaultCustomer", useDefaultCustomer.getValue());
+	}
+
+	Attr defaultCustomerId = element.getAttributeNode("defaultCustomerId");
+	if (defaultCustomerId != null) {
+	    manager.addPropertyValue("defaultCustomerId", defaultCustomerId.getValue());
+	}
+
+	Attr useDefaultArea = element.getAttributeNode("useDefaultArea");
+	if (useDefaultArea != null) {
+	    manager.addPropertyValue("useDefaultArea", useDefaultArea.getValue());
+	}
+
+	Attr defaultAreaId = element.getAttributeNode("defaultAreaId");
+	if (defaultAreaId != null) {
+	    manager.addPropertyValue("defaultAreaId", defaultAreaId.getValue());
 	}
 
 	context.getRegistry().registerBeanDefinition(DeviceRegistrationBeans.BEAN_REGISTRATION_MANAGER,
 		manager.getBeanDefinition());
-    }
-
-    /**
-     * Parse a registration manager reference.
-     * 
-     * @param element
-     * @param context
-     */
-    protected void parseRegistrationManager(Element element, ParserContext context) {
-	Attr ref = element.getAttributeNode("ref");
-	if (ref == null) {
-	    throw new RuntimeException("Registration manager reference does not have ref defined.");
-	}
-
-	context.getRegistry().registerAlias(DeviceRegistrationBeans.BEAN_REGISTRATION_MANAGER, ref.getValue());
     }
 }

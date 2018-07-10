@@ -33,6 +33,13 @@ public interface IDeviceRegistrationRequest extends IMetadataProvider, Serializa
     public String getDeviceTypeToken();
 
     /**
+     * Get token for customer to which device should be assigned.
+     * 
+     * @return
+     */
+    public String getCustomerToken();
+
+    /**
      * Get token for area to which device should be assigned.
      * 
      * @return

@@ -31,19 +31,50 @@ public interface IRegistrationManager extends ITenantEngineLifecycleComponent {
     public boolean isAllowNewDevices();
 
     /**
+     * Indicates whether a default device type is used if information is not passed
+     * in the registration request.
+     * 
+     * @return
+     */
+    public boolean isUseDefaultDeviceType();
+
+    /**
      * Get id of device type that will be used if no device type is provided in
      * request.
      * 
      * @return
      */
-    public UUID getAutoAssignDeviceTypeId();
+    public UUID getDefaultDeviceTypeId();
+
+    /**
+     * Indicates whether a default customer is used when creating a device
+     * assignment for an unassigned device.
+     * 
+     * @return
+     */
+    public boolean isUseDefaultCustomer();
+
+    /**
+     * Get id of customer that will be used if no customer is provided in request.
+     * 
+     * @return
+     */
+    public UUID getDefaultCustomerId();
+
+    /**
+     * Indicates whether a default area is used when creating a device assignment
+     * for an unassigned device.
+     * 
+     * @return
+     */
+    public boolean isUseDefaultArea();
 
     /**
      * Get id of area that will be used if no area is provided in request.
      * 
      * @return
      */
-    public UUID getAutoAssignAreaId();
+    public UUID getDefaultAreaId();
 
     /**
      * Handle registration of a new device.

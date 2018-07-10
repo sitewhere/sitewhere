@@ -6,10 +6,12 @@
 	targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/device-registration"
 	elementFormDefault="qualified" attributeFormDefault="unqualified">
 
-	<xsd:import namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
+	<xsd:import
+		namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
 		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
 
-	<xsd:element name="device-registration" type="deviceRegistrationType">
+	<xsd:element name="device-registration"
+		type="deviceRegistrationType">
 		<xsd:annotation>
 			<xsd:documentation>
 				Provides configuration information for the
@@ -26,8 +28,8 @@
 	</xsd:complexType>
 
 	<!-- Used as a placeholder for registration manager elements to allow substitutionGroups -->
-	<xsd:element name="abstract-registration-manager" abstract="true"
-		type="abstractRegistrationManagerType">
+	<xsd:element name="abstract-registration-manager"
+		abstract="true" type="abstractRegistrationManagerType">
 		<xsd:annotation>
 			<xsd:documentation>
 				A placeholder for registration manager elements.
@@ -38,33 +40,9 @@
 	<!-- Common registration manager element information -->
 	<xsd:complexType name="abstractRegistrationManagerType" />
 
-	<!-- Registration manager reference -->
-	<xsd:element name="registration-manager" type="registrationManagerReferenceType"
-		substitutionGroup="abstract-registration-manager">
-		<xsd:annotation>
-			<xsd:documentation>
-				Allows a custom registration manager to be
-				installed.
-			</xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="registrationManagerReferenceType">
-		<xsd:complexContent>
-			<xsd:extension base="abstractRegistrationManagerType">
-				<xsd:attribute name="ref" type="xsd:string" use="required">
-					<xsd:annotation>
-						<xsd:documentation>
-							Identifies bean that implements registration
-							manager.
-						</xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-
 	<!-- Default registration manager implementation -->
-	<xsd:element name="default-registration-manager" type="defaultRegistrationManagerType"
+	<xsd:element name="default-registration-manager"
+		type="defaultRegistrationManagerType"
 		substitutionGroup="abstract-registration-manager">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -76,30 +54,57 @@
 	<xsd:complexType name="defaultRegistrationManagerType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractRegistrationManagerType">
-				<xsd:attribute name="allowNewDevices" type="xsd:boolean">
+				<xsd:attribute name="allowNewDevices"
+					type="xsd:boolean">
 					<xsd:annotation>
 						<xsd:documentation>Indicates whether new devices should be allowed
-							to register. If
-							set
-							to false, devices not already in the system
+							to register. If set to false, devices not already in the system
 							will be rejected.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="autoAssignSite" type="xsd:boolean">
+				<xsd:attribute name="useDefaultDeviceType"
+					type="xsd:boolean">
 					<xsd:annotation>
-						<xsd:documentation>Indicates whether the site should automatically
-							be chosen if not
-							passed with registration request.
+						<xsd:documentation>Indicates whether the device type should
+							automatically be chosen if not passed with registration request.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="autoAssignToken" type="xsd:string">
+				<xsd:attribute name="defaultDeviceTypeId"
+					type="xsd:string">
 					<xsd:annotation>
-						<xsd:documentation>Token for site used in auto assignment. If not
-							set and
-							'autoAssignSite' is set to true, the first site will be
-							used.
+						<xsd:documentation>Unique id for device type used in device
+							auto-creation.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="useDefaultCustomer"
+					type="xsd:boolean">
+					<xsd:annotation>
+						<xsd:documentation>Indicates whether a default customer should be
+							used when creating a default device assignment.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="defaultCustomerId"
+					type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>Unique id for customer used in auto assignment.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="useDefaultArea"
+					type="xsd:boolean">
+					<xsd:annotation>
+						<xsd:documentation>Indicates whether a default area should be used
+							when creating a default device assignment.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="defaultAreaId" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>Unique id for area used in auto assignment.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
