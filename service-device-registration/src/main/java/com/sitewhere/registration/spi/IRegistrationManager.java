@@ -7,8 +7,6 @@
  */
 package com.sitewhere.registration.spi;
 
-import java.util.UUID;
-
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
@@ -39,12 +37,12 @@ public interface IRegistrationManager extends ITenantEngineLifecycleComponent {
     public boolean isUseDefaultDeviceType();
 
     /**
-     * Get id of device type that will be used if no device type is provided in
+     * Get token of device type that will be used if no device type is provided in
      * request.
      * 
      * @return
      */
-    public UUID getDefaultDeviceTypeId();
+    public String getDefaultDeviceTypeToken();
 
     /**
      * Indicates whether a default customer is used when creating a device
@@ -55,11 +53,12 @@ public interface IRegistrationManager extends ITenantEngineLifecycleComponent {
     public boolean isUseDefaultCustomer();
 
     /**
-     * Get id of customer that will be used if no customer is provided in request.
+     * Get token of customer that will be used if no customer is provided in
+     * request.
      * 
      * @return
      */
-    public UUID getDefaultCustomerId();
+    public String getDefaultCustomerToken();
 
     /**
      * Indicates whether a default area is used when creating a device assignment
@@ -70,11 +69,11 @@ public interface IRegistrationManager extends ITenantEngineLifecycleComponent {
     public boolean isUseDefaultArea();
 
     /**
-     * Get id of area that will be used if no area is provided in request.
+     * Get token of area that will be used if no area is provided in request.
      * 
      * @return
      */
-    public UUID getDefaultAreaId();
+    public String getDefaultAreaToken();
 
     /**
      * Handle registration of a new device.

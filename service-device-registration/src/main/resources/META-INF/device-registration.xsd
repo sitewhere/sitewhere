@@ -71,10 +71,10 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="defaultDeviceTypeId"
+				<xsd:attribute name="defaultDeviceTypeToken"
 					type="xsd:string">
 					<xsd:annotation>
-						<xsd:documentation>Unique id for device type used in device
+						<xsd:documentation>Token for device type used in device
 							auto-creation.
 						</xsd:documentation>
 					</xsd:annotation>
@@ -87,10 +87,10 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="defaultCustomerId"
+				<xsd:attribute name="defaultCustomerToken"
 					type="xsd:string">
 					<xsd:annotation>
-						<xsd:documentation>Unique id for customer used in auto assignment.
+						<xsd:documentation>Token for customer used in auto assignment.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -102,9 +102,10 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="defaultAreaId" type="xsd:string">
+				<xsd:attribute name="defaultAreaToken"
+					type="xsd:string">
 					<xsd:annotation>
-						<xsd:documentation>Unique id for area used in auto assignment.
+						<xsd:documentation>Token for area used in auto assignment.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>

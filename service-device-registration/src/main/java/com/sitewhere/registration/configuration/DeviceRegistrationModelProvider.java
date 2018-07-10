@@ -96,7 +96,7 @@ public class DeviceRegistrationModelProvider extends ConfigurationModelProvider 
 		AttributeType.Boolean, ConfigurationModelProvider.ATTR_GROUP_GENERAL).description(
 			"Indicates if a default device type should be used if no device type token is passed in registration request.")
 			.build()));
-	builder.attribute((new AttributeNode.Builder("Default device type", "defaultDeviceTypeId",
+	builder.attribute((new AttributeNode.Builder("Default device type", "defaultDeviceTypeToken",
 		AttributeType.DeviceTypeReference, ConfigurationModelProvider.ATTR_GROUP_GENERAL)
 			.description(
 				"Default device type used if no device type token is passed in registration request.")
@@ -105,7 +105,7 @@ public class DeviceRegistrationModelProvider extends ConfigurationModelProvider 
 		AttributeType.Boolean, ConfigurationModelProvider.ATTR_GROUP_GENERAL).description(
 			"Indicates if a default customer should be used if no customer token is passed in registration request.")
 			.build()));
-	builder.attribute((new AttributeNode.Builder("Default customer", "defaultCustomerId",
+	builder.attribute((new AttributeNode.Builder("Default customer", "defaultCustomerToken",
 		AttributeType.CustomerReference, ConfigurationModelProvider.ATTR_GROUP_GENERAL)
 			.description("Default customer used if no customer token is passed in registration request.")
 			.build()));
@@ -113,7 +113,7 @@ public class DeviceRegistrationModelProvider extends ConfigurationModelProvider 
 		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description(
 			"Indicates if a default area should be used if no area token is passed in registration request.")
 			.build()));
-	builder.attribute((new AttributeNode.Builder("Default area", "defaultAreaId", AttributeType.AreaReference,
+	builder.attribute((new AttributeNode.Builder("Default area", "defaultAreaToken", AttributeType.AreaReference,
 		ConfigurationModelProvider.ATTR_GROUP_GENERAL)
 			.description("Default area used if no area token is passed in registration request.").build()));
 	return builder.build();

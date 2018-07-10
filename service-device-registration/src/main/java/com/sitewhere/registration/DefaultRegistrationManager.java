@@ -7,7 +7,8 @@
  */
 package com.sitewhere.registration;
 
-import java.util.UUID;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.registration.spi.IRegistrationManager;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice;
@@ -47,7 +48,7 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
     private boolean useDefaultDeviceType = false;
 
     /** Id of device type that will be used if none provided */
-    private UUID defaultDeviceTypeId = null;
+    private String defaultDeviceTypeToken = null;
 
     /** Device type used if not provided in registration request */
     private IDeviceType defaultDeviceType;
@@ -55,8 +56,8 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
     /** Indicates if a default customer used if not provided in request */
     private boolean useDefaultCustomer = false;
 
-    /** Id of customer that will be used by default in assignment */
-    private UUID defaultCustomerId = null;
+    /** Token of customer that will be used by default in assignment */
+    private String defaultCustomerToken = null;
 
     /** Customer used for automatic assignment */
     private ICustomer defaultCustomer;
@@ -64,8 +65,8 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
     /** Indicates if a default area used if not provided in request */
     private boolean useDefaultArea = false;
 
-    /** Id of area that will be used by default in assignment */
-    private UUID defaultAreaId = null;
+    /** Token of area that will be used by default in assignment */
+    private String defaultAreaToken = null;
 
     /** Area used for automatic assignment */
     private IArea defaultArea;
@@ -83,28 +84,37 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
      */
     @Override
     public void handleDeviceRegistration(IDeviceRegistrationRequest request) throws SiteWhereException {
-	getLogger().debug("Handling device registration request.");
-	IDevice device = getOrCreateDevice(request);
+	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
+	try {
+	    Authentication system = getMicroservice().getSystemUser()
+		    .getAuthenticationForTenant(getTenantEngine().getTenant());
+	    SecurityContextHolder.getContext().setAuthentication(system);
 
-	// Find assignment metadata that should be associated.
-	ICustomer customer = getCustomerFor(request);
-	IArea area = getAreaFor(request);
+	    getLogger().debug("Handling device registration request.");
+	    IDevice device = getOrCreateDevice(request);
 
-	// Make sure device is assigned.
-	if (device.getDeviceAssignmentId() == null) {
-	    getLogger().debug("Handling unassigned device for registration.");
-	    DeviceAssignmentCreateRequest assnCreate = new DeviceAssignmentCreateRequest();
-	    assnCreate.setDeviceToken(device.getToken());
-	    if (customer != null) {
-		assnCreate.setCustomerToken(customer.getToken());
+	    // Find assignment metadata that should be associated.
+	    ICustomer customer = getCustomerFor(request);
+	    IArea area = getAreaFor(request);
+
+	    // Make sure device is assigned.
+	    if (device.getDeviceAssignmentId() == null) {
+		getLogger().debug("Handling unassigned device for registration.");
+		DeviceAssignmentCreateRequest assnCreate = new DeviceAssignmentCreateRequest();
+		assnCreate.setDeviceToken(device.getToken());
+		if (customer != null) {
+		    assnCreate.setCustomerToken(customer.getToken());
+		}
+		if (area != null) {
+		    assnCreate.setAreaToken(area.getToken());
+		}
+		getDeviceManagement().createDeviceAssignment(assnCreate);
 	    }
-	    if (area != null) {
-		assnCreate.setAreaToken(area.getToken());
-	    }
-	    getDeviceManagement().createDeviceAssignment(assnCreate);
+	    boolean isNewRegistration = (device != null);
+	    sendRegistrationAck(request.getDeviceToken(), isNewRegistration);
+	} finally {
+	    SecurityContextHolder.getContext().setAuthentication(previous);
 	}
-	boolean isNewRegistration = (device != null);
-	sendRegistrationAck(request.getDeviceToken(), isNewRegistration);
     }
 
     /**
@@ -299,26 +309,35 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	if (getDefaultDeviceTypeId() != null) {
-	    IDeviceType deviceType = getDeviceManagement().getDeviceType(getDefaultDeviceTypeId());
-	    if (deviceType == null) {
-		throw new SiteWhereException("Registration manager auto assignment device type is invalid.");
+	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
+	try {
+	    Authentication system = getMicroservice().getSystemUser()
+		    .getAuthenticationForTenant(getTenantEngine().getTenant());
+	    SecurityContextHolder.getContext().setAuthentication(system);
+
+	    if (getDefaultDeviceTypeToken() != null) {
+		IDeviceType deviceType = getDeviceManagement().getDeviceTypeByToken(getDefaultDeviceTypeToken());
+		if (deviceType == null) {
+		    throw new SiteWhereException("Registration manager auto assignment device type is invalid.");
+		}
+		DefaultRegistrationManager.this.defaultDeviceType = deviceType;
 	    }
-	    this.defaultDeviceType = deviceType;
-	}
-	if (getDefaultCustomerId() != null) {
-	    ICustomer customer = getDeviceManagement().getCustomer(getDefaultCustomerId());
-	    if (customer == null) {
-		throw new SiteWhereException("Registration manager auto assignment customer is invalid.");
+	    if (getDefaultCustomerToken() != null) {
+		ICustomer customer = getDeviceManagement().getCustomerByToken(getDefaultCustomerToken());
+		if (customer == null) {
+		    throw new SiteWhereException("Registration manager auto assignment customer is invalid.");
+		}
+		DefaultRegistrationManager.this.defaultCustomer = customer;
 	    }
-	    this.defaultCustomer = customer;
-	}
-	if (getDefaultAreaId() != null) {
-	    IArea area = getDeviceManagement().getArea(getDefaultAreaId());
-	    if (area == null) {
-		throw new SiteWhereException("Registration manager auto assignment area is invalid.");
+	    if (getDefaultAreaToken() != null) {
+		IArea area = getDeviceManagement().getAreaByToken(getDefaultAreaToken());
+		if (area == null) {
+		    throw new SiteWhereException("Registration manager auto assignment area is invalid.");
+		}
+		DefaultRegistrationManager.this.defaultArea = area;
 	    }
-	    this.defaultArea = area;
+	} finally {
+	    SecurityContextHolder.getContext().setAuthentication(previous);
 	}
     }
 
@@ -349,15 +368,16 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 
     /*
      * @see
-     * com.sitewhere.registration.spi.IRegistrationManager#getDefaultDeviceTypeId()
+     * com.sitewhere.registration.spi.IRegistrationManager#getDefaultDeviceTypeToken
+     * ()
      */
     @Override
-    public UUID getDefaultDeviceTypeId() {
-	return defaultDeviceTypeId;
+    public String getDefaultDeviceTypeToken() {
+	return defaultDeviceTypeToken;
     }
 
-    public void setDefaultDeviceTypeId(UUID defaultDeviceTypeId) {
-	this.defaultDeviceTypeId = defaultDeviceTypeId;
+    public void setDefaultDeviceTypeToken(String defaultDeviceTypeToken) {
+	this.defaultDeviceTypeToken = defaultDeviceTypeToken;
     }
 
     /*
@@ -375,15 +395,15 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 
     /*
      * @see
-     * com.sitewhere.registration.spi.IRegistrationManager#getDefaultCustomerId()
+     * com.sitewhere.registration.spi.IRegistrationManager#getDefaultCustomerToken()
      */
     @Override
-    public UUID getDefaultCustomerId() {
-	return defaultCustomerId;
+    public String getDefaultCustomerToken() {
+	return defaultCustomerToken;
     }
 
-    public void setDefaultCustomerId(UUID defaultCustomerId) {
-	this.defaultCustomerId = defaultCustomerId;
+    public void setDefaultCustomerToken(String defaultCustomerToken) {
+	this.defaultCustomerToken = defaultCustomerToken;
     }
 
     /*
@@ -399,15 +419,16 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
     }
 
     /*
-     * @see com.sitewhere.registration.spi.IRegistrationManager#getDefaultAreaId()
+     * @see
+     * com.sitewhere.registration.spi.IRegistrationManager#getDefaultAreaToken()
      */
     @Override
-    public UUID getDefaultAreaId() {
-	return defaultAreaId;
+    public String getDefaultAreaToken() {
+	return defaultAreaToken;
     }
 
-    public void setDefaultAreaId(UUID defaultAreaId) {
-	this.defaultAreaId = defaultAreaId;
+    public void setDefaultAreaToken(String defaultAreaToken) {
+	this.defaultAreaToken = defaultAreaToken;
     }
 
     protected IDeviceType getDefaultDeviceType() {

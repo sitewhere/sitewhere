@@ -78,9 +78,9 @@ public class DeviceRegistrationParser extends AbstractBeanDefinitionParser {
 	    manager.addPropertyValue("useDefaultDeviceType", useDefaultDeviceType.getValue());
 	}
 
-	Attr defaultDeviceTypeId = element.getAttributeNode("defaultDeviceTypeId");
-	if (defaultDeviceTypeId != null) {
-	    manager.addPropertyValue("defaultDeviceTypeId", defaultDeviceTypeId.getValue());
+	Attr defaultDeviceTypeToken = element.getAttributeNode("defaultDeviceTypeToken");
+	if (defaultDeviceTypeToken != null) {
+	    manager.addPropertyValue("defaultDeviceTypeToken", defaultDeviceTypeToken.getValue());
 	}
 
 	Attr useDefaultCustomer = element.getAttributeNode("useDefaultCustomer");
@@ -88,9 +88,9 @@ public class DeviceRegistrationParser extends AbstractBeanDefinitionParser {
 	    manager.addPropertyValue("useDefaultCustomer", useDefaultCustomer.getValue());
 	}
 
-	Attr defaultCustomerId = element.getAttributeNode("defaultCustomerId");
-	if (defaultCustomerId != null) {
-	    manager.addPropertyValue("defaultCustomerId", defaultCustomerId.getValue());
+	Attr defaultCustomerToken = element.getAttributeNode("defaultCustomerToken");
+	if (defaultCustomerToken != null) {
+	    manager.addPropertyValue("defaultCustomerToken", defaultCustomerToken.getValue());
 	}
 
 	Attr useDefaultArea = element.getAttributeNode("useDefaultArea");
@@ -98,9 +98,9 @@ public class DeviceRegistrationParser extends AbstractBeanDefinitionParser {
 	    manager.addPropertyValue("useDefaultArea", useDefaultArea.getValue());
 	}
 
-	Attr defaultAreaId = element.getAttributeNode("defaultAreaId");
-	if (defaultAreaId != null) {
-	    manager.addPropertyValue("defaultAreaId", defaultAreaId.getValue());
+	Attr defaultAreaToken = element.getAttributeNode("defaultAreaToken");
+	if (defaultAreaToken != null) {
+	    manager.addPropertyValue("defaultAreaToken", defaultAreaToken.getValue());
 	}
 
 	context.getRegistry().registerBeanDefinition(DeviceRegistrationBeans.BEAN_REGISTRATION_MANAGER,
