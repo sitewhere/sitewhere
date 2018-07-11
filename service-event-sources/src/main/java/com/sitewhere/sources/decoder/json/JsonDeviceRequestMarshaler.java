@@ -23,13 +23,11 @@ import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceStreamDataCreateRequest;
-import com.sitewhere.rest.model.device.request.DeviceMappingCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
 import com.sitewhere.sources.DecodedDeviceRequest;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
@@ -153,14 +151,6 @@ public class JsonDeviceRequestMarshaler extends JsonDeserializer<DecodedDeviceRe
 	    decoded.setOriginator(originator);
 	    IDeviceCommandResponseCreateRequest req = MAPPER.treeToValue(json,
 		    DeviceCommandResponseCreateRequest.class);
-	    decoded.setRequest(req);
-	    return decoded;
-	}
-	case MapDevice: {
-	    DecodedDeviceRequest<IDeviceMappingCreateRequest> decoded = new DecodedDeviceRequest<IDeviceMappingCreateRequest>();
-	    decoded.setDeviceToken(deviceToken);
-	    decoded.setOriginator(originator);
-	    IDeviceMappingCreateRequest req = MAPPER.treeToValue(json, DeviceMappingCreateRequest.class);
 	    decoded.setRequest(req);
 	    return decoded;
 	}

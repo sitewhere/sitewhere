@@ -9,7 +9,7 @@ package com.sitewhere.rest.model.device.event.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.common.MetadataProvider;
+import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 
 /**
@@ -18,32 +18,16 @@ import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceRegistrationRequest extends MetadataProvider implements IDeviceRegistrationRequest {
+public class DeviceRegistrationRequest extends DeviceCreateRequest implements IDeviceRegistrationRequest {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = 6079525813334392482L;
-
-    /** Device type token */
-    private String deviceTypeToken;
 
     /** Customer token */
     private String customerToken;
 
     /** Area token */
     private String areaToken;
-
-    /*
-     * @see com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest#
-     * getDeviceTypeToken()
-     */
-    @Override
-    public String getDeviceTypeToken() {
-	return deviceTypeToken;
-    }
-
-    public void setDeviceTypeToken(String deviceTypeToken) {
-	this.deviceTypeToken = deviceTypeToken;
-    }
 
     /*
      * @see com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest#

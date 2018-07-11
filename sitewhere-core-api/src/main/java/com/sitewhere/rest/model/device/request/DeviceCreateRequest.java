@@ -13,7 +13,6 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 
@@ -41,7 +40,7 @@ public class DeviceCreateRequest implements IDeviceCreateRequest {
     private Boolean removeParentHardwareId;
 
     /** List of device element mappings */
-    private List<DeviceElementMapping> deviceElementMappings;
+    private List<? extends IDeviceElementMapping> deviceElementMappings;
 
     /** Comments */
     private String comments;
@@ -106,18 +105,15 @@ public class DeviceCreateRequest implements IDeviceCreateRequest {
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.request.IDeviceCreateRequest#
      * getDeviceElementMappings()
      */
     @Override
-    @SuppressWarnings("unchecked")
-    public List<IDeviceElementMapping> getDeviceElementMappings() {
-	return (List<IDeviceElementMapping>) (List<? extends IDeviceElementMapping>) deviceElementMappings;
+    public List<? extends IDeviceElementMapping> getDeviceElementMappings() {
+	return deviceElementMappings;
     }
 
-    public void setDeviceElementMappings(List<DeviceElementMapping> deviceElementMappings) {
+    public void setDeviceElementMappings(List<? extends IDeviceElementMapping> deviceElementMappings) {
 	this.deviceElementMappings = deviceElementMappings;
     }
 

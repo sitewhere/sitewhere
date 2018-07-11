@@ -16,7 +16,6 @@ import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
@@ -57,8 +56,8 @@ public interface IInboundEventProcessor extends ITenantEngineLifecycleComponent 
 	    IDeviceCommandResponseCreateRequest request) throws SiteWhereException;
 
     /**
-     * Called to request the creation of a new {@link IDeviceMeasurement} based
-     * on the given information.
+     * Called to request the creation of a new {@link IDeviceMeasurement} based on
+     * the given information.
      * 
      * @param hardwareId
      * @param originator
@@ -69,8 +68,8 @@ public interface IInboundEventProcessor extends ITenantEngineLifecycleComponent 
 	    IDeviceMeasurementCreateRequest request) throws SiteWhereException;
 
     /**
-     * Called to request the creation of a new {@link IDeviceLocation} based on
-     * the given information.
+     * Called to request the creation of a new {@link IDeviceLocation} based on the
+     * given information.
      * 
      * @param hardwareId
      * @param originator
@@ -93,8 +92,8 @@ public interface IInboundEventProcessor extends ITenantEngineLifecycleComponent 
 	    throws SiteWhereException;
 
     /**
-     * Called to request the creation of a new {@link IDeviceStateChange} based
-     * on the given information.
+     * Called to request the creation of a new {@link IDeviceStateChange} based on
+     * the given information.
      * 
      * @param hardwareId
      * @param originator
@@ -105,8 +104,8 @@ public interface IInboundEventProcessor extends ITenantEngineLifecycleComponent 
 	    IDeviceStateChangeCreateRequest request) throws SiteWhereException;
 
     /**
-     * Called to request the creation of a new {@link IDeviceStream} based on
-     * the given information.
+     * Called to request the creation of a new {@link IDeviceStream} based on the
+     * given information.
      * 
      * @param hardwareId
      * @param originator
@@ -117,8 +116,8 @@ public interface IInboundEventProcessor extends ITenantEngineLifecycleComponent 
 	    throws SiteWhereException;
 
     /**
-     * Called to request the creation of a new {@link IDeviceStreamData} based
-     * on the given information.
+     * Called to request the creation of a new {@link IDeviceStreamData} based on
+     * the given information.
      * 
      * @param hardwareId
      * @param originator
@@ -139,16 +138,4 @@ public interface IInboundEventProcessor extends ITenantEngineLifecycleComponent 
      */
     public void onSendDeviceStreamDataRequest(String hardwareId, String originator,
 	    ISendDeviceStreamDataRequest request) throws SiteWhereException;
-
-    /**
-     * Called to request that a device be mapped to a path on a composite
-     * device.
-     * 
-     * @param hardwareId
-     * @param originator
-     * @param request
-     * @throws SiteWhereException
-     */
-    public void onDeviceMappingCreateRequest(String hardwareId, String originator, IDeviceMappingCreateRequest request)
-	    throws SiteWhereException;
 }

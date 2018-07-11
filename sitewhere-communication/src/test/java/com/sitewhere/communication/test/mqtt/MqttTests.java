@@ -31,7 +31,6 @@ import com.sitewhere.rest.model.device.communication.DeviceRequest.Type;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
-import com.sitewhere.rest.model.device.request.DeviceMappingCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
@@ -188,31 +187,6 @@ public class MqttTests {
 
 		System.out.println("Payload:\n\n" + payload);
 		connection.publish("SiteWhere/default/input/json", payload.getBytes(), QoS.AT_LEAST_ONCE, false);
-		System.out.println("Message sent successfully.");
-	    } catch (JsonProcessingException e) {
-		throw new SiteWhereException(e);
-	    } catch (Exception e) {
-		throw new SiteWhereException(e);
-	    }
-	}
-
-	/**
-	 * Send request for mapping a device as an element of a composite device.
-	 * 
-	 * @throws SiteWhereException
-	 */
-	public void sendDeviceMappingCreateRequest() throws SiteWhereException {
-	    DeviceRequest request = new DeviceRequest();
-	    request.setHardwareId("19c5a02a-a9a9-4b39-ad4e-1066bb464141");
-	    request.setType(Type.MapDevice);
-	    DeviceMappingCreateRequest mapping = new DeviceMappingCreateRequest();
-	    mapping.setCompositeDeviceHardwareId("072d6db9-5349-4162-bfbe-e4990a101f29");
-	    mapping.setMappingPath("/default/pci/pci1");
-	    request.setRequest(mapping);
-	    try {
-		String payload = (new ObjectMapper()).writeValueAsString(request);
-		System.out.println("Payload:\n\n" + payload);
-		connection.publish("SiteWhere/input/json", payload.getBytes(), QoS.AT_LEAST_ONCE, false);
 		System.out.println("Message sent successfully.");
 	    } catch (JsonProcessingException e) {
 		throw new SiteWhereException(e);

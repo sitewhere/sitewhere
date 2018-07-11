@@ -53,7 +53,7 @@ public interface IDeviceCreateRequest extends Serializable {
      * 
      * @return
      */
-    public List<IDeviceElementMapping> getDeviceElementMappings();
+    public List<? extends IDeviceElementMapping> getDeviceElementMappings();
 
     /**
      * Get comments associated with device.

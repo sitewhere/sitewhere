@@ -114,6 +114,22 @@ public class KafkaModelMarshaler {
     }
 
     /**
+     * Parse message that contains an device registration payload.
+     * 
+     * @param payload
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceRegistationPayload parseDeviceRegistrationPayloadMessage(byte[] payload)
+	    throws SiteWhereException {
+	try {
+	    return GDeviceRegistationPayload.parseFrom(payload);
+	} catch (InvalidProtocolBufferException e) {
+	    throw new SiteWhereException("Unable to parse device registration payload message.", e);
+	}
+    }
+
+    /**
      * Build binary message for API inbound event payload.
      * 
      * @param api

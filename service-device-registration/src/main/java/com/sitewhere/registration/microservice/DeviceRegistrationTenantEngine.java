@@ -8,8 +8,10 @@
 package com.sitewhere.registration.microservice;
 
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
+import com.sitewhere.registration.kafka.DeviceRegistrationEventsConsumer;
 import com.sitewhere.registration.kafka.UnregisteredEventsConsumer;
 import com.sitewhere.registration.spi.IRegistrationManager;
+import com.sitewhere.registration.spi.kafka.IDeviceRegistrationEventsConsumer;
 import com.sitewhere.registration.spi.kafka.IUnregisteredEventsConsumer;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
@@ -33,6 +35,9 @@ public class DeviceRegistrationTenantEngine extends MicroserviceTenantEngine
     /** Kafka consumer for unregistered device events */
     private IUnregisteredEventsConsumer unregisteredEventsConsumer;
 
+    /** Kafka consumer for new device registrations */
+    private IDeviceRegistrationEventsConsumer deviceRegistrationEventsConsumer;
+
     /** Device registration manager */
     private IRegistrationManager registrationManager;
 
@@ -50,6 +55,9 @@ public class DeviceRegistrationTenantEngine extends MicroserviceTenantEngine
 	// Unregistered events consumer.
 	this.unregisteredEventsConsumer = new UnregisteredEventsConsumer();
 
+	// Device registration events consumer.
+	this.deviceRegistrationEventsConsumer = new DeviceRegistrationEventsConsumer();
+
 	// Load configured registration manager.
 	this.registrationManager = (IRegistrationManager) getModuleContext()
 		.getBean(DeviceRegistrationBeans.BEAN_REGISTRATION_MANAGER);
@@ -62,6 +70,9 @@ public class DeviceRegistrationTenantEngine extends MicroserviceTenantEngine
 
 	// Initialize unregistered events consumer.
 	init.addInitializeStep(this, getUnregisteredEventsConsumer(), true);
+
+	// Initialize device registration events consumer.
+	init.addInitializeStep(this, getDeviceRegistrationEventsConsumer(), true);
 
 	// Initialize registration manager.
 	init.addInitializeStep(this, getRegistrationManager(), true);
@@ -81,6 +92,9 @@ public class DeviceRegistrationTenantEngine extends MicroserviceTenantEngine
 
 	// Start unregistered events consumer.
 	start.addStartStep(this, getUnregisteredEventsConsumer(), true);
+
+	// Start device registration events consumer.
+	start.addStartStep(this, getDeviceRegistrationEventsConsumer(), true);
 
 	// Start registration manager.
 	start.addStartStep(this, getRegistrationManager(), true);
@@ -108,6 +122,9 @@ public class DeviceRegistrationTenantEngine extends MicroserviceTenantEngine
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
 
+	// Stop device registration events consumer.
+	stop.addStopStep(this, getDeviceRegistrationEventsConsumer());
+
 	// Stop unregistered events consumer.
 	stop.addStopStep(this, getUnregisteredEventsConsumer());
 
@@ -130,6 +147,21 @@ public class DeviceRegistrationTenantEngine extends MicroserviceTenantEngine
 
     public void setUnregisteredEventsConsumer(IUnregisteredEventsConsumer unregisteredEventsConsumer) {
 	this.unregisteredEventsConsumer = unregisteredEventsConsumer;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.registration.spi.microservice.IDeviceRegistrationTenantEngine#
+     * getDeviceRegistrationEventsConsumer()
+     */
+    @Override
+    public IDeviceRegistrationEventsConsumer getDeviceRegistrationEventsConsumer() {
+	return deviceRegistrationEventsConsumer;
+    }
+
+    public void setDeviceRegistrationEventsConsumer(
+	    IDeviceRegistrationEventsConsumer deviceRegistrationEventsConsumer) {
+	this.deviceRegistrationEventsConsumer = deviceRegistrationEventsConsumer;
     }
 
     /*

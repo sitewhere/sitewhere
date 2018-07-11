@@ -152,8 +152,8 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
     @Override
     public void handleDecodedEvent(String sourceId, byte[] encoded, Map<String, Object> metadata,
 	    IDecodedDeviceRequest<?> decoded) throws SiteWhereException {
-	if (getDecodedEventsProducer().getLifecycleStatus() == LifecycleStatus.Started) {
-	    if (decoded.getRequest() instanceof IDeviceEventCreateRequest) {
+	if (decoded.getRequest() instanceof IDeviceEventCreateRequest) {
+	    if (getDecodedEventsProducer().getLifecycleStatus() == LifecycleStatus.Started) {
 		// Build and forward inbound event payload message.
 		InboundEventPayload payload = new InboundEventPayload();
 		payload.setSourceId(sourceId);
@@ -162,7 +162,11 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 		payload.setEventCreateRequest((IDeviceEventCreateRequest) decoded.getRequest());
 		getDecodedEventsProducer().send(decoded.getDeviceToken(),
 			KafkaModelMarshaler.buildInboundEventPayloadMessage(payload));
-	    } else if (decoded.getRequest() instanceof IDeviceRegistrationRequest) {
+	    } else {
+		getLogger().warn("Producer not started. Unable to add decoded event to topic.");
+	    }
+	} else if (decoded.getRequest() instanceof IDeviceRegistrationRequest) {
+	    if (getDeviceRegistrationEventsProducer().getLifecycleStatus() == LifecycleStatus.Started) {
 		// Build and forward device registration payload message.
 		DeviceRegistrationPayload payload = new DeviceRegistrationPayload();
 		payload.setSourceId(sourceId);
@@ -171,9 +175,9 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 		payload.setDeviceRegistrationRequest((IDeviceRegistrationRequest) decoded.getRequest());
 		getDeviceRegistrationEventsProducer().send(decoded.getDeviceToken(),
 			KafkaModelMarshaler.buildDeviceRegistrationPayloadMessage(payload));
+	    } else {
+		getLogger().warn("Producer not started. Unable to add device registration event to topic.");
 	    }
-	} else {
-	    getLogger().warn("Producer not started. Unable to add event to topic.");
 	}
     }
 

@@ -1008,7 +1008,7 @@ public class DeviceModelConverter {
      * @return
      * @throws SiteWhereException
      */
-    public static List<GDeviceElementMapping> asGrpcDeviceElementMappings(List<IDeviceElementMapping> apis)
+    public static List<GDeviceElementMapping> asGrpcDeviceElementMappings(List<? extends IDeviceElementMapping> apis)
 	    throws SiteWhereException {
 	List<GDeviceElementMapping> grpcs = new ArrayList<GDeviceElementMapping>();
 	if (apis != null) {

@@ -187,7 +187,6 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
      */
     @Override
     public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encoded, Map<String, Object> metadata) {
-	getLogger().debug("Device event receiver picked up event.");
 	List<IDecodedDeviceRequest<?>> requests = decodeEvent(encoded, metadata);
 	if (requests != null) {
 	    for (IDecodedDeviceRequest<?> decoded : requests) {
@@ -293,7 +292,7 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
 	return sourceId;
     }
 
-    protected void setSourceId(String sourceId) {
+    public void setSourceId(String sourceId) {
 	this.sourceId = sourceId;
     }
 
@@ -305,7 +304,7 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
 	return deviceEventDecoder;
     }
 
-    protected void setDeviceEventDecoder(IDeviceEventDecoder<T> deviceEventDecoder) {
+    public void setDeviceEventDecoder(IDeviceEventDecoder<T> deviceEventDecoder) {
 	this.deviceEventDecoder = deviceEventDecoder;
     }
 
@@ -318,7 +317,7 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
 	return deviceEventDeduplicator;
     }
 
-    protected void setDeviceEventDeduplicator(IDeviceEventDeduplicator deviceEventDeduplicator) {
+    public void setDeviceEventDeduplicator(IDeviceEventDeduplicator deviceEventDeduplicator) {
 	this.deviceEventDeduplicator = deviceEventDeduplicator;
     }
 
@@ -330,7 +329,7 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
 	return inboundEventReceivers;
     }
 
-    protected void setInboundEventReceivers(List<IInboundEventReceiver<T>> inboundEventReceivers) {
+    public void setInboundEventReceivers(List<IInboundEventReceiver<T>> inboundEventReceivers) {
 	this.inboundEventReceivers = inboundEventReceivers;
     }
 

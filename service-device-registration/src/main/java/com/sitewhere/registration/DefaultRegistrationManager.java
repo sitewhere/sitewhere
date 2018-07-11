@@ -12,8 +12,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.registration.spi.IRegistrationManager;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice;
-import com.sitewhere.rest.model.device.DeviceElementMapping;
-import com.sitewhere.rest.model.device.command.DeviceMappingAckCommand;
 import com.sitewhere.rest.model.device.command.RegistrationAckCommand;
 import com.sitewhere.rest.model.device.command.RegistrationFailureCommand;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
@@ -25,10 +23,9 @@ import com.sitewhere.spi.customer.ICustomer;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.device.command.DeviceMappingResult;
 import com.sitewhere.spi.device.command.RegistrationFailureReason;
 import com.sitewhere.spi.device.command.RegistrationSuccessReason;
-import com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.microservice.kafka.payload.IDeviceRegistrationPayload;
 import com.sitewhere.spi.microservice.kafka.payload.IInboundEventPayload;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -88,7 +85,6 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 		    .getAuthenticationForTenant(getTenantEngine().getTenant());
 	    SecurityContextHolder.getContext().setAuthentication(system);
 
-	    getLogger().debug("Handling device registration request.");
 	    IDevice device = getOrCreateDevice(registration);
 
 	    // Find assignment metadata that should be associated.
@@ -124,28 +120,26 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
      */
     protected IDevice getOrCreateDevice(IDeviceRegistrationPayload registration) throws SiteWhereException {
 	IDevice device = getDeviceManagement().getDeviceByToken(registration.getDeviceToken());
-	IDeviceType deviceType = getDeviceTypeFor(registration);
-
-	// Create device if it does not already exist.
+	IDeviceCreateRequest request = registration.getDeviceRegistrationRequest();
 	if (device == null) {
 	    if (!isAllowNewDevices()) {
-		throw new SiteWhereException("Ignoring device registration request since new devices are not allowed.");
+		throw new SiteWhereException("Ignoring device registration request. New devices are not allowed.");
 	    }
-	    getLogger().debug("Creating new device as part of registration.");
+	    // Create device if it does not already exist.
+	    getLogger().info("Creating new device as part of registration.");
 	    DeviceCreateRequest deviceCreate = new DeviceCreateRequest();
-	    deviceCreate.setToken(registration.getDeviceToken());
-	    deviceCreate.setDeviceTypeToken(registration.getDeviceRegistrationRequest().getDeviceTypeToken());
-	    deviceCreate.setComments("Device created by on-demand registration.");
-	    deviceCreate.setMetadata(registration.getDeviceRegistrationRequest().getMetadata());
+	    deviceCreate.setToken(request.getToken() != null ? request.getToken() : registration.getDeviceToken());
+	    deviceCreate.setDeviceTypeToken(request.getDeviceTypeToken());
+	    deviceCreate.setStatus(request.getStatus());
+	    deviceCreate.setDeviceElementMappings(request.getDeviceElementMappings());
+	    deviceCreate.setParentDeviceToken(request.getParentDeviceToken());
+	    deviceCreate.setComments(request.getComments() != null ? request.getComments()
+		    : "Device created by on-demand registration.");
+	    deviceCreate.setMetadata(request.getMetadata());
 	    return getDeviceManagement().createDevice(deviceCreate);
-	} else if (!device.getDeviceTypeId().equals(deviceType.getId())) {
-	    sendInvalidDeviceType(registration.getDeviceToken());
-	    throw new SiteWhereException("Found existing device registration, but device type does not match.");
 	} else {
-	    getLogger().info("Found existing device registration. Updating metadata.");
-	    DeviceCreateRequest deviceUpdate = new DeviceCreateRequest();
-	    deviceUpdate.setMetadata(registration.getDeviceRegistrationRequest().getMetadata());
-	    return getDeviceManagement().updateDevice(device.getId(), deviceUpdate);
+	    getLogger().info("Found existing device registration. Updating device information.");
+	    return getDeviceManagement().updateDevice(device.getId(), request);
 	}
     }
 
@@ -261,43 +255,6 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 	RegistrationFailureCommand command = new RegistrationFailureCommand();
 	command.setReason(RegistrationFailureReason.InvalidDeviceTypeToken);
 	command.setErrorMessage("Device type token passed in registration was invalid.");
-	// getDeviceCommunication().deliverSystemCommand(hardwareId, command);
-    }
-
-    /**
-     * Send information indicating a site token must be passed (if not
-     * auto-assigned).
-     * 
-     * @param hardwareId
-     * @throws SiteWhereException
-     */
-    protected void sendSiteTokenRequired(String hardwareId) throws SiteWhereException {
-	RegistrationFailureCommand command = new RegistrationFailureCommand();
-	command.setReason(RegistrationFailureReason.SiteTokenRequired);
-	command.setErrorMessage("Automatic site assignment disabled. Site token required.");
-	// getDeviceCommunication().deliverSystemCommand(hardwareId, command);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IRegistrationManager#
-     * handleDeviceMapping(java.lang.String,
-     * com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest)
-     */
-    @Override
-    public void handleDeviceMapping(String deviceToken, IDeviceMappingCreateRequest request) throws SiteWhereException {
-	DeviceElementMapping mapping = new DeviceElementMapping();
-	mapping.setDeviceToken(deviceToken);
-	mapping.setDeviceElementSchemaPath(request.getMappingPath());
-	DeviceMappingAckCommand command = new DeviceMappingAckCommand();
-	try {
-	    IDevice existing = getDeviceManagement().getDeviceByToken(deviceToken);
-	    getDeviceManagement().createDeviceElementMapping(existing.getId(), mapping);
-	    command.setResult(DeviceMappingResult.MappingCreated);
-	} catch (SiteWhereException e) {
-	    command.setResult(DeviceMappingResult.MappingFailedDueToExisting);
-	}
 	// getDeviceCommunication().deliverSystemCommand(hardwareId, command);
     }
 
