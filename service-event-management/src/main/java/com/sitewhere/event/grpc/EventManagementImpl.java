@@ -7,6 +7,8 @@
  */
 package com.sitewhere.event.grpc;
 
+import java.util.List;
+
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
@@ -21,20 +23,20 @@ import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.grpc.model.converter.DeviceModelConverter;
 import com.sitewhere.grpc.model.converter.EventModelConverter;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
-import com.sitewhere.grpc.service.GAddAlertRequest;
-import com.sitewhere.grpc.service.GAddAlertResponse;
-import com.sitewhere.grpc.service.GAddCommandInvocationRequest;
-import com.sitewhere.grpc.service.GAddCommandInvocationResponse;
-import com.sitewhere.grpc.service.GAddCommandResponseRequest;
-import com.sitewhere.grpc.service.GAddCommandResponseResponse;
+import com.sitewhere.grpc.service.GAddAlertsRequest;
+import com.sitewhere.grpc.service.GAddAlertsResponse;
+import com.sitewhere.grpc.service.GAddCommandInvocationsRequest;
+import com.sitewhere.grpc.service.GAddCommandInvocationsResponse;
+import com.sitewhere.grpc.service.GAddCommandResponsesRequest;
+import com.sitewhere.grpc.service.GAddCommandResponsesResponse;
 import com.sitewhere.grpc.service.GAddDeviceEventBatchRequest;
 import com.sitewhere.grpc.service.GAddDeviceEventBatchResponse;
-import com.sitewhere.grpc.service.GAddLocationRequest;
-import com.sitewhere.grpc.service.GAddLocationResponse;
-import com.sitewhere.grpc.service.GAddMeasurementRequest;
-import com.sitewhere.grpc.service.GAddMeasurementResponse;
-import com.sitewhere.grpc.service.GAddStateChangeRequest;
-import com.sitewhere.grpc.service.GAddStateChangeResponse;
+import com.sitewhere.grpc.service.GAddLocationsRequest;
+import com.sitewhere.grpc.service.GAddLocationsResponse;
+import com.sitewhere.grpc.service.GAddMeasurementsRequest;
+import com.sitewhere.grpc.service.GAddMeasurementsResponse;
+import com.sitewhere.grpc.service.GAddStateChangesRequest;
+import com.sitewhere.grpc.service.GAddStateChangesResponse;
 import com.sitewhere.grpc.service.GAddStreamDataForAssignmentRequest;
 import com.sitewhere.grpc.service.GAddStreamDataForAssignmentResponse;
 import com.sitewhere.grpc.service.GGetDeviceEventByAlternateIdRequest;
@@ -70,6 +72,12 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
+import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.search.ISearchResults;
 
@@ -186,28 +194,29 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 
     /*
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#addMeasurement(com.sitewhere.grpc.service.
-     * GAddMeasurementRequest, io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#addMeasurements(com.sitewhere.grpc.service.
+     * GAddMeasurementsRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void addMeasurement(GAddMeasurementRequest request,
-	    StreamObserver<GAddMeasurementResponse> responseObserver) {
+    public void addMeasurements(GAddMeasurementsRequest request,
+	    StreamObserver<GAddMeasurementsResponse> responseObserver) {
 	try {
-	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddMeasurementMethod());
-	    IDeviceMeasurement apiResult = getDeviceEventManagement().addDeviceMeasurement(
+	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddMeasurementsMethod());
+	    List<IDeviceMeasurement> apiResult = getDeviceEventManagement().addDeviceMeasurements(
 		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
-		    EventModelConverter.asApiDeviceMeasurementCreateRequest(request.getRequest()));
-	    GAddMeasurementResponse.Builder response = GAddMeasurementResponse.newBuilder();
+		    EventModelConverter.asApiDeviceMeasurementCreateRequests(request.getRequestsList())
+			    .toArray(new IDeviceMeasurementCreateRequest[0]));
+	    GAddMeasurementsResponse.Builder response = GAddMeasurementsResponse.newBuilder();
 	    if (apiResult != null) {
-		response.setMeasurement(EventModelConverter.asGrpcDeviceMeasurement(apiResult));
+		response.addAllMeasurements(EventModelConverter.asGrpcDeviceMeasurements(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getAddMeasurementMethod(), e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getAddMeasurementsMethod(), e,
 		    responseObserver);
 	} finally {
-	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getAddMeasurementMethod());
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getAddMeasurementsMethod());
 	}
     }
 
@@ -244,27 +253,28 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 
     /*
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#addLocation(com.sitewhere.grpc.service.
-     * GAddLocationRequest, io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#addLocations(com.sitewhere.grpc.service.
+     * GAddLocationsRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void addLocation(GAddLocationRequest request, StreamObserver<GAddLocationResponse> responseObserver) {
+    public void addLocations(GAddLocationsRequest request, StreamObserver<GAddLocationsResponse> responseObserver) {
 	try {
-	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddLocationMethod());
-	    IDeviceLocation apiResult = getDeviceEventManagement().addDeviceLocation(
+	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddLocationsMethod());
+	    List<IDeviceLocation> apiResult = getDeviceEventManagement().addDeviceLocations(
 		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
-		    EventModelConverter.asApiDeviceLocationCreateRequest(request.getRequest()));
-	    GAddLocationResponse.Builder response = GAddLocationResponse.newBuilder();
+		    EventModelConverter.asApiDeviceLocationCreateRequests(request.getRequestsList())
+			    .toArray(new IDeviceLocationCreateRequest[0]));
+	    GAddLocationsResponse.Builder response = GAddLocationsResponse.newBuilder();
 	    if (apiResult != null) {
-		response.setLocation(EventModelConverter.asGrpcDeviceLocation(apiResult));
+		response.addAllLocations(EventModelConverter.asGrpcDeviceLocations(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getAddLocationMethod(), e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getAddLocationsMethod(), e,
 		    responseObserver);
 	} finally {
-	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getAddLocationMethod());
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getAddLocationsMethod());
 	}
     }
 
@@ -301,26 +311,27 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 
     /*
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#addAlert(com.sitewhere.grpc.service.
-     * GAddAlertRequest, io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#addAlerts(com.sitewhere.grpc.service.
+     * GAddAlertsRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void addAlert(GAddAlertRequest request, StreamObserver<GAddAlertResponse> responseObserver) {
+    public void addAlerts(GAddAlertsRequest request, StreamObserver<GAddAlertsResponse> responseObserver) {
 	try {
-	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddAlertMethod());
-	    IDeviceAlert apiResult = getDeviceEventManagement().addDeviceAlert(
+	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddAlertsMethod());
+	    List<IDeviceAlert> apiResult = getDeviceEventManagement().addDeviceAlerts(
 		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
-		    EventModelConverter.asApiDeviceAlertCreateRequest(request.getRequest()));
-	    GAddAlertResponse.Builder response = GAddAlertResponse.newBuilder();
+		    EventModelConverter.asApiDeviceAlertCreateRequests(request.getRequestsList())
+			    .toArray(new IDeviceAlertCreateRequest[0]));
+	    GAddAlertsResponse.Builder response = GAddAlertsResponse.newBuilder();
 	    if (apiResult != null) {
-		response.setAlert(EventModelConverter.asGrpcDeviceAlert(apiResult));
+		response.addAllAlerts(EventModelConverter.asGrpcDeviceAlerts(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getAddAlertMethod(), e, responseObserver);
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getAddAlertsMethod(), e, responseObserver);
 	} finally {
-	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getAddAlertMethod());
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getAddAlertsMethod());
 	}
     }
 
@@ -449,28 +460,29 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 
     /*
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#addCommandInvocation(com.sitewhere.grpc.service
-     * .GAddCommandInvocationRequest, io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#addCommandInvocations(com.sitewhere.grpc.
+     * service.GAddCommandInvocationsRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void addCommandInvocation(GAddCommandInvocationRequest request,
-	    StreamObserver<GAddCommandInvocationResponse> responseObserver) {
+    public void addCommandInvocations(GAddCommandInvocationsRequest request,
+	    StreamObserver<GAddCommandInvocationsResponse> responseObserver) {
 	try {
-	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddCommandInvocationMethod());
-	    IDeviceCommandInvocation apiResult = getDeviceEventManagement().addDeviceCommandInvocation(
+	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddCommandInvocationsMethod());
+	    List<IDeviceCommandInvocation> apiResult = getDeviceEventManagement().addDeviceCommandInvocations(
 		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
-		    EventModelConverter.asApiDeviceCommandInvocationCreateRequest(request.getRequest()));
-	    GAddCommandInvocationResponse.Builder response = GAddCommandInvocationResponse.newBuilder();
+		    EventModelConverter.asApiDeviceCommandInvocationCreateRequests(request.getRequestsList())
+			    .toArray(new IDeviceCommandInvocationCreateRequest[0]));
+	    GAddCommandInvocationsResponse.Builder response = GAddCommandInvocationsResponse.newBuilder();
 	    if (apiResult != null) {
-		response.setInvocation(EventModelConverter.asGrpcDeviceCommandInvocation(apiResult));
+		response.addAllInvocations(EventModelConverter.asGrpcDeviceCommandInvocations(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getAddCommandInvocationMethod(), e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getAddCommandInvocationsMethod(), e,
 		    responseObserver);
 	} finally {
-	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getAddCommandInvocationMethod());
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getAddCommandInvocationsMethod());
 	}
     }
 
@@ -510,28 +522,29 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 
     /*
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#addCommandResponse(com.sitewhere.grpc.service.
-     * GAddCommandResponseRequest, io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#addCommandResponses(com.sitewhere.grpc.service.
+     * GAddCommandResponsesRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void addCommandResponse(GAddCommandResponseRequest request,
-	    StreamObserver<GAddCommandResponseResponse> responseObserver) {
+    public void addCommandResponses(GAddCommandResponsesRequest request,
+	    StreamObserver<GAddCommandResponsesResponse> responseObserver) {
 	try {
-	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddCommandResponseMethod());
-	    IDeviceCommandResponse apiResult = getDeviceEventManagement().addDeviceCommandResponse(
+	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddCommandResponsesMethod());
+	    List<IDeviceCommandResponse> apiResult = getDeviceEventManagement().addDeviceCommandResponses(
 		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
-		    EventModelConverter.asApiDeviceCommandResponseCreateRequest(request.getRequest()));
-	    GAddCommandResponseResponse.Builder response = GAddCommandResponseResponse.newBuilder();
+		    EventModelConverter.asApiDeviceCommandResponseCreateRequests(request.getRequestsList())
+			    .toArray(new IDeviceCommandResponseCreateRequest[0]));
+	    GAddCommandResponsesResponse.Builder response = GAddCommandResponsesResponse.newBuilder();
 	    if (apiResult != null) {
-		response.setResponse(EventModelConverter.asGrpcDeviceCommandResponse(apiResult));
+		response.addAllResponses(EventModelConverter.asGrpcDeviceCommandResponses(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getAddCommandResponseMethod(), e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getAddCommandResponsesMethod(), e,
 		    responseObserver);
 	} finally {
-	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getAddCommandResponseMethod());
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getAddCommandResponsesMethod());
 	}
     }
 
@@ -603,28 +616,29 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 
     /*
      * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#addStateChange(com.sitewhere.grpc.service.
-     * GAddStateChangeRequest, io.grpc.stub.StreamObserver)
+     * DeviceEventManagementImplBase#addStateChanges(com.sitewhere.grpc.service.
+     * GAddStateChangesRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void addStateChange(GAddStateChangeRequest request,
-	    StreamObserver<GAddStateChangeResponse> responseObserver) {
+    public void addStateChanges(GAddStateChangesRequest request,
+	    StreamObserver<GAddStateChangesResponse> responseObserver) {
 	try {
-	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddStateChangeMethod());
-	    IDeviceStateChange apiResult = getDeviceEventManagement().addDeviceStateChange(
+	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddStateChangesMethod());
+	    List<IDeviceStateChange> apiResult = getDeviceEventManagement().addDeviceStateChanges(
 		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
-		    EventModelConverter.asApiDeviceStateChangeCreateRequest(request.getRequest()));
-	    GAddStateChangeResponse.Builder response = GAddStateChangeResponse.newBuilder();
+		    EventModelConverter.asApiDeviceStateChangeCreateRequests(request.getRequestsList())
+			    .toArray(new IDeviceStateChangeCreateRequest[0]));
+	    GAddStateChangesResponse.Builder response = GAddStateChangesResponse.newBuilder();
 	    if (apiResult != null) {
-		response.setStateChange(EventModelConverter.asGrpcDeviceStateChange(apiResult));
+		response.addAllStateChanges(EventModelConverter.asGrpcDeviceStateChanges(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getAddStateChangeMethod(), e,
+	    GrpcUtils.handleServerMethodException(DeviceEventManagementGrpc.getAddStateChangesMethod(), e,
 		    responseObserver);
 	} finally {
-	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getAddStateChangeMethod());
+	    GrpcUtils.handleServerMethodExit(DeviceEventManagementGrpc.getAddStateChangesMethod());
 	}
     }
 

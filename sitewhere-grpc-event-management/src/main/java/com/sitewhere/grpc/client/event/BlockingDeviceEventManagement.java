@@ -88,15 +88,15 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
 
     /*
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceMeasurement(
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceMeasurements(
      * java.util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest)
+     * com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest[])
      */
     @Override
-    public IDeviceMeasurement addDeviceMeasurement(UUID deviceAssignmentId,
-	    IDeviceMeasurementCreateRequest measurements) throws SiteWhereException {
-	BlockingStreamObserver<IDeviceMeasurement> observer = new BlockingStreamObserver<>();
-	api.addDeviceMeasurements(deviceAssignmentId, measurements, observer);
+    public List<IDeviceMeasurement> addDeviceMeasurements(UUID deviceAssignmentId,
+	    IDeviceMeasurementCreateRequest... measurements) throws SiteWhereException {
+	BlockingStreamListObserver<IDeviceMeasurement> observer = new BlockingStreamListObserver<>();
+	api.addDeviceMeasurements(deviceAssignmentId, observer, measurements);
 	return observer.getResult();
     }
 
@@ -116,15 +116,15 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
 
     /*
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocation(java.
-     * util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocations(java
+     * .util.UUID,
+     * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest[])
      */
     @Override
-    public IDeviceLocation addDeviceLocation(UUID deviceAssignmentId, IDeviceLocationCreateRequest request)
+    public List<IDeviceLocation> addDeviceLocations(UUID deviceAssignmentId, IDeviceLocationCreateRequest... requests)
 	    throws SiteWhereException {
-	BlockingStreamObserver<IDeviceLocation> observer = new BlockingStreamObserver<>();
-	api.addDeviceLocation(deviceAssignmentId, request, observer);
+	BlockingStreamListObserver<IDeviceLocation> observer = new BlockingStreamListObserver<>();
+	api.addDeviceLocations(deviceAssignmentId, observer, requests);
 	return observer.getResult();
     }
 
@@ -147,10 +147,10 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
      * util.UUID, com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
      */
     @Override
-    public IDeviceAlert addDeviceAlert(UUID deviceAssignmentId, IDeviceAlertCreateRequest request)
+    public List<IDeviceAlert> addDeviceAlerts(UUID deviceAssignmentId, IDeviceAlertCreateRequest... requests)
 	    throws SiteWhereException {
-	BlockingStreamObserver<IDeviceAlert> observer = new BlockingStreamObserver<>();
-	api.addDeviceAlert(deviceAssignmentId, request, observer);
+	BlockingStreamListObserver<IDeviceAlert> observer = new BlockingStreamListObserver<>();
+	api.addDeviceAlerts(deviceAssignmentId, observer, requests);
 	return observer.getResult();
     }
 
@@ -209,14 +209,15 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * addDeviceCommandInvocation(java.util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest)
+     * addDeviceCommandInvocations(java.util.UUID,
+     * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest[
+     * ])
      */
     @Override
-    public IDeviceCommandInvocation addDeviceCommandInvocation(UUID deviceAssignmentId,
-	    IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
-	BlockingStreamObserver<IDeviceCommandInvocation> observer = new BlockingStreamObserver<>();
-	api.addDeviceCommandInvocation(deviceAssignmentId, request, observer);
+    public List<IDeviceCommandInvocation> addDeviceCommandInvocations(UUID deviceAssignmentId,
+	    IDeviceCommandInvocationCreateRequest... requests) throws SiteWhereException {
+	BlockingStreamListObserver<IDeviceCommandInvocation> observer = new BlockingStreamListObserver<>();
+	api.addDeviceCommandInvocations(deviceAssignmentId, observer, requests);
 	return observer.getResult();
     }
 
@@ -248,14 +249,14 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * addDeviceCommandResponse(java.util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest)
+     * addDeviceCommandResponses(java.util.UUID,
+     * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest[])
      */
     @Override
-    public IDeviceCommandResponse addDeviceCommandResponse(UUID deviceAssignmentId,
-	    IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
-	BlockingStreamObserver<IDeviceCommandResponse> observer = new BlockingStreamObserver<>();
-	api.addDeviceCommandResponse(deviceAssignmentId, request, observer);
+    public List<IDeviceCommandResponse> addDeviceCommandResponses(UUID deviceAssignmentId,
+	    IDeviceCommandResponseCreateRequest... requests) throws SiteWhereException {
+	BlockingStreamListObserver<IDeviceCommandResponse> observer = new BlockingStreamListObserver<>();
+	api.addDeviceCommandResponses(deviceAssignmentId, observer, requests);
 	return observer.getResult();
     }
 
@@ -275,15 +276,15 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
 
     /*
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceStateChange(
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceStateChanges(
      * java.util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest)
+     * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest[])
      */
     @Override
-    public IDeviceStateChange addDeviceStateChange(UUID deviceAssignmentId, IDeviceStateChangeCreateRequest request)
-	    throws SiteWhereException {
-	BlockingStreamObserver<IDeviceStateChange> observer = new BlockingStreamObserver<>();
-	api.addDeviceStateChange(deviceAssignmentId, request, observer);
+    public List<IDeviceStateChange> addDeviceStateChanges(UUID deviceAssignmentId,
+	    IDeviceStateChangeCreateRequest... requests) throws SiteWhereException {
+	BlockingStreamListObserver<IDeviceStateChange> observer = new BlockingStreamListObserver<>();
+	api.addDeviceStateChanges(deviceAssignmentId, observer, requests);
 	return observer.getResult();
     }
 

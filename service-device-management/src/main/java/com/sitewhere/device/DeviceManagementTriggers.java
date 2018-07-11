@@ -54,7 +54,7 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
 	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest();
 	state.setAttribute(IDeviceStateChangeCreateRequest.ATTRIBUTE_ASSIGNMENT);
 	state.setType("create");
-	getDeviceEventManagement().addDeviceStateChange(created.getId(), state);
+	getDeviceEventManagement().addDeviceStateChanges(created.getId(), state);
 	return created;
     }
 
@@ -72,7 +72,7 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
 	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest();
 	state.setAttribute(IDeviceStateChangeCreateRequest.ATTRIBUTE_ASSIGNMENT);
 	state.setType("update");
-	getDeviceEventManagement().addDeviceStateChange(updated.getId(), state);
+	getDeviceEventManagement().addDeviceStateChanges(updated.getId(), state);
 	return updated;
     }
 
@@ -89,7 +89,7 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
 	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest();
 	state.setAttribute(IDeviceStateChangeCreateRequest.ATTRIBUTE_ASSIGNMENT);
 	state.setType("end");
-	getDeviceEventManagement().addDeviceStateChange(updated.getId(), state);
+	getDeviceEventManagement().addDeviceStateChanges(updated.getId(), state);
 	return updated;
     }
 

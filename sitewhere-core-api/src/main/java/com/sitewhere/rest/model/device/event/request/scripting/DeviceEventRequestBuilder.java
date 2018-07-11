@@ -7,6 +7,9 @@
  */
 package com.sitewhere.rest.model.device.event.request.scripting;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
@@ -124,25 +127,100 @@ public class DeviceEventRequestBuilder {
 	    this.deviceAssignment = deviceAssignment;
 	}
 
+	/**
+	 * Persist a single location event.
+	 * 
+	 * @param builder
+	 * @return
+	 * @throws SiteWhereException
+	 */
 	public IDeviceLocation persist(DeviceLocationCreateRequest.Builder builder) throws SiteWhereException {
 	    DeviceLocationCreateRequest request = builder.build();
-	    return events.addDeviceLocation(getDeviceAssignment().getId(), request);
+	    return events.addDeviceLocations(getDeviceAssignment().getId(), request).get(0);
 	}
 
+	/**
+	 * Persist multiple location events.
+	 * 
+	 * @param builders
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public List<IDeviceLocation> persistLocations(List<DeviceLocationCreateRequest.Builder> builders)
+		throws SiteWhereException {
+	    List<DeviceLocationCreateRequest> requests = new ArrayList<>();
+	    for (DeviceLocationCreateRequest.Builder builder : builders) {
+		DeviceLocationCreateRequest request = builder.build();
+		requests.add(request);
+	    }
+	    return events.addDeviceLocations(getDeviceAssignment().getId(),
+		    requests.toArray(new DeviceLocationCreateRequest[0]));
+	}
+
+	/**
+	 * Persist a single measurement event.
+	 * 
+	 * @param builder
+	 * @return
+	 * @throws SiteWhereException
+	 */
 	public IDeviceMeasurement persist(DeviceMeasurementCreateRequest.Builder builder) throws SiteWhereException {
 	    DeviceMeasurementCreateRequest request = builder.build();
-	    return events.addDeviceMeasurement(getDeviceAssignment().getId(), request);
+	    return events.addDeviceMeasurements(getDeviceAssignment().getId(), request).get(0);
 	}
 
+	/**
+	 * Persist multiple measurement events.
+	 * 
+	 * @param builders
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public List<IDeviceMeasurement> persistMeasurements(List<DeviceMeasurementCreateRequest.Builder> builders)
+		throws SiteWhereException {
+	    List<DeviceMeasurementCreateRequest> requests = new ArrayList<>();
+	    for (DeviceMeasurementCreateRequest.Builder builder : builders) {
+		DeviceMeasurementCreateRequest request = builder.build();
+		requests.add(request);
+	    }
+	    return events.addDeviceMeasurements(getDeviceAssignment().getId(),
+		    requests.toArray(new DeviceMeasurementCreateRequest[0]));
+	}
+
+	/**
+	 * Persist a single alert event.
+	 * 
+	 * @param builder
+	 * @return
+	 * @throws SiteWhereException
+	 */
 	public IDeviceAlert persist(DeviceAlertCreateRequest.Builder builder) throws SiteWhereException {
 	    DeviceAlertCreateRequest request = builder.build();
-	    return events.addDeviceAlert(getDeviceAssignment().getId(), request);
+	    return events.addDeviceAlerts(getDeviceAssignment().getId(), request).get(0);
+	}
+
+	/**
+	 * Persist multiple alert events.
+	 * 
+	 * @param builders
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public List<IDeviceAlert> persistAlerts(List<DeviceAlertCreateRequest.Builder> builders)
+		throws SiteWhereException {
+	    List<DeviceAlertCreateRequest> requests = new ArrayList<>();
+	    for (DeviceAlertCreateRequest.Builder builder : builders) {
+		DeviceAlertCreateRequest request = builder.build();
+		requests.add(request);
+	    }
+	    return events.addDeviceAlerts(getDeviceAssignment().getId(),
+		    requests.toArray(new DeviceAlertCreateRequest[0]));
 	}
 
 	public IDeviceCommandInvocation persist(DeviceCommandInvocationCreateRequest.Builder builder)
 		throws SiteWhereException {
 	    DeviceCommandInvocationCreateRequest request = builder.build();
-	    return events.addDeviceCommandInvocation(getDeviceAssignment().getId(), request);
+	    return events.addDeviceCommandInvocations(getDeviceAssignment().getId(), request).get(0);
 	}
 
 	public IDeviceAssignment getDeviceAssignment() {

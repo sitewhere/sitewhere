@@ -35,7 +35,7 @@ service DeviceEventManagement {
 	// ####################
 	
 	// Add measurements.
-	rpc AddMeasurement (GAddMeasurementRequest) returns (GAddMeasurementResponse) {}
+	rpc AddMeasurements (GAddMeasurementsRequest) returns (GAddMeasurementsResponse) {}
 	
 	// List measurements for an index.
 	rpc ListMeasurementsForIndex (GListMeasurementsForIndexRequest) returns (GListMeasurementsForIndexResponse) {}
@@ -44,8 +44,8 @@ service DeviceEventManagement {
 	// ### LOCATIONS ###
 	// #################
 	
-	// Add location.
-	rpc AddLocation (GAddLocationRequest) returns (GAddLocationResponse) {}
+	// Add locations.
+	rpc AddLocations (GAddLocationsRequest) returns (GAddLocationsResponse) {}
 	
 	// List locations for an index.
 	rpc ListLocationsForIndex (GListLocationsForIndexRequest) returns (GListLocationsForIndexResponse) {}
@@ -54,8 +54,8 @@ service DeviceEventManagement {
 	// ### ALERTS ###
 	// ##############
 	
-	// Add alert.
-	rpc AddAlert (GAddAlertRequest) returns (GAddAlertResponse) {}
+	// Add alerts.
+	rpc AddAlerts (GAddAlertsRequest) returns (GAddAlertsResponse) {}
 	
 	// List alerts for an index.
 	rpc ListAlertsForIndex (GListAlertsForIndexRequest) returns (GListAlertsForIndexResponse) {}
@@ -77,8 +77,8 @@ service DeviceEventManagement {
 	// ### COMMAND INVOCATIONS ###
 	// ###########################
 	
-	// Add command invocation.
-	rpc AddCommandInvocation (GAddCommandInvocationRequest) returns (GAddCommandInvocationResponse) {}
+	// Add command invocations.
+	rpc AddCommandInvocations (GAddCommandInvocationsRequest) returns (GAddCommandInvocationsResponse) {}
 	
 	// List command invocations for an index.
 	rpc ListCommandInvocationsForIndex (GListCommandInvocationsForIndexRequest) returns (GListCommandInvocationsForIndexResponse) {}
@@ -87,21 +87,21 @@ service DeviceEventManagement {
 	// ### COMMAND RESPONSES ###
 	// #########################
 	
-	// Add command invocation.
-	rpc AddCommandResponse (GAddCommandResponseRequest) returns (GAddCommandResponseResponse) {}
+	// Add command responses.
+	rpc AddCommandResponses (GAddCommandResponsesRequest) returns (GAddCommandResponsesResponse) {}
 	
-	// List command invocations for a command invocation.
+	// List command responses for a command invocation.
 	rpc ListCommandResponsesForInvocation (GListCommandResponsesForInvocationRequest) returns (GListCommandResponsesForInvocationResponse) {}
 	
-	// List command invocations for an index.
+	// List command responses for an index.
 	rpc ListCommandResponsesForIndex (GListCommandResponsesForIndexRequest) returns (GListCommandResponsesForIndexResponse) {}
 	
 	// #####################
 	// ### STATE CHANGES ###
 	// #####################
 	
-	// Add state change.
-	rpc AddStateChange (GAddStateChangeRequest) returns (GAddStateChangeResponse) {}
+	// Add state changes.
+	rpc AddStateChanges (GAddStateChangesRequest) returns (GAddStateChangesResponse) {}
 	
 	// List state changes for an index.
 	rpc ListStateChangesForIndex (GListStateChangesForIndexRequest) returns (GListStateChangesForIndexResponse) {}
@@ -152,15 +152,15 @@ message GGetDeviceEventByAlternateIdResponse {
 // ### MEASUREMENTS ###
 // ####################
 	
-// Request for adding measurement.
-message GAddMeasurementRequest {
+// Request for adding measurements.
+message GAddMeasurementsRequest {
 	com.sitewhere.grpc.model.GUUID deviceAssignmentId = 1;
-	com.sitewhere.grpc.model.GDeviceMeasurementCreateRequest request = 2;
+	repeated com.sitewhere.grpc.model.GDeviceMeasurementCreateRequest requests = 2;
 }
 	
-// Response for adding measurement.
-message GAddMeasurementResponse {
-	com.sitewhere.grpc.model.GDeviceMeasurement measurement = 1;
+// Response for adding measurements.
+message GAddMeasurementsResponse {
+	repeated com.sitewhere.grpc.model.GDeviceMeasurement measurements = 1;
 }
 	
 // Request for list of measurements.
@@ -179,15 +179,15 @@ message GListMeasurementsForIndexResponse {
 // ### LOCATIONS ###
 // #################
 	
-// Request for adding location.
-message GAddLocationRequest {
+// Request for adding locations.
+message GAddLocationsRequest {
 	com.sitewhere.grpc.model.GUUID deviceAssignmentId = 1;
-	com.sitewhere.grpc.model.GDeviceLocationCreateRequest request = 2;
+	repeated com.sitewhere.grpc.model.GDeviceLocationCreateRequest requests = 2;
 }
 	
-// Response for adding location.
-message GAddLocationResponse {
-	com.sitewhere.grpc.model.GDeviceLocation location = 1;
+// Response for adding locations.
+message GAddLocationsResponse {
+	repeated com.sitewhere.grpc.model.GDeviceLocation locations = 1;
 }
 	
 // Request for list of locations.
@@ -206,15 +206,15 @@ message GListLocationsForIndexResponse {
 // ### ALERTS ###
 // ##############
 	
-// Request for adding alert.
-message GAddAlertRequest {
+// Request for adding alerts.
+message GAddAlertsRequest {
 	com.sitewhere.grpc.model.GUUID deviceAssignmentId = 1;
-	com.sitewhere.grpc.model.GDeviceAlertCreateRequest request = 2;
+	repeated com.sitewhere.grpc.model.GDeviceAlertCreateRequest requests = 2;
 }
 	
-// Response for adding alert.
-message GAddAlertResponse {
-	com.sitewhere.grpc.model.GDeviceAlert alert = 1;
+// Response for adding alerts.
+message GAddAlertsResponse {
+	repeated com.sitewhere.grpc.model.GDeviceAlert alerts = 1;
 }
 	
 // Request for list of alerts.
@@ -273,15 +273,15 @@ message GListStreamDataForAssignmentResponse {
 // ### COMMAND INVOCATIONS ###
 // ###########################
 	
-// Request for adding command invocation.
-message GAddCommandInvocationRequest {
+// Request for adding command invocations.
+message GAddCommandInvocationsRequest {
 	com.sitewhere.grpc.model.GUUID deviceAssignmentId = 1;
-	com.sitewhere.grpc.model.GDeviceCommandInvocationCreateRequest request = 2;
+	repeated com.sitewhere.grpc.model.GDeviceCommandInvocationCreateRequest requests = 2;
 }
 	
-// Response for adding command invocation.
-message GAddCommandInvocationResponse {
-	com.sitewhere.grpc.model.GDeviceCommandInvocation invocation = 1;
+// Response for adding command invocations.
+message GAddCommandInvocationsResponse {
+	repeated com.sitewhere.grpc.model.GDeviceCommandInvocation invocations = 1;
 }
 	
 // Request for list of command invocations for one or more assignments.
@@ -300,15 +300,15 @@ message GListCommandInvocationsForIndexResponse {
 // ### COMMAND RESPONSES ###
 // #########################
 	
-// Request for adding command response.
-message GAddCommandResponseRequest {
+// Request for adding command responses.
+message GAddCommandResponsesRequest {
 	com.sitewhere.grpc.model.GUUID deviceAssignmentId = 1;
-	com.sitewhere.grpc.model.GDeviceCommandResponseCreateRequest request = 2;
+	repeated com.sitewhere.grpc.model.GDeviceCommandResponseCreateRequest requests = 2;
 }
 	
-// Response for adding command response.
-message GAddCommandResponseResponse {
-	com.sitewhere.grpc.model.GDeviceCommandResponse response = 1;
+// Response for adding command responses.
+message GAddCommandResponsesResponse {
+	repeated com.sitewhere.grpc.model.GDeviceCommandResponse responses = 1;
 }
 		
 // Request for list of command responses for an invocation.
@@ -339,15 +339,15 @@ message GListCommandResponsesForIndexResponse {
 // ### STATE CHANGES ###
 // #####################
 	
-// Request for adding state change.
-message GAddStateChangeRequest {
+// Request for adding state changes.
+message GAddStateChangesRequest {
 	com.sitewhere.grpc.model.GUUID deviceAssignmentId = 1;
-	com.sitewhere.grpc.model.GDeviceStateChangeCreateRequest request = 2;
+	repeated com.sitewhere.grpc.model.GDeviceStateChangeCreateRequest requests = 2;
 }
 	
-// Response for adding state change.
-message GAddStateChangeResponse {
-	com.sitewhere.grpc.model.GDeviceStateChange stateChange = 1;
+// Response for adding state changes.
+message GAddStateChangesResponse {
+	repeated com.sitewhere.grpc.model.GDeviceStateChange stateChanges = 1;
 }
 	
 // Request for list of state changes.

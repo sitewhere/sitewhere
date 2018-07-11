@@ -81,14 +81,14 @@ public class DeviceEventManagementDecorator extends TenantEngineLifecycleCompone
 
     /*
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceMeasurement(
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceMeasurements(
      * java.util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest)
+     * com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest[])
      */
     @Override
-    public IDeviceMeasurement addDeviceMeasurement(UUID deviceAssignmentId,
-	    IDeviceMeasurementCreateRequest measurements) throws SiteWhereException {
-	return getDelegate().addDeviceMeasurement(deviceAssignmentId, measurements);
+    public List<IDeviceMeasurement> addDeviceMeasurements(UUID deviceAssignmentId,
+	    IDeviceMeasurementCreateRequest... measurements) throws SiteWhereException {
+	return getDelegate().addDeviceMeasurements(deviceAssignmentId, measurements);
     }
 
     /*
@@ -105,14 +105,14 @@ public class DeviceEventManagementDecorator extends TenantEngineLifecycleCompone
 
     /*
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocation(java.
-     * util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocations(java
+     * .util.UUID,
+     * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest[])
      */
     @Override
-    public IDeviceLocation addDeviceLocation(UUID deviceAssignmentId, IDeviceLocationCreateRequest request)
+    public List<IDeviceLocation> addDeviceLocations(UUID deviceAssignmentId, IDeviceLocationCreateRequest... request)
 	    throws SiteWhereException {
-	return getDelegate().addDeviceLocation(deviceAssignmentId, request);
+	return getDelegate().addDeviceLocations(deviceAssignmentId, request);
     }
 
     /*
@@ -128,13 +128,14 @@ public class DeviceEventManagementDecorator extends TenantEngineLifecycleCompone
 
     /*
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceAlert(java.
-     * util.UUID, com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceAlerts(java.
+     * util.UUID,
+     * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest[])
      */
     @Override
-    public IDeviceAlert addDeviceAlert(UUID deviceAssignmentId, IDeviceAlertCreateRequest request)
+    public List<IDeviceAlert> addDeviceAlerts(UUID deviceAssignmentId, IDeviceAlertCreateRequest... request)
 	    throws SiteWhereException {
-	return getDelegate().addDeviceAlert(deviceAssignmentId, request);
+	return getDelegate().addDeviceAlerts(deviceAssignmentId, request);
     }
 
     /*
@@ -184,13 +185,14 @@ public class DeviceEventManagementDecorator extends TenantEngineLifecycleCompone
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * addDeviceCommandInvocation(java.util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest)
+     * addDeviceCommandInvocations(java.util.UUID,
+     * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest[
+     * ])
      */
     @Override
-    public IDeviceCommandInvocation addDeviceCommandInvocation(UUID deviceAssignmentId,
-	    IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
-	return getDelegate().addDeviceCommandInvocation(deviceAssignmentId, request);
+    public List<IDeviceCommandInvocation> addDeviceCommandInvocations(UUID deviceAssignmentId,
+	    IDeviceCommandInvocationCreateRequest... request) throws SiteWhereException {
+	return getDelegate().addDeviceCommandInvocations(deviceAssignmentId, request);
     }
 
     /*
@@ -217,13 +219,13 @@ public class DeviceEventManagementDecorator extends TenantEngineLifecycleCompone
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * addDeviceCommandResponse(java.util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest)
+     * addDeviceCommandResponses(java.util.UUID,
+     * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest[])
      */
     @Override
-    public IDeviceCommandResponse addDeviceCommandResponse(UUID deviceAssignmentId,
-	    IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
-	return getDelegate().addDeviceCommandResponse(deviceAssignmentId, request);
+    public List<IDeviceCommandResponse> addDeviceCommandResponses(UUID deviceAssignmentId,
+	    IDeviceCommandResponseCreateRequest... request) throws SiteWhereException {
+	return getDelegate().addDeviceCommandResponses(deviceAssignmentId, request);
     }
 
     /*
@@ -240,14 +242,14 @@ public class DeviceEventManagementDecorator extends TenantEngineLifecycleCompone
 
     /*
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceStateChange(
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceStateChanges(
      * java.util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest)
+     * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest[])
      */
     @Override
-    public IDeviceStateChange addDeviceStateChange(UUID deviceAssignmentId, IDeviceStateChangeCreateRequest request)
-	    throws SiteWhereException {
-	return getDelegate().addDeviceStateChange(deviceAssignmentId, request);
+    public List<IDeviceStateChange> addDeviceStateChanges(UUID deviceAssignmentId,
+	    IDeviceStateChangeCreateRequest... request) throws SiteWhereException {
+	return getDelegate().addDeviceStateChanges(deviceAssignmentId, request);
     }
 
     /*

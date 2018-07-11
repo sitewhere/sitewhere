@@ -57,7 +57,7 @@ public class ZoneTestRuleProcessor extends RuleProcessor {
 		alert.setMessage(test.getAlertMessage());
 		alert.setUpdateState(false);
 		alert.setEventDate(new Date());
-		getDeviceEventManagement().addDeviceAlert(location.getDeviceAssignmentId(), alert);
+		getDeviceEventManagement().addDeviceAlerts(location.getDeviceAssignmentId(), alert);
 	    }
 	}
     }

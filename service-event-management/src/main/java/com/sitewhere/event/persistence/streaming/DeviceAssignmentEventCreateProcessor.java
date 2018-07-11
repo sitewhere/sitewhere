@@ -68,30 +68,30 @@ public class DeviceAssignmentEventCreateProcessor extends BaseSubscriber<IDevice
 	try {
 	    switch (request.getEventType()) {
 	    case Alert: {
-		getDeviceEventManagement().addDeviceAlert(assignmentId, (IDeviceAlertCreateRequest) request);
+		getDeviceEventManagement().addDeviceAlerts(assignmentId, (IDeviceAlertCreateRequest) request);
 		break;
 	    }
 	    case CommandInvocation: {
-		getDeviceEventManagement().addDeviceCommandInvocation(assignmentId,
+		getDeviceEventManagement().addDeviceCommandInvocations(assignmentId,
 			(IDeviceCommandInvocationCreateRequest) request);
 		break;
 	    }
 	    case CommandResponse: {
-		getDeviceEventManagement().addDeviceCommandResponse(assignmentId,
+		getDeviceEventManagement().addDeviceCommandResponses(assignmentId,
 			(IDeviceCommandResponseCreateRequest) request);
 		break;
 	    }
 	    case Location: {
-		getDeviceEventManagement().addDeviceLocation(assignmentId, (IDeviceLocationCreateRequest) request);
+		getDeviceEventManagement().addDeviceLocations(assignmentId, (IDeviceLocationCreateRequest) request);
 		break;
 	    }
 	    case Measurement: {
-		getDeviceEventManagement().addDeviceMeasurement(assignmentId,
+		getDeviceEventManagement().addDeviceMeasurements(assignmentId,
 			(IDeviceMeasurementCreateRequest) request);
 		break;
 	    }
 	    case StateChange: {
-		getDeviceEventManagement().addDeviceStateChange(assignmentId,
+		getDeviceEventManagement().addDeviceStateChanges(assignmentId,
 			(IDeviceStateChangeCreateRequest) request);
 		break;
 	    }

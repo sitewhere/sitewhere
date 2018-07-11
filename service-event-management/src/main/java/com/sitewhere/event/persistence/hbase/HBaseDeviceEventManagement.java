@@ -165,14 +165,14 @@ public class HBaseDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceMeasurement(
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceMeasurements(
      * java.util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest)
+     * com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest[])
      */
     @Override
-    public IDeviceMeasurement addDeviceMeasurement(UUID deviceAssignmentId,
-	    IDeviceMeasurementCreateRequest measurements) throws SiteWhereException {
-	return HBaseDeviceEvent.createDeviceMeasurements(context, null, measurements);
+    public List<IDeviceMeasurement> addDeviceMeasurements(UUID deviceAssignmentId,
+	    IDeviceMeasurementCreateRequest... measurements) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase device management.");
     }
 
     /*
@@ -189,14 +189,14 @@ public class HBaseDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocation(java.
-     * util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocations(java
+     * .util.UUID,
+     * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest[])
      */
     @Override
-    public IDeviceLocation addDeviceLocation(UUID deviceAssignmentId, IDeviceLocationCreateRequest request)
+    public List<IDeviceLocation> addDeviceLocations(UUID deviceAssignmentId, IDeviceLocationCreateRequest... request)
 	    throws SiteWhereException {
-	return HBaseDeviceEvent.createDeviceLocation(context, null, request);
+	throw new SiteWhereException("Not implemented yet for HBase device management.");
     }
 
     /*
@@ -212,13 +212,14 @@ public class HBaseDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceAlert(java.
-     * util.UUID, com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceAlerts(java.
+     * util.UUID,
+     * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest[])
      */
     @Override
-    public IDeviceAlert addDeviceAlert(UUID deviceAssignmentId, IDeviceAlertCreateRequest request)
+    public List<IDeviceAlert> addDeviceAlerts(UUID deviceAssignmentId, IDeviceAlertCreateRequest... request)
 	    throws SiteWhereException {
-	return HBaseDeviceEvent.createDeviceAlert(context, null, request);
+	throw new SiteWhereException("Not implemented yet for HBase device management.");
     }
 
     /*
@@ -268,13 +269,14 @@ public class HBaseDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * addDeviceCommandInvocation(java.util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest)
+     * addDeviceCommandInvocations(java.util.UUID,
+     * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest[
+     * ])
      */
     @Override
-    public IDeviceCommandInvocation addDeviceCommandInvocation(UUID deviceAssignmentId,
-	    IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
-	return HBaseDeviceEvent.createDeviceCommandInvocation(context, null, request);
+    public List<IDeviceCommandInvocation> addDeviceCommandInvocations(UUID deviceAssignmentId,
+	    IDeviceCommandInvocationCreateRequest... request) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase device management.");
     }
 
     /*
@@ -301,13 +303,13 @@ public class HBaseDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * addDeviceCommandResponse(java.util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest)
+     * addDeviceCommandResponses(java.util.UUID,
+     * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest[])
      */
     @Override
-    public IDeviceCommandResponse addDeviceCommandResponse(UUID deviceAssignmentId,
-	    IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
-	return HBaseDeviceEvent.createDeviceCommandResponse(context, null, request);
+    public List<IDeviceCommandResponse> addDeviceCommandResponses(UUID deviceAssignmentId,
+	    IDeviceCommandResponseCreateRequest... request) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase device management.");
     }
 
     /*
@@ -324,14 +326,14 @@ public class HBaseDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceStateChange(
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceStateChanges(
      * java.util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest)
+     * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest[])
      */
     @Override
-    public IDeviceStateChange addDeviceStateChange(UUID deviceAssignmentId, IDeviceStateChangeCreateRequest request)
-	    throws SiteWhereException {
-	return HBaseDeviceEvent.createDeviceStateChange(context, null, request);
+    public List<IDeviceStateChange> addDeviceStateChanges(UUID deviceAssignmentId,
+	    IDeviceStateChangeCreateRequest... request) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented yet for HBase device management.");
     }
 
     /*

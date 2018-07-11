@@ -72,13 +72,13 @@ public class JsonDeviceRequestMarshaler extends JsonDeserializer<DecodedDeviceRe
 		throw new IOException("Request is missing.");
 	    }
 
-	    JsonNode hardwareId = node.get("hardwareId");
-	    if (hardwareId == null) {
-		throw new IOException("Hardware id is missing.");
+	    JsonNode deviceToken = node.get("deviceToken");
+	    if (deviceToken == null) {
+		throw new IOException("Device token is missing.");
 	    }
 
 	    JsonNode originator = node.get("originator");
-	    return unmarshal(hardwareId.textValue(), (originator == null) ? null : originator.textValue(), type,
+	    return unmarshal(deviceToken.textValue(), (originator == null) ? null : originator.textValue(), type,
 		    request);
 	} catch (IllegalArgumentException e) {
 	    throw new JsonMappingException("Event type is not valid.");

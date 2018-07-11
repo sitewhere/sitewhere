@@ -1269,7 +1269,7 @@ public class EventModelConverter {
      * @return
      * @throws SiteWhereException
      */
-    public static List<DeviceCommandInvocation> asApiDeviceCommandInvocation(List<GDeviceCommandInvocation> grpcs)
+    public static List<DeviceCommandInvocation> asApiDeviceCommandInvocations(List<GDeviceCommandInvocation> grpcs)
 	    throws SiteWhereException {
 	List<DeviceCommandInvocation> api = new ArrayList<DeviceCommandInvocation>();
 	for (GDeviceCommandInvocation grpc : grpcs) {
@@ -1279,13 +1279,13 @@ public class EventModelConverter {
     }
 
     /**
-     * Convert device command invocation from API to GRPC.
+     * Convert device command invocations from API to GRPC.
      * 
      * @param apis
      * @return
      * @throws SiteWhereException
      */
-    public static List<GDeviceCommandInvocation> asGrpcDeviceCommandInvocation(List<IDeviceCommandInvocation> apis)
+    public static List<GDeviceCommandInvocation> asGrpcDeviceCommandInvocations(List<IDeviceCommandInvocation> apis)
 	    throws SiteWhereException {
 	List<GDeviceCommandInvocation> grpcs = new ArrayList<GDeviceCommandInvocation>();
 	for (IDeviceCommandInvocation api : apis) {

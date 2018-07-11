@@ -187,7 +187,7 @@ public class DevicePresenceManager extends TenantEngineLifecycleComponent implem
 		if (getPresenceNotificationStrategy().shouldGenerateEvent(deviceState, create)) {
 		    IDeviceEventManagement eventManagement = new BlockingDeviceEventManagement(
 			    getDeviceEventManagementApiChannel());
-		    eventManagement.addDeviceStateChange(deviceState.getDeviceAssignmentId(), create);
+		    eventManagement.addDeviceStateChanges(deviceState.getDeviceAssignmentId(), create);
 		    return true;
 		}
 	    } catch (SiteWhereException e) {

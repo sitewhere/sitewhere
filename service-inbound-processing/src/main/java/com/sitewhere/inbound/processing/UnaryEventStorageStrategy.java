@@ -59,31 +59,33 @@ public class UnaryEventStorageStrategy implements IInboundEventStorageStrategy {
 	switch (request.getEventType()) {
 	case Measurement:
 	    getDeviceEventManagement().addDeviceMeasurements(assignment.getId(),
-		    (IDeviceMeasurementCreateRequest) request,
-		    new AlertHandlerStreamObserver<>(getInboundPayloadProcessingLogic()));
+		    new AlertHandlerStreamObserver<>(getInboundPayloadProcessingLogic()),
+		    (IDeviceMeasurementCreateRequest) request);
 	    break;
 	case Alert:
-	    getDeviceEventManagement().addDeviceAlert(assignment.getId(), (IDeviceAlertCreateRequest) request,
-		    new AlertHandlerStreamObserver<>(getInboundPayloadProcessingLogic()));
+	    getDeviceEventManagement().addDeviceAlerts(assignment.getId(),
+		    new AlertHandlerStreamObserver<>(getInboundPayloadProcessingLogic()),
+		    (IDeviceAlertCreateRequest) request);
 	    break;
 	case CommandInvocation:
-	    getDeviceEventManagement().addDeviceCommandInvocation(assignment.getId(),
-		    (IDeviceCommandInvocationCreateRequest) request,
-		    new AlertHandlerStreamObserver<>(getInboundPayloadProcessingLogic()));
+	    getDeviceEventManagement().addDeviceCommandInvocations(assignment.getId(),
+		    new AlertHandlerStreamObserver<>(getInboundPayloadProcessingLogic()),
+		    (IDeviceCommandInvocationCreateRequest) request);
 	    break;
 	case CommandResponse:
-	    getDeviceEventManagement().addDeviceCommandResponse(assignment.getId(),
-		    (IDeviceCommandResponseCreateRequest) request,
-		    new AlertHandlerStreamObserver<>(getInboundPayloadProcessingLogic()));
+	    getDeviceEventManagement().addDeviceCommandResponses(assignment.getId(),
+		    new AlertHandlerStreamObserver<>(getInboundPayloadProcessingLogic()),
+		    (IDeviceCommandResponseCreateRequest) request);
 	    break;
 	case Location:
-	    getDeviceEventManagement().addDeviceLocation(assignment.getId(), (IDeviceLocationCreateRequest) request,
-		    new AlertHandlerStreamObserver<>(getInboundPayloadProcessingLogic()));
+	    getDeviceEventManagement().addDeviceLocations(assignment.getId(),
+		    new AlertHandlerStreamObserver<>(getInboundPayloadProcessingLogic()),
+		    (IDeviceLocationCreateRequest) request);
 	    break;
 	case StateChange:
-	    getDeviceEventManagement().addDeviceStateChange(assignment.getId(),
-		    (IDeviceStateChangeCreateRequest) request,
-		    new AlertHandlerStreamObserver<>(getInboundPayloadProcessingLogic()));
+	    getDeviceEventManagement().addDeviceStateChanges(assignment.getId(),
+		    new AlertHandlerStreamObserver<>(getInboundPayloadProcessingLogic()),
+		    (IDeviceStateChangeCreateRequest) request);
 	    break;
 	case StreamData: {
 	    IDeviceStreamDataCreateRequest sdreq = (IDeviceStreamDataCreateRequest) request;

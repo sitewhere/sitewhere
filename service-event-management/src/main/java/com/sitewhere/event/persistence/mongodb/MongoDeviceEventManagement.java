@@ -7,6 +7,7 @@
  */
 package com.sitewhere.event.persistence.mongodb;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -189,21 +190,26 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceMeasurement(
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceMeasurements(
      * java.util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest)
+     * com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest[])
      */
     @Override
-    public IDeviceMeasurement addDeviceMeasurement(UUID deviceAssignmentId, IDeviceMeasurementCreateRequest request)
-	    throws SiteWhereException {
+    public List<IDeviceMeasurement> addDeviceMeasurements(UUID deviceAssignmentId,
+	    IDeviceMeasurementCreateRequest... requests) throws SiteWhereException {
+	List<IDeviceMeasurement> result = new ArrayList<>();
 	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
-	DeviceMeasurement measurements = DeviceEventManagementPersistence.deviceMeasurementCreateLogic(request,
-		assignment);
+	for (IDeviceMeasurementCreateRequest request : requests) {
+	    DeviceMeasurement measurements = DeviceEventManagementPersistence.deviceMeasurementCreateLogic(request,
+		    assignment);
 
-	MongoCollection<Document> events = getMongoClient().getEventsCollection();
-	Document mObject = MongoDeviceMeasurement.toDocument(measurements, false);
-	MongoDeviceEventManagementPersistence.insertEvent(events, mObject, isUseBulkEventInserts(), getEventBuffer());
-	return MongoDeviceMeasurement.fromDocument(mObject, false);
+	    MongoCollection<Document> events = getMongoClient().getEventsCollection();
+	    Document mObject = MongoDeviceMeasurement.toDocument(measurements, false);
+	    MongoDeviceEventManagementPersistence.insertEvent(events, mObject, isUseBulkEventInserts(),
+		    getEventBuffer());
+	    result.add(MongoDeviceMeasurement.fromDocument(mObject, false));
+	}
+	return result;
     }
 
     /*
@@ -225,20 +231,25 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocation(java.
-     * util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocations(java
+     * .util.UUID,
+     * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest[])
      */
     @Override
-    public IDeviceLocation addDeviceLocation(UUID deviceAssignmentId, IDeviceLocationCreateRequest request)
+    public List<IDeviceLocation> addDeviceLocations(UUID deviceAssignmentId, IDeviceLocationCreateRequest... requests)
 	    throws SiteWhereException {
+	List<IDeviceLocation> result = new ArrayList<>();
 	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
-	DeviceLocation location = DeviceEventManagementPersistence.deviceLocationCreateLogic(assignment, request);
+	for (IDeviceLocationCreateRequest request : requests) {
+	    DeviceLocation location = DeviceEventManagementPersistence.deviceLocationCreateLogic(assignment, request);
 
-	MongoCollection<Document> events = getMongoClient().getEventsCollection();
-	Document locObject = MongoDeviceLocation.toDocument(location, false);
-	MongoDeviceEventManagementPersistence.insertEvent(events, locObject, isUseBulkEventInserts(), getEventBuffer());
-	return MongoDeviceLocation.fromDocument(locObject, false);
+	    MongoCollection<Document> events = getMongoClient().getEventsCollection();
+	    Document locObject = MongoDeviceLocation.toDocument(location, false);
+	    MongoDeviceEventManagementPersistence.insertEvent(events, locObject, isUseBulkEventInserts(),
+		    getEventBuffer());
+	    result.add(MongoDeviceLocation.fromDocument(locObject, false));
+	}
+	return result;
     }
 
     /*
@@ -259,20 +270,25 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceAlert(java.
-     * util.UUID, com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceAlerts(java.
+     * util.UUID,
+     * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest[])
      */
     @Override
-    public IDeviceAlert addDeviceAlert(UUID deviceAssignmentId, IDeviceAlertCreateRequest request)
+    public List<IDeviceAlert> addDeviceAlerts(UUID deviceAssignmentId, IDeviceAlertCreateRequest... requests)
 	    throws SiteWhereException {
+	List<IDeviceAlert> result = new ArrayList<>();
 	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
-	DeviceAlert alert = DeviceEventManagementPersistence.deviceAlertCreateLogic(assignment, request);
+	for (IDeviceAlertCreateRequest request : requests) {
+	    DeviceAlert alert = DeviceEventManagementPersistence.deviceAlertCreateLogic(assignment, request);
 
-	MongoCollection<Document> events = getMongoClient().getEventsCollection();
-	Document alertObject = MongoDeviceAlert.toDocument(alert, false);
-	MongoDeviceEventManagementPersistence.insertEvent(events, alertObject, isUseBulkEventInserts(),
-		getEventBuffer());
-	return MongoDeviceAlert.fromDocument(alertObject, false);
+	    MongoCollection<Document> events = getMongoClient().getEventsCollection();
+	    Document alertObject = MongoDeviceAlert.toDocument(alert, false);
+	    MongoDeviceEventManagementPersistence.insertEvent(events, alertObject, isUseBulkEventInserts(),
+		    getEventBuffer());
+	    result.add(MongoDeviceAlert.fromDocument(alertObject, false));
+	}
+	return result;
     }
 
     /*
@@ -346,21 +362,26 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * addDeviceCommandInvocation(java.util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest)
+     * addDeviceCommandInvocations(java.util.UUID,
+     * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest[
+     * ])
      */
     @Override
-    public IDeviceCommandInvocation addDeviceCommandInvocation(UUID deviceAssignmentId,
-	    IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
+    public List<IDeviceCommandInvocation> addDeviceCommandInvocations(UUID deviceAssignmentId,
+	    IDeviceCommandInvocationCreateRequest... requests) throws SiteWhereException {
+	List<IDeviceCommandInvocation> result = new ArrayList<>();
 	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
-	DeviceCommandInvocation ci = DeviceEventManagementPersistence.deviceCommandInvocationCreateLogic(assignment,
-		request);
+	for (IDeviceCommandInvocationCreateRequest request : requests) {
+	    DeviceCommandInvocation ci = DeviceEventManagementPersistence.deviceCommandInvocationCreateLogic(assignment,
+		    request);
 
-	MongoCollection<Document> events = getMongoClient().getEventsCollection();
-	Document ciObject = MongoDeviceCommandInvocation.toDocument(ci);
-	MongoDeviceEventManagementPersistence.insertEvent(events, ciObject, isUseBulkEventInserts(), getEventBuffer());
-
-	return MongoDeviceCommandInvocation.fromDocument(ciObject);
+	    MongoCollection<Document> events = getMongoClient().getEventsCollection();
+	    Document ciObject = MongoDeviceCommandInvocation.toDocument(ci);
+	    MongoDeviceEventManagementPersistence.insertEvent(events, ciObject, isUseBulkEventInserts(),
+		    getEventBuffer());
+	    result.add(MongoDeviceCommandInvocation.fromDocument(ciObject));
+	}
+	return result;
     }
 
     /*
@@ -397,22 +418,25 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * addDeviceCommandResponse(java.util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest)
+     * addDeviceCommandResponses(java.util.UUID,
+     * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest[])
      */
     @Override
-    public IDeviceCommandResponse addDeviceCommandResponse(UUID deviceAssignmentId,
-	    IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
+    public List<IDeviceCommandResponse> addDeviceCommandResponses(UUID deviceAssignmentId,
+	    IDeviceCommandResponseCreateRequest... requests) throws SiteWhereException {
+	List<IDeviceCommandResponse> result = new ArrayList<>();
 	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
-	DeviceCommandResponse response = DeviceEventManagementPersistence.deviceCommandResponseCreateLogic(assignment,
-		request);
+	for (IDeviceCommandResponseCreateRequest request : requests) {
+	    DeviceCommandResponse response = DeviceEventManagementPersistence
+		    .deviceCommandResponseCreateLogic(assignment, request);
 
-	MongoCollection<Document> events = getMongoClient().getEventsCollection();
-	Document dbresponse = MongoDeviceCommandResponse.toDocument(response);
-	MongoDeviceEventManagementPersistence.insertEvent(events, dbresponse, isUseBulkEventInserts(),
-		getEventBuffer());
-
-	return MongoDeviceCommandResponse.fromDocument(dbresponse);
+	    MongoCollection<Document> events = getMongoClient().getEventsCollection();
+	    Document dbresponse = MongoDeviceCommandResponse.toDocument(response);
+	    MongoDeviceEventManagementPersistence.insertEvent(events, dbresponse, isUseBulkEventInserts(),
+		    getEventBuffer());
+	    result.add(MongoDeviceCommandResponse.fromDocument(dbresponse));
+	}
+	return result;
     }
 
     /*
@@ -434,20 +458,26 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceStateChange(
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceStateChanges(
      * java.util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest)
+     * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest[])
      */
     @Override
-    public IDeviceStateChange addDeviceStateChange(UUID deviceAssignmentId, IDeviceStateChangeCreateRequest request)
-	    throws SiteWhereException {
+    public List<IDeviceStateChange> addDeviceStateChanges(UUID deviceAssignmentId,
+	    IDeviceStateChangeCreateRequest... requests) throws SiteWhereException {
+	List<IDeviceStateChange> result = new ArrayList<>();
 	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
-	DeviceStateChange state = DeviceEventManagementPersistence.deviceStateChangeCreateLogic(assignment, request);
+	for (IDeviceStateChangeCreateRequest request : requests) {
+	    DeviceStateChange state = DeviceEventManagementPersistence.deviceStateChangeCreateLogic(assignment,
+		    request);
 
-	MongoCollection<Document> events = getMongoClient().getEventsCollection();
-	Document dbstate = MongoDeviceStateChange.toDocument(state);
-	MongoDeviceEventManagementPersistence.insertEvent(events, dbstate, isUseBulkEventInserts(), getEventBuffer());
-	return MongoDeviceStateChange.fromDocument(dbstate);
+	    MongoCollection<Document> events = getMongoClient().getEventsCollection();
+	    Document dbstate = MongoDeviceStateChange.toDocument(state);
+	    MongoDeviceEventManagementPersistence.insertEvent(events, dbstate, isUseBulkEventInserts(),
+		    getEventBuffer());
+	    result.add(MongoDeviceStateChange.fromDocument(dbstate));
+	}
+	return result;
     }
 
     /*

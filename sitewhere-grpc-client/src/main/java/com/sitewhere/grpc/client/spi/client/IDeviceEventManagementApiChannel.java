@@ -82,12 +82,12 @@ public interface IDeviceEventManagementApiChannel<T extends MultitenantGrpcChann
      * Add measurements for a given device assignment.
      * 
      * @param deviceAssignmentId
-     * @param measurements
      * @param observer
+     * @param requests
      * @throws SiteWhereException
      */
-    public void addDeviceMeasurements(UUID deviceAssignmentId, IDeviceMeasurementCreateRequest measurements,
-	    StreamObserver<IDeviceMeasurement> observer) throws SiteWhereException;
+    public void addDeviceMeasurements(UUID deviceAssignmentId, StreamObserver<IDeviceMeasurement> observer,
+	    IDeviceMeasurementCreateRequest... requests) throws SiteWhereException;
 
     /**
      * List device measurement entries for an index based on criteria.
@@ -103,15 +103,15 @@ public interface IDeviceEventManagementApiChannel<T extends MultitenantGrpcChann
 	    throws SiteWhereException;
 
     /**
-     * Add location for a given device assignment.
+     * Add locations for a given device assignment.
      * 
      * @param deviceAssignmentId
-     * @param request
      * @param observer
+     * @param requests
      * @throws SiteWhereException
      */
-    public void addDeviceLocation(UUID deviceAssignmentId, IDeviceLocationCreateRequest request,
-	    StreamObserver<IDeviceLocation> observer) throws SiteWhereException;
+    public void addDeviceLocations(UUID deviceAssignmentId, StreamObserver<IDeviceLocation> observer,
+	    IDeviceLocationCreateRequest... requests) throws SiteWhereException;
 
     /**
      * List device location entries for an index based on criteria.
@@ -127,15 +127,15 @@ public interface IDeviceEventManagementApiChannel<T extends MultitenantGrpcChann
 	    throws SiteWhereException;
 
     /**
-     * Add alert for a given device assignment.
+     * Add alerts for a given device assignment.
      * 
      * @param deviceAssignmentId
-     * @param request
      * @param observer
+     * @param requests
      * @throws SiteWhereException
      */
-    public void addDeviceAlert(UUID deviceAssignmentId, IDeviceAlertCreateRequest request,
-	    StreamObserver<IDeviceAlert> observer) throws SiteWhereException;
+    public void addDeviceAlerts(UUID deviceAssignmentId, StreamObserver<IDeviceAlert> observer,
+	    IDeviceAlertCreateRequest... requests) throws SiteWhereException;
 
     /**
      * List device location entries for an index based on criteria.
@@ -189,15 +189,15 @@ public interface IDeviceEventManagementApiChannel<T extends MultitenantGrpcChann
 	    StreamObserver<ISearchResults<IDeviceStreamData>> observer) throws SiteWhereException;
 
     /**
-     * Add a device command invocation event for the given assignment.
+     * Add a device command invocation events for the given assignment.
      * 
      * @param deviceAssignmentId
-     * @param request
      * @param observer
+     * @param requests
      * @throws SiteWhereException
      */
-    public void addDeviceCommandInvocation(UUID deviceAssignmentId, IDeviceCommandInvocationCreateRequest request,
-	    StreamObserver<IDeviceCommandInvocation> observer) throws SiteWhereException;
+    public void addDeviceCommandInvocations(UUID deviceAssignmentId, StreamObserver<IDeviceCommandInvocation> observer,
+	    IDeviceCommandInvocationCreateRequest... requests) throws SiteWhereException;
 
     /**
      * List device command invocation events for an index based on criteria.
@@ -224,15 +224,15 @@ public interface IDeviceEventManagementApiChannel<T extends MultitenantGrpcChann
 	    StreamObserver<ISearchResults<IDeviceCommandResponse>> observer) throws SiteWhereException;
 
     /**
-     * Adds a new device command response event.
+     * Adds a new device command response events.
      * 
      * @param deviceAssignmentId
-     * @param request
      * @param observer
+     * @param requests
      * @throws SiteWhereException
      */
-    public void addDeviceCommandResponse(UUID deviceAssignmentId, IDeviceCommandResponseCreateRequest request,
-	    StreamObserver<IDeviceCommandResponse> observer) throws SiteWhereException;
+    public void addDeviceCommandResponses(UUID deviceAssignmentId, StreamObserver<IDeviceCommandResponse> observer,
+	    IDeviceCommandResponseCreateRequest... requests) throws SiteWhereException;
 
     /**
      * List device command response events for an index based on criteria.
@@ -248,15 +248,15 @@ public interface IDeviceEventManagementApiChannel<T extends MultitenantGrpcChann
 	    throws SiteWhereException;
 
     /**
-     * Adds a new device state change event.
+     * Adds a new device state change events.
      * 
      * @param deviceAssignmentId
-     * @param request
      * @param observer
+     * @param requests
      * @throws SiteWhereException
      */
-    public void addDeviceStateChange(UUID deviceAssignmentId, IDeviceStateChangeCreateRequest request,
-	    StreamObserver<IDeviceStateChange> observer) throws SiteWhereException;
+    public void addDeviceStateChanges(UUID deviceAssignmentId, StreamObserver<IDeviceStateChange> observer,
+	    IDeviceStateChangeCreateRequest... requests) throws SiteWhereException;
 
     /**
      * List device state change events for an index based on criteria.

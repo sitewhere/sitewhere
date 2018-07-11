@@ -7,6 +7,7 @@
  */
 package com.sitewhere.event.kafka;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.logging.Log;
@@ -71,51 +72,54 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
      * @return
      * @throws SiteWhereException
      */
-    protected <T extends IDeviceEvent> T forwardEvent(UUID deviceAssignmentId, T event) throws SiteWhereException {
+    protected <T extends IDeviceEvent> List<T> forwardEvents(UUID deviceAssignmentId, List<T> events)
+	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
-	PersistedEventPayload api = new PersistedEventPayload();
-	api.setDeviceId(assignment.getDeviceId());
-	api.setEvent(event);
-	GPersistedEventPayload payload = KafkaModelConverter.asGrpcPersistedEventPayload(api);
+	for (T event : events) {
+	    PersistedEventPayload api = new PersistedEventPayload();
+	    api.setDeviceId(assignment.getDeviceId());
+	    api.setEvent(event);
+	    GPersistedEventPayload payload = KafkaModelConverter.asGrpcPersistedEventPayload(api);
 
-	getTenantEngine().getInboundPersistedEventsProducer().send(assignment.getId().toString(),
-		KafkaModelMarshaler.buildPersistedEventPayloadMessage(payload));
-	return event;
+	    getTenantEngine().getInboundPersistedEventsProducer().send(assignment.getId().toString(),
+		    KafkaModelMarshaler.buildPersistedEventPayloadMessage(payload));
+	}
+	return events;
     }
 
     /*
      * @see
-     * com.sitewhere.event.DeviceEventManagementDecorator#addDeviceMeasurement(java.
+     * com.sitewhere.event.DeviceEventManagementDecorator#addDeviceMeasurements(java
+     * .util.UUID,
+     * com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest[])
+     */
+    @Override
+    public List<IDeviceMeasurement> addDeviceMeasurements(UUID deviceAssignmentId,
+	    IDeviceMeasurementCreateRequest... measurements) throws SiteWhereException {
+	return forwardEvents(deviceAssignmentId, super.addDeviceMeasurements(deviceAssignmentId, measurements));
+    }
+
+    /*
+     * @see
+     * com.sitewhere.event.DeviceEventManagementDecorator#addDeviceLocations(java.
      * util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest)
+     * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest[])
      */
     @Override
-    public IDeviceMeasurement addDeviceMeasurement(UUID deviceAssignmentId,
-	    IDeviceMeasurementCreateRequest measurements) throws SiteWhereException {
-	return forwardEvent(deviceAssignmentId, super.addDeviceMeasurement(deviceAssignmentId, measurements));
+    public List<IDeviceLocation> addDeviceLocations(UUID deviceAssignmentId, IDeviceLocationCreateRequest... request)
+	    throws SiteWhereException {
+	return forwardEvents(deviceAssignmentId, super.addDeviceLocations(deviceAssignmentId, request));
     }
 
     /*
      * @see
-     * com.sitewhere.event.DeviceEventManagementDecorator#addDeviceLocation(java.
-     * util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
+     * com.sitewhere.event.DeviceEventManagementDecorator#addDeviceAlerts(java.util.
+     * UUID, com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest[])
      */
     @Override
-    public IDeviceLocation addDeviceLocation(UUID deviceAssignmentId, IDeviceLocationCreateRequest request)
+    public List<IDeviceAlert> addDeviceAlerts(UUID deviceAssignmentId, IDeviceAlertCreateRequest... request)
 	    throws SiteWhereException {
-	return forwardEvent(deviceAssignmentId, super.addDeviceLocation(deviceAssignmentId, request));
-    }
-
-    /*
-     * @see
-     * com.sitewhere.event.DeviceEventManagementDecorator#addDeviceAlert(java.util.
-     * UUID, com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
-     */
-    @Override
-    public IDeviceAlert addDeviceAlert(UUID deviceAssignmentId, IDeviceAlertCreateRequest request)
-	    throws SiteWhereException {
-	return forwardEvent(deviceAssignmentId, super.addDeviceAlert(deviceAssignmentId, request));
+	return forwardEvents(deviceAssignmentId, super.addDeviceAlerts(deviceAssignmentId, request));
     }
 
     /*
@@ -127,43 +131,43 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
     @Override
     public IDeviceStreamData addDeviceStreamData(UUID deviceAssignmentId, IDeviceStream stream,
 	    IDeviceStreamDataCreateRequest request) throws SiteWhereException {
-	return forwardEvent(deviceAssignmentId, super.addDeviceStreamData(deviceAssignmentId, stream, request));
+	return null;
     }
 
     /*
-     * @see
-     * com.sitewhere.event.DeviceEventManagementDecorator#addDeviceCommandInvocation
-     * (java.util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest)
+     * @see com.sitewhere.event.DeviceEventManagementDecorator#
+     * addDeviceCommandInvocations(java.util.UUID,
+     * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest[
+     * ])
      */
     @Override
-    public IDeviceCommandInvocation addDeviceCommandInvocation(UUID deviceAssignmentId,
-	    IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
-	return forwardEvent(deviceAssignmentId, super.addDeviceCommandInvocation(deviceAssignmentId, request));
+    public List<IDeviceCommandInvocation> addDeviceCommandInvocations(UUID deviceAssignmentId,
+	    IDeviceCommandInvocationCreateRequest... request) throws SiteWhereException {
+	return forwardEvents(deviceAssignmentId, super.addDeviceCommandInvocations(deviceAssignmentId, request));
     }
 
     /*
      * @see
-     * com.sitewhere.event.DeviceEventManagementDecorator#addDeviceCommandResponse(
+     * com.sitewhere.event.DeviceEventManagementDecorator#addDeviceCommandResponses(
      * java.util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest)
+     * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest[])
      */
     @Override
-    public IDeviceCommandResponse addDeviceCommandResponse(UUID deviceAssignmentId,
-	    IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
-	return forwardEvent(deviceAssignmentId, super.addDeviceCommandResponse(deviceAssignmentId, request));
+    public List<IDeviceCommandResponse> addDeviceCommandResponses(UUID deviceAssignmentId,
+	    IDeviceCommandResponseCreateRequest... request) throws SiteWhereException {
+	return forwardEvents(deviceAssignmentId, super.addDeviceCommandResponses(deviceAssignmentId, request));
     }
 
     /*
      * @see
-     * com.sitewhere.event.DeviceEventManagementDecorator#addDeviceStateChange(java.
-     * util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest)
+     * com.sitewhere.event.DeviceEventManagementDecorator#addDeviceStateChanges(java
+     * .util.UUID,
+     * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest[])
      */
     @Override
-    public IDeviceStateChange addDeviceStateChange(UUID deviceAssignmentId, IDeviceStateChangeCreateRequest request)
-	    throws SiteWhereException {
-	return forwardEvent(deviceAssignmentId, super.addDeviceStateChange(deviceAssignmentId, request));
+    public List<IDeviceStateChange> addDeviceStateChanges(UUID deviceAssignmentId,
+	    IDeviceStateChangeCreateRequest... request) throws SiteWhereException {
+	return forwardEvents(deviceAssignmentId, super.addDeviceStateChanges(deviceAssignmentId, request));
     }
 
     /**

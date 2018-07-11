@@ -287,6 +287,9 @@ def createMeasurements = { assn, start ->
 	double fuel = 100
 	double delta = 4
 	double mult = 6
+		
+	def mxRequests = []
+	def alertRequests = []
 	
 	int mxCount = 0
 	int alertCount = 0
@@ -306,10 +309,12 @@ def createMeasurements = { assn, start ->
 		}
 		
 		def fuellevel = eventBuilder.newMeasurements() measurement('fuel.level', fuel) on(new Date(current)) trackState()
-		eventBuilder.forAssignment assn.token persist fuellevel
+		mxRequests << fuellevel
+		mxCount++;
 		
 		def engtemp = eventBuilder.newMeasurements() measurement('engine.temperature', temp) on(new Date(current)) trackState()
-		eventBuilder.forAssignment assn.token persist engtemp
+		mxRequests << engtemp
+		mxCount++;
 		
 		if (temp > warnTemp) {
 			def alert = eventBuilder.newAlert 'engine.overheat', 'Engine temperature is at top of operating range.' on(new Date(current)) warning() trackState()
@@ -317,22 +322,27 @@ def createMeasurements = { assn, start ->
 				alert = eventBuilder.newAlert 'engine.overheat', 'Engine temperature is at a dangerous level.' on(new Date(current)) error() trackState()
 			}
 			if (temp > criticalTemp) {
-				alert = eventBuilder.newAlert 'engine.overheat', 'Engine temperature critical. Shutting down.' on(new Date(current)) critical() trackState()
+				alert = eventBuilder.newAlert 'engine.overheat', 'Engine shut down due to critical temperature of ' + temp + ' degrees' on(new Date(current)) critical() trackState()
 			}
-			alert = eventBuilder.forAssignment assn.token persist alert
-			
-			if (temp > criticalTemp) {
-				def alarm = deviceBuilder.newDeviceAlarm assn.token, 'Engine shut down due to critical temperature of ' + temp + ' degrees' 
-				alarm.withTriggeringEventId alert.id
-				deviceBuilder.persist alarm
-			}
-			
+			alertRequests << alert
 			alertCount++;
 		}
 		
-		mxCount++;
 		current += (long) (Math.random() * 30000.0);
 	}
+			
+	eventBuilder.forAssignment assn.token persistMeasurements mxRequests
+	def alerts = eventBuilder.forAssignment assn.token persistAlerts alertRequests
+			
+	// Create alarms for critical alerts.
+	alerts.each { alert ->
+		if (alert.level.name() == 'Critical') {
+			def alarm = deviceBuilder.newDeviceAlarm assn.token, alert.message 
+			alarm.withTriggeringEventId alert.id
+			deviceBuilder.persist alarm
+		}
+	}
+			
 	logger.info "[Create Events] ${mxCount} measurements. ${alertCount} alerts."
 }
 
@@ -354,6 +364,8 @@ def createLocations = { assn, startDate ->
 	// Used to rotate deltas to turn path and stay inside polygon.
 	AffineTransformation xform = new AffineTransformation();
 	xform.rotate(Math.toRadians(22.5));
+	
+	def locationRequests = []
 
 	int locCount = 0
 	GeometryFactory factory = new GeometryFactory();
@@ -376,7 +388,7 @@ def createLocations = { assn, startDate ->
 			LineString line = factory.createLineString(lineCoords);
 			if (polyZone.contains(line)) {
 				def newloc = eventBuilder.newLocation end.y, end.x on(new Date(current)) trackState()
-				eventBuilder.forAssignment assn.token persist newloc
+				locationRequests << newloc
 
 				cx = cx + deltaX;
 				cy = cy + deltaY;
@@ -392,6 +404,7 @@ def createLocations = { assn, startDate ->
 		locCount++
 		current += (long) (Math.random() * 30000.0);
 	}
+	eventBuilder.forAssignment assn.token persistLocations locationRequests
 	logger.info "[Create Events] ${locCount} locations."
 }
 

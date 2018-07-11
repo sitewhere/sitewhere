@@ -74,7 +74,7 @@ public class CommandInvocationJob implements Job {
 	    create.setTarget(CommandTarget.Assignment);
 	    create.setTargetId(getAssignmentToken());
 	    create.setEventDate(new Date());
-	    events.addDeviceCommandInvocation(null, create);
+	    events.addDeviceCommandInvocations(null, create);
 	    LOGGER.info("Executed command invocation job.");
 	} catch (SiteWhereException e) {
 	    throw new JobExecutionException("Unable to create command invocation.", e);

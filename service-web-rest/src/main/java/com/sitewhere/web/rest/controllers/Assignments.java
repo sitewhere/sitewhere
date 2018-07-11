@@ -368,8 +368,8 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return new BlockingDeviceEventManagement(getDeviceEventManagement()).addDeviceMeasurement(assignment.getId(),
-		input);
+	return new BlockingDeviceEventManagement(getDeviceEventManagement())
+		.addDeviceMeasurements(assignment.getId(), input).get(0);
     }
 
     /**
@@ -411,8 +411,8 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return new BlockingDeviceEventManagement(getDeviceEventManagement()).addDeviceLocation(assignment.getId(),
-		input);
+	return new BlockingDeviceEventManagement(getDeviceEventManagement())
+		.addDeviceLocations(assignment.getId(), input).get(0);
     }
 
     /**
@@ -454,7 +454,8 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return new BlockingDeviceEventManagement(getDeviceEventManagement()).addDeviceAlert(assignment.getId(), input);
+	return new BlockingDeviceEventManagement(getDeviceEventManagement()).addDeviceAlerts(assignment.getId(), input)
+		.get(0);
     }
 
     /**
@@ -660,7 +661,7 @@ public class Assignments extends RestControllerBase {
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	IDeviceCommandInvocation result = new BlockingDeviceEventManagement(getDeviceEventManagement())
-		.addDeviceCommandInvocation(assignment.getId(), request);
+		.addDeviceCommandInvocations(assignment.getId(), request).get(0);
 	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(getDeviceManagement());
 	return helper.convert(result);
     }
@@ -725,8 +726,8 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return new BlockingDeviceEventManagement(getDeviceEventManagement()).addDeviceStateChange(assignment.getId(),
-		input);
+	return new BlockingDeviceEventManagement(getDeviceEventManagement())
+		.addDeviceStateChanges(assignment.getId(), input).get(0);
     }
 
     /**
@@ -768,7 +769,7 @@ public class Assignments extends RestControllerBase {
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	IDeviceCommandResponse result = new BlockingDeviceEventManagement(getDeviceEventManagement())
-		.addDeviceCommandResponse(assignment.getId(), input);
+		.addDeviceCommandResponses(assignment.getId(), input).get(0);
 	return DeviceCommandResponse.copy(result);
     }
 
