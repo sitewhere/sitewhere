@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.sitewhere.grpc.kafka.model.KafkaModel.GDeviceRegistationPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GEnrichedEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GMicroserviceLogMessage;
@@ -25,6 +26,7 @@ import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdateType;
 import com.sitewhere.grpc.model.converter.KafkaModelConverter;
 import com.sitewhere.grpc.model.converter.TenantModelConverter;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.kafka.payload.IDeviceRegistrationPayload;
 import com.sitewhere.spi.microservice.kafka.payload.IEnrichedEventPayload;
 import com.sitewhere.spi.microservice.kafka.payload.IInboundEventPayload;
 import com.sitewhere.spi.tenant.ITenant;
@@ -75,6 +77,39 @@ public class KafkaModelMarshaler {
 	    return GTenantModelUpdate.parseFrom(payload);
 	} catch (InvalidProtocolBufferException e) {
 	    throw new SiteWhereException("Unable to parse tenant update message.", e);
+	}
+    }
+
+    /**
+     * Build binary message for API device registration payload.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static byte[] buildDeviceRegistrationPayloadMessage(IDeviceRegistrationPayload api)
+	    throws SiteWhereException {
+	GDeviceRegistationPayload grpc = KafkaModelConverter.asGrpcDeviceRegistrationPayload(api);
+	return buildDeviceRegistrationPayloadMessage(grpc);
+    }
+
+    /**
+     * Build binary message for GRPC device registration payload.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static byte[] buildDeviceRegistrationPayloadMessage(GDeviceRegistationPayload grpc)
+	    throws SiteWhereException {
+	ByteArrayOutputStream output = new ByteArrayOutputStream();
+	try {
+	    grpc.writeTo(output);
+	    return output.toByteArray();
+	} catch (IOException e) {
+	    throw new SiteWhereException("Unable to build device registration payload message.", e);
+	} finally {
+	    closeQuietly(output);
 	}
     }
 

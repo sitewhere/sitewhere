@@ -31,6 +31,14 @@ message GTenantModelUpdate {
 // ### EVENT PROCESSING ###
 // ########################
 
+// Device registration payload.
+message GDeviceRegistationPayload {
+	string sourceId = 1;
+	string deviceToken = 2;
+	com.sitewhere.grpc.model.GOptionalString originator = 3;
+	com.sitewhere.grpc.model.GDeviceRegistrationRequest registration = 4;
+}
+
 // Inbound event payload.
 message GInboundEventPayload {
 	string sourceId = 1;

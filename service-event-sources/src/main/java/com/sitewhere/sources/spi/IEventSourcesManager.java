@@ -10,6 +10,9 @@ package com.sitewhere.sources.spi;
 import java.util.List;
 import java.util.Map;
 
+import com.sitewhere.sources.kafka.DecodedEventsProducer;
+import com.sitewhere.sources.kafka.DeviceRegistrationEventsProducer;
+import com.sitewhere.sources.kafka.FailedDecodeEventsProducer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
@@ -26,6 +29,27 @@ public interface IEventSourcesManager extends ITenantEngineLifecycleComponent {
      * @return
      */
     public List<IInboundEventSource<?>> getEventSources();
+
+    /**
+     * Get Kafka producer for decoded events.
+     * 
+     * @return
+     */
+    public DecodedEventsProducer getDecodedEventsProducer();
+
+    /**
+     * Get Kafka producer for events that could not be decoded.
+     * 
+     * @return
+     */
+    public FailedDecodeEventsProducer getFailedDecodeEventsProducer();
+
+    /**
+     * Get Kafka producer for device registation events.
+     * 
+     * @return
+     */
+    public DeviceRegistrationEventsProducer getDeviceRegistrationEventsProducer();
 
     /**
      * Handle processing for a decoded event from an event source.

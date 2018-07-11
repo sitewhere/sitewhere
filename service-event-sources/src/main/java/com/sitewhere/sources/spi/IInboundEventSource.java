@@ -28,32 +28,25 @@ public interface IInboundEventSource<T> extends ITenantEngineLifecycleComponent 
     public String getSourceId();
 
     /**
-     * Set event sources manager.
+     * Get device event decoder implementation.
      * 
-     * @param eventSourcesManager
+     * @return
      */
-    public void setEventSourcesManager(IEventSourcesManager eventSourcesManager);
+    public IDeviceEventDecoder<T> getDeviceEventDecoder();
 
     /**
-     * Set the device event decoder.
+     * Get device event deduplicator implementation.
      * 
-     * @param decoder
+     * @return
      */
-    public void setDeviceEventDecoder(IDeviceEventDecoder<T> decoder);
+    public IDeviceEventDeduplicator getDeviceEventDeduplicator();
 
     /**
-     * Set the device event deduplicator.
+     * Get list of inbound event receivers.
      * 
-     * @param deduplicator
+     * @return
      */
-    public void setDeviceEventDeduplicator(IDeviceEventDeduplicator deduplicator);
-
-    /**
-     * Set the list of {@link IInboundEventReceiver} that feed this processor.
-     * 
-     * @param receivers
-     */
-    public void setInboundEventReceivers(List<IInboundEventReceiver<T>> receivers);
+    public List<IInboundEventReceiver<T>> getInboundEventReceivers();
 
     /**
      * Get the raw payload as a byte array.

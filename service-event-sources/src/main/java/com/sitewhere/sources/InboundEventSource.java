@@ -20,6 +20,7 @@ import com.sitewhere.sources.spi.IDeviceEventDeduplicator;
 import com.sitewhere.sources.spi.IEventSourcesManager;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.sources.spi.IInboundEventSource;
+import com.sitewhere.sources.spi.microservice.IEventSourcesTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
@@ -32,9 +33,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * @param <T>
  */
 public abstract class InboundEventSource<T> extends TenantEngineLifecycleComponent implements IInboundEventSource<T> {
-
-    /** Manager for all event sources in a tenant */
-    private IEventSourcesManager eventSourcesManager;
 
     /** Unique id for referencing source */
     private String sourceId;
@@ -183,16 +181,6 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.server.lifecycle.LifecycleComponent#getComponentName()
-     */
-    @Override
-    public String getComponentName() {
-	return "Event Source (" + getSourceId() + ")";
-    }
-
-    /*
      * @see
      * com.sitewhere.sources.spi.IInboundEventSource#onEncodedEventReceived(com.
      * sitewhere.sources.spi.IInboundEventReceiver, java.lang.Object, java.util.Map)
@@ -305,69 +293,45 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
 	return sourceId;
     }
 
-    public void setSourceId(String sourceId) {
+    protected void setSourceId(String sourceId) {
 	this.sourceId = sourceId;
     }
 
     /*
-     * @see com.sitewhere.spi.device.communication.IInboundEventSource#
-     * setEventSourcesManager(com.sitewhere.spi.device.communication.
-     * IEventSourcesManager)
+     * @see com.sitewhere.sources.spi.IInboundEventSource#getDeviceEventDecoder()
      */
     @Override
-    public void setEventSourcesManager(IEventSourcesManager eventSourcesManager) {
-	this.eventSourcesManager = eventSourcesManager;
-    }
-
-    public IEventSourcesManager getEventSourcesManager() {
-	return eventSourcesManager;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IInboundEventSource#
-     * setDeviceEventDecoder
-     * (com.sitewhere.spi.device.communication.IDeviceEventDecoder)
-     */
-    @Override
-    public void setDeviceEventDecoder(IDeviceEventDecoder<T> deviceEventDecoder) {
-	this.deviceEventDecoder = deviceEventDecoder;
-    }
-
     public IDeviceEventDecoder<T> getDeviceEventDecoder() {
 	return deviceEventDecoder;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IInboundEventSource#
-     * setDeviceEventDeduplicator(com.sitewhere.spi.device.communication.
-     * IDeviceEventDeduplicator)
-     */
-    @Override
-    public void setDeviceEventDeduplicator(IDeviceEventDeduplicator deviceEventDeduplicator) {
-	this.deviceEventDeduplicator = deviceEventDeduplicator;
+    protected void setDeviceEventDecoder(IDeviceEventDecoder<T> deviceEventDecoder) {
+	this.deviceEventDecoder = deviceEventDecoder;
     }
 
+    /*
+     * @see
+     * com.sitewhere.sources.spi.IInboundEventSource#getDeviceEventDeduplicator()
+     */
+    @Override
     public IDeviceEventDeduplicator getDeviceEventDeduplicator() {
 	return deviceEventDeduplicator;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IInboundEventSource#
-     * setInboundEventReceivers (java.util.List)
-     */
-    @Override
-    public void setInboundEventReceivers(List<IInboundEventReceiver<T>> inboundEventReceivers) {
-	this.inboundEventReceivers = inboundEventReceivers;
+    protected void setDeviceEventDeduplicator(IDeviceEventDeduplicator deviceEventDeduplicator) {
+	this.deviceEventDeduplicator = deviceEventDeduplicator;
     }
 
+    /*
+     * @see com.sitewhere.sources.spi.IInboundEventSource#getInboundEventReceivers()
+     */
+    @Override
     public List<IInboundEventReceiver<T>> getInboundEventReceivers() {
 	return inboundEventReceivers;
+    }
+
+    protected void setInboundEventReceivers(List<IInboundEventReceiver<T>> inboundEventReceivers) {
+	this.inboundEventReceivers = inboundEventReceivers;
     }
 
     protected Meter getDecodedEvents() {
@@ -380,5 +344,9 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
 
     protected Meter getDuplicates() {
 	return duplicates;
+    }
+
+    protected IEventSourcesManager getEventSourcesManager() {
+	return ((IEventSourcesTenantEngine) getTenantEngine()).getEventSourcesManager();
     }
 }

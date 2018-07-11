@@ -83,7 +83,6 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		RegisterDevice register = RegisterDevice.parseDelimitedFrom(stream);
 		getLogger().debug("Decoded registration for: " + register.getHardwareId());
 		DeviceRegistrationRequest request = new DeviceRegistrationRequest();
-		request.setDeviceToken(register.getHardwareId());
 		request.setDeviceTypeToken(register.getDeviceTypeToken());
 		if (register.hasAreaToken()) {
 		    request.setAreaToken(register.getAreaToken());

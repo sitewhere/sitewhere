@@ -53,6 +53,9 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     /** Topic suffix for events that have been persisted */
     protected static final String TENANT_TOPIC_INBOUND_PERSISTED_EVENTS = "inbound-persisted-events";
 
+    /** Topic suffix for device registration events from inbound event sources */
+    protected static final String TENANT_TOPIC_INBOUND_DEVICE_REGISTRATION_EVENTS = "inbound-device-registration-events";
+
     /** Topic suffix for tenant events sent to unregistered devices */
     protected static final String TENANT_TOPIC_INBOUND_UNREGISTERED_DEVICE_EVENTS = "inbound-unregistered-device-events";
 
@@ -168,6 +171,15 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     @Override
     public String getInboundPersistedEventsTopic(ITenant tenant) {
 	return getTenantPrefix(tenant) + TENANT_TOPIC_INBOUND_PERSISTED_EVENTS;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#
+     * getDeviceRegistrationEventsTopic(com.sitewhere.spi.tenant.ITenant)
+     */
+    @Override
+    public String getDeviceRegistrationEventsTopic(ITenant tenant) {
+	return getTenantPrefix(tenant) + TENANT_TOPIC_INBOUND_DEVICE_REGISTRATION_EVENTS;
     }
 
     /*

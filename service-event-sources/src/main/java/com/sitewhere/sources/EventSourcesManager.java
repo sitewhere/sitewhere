@@ -11,20 +11,22 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
+import com.sitewhere.rest.model.microservice.kafka.payload.DeviceRegistrationPayload;
 import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
+import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
-import com.sitewhere.server.lifecycle.TracerUtils;
 import com.sitewhere.sources.kafka.DecodedEventsProducer;
+import com.sitewhere.sources.kafka.DeviceRegistrationEventsProducer;
 import com.sitewhere.sources.kafka.FailedDecodeEventsProducer;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IEventSourcesManager;
 import com.sitewhere.sources.spi.IInboundEventSource;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
-
-import io.opentracing.ActiveSpan;
 
 /**
  * Manages lifecycle of the list of event sources configured for a tenant.
@@ -36,11 +38,14 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
     /** List of event sources */
     private List<IInboundEventSource<?>> eventSources;
 
-    /** Kafka producer for decoded events form event sources */
+    /** Kafka producer for decoded events from event sources */
     private DecodedEventsProducer decodedEventsProducer;
 
     /** Kafka producer for events that could not be decoded */
     private FailedDecodeEventsProducer failedDecodeEventsProducer;
+
+    /** Kafka producer for device registation events from event sources */
+    private DeviceRegistrationEventsProducer deviceRegistrationEventsProducer;
 
     /*
      * @see com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.
@@ -48,49 +53,39 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Initialize Kafka producer for decoded events.
-	initializeDecodedEventsProducer(monitor);
+	// Create Kafka components.
+	createKafkaComponents();
 
-	ActiveSpan span = null;
+	// Composite step for initializing component.
+	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
+
+	// Initialize decoded events producer.
+	init.addInitializeStep(this, getDecodedEventsProducer(), true);
+
+	// Initialize failed decode events producer.
+	init.addInitializeStep(this, getFailedDecodeEventsProducer(), true);
+
+	// Initialize device registration events producer.
+	init.addInitializeStep(this, getDeviceRegistrationEventsProducer(), true);
+
+	// Initialize event sources.
 	for (IInboundEventSource<?> source : getEventSources()) {
-	    try {
-		span = monitor.getMicroservice().getTracer().buildSpan("Initialize event source").startActive();
-		span.log("Initializing '" + source.getComponentName() + "' event source.");
-		source.setEventSourcesManager(this);
-		initializeNestedComponent(source, monitor, true);
-	    } catch (SiteWhereException e) {
-		TracerUtils.handleErrorInTracerSpan(span, e);
-		getLogger().error("Error initializing event source.", e);
-	    } catch (Throwable e) {
-		TracerUtils.handleErrorInTracerSpan(span, e);
-		getLogger().error("Unhandled exception initializing event source.", e);
-	    } finally {
-		TracerUtils.finishTracerSpan(span);
-	    }
+	    init.addInitializeStep(this, source, false);
 	}
+
+	// Execute initialization steps.
+	init.execute(monitor);
     }
 
     /**
-     * Initialize Kafka producer for decoded events.
+     * Create Kafka components.
      * 
-     * @param monitor
      * @throws SiteWhereException
      */
-    protected void initializeDecodedEventsProducer(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	ActiveSpan span = null;
-	try {
-	    span = monitor.getMicroservice().getTracer().buildSpan("Initialize decoded events producer").startActive();
-	    decodedEventsProducer = new DecodedEventsProducer();
-	    initializeNestedComponent(getDecodedEventsProducer(), monitor, true);
-	} catch (SiteWhereException e) {
-	    TracerUtils.handleErrorInTracerSpan(span, e);
-	    getLogger().error("Error initializing decoded events producer.", e);
-	} catch (Throwable e) {
-	    TracerUtils.handleErrorInTracerSpan(span, e);
-	    getLogger().error("Unhandled exception initializing decoded events producer.", e);
-	} finally {
-	    TracerUtils.finishTracerSpan(span);
-	}
+    protected void createKafkaComponents() throws SiteWhereException {
+	this.decodedEventsProducer = new DecodedEventsProducer();
+	this.failedDecodeEventsProducer = new FailedDecodeEventsProducer();
+	this.deviceRegistrationEventsProducer = new DeviceRegistrationEventsProducer();
     }
 
     /*
@@ -100,47 +95,25 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Start Kafka producer for decoded events.
-	startDecodedEventsProducer(monitor);
+	// Composite step for starting component.
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
 
-	ActiveSpan span = null;
+	// Start decoded events producer.
+	start.addStartStep(this, getDecodedEventsProducer(), true);
+
+	// Start failed decode events producer.
+	start.addStartStep(this, getFailedDecodeEventsProducer(), true);
+
+	// Start device registration events producer.
+	start.addStartStep(this, getDeviceRegistrationEventsProducer(), true);
+
+	// Start event sources.
 	for (IInboundEventSource<?> source : getEventSources()) {
-	    try {
-		span = monitor.getMicroservice().getTracer().buildSpan("Start event source").startActive();
-		span.log("Starting '" + source.getComponentName() + "' event source.");
-		startNestedComponent(source, monitor, true);
-	    } catch (SiteWhereException e) {
-		TracerUtils.handleErrorInTracerSpan(span, e);
-		getLogger().error("Error starting event source.", e);
-	    } catch (Throwable e) {
-		TracerUtils.handleErrorInTracerSpan(span, e);
-		getLogger().error("Unhandled exception starting event source.", e);
-	    } finally {
-		TracerUtils.finishTracerSpan(span);
-	    }
+	    start.addStartStep(this, source, false);
 	}
-    }
 
-    /**
-     * Start Kafka producer for decoded events.
-     * 
-     * @param monitor
-     * @throws SiteWhereException
-     */
-    protected void startDecodedEventsProducer(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	ActiveSpan span = null;
-	try {
-	    span = monitor.getMicroservice().getTracer().buildSpan("Start decoded events producer").startActive();
-	    startNestedComponent(getDecodedEventsProducer(), monitor, true);
-	} catch (SiteWhereException e) {
-	    TracerUtils.handleErrorInTracerSpan(span, e);
-	    getLogger().error("Error starting decoded events producer.", e);
-	} catch (Throwable e) {
-	    TracerUtils.handleErrorInTracerSpan(span, e);
-	    getLogger().error("Unhandled exception starting decoded events producer.", e);
-	} finally {
-	    TracerUtils.finishTracerSpan(span);
-	}
+	// Execute startup steps.
+	start.execute(monitor);
     }
 
     /*
@@ -150,47 +123,25 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Stop Kafka producer for decoded events.
-	stopDecodedEventsProducer(monitor);
+	// Composite step for stopping component.
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
 
-	ActiveSpan span = null;
+	// Stop event sources.
 	for (IInboundEventSource<?> source : getEventSources()) {
-	    try {
-		span = monitor.getMicroservice().getTracer().buildSpan("Stop event source").startActive();
-		span.log("Stopping '" + source.getComponentName() + "' event source.");
-		source.stop(monitor);
-	    } catch (SiteWhereException e) {
-		TracerUtils.handleErrorInTracerSpan(span, e);
-		getLogger().error("Error stopping event source.", e);
-	    } catch (Throwable e) {
-		TracerUtils.handleErrorInTracerSpan(span, e);
-		getLogger().error("Unhandled exception stopping event source.", e);
-	    } finally {
-		TracerUtils.finishTracerSpan(span);
-	    }
+	    stop.addStopStep(this, source);
 	}
-    }
 
-    /**
-     * Stop Kafka producer for decoded events.
-     * 
-     * @param monitor
-     * @throws SiteWhereException
-     */
-    protected void stopDecodedEventsProducer(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	ActiveSpan span = null;
-	try {
-	    span = monitor.getMicroservice().getTracer().buildSpan("Stop decoded events producer").startActive();
-	    getDecodedEventsProducer().stop(monitor);
-	} catch (SiteWhereException e) {
-	    TracerUtils.handleErrorInTracerSpan(span, e);
-	    getLogger().error("Error stopping decoded events producer.", e);
-	} catch (Throwable e) {
-	    TracerUtils.handleErrorInTracerSpan(span, e);
-	    getLogger().error("Unhandled exception stopping decoded events producer.", e);
-	} finally {
-	    TracerUtils.finishTracerSpan(span);
-	}
+	// Stop device registration events producer.
+	stop.addStopStep(this, getDeviceRegistrationEventsProducer());
+
+	// Stop failed decode events producer.
+	stop.addStopStep(this, getFailedDecodeEventsProducer());
+
+	// Stop decoded events producer.
+	stop.addStopStep(this, getDecodedEventsProducer());
+
+	// Execute shutdown steps.
+	stop.execute(monitor);
     }
 
     /*
@@ -203,18 +154,25 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 	    IDecodedDeviceRequest<?> decoded) throws SiteWhereException {
 	if (getDecodedEventsProducer().getLifecycleStatus() == LifecycleStatus.Started) {
 	    if (decoded.getRequest() instanceof IDeviceEventCreateRequest) {
-		// Build payload message.
+		// Build and forward inbound event payload message.
 		InboundEventPayload payload = new InboundEventPayload();
 		payload.setSourceId(sourceId);
 		payload.setDeviceToken(decoded.getDeviceToken());
 		payload.setOriginator(decoded.getOriginator());
 		payload.setEventCreateRequest((IDeviceEventCreateRequest) decoded.getRequest());
-
-		// Send payload to Kafka topic.
 		getDecodedEventsProducer().send(decoded.getDeviceToken(),
 			KafkaModelMarshaler.buildInboundEventPayloadMessage(payload));
+	    } else if (decoded.getRequest() instanceof IDeviceRegistrationRequest) {
+		// Build and forward device registration payload message.
+		DeviceRegistrationPayload payload = new DeviceRegistrationPayload();
+		payload.setSourceId(sourceId);
+		payload.setDeviceToken(decoded.getDeviceToken());
+		payload.setOriginator(decoded.getOriginator());
+		payload.setDeviceRegistrationRequest((IDeviceRegistrationRequest) decoded.getRequest());
+		getDeviceRegistrationEventsProducer().send(decoded.getDeviceToken(),
+			KafkaModelMarshaler.buildDeviceRegistrationPayloadMessage(payload));
 	    }
-	} else if (getLogger().isWarnEnabled()) {
+	} else {
 	    getLogger().warn("Producer not started. Unable to add event to topic.");
 	}
     }
@@ -246,6 +204,11 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 	this.eventSources = eventSources;
     }
 
+    /*
+     * @see
+     * com.sitewhere.sources.spi.IEventSourcesManager#getDecodedEventsProducer()
+     */
+    @Override
     public DecodedEventsProducer getDecodedEventsProducer() {
 	return decodedEventsProducer;
     }
@@ -254,11 +217,30 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 	this.decodedEventsProducer = decodedEventsProducer;
     }
 
+    /*
+     * @see
+     * com.sitewhere.sources.spi.IEventSourcesManager#getFailedDecodeEventsProducer(
+     * )
+     */
+    @Override
     public FailedDecodeEventsProducer getFailedDecodeEventsProducer() {
 	return failedDecodeEventsProducer;
     }
 
     public void setFailedDecodeEventsProducer(FailedDecodeEventsProducer failedDecodeEventsProducer) {
 	this.failedDecodeEventsProducer = failedDecodeEventsProducer;
+    }
+
+    /*
+     * @see com.sitewhere.sources.spi.IEventSourcesManager#
+     * getDeviceRegistrationEventsProducer()
+     */
+    @Override
+    public DeviceRegistrationEventsProducer getDeviceRegistrationEventsProducer() {
+	return deviceRegistrationEventsProducer;
+    }
+
+    public void setDeviceRegistrationEventsProducer(DeviceRegistrationEventsProducer deviceRegistrationEventsProducer) {
+	this.deviceRegistrationEventsProducer = deviceRegistrationEventsProducer;
     }
 }

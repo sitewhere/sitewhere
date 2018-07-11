@@ -102,7 +102,16 @@ public interface IKafkaTopicNaming {
     public String getInboundPersistedEventsTopic(ITenant tenant);
 
     /**
-     * Get name fro topic that contains events for devices that were not registered
+     * Get name for topic that contains events for device registration requests
+     * decoded by event sources.
+     * 
+     * @param tenant
+     * @return
+     */
+    public String getDeviceRegistrationEventsTopic(ITenant tenant);
+
+    /**
+     * Get name for topic that contains events for devices that were not registered
      * in the system.
      * 
      * @param tenant

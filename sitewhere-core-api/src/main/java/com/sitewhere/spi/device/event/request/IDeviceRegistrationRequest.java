@@ -19,13 +19,6 @@ import com.sitewhere.spi.common.IMetadataProvider;
 public interface IDeviceRegistrationRequest extends IMetadataProvider, Serializable {
 
     /**
-     * Get device token to be registered.
-     * 
-     * @return
-     */
-    public String getDeviceToken();
-
-    /**
      * Get token for device type token.
      * 
      * @return

@@ -29,7 +29,7 @@ import com.sitewhere.spi.device.command.DeviceMappingResult;
 import com.sitewhere.spi.device.command.RegistrationFailureReason;
 import com.sitewhere.spi.device.command.RegistrationSuccessReason;
 import com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.microservice.kafka.payload.IDeviceRegistrationPayload;
 import com.sitewhere.spi.microservice.kafka.payload.IInboundEventPayload;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
@@ -76,14 +76,12 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IRegistrationManager#
-     * handleDeviceRegistration
-     * (com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest)
+     * @see
+     * com.sitewhere.registration.spi.IRegistrationManager#handleDeviceRegistration(
+     * com.sitewhere.spi.microservice.kafka.payload.IDeviceRegistrationPayload)
      */
     @Override
-    public void handleDeviceRegistration(IDeviceRegistrationRequest request) throws SiteWhereException {
+    public void handleDeviceRegistration(IDeviceRegistrationPayload registration) throws SiteWhereException {
 	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
 	try {
 	    Authentication system = getMicroservice().getSystemUser()
@@ -91,11 +89,11 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 	    SecurityContextHolder.getContext().setAuthentication(system);
 
 	    getLogger().debug("Handling device registration request.");
-	    IDevice device = getOrCreateDevice(request);
+	    IDevice device = getOrCreateDevice(registration);
 
 	    // Find assignment metadata that should be associated.
-	    ICustomer customer = getCustomerFor(request);
-	    IArea area = getAreaFor(request);
+	    ICustomer customer = getCustomerFor(registration);
+	    IArea area = getAreaFor(registration);
 
 	    // Make sure device is assigned.
 	    if (device.getDeviceAssignmentId() == null) {
@@ -111,7 +109,7 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 		getDeviceManagement().createDeviceAssignment(assnCreate);
 	    }
 	    boolean isNewRegistration = (device != null);
-	    sendRegistrationAck(request.getDeviceToken(), isNewRegistration);
+	    sendRegistrationAck(registration.getDeviceToken(), isNewRegistration);
 	} finally {
 	    SecurityContextHolder.getContext().setAuthentication(previous);
 	}
@@ -120,13 +118,13 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
     /**
      * Get existing device or create a new one based on registration request.
      * 
-     * @param request
+     * @param registration
      * @return
      * @throws SiteWhereException
      */
-    protected IDevice getOrCreateDevice(IDeviceRegistrationRequest request) throws SiteWhereException {
-	IDevice device = getDeviceManagement().getDeviceByToken(request.getDeviceToken());
-	IDeviceType deviceType = getDeviceTypeFor(request);
+    protected IDevice getOrCreateDevice(IDeviceRegistrationPayload registration) throws SiteWhereException {
+	IDevice device = getDeviceManagement().getDeviceByToken(registration.getDeviceToken());
+	IDeviceType deviceType = getDeviceTypeFor(registration);
 
 	// Create device if it does not already exist.
 	if (device == null) {
@@ -135,18 +133,18 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 	    }
 	    getLogger().debug("Creating new device as part of registration.");
 	    DeviceCreateRequest deviceCreate = new DeviceCreateRequest();
-	    deviceCreate.setToken(request.getDeviceToken());
-	    deviceCreate.setDeviceTypeToken(request.getDeviceTypeToken());
+	    deviceCreate.setToken(registration.getDeviceToken());
+	    deviceCreate.setDeviceTypeToken(registration.getDeviceRegistrationRequest().getDeviceTypeToken());
 	    deviceCreate.setComments("Device created by on-demand registration.");
-	    deviceCreate.setMetadata(request.getMetadata());
+	    deviceCreate.setMetadata(registration.getDeviceRegistrationRequest().getMetadata());
 	    return getDeviceManagement().createDevice(deviceCreate);
 	} else if (!device.getDeviceTypeId().equals(deviceType.getId())) {
-	    sendInvalidDeviceType(request.getDeviceToken());
+	    sendInvalidDeviceType(registration.getDeviceToken());
 	    throw new SiteWhereException("Found existing device registration, but device type does not match.");
 	} else {
 	    getLogger().info("Found existing device registration. Updating metadata.");
 	    DeviceCreateRequest deviceUpdate = new DeviceCreateRequest();
-	    deviceUpdate.setMetadata(request.getMetadata());
+	    deviceUpdate.setMetadata(registration.getDeviceRegistrationRequest().getMetadata());
 	    return getDeviceManagement().updateDevice(device.getId(), deviceUpdate);
 	}
     }
@@ -164,13 +162,14 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
     /**
      * Get device type that should be used for the given request.
      * 
-     * @param request
+     * @param registration
      * @return
      * @throws SiteWhereException
      */
-    protected IDeviceType getDeviceTypeFor(IDeviceRegistrationRequest request) throws SiteWhereException {
-	if (request.getDeviceTypeToken() != null) {
-	    IDeviceType override = getDeviceManagement().getDeviceTypeByToken(request.getDeviceTypeToken());
+    protected IDeviceType getDeviceTypeFor(IDeviceRegistrationPayload registration) throws SiteWhereException {
+	String deviceTypeToken = registration.getDeviceRegistrationRequest().getDeviceTypeToken();
+	if (deviceTypeToken != null) {
+	    IDeviceType override = getDeviceManagement().getDeviceTypeByToken(deviceTypeToken);
 	    if (override == null) {
 		throw new SiteWhereException("Registration request specified invalid device type token.");
 	    }
@@ -184,13 +183,14 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
     /**
      * Get customer that should be used for the given request.
      * 
-     * @param request
+     * @param registration
      * @return
      * @throws SiteWhereException
      */
-    protected ICustomer getCustomerFor(IDeviceRegistrationRequest request) throws SiteWhereException {
-	if (request.getCustomerToken() != null) {
-	    ICustomer override = getDeviceManagement().getCustomerByToken(request.getCustomerToken());
+    protected ICustomer getCustomerFor(IDeviceRegistrationPayload registration) throws SiteWhereException {
+	String customerToken = registration.getDeviceRegistrationRequest().getCustomerToken();
+	if (customerToken != null) {
+	    ICustomer override = getDeviceManagement().getCustomerByToken(customerToken);
 	    if (override == null) {
 		throw new SiteWhereException("Registration request specified invalid customer token.");
 	    }
@@ -204,13 +204,14 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
     /**
      * Get area that should be used for the given request.
      * 
-     * @param request
+     * @param registration
      * @return
      * @throws SiteWhereException
      */
-    protected IArea getAreaFor(IDeviceRegistrationRequest request) throws SiteWhereException {
-	if (request.getAreaToken() != null) {
-	    IArea override = getDeviceManagement().getAreaByToken(request.getAreaToken());
+    protected IArea getAreaFor(IDeviceRegistrationPayload registration) throws SiteWhereException {
+	String areaToken = registration.getDeviceRegistrationRequest().getAreaToken();
+	if (areaToken != null) {
+	    IArea override = getDeviceManagement().getAreaByToken(areaToken);
 	    if (override == null) {
 		throw new SiteWhereException("Registration request specified invalid area token.");
 	    }

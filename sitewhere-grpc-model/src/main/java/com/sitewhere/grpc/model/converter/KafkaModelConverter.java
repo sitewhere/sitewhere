@@ -10,6 +10,7 @@ package com.sitewhere.grpc.model.converter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sitewhere.grpc.kafka.model.KafkaModel.GDeviceRegistationPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GEnrichedEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GLifecycleComponentState;
@@ -23,6 +24,7 @@ import com.sitewhere.grpc.kafka.model.KafkaModel.GPersistedEventPayload;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GStateUpdate;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantEngineState;
 import com.sitewhere.grpc.model.CommonModel.GOptionalString;
+import com.sitewhere.rest.model.microservice.kafka.payload.DeviceRegistrationPayload;
 import com.sitewhere.rest.model.microservice.kafka.payload.EnrichedEventPayload;
 import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
 import com.sitewhere.rest.model.microservice.kafka.payload.PersistedEventPayload;
@@ -33,6 +35,7 @@ import com.sitewhere.rest.model.microservice.state.LifecycleComponentState;
 import com.sitewhere.rest.model.microservice.state.MicroserviceState;
 import com.sitewhere.rest.model.microservice.state.TenantEngineState;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.kafka.payload.IDeviceRegistrationPayload;
 import com.sitewhere.spi.microservice.kafka.payload.IEnrichedEventPayload;
 import com.sitewhere.spi.microservice.kafka.payload.IInboundEventPayload;
 import com.sitewhere.spi.microservice.kafka.payload.IPersistedEventPayload;
@@ -51,6 +54,42 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  * @author Derek
  */
 public class KafkaModelConverter {
+
+    /**
+     * Convert device registration payload from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceRegistrationPayload asApiDeviceRegistrationPayload(GDeviceRegistationPayload grpc)
+	    throws SiteWhereException {
+	DeviceRegistrationPayload api = new DeviceRegistrationPayload();
+	api.setSourceId(grpc.getSourceId());
+	api.setDeviceToken(grpc.getDeviceToken());
+	api.setOriginator(grpc.hasOriginator() ? grpc.getOriginator().getValue() : null);
+	api.setDeviceRegistrationRequest(EventModelConverter.asApiDeviceRegistrationRequest(grpc.getRegistration()));
+	return api;
+    }
+
+    /**
+     * Convert device registration payload from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceRegistationPayload asGrpcDeviceRegistrationPayload(IDeviceRegistrationPayload api)
+	    throws SiteWhereException {
+	GDeviceRegistationPayload.Builder grpc = GDeviceRegistationPayload.newBuilder();
+	grpc.setSourceId(api.getSourceId());
+	grpc.setDeviceToken(api.getDeviceToken());
+	if (api.getOriginator() != null) {
+	    grpc.setOriginator(GOptionalString.newBuilder().setValue(api.getOriginator()));
+	}
+	grpc.setRegistration(EventModelConverter.asGrpcDeviceRegistrationRequest(api.getDeviceRegistrationRequest()));
+	return grpc.build();
+    }
 
     /**
      * Convert inbound event payload from GRPC to API.

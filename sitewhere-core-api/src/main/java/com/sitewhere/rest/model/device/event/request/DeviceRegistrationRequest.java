@@ -21,10 +21,7 @@ import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 public class DeviceRegistrationRequest extends MetadataProvider implements IDeviceRegistrationRequest {
 
     /** Serialization version identifier */
-    private static final long serialVersionUID = 5522470205357867985L;
-
-    /** Device token */
-    private String deviceToken;
+    private static final long serialVersionUID = 6079525813334392482L;
 
     /** Device type token */
     private String deviceTypeToken;
@@ -34,19 +31,6 @@ public class DeviceRegistrationRequest extends MetadataProvider implements IDevi
 
     /** Area token */
     private String areaToken;
-
-    /*
-     * @see com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest#
-     * getDeviceToken()
-     */
-    @Override
-    public String getDeviceToken() {
-	return deviceToken;
-    }
-
-    public void setDeviceToken(String deviceToken) {
-	this.deviceToken = deviceToken;
-    }
 
     /*
      * @see com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest#

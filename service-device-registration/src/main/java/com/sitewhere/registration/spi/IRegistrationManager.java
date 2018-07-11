@@ -9,7 +9,7 @@ package com.sitewhere.registration.spi;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.microservice.kafka.payload.IDeviceRegistrationPayload;
 import com.sitewhere.spi.microservice.kafka.payload.IInboundEventPayload;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
@@ -81,7 +81,7 @@ public interface IRegistrationManager extends ITenantEngineLifecycleComponent {
      * @param request
      * @throws SiteWhereException
      */
-    public void handleDeviceRegistration(IDeviceRegistrationRequest request) throws SiteWhereException;
+    public void handleDeviceRegistration(IDeviceRegistrationPayload request) throws SiteWhereException;
 
     /**
      * Handle event addressed to unknown device.

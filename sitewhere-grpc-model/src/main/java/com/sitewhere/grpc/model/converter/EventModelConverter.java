@@ -46,6 +46,7 @@ import com.sitewhere.grpc.model.DeviceEventModel.GDeviceLocationSearchResults;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceMeasurement;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceMeasurementCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceMeasurementSearchResults;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceRegistrationRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStateChange;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStateChangeCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceStateChangeSearchResults;
@@ -71,6 +72,7 @@ import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreate
 import com.sitewhere.rest.model.device.event.request.DeviceEventCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceStateChangeCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceStreamDataCreateRequest;
 import com.sitewhere.rest.model.device.event.streaming.EventStreamAck;
@@ -101,6 +103,7 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.event.streaming.IEventStreamAck;
@@ -113,6 +116,44 @@ import com.sitewhere.spi.search.ISearchResults;
  * @author Derek
  */
 public class EventModelConverter {
+
+    /**
+     * Convert device registration request from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceRegistrationRequest asApiDeviceRegistrationRequest(GDeviceRegistrationRequest grpc)
+	    throws SiteWhereException {
+	DeviceRegistrationRequest api = new DeviceRegistrationRequest();
+	api.setDeviceTypeToken(grpc.hasDeviceTypeToken() ? grpc.getDeviceTypeToken().getValue() : null);
+	api.setCustomerToken(grpc.hasCustomerToken() ? grpc.getCustomerToken().getValue() : null);
+	api.setAreaToken(grpc.hasAreaToken() ? grpc.getAreaToken().getValue() : null);
+	return api;
+    }
+
+    /**
+     * Convert device registration request from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceRegistrationRequest asGrpcDeviceRegistrationRequest(IDeviceRegistrationRequest api)
+	    throws SiteWhereException {
+	GDeviceRegistrationRequest.Builder grpc = GDeviceRegistrationRequest.newBuilder();
+	if (api.getDeviceTypeToken() != null) {
+	    grpc.setDeviceTypeToken(GOptionalString.newBuilder().setValue(api.getDeviceTypeToken()));
+	}
+	if (api.getCustomerToken() != null) {
+	    grpc.setCustomerToken(GOptionalString.newBuilder().setValue(api.getCustomerToken()));
+	}
+	if (api.getAreaToken() != null) {
+	    grpc.setAreaToken(GOptionalString.newBuilder().setValue(api.getAreaToken()));
+	}
+	return grpc.build();
+    }
 
     /**
      * Copy common device event create request fields from GRPC to API.

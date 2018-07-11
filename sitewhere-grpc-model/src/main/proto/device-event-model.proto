@@ -6,6 +6,18 @@ option java_outer_classname = "DeviceEventModel";
 
 import "sitewhere-common.proto";
 
+// ###########################
+// ### DEVICE REGISTRATION ###
+// ###########################
+
+// Fields for registering a device.
+message GDeviceRegistrationRequest {
+	GOptionalString deviceTypeToken = 1;
+	GOptionalString customerToken = 2;
+	GOptionalString areaToken = 3;
+	map<string, string> metadata = 4;
+}
+
 // #####################
 // ### DEVICE EVENTS ###
 // #####################
