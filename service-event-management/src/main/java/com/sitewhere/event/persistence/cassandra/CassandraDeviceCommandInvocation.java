@@ -14,6 +14,7 @@ import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandTarget;
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 
 /**
@@ -59,6 +60,29 @@ public class CassandraDeviceCommandInvocation implements ICassandraEventBinder<I
     public void bind(CassandraEventManagementClient client, BoundStatement bound, IDeviceCommandInvocation event)
 	    throws SiteWhereException {
 	CassandraDeviceCommandInvocation.bindFields(client, bound, event);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.event.persistence.cassandra.ICassandraEventBinder#load(com.
+     * sitewhere.event.persistence.cassandra.CassandraEventManagementClient,
+     * com.datastax.driver.core.Row)
+     */
+    @Override
+    public IDeviceCommandInvocation load(CassandraEventManagementClient client, Row row) throws SiteWhereException {
+	DeviceCommandInvocation event = new DeviceCommandInvocation();
+	CassandraDeviceCommandInvocation.loadFields(client, event, row);
+	return event;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.event.persistence.cassandra.ICassandraEventBinder#getEventType(
+     * )
+     */
+    @Override
+    public DeviceEventType getEventType() {
+	return DeviceEventType.CommandInvocation;
     }
 
     /**

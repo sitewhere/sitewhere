@@ -10,7 +10,6 @@ package com.sitewhere.event.persistence.cassandra;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -179,24 +178,7 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     @Override
     public ISearchResults<IDeviceMeasurement> listDeviceMeasurementsForIndex(DeviceEventIndex index,
 	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	PreparedStatement query = getQueryForIndex(index);
-	String queryField = getQueryFieldForIndex(index);
-	Pager<IDeviceMeasurement> pager = new Pager<>(criteria);
-	List<Integer> buckets = getBucketsForDateRange(criteria);
-	for (int bucket : buckets) {
-	    List<ResultSet> perBucket = listResultsForBucket(query, queryField, entityIds, criteria,
-		    DeviceEventType.Measurement, bucket);
-	    List<IDeviceMeasurement> bucketEvents = new ArrayList<>();
-	    for (ResultSet perKey : perBucket) {
-		for (Row row : perKey) {
-		    DeviceMeasurement mx = new DeviceMeasurement();
-		    CassandraDeviceMeasurement.loadFields(getCassandraEventManagementClient(), mx, row);
-		    bucketEvents.add(mx);
-		}
-	    }
-	    addSortedEventsToPager(pager, bucketEvents, bucket);
-	}
-	return new SearchResults<IDeviceMeasurement>(pager.getResults(), pager.getTotal());
+	return searchEventsByIndex(index, entityIds, criteria, CassandraDeviceMeasurement.INSTANCE);
     }
 
     /*
@@ -226,24 +208,7 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     @Override
     public ISearchResults<IDeviceLocation> listDeviceLocationsForIndex(DeviceEventIndex index, List<UUID> entityIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	PreparedStatement query = getQueryForIndex(index);
-	String queryField = getQueryFieldForIndex(index);
-	Pager<IDeviceLocation> pager = new Pager<>(criteria);
-	List<Integer> buckets = getBucketsForDateRange(criteria);
-	for (int bucket : buckets) {
-	    List<ResultSet> perBucket = listResultsForBucket(query, queryField, entityIds, criteria,
-		    DeviceEventType.Location, bucket);
-	    List<IDeviceLocation> bucketEvents = new ArrayList<>();
-	    for (ResultSet perKey : perBucket) {
-		for (Row row : perKey) {
-		    DeviceLocation location = new DeviceLocation();
-		    CassandraDeviceLocation.loadFields(getCassandraEventManagementClient(), location, row);
-		    bucketEvents.add(location);
-		}
-	    }
-	    addSortedEventsToPager(pager, bucketEvents, bucket);
-	}
-	return new SearchResults<IDeviceLocation>(pager.getResults(), pager.getTotal());
+	return searchEventsByIndex(index, entityIds, criteria, CassandraDeviceLocation.INSTANCE);
     }
 
     /*
@@ -273,24 +238,7 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     @Override
     public ISearchResults<IDeviceAlert> listDeviceAlertsForIndex(DeviceEventIndex index, List<UUID> entityIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	PreparedStatement query = getQueryForIndex(index);
-	String queryField = getQueryFieldForIndex(index);
-	Pager<IDeviceAlert> pager = new Pager<>(criteria);
-	List<Integer> buckets = getBucketsForDateRange(criteria);
-	for (int bucket : buckets) {
-	    List<ResultSet> perBucket = listResultsForBucket(query, queryField, entityIds, criteria,
-		    DeviceEventType.Alert, bucket);
-	    List<IDeviceAlert> bucketEvents = new ArrayList<>();
-	    for (ResultSet perKey : perBucket) {
-		for (Row row : perKey) {
-		    DeviceAlert alert = new DeviceAlert();
-		    CassandraDeviceAlert.loadFields(getCassandraEventManagementClient(), alert, row);
-		    bucketEvents.add(alert);
-		}
-	    }
-	    addSortedEventsToPager(pager, bucketEvents, bucket);
-	}
-	return new SearchResults<IDeviceAlert>(pager.getResults(), pager.getTotal());
+	return searchEventsByIndex(index, entityIds, criteria, CassandraDeviceAlert.INSTANCE);
     }
 
     /*
@@ -322,24 +270,7 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     @Override
     public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForIndex(DeviceEventIndex index,
 	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	PreparedStatement query = getQueryForIndex(index);
-	String queryField = getQueryFieldForIndex(index);
-	Pager<IDeviceCommandInvocation> pager = new Pager<>(criteria);
-	List<Integer> buckets = getBucketsForDateRange(criteria);
-	for (int bucket : buckets) {
-	    List<ResultSet> perBucket = listResultsForBucket(query, queryField, entityIds, criteria,
-		    DeviceEventType.CommandInvocation, bucket);
-	    List<IDeviceCommandInvocation> bucketEvents = new ArrayList<>();
-	    for (ResultSet perKey : perBucket) {
-		for (Row row : perKey) {
-		    DeviceCommandInvocation invocation = new DeviceCommandInvocation();
-		    CassandraDeviceCommandInvocation.loadFields(getCassandraEventManagementClient(), invocation, row);
-		    bucketEvents.add(invocation);
-		}
-	    }
-	    addSortedEventsToPager(pager, bucketEvents, bucket);
-	}
-	return new SearchResults<IDeviceCommandInvocation>(pager.getResults(), pager.getTotal());
+	return searchEventsByIndex(index, entityIds, criteria, CassandraDeviceCommandInvocation.INSTANCE);
     }
 
     /*
@@ -380,24 +311,7 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     @Override
     public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForIndex(DeviceEventIndex index,
 	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	PreparedStatement query = getQueryForIndex(index);
-	String queryField = getQueryFieldForIndex(index);
-	Pager<IDeviceCommandResponse> pager = new Pager<>(criteria);
-	List<Integer> buckets = getBucketsForDateRange(criteria);
-	for (int bucket : buckets) {
-	    List<ResultSet> perBucket = listResultsForBucket(query, queryField, entityIds, criteria,
-		    DeviceEventType.CommandResponse, bucket);
-	    List<IDeviceCommandResponse> bucketEvents = new ArrayList<>();
-	    for (ResultSet perKey : perBucket) {
-		for (Row row : perKey) {
-		    DeviceCommandResponse response = new DeviceCommandResponse();
-		    CassandraDeviceCommandResponse.loadFields(getCassandraEventManagementClient(), response, row);
-		    bucketEvents.add(response);
-		}
-	    }
-	    addSortedEventsToPager(pager, bucketEvents, bucket);
-	}
-	return new SearchResults<IDeviceCommandResponse>(pager.getResults(), pager.getTotal());
+	return searchEventsByIndex(index, entityIds, criteria, CassandraDeviceCommandResponse.INSTANCE);
     }
 
     /*
@@ -429,24 +343,7 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     @Override
     public ISearchResults<IDeviceStateChange> listDeviceStateChangesForIndex(DeviceEventIndex index,
 	    List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	PreparedStatement query = getQueryForIndex(index);
-	String queryField = getQueryFieldForIndex(index);
-	Pager<IDeviceStateChange> pager = new Pager<>(criteria);
-	List<Integer> buckets = getBucketsForDateRange(criteria);
-	for (int bucket : buckets) {
-	    List<ResultSet> perBucket = listResultsForBucket(query, queryField, entityIds, criteria,
-		    DeviceEventType.StateChange, bucket);
-	    List<IDeviceStateChange> bucketEvents = new ArrayList<>();
-	    for (ResultSet perKey : perBucket) {
-		for (Row row : perKey) {
-		    DeviceStateChange response = new DeviceStateChange();
-		    CassandraDeviceStateChange.loadFields(getCassandraEventManagementClient(), response, row);
-		    bucketEvents.add(response);
-		}
-	    }
-	    addSortedEventsToPager(pager, bucketEvents, bucket);
-	}
-	return new SearchResults<IDeviceStateChange>(pager.getResults(), pager.getTotal());
+	return searchEventsByIndex(index, entityIds, criteria, CassandraDeviceStateChange.INSTANCE);
     }
 
     /**
@@ -457,18 +354,34 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
      * @param binder
      * @throws SiteWhereException
      */
-    protected <T extends IDeviceEvent> void storeDeviceEvent(IDeviceAssignment assignment, T event,
-	    ICassandraEventBinder<T> binder) throws SiteWhereException {
+    protected <I extends IDeviceEvent> void storeDeviceEvent(IDeviceAssignment assignment, I event,
+	    ICassandraEventBinder<I> binder) throws SiteWhereException {
 	// Build insert for event by id.
 	BoundStatement eventById = getCassandraEventManagementClient().getInsertDeviceEventById().bind();
 	binder.bind(getCassandraEventManagementClient(), eventById, event);
 	process(eventById, event);
+
+	// Build insert for event by alternate id.
+	if (event.getAlternateId() != null) {
+	    BoundStatement eventByAltId = getCassandraEventManagementClient().getInsertDeviceEventByAltId().bind();
+	    binder.bind(getCassandraEventManagementClient(), eventByAltId, event);
+	    process(eventByAltId, event);
+	}
 
 	// Build insert for event by assignment.
 	BoundStatement eventByAssn = getCassandraEventManagementClient().getInsertDeviceEventByAssignment().bind();
 	binder.bind(getCassandraEventManagementClient(), eventByAssn, event);
 	eventByAssn.setInt("bucket", getClient().getBucketValue(event.getEventDate().getTime()));
 	process(eventByAssn, event);
+
+	// Build insert for event by customer.
+	if (assignment.getCustomerId() != null) {
+	    BoundStatement eventByCustomer = getCassandraEventManagementClient().getInsertDeviceEventByCustomer()
+		    .bind();
+	    binder.bind(getCassandraEventManagementClient(), eventByCustomer, event);
+	    eventByCustomer.setInt("bucket", getClient().getBucketValue(event.getEventDate().getTime()));
+	    process(eventByCustomer, event);
+	}
 
 	// Build insert for event by area.
 	if (assignment.getAreaId() != null) {
@@ -485,6 +398,36 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	    eventByAsset.setInt("bucket", getClient().getBucketValue(event.getEventDate().getTime()));
 	    process(eventByAsset, event);
 	}
+    }
+
+    /**
+     * Search events by a given index.
+     * 
+     * @param index
+     * @param entityIds
+     * @param eventType
+     * @param criteria
+     * @param binder
+     * @return
+     * @throws SiteWhereException
+     */
+    protected <I extends IDeviceEvent> ISearchResults<I> searchEventsByIndex(DeviceEventIndex index,
+	    List<UUID> entityIds, IDateRangeSearchCriteria criteria, ICassandraEventBinder<I> binder)
+	    throws SiteWhereException {
+	PreparedStatement query = getQueryForIndex(index);
+	Pager<I> pager = new Pager<>(criteria);
+	List<Integer> buckets = getBucketsForDateRange(criteria);
+	for (int bucket : buckets) {
+	    List<ResultSet> perBucket = listResultsForBucket(query, entityIds, criteria, binder.getEventType(), bucket);
+	    List<I> bucketEvents = new ArrayList<>();
+	    for (ResultSet perKey : perBucket) {
+		for (Row row : perKey) {
+		    bucketEvents.add(binder.load(getCassandraEventManagementClient(), row));
+		}
+	    }
+	    addSortedEventsToPager(pager, bucketEvents, bucket);
+	}
+	return new SearchResults<I>(pager.getResults(), pager.getTotal());
     }
 
     /**
@@ -525,42 +468,17 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
      */
     protected PreparedStatement getQueryForIndex(DeviceEventIndex index) throws SiteWhereException {
 	switch (index) {
-	case Area: {
-	    return getCassandraEventManagementClient().getSelectEventsByAreaForType();
-	}
-	case Asset: {
-	    throw new SiteWhereException("Indexing by asset not implemented.");
-	}
 	case Assignment: {
 	    return getCassandraEventManagementClient().getSelectEventsByAssignmentForType();
 	}
 	case Customer: {
-	    throw new SiteWhereException("Indexing by customer not implemented.");
+	    return getCassandraEventManagementClient().getSelectEventsByCustomerForType();
 	}
-	}
-	throw new SiteWhereException("Index type not implemented: " + index.name());
-    }
-
-    /**
-     * Get query field that corresponds to index.
-     * 
-     * @param index
-     * @return
-     * @throws SiteWhereException
-     */
-    protected String getQueryFieldForIndex(DeviceEventIndex index) throws SiteWhereException {
-	switch (index) {
 	case Area: {
-	    return "areaId";
+	    return getCassandraEventManagementClient().getSelectEventsByAreaForType();
 	}
 	case Asset: {
-	    throw new SiteWhereException("Indexing by asset not implemented.");
-	}
-	case Assignment: {
-	    return "assignmentId";
-	}
-	case Customer: {
-	    throw new SiteWhereException("Indexing by customer not implemented.");
+	    return getCassandraEventManagementClient().getSelectEventsByAssetForType();
 	}
 	}
 	throw new SiteWhereException("Index type not implemented: " + index.name());
@@ -577,13 +495,12 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	long bucket = getClient().getBucketLengthInMs();
 	long current = criteria.getEndDate() != null ? criteria.getEndDate().getTime() : System.currentTimeMillis();
 	long start = criteria.getStartDate() != null ? criteria.getStartDate().getTime() : current - 1;
-	getLogger().info("Buckets in range " + new Date(start) + " to " + new Date(current));
 	List<Integer> buckets = new ArrayList<>();
 	while (current >= start) {
 	    buckets.add(getClient().getBucketValue(current));
 	    current -= bucket;
 	}
-	getLogger().info("Processing " + buckets.size() + " buckets.");
+	getLogger().debug("Processing " + buckets.size() + " buckets.");
 	return buckets;
     }
 
@@ -598,7 +515,7 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
      * @return
      * @throws SiteWhereException
      */
-    protected List<ResultSet> listResultsForBucket(PreparedStatement statement, String keyField, List<UUID> keys,
+    protected List<ResultSet> listResultsForBucket(PreparedStatement statement, List<UUID> keys,
 	    IDateRangeSearchCriteria criteria, DeviceEventType eventType, int bucket) throws SiteWhereException {
 	List<ResultSetFuture> futures = new ArrayList<>();
 	for (UUID key : keys) {
@@ -635,7 +552,7 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	for (T event : events) {
 	    pager.process(event);
 	}
-	getLogger().info("Processed " + events.size() + " events for bucket " + bucket + ".");
+	getLogger().debug("Processed " + events.size() + " events for bucket " + bucket + ".");
     }
 
     /**

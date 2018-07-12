@@ -14,6 +14,7 @@ import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 
 /**
@@ -52,6 +53,29 @@ public class CassandraDeviceAlert implements ICassandraEventBinder<IDeviceAlert>
     public void bind(CassandraEventManagementClient client, BoundStatement bound, IDeviceAlert event)
 	    throws SiteWhereException {
 	CassandraDeviceAlert.bindFields(client, bound, event);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.event.persistence.cassandra.ICassandraEventBinder#load(com.
+     * sitewhere.event.persistence.cassandra.CassandraEventManagementClient,
+     * com.datastax.driver.core.Row)
+     */
+    @Override
+    public IDeviceAlert load(CassandraEventManagementClient client, Row row) throws SiteWhereException {
+	DeviceAlert event = new DeviceAlert();
+	CassandraDeviceAlert.loadFields(client, event, row);
+	return event;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.event.persistence.cassandra.ICassandraEventBinder#getEventType(
+     * )
+     */
+    @Override
+    public DeviceEventType getEventType() {
+	return DeviceEventType.Alert;
     }
 
     /**

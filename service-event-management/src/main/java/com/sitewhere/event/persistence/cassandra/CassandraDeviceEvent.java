@@ -31,6 +31,9 @@ public class CassandraDeviceEvent {
     // Assignment id field.
     public static final String FIELD_ASSIGNMENT_ID = "assignment_id";
 
+    // Customer id field.
+    public static final String FIELD_CUSTOMER_ID = "customer_id";
+
     // Area id field.
     public static final String FIELD_AREA_ID = "area_id";
 
@@ -58,6 +61,9 @@ public class CassandraDeviceEvent {
 	}
 	bound.setByte(FIELD_EVENT_TYPE, getIndicatorForEventType(event.getEventType()));
 	bound.setUUID(FIELD_ASSIGNMENT_ID, event.getDeviceAssignmentId());
+	if (event.getCustomerId() != null) {
+	    bound.setUUID(FIELD_CUSTOMER_ID, event.getCustomerId());
+	}
 	if (event.getAreaId() != null) {
 	    bound.setUUID(FIELD_AREA_ID, event.getAreaId());
 	}
@@ -81,6 +87,7 @@ public class CassandraDeviceEvent {
 	event.setAlternateId(row.getString(FIELD_ALTERNATE_ID));
 	event.setEventType(getEventTypeForIndicator(row.getByte(FIELD_EVENT_TYPE)));
 	event.setDeviceAssignmentId(row.getUUID(FIELD_ASSIGNMENT_ID));
+	event.setCustomerId(row.getUUID(FIELD_CUSTOMER_ID));
 	event.setAreaId(row.getUUID(FIELD_AREA_ID));
 	event.setAssetId(row.getUUID(FIELD_ASSET_ID));
 	event.setEventDate(row.getTimestamp(FIELD_EVENT_DATE));

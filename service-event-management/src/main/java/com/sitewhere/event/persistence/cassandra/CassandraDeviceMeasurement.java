@@ -12,6 +12,7 @@ import com.datastax.driver.core.Row;
 import com.datastax.driver.core.UDTValue;
 import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 
 /**
@@ -44,6 +45,29 @@ public class CassandraDeviceMeasurement implements ICassandraEventBinder<IDevice
     public void bind(CassandraEventManagementClient client, BoundStatement bound, IDeviceMeasurement event)
 	    throws SiteWhereException {
 	CassandraDeviceMeasurement.bindFields(client, bound, event);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.event.persistence.cassandra.ICassandraEventBinder#load(com.
+     * sitewhere.event.persistence.cassandra.CassandraEventManagementClient,
+     * com.datastax.driver.core.Row)
+     */
+    @Override
+    public IDeviceMeasurement load(CassandraEventManagementClient client, Row row) throws SiteWhereException {
+	DeviceMeasurement event = new DeviceMeasurement();
+	CassandraDeviceMeasurement.loadFields(client, event, row);
+	return event;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.event.persistence.cassandra.ICassandraEventBinder#getEventType(
+     * )
+     */
+    @Override
+    public DeviceEventType getEventType() {
+	return DeviceEventType.Measurement;
     }
 
     /**

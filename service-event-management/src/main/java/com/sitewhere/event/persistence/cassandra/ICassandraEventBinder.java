@@ -8,7 +8,9 @@
 package com.sitewhere.event.persistence.cassandra;
 
 import com.datastax.driver.core.BoundStatement;
+import com.datastax.driver.core.Row;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 
 /**
@@ -19,7 +21,7 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
  *
  * @param <T>
  */
-public interface ICassandraEventBinder<T extends IDeviceEvent> {
+public interface ICassandraEventBinder<I extends IDeviceEvent> {
 
     /**
      * Binds fields values from a device event into a bound statement.
@@ -29,5 +31,21 @@ public interface ICassandraEventBinder<T extends IDeviceEvent> {
      * @param event
      * @throws SiteWhereException
      */
-    public void bind(CassandraEventManagementClient client, BoundStatement bound, T event) throws SiteWhereException;
+    public void bind(CassandraEventManagementClient client, BoundStatement bound, I event) throws SiteWhereException;
+
+    /**
+     * Load fields from a {@link Row} into an event.
+     * 
+     * @param client
+     * @param row
+     * @throws SiteWhereException
+     */
+    public I load(CassandraEventManagementClient client, Row row) throws SiteWhereException;
+
+    /**
+     * Get event type this binder corresponds to.
+     * 
+     * @return
+     */
+    public DeviceEventType getEventType();
 }
