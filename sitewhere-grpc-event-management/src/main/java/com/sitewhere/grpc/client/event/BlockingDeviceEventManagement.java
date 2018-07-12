@@ -66,23 +66,23 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
     /*
      * @see
      * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceEventById(java
-     * .util.UUID, java.util.UUID)
+     * .util.UUID)
      */
     @Override
-    public IDeviceEvent getDeviceEventById(UUID deviceId, UUID eventId) throws SiteWhereException {
+    public IDeviceEvent getDeviceEventById(UUID eventId) throws SiteWhereException {
 	BlockingStreamObserver<IDeviceEvent> observer = new BlockingStreamObserver<>();
-	api.getDeviceEventById(deviceId, eventId, observer);
+	api.getDeviceEventById(eventId, observer);
 	return observer.getResult();
     }
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * getDeviceEventByAlternateId(java.util.UUID, java.lang.String)
+     * getDeviceEventByAlternateId(java.lang.String)
      */
     @Override
-    public IDeviceEvent getDeviceEventByAlternateId(UUID deviceId, String alternateId) throws SiteWhereException {
+    public IDeviceEvent getDeviceEventByAlternateId(String alternateId) throws SiteWhereException {
 	BlockingStreamObserver<IDeviceEvent> observer = new BlockingStreamObserver<>();
-	api.getDeviceEventByAlternateId(deviceId, alternateId, observer);
+	api.getDeviceEventByAlternateId(alternateId, observer);
 	return observer.getResult();
     }
 
@@ -237,13 +237,13 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandInvocationResponses(java.util.UUID, java.util.UUID)
+     * listDeviceCommandInvocationResponses(java.util.UUID)
      */
     @Override
-    public ISearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(UUID deviceId, UUID invocationId)
+    public ISearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(UUID invocationId)
 	    throws SiteWhereException {
 	BlockingStreamObserver<ISearchResults<IDeviceCommandResponse>> observer = new BlockingStreamObserver<>();
-	api.listDeviceCommandInvocationResponses(deviceId, invocationId, observer);
+	api.listDeviceCommandInvocationResponses(invocationId, observer);
 	return observer.getResult();
     }
 

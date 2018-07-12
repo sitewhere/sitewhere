@@ -128,8 +128,7 @@ message GAddDeviceEventBatchResponse {
 	
 // Request for getting an event by id.
 message GGetDeviceEventByIdRequest {
-	com.sitewhere.grpc.model.GUUID deviceId = 1;
-	com.sitewhere.grpc.model.GUUID eventId = 2;
+	com.sitewhere.grpc.model.GUUID eventId = 1;
 }
 
 // Response for getting an event by id.
@@ -139,8 +138,7 @@ message GGetDeviceEventByIdResponse {
 	
 // Request for getting an event by alternate id.
 message GGetDeviceEventByAlternateIdRequest {
-	com.sitewhere.grpc.model.GUUID deviceId = 1;
-	string alternateId = 2;
+	string alternateId = 1;
 }
 
 // Response for getting an event by alternate id.
@@ -313,9 +311,8 @@ message GAddCommandResponsesResponse {
 		
 // Request for list of command responses for an invocation.
 message GListCommandResponsesForInvocationRequest {
-	com.sitewhere.grpc.model.GUUID deviceId = 1;
-	com.sitewhere.grpc.model.GUUID invocationEventId = 2;
-	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 3;
+	com.sitewhere.grpc.model.GUUID invocationEventId = 1;
+	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 4;
 }
 
 // Response for list of command responses for an invocation.

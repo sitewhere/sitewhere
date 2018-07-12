@@ -63,20 +63,20 @@ public class DeviceEventManagementDecorator extends TenantEngineLifecycleCompone
     /*
      * @see
      * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceEventById(java
-     * .util.UUID, java.util.UUID)
+     * .util.UUID)
      */
     @Override
-    public IDeviceEvent getDeviceEventById(UUID deviceId, UUID eventId) throws SiteWhereException {
-	return getDelegate().getDeviceEventById(deviceId, eventId);
+    public IDeviceEvent getDeviceEventById(UUID eventId) throws SiteWhereException {
+	return getDelegate().getDeviceEventById(eventId);
     }
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * getDeviceEventByAlternateId(java.util.UUID, java.lang.String)
+     * getDeviceEventByAlternateId(java.lang.String)
      */
     @Override
-    public IDeviceEvent getDeviceEventByAlternateId(UUID deviceId, String alternateId) throws SiteWhereException {
-	return getDelegate().getDeviceEventByAlternateId(deviceId, alternateId);
+    public IDeviceEvent getDeviceEventByAlternateId(String alternateId) throws SiteWhereException {
+	return getDelegate().getDeviceEventByAlternateId(alternateId);
     }
 
     /*
@@ -209,12 +209,12 @@ public class DeviceEventManagementDecorator extends TenantEngineLifecycleCompone
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandInvocationResponses(java.util.UUID, java.util.UUID)
+     * listDeviceCommandInvocationResponses(java.util.UUID)
      */
     @Override
-    public ISearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(UUID deviceId, UUID invocationId)
+    public ISearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(UUID invocationId)
 	    throws SiteWhereException {
-	return getDelegate().listDeviceCommandInvocationResponses(deviceId, invocationId);
+	return getDelegate().listDeviceCommandInvocationResponses(invocationId);
     }
 
     /*

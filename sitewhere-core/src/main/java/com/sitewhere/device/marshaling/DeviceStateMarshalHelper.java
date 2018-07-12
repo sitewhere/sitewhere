@@ -151,7 +151,7 @@ public class DeviceStateMarshalHelper {
 	if (isIncludeEventDetails()) {
 	    if (source.getLastLocationEventId() != null) {
 		IDeviceLocation location = (IDeviceLocation) getDeviceEventManagement()
-			.getDeviceEventById(source.getDeviceId(), source.getLastLocationEventId());
+			.getDeviceEventById(source.getLastLocationEventId());
 		result.setLastLocationEvent(location);
 	    }
 
@@ -159,8 +159,7 @@ public class DeviceStateMarshalHelper {
 		Map<String, IDeviceMeasurement> mxs = new HashMap<>();
 		for (String key : source.getLastMeasurementEventIds().keySet()) {
 		    UUID id = source.getLastMeasurementEventIds().get(key);
-		    IDeviceMeasurement mx = (IDeviceMeasurement) getDeviceEventManagement()
-			    .getDeviceEventById(source.getDeviceId(), id);
+		    IDeviceMeasurement mx = (IDeviceMeasurement) getDeviceEventManagement().getDeviceEventById(id);
 		    mxs.put(key, mx);
 		}
 		result.setLastMeasurementEvents(mxs);
@@ -169,8 +168,7 @@ public class DeviceStateMarshalHelper {
 		Map<String, IDeviceAlert> alerts = new HashMap<>();
 		for (String key : source.getLastAlertEventIds().keySet()) {
 		    UUID id = source.getLastAlertEventIds().get(key);
-		    IDeviceAlert alert = (IDeviceAlert) getDeviceEventManagement()
-			    .getDeviceEventById(source.getDeviceId(), id);
+		    IDeviceAlert alert = (IDeviceAlert) getDeviceEventManagement().getDeviceEventById(id);
 		    alerts.put(key, alert);
 		}
 		result.setLastAlertEvents(alerts);

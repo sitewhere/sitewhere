@@ -14,7 +14,6 @@ import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.view.DeviceCommandInvocationSummary;
 import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceCommandInvocation;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.event.IDeviceAlert;
@@ -61,9 +60,7 @@ public class DeviceInvocationSummaryBuilder {
 	    DeviceCommandInvocationSummary.Response rsp = new DeviceCommandInvocationSummary.Response();
 	    rsp.setDate(response.getEventDate());
 	    if (response.getResponseEventId() != null) {
-		IDevice device = deviceManagement.getDevice(response.getDeviceId());
-		IDeviceEvent event = deviceEventManagement.getDeviceEventById(device.getId(),
-			response.getResponseEventId());
+		IDeviceEvent event = deviceEventManagement.getDeviceEventById(response.getResponseEventId());
 		rsp.setDescription(getDeviceEventDescription(event));
 	    } else if (response.getResponse() != null) {
 		rsp.setDescription("Ack (\"" + response.getResponse() + "\")");

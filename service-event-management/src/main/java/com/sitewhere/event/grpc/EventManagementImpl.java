@@ -146,9 +146,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    StreamObserver<GGetDeviceEventByIdResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getGetDeviceEventByIdMethod());
-	    IDeviceEvent apiResult = getDeviceEventManagement().getDeviceEventById(
-		    CommonModelConverter.asApiUuid(request.getDeviceId()),
-		    CommonModelConverter.asApiUuid(request.getEventId()));
+	    IDeviceEvent apiResult = getDeviceEventManagement()
+		    .getDeviceEventById(CommonModelConverter.asApiUuid(request.getEventId()));
 	    GGetDeviceEventByIdResponse.Builder response = GGetDeviceEventByIdResponse.newBuilder();
 	    if (apiResult != null) {
 		response.setEvent(EventModelConverter.asGrpcGenericDeviceEvent(apiResult));
@@ -176,8 +175,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    StreamObserver<GGetDeviceEventByAlternateIdResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getGetDeviceEventByAlternateIdMethod());
-	    IDeviceEvent apiResult = getDeviceEventManagement().getDeviceEventByAlternateId(
-		    CommonModelConverter.asApiUuid(request.getDeviceId()), request.getAlternateId());
+	    IDeviceEvent apiResult = getDeviceEventManagement().getDeviceEventByAlternateId(request.getAlternateId());
 	    GGetDeviceEventByAlternateIdResponse.Builder response = GGetDeviceEventByAlternateIdResponse.newBuilder();
 	    if (apiResult != null) {
 		response.setEvent(EventModelConverter.asGrpcGenericDeviceEvent(apiResult));
@@ -563,7 +561,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    GrpcUtils.handleServerMethodEntry(this,
 		    DeviceEventManagementGrpc.getListCommandResponsesForInvocationMethod());
 	    ISearchResults<IDeviceCommandResponse> apiResult = getDeviceEventManagement()
-		    .listDeviceCommandInvocationResponses(CommonModelConverter.asApiUuid(request.getDeviceId()),
+		    .listDeviceCommandInvocationResponses(
 			    CommonModelConverter.asApiUuid(request.getInvocationEventId()));
 	    GListCommandResponsesForInvocationResponse.Builder response = GListCommandResponsesForInvocationResponse
 		    .newBuilder();

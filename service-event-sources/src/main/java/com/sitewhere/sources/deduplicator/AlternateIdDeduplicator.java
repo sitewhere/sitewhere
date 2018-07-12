@@ -7,12 +7,12 @@
  */
 package com.sitewhere.sources.deduplicator;
 
+import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IDeviceEventDeduplicator;
+import com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDevice;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
@@ -44,9 +44,7 @@ public class AlternateIdDeduplicator extends TenantEngineLifecycleComponent impl
 	    IDeviceEventCreateRequest createRequest = (IDeviceEventCreateRequest) request.getRequest();
 	    String alternateId = createRequest.getAlternateId();
 	    if (alternateId != null) {
-		IDevice device = getDeviceManagement().getDeviceByToken(request.getDeviceToken());
-		IDeviceEvent existing = getDeviceEventManagement().getDeviceEventByAlternateId(device.getId(),
-			alternateId);
+		IDeviceEvent existing = getDeviceEventManagement().getDeviceEventByAlternateId(alternateId);
 		if (existing != null) {
 		    getLogger().info("Found event with same alternate id. Will be treated as duplicate.");
 		    return true;
@@ -57,11 +55,8 @@ public class AlternateIdDeduplicator extends TenantEngineLifecycleComponent impl
 	return false;
     }
 
-    private IDeviceManagement getDeviceManagement() {
-	return null;
-    }
-
     private IDeviceEventManagement getDeviceEventManagement() {
-	return null;
+	return new BlockingDeviceEventManagement(
+		((IEventSourcesMicroservice) getMicroservice()).getDeviceEventManagementApiDemux().getApiChannel());
     }
 }

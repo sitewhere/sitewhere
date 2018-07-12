@@ -59,23 +59,20 @@ public interface IDeviceEventManagementApiChannel<T extends MultitenantGrpcChann
     /**
      * Get a device event by id.
      * 
-     * @param deviceId
      * @param eventId
      * @param observer
      * @throws SiteWhereException
      */
-    public void getDeviceEventById(UUID deviceId, UUID eventId, StreamObserver<IDeviceEvent> observer)
-	    throws SiteWhereException;
+    public void getDeviceEventById(UUID eventId, StreamObserver<IDeviceEvent> observer) throws SiteWhereException;
 
     /**
      * Get a device event by alternate (external) id.
      * 
-     * @param deviceId
      * @param alternateId
      * @param observer
      * @throws SiteWhereException
      */
-    public void getDeviceEventByAlternateId(UUID deviceId, String alternateId, StreamObserver<IDeviceEvent> observer)
+    public void getDeviceEventByAlternateId(String alternateId, StreamObserver<IDeviceEvent> observer)
 	    throws SiteWhereException;
 
     /**
@@ -215,12 +212,11 @@ public interface IDeviceEventManagementApiChannel<T extends MultitenantGrpcChann
     /**
      * List responses associated with a command invocation.
      * 
-     * @param deviceId
      * @param invocationId
      * @param observer
      * @throws SiteWhereException
      */
-    public void listDeviceCommandInvocationResponses(UUID deviceId, UUID invocationId,
+    public void listDeviceCommandInvocationResponses(UUID invocationId,
 	    StreamObserver<ISearchResults<IDeviceCommandResponse>> observer) throws SiteWhereException;
 
     /**

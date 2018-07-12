@@ -160,12 +160,11 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
     /*
      * @see
      * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceEventById(java
-     * .util.UUID, java.util.UUID)
+     * .util.UUID)
      */
     @Override
-    public IDeviceEvent getDeviceEventById(UUID deviceId, UUID eventId) throws SiteWhereException {
-	Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ID, deviceId).append(MongoDeviceEvent.PROP_ID,
-		eventId);
+    public IDeviceEvent getDeviceEventById(UUID eventId) throws SiteWhereException {
+	Document query = new Document(MongoDeviceEvent.PROP_ID, eventId);
 	Document found = getMongoClient().getEventsCollection().find(query).first();
 	if (found == null) {
 	    return null;
@@ -175,12 +174,11 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * getDeviceEventByAlternateId(java.util.UUID, java.lang.String)
+     * getDeviceEventByAlternateId(java.lang.String)
      */
     @Override
-    public IDeviceEvent getDeviceEventByAlternateId(UUID deviceId, String alternateId) throws SiteWhereException {
-	Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ID, deviceId)
-		.append(MongoDeviceEvent.PROP_ALTERNATE_ID, alternateId);
+    public IDeviceEvent getDeviceEventByAlternateId(String alternateId) throws SiteWhereException {
+	Document query = new Document(MongoDeviceEvent.PROP_ALTERNATE_ID, alternateId);
 	Document found = getMongoClient().getEventsCollection().find(query).first();
 	if (found == null) {
 	    return null;
@@ -403,14 +401,13 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandInvocationResponses(java.util.UUID, java.util.UUID)
+     * listDeviceCommandInvocationResponses(java.util.UUID)
      */
     @Override
-    public ISearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(UUID deviceId, UUID invocationId)
+    public ISearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(UUID invocationId)
 	    throws SiteWhereException {
 	MongoCollection<Document> events = getMongoClient().getEventsCollection();
-	Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ID, deviceId)
-		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandResponse.name())
+	Document query = new Document(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandResponse.name())
 		.append(MongoDeviceCommandResponse.PROP_ORIGINATING_EVENT_ID, invocationId);
 	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1);
 	return MongoPersistence.search(IDeviceCommandResponse.class, events, query, sort, LOOKUP);

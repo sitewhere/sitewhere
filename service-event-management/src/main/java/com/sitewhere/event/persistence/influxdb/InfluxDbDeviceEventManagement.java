@@ -149,20 +149,20 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     /*
      * @see
      * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceEventById(java
-     * .util.UUID, java.util.UUID)
+     * .util.UUID)
      */
     @Override
-    public IDeviceEvent getDeviceEventById(UUID deviceId, UUID eventId) throws SiteWhereException {
-	return InfluxDbDeviceEvent.getEventById(deviceId, eventId, getClient());
+    public IDeviceEvent getDeviceEventById(UUID eventId) throws SiteWhereException {
+	return InfluxDbDeviceEvent.getEventById(eventId, getClient());
     }
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * getDeviceEventByAlternateId(java.util.UUID, java.lang.String)
+     * getDeviceEventByAlternateId(java.lang.String)
      */
     @Override
-    public IDeviceEvent getDeviceEventByAlternateId(UUID deviceId, String alternateId) throws SiteWhereException {
-	throw new SiteWhereException("Not supported yet for InfluxDB device event management.");
+    public IDeviceEvent getDeviceEventByAlternateId(String alternateId) throws SiteWhereException {
+	return InfluxDbDeviceEvent.getEventByAlternateId(alternateId, getClient());
     }
 
     /*
@@ -358,10 +358,10 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
 
     /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceCommandInvocationResponses(java.util.UUID, java.util.UUID)
+     * listDeviceCommandInvocationResponses(java.util.UUID)
      */
     @Override
-    public ISearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(UUID deviceId, UUID invocationId)
+    public ISearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(UUID invocationId)
 	    throws SiteWhereException {
 	return InfluxDbDeviceCommandResponse.getResponsesForInvocation(invocationId, getClient().getInflux(),
 		getClient().getDatabase().getValue());

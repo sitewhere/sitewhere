@@ -49,7 +49,7 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceEvent getDeviceEventById(UUID deviceId, UUID eventId) throws SiteWhereException;
+    public IDeviceEvent getDeviceEventById(UUID eventId) throws SiteWhereException;
 
     /**
      * Get a device event by alternate (external) id.
@@ -59,7 +59,7 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceEvent getDeviceEventByAlternateId(UUID deviceId, String alternateId) throws SiteWhereException;
+    public IDeviceEvent getDeviceEventByAlternateId(String alternateId) throws SiteWhereException;
 
     /**
      * Add one or more measurements for a given device assignment.
@@ -193,12 +193,11 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
     /**
      * List responses associated with a command invocation.
      * 
-     * @param deviceId
      * @param invocationId
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(UUID deviceId, UUID invocationId)
+    public ISearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(UUID invocationId)
 	    throws SiteWhereException;
 
     /**

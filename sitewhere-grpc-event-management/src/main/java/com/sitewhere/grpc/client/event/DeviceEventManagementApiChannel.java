@@ -158,16 +158,13 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
 
     /*
      * @see com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel#
-     * getDeviceEventById(java.util.UUID, java.util.UUID,
-     * io.grpc.stub.StreamObserver)
+     * getDeviceEventById(java.util.UUID, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void getDeviceEventById(UUID deviceId, UUID eventId, StreamObserver<IDeviceEvent> observer)
-	    throws SiteWhereException {
+    public void getDeviceEventById(UUID eventId, StreamObserver<IDeviceEvent> observer) throws SiteWhereException {
 	GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getGetDeviceEventByIdMethod(),
-		DebugParameter.create("Device Id", deviceId), DebugParameter.create("Event Id", eventId));
+		DebugParameter.create("Event Id", eventId));
 	GGetDeviceEventByIdRequest.Builder grequest = GGetDeviceEventByIdRequest.newBuilder();
-	grequest.setDeviceId(CommonModelConverter.asGrpcUuid(deviceId));
 	grequest.setEventId(CommonModelConverter.asGrpcUuid(eventId));
 	getGrpcChannel().getAsyncStub().getDeviceEventById(GrpcUtils
 		.logGrpcClientRequest(DeviceEventManagementGrpc.getGetDeviceEventByIdMethod(), grequest.build()),
@@ -202,11 +199,10 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
 
     /*
      * @see com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel#
-     * getDeviceEventByAlternateId(java.util.UUID, java.lang.String,
-     * io.grpc.stub.StreamObserver)
+     * getDeviceEventByAlternateId(java.lang.String, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void getDeviceEventByAlternateId(UUID deviceId, String alternateId, StreamObserver<IDeviceEvent> observer)
+    public void getDeviceEventByAlternateId(String alternateId, StreamObserver<IDeviceEvent> observer)
 	    throws SiteWhereException {
 	GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getGetDeviceEventByAlternateIdMethod(),
 		DebugParameter.create("Alternate Id", alternateId));
@@ -771,17 +767,16 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
 
     /*
      * @see com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel#
-     * listDeviceCommandInvocationResponses(java.util.UUID, java.util.UUID,
+     * listDeviceCommandInvocationResponses(java.util.UUID,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listDeviceCommandInvocationResponses(UUID deviceId, UUID invocationId,
+    public void listDeviceCommandInvocationResponses(UUID invocationId,
 	    StreamObserver<ISearchResults<IDeviceCommandResponse>> observer) throws SiteWhereException {
 	GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getListCommandResponsesForInvocationMethod(),
-		DebugParameter.create("Device Id", deviceId), DebugParameter.create("Invocation Id", invocationId));
+		DebugParameter.create("Invocation Id", invocationId));
 	GListCommandResponsesForInvocationRequest.Builder grequest = GListCommandResponsesForInvocationRequest
 		.newBuilder();
-	grequest.setDeviceId(CommonModelConverter.asGrpcUuid(deviceId));
 	grequest.setInvocationEventId(CommonModelConverter.asGrpcUuid(invocationId));
 	getGrpcChannel().getAsyncStub()
 		.listCommandResponsesForInvocation(GrpcUtils.logGrpcClientRequest(

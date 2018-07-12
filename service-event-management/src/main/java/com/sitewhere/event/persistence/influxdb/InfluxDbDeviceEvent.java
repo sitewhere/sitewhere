@@ -51,6 +51,9 @@ public class InfluxDbDeviceEvent {
     /** Event id tag */
     public static final String EVENT_ID = "eid";
 
+    /** Alternate event id tag */
+    public static final String ALTERNATE_ID = "altid";
+
     /** Event type tag */
     public static final String EVENT_TYPE = "type";
 
@@ -91,16 +94,35 @@ public class InfluxDbDeviceEvent {
     /**
      * Get an event by unique id.
      * 
-     * @param deviceId
      * @param eventId
      * @param client
      * @return
      * @throws SiteWhereException
      */
-    public static IDeviceEvent getEventById(UUID deviceId, UUID eventId, InfluxDbClient client)
+    public static IDeviceEvent getEventById(UUID eventId, InfluxDbClient client) throws SiteWhereException {
+	Query query = new Query(
+		"SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where " + EVENT_ID + "='" + eventId + "'",
+		client.getDatabase().getValue());
+	QueryResult response = client.getInflux().query(query, TimeUnit.MILLISECONDS);
+	List<IDeviceEvent> results = InfluxDbDeviceEvent.eventsOfType(response, IDeviceEvent.class);
+	if (results.size() > 0) {
+	    return results.get(0);
+	}
+	return null;
+    }
+
+    /**
+     * Get an event by alternate id.
+     * 
+     * @param alternateId
+     * @param client
+     * @return
+     * @throws SiteWhereException
+     */
+    public static IDeviceEvent getEventByAlternateId(String alternateId, InfluxDbClient client)
 	    throws SiteWhereException {
-	Query query = new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where " + EVENT_DEVICE
-		+ "='" + deviceId + "' and " + EVENT_ID + "='" + eventId + "'", client.getDatabase().getValue());
+	Query query = new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where " + ALTERNATE_ID
+		+ "='" + alternateId + "'", client.getDatabase().getValue());
 	QueryResult response = client.getInflux().query(query, TimeUnit.MILLISECONDS);
 	List<IDeviceEvent> results = InfluxDbDeviceEvent.eventsOfType(response, IDeviceEvent.class);
 	if (results.size() > 0) {
@@ -406,6 +428,7 @@ public class InfluxDbDeviceEvent {
      */
     protected static void loadFromMap(DeviceEvent event, Map<String, Object> values) throws SiteWhereException {
 	event.setId(convertUUID((String) values.get(EVENT_ID)));
+	event.setAlternateId((String) values.get(ALTERNATE_ID));
 	event.setDeviceId(convertUUID((String) values.get(EVENT_DEVICE)));
 	event.setDeviceAssignmentId(convertUUID((String) values.get(EVENT_ASSIGNMENT)));
 	event.setCustomerId(convertUUID((String) values.get(EVENT_CUSTOMER)));
@@ -477,6 +500,9 @@ public class InfluxDbDeviceEvent {
 
 	builder.time(event.getEventDate().getTime(), precision);
 	builder.addField(EVENT_ID, event.getId().toString());
+	if (event.getAlternateId() != null) {
+	    builder.addField(ALTERNATE_ID, event.getAlternateId());
+	}
 	builder.tag(EVENT_TYPE, event.getEventType().name());
 	builder.tag(EVENT_DEVICE, event.getDeviceId().toString());
 	builder.tag(EVENT_ASSIGNMENT, event.getDeviceAssignmentId().toString());
@@ -530,7 +556,7 @@ public class InfluxDbDeviceEvent {
 	for (UUID entityId : entityIds) {
 	    clauses.add(field + "='" + entityId.toString() + "'");
 	}
-	return String.join(" or ", clauses);
+	return "(" + String.join(" or ", clauses) + ")";
     }
 
     /**
