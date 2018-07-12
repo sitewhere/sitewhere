@@ -537,8 +537,10 @@ public class Customers extends RestControllerBase {
     public ISearchResults<DeviceAssignment> listAssignmentsForCustomer(
 	    @ApiParam(value = "Token that identifies customer", required = true) @PathVariable String customerToken,
 	    @ApiParam(value = "Limit results to the given status", required = false) @RequestParam(required = false) String status,
-	    @ApiParam(value = "Include detailed device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
-	    @ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "false") boolean includeAsset,
+	    @ApiParam(value = "Include device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
+	    @ApiParam(value = "Include customer information", required = false) @RequestParam(defaultValue = "false") boolean includeCustomer,
+	    @ApiParam(value = "Include area information", required = false) @RequestParam(defaultValue = "false") boolean includeArea,
+	    @ApiParam(value = "Include asset information", required = false) @RequestParam(defaultValue = "false") boolean includeAsset,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize)
 	    throws SiteWhereException {
@@ -552,8 +554,10 @@ public class Customers extends RestControllerBase {
 
 	ISearchResults<IDeviceAssignment> matches = getDeviceManagement().listDeviceAssignments(criteria);
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
-	helper.setIncludeAsset(includeAsset);
 	helper.setIncludeDevice(includeDevice);
+	helper.setIncludeCustomer(includeCustomer);
+	helper.setIncludeArea(includeArea);
+	helper.setIncludeAsset(includeAsset);
 	List<DeviceAssignment> converted = new ArrayList<DeviceAssignment>();
 	for (IDeviceAssignment assignment : matches.getResults()) {
 	    converted.add(helper.convert(assignment, getAssetManagement()));

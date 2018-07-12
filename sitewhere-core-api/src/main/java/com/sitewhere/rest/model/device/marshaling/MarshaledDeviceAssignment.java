@@ -10,6 +10,7 @@ package com.sitewhere.rest.model.device.marshaling;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.asset.IAsset;
+import com.sitewhere.spi.customer.ICustomer;
 import com.sitewhere.spi.device.IDevice;
 
 /**
@@ -25,6 +26,9 @@ public class MarshaledDeviceAssignment extends DeviceAssignment {
 
     /** Device being assigned */
     private IDevice device;
+
+    /** Assigned customer */
+    private ICustomer customer;
 
     /** Assigned area */
     private IArea area;
@@ -44,6 +48,14 @@ public class MarshaledDeviceAssignment extends DeviceAssignment {
 
     public void setDevice(IDevice device) {
 	this.device = device;
+    }
+
+    public ICustomer getCustomer() {
+	return customer;
+    }
+
+    public void setCustomer(ICustomer customer) {
+	this.customer = customer;
     }
 
     public IArea getArea() {

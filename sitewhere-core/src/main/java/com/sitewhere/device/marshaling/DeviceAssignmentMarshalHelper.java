@@ -14,7 +14,6 @@ import com.sitewhere.device.marshaling.invalid.InvalidAsset;
 import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceAssignment;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDevice;
@@ -37,6 +36,9 @@ public class DeviceAssignmentMarshalHelper {
 
     /** Indicates whether to include device information */
     private boolean includeDevice = false;
+
+    /** Indicates whether to include customer information */
+    private boolean includeCustomer = true;
 
     /** Indicates whether to include area information */
     private boolean includeArea = true;
@@ -87,11 +89,16 @@ public class DeviceAssignmentMarshalHelper {
 	    }
 	}
 
+	// If customer is assigned, look it up.
+	result.setCustomerId(source.getCustomerId());
+	if ((isIncludeCustomer()) && (source.getCustomerId() != null)) {
+	    result.setCustomer(getDeviceManagement().getCustomer(source.getCustomerId()));
+	}
+
 	// If area is assigned, look it up.
 	result.setAreaId(source.getAreaId());
 	if ((isIncludeArea()) && (source.getAreaId() != null)) {
-	    IArea area = getDeviceManagement().getArea(source.getAreaId());
-	    result.setArea(area);
+	    result.setArea(getDeviceManagement().getArea(source.getAreaId()));
 	}
 
 	// Add device information.
@@ -101,7 +108,7 @@ public class DeviceAssignmentMarshalHelper {
 	    if (device != null) {
 		result.setDevice(getDeviceHelper().convert(device, assetManagement));
 	    } else {
-		LOGGER.error("Assignment references invalid hardware id.");
+		LOGGER.error("Assignment references invalid device id.");
 	    }
 	}
 	return result;
@@ -137,6 +144,14 @@ public class DeviceAssignmentMarshalHelper {
     public DeviceAssignmentMarshalHelper setIncludeDevice(boolean includeDevice) {
 	this.includeDevice = includeDevice;
 	return this;
+    }
+
+    public boolean isIncludeCustomer() {
+	return includeCustomer;
+    }
+
+    public void setIncludeCustomer(boolean includeCustomer) {
+	this.includeCustomer = includeCustomer;
     }
 
     public boolean isIncludeArea() {

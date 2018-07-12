@@ -245,6 +245,7 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Limit by area token", required = false) @RequestParam(required = false) String areaToken,
 	    @ApiParam(value = "Limit by asset token", required = false) @RequestParam(required = false) String assetToken,
 	    @ApiParam(value = "Include device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
+	    @ApiParam(value = "Include customer information", required = false) @RequestParam(defaultValue = "false") boolean includeCustomer,
 	    @ApiParam(value = "Include area information", required = false) @RequestParam(defaultValue = "false") boolean includeArea,
 	    @ApiParam(value = "Include asset information", required = false) @RequestParam(defaultValue = "false") boolean includeAsset,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
@@ -287,6 +288,7 @@ public class Assignments extends RestControllerBase {
 	ISearchResults<IDeviceAssignment> matches = getDeviceManagement().listDeviceAssignments(criteria);
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeDevice(includeDevice);
+	helper.setIncludeCustomer(includeCustomer);
 	helper.setIncludeArea(includeArea);
 	helper.setIncludeAsset(includeAsset);
 

@@ -111,8 +111,7 @@ public class Devices extends RestControllerBase {
     @RequestMapping(value = "/{deviceToken:.+}", method = RequestMethod.GET)
     @ApiOperation(value = "Get device by token")
     @Secured({ SiteWhereRoles.REST })
-    public IDevice getDeviceByHardwareId(
-	    @ApiParam(value = "Device token", required = true) @PathVariable String deviceToken,
+    public IDevice getDeviceByToken(@ApiParam(value = "Device token", required = true) @PathVariable String deviceToken,
 	    @ApiParam(value = "Include device type information", required = false) @RequestParam(defaultValue = "true") boolean includeDeviceType,
 	    @ApiParam(value = "Include assignment if associated", required = false) @RequestParam(defaultValue = "true") boolean includeAssignment,
 	    @ApiParam(value = "Include detailed nested device information", required = false) @RequestParam(defaultValue = "false") boolean includeNested)
@@ -204,15 +203,18 @@ public class Devices extends RestControllerBase {
     @Secured({ SiteWhereRoles.REST })
     public IDeviceAssignment getDeviceCurrentAssignment(
 	    @ApiParam(value = "Device token", required = true) @PathVariable String deviceToken,
-	    @ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset,
-	    @ApiParam(value = "Include detailed device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
-	    @ApiParam(value = "Include detailed site information", required = false) @RequestParam(defaultValue = "true") boolean includeSite,
+	    @ApiParam(value = "Include device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
+	    @ApiParam(value = "Include customer information", required = false) @RequestParam(defaultValue = "false") boolean includeCustomer,
+	    @ApiParam(value = "Include area information", required = false) @RequestParam(defaultValue = "false") boolean includeArea,
+	    @ApiParam(value = "Include asset information", required = false) @RequestParam(defaultValue = "false") boolean includeAsset,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDevice existing = assertDeviceByToken(deviceToken);
 	IDeviceAssignment assignment = assertDeviceAssignment(existing.getDeviceAssignmentId());
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
-	helper.setIncludeAsset(includeAsset);
 	helper.setIncludeDevice(includeDevice);
+	helper.setIncludeCustomer(includeCustomer);
+	helper.setIncludeArea(includeArea);
+	helper.setIncludeAsset(includeAsset);
 	return helper.convert(assignment, getAssetManagement());
     }
 
@@ -228,8 +230,10 @@ public class Devices extends RestControllerBase {
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceAssignment> listDeviceAssignmentHistory(
 	    @ApiParam(value = "Device token", required = true) @PathVariable String deviceToken,
-	    @ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "false") boolean includeAsset,
-	    @ApiParam(value = "Include detailed device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
+	    @ApiParam(value = "Include device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
+	    @ApiParam(value = "Include customer information", required = false) @RequestParam(defaultValue = "false") boolean includeCustomer,
+	    @ApiParam(value = "Include area information", required = false) @RequestParam(defaultValue = "false") boolean includeArea,
+	    @ApiParam(value = "Include asset information", required = false) @RequestParam(defaultValue = "false") boolean includeAsset,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
@@ -243,8 +247,11 @@ public class Devices extends RestControllerBase {
 
 	ISearchResults<IDeviceAssignment> history = getDeviceManagement().listDeviceAssignments(criteria);
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
-	helper.setIncludeAsset(includeAsset);
 	helper.setIncludeDevice(includeDevice);
+	helper.setIncludeCustomer(includeCustomer);
+	helper.setIncludeArea(includeArea);
+	helper.setIncludeAsset(includeAsset);
+
 	List<IDeviceAssignment> converted = new ArrayList<IDeviceAssignment>();
 	for (IDeviceAssignment assignment : history.getResults()) {
 	    converted.add(helper.convert(assignment, getAssetManagement()));
