@@ -15,7 +15,6 @@ import com.sitewhere.grpc.client.MultitenantApiChannel;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.model.converter.CommonModelConverter;
-import com.sitewhere.grpc.model.converter.DeviceModelConverter;
 import com.sitewhere.grpc.model.converter.EventModelConverter;
 import com.sitewhere.grpc.model.tracing.DebugParameter;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
@@ -33,14 +32,10 @@ import com.sitewhere.grpc.service.GAddMeasurementsRequest;
 import com.sitewhere.grpc.service.GAddMeasurementsResponse;
 import com.sitewhere.grpc.service.GAddStateChangesRequest;
 import com.sitewhere.grpc.service.GAddStateChangesResponse;
-import com.sitewhere.grpc.service.GAddStreamDataForAssignmentRequest;
-import com.sitewhere.grpc.service.GAddStreamDataForAssignmentResponse;
 import com.sitewhere.grpc.service.GGetDeviceEventByAlternateIdRequest;
 import com.sitewhere.grpc.service.GGetDeviceEventByAlternateIdResponse;
 import com.sitewhere.grpc.service.GGetDeviceEventByIdRequest;
 import com.sitewhere.grpc.service.GGetDeviceEventByIdResponse;
-import com.sitewhere.grpc.service.GGetStreamDataForAssignmentRequest;
-import com.sitewhere.grpc.service.GGetStreamDataForAssignmentResponse;
 import com.sitewhere.grpc.service.GListAlertsForIndexRequest;
 import com.sitewhere.grpc.service.GListAlertsForIndexResponse;
 import com.sitewhere.grpc.service.GListCommandInvocationsForIndexRequest;
@@ -55,8 +50,6 @@ import com.sitewhere.grpc.service.GListMeasurementsForIndexRequest;
 import com.sitewhere.grpc.service.GListMeasurementsForIndexResponse;
 import com.sitewhere.grpc.service.GListStateChangesForIndexRequest;
 import com.sitewhere.grpc.service.GListStateChangesForIndexResponse;
-import com.sitewhere.grpc.service.GListStreamDataForAssignmentRequest;
-import com.sitewhere.grpc.service.GListStreamDataForAssignmentResponse;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
@@ -74,15 +67,12 @@ import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
-import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
-import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.tracing.ITracerProvider;
@@ -507,149 +497,6 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
 			} catch (Throwable t) {
 			    observer.onError(GrpcUtils.handleClientMethodException(
 				    DeviceEventManagementGrpc.getListAlertsForIndexMethod(), t));
-			}
-		    }
-
-		    @Override
-		    public void onError(Throwable t) {
-			observer.onError(t);
-		    }
-
-		    @Override
-		    public void onCompleted() {
-			observer.onCompleted();
-		    }
-		});
-    }
-
-    /*
-     * @see com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel#
-     * addDeviceStreamData(java.util.UUID,
-     * com.sitewhere.spi.device.streaming.IDeviceStream,
-     * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void addDeviceStreamData(UUID deviceAssignmentId, IDeviceStream stream,
-	    IDeviceStreamDataCreateRequest request, StreamObserver<IDeviceStreamData> observer)
-	    throws SiteWhereException {
-	GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getAddStreamDataForAssignmentMethod(),
-		DebugParameter.create("Assignment Id", deviceAssignmentId), DebugParameter.create("Stream", stream),
-		DebugParameter.create("Request", request));
-	GAddStreamDataForAssignmentRequest.Builder grequest = GAddStreamDataForAssignmentRequest.newBuilder();
-	grequest.setDeviceAssignmentId(CommonModelConverter.asGrpcUuid(deviceAssignmentId));
-	grequest.setDeviceStream(DeviceModelConverter.asGrpcDeviceStream(stream));
-	grequest.setRequest(EventModelConverter.asGrpcDeviceStreamDataCreateRequest(request));
-	getGrpcChannel().getAsyncStub().addStreamDataForAssignment(
-		GrpcUtils.logGrpcClientRequest(DeviceEventManagementGrpc.getAddStreamDataForAssignmentMethod(),
-			grequest.build()),
-		new StreamObserver<GAddStreamDataForAssignmentResponse>() {
-
-		    @Override
-		    public void onNext(GAddStreamDataForAssignmentResponse gresponse) {
-			try {
-			    IDeviceStreamData response = EventModelConverter
-				    .asApiDeviceStreamData(gresponse.getStreamData());
-			    GrpcUtils.logClientMethodResponse(
-				    DeviceEventManagementGrpc.getAddStreamDataForAssignmentMethod(), response);
-			    observer.onNext(response);
-			} catch (Throwable t) {
-			    observer.onError(GrpcUtils.handleClientMethodException(
-				    DeviceEventManagementGrpc.getAddStreamDataForAssignmentMethod(), t));
-			}
-		    }
-
-		    @Override
-		    public void onError(Throwable t) {
-			observer.onError(t);
-		    }
-
-		    @Override
-		    public void onCompleted() {
-			observer.onCompleted();
-		    }
-		});
-    }
-
-    /*
-     * @see com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel#
-     * getDeviceStreamData(java.util.UUID, java.lang.String, long,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getDeviceStreamData(UUID deviceAssignmentId, String streamId, long sequenceNumber,
-	    StreamObserver<IDeviceStreamData> observer) throws SiteWhereException {
-	GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getGetStreamDataForAssignmentMethod(),
-		DebugParameter.create("Assignment Id", deviceAssignmentId),
-		DebugParameter.create("Stream Id", streamId),
-		DebugParameter.create("Sequence Number", String.valueOf(sequenceNumber)));
-	GGetStreamDataForAssignmentRequest.Builder grequest = GGetStreamDataForAssignmentRequest.newBuilder();
-	grequest.setDeviceAssignmentId(CommonModelConverter.asGrpcUuid(deviceAssignmentId));
-	grequest.setStreamId(streamId);
-	grequest.setSequenceNumber(sequenceNumber);
-	getGrpcChannel().getAsyncStub().getStreamDataForAssignment(
-		GrpcUtils.logGrpcClientRequest(DeviceEventManagementGrpc.getGetStreamDataForAssignmentMethod(),
-			grequest.build()),
-		new StreamObserver<GGetStreamDataForAssignmentResponse>() {
-
-		    @Override
-		    public void onNext(GGetStreamDataForAssignmentResponse gresponse) {
-			try {
-			    IDeviceStreamData response = EventModelConverter
-				    .asApiDeviceStreamData(gresponse.getStreamData());
-			    GrpcUtils.logClientMethodResponse(
-				    DeviceEventManagementGrpc.getGetStreamDataForAssignmentMethod(), response);
-			    observer.onNext(response);
-			} catch (Throwable t) {
-			    observer.onError(GrpcUtils.handleClientMethodException(
-				    DeviceEventManagementGrpc.getGetStreamDataForAssignmentMethod(), t));
-			}
-		    }
-
-		    @Override
-		    public void onError(Throwable t) {
-			observer.onError(t);
-		    }
-
-		    @Override
-		    public void onCompleted() {
-			observer.onCompleted();
-		    }
-		});
-    }
-
-    /*
-     * @see com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel#
-     * listDeviceStreamDataForAssignment(java.util.UUID, java.lang.String,
-     * com.sitewhere.spi.search.IDateRangeSearchCriteria,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void listDeviceStreamDataForAssignment(UUID assignmentId, String streamId, IDateRangeSearchCriteria criteria,
-	    StreamObserver<ISearchResults<IDeviceStreamData>> observer) throws SiteWhereException {
-	GrpcUtils.handleClientMethodEntry(this, DeviceEventManagementGrpc.getListStreamDataForAssignmentMethod(),
-		DebugParameter.create("Assignment Id", assignmentId), DebugParameter.create("Stream Id", streamId),
-		DebugParameter.create("Criteria", criteria));
-	GListStreamDataForAssignmentRequest.Builder grequest = GListStreamDataForAssignmentRequest.newBuilder();
-	grequest.setDeviceAssignmentId(CommonModelConverter.asGrpcUuid(assignmentId));
-	grequest.setStreamId(streamId);
-	grequest.setCriteria(CommonModelConverter.asGrpcDateRangeSearchCriteria(criteria));
-	getGrpcChannel().getAsyncStub().listStreamDataForAssignment(
-		GrpcUtils.logGrpcClientRequest(DeviceEventManagementGrpc.getListStreamDataForAssignmentMethod(),
-			grequest.build()),
-		new StreamObserver<GListStreamDataForAssignmentResponse>() {
-
-		    @Override
-		    public void onNext(GListStreamDataForAssignmentResponse gresponse) {
-			try {
-			    ISearchResults<IDeviceStreamData> response = EventModelConverter
-				    .asApiDeviceStreamDataSearchResults(gresponse.getResults());
-			    GrpcUtils.logClientMethodResponse(
-				    DeviceEventManagementGrpc.getListStreamDataForAssignmentMethod(), response);
-			    observer.onNext(response);
-			} catch (Throwable t) {
-			    observer.onError(GrpcUtils.handleClientMethodException(
-				    DeviceEventManagementGrpc.getListStreamDataForAssignmentMethod(), t));
 			}
 		    }
 

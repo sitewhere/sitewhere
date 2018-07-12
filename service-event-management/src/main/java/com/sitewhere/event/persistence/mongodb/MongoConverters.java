@@ -18,7 +18,6 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
-import com.sitewhere.spi.device.event.IDeviceStreamData;
 
 /**
  * Manages classes used to convert between Mongo and SPI objects.
@@ -36,7 +35,6 @@ public class MongoConverters implements IMongoConverterLookup {
 	CONVERTERS.put(IDeviceMeasurement.class, new MongoDeviceMeasurement());
 	CONVERTERS.put(IDeviceAlert.class, new MongoDeviceAlert());
 	CONVERTERS.put(IDeviceLocation.class, new MongoDeviceLocation());
-	CONVERTERS.put(IDeviceStreamData.class, new MongoDeviceStreamData());
 	CONVERTERS.put(IDeviceCommandInvocation.class, new MongoDeviceCommandInvocation());
 	CONVERTERS.put(IDeviceCommandResponse.class, new MongoDeviceCommandResponse());
 	CONVERTERS.put(IDeviceStateChange.class, new MongoDeviceStateChange());
@@ -45,8 +43,7 @@ public class MongoConverters implements IMongoConverterLookup {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.mongodb.IMongoConverterLookup#getConverterFor(java.lang.
+     * @see com.sitewhere.mongodb.IMongoConverterLookup#getConverterFor(java.lang.
      * Class)
      */
     @SuppressWarnings("unchecked")

@@ -7,7 +7,6 @@
  */
 package com.sitewhere.inbound.processing;
 
-import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
 import com.sitewhere.grpc.model.DeviceEventModel.GAnyDeviceEventCreateRequest;
@@ -25,8 +24,6 @@ import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
-import com.sitewhere.spi.device.streaming.IDeviceStream;
 
 /**
  * Event storage strategy that sends each event via a unary GRPC call.
@@ -87,17 +84,6 @@ public class UnaryEventStorageStrategy implements IInboundEventStorageStrategy {
 		    new AlertHandlerStreamObserver<>(getInboundPayloadProcessingLogic()),
 		    (IDeviceStateChangeCreateRequest) request);
 	    break;
-	case StreamData: {
-	    IDeviceStreamDataCreateRequest sdreq = (IDeviceStreamDataCreateRequest) request;
-	    IDeviceStream stream = getDeviceManagement().getDeviceStream(assignment.getId(), sdreq.getStreamId());
-	    if (stream != null) {
-		new BlockingDeviceEventManagement(getDeviceEventManagement()).addDeviceStreamData(assignment.getId(),
-			stream, sdreq);
-	    } else {
-		throw new SiteWhereException("Stream data references invalid stream: " + sdreq.getStreamId());
-	    }
-	    break;
-	}
 	default:
 	    throw new SiteWhereException("Unknown event type sent for storage: " + request.getEventType().name());
 	}

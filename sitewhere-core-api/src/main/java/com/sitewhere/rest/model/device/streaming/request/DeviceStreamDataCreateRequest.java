@@ -5,13 +5,13 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.rest.model.device.event.request;
+package com.sitewhere.rest.model.device.streaming.request;
 
 import java.io.Serializable;
 
-import com.sitewhere.rest.model.device.event.DeviceStreamData;
-import com.sitewhere.spi.device.event.DeviceEventType;
-import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceEventCreateRequest;
+import com.sitewhere.rest.model.device.streaming.DeviceStreamData;
+import com.sitewhere.spi.device.streaming.request.IDeviceStreamDataCreateRequest;
 
 /**
  * Model object used to create a new {@link DeviceStreamData} via REST APIs.
@@ -34,14 +34,13 @@ public class DeviceStreamDataCreateRequest extends DeviceEventCreateRequest
     private byte[] data;
 
     public DeviceStreamDataCreateRequest() {
-	setEventType(DeviceEventType.StreamData);
+	setEventType(null);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest#
+     * @see com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest#
      * getStreamId()
      */
     public String getStreamId() {
@@ -55,8 +54,7 @@ public class DeviceStreamDataCreateRequest extends DeviceEventCreateRequest
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest#
+     * @see com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest#
      * getSequenceNumber ()
      */
     public long getSequenceNumber() {
@@ -70,8 +68,7 @@ public class DeviceStreamDataCreateRequest extends DeviceEventCreateRequest
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest#
+     * @see com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest#
      * getData()
      */
     public byte[] getData() {

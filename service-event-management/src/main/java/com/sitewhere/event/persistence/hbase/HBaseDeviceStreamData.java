@@ -11,10 +11,10 @@ import org.apache.hadoop.hbase.client.Table;
 
 import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
-import com.sitewhere.rest.model.device.event.DeviceStreamData;
+import com.sitewhere.rest.model.device.streaming.DeviceStreamData;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.spi.device.streaming.request.IDeviceStreamDataCreateRequest;
 
 /**
  * HBase specifics for dealing with SiteWhere device stream data.

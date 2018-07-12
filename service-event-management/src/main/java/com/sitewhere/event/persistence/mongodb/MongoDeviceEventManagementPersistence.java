@@ -22,7 +22,6 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
-import com.sitewhere.spi.device.event.IDeviceStreamData;
 
 public class MongoDeviceEventManagementPersistence extends MongoPersistence {
 
@@ -69,9 +68,6 @@ public class MongoDeviceEventManagementPersistence extends MongoPersistence {
 	case Alert: {
 	    return MongoDeviceAlert.toDocument((IDeviceAlert) event, false);
 	}
-	case StreamData: {
-	    return MongoDeviceStreamData.toDocument((IDeviceStreamData) event, false);
-	}
 	case CommandInvocation: {
 	    return MongoDeviceCommandInvocation.toDocument((IDeviceCommandInvocation) event);
 	}
@@ -114,9 +110,6 @@ public class MongoDeviceEventManagementPersistence extends MongoPersistence {
 	}
 	case Alert: {
 	    return MongoDeviceAlert.fromDocument(found, false);
-	}
-	case StreamData: {
-	    return MongoDeviceStreamData.fromDocument(found, false);
 	}
 	case CommandInvocation: {
 	    return MongoDeviceCommandInvocation.fromDocument(found);

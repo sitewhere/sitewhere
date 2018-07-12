@@ -24,15 +24,12 @@ import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
-import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
-import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 
@@ -146,44 +143,6 @@ public interface IDeviceEventManagementApiChannel<T extends MultitenantGrpcChann
     public void listDeviceAlertsForIndex(DeviceEventIndex index, List<UUID> entityIds,
 	    IDateRangeSearchCriteria criteria, StreamObserver<ISearchResults<IDeviceAlert>> observer)
 	    throws SiteWhereException;
-
-    /**
-     * Add a chunk of stream data for a given device assignment.
-     * 
-     * @param deviceAssignmentId
-     * @param stream
-     * @param request
-     * @param observer
-     * @throws SiteWhereException
-     */
-    public void addDeviceStreamData(UUID deviceAssignmentId, IDeviceStream stream,
-	    IDeviceStreamDataCreateRequest request, StreamObserver<IDeviceStreamData> observer)
-	    throws SiteWhereException;
-
-    /**
-     * Get a single chunk of data from a device stream.
-     * 
-     * @param deviceAssignmentId
-     * @param streamId
-     * @param sequenceNumber
-     * @param observer
-     * @throws SiteWhereException
-     */
-    public void getDeviceStreamData(UUID deviceAssignmentId, String streamId, long sequenceNumber,
-	    StreamObserver<IDeviceStreamData> observer) throws SiteWhereException;
-
-    /**
-     * List all chunks of data in a device assignment that belong to a given stream
-     * and meet the criteria.
-     * 
-     * @param assignmentId
-     * @param streamId
-     * @param criteria
-     * @param observer
-     * @throws SiteWhereException
-     */
-    public void listDeviceStreamDataForAssignment(UUID assignmentId, String streamId, IDateRangeSearchCriteria criteria,
-	    StreamObserver<ISearchResults<IDeviceStreamData>> observer) throws SiteWhereException;
 
     /**
      * Add a device command invocation events for the given assignment.

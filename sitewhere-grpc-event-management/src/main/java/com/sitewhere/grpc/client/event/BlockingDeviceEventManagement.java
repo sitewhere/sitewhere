@@ -24,15 +24,12 @@ import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
-import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
-import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 
@@ -164,46 +161,6 @@ public class BlockingDeviceEventManagement extends TenantEngineLifecycleComponen
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	BlockingStreamObserver<ISearchResults<IDeviceAlert>> observer = new BlockingStreamObserver<>();
 	api.listDeviceAlertsForIndex(index, entityIds, criteria, observer);
-	return observer.getResult();
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceStreamData(
-     * java.util.UUID, com.sitewhere.spi.device.streaming.IDeviceStream,
-     * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest)
-     */
-    @Override
-    public IDeviceStreamData addDeviceStreamData(UUID deviceAssignmentId, IDeviceStream stream,
-	    IDeviceStreamDataCreateRequest request) throws SiteWhereException {
-	BlockingStreamObserver<IDeviceStreamData> observer = new BlockingStreamObserver<>();
-	api.addDeviceStreamData(deviceAssignmentId, stream, request, observer);
-	return observer.getResult();
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceStreamData(
-     * java.util.UUID, java.lang.String, long)
-     */
-    @Override
-    public IDeviceStreamData getDeviceStreamData(UUID deviceAssignmentId, String streamId, long sequenceNumber)
-	    throws SiteWhereException {
-	BlockingStreamObserver<IDeviceStreamData> observer = new BlockingStreamObserver<>();
-	api.getDeviceStreamData(deviceAssignmentId, streamId, sequenceNumber, observer);
-	return observer.getResult();
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceStreamDataForAssignment(java.util.UUID, java.lang.String,
-     * com.sitewhere.spi.search.IDateRangeSearchCriteria)
-     */
-    @Override
-    public ISearchResults<IDeviceStreamData> listDeviceStreamDataForAssignment(UUID assignmentId, String streamId,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	BlockingStreamObserver<ISearchResults<IDeviceStreamData>> observer = new BlockingStreamObserver<>();
-	api.listDeviceStreamDataForAssignment(assignmentId, streamId, criteria, observer);
 	return observer.getResult();
     }
 

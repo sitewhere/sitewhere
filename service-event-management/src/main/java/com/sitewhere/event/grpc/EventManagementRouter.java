@@ -32,14 +32,10 @@ import com.sitewhere.grpc.service.GAddMeasurementsRequest;
 import com.sitewhere.grpc.service.GAddMeasurementsResponse;
 import com.sitewhere.grpc.service.GAddStateChangesRequest;
 import com.sitewhere.grpc.service.GAddStateChangesResponse;
-import com.sitewhere.grpc.service.GAddStreamDataForAssignmentRequest;
-import com.sitewhere.grpc.service.GAddStreamDataForAssignmentResponse;
 import com.sitewhere.grpc.service.GGetDeviceEventByAlternateIdRequest;
 import com.sitewhere.grpc.service.GGetDeviceEventByAlternateIdResponse;
 import com.sitewhere.grpc.service.GGetDeviceEventByIdRequest;
 import com.sitewhere.grpc.service.GGetDeviceEventByIdResponse;
-import com.sitewhere.grpc.service.GGetStreamDataForAssignmentRequest;
-import com.sitewhere.grpc.service.GGetStreamDataForAssignmentResponse;
 import com.sitewhere.grpc.service.GListAlertsForIndexRequest;
 import com.sitewhere.grpc.service.GListAlertsForIndexResponse;
 import com.sitewhere.grpc.service.GListCommandInvocationsForIndexRequest;
@@ -54,8 +50,6 @@ import com.sitewhere.grpc.service.GListMeasurementsForIndexRequest;
 import com.sitewhere.grpc.service.GListMeasurementsForIndexResponse;
 import com.sitewhere.grpc.service.GListStateChangesForIndexRequest;
 import com.sitewhere.grpc.service.GListStateChangesForIndexResponse;
-import com.sitewhere.grpc.service.GListStreamDataForAssignmentRequest;
-import com.sitewhere.grpc.service.GListStreamDataForAssignmentResponse;
 import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
 
 import io.grpc.stub.StreamObserver;
@@ -226,55 +220,6 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
 	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
 	if (engine != null) {
 	    engine.listAlertsForIndex(request, responseObserver);
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#addStreamDataForAssignment(com.sitewhere.
-     * grpc.service.GAddStreamDataForAssignmentRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void addStreamDataForAssignment(GAddStreamDataForAssignmentRequest request,
-	    StreamObserver<GAddStreamDataForAssignmentResponse> responseObserver) {
-	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.addStreamDataForAssignment(request, responseObserver);
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#getStreamDataForAssignment(com.sitewhere.
-     * grpc.service.GGetStreamDataForAssignmentRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getStreamDataForAssignment(GGetStreamDataForAssignmentRequest request,
-	    StreamObserver<GGetStreamDataForAssignmentResponse> responseObserver) {
-	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getStreamDataForAssignment(request, responseObserver);
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.service.DeviceEventManagementGrpc.
-     * DeviceEventManagementImplBase#listStreamDataForAssignment(com.sitewhere.
-     * grpc.service.GListStreamDataForAssignmentRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void listStreamDataForAssignment(GListStreamDataForAssignmentRequest request,
-	    StreamObserver<GListStreamDataForAssignmentResponse> responseObserver) {
-	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listStreamDataForAssignment(request, responseObserver);
 	}
     }
 

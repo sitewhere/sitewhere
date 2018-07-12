@@ -5,13 +5,13 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.event.persistence.mongodb;
+package com.sitewhere.media.persistence.mongodb;
 
 import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
-import com.sitewhere.rest.model.device.event.DeviceStreamData;
-import com.sitewhere.spi.device.event.IDeviceStreamData;
+import com.sitewhere.rest.model.device.streaming.DeviceStreamData;
+import com.sitewhere.spi.device.streaming.IDeviceStreamData;
 
 /**
  * Handles loading/saving {@link DeviceStreamData} objects to a MongoDB
@@ -58,7 +58,7 @@ public class MongoDeviceStreamData implements MongoConverter<IDeviceStreamData> 
      * @param isNested
      */
     public static void toDocument(IDeviceStreamData source, Document target, boolean isNested) {
-	MongoDeviceEvent.toDocument(source, target, isNested);
+	// MongoDeviceEvent.toDocument(source, target, isNested);
 
 	target.append(PROP_STREAM_ID, source.getStreamId());
 	target.append(PROP_SEQUENCE_NUMBER, source.getSequenceNumber());
@@ -73,7 +73,7 @@ public class MongoDeviceStreamData implements MongoConverter<IDeviceStreamData> 
      * @param isNested
      */
     public static void fromDocument(Document source, DeviceStreamData target, boolean isNested) {
-	MongoDeviceEvent.fromDocument(source, target, isNested);
+	// MongoDeviceEvent.fromDocument(source, target, isNested);
 
 	String streamId = (String) source.get(PROP_STREAM_ID);
 	Long sequenceNumber = (Long) source.get(PROP_SEQUENCE_NUMBER);

@@ -23,7 +23,6 @@ import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
-import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -41,15 +40,12 @@ import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
-import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
-import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
@@ -282,41 +278,6 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	return InfluxDbDeviceEvent.searchByIndex(index, entityIds, DeviceEventType.Alert, criteria, getClient(),
 		IDeviceAlert.class);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceStreamData(
-     * java.util.UUID, com.sitewhere.spi.device.streaming.IDeviceStream,
-     * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest)
-     */
-    @Override
-    public IDeviceStreamData addDeviceStreamData(UUID deviceAssignmentId, IDeviceStream stream,
-	    IDeviceStreamDataCreateRequest request) throws SiteWhereException {
-	throw new SiteWhereException("Streaming data not supported by InfluxDB.");
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceStreamData(
-     * java.util.UUID, java.lang.String, long)
-     */
-    @Override
-    public IDeviceStreamData getDeviceStreamData(UUID deviceAssignmentId, String streamId, long sequenceNumber)
-	    throws SiteWhereException {
-	throw new SiteWhereException("Streaming data not supported by InfluxDB.");
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceStreamDataForAssignment(java.util.UUID, java.lang.String,
-     * com.sitewhere.spi.search.IDateRangeSearchCriteria)
-     */
-    @Override
-    public ISearchResults<IDeviceStreamData> listDeviceStreamDataForAssignment(UUID assignmentId, String streamId,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	List<IDeviceStreamData> results = new ArrayList<IDeviceStreamData>();
-	return new SearchResults<IDeviceStreamData>(results);
     }
 
     /*

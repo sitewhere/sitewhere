@@ -2,6 +2,11 @@ description = 'SiteWhere Streaming Media Microservice'
 
 dependencies {
 	compile project(':sitewhere-microservice')
+	
+	// Supported databases.
+	compile project(':sitewhere-cassandra')
+	compile project(':sitewhere-mongodb')
+	compile project(':sitewhere-influxdb')
 }
 
 apply plugin: 'org.springframework.boot'

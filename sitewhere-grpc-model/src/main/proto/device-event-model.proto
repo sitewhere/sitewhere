@@ -79,14 +79,6 @@ message GDeviceLocationCreateRequest {
 	GDeviceEventCreateRequest event = 4;
 }
 
-// Request data for creating device stream data.
-message GDeviceStreamDataCreateRequest {
-	string streamId = 1;
-	int64 sequenceNumber = 2;
-	bytes data = 3;
-	GDeviceEventCreateRequest event = 4;
-}
-
 // Request data for invoking a device command.
 message GDeviceCommandInvocationCreateRequest {
 	GDeviceCommandInitiator initiator = 1;
@@ -121,10 +113,9 @@ message GAnyDeviceEventCreateRequest {
 		GDeviceMeasurementCreateRequest measurement = 1;
 		GDeviceAlertCreateRequest alert = 2;
 		GDeviceLocationCreateRequest location = 3;
-		GDeviceStreamDataCreateRequest streamData = 4;
-		GDeviceCommandInvocationCreateRequest commandInvocation = 5;
-		GDeviceCommandResponseCreateRequest commandResponse = 6;
-		GDeviceStateChangeCreateRequest stateChange = 7;
+		GDeviceCommandInvocationCreateRequest commandInvocation = 4;
+		GDeviceCommandResponseCreateRequest commandResponse = 5;
+		GDeviceStateChangeCreateRequest stateChange = 6;
 	}
 }
 
@@ -134,20 +125,14 @@ message GDeviceAssignmentEventCreateRequest {
 	GAnyDeviceEventCreateRequest request = 2;
 }
 
-// Response for streaming methods.
-message GEventStreamAck {
-	uint64 processedEventCount = 1;
-}
-
 // Device event type.
 enum GDeviceEventType {
 	EVENT_TYPE_MEASUREMENT = 0;
 	EVENT_TYPE_LOCATION = 1;
 	EVENT_TYPE_ALERT = 2;
-	EVENT_TYPE_STREAM_DATA = 3;
-	EVENT_TYPE_COMMAND_INVOCATION = 4;
-	EVENT_TYPE_COMMAND_RESPONSE = 5;
-	EVENT_TYPE_STATE_CHANGE = 6;
+	EVENT_TYPE_COMMAND_INVOCATION = 3;
+	EVENT_TYPE_COMMAND_RESPONSE = 4;
+	EVENT_TYPE_STATE_CHANGE = 5;
 }
 
 // Common device event information.
@@ -189,14 +174,6 @@ message GDeviceLocation {
 	GDeviceEvent event = 4;
 }
 
-// Stream data event.
-message GDeviceStreamData {
-	string streamId = 1;
-	int64 sequenceNumber = 2;
-	bytes data = 3;
-	GDeviceEvent event = 4;
-}
-
 // Command invocation event.
 message GDeviceCommandInvocation {
 	GDeviceCommandInitiator initiator = 1;
@@ -231,10 +208,9 @@ message GAnyDeviceEvent {
 		GDeviceMeasurement measurement = 1;
 		GDeviceAlert alert = 2;
 		GDeviceLocation location = 3;
-		GDeviceStreamData streamData = 4;
-		GDeviceCommandInvocation commandInvocation = 5;
-		GDeviceCommandResponse commandResponse = 6;
-		GDeviceStateChange stateChange = 7;
+		GDeviceCommandInvocation commandInvocation = 4;
+		GDeviceCommandResponse commandResponse = 5;
+		GDeviceStateChange stateChange = 6;
 	}
 }
 
@@ -276,12 +252,6 @@ message GDeviceAlertSearchResults {
 message GDeviceLocationSearchResults {
 	int64 count = 1;
 	repeated GDeviceLocation locations = 2;
-}
-
-// Results for device stream data search.
-message GDeviceStreamDataSearchResults {
-	int64 count = 1;
-	repeated GDeviceStreamData streamData = 2;
 }
 
 // Results for device command invocation search.

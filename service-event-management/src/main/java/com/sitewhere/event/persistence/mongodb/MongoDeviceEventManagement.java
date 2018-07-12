@@ -14,7 +14,6 @@ import java.util.UUID;
 import org.bson.Document;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.MongoTimeoutException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.IndexOptions;
 import com.sitewhere.event.persistence.DeviceEventManagementPersistence;
@@ -27,7 +26,6 @@ import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
-import com.sitewhere.rest.model.device.event.DeviceStreamData;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -46,15 +44,12 @@ import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
-import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
-import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
@@ -306,59 +301,6 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceStreamData(
-     * java.util.UUID, com.sitewhere.spi.device.streaming.IDeviceStream,
-     * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest)
-     */
-    @Override
-    public IDeviceStreamData addDeviceStreamData(UUID deviceAssignmentId, IDeviceStream stream,
-	    IDeviceStreamDataCreateRequest request) throws SiteWhereException {
-	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
-	// Use common logic so all backend implementations work the same.
-	DeviceStreamData streamData = DeviceEventManagementPersistence.deviceStreamDataCreateLogic(assignment, request);
-
-	MongoCollection<Document> events = getMongoClient().getEventsCollection();
-	Document streamDataObject = MongoDeviceStreamData.toDocument(streamData, false);
-	MongoDeviceEventManagementPersistence.insertEvent(events, streamDataObject, isUseBulkEventInserts(),
-		getEventBuffer());
-
-	return MongoDeviceStreamData.fromDocument(streamDataObject, false);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceStreamData(
-     * java.util.UUID, java.lang.String, long)
-     */
-    @Override
-    public IDeviceStreamData getDeviceStreamData(UUID deviceAssignmentId, String streamId, long sequenceNumber)
-	    throws SiteWhereException {
-	Document dbData = getDeviceStreamDataDocument(deviceAssignmentId, streamId, sequenceNumber);
-	if (dbData == null) {
-	    return null;
-	}
-	return MongoDeviceStreamData.fromDocument(dbData, false);
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceStreamDataForAssignment(java.util.UUID, java.lang.String,
-     * com.sitewhere.spi.search.IDateRangeSearchCriteria)
-     */
-    @Override
-    public ISearchResults<IDeviceStreamData> listDeviceStreamDataForAssignment(UUID assignmentId, String streamId,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	MongoCollection<Document> events = getMongoClient().getEventsCollection();
-	Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_ID, assignmentId)
-		.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.StreamData.name())
-		.append(MongoDeviceStreamData.PROP_STREAM_ID, streamId);
-	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
-	Document sort = new Document(MongoDeviceStreamData.PROP_SEQUENCE_NUMBER, 1);
-	return MongoPersistence.search(IDeviceStreamData.class, events, query, sort, criteria, LOOKUP);
-    }
-
-    /*
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
      * addDeviceCommandInvocations(java.util.UUID,
      * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest[
@@ -492,29 +434,6 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 	MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 	Document sort = new Document(MongoDeviceEvent.PROP_EVENT_DATE, -1);
 	return MongoPersistence.search(IDeviceStateChange.class, events, query, sort, criteria, LOOKUP);
-    }
-
-    /**
-     * Get the {@link Document} for an {@link IDeviceStreamData} chunk based on
-     * assignment token, stream id, and sequence number.
-     * 
-     * @param assignmentId
-     * @param streamId
-     * @param sequenceNumber
-     * @return
-     * @throws SiteWhereException
-     */
-    protected Document getDeviceStreamDataDocument(UUID assignmentId, String streamId, long sequenceNumber)
-	    throws SiteWhereException {
-	try {
-	    MongoCollection<Document> events = getMongoClient().getEventsCollection();
-	    Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_ID, assignmentId)
-		    .append(MongoDeviceStreamData.PROP_STREAM_ID, streamId)
-		    .append(MongoDeviceStreamData.PROP_SEQUENCE_NUMBER, sequenceNumber);
-	    return events.find(query).first();
-	} catch (MongoTimeoutException e) {
-	    throw new SiteWhereException("Connection to MongoDB lost.", e);
-	}
     }
 
     /**

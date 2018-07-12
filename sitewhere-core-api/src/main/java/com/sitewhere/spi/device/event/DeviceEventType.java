@@ -23,9 +23,6 @@ public enum DeviceEventType {
     /** Exception condtion alert */
     Alert,
 
-    /** Single chunk of data from a binary data stream */
-    StreamData,
-
     /** Invocation of device command */
     CommandInvocation,
 

@@ -60,19 +60,6 @@ service DeviceEventManagement {
 	// List alerts for an index.
 	rpc ListAlertsForIndex (GListAlertsForIndexRequest) returns (GListAlertsForIndexResponse) {}
 
-	// ###################
-	// ### STREAM DATA ###
-	// ###################
-	
-	// Add stream data for an assignment.
-	rpc AddStreamDataForAssignment (GAddStreamDataForAssignmentRequest) returns (GAddStreamDataForAssignmentResponse) {}
-	
-	// Get stream data for an assignment.
-	rpc GetStreamDataForAssignment (GGetStreamDataForAssignmentRequest) returns (GGetStreamDataForAssignmentResponse) {}
-	
-	// List stream data for an assignment.
-	rpc ListStreamDataForAssignment (GListStreamDataForAssignmentRequest) returns (GListStreamDataForAssignmentResponse) {}
-
 	// ###########################
 	// ### COMMAND INVOCATIONS ###
 	// ###########################
@@ -227,46 +214,6 @@ message GListAlertsForIndexResponse {
 	com.sitewhere.grpc.model.GDeviceAlertSearchResults results = 1;
 }
 
-// ###################
-// ### STREAM DATA ###
-// ###################
-	
-// Request for adding stream data for an assignment.
-message GAddStreamDataForAssignmentRequest {
-	com.sitewhere.grpc.model.GUUID deviceAssignmentId = 1;
-	com.sitewhere.grpc.model.GDeviceStream deviceStream = 2;
-	com.sitewhere.grpc.model.GDeviceStreamDataCreateRequest request = 3;
-}
-	
-// Response for adding stream data for an assignment.
-message GAddStreamDataForAssignmentResponse {
-	com.sitewhere.grpc.model.GDeviceStreamData streamData = 1;
-}
-	
-// Request for adding stream data for an assignment.
-message GGetStreamDataForAssignmentRequest {
-	com.sitewhere.grpc.model.GUUID deviceAssignmentId = 1;
-	string streamId = 2;
-	uint64 sequenceNumber = 3;
-}
-	
-// Response for adding stream data for an assignment.
-message GGetStreamDataForAssignmentResponse {
-	com.sitewhere.grpc.model.GDeviceStreamData streamData = 1;
-}
-	
-// Request for list of stream data for an assignment.
-message GListStreamDataForAssignmentRequest {
-	com.sitewhere.grpc.model.GUUID deviceAssignmentId = 1;
-	string streamId = 2;
-	com.sitewhere.grpc.model.GDateRangeSearchCriteria criteria = 3;
-}
-
-// Response for list of stream data for an assignment.
-message GListStreamDataForAssignmentResponse {
-	com.sitewhere.grpc.model.GDeviceStreamDataSearchResults results = 1;
-}
-
 // ###########################
 // ### COMMAND INVOCATIONS ###
 // ###########################
@@ -358,5 +305,3 @@ message GListStateChangesForIndexRequest {
 message GListStateChangesForIndexResponse {
 	com.sitewhere.grpc.model.GDeviceStateChangeSearchResults results = 1;
 }
-
-

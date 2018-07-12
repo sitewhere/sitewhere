@@ -22,8 +22,8 @@ import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreate
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
-import com.sitewhere.rest.model.device.event.request.DeviceStreamDataCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
+import com.sitewhere.rest.model.device.streaming.request.DeviceStreamDataCreateRequest;
 import com.sitewhere.sources.DecodedDeviceRequest;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
@@ -31,7 +31,7 @@ import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.spi.device.streaming.request.IDeviceStreamDataCreateRequest;
 
 /**
  * Custom marshaler for converting JSON payloads to {@link DecodedDeviceRequest}

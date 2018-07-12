@@ -7,18 +7,15 @@
  */
 package com.sitewhere.web.rest.controllers;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -51,7 +48,6 @@ import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreate
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceStateChangeCreateRequest;
-import com.sitewhere.rest.model.device.event.request.DeviceStreamDataCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
@@ -76,7 +72,6 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
-import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
@@ -532,117 +527,6 @@ public class Assignments extends RestControllerBase {
 		    HttpServletResponse.SC_NOT_FOUND);
 	}
 	return DeviceStream.copy(result);
-    }
-
-    /**
-     * Adds data to an existing device stream.
-     * 
-     * @param token
-     * @param streamId
-     * @param sequenceNumber
-     * @param svtRequest
-     * @param svtResponse
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/{token}/streams/{streamId:.+}", method = RequestMethod.POST)
-    @ApiOperation(value = "Add data to device assignment data stream")
-    @Secured({ SiteWhereRoles.REST })
-    public void addDeviceStreamData(@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
-	    @ApiParam(value = "Sequence Number", required = false) @RequestParam(required = false) Long sequenceNumber,
-	    HttpServletRequest servletRequest, HttpServletResponse svtResponse) throws SiteWhereException {
-	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	IDeviceStream stream = assertDeviceStream(assignment.getId(), streamId);
-	try {
-	    ServletInputStream inData = servletRequest.getInputStream();
-	    ByteArrayOutputStream byteData = new ByteArrayOutputStream();
-	    int data;
-	    while ((data = inData.read()) != -1) {
-		byteData.write(data);
-	    }
-	    byte[] payload = byteData.toByteArray();
-	    DeviceStreamDataCreateRequest request = new DeviceStreamDataCreateRequest();
-	    request.setStreamId(streamId);
-	    request.setSequenceNumber(sequenceNumber);
-	    request.setEventDate(new Date());
-	    request.setUpdateState(false);
-	    request.setData(payload);
-	    new BlockingDeviceEventManagement(getDeviceEventManagement()).addDeviceStreamData(assignment.getId(),
-		    stream, request);
-	    svtResponse.setStatus(HttpServletResponse.SC_CREATED);
-	} catch (SiteWhereSystemException e) {
-	    if (e.getCode() == ErrorCode.InvalidStreamId) {
-		svtResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
-	    } else {
-		LOGGER.error("Unhandled SiteWhere exception.", e);
-		svtResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-	    }
-	} catch (IOException e) {
-	    LOGGER.error(e);
-	    svtResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-	}
-    }
-
-    /**
-     * Get a single chunk of data from a device stream.
-     * 
-     * @param token
-     * @param streamId
-     * @param sequenceNumber
-     * @param svtResponse
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/{token}/streams/{streamId:.+}/data/{sequenceNumber}", method = RequestMethod.GET)
-    @ApiOperation(value = "Get data from device assignment data stream")
-    @Secured({ SiteWhereRoles.REST })
-    public void getDeviceStreamData(@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
-	    @ApiParam(value = "Sequence Number", required = true) @PathVariable long sequenceNumber,
-	    HttpServletRequest servletRequest, HttpServletResponse svtResponse) throws SiteWhereException {
-	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	IDeviceStreamData chunk = new BlockingDeviceEventManagement(getDeviceEventManagement())
-		.getDeviceStreamData(assignment.getId(), streamId, sequenceNumber);
-	if (chunk == null) {
-	    svtResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
-	    return;
-	}
-	try {
-	    svtResponse.getOutputStream().write(chunk.getData());
-	} catch (IOException e) {
-	    throw new SiteWhereException("Unable to write device stream data chunk.", e);
-	}
-    }
-
-    @RequestMapping(value = "/{token}/streams/{streamId:.+}/data", method = RequestMethod.GET)
-    @ApiOperation(value = "Get all data from device assignment data stream")
-    @Secured({ SiteWhereRoles.REST })
-    public void listDeviceStreamDataForAssignment(
-	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
-	    HttpServletRequest servletRequest, HttpServletResponse svtResponse) throws SiteWhereException {
-	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	IDeviceStream stream = assertDeviceStream(assignment.getId(), streamId);
-	svtResponse.setContentType(stream.getContentType());
-
-	DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 0, null, null);
-	ISearchResults<IDeviceStreamData> data = new BlockingDeviceEventManagement(getDeviceEventManagement())
-		.listDeviceStreamDataForAssignment(assignment.getId(), streamId, criteria);
-
-	// Sort results by sequence number.
-	Collections.sort(data.getResults(), new Comparator<IDeviceStreamData>() {
-
-	    @Override
-	    public int compare(IDeviceStreamData o1, IDeviceStreamData o2) {
-		return o1.getSequenceNumber().compareTo(o2.getSequenceNumber());
-	    }
-	});
-	for (IDeviceStreamData chunk : data.getResults()) {
-	    try {
-		svtResponse.getOutputStream().write(chunk.getData());
-	    } catch (IOException e) {
-		LOGGER.error("Error writing chunk to servlet output stream.", e);
-	    }
-	}
     }
 
     /**

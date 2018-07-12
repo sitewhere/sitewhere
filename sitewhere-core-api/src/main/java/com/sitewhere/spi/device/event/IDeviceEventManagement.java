@@ -17,8 +17,6 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
-import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
@@ -128,43 +126,6 @@ public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent 
      * @throws SiteWhereException
      */
     public ISearchResults<IDeviceAlert> listDeviceAlertsForIndex(DeviceEventIndex index, List<UUID> entityIds,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
-
-    /**
-     * Add a chunk of stream data for a given device assignment.
-     * 
-     * @param deviceAssignmentId
-     * @param stream
-     * @param request
-     * @return
-     * @throws SiteWhereException
-     */
-    public IDeviceStreamData addDeviceStreamData(UUID deviceAssignmentId, IDeviceStream stream,
-	    IDeviceStreamDataCreateRequest request) throws SiteWhereException;
-
-    /**
-     * Get a single chunk of data from a device stream.
-     * 
-     * @param deviceAssignmentId
-     * @param streamId
-     * @param sequenceNumber
-     * @return
-     * @throws SiteWhereException
-     */
-    public IDeviceStreamData getDeviceStreamData(UUID deviceAssignmentId, String streamId, long sequenceNumber)
-	    throws SiteWhereException;
-
-    /**
-     * List all chunks of data in a device assignment that belong to a given stream
-     * and meet the criteria.
-     * 
-     * @param assignmentId
-     * @param streamId
-     * @param criteria
-     * @return
-     * @throws SiteWhereException
-     */
-    public ISearchResults<IDeviceStreamData> listDeviceStreamDataForAssignment(UUID assignmentId, String streamId,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
     /**

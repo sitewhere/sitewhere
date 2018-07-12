@@ -23,15 +23,12 @@ import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
-import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
-import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 
@@ -147,40 +144,6 @@ public class DeviceEventManagementDecorator extends TenantEngineLifecycleCompone
     public ISearchResults<IDeviceAlert> listDeviceAlertsForIndex(DeviceEventIndex index, List<UUID> entityIds,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	return getDelegate().listDeviceAlertsForIndex(index, entityIds, criteria);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceStreamData(
-     * java.util.UUID, com.sitewhere.spi.device.streaming.IDeviceStream,
-     * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest)
-     */
-    @Override
-    public IDeviceStreamData addDeviceStreamData(UUID deviceAssignmentId, IDeviceStream stream,
-	    IDeviceStreamDataCreateRequest request) throws SiteWhereException {
-	return getDelegate().addDeviceStreamData(deviceAssignmentId, stream, request);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceStreamData(
-     * java.util.UUID, java.lang.String, long)
-     */
-    @Override
-    public IDeviceStreamData getDeviceStreamData(UUID deviceAssignmentId, String streamId, long sequenceNumber)
-	    throws SiteWhereException {
-	return getDelegate().getDeviceStreamData(deviceAssignmentId, streamId, sequenceNumber);
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceStreamDataForAssignment(java.util.UUID, java.lang.String,
-     * com.sitewhere.spi.search.IDateRangeSearchCriteria)
-     */
-    @Override
-    public ISearchResults<IDeviceStreamData> listDeviceStreamDataForAssignment(UUID assignmentId, String streamId,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	return getDelegate().listDeviceStreamDataForAssignment(assignmentId, streamId, criteria);
     }
 
     /*
