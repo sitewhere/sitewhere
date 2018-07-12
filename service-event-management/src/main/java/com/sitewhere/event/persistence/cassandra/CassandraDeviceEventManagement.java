@@ -74,8 +74,28 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     /** Configured Cassandra client */
     private CassandraClient client;
 
+    /** Cassandra event management client */
+    private CassandraEventManagementClient cassandraEventManagementClient;
+
     public CassandraDeviceEventManagement() {
 	super(LifecycleComponentType.DataStore);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	if (getClient() == null) {
+	    throw new SiteWhereException("No Cassandra client configured.");
+	}
+	getClient().initialize(monitor);
+
+	// Initialize event management client wrapper.
+	this.cassandraEventManagementClient = new CassandraEventManagementClient(getClient());
+	getCassandraEventManagementClient().initialize(monitor);
     }
 
     /*
@@ -85,10 +105,19 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	if (getClient() == null) {
-	    throw new SiteWhereException("No Cassandra client configured.");
-	}
 	getClient().start(monitor);
+	getCassandraEventManagementClient().start(monitor);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	getCassandraEventManagementClient().stop(monitor);
+	getClient().stop(monitor);
     }
 
     /*
@@ -134,35 +163,9 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	List<IDeviceMeasurement> result = new ArrayList<>();
 	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
 	for (IDeviceMeasurementCreateRequest request : requests) {
-	    DeviceMeasurement mxs = DeviceEventManagementPersistence.deviceMeasurementCreateLogic(request, assignment);
-
-	    // Build insert for event by id.
-	    BoundStatement eventById = getClient().getInsertDeviceEventById().bind();
-	    CassandraDeviceMeasurements.bindFields(getClient(), eventById, mxs);
-	    process(eventById, mxs);
-
-	    // Build insert for event by assignment.
-	    BoundStatement eventByAssn = getClient().getInsertDeviceEventByAssignment().bind();
-	    CassandraDeviceMeasurements.bindFields(getClient(), eventByAssn, mxs);
-	    eventByAssn.setInt("bucket", getClient().getBucketValue(mxs.getEventDate().getTime()));
-	    process(eventByAssn, mxs);
-
-	    // Build insert for event by area.
-	    if (assignment.getAreaId() != null) {
-		BoundStatement eventByArea = getClient().getInsertDeviceEventByArea().bind();
-		CassandraDeviceMeasurements.bindFields(getClient(), eventByArea, mxs);
-		eventByArea.setInt("bucket", getClient().getBucketValue(mxs.getEventDate().getTime()));
-		process(eventByArea, mxs);
-	    }
-
-	    // Build insert for event by asset.
-	    if (assignment.getAssetId() != null) {
-		BoundStatement eventByAsset = getClient().getInsertDeviceEventByAsset().bind();
-		CassandraDeviceMeasurements.bindFields(getClient(), eventByAsset, mxs);
-		eventByAsset.setInt("bucket", getClient().getBucketValue(mxs.getEventDate().getTime()));
-		process(eventByAsset, mxs);
-	    }
-	    result.add(mxs);
+	    DeviceMeasurement mx = DeviceEventManagementPersistence.deviceMeasurementCreateLogic(request, assignment);
+	    storeDeviceEvent(assignment, mx, CassandraDeviceMeasurement.INSTANCE);
+	    result.add(mx);
 	}
 	return result;
     }
@@ -187,7 +190,7 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	    for (ResultSet perKey : perBucket) {
 		for (Row row : perKey) {
 		    DeviceMeasurement mx = new DeviceMeasurement();
-		    CassandraDeviceMeasurements.loadFields(getClient(), mx, row);
+		    CassandraDeviceMeasurement.loadFields(getCassandraEventManagementClient(), mx, row);
 		    bucketEvents.add(mx);
 		}
 	    }
@@ -209,33 +212,7 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
 	for (IDeviceLocationCreateRequest request : requests) {
 	    DeviceLocation location = DeviceEventManagementPersistence.deviceLocationCreateLogic(assignment, request);
-
-	    // Build insert for event by id.
-	    BoundStatement eventById = getClient().getInsertDeviceEventById().bind();
-	    CassandraDeviceLocation.bindFields(getClient(), eventById, location);
-	    process(eventById, location);
-
-	    // Build insert for event by assignment.
-	    BoundStatement eventByAssn = getClient().getInsertDeviceEventByAssignment().bind();
-	    CassandraDeviceLocation.bindFields(getClient(), eventByAssn, location);
-	    eventByAssn.setInt("bucket", getClient().getBucketValue(location.getEventDate().getTime()));
-	    process(eventByAssn, location);
-
-	    // Build insert for event by area.
-	    if (assignment.getAreaId() != null) {
-		BoundStatement eventByArea = getClient().getInsertDeviceEventByArea().bind();
-		CassandraDeviceLocation.bindFields(getClient(), eventByArea, location);
-		eventByArea.setInt("bucket", getClient().getBucketValue(location.getEventDate().getTime()));
-		process(eventByArea, location);
-	    }
-
-	    // Build insert for event by asset.
-	    if (assignment.getAssetId() != null) {
-		BoundStatement eventByAsset = getClient().getInsertDeviceEventByAsset().bind();
-		CassandraDeviceLocation.bindFields(getClient(), eventByAsset, location);
-		eventByAsset.setInt("bucket", getClient().getBucketValue(location.getEventDate().getTime()));
-		process(eventByAsset, location);
-	    }
+	    storeDeviceEvent(assignment, location, CassandraDeviceLocation.INSTANCE);
 	    result.add(location);
 	}
 	return result;
@@ -260,7 +237,7 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	    for (ResultSet perKey : perBucket) {
 		for (Row row : perKey) {
 		    DeviceLocation location = new DeviceLocation();
-		    CassandraDeviceLocation.loadFields(getClient(), location, row);
+		    CassandraDeviceLocation.loadFields(getCassandraEventManagementClient(), location, row);
 		    bucketEvents.add(location);
 		}
 	    }
@@ -282,33 +259,7 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
 	for (IDeviceAlertCreateRequest request : requests) {
 	    DeviceAlert alert = DeviceEventManagementPersistence.deviceAlertCreateLogic(assignment, request);
-
-	    // Build insert for event by id.
-	    BoundStatement eventById = getClient().getInsertDeviceEventById().bind();
-	    CassandraDeviceAlert.bindFields(getClient(), eventById, alert);
-	    process(eventById, alert);
-
-	    // Build insert for event by assignment.
-	    BoundStatement eventByAssn = getClient().getInsertDeviceEventByAssignment().bind();
-	    CassandraDeviceAlert.bindFields(getClient(), eventByAssn, alert);
-	    eventByAssn.setInt("bucket", getClient().getBucketValue(alert.getEventDate().getTime()));
-	    process(eventByAssn, alert);
-
-	    // Build insert for event by area.
-	    if (assignment.getAreaId() != null) {
-		BoundStatement eventByArea = getClient().getInsertDeviceEventByArea().bind();
-		CassandraDeviceAlert.bindFields(getClient(), eventByArea, alert);
-		eventByArea.setInt("bucket", getClient().getBucketValue(alert.getEventDate().getTime()));
-		process(eventByArea, alert);
-	    }
-
-	    // Build insert for event by asset.
-	    if (assignment.getAssetId() != null) {
-		BoundStatement eventByAsset = getClient().getInsertDeviceEventByAsset().bind();
-		CassandraDeviceAlert.bindFields(getClient(), eventByAsset, alert);
-		eventByAsset.setInt("bucket", getClient().getBucketValue(alert.getEventDate().getTime()));
-		process(eventByAsset, alert);
-	    }
+	    storeDeviceEvent(assignment, alert, CassandraDeviceAlert.INSTANCE);
 	    result.add(alert);
 	}
 	return result;
@@ -333,7 +284,7 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	    for (ResultSet perKey : perBucket) {
 		for (Row row : perKey) {
 		    DeviceAlert alert = new DeviceAlert();
-		    CassandraDeviceAlert.loadFields(getClient(), alert, row);
+		    CassandraDeviceAlert.loadFields(getCassandraEventManagementClient(), alert, row);
 		    bucketEvents.add(alert);
 		}
 	    }
@@ -356,33 +307,7 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	for (IDeviceCommandInvocationCreateRequest request : requests) {
 	    DeviceCommandInvocation invocation = DeviceEventManagementPersistence
 		    .deviceCommandInvocationCreateLogic(assignment, request);
-
-	    // Build insert for event by id.
-	    BoundStatement eventById = getClient().getInsertDeviceEventById().bind();
-	    CassandraDeviceCommandInvocation.bindFields(getClient(), eventById, invocation);
-	    process(eventById, invocation);
-
-	    // Build insert for event by assignment.
-	    BoundStatement eventByAssn = getClient().getInsertDeviceEventByAssignment().bind();
-	    CassandraDeviceCommandInvocation.bindFields(getClient(), eventByAssn, invocation);
-	    eventByAssn.setInt("bucket", getClient().getBucketValue(invocation.getEventDate().getTime()));
-	    process(eventByAssn, invocation);
-
-	    // Build insert for event by area.
-	    if (assignment.getAreaId() != null) {
-		BoundStatement eventByArea = getClient().getInsertDeviceEventByArea().bind();
-		CassandraDeviceCommandInvocation.bindFields(getClient(), eventByArea, invocation);
-		eventByArea.setInt("bucket", getClient().getBucketValue(invocation.getEventDate().getTime()));
-		process(eventByArea, invocation);
-	    }
-
-	    // Build insert for event by asset.
-	    if (assignment.getAssetId() != null) {
-		BoundStatement eventByAsset = getClient().getInsertDeviceEventByAsset().bind();
-		CassandraDeviceCommandInvocation.bindFields(getClient(), eventByAsset, invocation);
-		eventByAsset.setInt("bucket", getClient().getBucketValue(invocation.getEventDate().getTime()));
-		process(eventByAsset, invocation);
-	    }
+	    storeDeviceEvent(assignment, invocation, CassandraDeviceCommandInvocation.INSTANCE);
 	    result.add(invocation);
 	}
 	return result;
@@ -408,7 +333,7 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	    for (ResultSet perKey : perBucket) {
 		for (Row row : perKey) {
 		    DeviceCommandInvocation invocation = new DeviceCommandInvocation();
-		    CassandraDeviceCommandInvocation.loadFields(getClient(), invocation, row);
+		    CassandraDeviceCommandInvocation.loadFields(getCassandraEventManagementClient(), invocation, row);
 		    bucketEvents.add(invocation);
 		}
 	    }
@@ -440,33 +365,7 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	for (IDeviceCommandResponseCreateRequest request : requests) {
 	    DeviceCommandResponse response = DeviceEventManagementPersistence
 		    .deviceCommandResponseCreateLogic(assignment, request);
-
-	    // Build insert for event by id.
-	    BoundStatement eventById = getClient().getInsertDeviceEventById().bind();
-	    CassandraDeviceCommandResponse.bindFields(getClient(), eventById, response);
-	    process(eventById, response);
-
-	    // Build insert for event by assignment.
-	    BoundStatement eventByAssn = getClient().getInsertDeviceEventByAssignment().bind();
-	    CassandraDeviceCommandResponse.bindFields(getClient(), eventByAssn, response);
-	    eventByAssn.setInt("bucket", getClient().getBucketValue(response.getEventDate().getTime()));
-	    process(eventByAssn, response);
-
-	    // Build insert for event by area.
-	    if (assignment.getAreaId() != null) {
-		BoundStatement eventByArea = getClient().getInsertDeviceEventByArea().bind();
-		CassandraDeviceCommandResponse.bindFields(getClient(), eventByArea, response);
-		eventByArea.setInt("bucket", getClient().getBucketValue(response.getEventDate().getTime()));
-		process(eventByArea, response);
-	    }
-
-	    // Build insert for event by asset.
-	    if (assignment.getAssetId() != null) {
-		BoundStatement eventByAsset = getClient().getInsertDeviceEventByAsset().bind();
-		CassandraDeviceCommandResponse.bindFields(getClient(), eventByAsset, response);
-		eventByAsset.setInt("bucket", getClient().getBucketValue(response.getEventDate().getTime()));
-		process(eventByAsset, response);
-	    }
+	    storeDeviceEvent(assignment, response, CassandraDeviceCommandResponse.INSTANCE);
 	    result.add(response);
 	}
 	return result;
@@ -492,7 +391,7 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	    for (ResultSet perKey : perBucket) {
 		for (Row row : perKey) {
 		    DeviceCommandResponse response = new DeviceCommandResponse();
-		    CassandraDeviceCommandResponse.loadFields(getClient(), response, row);
+		    CassandraDeviceCommandResponse.loadFields(getCassandraEventManagementClient(), response, row);
 		    bucketEvents.add(response);
 		}
 	    }
@@ -515,33 +414,7 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	for (IDeviceStateChangeCreateRequest request : requests) {
 	    DeviceStateChange state = DeviceEventManagementPersistence.deviceStateChangeCreateLogic(assignment,
 		    request);
-
-	    // Build insert for event by id.
-	    BoundStatement eventById = getClient().getInsertDeviceEventById().bind();
-	    CassandraDeviceStateChange.bindFields(getClient(), eventById, state);
-	    process(eventById, state);
-
-	    // Build insert for event by assignment.
-	    BoundStatement eventByAssn = getClient().getInsertDeviceEventByAssignment().bind();
-	    CassandraDeviceStateChange.bindFields(getClient(), eventByAssn, state);
-	    eventByAssn.setInt("bucket", getClient().getBucketValue(state.getEventDate().getTime()));
-	    process(eventByAssn, state);
-
-	    // Build insert for event by area.
-	    if (assignment.getAreaId() != null) {
-		BoundStatement eventByArea = getClient().getInsertDeviceEventByArea().bind();
-		CassandraDeviceStateChange.bindFields(getClient(), eventByArea, state);
-		eventByArea.setInt("bucket", getClient().getBucketValue(state.getEventDate().getTime()));
-		process(eventByArea, state);
-	    }
-
-	    // Build insert for event by asset.
-	    if (assignment.getAssetId() != null) {
-		BoundStatement eventByAsset = getClient().getInsertDeviceEventByAsset().bind();
-		CassandraDeviceStateChange.bindFields(getClient(), eventByAsset, state);
-		eventByAsset.setInt("bucket", getClient().getBucketValue(state.getEventDate().getTime()));
-		process(eventByAsset, state);
-	    }
+	    storeDeviceEvent(assignment, state, CassandraDeviceStateChange.INSTANCE);
 	    result.add(state);
 	}
 	return result;
@@ -567,13 +440,51 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	    for (ResultSet perKey : perBucket) {
 		for (Row row : perKey) {
 		    DeviceStateChange response = new DeviceStateChange();
-		    CassandraDeviceStateChange.loadFields(getClient(), response, row);
+		    CassandraDeviceStateChange.loadFields(getCassandraEventManagementClient(), response, row);
 		    bucketEvents.add(response);
 		}
 	    }
 	    addSortedEventsToPager(pager, bucketEvents, bucket);
 	}
 	return new SearchResults<IDeviceStateChange>(pager.getResults(), pager.getTotal());
+    }
+
+    /**
+     * Store a device event using various indexing strategies.
+     * 
+     * @param assignment
+     * @param event
+     * @param binder
+     * @throws SiteWhereException
+     */
+    protected <T extends IDeviceEvent> void storeDeviceEvent(IDeviceAssignment assignment, T event,
+	    ICassandraEventBinder<T> binder) throws SiteWhereException {
+	// Build insert for event by id.
+	BoundStatement eventById = getCassandraEventManagementClient().getInsertDeviceEventById().bind();
+	binder.bind(getCassandraEventManagementClient(), eventById, event);
+	process(eventById, event);
+
+	// Build insert for event by assignment.
+	BoundStatement eventByAssn = getCassandraEventManagementClient().getInsertDeviceEventByAssignment().bind();
+	binder.bind(getCassandraEventManagementClient(), eventByAssn, event);
+	eventByAssn.setInt("bucket", getClient().getBucketValue(event.getEventDate().getTime()));
+	process(eventByAssn, event);
+
+	// Build insert for event by area.
+	if (assignment.getAreaId() != null) {
+	    BoundStatement eventByArea = getCassandraEventManagementClient().getInsertDeviceEventByArea().bind();
+	    binder.bind(getCassandraEventManagementClient(), eventByArea, event);
+	    eventByArea.setInt("bucket", getClient().getBucketValue(event.getEventDate().getTime()));
+	    process(eventByArea, event);
+	}
+
+	// Build insert for event by asset.
+	if (assignment.getAssetId() != null) {
+	    BoundStatement eventByAsset = getCassandraEventManagementClient().getInsertDeviceEventByAsset().bind();
+	    binder.bind(getCassandraEventManagementClient(), eventByAsset, event);
+	    eventByAsset.setInt("bucket", getClient().getBucketValue(event.getEventDate().getTime()));
+	    process(eventByAsset, event);
+	}
     }
 
     /**
@@ -615,13 +526,13 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     protected PreparedStatement getQueryForIndex(DeviceEventIndex index) throws SiteWhereException {
 	switch (index) {
 	case Area: {
-	    return getClient().getSelectEventsByAreaForType();
+	    return getCassandraEventManagementClient().getSelectEventsByAreaForType();
 	}
 	case Asset: {
 	    throw new SiteWhereException("Indexing by asset not implemented.");
 	}
 	case Assignment: {
-	    return getClient().getSelectEventsByAssignmentForType();
+	    return getCassandraEventManagementClient().getSelectEventsByAssignmentForType();
 	}
 	case Customer: {
 	    throw new SiteWhereException("Indexing by customer not implemented.");
@@ -753,5 +664,13 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 
     public void setClient(CassandraClient client) {
 	this.client = client;
+    }
+
+    protected CassandraEventManagementClient getCassandraEventManagementClient() {
+	return cassandraEventManagementClient;
+    }
+
+    protected void setCassandraEventManagementClient(CassandraEventManagementClient cassandraEventManagementClient) {
+	this.cassandraEventManagementClient = cassandraEventManagementClient;
     }
 }

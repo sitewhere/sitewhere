@@ -10,7 +10,6 @@ package com.sitewhere.event.persistence.cassandra;
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.UDTValue;
-import com.sitewhere.cassandra.CassandraClient;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.CommandInitiator;
@@ -23,7 +22,10 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
  * 
  * @author Derek
  */
-public class CassandraDeviceCommandInvocation {
+public class CassandraDeviceCommandInvocation implements ICassandraEventBinder<IDeviceCommandInvocation> {
+
+    /** Static instance */
+    public static final ICassandraEventBinder<IDeviceCommandInvocation> INSTANCE = new CassandraDeviceCommandInvocation();
 
     // Invocation field.
     public static final String FIELD_INVOCATION = "invocation";
@@ -46,6 +48,19 @@ public class CassandraDeviceCommandInvocation {
     // Command parameters field.
     public static final String FIELD_COMMAND_PARAMS = "command_params";
 
+    /*
+     * @see
+     * com.sitewhere.event.persistence.cassandra.ICassandraEventBinder#bind(com.
+     * sitewhere.event.persistence.cassandra.CassandraEventManagementClient,
+     * com.datastax.driver.core.BoundStatement,
+     * com.sitewhere.spi.device.event.IDeviceEvent)
+     */
+    @Override
+    public void bind(CassandraEventManagementClient client, BoundStatement bound, IDeviceCommandInvocation event)
+	    throws SiteWhereException {
+	CassandraDeviceCommandInvocation.bindFields(client, bound, event);
+    }
+
     /**
      * Bind fields from a device command invocation to an existing
      * {@link BoundStatement}.
@@ -55,8 +70,8 @@ public class CassandraDeviceCommandInvocation {
      * @param invocation
      * @throws SiteWhereException
      */
-    public static void bindFields(CassandraClient client, BoundStatement bound, IDeviceCommandInvocation invocation)
-	    throws SiteWhereException {
+    public static void bindFields(CassandraEventManagementClient client, BoundStatement bound,
+	    IDeviceCommandInvocation invocation) throws SiteWhereException {
 	CassandraDeviceEvent.bindEventFields(bound, invocation);
 
 	UDTValue udt = client.getInvocationType().newValue();
@@ -77,7 +92,7 @@ public class CassandraDeviceCommandInvocation {
      * @param row
      * @throws SiteWhereException
      */
-    public static void loadFields(CassandraClient client, DeviceCommandInvocation invocation, Row row)
+    public static void loadFields(CassandraEventManagementClient client, DeviceCommandInvocation invocation, Row row)
 	    throws SiteWhereException {
 	CassandraDeviceEvent.loadEventFields(invocation, row);
 

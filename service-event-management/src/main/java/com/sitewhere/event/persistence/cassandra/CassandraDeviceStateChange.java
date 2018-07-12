@@ -10,7 +10,6 @@ package com.sitewhere.event.persistence.cassandra;
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.UDTValue;
-import com.sitewhere.cassandra.CassandraClient;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
@@ -20,7 +19,10 @@ import com.sitewhere.spi.device.event.IDeviceStateChange;
  * 
  * @author Derek
  */
-public class CassandraDeviceStateChange {
+public class CassandraDeviceStateChange implements ICassandraEventBinder<IDeviceStateChange> {
+
+    /** Static instance */
+    public static final ICassandraEventBinder<IDeviceStateChange> INSTANCE = new CassandraDeviceStateChange();
 
     // State change field.
     public static final String FIELD_STATE_CHANGE = "state_change";
@@ -37,6 +39,19 @@ public class CassandraDeviceStateChange {
     // New state field.
     public static final String FIELD_NEW_STATE = "new_state";
 
+    /*
+     * @see
+     * com.sitewhere.event.persistence.cassandra.ICassandraEventBinder#bind(com.
+     * sitewhere.event.persistence.cassandra.CassandraEventManagementClient,
+     * com.datastax.driver.core.BoundStatement,
+     * com.sitewhere.spi.device.event.IDeviceEvent)
+     */
+    @Override
+    public void bind(CassandraEventManagementClient client, BoundStatement bound, IDeviceStateChange event)
+	    throws SiteWhereException {
+	CassandraDeviceStateChange.bindFields(client, bound, event);
+    }
+
     /**
      * Bind fields from a device state change to an existing {@link BoundStatement}.
      * 
@@ -45,7 +60,7 @@ public class CassandraDeviceStateChange {
      * @param state
      * @throws SiteWhereException
      */
-    public static void bindFields(CassandraClient client, BoundStatement bound, IDeviceStateChange state)
+    public static void bindFields(CassandraEventManagementClient client, BoundStatement bound, IDeviceStateChange state)
 	    throws SiteWhereException {
 	CassandraDeviceEvent.bindEventFields(bound, state);
 
@@ -65,7 +80,8 @@ public class CassandraDeviceStateChange {
      * @param row
      * @throws SiteWhereException
      */
-    public static void loadFields(CassandraClient client, DeviceStateChange state, Row row) throws SiteWhereException {
+    public static void loadFields(CassandraEventManagementClient client, DeviceStateChange state, Row row)
+	    throws SiteWhereException {
 	CassandraDeviceEvent.loadEventFields(state, row);
 
 	UDTValue udt = row.getUDTValue(FIELD_STATE_CHANGE);

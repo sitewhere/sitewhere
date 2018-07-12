@@ -10,7 +10,6 @@ package com.sitewhere.event.persistence.cassandra;
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.UDTValue;
-import com.sitewhere.cassandra.CassandraClient;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.AlertLevel;
@@ -22,7 +21,10 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
  * 
  * @author Derek
  */
-public class CassandraDeviceAlert {
+public class CassandraDeviceAlert implements ICassandraEventBinder<IDeviceAlert> {
+
+    /** Static instance */
+    public static final ICassandraEventBinder<IDeviceAlert> INSTANCE = new CassandraDeviceAlert();
 
     // Alert field.
     public static final String FIELD_ALERT = "alert";
@@ -39,6 +41,19 @@ public class CassandraDeviceAlert {
     // Message field.
     public static final String FIELD_MESSAGE = "message";
 
+    /*
+     * @see
+     * com.sitewhere.event.persistence.cassandra.ICassandraEventBinder#bind(com.
+     * sitewhere.event.persistence.cassandra.CassandraEventManagementClient,
+     * com.datastax.driver.core.BoundStatement,
+     * com.sitewhere.spi.device.event.IDeviceEvent)
+     */
+    @Override
+    public void bind(CassandraEventManagementClient client, BoundStatement bound, IDeviceAlert event)
+	    throws SiteWhereException {
+	CassandraDeviceAlert.bindFields(client, bound, event);
+    }
+
     /**
      * Bind fields from a device alert to an existing {@link BoundStatement}.
      * 
@@ -47,7 +62,7 @@ public class CassandraDeviceAlert {
      * @param alert
      * @throws SiteWhereException
      */
-    public static void bindFields(CassandraClient client, BoundStatement bound, IDeviceAlert alert)
+    public static void bindFields(CassandraEventManagementClient client, BoundStatement bound, IDeviceAlert alert)
 	    throws SiteWhereException {
 	CassandraDeviceEvent.bindEventFields(bound, alert);
 
@@ -67,7 +82,8 @@ public class CassandraDeviceAlert {
      * @param row
      * @throws SiteWhereException
      */
-    public static void loadFields(CassandraClient client, DeviceAlert alert, Row row) throws SiteWhereException {
+    public static void loadFields(CassandraEventManagementClient client, DeviceAlert alert, Row row)
+	    throws SiteWhereException {
 	CassandraDeviceEvent.loadEventFields(alert, row);
 
 	UDTValue udt = row.getUDTValue(FIELD_ALERT);

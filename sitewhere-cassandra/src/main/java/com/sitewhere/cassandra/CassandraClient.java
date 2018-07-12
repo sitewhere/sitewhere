@@ -10,9 +10,7 @@ package com.sitewhere.cassandra;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.HostDistance;
 import com.datastax.driver.core.PoolingOptions;
-import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.Session;
-import com.datastax.driver.core.UserType;
 import com.datastax.driver.core.exceptions.QueryExecutionException;
 import com.sitewhere.configuration.instance.cassandra.CassandraConfiguration;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -38,42 +36,6 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
 
     /** Cassandra session */
     private Session session;
-
-    /** User type for device location */
-    private UserType locationType;
-
-    /** User type for device measurements */
-    private UserType measurementsType;
-
-    /** User type for device alert */
-    private UserType alertType;
-
-    /** User type for device command invocation */
-    private UserType invocationType;
-
-    /** User type for device command response */
-    private UserType responseType;
-
-    /** User type for device state change */
-    private UserType stateChangeType;
-
-    /** Prepared statement for inserting a device location by id */
-    private PreparedStatement insertDeviceEventById;
-
-    /** Prepared statement for inserting a device location by assignment */
-    private PreparedStatement insertDeviceEventByAssignment;
-
-    /** Prepared statement for inserting a device location by area */
-    private PreparedStatement insertDeviceEventByArea;
-
-    /** Prepared statement for inserting a device location by asset */
-    private PreparedStatement insertDeviceEventByAsset;
-
-    /** Prepared statement for selecting device events by type for an assignment */
-    private PreparedStatement selectEventsByAssignmentForType;
-
-    /** Prepared statement for selecting device events by type for an area */
-    private PreparedStatement selectEventsByAreaForType;
 
     /** Contact points parameter */
     private ILifecycleComponentParameter<String> contactPoints;
@@ -130,94 +92,6 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
 	builder.withPoolingOptions(pooling);
 	this.cluster = builder.build();
 	this.session = getCluster().connect();
-
-	// Intitialize tenant data constructs.
-	initializeTenant();
-	initializePreparedStatements();
-    }
-
-    /**
-     * Initializes tenant keyspace if not already created.
-     */
-    protected void initializeTenant() throws SiteWhereException {
-	// Create keyspace.
-	execute("CREATE KEYSPACE IF NOT EXISTS " + getKeyspace().getValue()
-		+ " WITH replication =  {'class':'SimpleStrategy','replication_factor':'1'}");
-
-	// Use keyspace.
-	execute("USE " + getKeyspace().getValue() + ";");
-
-	// Create location type.
-	execute("CREATE TYPE IF NOT EXISTS " + getKeyspace().getValue()
-		+ ".sw_location (latitude double, longitude double, elevation double);");
-	this.locationType = getSession().getCluster().getMetadata().getKeyspace(getKeyspace().getValue())
-		.getUserType("sw_location");
-
-	// Create measurements type.
-	execute("CREATE TYPE IF NOT EXISTS " + getKeyspace().getValue()
-		+ ".sw_measurements (mx_values map<text, double>);");
-	this.measurementsType = getSession().getCluster().getMetadata().getKeyspace(getKeyspace().getValue())
-		.getUserType("sw_measurements");
-
-	// Create alerts type.
-	execute("CREATE TYPE IF NOT EXISTS " + getKeyspace().getValue()
-		+ ".sw_alert (source tinyint, level tinyint, type text, message text);");
-	this.alertType = getSession().getCluster().getMetadata().getKeyspace(getKeyspace().getValue())
-		.getUserType("sw_alert");
-
-	// Create command invocation type.
-	execute("CREATE TYPE IF NOT EXISTS " + getKeyspace().getValue()
-		+ ".sw_invocation (initiator tinyint, initiator_id text, target tinyint, target_id text, command_token text, command_params map<text, text>);");
-	this.invocationType = getSession().getCluster().getMetadata().getKeyspace(getKeyspace().getValue())
-		.getUserType("sw_invocation");
-
-	// Create command response type.
-	execute("CREATE TYPE IF NOT EXISTS " + getKeyspace().getValue()
-		+ ".sw_response (orig_event_id uuid, resp_event_id uuid, response text);");
-	this.responseType = getSession().getCluster().getMetadata().getKeyspace(getKeyspace().getValue())
-		.getUserType("sw_response");
-
-	// Create state change type.
-	execute("CREATE TYPE IF NOT EXISTS " + getKeyspace().getValue()
-		+ ".sw_state_change (category text, type text, previous_state text, new_state text);");
-	this.stateChangeType = getSession().getCluster().getMetadata().getKeyspace(getKeyspace().getValue())
-		.getUserType("sw_state_change");
-
-	// Create events_by_id table.
-	execute("CREATE TABLE IF NOT EXISTS " + getKeyspace().getValue()
-		+ ".events_by_id (device_id uuid, event_id uuid, alt_id text, event_type tinyint, assignment_id uuid, area_id uuid, asset_id uuid, event_date timestamp, received_date timestamp, location frozen<sw_location>, measurements frozen<sw_measurements>, alert frozen<sw_alert>, invocation frozen<sw_invocation>, response frozen<sw_response>, state_change frozen<sw_state_change>, PRIMARY KEY (event_id));");
-
-	// Create events_by_assignment table.
-	execute("CREATE TABLE IF NOT EXISTS " + getKeyspace().getValue()
-		+ ".events_by_assignment (device_id uuid, bucket int, event_id uuid, alt_id text, event_type tinyint, assignment_id uuid, area_id uuid, asset_id uuid, event_date timestamp, received_date timestamp, location frozen<sw_location>, measurements frozen<sw_measurements>, alert frozen<sw_alert>, invocation frozen<sw_invocation>, response frozen<sw_response>, state_change frozen<sw_state_change>, PRIMARY KEY ((assignment_id, event_type, bucket), event_date, event_id)) WITH CLUSTERING ORDER BY (event_date desc, event_id asc);");
-
-	// Create events_by_area table.
-	execute("CREATE TABLE IF NOT EXISTS " + getKeyspace().getValue()
-		+ ".events_by_area (device_id uuid, bucket int, event_id uuid, alt_id text, event_type tinyint, assignment_id uuid, area_id uuid, asset_id uuid, event_date timestamp, received_date timestamp, location frozen<sw_location>, measurements frozen<sw_measurements>, alert frozen<sw_alert>, invocation frozen<sw_invocation>, response frozen<sw_response>, state_change frozen<sw_state_change>, PRIMARY KEY ((area_id, event_type, bucket), event_date, event_id)) WITH CLUSTERING ORDER BY (event_date desc, event_id asc);");
-
-	// Create events_by_asset table.
-	execute("CREATE TABLE IF NOT EXISTS " + getKeyspace().getValue()
-		+ ".events_by_asset (device_id uuid, bucket int, event_id uuid, alt_id text, event_type tinyint, assignment_id uuid, area_id uuid, asset_id uuid, event_date timestamp, received_date timestamp, location frozen<sw_location>, measurements frozen<sw_measurements>, alert frozen<sw_alert>, invocation frozen<sw_invocation>, response frozen<sw_response>, state_change frozen<sw_state_change>, PRIMARY KEY ((asset_id, event_type, bucket), event_date, event_id)) WITH CLUSTERING ORDER BY (event_date desc, event_id asc);");
-    }
-
-    /**
-     * Initialize prepared statements.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void initializePreparedStatements() throws SiteWhereException {
-	this.insertDeviceEventById = getSession().prepare("insert into " + getKeyspace().getValue()
-		+ ".events_by_id (device_id, event_id, alt_id, event_type, assignment_id, area_id, asset_id, event_date, received_date, location, measurements, alert, invocation, response, state_change) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-	this.insertDeviceEventByAssignment = getSession().prepare("insert into " + getKeyspace().getValue()
-		+ ".events_by_assignment (device_id, bucket, event_id, alt_id, event_type, assignment_id, area_id, asset_id, event_date, received_date, location, measurements, alert, invocation, response, state_change) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-	this.insertDeviceEventByArea = getSession().prepare("insert into " + getKeyspace().getValue()
-		+ ".events_by_area (device_id, bucket, event_id, alt_id, event_type, assignment_id, area_id, asset_id, event_date, received_date, location, measurements, alert, invocation, response, state_change) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-	this.insertDeviceEventByAsset = getSession().prepare("insert into " + getKeyspace().getValue()
-		+ ".events_by_asset (device_id, bucket, event_id, alt_id, event_type, assignment_id, area_id, asset_id, event_date, received_date, location, measurements, alert, invocation, response, state_change) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-	this.selectEventsByAssignmentForType = getSession().prepare("select * from " + getKeyspace().getValue()
-		+ ".events_by_assignment where assignment_id=? and event_type=? and bucket=? and event_date >= ? and event_date <= ?");
-	this.selectEventsByAreaForType = getSession().prepare("select * from " + getKeyspace().getValue()
-		+ ".events_by_area where area_id=? and event_type=? and bucket=? and event_date >= ? and event_date <= ?");
     }
 
     /**
@@ -226,7 +100,7 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
      * @param query
      * @throws SiteWhereException
      */
-    protected void execute(String query) throws SiteWhereException {
+    public void execute(String query) throws SiteWhereException {
 	try {
 	    getSession().execute(query);
 	} catch (QueryExecutionException e) {
@@ -300,101 +174,5 @@ public class CassandraClient extends TenantEngineLifecycleComponent implements I
 
     public void setSession(Session session) {
 	this.session = session;
-    }
-
-    public UserType getLocationType() {
-	return locationType;
-    }
-
-    public void setLocationType(UserType locationType) {
-	this.locationType = locationType;
-    }
-
-    public UserType getMeasurementsType() {
-	return measurementsType;
-    }
-
-    public void setMeasurementsType(UserType measurementsType) {
-	this.measurementsType = measurementsType;
-    }
-
-    public UserType getAlertType() {
-	return alertType;
-    }
-
-    public void setAlertType(UserType alertType) {
-	this.alertType = alertType;
-    }
-
-    public UserType getInvocationType() {
-	return invocationType;
-    }
-
-    public void setInvocationType(UserType invocationType) {
-	this.invocationType = invocationType;
-    }
-
-    public UserType getResponseType() {
-	return responseType;
-    }
-
-    public UserType getStateChangeType() {
-	return stateChangeType;
-    }
-
-    public void setStateChangeType(UserType stateChangeType) {
-	this.stateChangeType = stateChangeType;
-    }
-
-    public void setResponseType(UserType responseType) {
-	this.responseType = responseType;
-    }
-
-    public PreparedStatement getInsertDeviceEventById() {
-	return insertDeviceEventById;
-    }
-
-    public void setInsertDeviceEventById(PreparedStatement insertDeviceEventById) {
-	this.insertDeviceEventById = insertDeviceEventById;
-    }
-
-    public PreparedStatement getInsertDeviceEventByAssignment() {
-	return insertDeviceEventByAssignment;
-    }
-
-    public void setInsertDeviceEventByAssignment(PreparedStatement insertDeviceEventByAssignment) {
-	this.insertDeviceEventByAssignment = insertDeviceEventByAssignment;
-    }
-
-    public PreparedStatement getInsertDeviceEventByArea() {
-	return insertDeviceEventByArea;
-    }
-
-    public void setInsertDeviceEventByArea(PreparedStatement insertDeviceEventByArea) {
-	this.insertDeviceEventByArea = insertDeviceEventByArea;
-    }
-
-    public PreparedStatement getInsertDeviceEventByAsset() {
-	return insertDeviceEventByAsset;
-    }
-
-    public void setInsertDeviceEventByAsset(PreparedStatement insertDeviceEventByAsset) {
-	this.insertDeviceEventByAsset = insertDeviceEventByAsset;
-    }
-
-    public PreparedStatement getSelectEventsByAssignmentForType() {
-	return selectEventsByAssignmentForType;
-    }
-
-    public void setSelectEventsByAssignmentForType(PreparedStatement selectEventsByAssignmentForType) {
-	this.selectEventsByAssignmentForType = selectEventsByAssignmentForType;
-    }
-
-    public PreparedStatement getSelectEventsByAreaForType() {
-	return selectEventsByAreaForType;
-    }
-
-    public void setSelectEventsByAreaForType(PreparedStatement selectEventsByAreaForType) {
-	this.selectEventsByAreaForType = selectEventsByAreaForType;
     }
 }

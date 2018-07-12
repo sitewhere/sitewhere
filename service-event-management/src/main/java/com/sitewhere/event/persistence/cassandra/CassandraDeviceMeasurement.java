@@ -10,7 +10,6 @@ package com.sitewhere.event.persistence.cassandra;
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.UDTValue;
-import com.sitewhere.cassandra.CassandraClient;
 import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
@@ -20,16 +19,32 @@ import com.sitewhere.spi.device.event.IDeviceMeasurement;
  * 
  * @author Derek
  */
-public class CassandraDeviceMeasurements {
+public class CassandraDeviceMeasurement implements ICassandraEventBinder<IDeviceMeasurement> {
 
-    // Measurements field.
-    public static final String FIELD_MEASUREMENTS = "measurements";
+    /** Static instance */
+    public static final ICassandraEventBinder<IDeviceMeasurement> INSTANCE = new CassandraDeviceMeasurement();
+
+    // Measurement field.
+    public static final String FIELD_MEASUREMENT = "measurement";
 
     // Measurement name field.
     public static final String FIELD_MXNAME = "mxname";
 
     // Measurement value field.
     public static final String FIELD_MXVALUE = "mxvalue";
+
+    /*
+     * @see
+     * com.sitewhere.event.persistence.cassandra.ICassandraEventBinder#bind(com.
+     * sitewhere.event.persistence.cassandra.CassandraEventManagementClient,
+     * com.datastax.driver.core.BoundStatement,
+     * com.sitewhere.spi.device.event.IDeviceEvent)
+     */
+    @Override
+    public void bind(CassandraEventManagementClient client, BoundStatement bound, IDeviceMeasurement event)
+	    throws SiteWhereException {
+	CassandraDeviceMeasurement.bindFields(client, bound, event);
+    }
 
     /**
      * Bind fields from a device measurements event to an existing
@@ -40,14 +55,14 @@ public class CassandraDeviceMeasurements {
      * @param mx
      * @throws SiteWhereException
      */
-    public static void bindFields(CassandraClient client, BoundStatement bound, IDeviceMeasurement mx)
+    public static void bindFields(CassandraEventManagementClient client, BoundStatement bound, IDeviceMeasurement mx)
 	    throws SiteWhereException {
 	CassandraDeviceEvent.bindEventFields(bound, mx);
 
-	UDTValue udt = client.getMeasurementsType().newValue();
+	UDTValue udt = client.getMeasurementType().newValue();
 	udt.setString(FIELD_MXNAME, mx.getName());
 	udt.setDouble(FIELD_MXVALUE, mx.getValue());
-	bound.setUDTValue(FIELD_MEASUREMENTS, udt);
+	bound.setUDTValue(FIELD_MEASUREMENT, udt);
     }
 
     /**
@@ -58,10 +73,11 @@ public class CassandraDeviceMeasurements {
      * @param row
      * @throws SiteWhereException
      */
-    public static void loadFields(CassandraClient client, DeviceMeasurement mx, Row row) throws SiteWhereException {
+    public static void loadFields(CassandraEventManagementClient client, DeviceMeasurement mx, Row row)
+	    throws SiteWhereException {
 	CassandraDeviceEvent.loadEventFields(mx, row);
 
-	UDTValue udt = row.getUDTValue(FIELD_MEASUREMENTS);
+	UDTValue udt = row.getUDTValue(FIELD_MEASUREMENT);
 	mx.setName(udt.getString(FIELD_MXNAME));
 	mx.setValue(udt.getDouble(FIELD_MXVALUE));
     }

@@ -10,7 +10,6 @@ package com.sitewhere.event.persistence.cassandra;
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.UDTValue;
-import com.sitewhere.cassandra.CassandraClient;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -20,7 +19,10 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
  * 
  * @author Derek
  */
-public class CassandraDeviceCommandResponse {
+public class CassandraDeviceCommandResponse implements ICassandraEventBinder<IDeviceCommandResponse> {
+
+    /** Static instance */
+    public static final ICassandraEventBinder<IDeviceCommandResponse> INSTANCE = new CassandraDeviceCommandResponse();
 
     // Response field.
     public static final String FIELD_RESPONSE = "response";
@@ -34,6 +36,19 @@ public class CassandraDeviceCommandResponse {
     // Response field.
     public static final String FIELD_RESPONSE_CONTENT = "response";
 
+    /*
+     * @see
+     * com.sitewhere.event.persistence.cassandra.ICassandraEventBinder#bind(com.
+     * sitewhere.event.persistence.cassandra.CassandraEventManagementClient,
+     * com.datastax.driver.core.BoundStatement,
+     * com.sitewhere.spi.device.event.IDeviceEvent)
+     */
+    @Override
+    public void bind(CassandraEventManagementClient client, BoundStatement bound, IDeviceCommandResponse event)
+	    throws SiteWhereException {
+	CassandraDeviceCommandResponse.bindFields(client, bound, event);
+    }
+
     /**
      * Bind fields from a device alert to an existing {@link BoundStatement}.
      * 
@@ -42,8 +57,8 @@ public class CassandraDeviceCommandResponse {
      * @param response
      * @throws SiteWhereException
      */
-    public static void bindFields(CassandraClient client, BoundStatement bound, IDeviceCommandResponse response)
-	    throws SiteWhereException {
+    public static void bindFields(CassandraEventManagementClient client, BoundStatement bound,
+	    IDeviceCommandResponse response) throws SiteWhereException {
 	CassandraDeviceEvent.bindEventFields(bound, response);
 
 	UDTValue udt = client.getResponseType().newValue();
@@ -61,7 +76,7 @@ public class CassandraDeviceCommandResponse {
      * @param row
      * @throws SiteWhereException
      */
-    public static void loadFields(CassandraClient client, DeviceCommandResponse response, Row row)
+    public static void loadFields(CassandraEventManagementClient client, DeviceCommandResponse response, Row row)
 	    throws SiteWhereException {
 	CassandraDeviceEvent.loadEventFields(response, row);
 

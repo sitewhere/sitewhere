@@ -10,7 +10,6 @@ package com.sitewhere.event.persistence.cassandra;
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.UDTValue;
-import com.sitewhere.cassandra.CassandraClient;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -20,7 +19,10 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
  * 
  * @author Derek
  */
-public class CassandraDeviceLocation {
+public class CassandraDeviceLocation implements ICassandraEventBinder<IDeviceLocation> {
+
+    /** Static instance */
+    public static final ICassandraEventBinder<IDeviceLocation> INSTANCE = new CassandraDeviceLocation();
 
     // Location field.
     public static final String FIELD_LOCATION = "location";
@@ -34,6 +36,19 @@ public class CassandraDeviceLocation {
     // Elevation field.
     public static final String FIELD_ELEVATION = "elevation";
 
+    /*
+     * @see
+     * com.sitewhere.event.persistence.cassandra.ICassandraEventBinder#bind(com.
+     * sitewhere.event.persistence.cassandra.CassandraEventManagementClient,
+     * com.datastax.driver.core.BoundStatement,
+     * com.sitewhere.spi.device.event.IDeviceEvent)
+     */
+    @Override
+    public void bind(CassandraEventManagementClient client, BoundStatement bound, IDeviceLocation event)
+	    throws SiteWhereException {
+	CassandraDeviceLocation.bindFields(client, bound, event);
+    }
+
     /**
      * Bind fields from a device location to an existing {@link BoundStatement}.
      * 
@@ -42,7 +57,7 @@ public class CassandraDeviceLocation {
      * @param location
      * @throws SiteWhereException
      */
-    public static void bindFields(CassandraClient client, BoundStatement bound, IDeviceLocation location)
+    public static void bindFields(CassandraEventManagementClient client, BoundStatement bound, IDeviceLocation location)
 	    throws SiteWhereException {
 	CassandraDeviceEvent.bindEventFields(bound, location);
 
@@ -61,7 +76,8 @@ public class CassandraDeviceLocation {
      * @param row
      * @throws SiteWhereException
      */
-    public static void loadFields(CassandraClient client, DeviceLocation location, Row row) throws SiteWhereException {
+    public static void loadFields(CassandraEventManagementClient client, DeviceLocation location, Row row)
+	    throws SiteWhereException {
 	CassandraDeviceEvent.loadEventFields(location, row);
 
 	UDTValue udt = row.getUDTValue(FIELD_LOCATION);
