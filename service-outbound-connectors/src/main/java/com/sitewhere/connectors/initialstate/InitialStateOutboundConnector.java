@@ -21,7 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
-import com.sitewhere.connectors.FilteredOutboundConnector;
+import com.sitewhere.connectors.SerialOutboundConnector;
 import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.rest.model.device.DeviceAssignment;
@@ -41,7 +41,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public class InitialStateEventProcessor extends FilteredOutboundConnector {
+public class InitialStateOutboundConnector extends SerialOutboundConnector {
 
     /** Base URI for REST calls */
     private static final String API_BASE = "https://groker.initialstate.com/api/";
@@ -78,12 +78,12 @@ public class InitialStateEventProcessor extends FilteredOutboundConnector {
 
     /*
      * @see
-     * com.sitewhere.connectors.FilteredOutboundConnector#onMeasurementNotFiltered(
-     * com.sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.connectors.SerialOutboundConnector#onMeasurement(com.sitewhere.
+     * spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceMeasurement)
      */
     @Override
-    public void onMeasurementNotFiltered(IDeviceEventContext context, IDeviceMeasurement mx) throws SiteWhereException {
+    public void onMeasurement(IDeviceEventContext context, IDeviceMeasurement mx) throws SiteWhereException {
 	List<EventCreateRequest> events = new ArrayList<EventCreateRequest>();
 	EventCreateRequest event = new EventCreateRequest();
 	event.setKey(mx.getName());
@@ -96,12 +96,12 @@ public class InitialStateEventProcessor extends FilteredOutboundConnector {
 
     /*
      * @see
-     * com.sitewhere.outbound.FilteredOutboundEventProcessor#onLocationNotFiltered(
-     * com.sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.connectors.SerialOutboundConnector#onLocation(com.sitewhere.spi
+     * .device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceLocation)
      */
     @Override
-    public void onLocationNotFiltered(IDeviceEventContext context, IDeviceLocation location) throws SiteWhereException {
+    public void onLocation(IDeviceEventContext context, IDeviceLocation location) throws SiteWhereException {
 	List<EventCreateRequest> events = new ArrayList<EventCreateRequest>();
 
 	EventCreateRequest event = new EventCreateRequest();
@@ -116,12 +116,12 @@ public class InitialStateEventProcessor extends FilteredOutboundConnector {
 
     /*
      * @see
-     * com.sitewhere.outbound.FilteredOutboundEventProcessor#onAlertNotFiltered(com.
-     * sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.connectors.SerialOutboundConnector#onAlert(com.sitewhere.spi.
+     * device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceAlert)
      */
     @Override
-    public void onAlertNotFiltered(IDeviceEventContext context, IDeviceAlert alert) throws SiteWhereException {
+    public void onAlert(IDeviceEventContext context, IDeviceAlert alert) throws SiteWhereException {
 	List<EventCreateRequest> events = new ArrayList<EventCreateRequest>();
 
 	EventCreateRequest event = new EventCreateRequest();

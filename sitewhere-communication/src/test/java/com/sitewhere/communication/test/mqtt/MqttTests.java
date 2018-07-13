@@ -38,10 +38,10 @@ import com.sitewhere.spi.device.event.AlertSource;
 public class MqttTests {
 
     /** Nunber of threads for multithreaded tests */
-    private static final int NUM_THREADS = 20;
+    private static final int NUM_THREADS = 1;
 
     /** Nunber of calls performed per thread */
-    private static final int NUM_CALLS_PER_THREAD = 10000;
+    private static final int NUM_CALLS_PER_THREAD = 100;
 
     @Test
     public void runMqttTest() throws Exception {
@@ -85,7 +85,7 @@ public class MqttTests {
 
 		long start = System.currentTimeMillis();
 		for (int i = 0; i < messageCount; i++) {
-		    sendAlertOverMqtt();
+		    sendLocationOverMqtt();
 		}
 		System.out
 			.println("Sent " + messageCount + " events in " + (System.currentTimeMillis() - start) + "ms.");
@@ -106,7 +106,7 @@ public class MqttTests {
 	 */
 	public void sendLocationOverMqtt() throws SiteWhereException {
 	    DeviceRequest request = new DeviceRequest();
-	    request.setHardwareId("72413-UNO-9252587");
+	    request.setDeviceToken("25683-LAIPAC-S911-7539094");
 	    request.setType(Type.DeviceLocation);
 	    DeviceLocationCreateRequest location = new DeviceLocationCreateRequest();
 	    location.setEventDate(new Date());
@@ -135,7 +135,7 @@ public class MqttTests {
 	 */
 	public void sendAlertOverMqtt() throws SiteWhereException {
 	    DeviceRequest request = new DeviceRequest();
-	    request.setHardwareId("4545-UNO-9430527");
+	    request.setDeviceToken("4545-UNO-9430527");
 	    request.setType(Type.DeviceAlert);
 	    DeviceAlertCreateRequest alert = new DeviceAlertCreateRequest();
 	    alert.setSource(AlertSource.Device);
@@ -167,7 +167,7 @@ public class MqttTests {
 	 */
 	public void sendNonStandardMeasurements() throws SiteWhereException {
 	    DeviceRequest request = new DeviceRequest();
-	    request.setHardwareId("123-TEST-4567890");
+	    request.setDeviceToken("123-TEST-4567890");
 	    request.setType(Type.DeviceMeasurements);
 	    DeviceMeasurementCreateRequest mx = new DeviceMeasurementCreateRequest();
 	    mx.setName("normal");

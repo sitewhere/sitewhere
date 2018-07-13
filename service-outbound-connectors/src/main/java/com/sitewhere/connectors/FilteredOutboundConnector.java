@@ -13,14 +13,7 @@ import java.util.List;
 import com.sitewhere.connectors.spi.IDeviceEventFilter;
 import com.sitewhere.connectors.spi.IFilteredOutboundConnector;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.event.IDeviceAlert;
-import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
-import com.sitewhere.spi.device.event.IDeviceCommandResponse;
-import com.sitewhere.spi.device.event.IDeviceEvent;
-import com.sitewhere.spi.device.event.IDeviceEventContext;
-import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurement;
-import com.sitewhere.spi.device.event.IDeviceStateChange;
+import com.sitewhere.spi.microservice.kafka.payload.IEnrichedEventPayload;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
@@ -41,6 +34,7 @@ public abstract class FilteredOutboundConnector extends OutboundConnector implem
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
 	getLifecycleComponents().clear();
 	for (IDeviceEventFilter filter : filters) {
 	    startNestedComponent(filter, monitor, true);
@@ -59,157 +53,35 @@ public abstract class FilteredOutboundConnector extends OutboundConnector implem
 	for (IDeviceEventFilter filter : filters) {
 	    filter.stop(monitor);
 	}
+	super.stop(monitor);
     }
 
     /*
      * @see
-     * com.sitewhere.connectors.OutboundConnector#onMeasurement(com.sitewhere.spi.
-     * device.event.IDeviceEventContext,
-     * com.sitewhere.spi.device.event.IDeviceMeasurement)
+     * com.sitewhere.connectors.spi.IOutboundConnector#processEventBatch(java.util.
+     * List)
      */
     @Override
-    public final void onMeasurement(IDeviceEventContext context, IDeviceMeasurement mx) throws SiteWhereException {
-	if (!isFiltered(context, mx)) {
-	    onMeasurementNotFiltered(context, mx);
+    public void processEventBatch(List<IEnrichedEventPayload> payloads) throws SiteWhereException {
+	List<IEnrichedEventPayload> notFiltered = new ArrayList<>();
+	for (IEnrichedEventPayload payload : payloads) {
+	    if (!isFiltered(payload)) {
+		notFiltered.add(payload);
+	    }
 	}
-    }
-
-    /*
-     * @see com.sitewhere.connectors.spi.IFilteredOutboundConnector#
-     * onMeasurementNotFiltered(com.sitewhere.spi.device.event.IDeviceEventContext,
-     * com.sitewhere.spi.device.event.IDeviceMeasurement)
-     */
-    @Override
-    public void onMeasurementNotFiltered(IDeviceEventContext context, IDeviceMeasurement measurements)
-	    throws SiteWhereException {
-    }
-
-    /*
-     * @see com.sitewhere.connectors.OutboundConnector#onLocation(com.sitewhere.spi.
-     * device.event.IDeviceEventContext,
-     * com.sitewhere.spi.device.event.IDeviceLocation)
-     */
-    @Override
-    public final void onLocation(IDeviceEventContext context, IDeviceLocation location) throws SiteWhereException {
-	if (!isFiltered(context, location)) {
-	    onLocationNotFiltered(context, location);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.connectors.spi.IFilteredOutboundConnector#onLocationNotFiltered
-     * (com.sitewhere.spi.device.event.IDeviceEventContext,
-     * com.sitewhere.spi.device.event.IDeviceLocation)
-     */
-    @Override
-    public void onLocationNotFiltered(IDeviceEventContext context, IDeviceLocation location) throws SiteWhereException {
-    }
-
-    /*
-     * @see
-     * com.sitewhere.connectors.OutboundConnector#onAlert(com.sitewhere.spi.device.
-     * event.IDeviceEventContext, com.sitewhere.spi.device.event.IDeviceAlert)
-     */
-    @Override
-    public final void onAlert(IDeviceEventContext context, IDeviceAlert alert) throws SiteWhereException {
-	if (!isFiltered(context, alert)) {
-	    onAlertNotFiltered(context, alert);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.connectors.spi.IFilteredOutboundConnector#onAlertNotFiltered(
-     * com.sitewhere.spi.device.event.IDeviceEventContext,
-     * com.sitewhere.spi.device.event.IDeviceAlert)
-     */
-    @Override
-    public void onAlertNotFiltered(IDeviceEventContext context, IDeviceAlert alert) throws SiteWhereException {
-    }
-
-    /*
-     * @see
-     * com.sitewhere.connectors.OutboundConnector#onStateChange(com.sitewhere.spi.
-     * device.event.IDeviceEventContext,
-     * com.sitewhere.spi.device.event.IDeviceStateChange)
-     */
-    @Override
-    public final void onStateChange(IDeviceEventContext context, IDeviceStateChange state) throws SiteWhereException {
-	if (!isFiltered(context, state)) {
-	    onStateChangeNotFiltered(context, state);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.connectors.spi.IFilteredOutboundConnector#
-     * onStateChangeNotFiltered(com.sitewhere.spi.device.event.IDeviceEventContext,
-     * com.sitewhere.spi.device.event.IDeviceStateChange)
-     */
-    @Override
-    public void onStateChangeNotFiltered(IDeviceEventContext context, IDeviceStateChange state)
-	    throws SiteWhereException {
-    }
-
-    /*
-     * @see
-     * com.sitewhere.connectors.OutboundConnector#onCommandInvocation(com.sitewhere.
-     * spi.device.event.IDeviceEventContext,
-     * com.sitewhere.spi.device.event.IDeviceCommandInvocation)
-     */
-    @Override
-    public final void onCommandInvocation(IDeviceEventContext context, IDeviceCommandInvocation invocation)
-	    throws SiteWhereException {
-	if (!isFiltered(context, invocation)) {
-	    onCommandInvocationNotFiltered(context, invocation);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.connectors.spi.IFilteredOutboundConnector#
-     * onCommandInvocationNotFiltered(com.sitewhere.spi.device.event.
-     * IDeviceEventContext, com.sitewhere.spi.device.event.IDeviceCommandInvocation)
-     */
-    @Override
-    public void onCommandInvocationNotFiltered(IDeviceEventContext context, IDeviceCommandInvocation invocation)
-	    throws SiteWhereException {
-    }
-
-    /*
-     * @see
-     * com.sitewhere.connectors.OutboundConnector#onCommandResponse(com.sitewhere.
-     * spi.device.event.IDeviceEventContext,
-     * com.sitewhere.spi.device.event.IDeviceCommandResponse)
-     */
-    @Override
-    public final void onCommandResponse(IDeviceEventContext context, IDeviceCommandResponse response)
-	    throws SiteWhereException {
-	if (!isFiltered(context, response)) {
-	    onCommandResponseNotFiltered(context, response);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.connectors.spi.IFilteredOutboundConnector#
-     * onCommandResponseNotFiltered(com.sitewhere.spi.device.event.
-     * IDeviceEventContext, com.sitewhere.spi.device.event.IDeviceCommandResponse)
-     */
-    @Override
-    public void onCommandResponseNotFiltered(IDeviceEventContext context, IDeviceCommandResponse response)
-	    throws SiteWhereException {
+	processFilteredEventBatch(notFiltered);
     }
 
     /**
      * Indicates if an event is filtered.
      * 
-     * @param context
-     * @param event
+     * @param payload
      * @return
      * @throws SiteWhereException
      */
-    protected boolean isFiltered(IDeviceEventContext context, IDeviceEvent event) throws SiteWhereException {
+    protected boolean isFiltered(IEnrichedEventPayload payload) throws SiteWhereException {
 	for (IDeviceEventFilter filter : filters) {
-	    if (filter.isFiltered(context, event)) {
+	    if (filter.isFiltered(payload.getEventContext(), payload.getEvent())) {
 		return true;
 	    }
 	}

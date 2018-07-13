@@ -8,8 +8,13 @@
 package com.sitewhere.connectors.kafka;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -17,6 +22,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.clients.consumer.OffsetCommitCallback;
 import org.apache.kafka.common.TopicPartition;
 
 import com.sitewhere.common.MarshalUtils;
@@ -24,18 +31,11 @@ import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GEnrichedEventPayload;
 import com.sitewhere.grpc.model.converter.KafkaModelConverter;
 import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
-import com.sitewhere.microservice.kafka.DirectKafkaConsumer;
+import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.rest.model.microservice.kafka.payload.EnrichedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.event.IDeviceAlert;
-import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
-import com.sitewhere.spi.device.event.IDeviceCommandResponse;
-import com.sitewhere.spi.device.event.IDeviceEvent;
-import com.sitewhere.spi.device.event.IDeviceEventContext;
-import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurement;
-import com.sitewhere.spi.device.event.IDeviceStateChange;
+import com.sitewhere.spi.microservice.kafka.payload.IEnrichedEventPayload;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
@@ -44,16 +44,28 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public class KafkaOutboundConnectorHost extends DirectKafkaConsumer {
+public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
 
     /** Consumer id */
     private static String CONSUMER_ID = UUID.randomUUID().toString();
 
+    /** Max number of Kafka commits that may be queued */
+    private static final int MAX_COMMIT_QUEUE_SIZE = 100;
+
     /** Get wrapped outbound connector implementation */
     private IOutboundConnector outboundConnector;
 
-    /** Executor */
-    private ExecutorService executor;
+    /** Last partition offsets */
+    private ConcurrentHashMap<TopicPartition, Long> partitionOffsets = new ConcurrentHashMap<>();
+
+    /** Queue of commits to be processed */
+    private BlockingQueue<TopicPartitionWithOffset> commitQueue = new ArrayBlockingQueue<>(MAX_COMMIT_QUEUE_SIZE);
+
+    /** Commit processor executor */
+    private ExecutorService commitProcessor;
+
+    /** Batch processors executor */
+    private ExecutorService batchProcessors;
 
     public KafkaOutboundConnectorHost(IOutboundConnector outboundConnector) {
 	this.outboundConnector = outboundConnector;
@@ -111,8 +123,9 @@ public class KafkaOutboundConnectorHost extends DirectKafkaConsumer {
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.start(monitor);
 	startNestedComponent(getOutboundConnector(), monitor, true);
-	executor = Executors.newFixedThreadPool(getOutboundConnector().getNumProcessingThreads(),
+	batchProcessors = Executors.newFixedThreadPool(getOutboundConnector().getNumProcessingThreads(),
 		new EventPayloadProcessorThreadFactory());
+	commitProcessor = Executors.newSingleThreadExecutor();
     }
 
     /*
@@ -124,12 +137,20 @@ public class KafkaOutboundConnectorHost extends DirectKafkaConsumer {
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.stop(monitor);
-	if (executor != null) {
-	    executor.shutdown();
+	if (batchProcessors != null) {
+	    batchProcessors.shutdown();
 	    try {
-		executor.awaitTermination(10, TimeUnit.SECONDS);
+		batchProcessors.awaitTermination(10, TimeUnit.SECONDS);
 	    } catch (InterruptedException e) {
-		getLogger().error("Outbound connector host did not terminate within timout period.");
+		getLogger().error("Batch processors for connector did not terminate within timout period.");
+	    }
+	}
+	if (commitProcessor != null) {
+	    commitProcessor.shutdown();
+	    try {
+		commitProcessor.awaitTermination(10, TimeUnit.SECONDS);
+	    } catch (InterruptedException e) {
+		getLogger().error("Commit processor for connector did not terminate within timout period.");
 	    }
 	}
 	stopNestedComponent(getOutboundConnector(), monitor);
@@ -137,27 +158,80 @@ public class KafkaOutboundConnectorHost extends DirectKafkaConsumer {
 
     /*
      * @see
-     * com.sitewhere.microservice.kafka.DirectKafkaConsumer#attemptToProcess(org.
+     * com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#process(org.
      * apache.kafka.common.TopicPartition, java.util.List)
      */
     @Override
-    public void attemptToProcess(TopicPartition topicPartition, List<ConsumerRecord<String, byte[]>> records)
-	    throws SiteWhereException {
-	for (ConsumerRecord<String, byte[]> record : records) {
-	    received(record.key(), record.value());
+    public void process(TopicPartition topicPartition, List<ConsumerRecord<String, byte[]>> records) {
+	if (records.size() > 0) {
+	    batchProcessors.execute(new TopicBatchProcessor(topicPartition, records));
 	}
     }
 
-    public void received(String key, byte[] message) throws SiteWhereException {
-	executor.execute(new EventPayloadProcessor(message));
+    /**
+     * Commit partition offset if it's greater than previous commits.
+     * 
+     * @param topicPartition
+     * @param offset
+     */
+    protected synchronized void commit(TopicPartition topicPartition, long newOffset) {
+	Long existing = getPartitionOffsets().get(topicPartition);
+	if ((existing != null) && (newOffset < existing)) {
+	    return;
+	}
+
+	// Store new offset.
+	getPartitionOffsets().put(topicPartition, newOffset);
+
+	TopicPartitionWithOffset entry = new TopicPartitionWithOffset();
+	entry.setTopicPartition(topicPartition);
+	entry.setOffset(newOffset);
+	getCommitQueue().offer(entry);
     }
 
-    public IOutboundConnector getOutboundConnector() {
+    protected IOutboundConnector getOutboundConnector() {
 	return outboundConnector;
     }
 
-    public void setOutboundConnector(IOutboundConnector outboundConnector) {
-	this.outboundConnector = outboundConnector;
+    protected ConcurrentHashMap<TopicPartition, Long> getPartitionOffsets() {
+	return partitionOffsets;
+    }
+
+    protected BlockingQueue<TopicPartitionWithOffset> getCommitQueue() {
+	return commitQueue;
+    }
+
+    /**
+     * Process Kafka commits in a single thread.
+     * 
+     * @author Derek
+     */
+    protected class CommitProcessor implements Runnable {
+
+	@Override
+	public void run() {
+	    while (true) {
+		try {
+		    TopicPartitionWithOffset entry = getCommitQueue().take();
+
+		    // Prepare new offset information.
+		    OffsetAndMetadata offset = new OffsetAndMetadata(entry.getOffset());
+		    Map<TopicPartition, OffsetAndMetadata> update = new HashMap<>();
+		    update.put(entry.getTopicPartition(), offset);
+
+		    // Send new offset information.
+		    getConsumer().commitAsync(update, new OffsetCommitCallback() {
+			public void onComplete(Map<TopicPartition, OffsetAndMetadata> offsets, Exception e) {
+			    if (e != null) {
+				getLogger().error("Commit failed for offsets " + offsets, e);
+			    }
+			}
+		    });
+		} catch (Throwable t) {
+		    getLogger().error("Unhandled exception in commit processor.", t);
+		}
+	    }
+	}
     }
 
     /**
@@ -166,14 +240,18 @@ public class KafkaOutboundConnectorHost extends DirectKafkaConsumer {
      * 
      * @author Derek
      */
-    protected class EventPayloadProcessor extends SystemUserRunnable {
+    protected class TopicBatchProcessor extends SystemUserRunnable {
 
-	/** Encoded event payload */
-	private byte[] encoded;
+	/** Partition */
+	private TopicPartition topicPartition;
 
-	public EventPayloadProcessor(byte[] encoded) {
+	/** Records to process */
+	private List<ConsumerRecord<String, byte[]>> records;
+
+	public TopicBatchProcessor(TopicPartition topicPartition, List<ConsumerRecord<String, byte[]>> records) {
 	    super(getTenantEngine().getMicroservice(), getTenantEngine().getTenant());
-	    this.encoded = encoded;
+	    this.topicPartition = topicPartition;
+	    this.records = records;
 	}
 
 	/*
@@ -181,59 +259,80 @@ public class KafkaOutboundConnectorHost extends DirectKafkaConsumer {
 	 */
 	@Override
 	public void runAsSystemUser() throws SiteWhereException {
-	    try {
-		GEnrichedEventPayload grpc = KafkaModelMarshaler.parseEnrichedEventPayloadMessage(encoded);
-		EnrichedEventPayload payload = KafkaModelConverter.asApiEnrichedEventPayload(grpc);
-		if (getLogger().isDebugEnabled()) {
-		    getLogger().debug(
-			    "Received enriched event payload:\n\n" + MarshalUtils.marshalJsonAsPrettyString(payload));
+	    List<IEnrichedEventPayload> decoded = new ArrayList<>();
+	    long offset = 0;
+	    for (ConsumerRecord<String, byte[]> record : getRecords()) {
+		try {
+		    GEnrichedEventPayload grpc = KafkaModelMarshaler.parseEnrichedEventPayloadMessage(record.value());
+		    EnrichedEventPayload payload = KafkaModelConverter.asApiEnrichedEventPayload(grpc);
+		    if (getLogger().isDebugEnabled()) {
+			getLogger().debug("Received enriched event payload:\n\n"
+				+ MarshalUtils.marshalJsonAsPrettyString(payload));
+		    }
+		    decoded.add(payload);
+		    offset = record.offset();
+		} catch (SiteWhereException e) {
+		    getLogger().error("Unable to parse outbound connector event payload.", e);
+		} catch (Throwable e) {
+		    getLogger().error("Unhandled exception parsing connector event payload.", e);
 		}
-		routePayload(payload);
+	    }
+	    try {
+		getOutboundConnector().processEventBatch(decoded);
+		commit(getTopicPartition(), offset);
 	    } catch (SiteWhereException e) {
-		getLogger().error("Unable to process outbound connector event payload.", e);
+		getOutboundConnector().handleFailedBatch(decoded, e);
+		getLogger().error("Unable to process outbound connector batch.", e);
 	    } catch (Throwable e) {
-		getLogger().error("Unhandled exception processing connector event payload.", e);
+		getOutboundConnector().handleFailedBatch(decoded, e);
+		getLogger().error("Unhandled exception processing connector batch.", e);
 	    }
 	}
 
-	/**
-	 * Route payload to correct processor method.
-	 * 
-	 * @param payload
-	 * @throws SiteWhereException
-	 */
-	protected void routePayload(EnrichedEventPayload payload) throws SiteWhereException {
-	    IDeviceEventContext context = payload.getEventContext();
-	    IDeviceEvent event = payload.getEvent();
-	    switch (event.getEventType()) {
-	    case Alert: {
-		getOutboundConnector().onAlert(context, (IDeviceAlert) event);
-		break;
-	    }
-	    case CommandInvocation: {
-		getOutboundConnector().onCommandInvocation(context, (IDeviceCommandInvocation) event);
-		break;
-	    }
-	    case CommandResponse: {
-		getOutboundConnector().onCommandResponse(context, (IDeviceCommandResponse) event);
-		break;
-	    }
-	    case Location: {
-		getOutboundConnector().onLocation(context, (IDeviceLocation) event);
-		break;
-	    }
-	    case Measurement: {
-		getOutboundConnector().onMeasurement(context, (IDeviceMeasurement) event);
-		break;
-	    }
-	    case StateChange: {
-		getOutboundConnector().onStateChange(context, (IDeviceStateChange) event);
-		break;
-	    }
-	    default: {
-		throw new SiteWhereException("Unknown event type. " + event.getEventType().name());
-	    }
-	    }
+	public TopicPartition getTopicPartition() {
+	    return topicPartition;
+	}
+
+	public void setTopicPartition(TopicPartition topicPartition) {
+	    this.topicPartition = topicPartition;
+	}
+
+	public List<ConsumerRecord<String, byte[]>> getRecords() {
+	    return records;
+	}
+
+	public void setRecords(List<ConsumerRecord<String, byte[]>> records) {
+	    this.records = records;
+	}
+    }
+
+    /**
+     * Wrapper for pointer to current offset in a partition.
+     * 
+     * @author Derek
+     */
+    private class TopicPartitionWithOffset {
+
+	/** Topic partition */
+	private TopicPartition topicPartition;
+
+	/** Topic offset */
+	private long offset;
+
+	public TopicPartition getTopicPartition() {
+	    return topicPartition;
+	}
+
+	public void setTopicPartition(TopicPartition topicPartition) {
+	    this.topicPartition = topicPartition;
+	}
+
+	public long getOffset() {
+	    return offset;
+	}
+
+	public void setOffset(long offset) {
+	    this.offset = offset;
 	}
     }
 

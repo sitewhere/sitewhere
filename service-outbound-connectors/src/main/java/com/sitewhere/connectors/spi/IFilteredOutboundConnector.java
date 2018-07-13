@@ -10,13 +10,7 @@ package com.sitewhere.connectors.spi;
 import java.util.List;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.event.IDeviceAlert;
-import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
-import com.sitewhere.spi.device.event.IDeviceCommandResponse;
-import com.sitewhere.spi.device.event.IDeviceEventContext;
-import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurement;
-import com.sitewhere.spi.device.event.IDeviceStateChange;
+import com.sitewhere.spi.microservice.kafka.payload.IEnrichedEventPayload;
 
 /**
  * Adds concept of filtering to outbound connectors.
@@ -33,59 +27,10 @@ public interface IFilteredOutboundConnector extends IOutboundConnector {
     public List<IDeviceEventFilter> getFilters();
 
     /**
-     * Called if measurement data was not filtered.
+     * Process a batch of event payloads after filters have been applied.
      * 
-     * @param context
-     * @param mx
+     * @param payloads
      * @throws SiteWhereException
      */
-    public void onMeasurementNotFiltered(IDeviceEventContext context, IDeviceMeasurement mx) throws SiteWhereException;
-
-    /**
-     * Called if location data was not filtered.
-     * 
-     * @param context
-     * @param location
-     * @throws SiteWhereException
-     */
-    public void onLocationNotFiltered(IDeviceEventContext context, IDeviceLocation location) throws SiteWhereException;
-
-    /**
-     * Called if alert data was not filtered.
-     * 
-     * @param context
-     * @param alert
-     * @throws SiteWhereException
-     */
-    public void onAlertNotFiltered(IDeviceEventContext context, IDeviceAlert alert) throws SiteWhereException;
-
-    /**
-     * Called if state change data was not filtered.
-     * 
-     * @param context
-     * @param state
-     * @throws SiteWhereException
-     */
-    public void onStateChangeNotFiltered(IDeviceEventContext context, IDeviceStateChange state)
-	    throws SiteWhereException;
-
-    /**
-     * Called if command invocation data was not filtered.
-     * 
-     * @param context
-     * @param invocation
-     * @throws SiteWhereException
-     */
-    public void onCommandInvocationNotFiltered(IDeviceEventContext context, IDeviceCommandInvocation invocation)
-	    throws SiteWhereException;
-
-    /**
-     * Called if command response data was not filtered.
-     * 
-     * @param context
-     * @param response
-     * @throws SiteWhereException
-     */
-    public void onCommandResponseNotFiltered(IDeviceEventContext context, IDeviceCommandResponse response)
-	    throws SiteWhereException;
+    public void processFilteredEventBatch(List<IEnrichedEventPayload> payloads) throws SiteWhereException;
 }

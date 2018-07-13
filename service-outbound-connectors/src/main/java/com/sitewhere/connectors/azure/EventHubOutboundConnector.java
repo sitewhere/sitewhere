@@ -26,7 +26,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.connectors.FilteredOutboundConnector;
+import com.sitewhere.connectors.SerialOutboundConnector;
 import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
@@ -44,7 +44,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
-public class EventHubOutboundEventProcessor extends FilteredOutboundConnector {
+public class EventHubOutboundConnector extends SerialOutboundConnector {
 
     /** SAS identity name */
     private String sasName;
@@ -143,55 +143,56 @@ public class EventHubOutboundEventProcessor extends FilteredOutboundConnector {
 
     /*
      * @see
-     * com.sitewhere.connectors.FilteredOutboundConnector#onMeasurementNotFiltered(
-     * com.sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.connectors.SerialOutboundConnector#onMeasurement(com.sitewhere.
+     * spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceMeasurement)
      */
     @Override
-    public void onMeasurementNotFiltered(IDeviceEventContext context, IDeviceMeasurement mx) throws SiteWhereException {
+    public void onMeasurement(IDeviceEventContext context, IDeviceMeasurement mx) throws SiteWhereException {
 	sendEvent(mx);
     }
 
     /*
      * @see
-     * com.sitewhere.outbound.FilteredOutboundEventProcessor#onLocationNotFiltered(
-     * com.sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.connectors.SerialOutboundConnector#onLocation(com.sitewhere.spi
+     * .device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceLocation)
      */
     @Override
-    public void onLocationNotFiltered(IDeviceEventContext context, IDeviceLocation location) throws SiteWhereException {
+    public void onLocation(IDeviceEventContext context, IDeviceLocation location) throws SiteWhereException {
 	sendEvent(location);
     }
 
     /*
      * @see
-     * com.sitewhere.outbound.FilteredOutboundEventProcessor#onAlertNotFiltered(com.
-     * sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.connectors.SerialOutboundConnector#onAlert(com.sitewhere.spi.
+     * device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceAlert)
      */
     @Override
-    public void onAlertNotFiltered(IDeviceEventContext context, IDeviceAlert alert) throws SiteWhereException {
+    public void onAlert(IDeviceEventContext context, IDeviceAlert alert) throws SiteWhereException {
 	sendEvent(alert);
     }
 
     /*
-     * @see com.sitewhere.outbound.FilteredOutboundEventProcessor#
-     * onCommandInvocationNotFiltered(com.sitewhere.spi.device.event.
-     * IDeviceEventContext, com.sitewhere.spi.device.event.IDeviceCommandInvocation)
+     * @see
+     * com.sitewhere.connectors.SerialOutboundConnector#onCommandInvocation(com.
+     * sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceCommandInvocation)
      */
     @Override
-    public void onCommandInvocationNotFiltered(IDeviceEventContext context, IDeviceCommandInvocation invocation)
+    public void onCommandInvocation(IDeviceEventContext context, IDeviceCommandInvocation invocation)
 	    throws SiteWhereException {
 	sendEvent(invocation);
     }
 
     /*
-     * @see com.sitewhere.outbound.FilteredOutboundEventProcessor#
-     * onCommandResponseNotFiltered(com.sitewhere.spi.device.event.
-     * IDeviceEventContext, com.sitewhere.spi.device.event.IDeviceCommandResponse)
+     * @see com.sitewhere.connectors.SerialOutboundConnector#onCommandResponse(com.
+     * sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceCommandResponse)
      */
     @Override
-    public void onCommandResponseNotFiltered(IDeviceEventContext context, IDeviceCommandResponse response)
+    public void onCommandResponse(IDeviceEventContext context, IDeviceCommandResponse response)
 	    throws SiteWhereException {
 	sendEvent(response);
     }

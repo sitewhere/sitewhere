@@ -29,19 +29,19 @@ import com.sitewhere.configuration.parser.IOutboundConnectorsParser.Filters;
 import com.sitewhere.configuration.parser.IOutboundConnectorsParser.Multicasters;
 import com.sitewhere.configuration.parser.IOutboundConnectorsParser.RouteBuilders;
 import com.sitewhere.connectors.OutboundConnectorsManager;
-import com.sitewhere.connectors.aws.sqs.SqsOutboundEventProcessor;
-import com.sitewhere.connectors.azure.EventHubOutboundEventProcessor;
-import com.sitewhere.connectors.dweetio.DweetIoEventProcessor;
+import com.sitewhere.connectors.aws.sqs.SqsOutboundConnector;
+import com.sitewhere.connectors.azure.EventHubOutboundConnector;
+import com.sitewhere.connectors.dweetio.DweetIoOutboundConnector;
 import com.sitewhere.connectors.filter.AreaFilter;
 import com.sitewhere.connectors.filter.DeviceTypeFilter;
 import com.sitewhere.connectors.filter.FilterOperation;
-import com.sitewhere.connectors.groovy.GroovyEventProcessor;
+import com.sitewhere.connectors.groovy.GroovyOutboundConnector;
 import com.sitewhere.connectors.groovy.filter.GroovyFilter;
 import com.sitewhere.connectors.groovy.multicast.AllWithSpecificationStringMulticaster;
 import com.sitewhere.connectors.groovy.routing.GroovyRouteBuilder;
-import com.sitewhere.connectors.initialstate.InitialStateEventProcessor;
+import com.sitewhere.connectors.initialstate.InitialStateOutboundConnector;
 import com.sitewhere.connectors.mqtt.MqttOutboundConnector;
-import com.sitewhere.connectors.rabbitmq.RabbitMqOutboundEventProcessor;
+import com.sitewhere.connectors.rabbitmq.RabbitMqOutboundConnector;
 import com.sitewhere.connectors.solr.SolrOutboundConnector;
 import com.sitewhere.spi.microservice.spring.OutboundConnectorsBeans;
 
@@ -247,7 +247,7 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
      */
     protected AbstractBeanDefinition parseRabbitMqConnector(Element element, ParserContext context) {
 	BeanDefinitionBuilder processor = BeanDefinitionBuilder
-		.rootBeanDefinition(RabbitMqOutboundEventProcessor.class);
+		.rootBeanDefinition(RabbitMqOutboundConnector.class);
 
 	// Parse common outbound connector attributes.
 	parseCommonOutboundConnectorAttributes(element, processor);
@@ -329,7 +329,7 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
      */
     protected AbstractBeanDefinition parseAzureEventHubConnector(Element element, ParserContext context) {
 	BeanDefinitionBuilder processor = BeanDefinitionBuilder
-		.rootBeanDefinition(EventHubOutboundEventProcessor.class);
+		.rootBeanDefinition(EventHubOutboundConnector.class);
 
 	// Parse common outbound connector attributes.
 	parseCommonOutboundConnectorAttributes(element, processor);
@@ -372,7 +372,7 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
      * @return
      */
     protected AbstractBeanDefinition parseAmazonSqsConnector(Element element, ParserContext context) {
-	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(SqsOutboundEventProcessor.class);
+	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(SqsOutboundConnector.class);
 
 	// Parse common outbound connector attributes.
 	parseCommonOutboundConnectorAttributes(element, processor);
@@ -409,7 +409,7 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
      * @return
      */
     protected AbstractBeanDefinition parseInitialStateConnector(Element element, ParserContext context) {
-	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(InitialStateEventProcessor.class);
+	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(InitialStateOutboundConnector.class);
 
 	// Parse common outbound connector attributes.
 	parseCommonOutboundConnectorAttributes(element, processor);
@@ -434,7 +434,7 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
      * @return
      */
     protected AbstractBeanDefinition parseDweetIoConnector(Element element, ParserContext context) {
-	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(DweetIoEventProcessor.class);
+	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(DweetIoOutboundConnector.class);
 
 	// Parse common outbound connector attributes.
 	parseCommonOutboundConnectorAttributes(element, processor);
@@ -453,7 +453,7 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
      * @return
      */
     protected AbstractBeanDefinition parseGroovyConnector(Element element, ParserContext context) {
-	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(GroovyEventProcessor.class);
+	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(GroovyOutboundConnector.class);
 
 	// Parse common outbound connector attributes.
 	parseCommonOutboundConnectorAttributes(element, processor);

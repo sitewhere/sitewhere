@@ -7,16 +7,12 @@
  */
 package com.sitewhere.connectors.spi;
 
+import java.util.List;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.event.IDeviceAlert;
-import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
-import com.sitewhere.spi.device.event.IDeviceCommandResponse;
-import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
-import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurement;
-import com.sitewhere.spi.device.event.IDeviceStateChange;
+import com.sitewhere.spi.microservice.kafka.payload.IEnrichedEventPayload;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
@@ -41,60 +37,21 @@ public interface IOutboundConnector extends ITenantEngineLifecycleComponent {
     public int getNumProcessingThreads();
 
     /**
-     * Executes processing code for a device measurement event.
+     * Process a batch of events.
      * 
-     * @param context
-     * @param measurement
+     * @param payloads
      * @throws SiteWhereException
      */
-    public void onMeasurement(IDeviceEventContext context, IDeviceMeasurement measurement) throws SiteWhereException;
+    public void processEventBatch(List<IEnrichedEventPayload> payloads) throws SiteWhereException;
 
     /**
-     * Executes processing code for a device location event.
+     * Handle a batch of events that could not be processed.
      * 
-     * @param context
-     * @param location
+     * @param payloads
+     * @param failReason
      * @throws SiteWhereException
      */
-    public void onLocation(IDeviceEventContext context, IDeviceLocation location) throws SiteWhereException;
-
-    /**
-     * Executes processing code for a device alert event.
-     * 
-     * @param context
-     * @param alert
-     * @throws SiteWhereException
-     */
-    public void onAlert(IDeviceEventContext context, IDeviceAlert alert) throws SiteWhereException;
-
-    /**
-     * Executes processing code for a device command invocation event.
-     * 
-     * @param context
-     * @param invocation
-     * @throws SiteWhereException
-     */
-    public void onCommandInvocation(IDeviceEventContext context, IDeviceCommandInvocation invocation)
-	    throws SiteWhereException;
-
-    /**
-     * Executes processing code for a device command response event.
-     * 
-     * @param context
-     * @param response
-     * @throws SiteWhereException
-     */
-    public void onCommandResponse(IDeviceEventContext context, IDeviceCommandResponse response)
-	    throws SiteWhereException;
-
-    /**
-     * Executes processing code for a device state change event.
-     * 
-     * @param context
-     * @param state
-     * @throws SiteWhereException
-     */
-    public void onStateChange(IDeviceEventContext context, IDeviceStateChange state) throws SiteWhereException;
+    public void handleFailedBatch(List<IEnrichedEventPayload> payloads, Throwable failReason) throws SiteWhereException;
 
     /**
      * Get device management API.

@@ -15,7 +15,7 @@ import com.amazonaws.services.sqs.AmazonSQSClient;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.connectors.FilteredOutboundConnector;
+import com.sitewhere.connectors.SerialOutboundConnector;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -28,11 +28,11 @@ import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
- * Outbound event processor that forwards events to Amazon SQS.
+ * Outbound connector that forwards events to Amazon SQS.
  * 
  * @author Derek
  */
-public class SqsOutboundEventProcessor extends FilteredOutboundConnector {
+public class SqsOutboundConnector extends SerialOutboundConnector {
 
     /** SQS client */
     private AmazonSQSClient sqs;
@@ -76,66 +76,67 @@ public class SqsOutboundEventProcessor extends FilteredOutboundConnector {
 
     /*
      * @see
-     * com.sitewhere.connectors.FilteredOutboundConnector#onMeasurementNotFiltered(
-     * com.sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.connectors.SerialOutboundConnector#onMeasurement(com.sitewhere.
+     * spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceMeasurement)
      */
     @Override
-    public void onMeasurementNotFiltered(IDeviceEventContext context, IDeviceMeasurement mx) throws SiteWhereException {
+    public void onMeasurement(IDeviceEventContext context, IDeviceMeasurement mx) throws SiteWhereException {
 	sendSqsMessage(mx);
     }
 
     /*
      * @see
-     * com.sitewhere.outbound.FilteredOutboundEventProcessor#onLocationNotFiltered(
-     * com.sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.connectors.SerialOutboundConnector#onLocation(com.sitewhere.spi
+     * .device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceLocation)
      */
     @Override
-    public void onLocationNotFiltered(IDeviceEventContext context, IDeviceLocation location) throws SiteWhereException {
+    public void onLocation(IDeviceEventContext context, IDeviceLocation location) throws SiteWhereException {
 	sendSqsMessage(location);
     }
 
     /*
      * @see
-     * com.sitewhere.outbound.FilteredOutboundEventProcessor#onAlertNotFiltered(com.
-     * sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.connectors.SerialOutboundConnector#onAlert(com.sitewhere.spi.
+     * device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceAlert)
      */
     @Override
-    public void onAlertNotFiltered(IDeviceEventContext context, IDeviceAlert alert) throws SiteWhereException {
+    public void onAlert(IDeviceEventContext context, IDeviceAlert alert) throws SiteWhereException {
 	sendSqsMessage(alert);
     }
 
     /*
-     * @see com.sitewhere.outbound.FilteredOutboundEventProcessor#
-     * onStateChangeNotFiltered(com.sitewhere.spi.device.event.IDeviceEventContext,
+     * @see
+     * com.sitewhere.connectors.SerialOutboundConnector#onStateChange(com.sitewhere.
+     * spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceStateChange)
      */
     @Override
-    public void onStateChangeNotFiltered(IDeviceEventContext context, IDeviceStateChange state)
-	    throws SiteWhereException {
+    public void onStateChange(IDeviceEventContext context, IDeviceStateChange state) throws SiteWhereException {
 	sendSqsMessage(state);
     }
 
     /*
-     * @see com.sitewhere.outbound.FilteredOutboundEventProcessor#
-     * onCommandInvocationNotFiltered(com.sitewhere.spi.device.event.
-     * IDeviceEventContext, com.sitewhere.spi.device.event.IDeviceCommandInvocation)
+     * @see
+     * com.sitewhere.connectors.SerialOutboundConnector#onCommandInvocation(com.
+     * sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceCommandInvocation)
      */
     @Override
-    public void onCommandInvocationNotFiltered(IDeviceEventContext context, IDeviceCommandInvocation invocation)
+    public void onCommandInvocation(IDeviceEventContext context, IDeviceCommandInvocation invocation)
 	    throws SiteWhereException {
 	sendSqsMessage(invocation);
     }
 
     /*
-     * @see com.sitewhere.outbound.FilteredOutboundEventProcessor#
-     * onCommandResponseNotFiltered(com.sitewhere.spi.device.event.
-     * IDeviceEventContext, com.sitewhere.spi.device.event.IDeviceCommandResponse)
+     * @see com.sitewhere.connectors.SerialOutboundConnector#onCommandResponse(com.
+     * sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceCommandResponse)
      */
     @Override
-    public void onCommandResponseNotFiltered(IDeviceEventContext context, IDeviceCommandResponse response)
+    public void onCommandResponse(IDeviceEventContext context, IDeviceCommandResponse response)
 	    throws SiteWhereException {
 	sendSqsMessage(response);
     }

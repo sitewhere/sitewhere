@@ -7,20 +7,16 @@
  */
 package com.sitewhere.connectors;
 
+import java.util.List;
+
 import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsMicroservice;
 import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.event.IDeviceAlert;
-import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
-import com.sitewhere.spi.device.event.IDeviceCommandResponse;
-import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
-import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurement;
-import com.sitewhere.spi.device.event.IDeviceStateChange;
+import com.sitewhere.spi.microservice.kafka.payload.IEnrichedEventPayload;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -41,66 +37,6 @@ public abstract class OutboundConnector extends TenantEngineLifecycleComponent i
 
     public OutboundConnector() {
 	super(LifecycleComponentType.OutboundConnector);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.connectors.spi.IOutboundConnector#onMeasurement(com.sitewhere.
-     * spi.device.event.IDeviceEventContext,
-     * com.sitewhere.spi.device.event.IDeviceMeasurement)
-     */
-    @Override
-    public void onMeasurement(IDeviceEventContext context, IDeviceMeasurement measurements) throws SiteWhereException {
-    }
-
-    /*
-     * @see
-     * com.sitewhere.connectors.spi.IOutboundConnector#onLocation(com.sitewhere.spi.
-     * device.event.IDeviceEventContext,
-     * com.sitewhere.spi.device.event.IDeviceLocation)
-     */
-    @Override
-    public void onLocation(IDeviceEventContext context, IDeviceLocation location) throws SiteWhereException {
-    }
-
-    /*
-     * @see
-     * com.sitewhere.connectors.spi.IOutboundConnector#onAlert(com.sitewhere.spi.
-     * device.event.IDeviceEventContext,
-     * com.sitewhere.spi.device.event.IDeviceAlert)
-     */
-    @Override
-    public void onAlert(IDeviceEventContext context, IDeviceAlert alert) throws SiteWhereException {
-    }
-
-    /*
-     * @see com.sitewhere.connectors.spi.IOutboundConnector#onCommandInvocation(com.
-     * sitewhere.spi.device.event.IDeviceEventContext,
-     * com.sitewhere.spi.device.event.IDeviceCommandInvocation)
-     */
-    @Override
-    public void onCommandInvocation(IDeviceEventContext context, IDeviceCommandInvocation invocation)
-	    throws SiteWhereException {
-    }
-
-    /*
-     * @see com.sitewhere.connectors.spi.IOutboundConnector#onCommandResponse(com.
-     * sitewhere.spi.device.event.IDeviceEventContext,
-     * com.sitewhere.spi.device.event.IDeviceCommandResponse)
-     */
-    @Override
-    public void onCommandResponse(IDeviceEventContext context, IDeviceCommandResponse response)
-	    throws SiteWhereException {
-    }
-
-    /*
-     * @see
-     * com.sitewhere.connectors.spi.IOutboundConnector#onStateChange(com.sitewhere.
-     * spi.device.event.IDeviceEventContext,
-     * com.sitewhere.spi.device.event.IDeviceStateChange)
-     */
-    @Override
-    public void onStateChange(IDeviceEventContext context, IDeviceStateChange state) throws SiteWhereException {
     }
 
     /*
@@ -126,6 +62,16 @@ public abstract class OutboundConnector extends TenantEngineLifecycleComponent i
 
     public void setNumProcessingThreads(int numProcessingThreads) {
 	this.numProcessingThreads = numProcessingThreads;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.connectors.spi.IOutboundConnector#handleFailedBatch(java.util.
+     * List, java.lang.Throwable)
+     */
+    @Override
+    public void handleFailedBatch(List<IEnrichedEventPayload> payloads, Throwable failReason)
+	    throws SiteWhereException {
     }
 
     /*
