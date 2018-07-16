@@ -8,12 +8,9 @@
 package com.sitewhere.connectors.kafka;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,20 +46,11 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
     /** Consumer id */
     private static String CONSUMER_ID = UUID.randomUUID().toString();
 
-    /** Max number of Kafka commits that may be queued */
-    private static final int MAX_COMMIT_QUEUE_SIZE = 100;
-
     /** Get wrapped outbound connector implementation */
     private IOutboundConnector outboundConnector;
 
     /** Last partition offsets */
     private ConcurrentHashMap<TopicPartition, Long> partitionOffsets = new ConcurrentHashMap<>();
-
-    /** Queue of commits to be processed */
-    private BlockingQueue<TopicPartitionWithOffset> commitQueue = new ArrayBlockingQueue<>(MAX_COMMIT_QUEUE_SIZE);
-
-    /** Commit processor executor */
-    private ExecutorService commitProcessor;
 
     /** Batch processors executor */
     private ExecutorService batchProcessors;
@@ -125,7 +113,6 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
 	startNestedComponent(getOutboundConnector(), monitor, true);
 	batchProcessors = Executors.newFixedThreadPool(getOutboundConnector().getNumProcessingThreads(),
 		new EventPayloadProcessorThreadFactory());
-	commitProcessor = Executors.newSingleThreadExecutor();
     }
 
     /*
@@ -145,14 +132,6 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
 		getLogger().error("Batch processors for connector did not terminate within timout period.");
 	    }
 	}
-	if (commitProcessor != null) {
-	    commitProcessor.shutdown();
-	    try {
-		commitProcessor.awaitTermination(10, TimeUnit.SECONDS);
-	    } catch (InterruptedException e) {
-		getLogger().error("Commit processor for connector did not terminate within timout period.");
-	    }
-	}
 	stopNestedComponent(getOutboundConnector(), monitor);
     }
 
@@ -165,28 +144,16 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
     public void process(TopicPartition topicPartition, List<ConsumerRecord<String, byte[]>> records) {
 	if (records.size() > 0) {
 	    batchProcessors.execute(new TopicBatchProcessor(topicPartition, records));
+
+	    // Send new offset information.
+	    getConsumer().commitAsync(new OffsetCommitCallback() {
+		public void onComplete(Map<TopicPartition, OffsetAndMetadata> offsets, Exception e) {
+		    if (e != null) {
+			getLogger().error("Commit failed for offsets " + offsets, e);
+		    }
+		}
+	    });
 	}
-    }
-
-    /**
-     * Commit partition offset if it's greater than previous commits.
-     * 
-     * @param topicPartition
-     * @param offset
-     */
-    protected synchronized void commit(TopicPartition topicPartition, long newOffset) {
-	Long existing = getPartitionOffsets().get(topicPartition);
-	if ((existing != null) && (newOffset < existing)) {
-	    return;
-	}
-
-	// Store new offset.
-	getPartitionOffsets().put(topicPartition, newOffset);
-
-	TopicPartitionWithOffset entry = new TopicPartitionWithOffset();
-	entry.setTopicPartition(topicPartition);
-	entry.setOffset(newOffset);
-	getCommitQueue().offer(entry);
     }
 
     protected IOutboundConnector getOutboundConnector() {
@@ -195,43 +162,6 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
 
     protected ConcurrentHashMap<TopicPartition, Long> getPartitionOffsets() {
 	return partitionOffsets;
-    }
-
-    protected BlockingQueue<TopicPartitionWithOffset> getCommitQueue() {
-	return commitQueue;
-    }
-
-    /**
-     * Process Kafka commits in a single thread.
-     * 
-     * @author Derek
-     */
-    protected class CommitProcessor implements Runnable {
-
-	@Override
-	public void run() {
-	    while (true) {
-		try {
-		    TopicPartitionWithOffset entry = getCommitQueue().take();
-
-		    // Prepare new offset information.
-		    OffsetAndMetadata offset = new OffsetAndMetadata(entry.getOffset());
-		    Map<TopicPartition, OffsetAndMetadata> update = new HashMap<>();
-		    update.put(entry.getTopicPartition(), offset);
-
-		    // Send new offset information.
-		    getConsumer().commitAsync(update, new OffsetCommitCallback() {
-			public void onComplete(Map<TopicPartition, OffsetAndMetadata> offsets, Exception e) {
-			    if (e != null) {
-				getLogger().error("Commit failed for offsets " + offsets, e);
-			    }
-			}
-		    });
-		} catch (Throwable t) {
-		    getLogger().error("Unhandled exception in commit processor.", t);
-		}
-	    }
-	}
     }
 
     /**
@@ -260,7 +190,6 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
 	@Override
 	public void runAsSystemUser() throws SiteWhereException {
 	    List<IEnrichedEventPayload> decoded = new ArrayList<>();
-	    long offset = 0;
 	    for (ConsumerRecord<String, byte[]> record : getRecords()) {
 		try {
 		    GEnrichedEventPayload grpc = KafkaModelMarshaler.parseEnrichedEventPayloadMessage(record.value());
@@ -270,7 +199,6 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
 				+ MarshalUtils.marshalJsonAsPrettyString(payload));
 		    }
 		    decoded.add(payload);
-		    offset = record.offset();
 		} catch (SiteWhereException e) {
 		    getLogger().error("Unable to parse outbound connector event payload.", e);
 		} catch (Throwable e) {
@@ -279,7 +207,6 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
 	    }
 	    try {
 		getOutboundConnector().processEventBatch(decoded);
-		commit(getTopicPartition(), offset);
 	    } catch (SiteWhereException e) {
 		getOutboundConnector().handleFailedBatch(decoded, e);
 		getLogger().error("Unable to process outbound connector batch.", e);
@@ -303,36 +230,6 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
 
 	public void setRecords(List<ConsumerRecord<String, byte[]>> records) {
 	    this.records = records;
-	}
-    }
-
-    /**
-     * Wrapper for pointer to current offset in a partition.
-     * 
-     * @author Derek
-     */
-    private class TopicPartitionWithOffset {
-
-	/** Topic partition */
-	private TopicPartition topicPartition;
-
-	/** Topic offset */
-	private long offset;
-
-	public TopicPartition getTopicPartition() {
-	    return topicPartition;
-	}
-
-	public void setTopicPartition(TopicPartition topicPartition) {
-	    this.topicPartition = topicPartition;
-	}
-
-	public long getOffset() {
-	    return offset;
-	}
-
-	public void setOffset(long offset) {
-	    this.offset = offset;
 	}
     }
 
