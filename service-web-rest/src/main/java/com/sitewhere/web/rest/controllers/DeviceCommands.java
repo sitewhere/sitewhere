@@ -193,7 +193,7 @@ public class DeviceCommands extends RestControllerBase {
      * Delete an existing device command.
      * 
      * @param token
-     * @param force
+     * @param servletRequest
      * @return
      * @throws SiteWhereException
      */
@@ -201,10 +201,9 @@ public class DeviceCommands extends RestControllerBase {
     @ApiOperation(value = "Delete device command by unique token")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceCommand deleteDeviceCommand(@ApiParam(value = "Token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceCommand command = assertDeviceCommandByToken(token);
-	return getDeviceManagement().deleteDeviceCommand(command.getId(), force);
+	return getDeviceManagement().deleteDeviceCommand(command.getId());
     }
 
     /**

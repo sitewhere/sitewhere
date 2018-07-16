@@ -72,9 +72,8 @@ public interface ITenantManagement extends ILifecycleComponent {
      * Delete an existing tenant.
      * 
      * @param tenantId
-     * @param force
      * @return
      * @throws SiteWhereException
      */
-    public ITenant deleteTenant(UUID tenantId, boolean force) throws SiteWhereException;
+    public ITenant deleteTenant(UUID tenantId) throws SiteWhereException;
 }

@@ -77,15 +77,13 @@ public class ScheduleManagementDecorator extends TenantEngineLifecycleComponentD
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.scheduling.IScheduleManagement#deleteSchedule(java.lang
-     * .String, boolean)
+     * com.sitewhere.spi.scheduling.IScheduleManagement#deleteSchedule(java.lang.
+     * String)
      */
     @Override
-    public ISchedule deleteSchedule(String token, boolean force) throws SiteWhereException {
-	return getDelegate().deleteSchedule(token, force);
+    public ISchedule deleteSchedule(String token) throws SiteWhereException {
+	return getDelegate().deleteSchedule(token);
     }
 
     /*
@@ -136,14 +134,12 @@ public class ScheduleManagementDecorator extends TenantEngineLifecycleComponentD
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.scheduling.IScheduleManagement#deleteScheduledJob(java.
-     * lang.String , boolean)
+     * com.sitewhere.spi.scheduling.IScheduleManagement#deleteScheduledJob(java.lang
+     * .String)
      */
     @Override
-    public IScheduledJob deleteScheduledJob(String token, boolean force) throws SiteWhereException {
-	return getDelegate().deleteScheduledJob(token, force);
+    public IScheduledJob deleteScheduledJob(String token) throws SiteWhereException {
+	return getDelegate().deleteScheduledJob(token);
     }
 }

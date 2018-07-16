@@ -122,11 +122,10 @@ public class HBaseAssetManagement extends TenantEngineLifecycleComponent impleme
     }
 
     /*
-     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAssetType(java.util.UUID,
-     * boolean)
+     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAssetType(java.util.UUID)
      */
     @Override
-    public IAssetType deleteAssetType(UUID assetTypeId, boolean force) throws SiteWhereException {
+    public IAssetType deleteAssetType(UUID assetTypeId) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented yet for HBase asset managment.");
     }
 
@@ -177,11 +176,10 @@ public class HBaseAssetManagement extends TenantEngineLifecycleComponent impleme
     }
 
     /*
-     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAsset(java.util.UUID,
-     * boolean)
+     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAsset(java.util.UUID)
      */
     @Override
-    public IAsset deleteAsset(UUID assetId, boolean force) throws SiteWhereException {
+    public IAsset deleteAsset(UUID assetId) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented yet for HBase asset managment.");
     }
 

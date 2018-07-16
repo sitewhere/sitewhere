@@ -235,28 +235,24 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceTypes(boolean,
-     * com.sitewhere.spi.search.ISearchCriteria)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listDeviceTypes(com.sitewhere.spi.
+     * search.ISearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceType> listDeviceTypes(boolean includeDeleted, ISearchCriteria criteria)
-	    throws SiteWhereException {
+    public ISearchResults<IDeviceType> listDeviceTypes(ISearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> types = getMongoClient().getDeviceTypesCollection();
 	Document dbCriteria = new Document();
-	if (!includeDeleted) {
-	    MongoSiteWhereEntity.setDeleted(dbCriteria, false);
-	}
 	Document sort = new Document(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
 	return MongoPersistence.search(IDeviceType.class, types, dbCriteria, sort, criteria, LOOKUP);
     }
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceType(java.util.UUID,
-     * boolean)
+     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceType(java.util.UUID)
      */
     @Override
-    public IDeviceType deleteDeviceType(UUID id, boolean force) throws SiteWhereException {
+    public IDeviceType deleteDeviceType(UUID id) throws SiteWhereException {
 	Document existing = assertDeviceType(id);
 
 	// Verify that device type can be deleted.
@@ -264,15 +260,8 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	DeviceManagementPersistence.deviceTypeDeleteLogic(deviceType, this);
 
 	MongoCollection<Document> types = getMongoClient().getDeviceTypesCollection();
-	if (force) {
-	    MongoPersistence.delete(types, existing);
-	    return MongoDeviceType.fromDocument(existing);
-	} else {
-	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    Document query = new Document(MongoDeviceType.PROP_ID, id);
-	    MongoPersistence.update(types, query, existing);
-	    return MongoDeviceType.fromDocument(existing);
-	}
+	MongoPersistence.delete(types, existing);
+	return MongoDeviceType.fromDocument(existing);
     }
 
     /**
@@ -438,7 +427,6 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	if (criteria.getDeviceTypeId() != null) {
 	    dbCriteria.put(MongoDeviceCommand.PROP_DEVICE_TYPE_ID, criteria.getDeviceTypeId());
 	}
-	MongoSiteWhereEntity.setDeleted(dbCriteria, false);
 	Document sort = new Document(MongoDeviceCommand.PROP_NAME, 1);
 	return MongoPersistence.search(IDeviceCommand.class, commands, dbCriteria, sort, criteria, LOOKUP);
     }
@@ -446,21 +434,14 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     /*
      * @see
      * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceCommand(java.util.
-     * UUID, boolean)
+     * UUID)
      */
     @Override
-    public IDeviceCommand deleteDeviceCommand(UUID id, boolean force) throws SiteWhereException {
+    public IDeviceCommand deleteDeviceCommand(UUID id) throws SiteWhereException {
 	Document existing = assertDeviceCommand(id);
 	MongoCollection<Document> commands = getMongoClient().getDeviceCommandsCollection();
-	if (force) {
-	    MongoPersistence.delete(commands, existing);
-	    return MongoDeviceCommand.fromDocument(existing);
-	} else {
-	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    Document query = new Document(MongoDeviceCommand.PROP_ID, id);
-	    MongoPersistence.update(commands, query, existing);
-	    return MongoDeviceCommand.fromDocument(existing);
-	}
+	MongoPersistence.delete(commands, existing);
+	return MongoDeviceCommand.fromDocument(existing);
     }
 
     /**
@@ -613,7 +594,6 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	if (criteria.getCode() != null) {
 	    dbCriteria.put(MongoDeviceStatus.PROP_CODE, criteria.getCode());
 	}
-	MongoSiteWhereEntity.setDeleted(dbCriteria, false);
 	Document sort = new Document(MongoDeviceStatus.PROP_NAME, 1);
 	return MongoPersistence.search(IDeviceStatus.class, statuses, dbCriteria, sort, criteria, LOOKUP);
     }
@@ -770,19 +750,14 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceManagement#listDevices(boolean,
-     * com.sitewhere.spi.search.device.IDeviceSearchCriteria)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listDevices(com.sitewhere.spi.
+     * search.device.IDeviceSearchCriteria)
      */
     @Override
-    public SearchResults<IDevice> listDevices(boolean includeDeleted, IDeviceSearchCriteria criteria)
-	    throws SiteWhereException {
+    public SearchResults<IDevice> listDevices(IDeviceSearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
 	Document dbCriteria = new Document();
-	if (!includeDeleted) {
-	    MongoSiteWhereEntity.setDeleted(dbCriteria, false);
-	}
 	if (criteria.isExcludeAssigned()) {
 	    dbCriteria.put(MongoDevice.PROP_ASSIGNMENT_ID, null);
 	}
@@ -821,26 +796,16 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#deleteDevice(java.util.UUID,
-     * boolean)
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteDevice(java.util.UUID)
      */
     @Override
-    public IDevice deleteDevice(UUID id, boolean force) throws SiteWhereException {
+    public IDevice deleteDevice(UUID id) throws SiteWhereException {
 	Document existing = assertDevice(id);
 	Device device = MongoDevice.fromDocument(existing);
 	DeviceManagementPersistence.deviceDeleteLogic(device, this);
-
-	if (force) {
-	    MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
-	    MongoPersistence.delete(devices, existing);
-	    return MongoDevice.fromDocument(existing);
-	} else {
-	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    Document query = new Document(MongoDevice.PROP_ID, id);
-	    MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
-	    MongoPersistence.update(devices, query, existing);
-	    return MongoDevice.fromDocument(existing);
-	}
+	MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
+	MongoPersistence.delete(devices, existing);
+	return MongoDevice.fromDocument(existing);
     }
 
     /**
@@ -981,23 +946,15 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     /*
      * @see
      * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceAssignment(java.util.
-     * UUID, boolean)
+     * UUID)
      */
     @Override
-    public IDeviceAssignment deleteDeviceAssignment(UUID id, boolean force) throws SiteWhereException {
+    public IDeviceAssignment deleteDeviceAssignment(UUID id) throws SiteWhereException {
 	Document existing = assertDeviceAssignment(id);
 	DeviceManagementPersistence.deviceAssignmentDeleteLogic(MongoDeviceAssignment.fromDocument(existing));
-	if (force) {
-	    MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
-	    MongoPersistence.delete(assignments, existing);
-	    return MongoDeviceAssignment.fromDocument(existing);
-	} else {
-	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    Document query = new Document(MongoDeviceAssignment.PROP_ID, id);
-	    MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
-	    MongoPersistence.update(assignments, query, existing);
-	    return MongoDeviceAssignment.fromDocument(existing);
-	}
+	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
+	MongoPersistence.delete(assignments, existing);
+	return MongoDeviceAssignment.fromDocument(existing);
     }
 
     /*
@@ -1384,25 +1341,17 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteCustomerType(java.util.UUID,
-     * boolean)
+     * com.sitewhere.spi.device.IDeviceManagement#deleteCustomerType(java.util.UUID)
      */
     @Override
-    public ICustomerType deleteCustomerType(UUID id, boolean force) throws SiteWhereException {
+    public ICustomerType deleteCustomerType(UUID id) throws SiteWhereException {
 	Document existing = getCustomerTypeDocumentById(id);
 	if (existing == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidCustomerTypeToken, ErrorLevel.ERROR);
 	}
 	MongoCollection<Document> types = getMongoClient().getCustomerTypesCollection();
-	if (force) {
-	    MongoPersistence.delete(types, existing);
-	    return MongoCustomerType.fromDocument(existing);
-	} else {
-	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    Document query = new Document(MongoCustomerType.PROP_ID, id);
-	    MongoPersistence.update(types, query, existing);
-	    return MongoCustomerType.fromDocument(existing);
-	}
+	MongoPersistence.delete(types, existing);
+	return MongoCustomerType.fromDocument(existing);
     }
 
     /*
@@ -1520,25 +1469,17 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteCustomer(java.util.UUID,
-     * boolean)
+     * com.sitewhere.spi.device.IDeviceManagement#deleteCustomer(java.util.UUID)
      */
     @Override
-    public ICustomer deleteCustomer(UUID id, boolean force) throws SiteWhereException {
+    public ICustomer deleteCustomer(UUID id) throws SiteWhereException {
 	Document existing = getCustomerDocumentById(id);
 	if (existing == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidCustomerToken, ErrorLevel.ERROR);
 	}
 	MongoCollection<Document> customers = getMongoClient().getCustomersCollection();
-	if (force) {
-	    MongoPersistence.delete(customers, existing);
-	    return MongoCustomer.fromDocument(existing);
-	} else {
-	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    Document query = new Document(MongoCustomer.PROP_ID, id);
-	    MongoPersistence.update(customers, query, existing);
-	    return MongoCustomer.fromDocument(existing);
-	}
+	MongoPersistence.delete(customers, existing);
+	return MongoCustomer.fromDocument(existing);
     }
 
     /*
@@ -1623,25 +1564,17 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteAreaType(java.util.UUID,
-     * boolean)
+     * com.sitewhere.spi.device.IDeviceManagement#deleteAreaType(java.util.UUID)
      */
     @Override
-    public IAreaType deleteAreaType(UUID id, boolean force) throws SiteWhereException {
+    public IAreaType deleteAreaType(UUID id) throws SiteWhereException {
 	Document existing = getAreaTypeDocumentById(id);
 	if (existing == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaTypeToken, ErrorLevel.ERROR);
 	}
 	MongoCollection<Document> types = getMongoClient().getAreaTypesCollection();
-	if (force) {
-	    MongoPersistence.delete(types, existing);
-	    return MongoAreaType.fromDocument(existing);
-	} else {
-	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    Document query = new Document(MongoAreaType.PROP_ID, id);
-	    MongoPersistence.update(types, query, existing);
-	    return MongoAreaType.fromDocument(existing);
-	}
+	MongoPersistence.delete(types, existing);
+	return MongoAreaType.fromDocument(existing);
     }
 
     /*
@@ -1754,25 +1687,17 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#deleteArea(java.util.UUID,
-     * boolean)
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteArea(java.util.UUID)
      */
     @Override
-    public IArea deleteArea(UUID id, boolean force) throws SiteWhereException {
+    public IArea deleteArea(UUID id) throws SiteWhereException {
 	Document existing = getAreaDocumentById(id);
 	if (existing == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
 	}
 	MongoCollection<Document> areas = getMongoClient().getAreasCollection();
-	if (force) {
-	    MongoPersistence.delete(areas, existing);
-	    return MongoArea.fromDocument(existing);
-	} else {
-	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    Document query = new Document(MongoArea.PROP_ID, id);
-	    MongoPersistence.update(areas, query, existing);
-	    return MongoArea.fromDocument(existing);
-	}
+	MongoPersistence.delete(areas, existing);
+	return MongoArea.fromDocument(existing);
     }
 
     /*
@@ -1866,23 +1791,14 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#deleteZone(java.util.UUID,
-     * boolean)
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteZone(java.util.UUID)
      */
     @Override
-    public IZone deleteZone(UUID id, boolean force) throws SiteWhereException {
+    public IZone deleteZone(UUID id) throws SiteWhereException {
 	Document existing = assertZone(id);
-	if (force) {
-	    MongoCollection<Document> zones = getMongoClient().getZonesCollection();
-	    MongoPersistence.delete(zones, existing);
-	    return MongoZone.fromDocument(existing);
-	} else {
-	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    Document query = new Document(MongoZone.PROP_ID, id);
-	    MongoCollection<Document> zones = getMongoClient().getZonesCollection();
-	    MongoPersistence.update(zones, query, existing);
-	    return MongoZone.fromDocument(existing);
-	}
+	MongoCollection<Document> zones = getMongoClient().getZonesCollection();
+	MongoPersistence.delete(zones, existing);
+	return MongoZone.fromDocument(existing);
     }
 
     /*
@@ -1955,67 +1871,48 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceGroups(boolean,
-     * com.sitewhere.spi.search.ISearchCriteria)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listDeviceGroups(com.sitewhere.spi
+     * .search.ISearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceGroup> listDeviceGroups(boolean includeDeleted, ISearchCriteria criteria)
-	    throws SiteWhereException {
+    public ISearchResults<IDeviceGroup> listDeviceGroups(ISearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection();
 	Document dbCriteria = new Document();
-	if (!includeDeleted) {
-	    MongoSiteWhereEntity.setDeleted(dbCriteria, false);
-	}
 	Document sort = new Document(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
 	return MongoPersistence.search(IDeviceGroup.class, groups, dbCriteria, sort, criteria, LOOKUP);
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listDeviceGroupsWithRole(java.
-     * lang. String , boolean, com.sitewhere.spi.search.ISearchCriteria)
+     * com.sitewhere.spi.device.IDeviceManagement#listDeviceGroupsWithRole(java.lang
+     * .String, com.sitewhere.spi.search.ISearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceGroup> listDeviceGroupsWithRole(String role, boolean includeDeleted,
-	    ISearchCriteria criteria) throws SiteWhereException {
+    public ISearchResults<IDeviceGroup> listDeviceGroupsWithRole(String role, ISearchCriteria criteria)
+	    throws SiteWhereException {
 	MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection();
 	Document dbCriteria = new Document(MongoDeviceGroup.PROP_ROLES, role);
-	if (!includeDeleted) {
-	    MongoSiteWhereEntity.setDeleted(dbCriteria, false);
-	}
 	Document sort = new Document(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
 	return MongoPersistence.search(IDeviceGroup.class, groups, dbCriteria, sort, criteria, LOOKUP);
     }
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceGroup(java.util.UUID,
-     * boolean)
+     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceGroup(java.util.UUID)
      */
     @Override
-    public IDeviceGroup deleteDeviceGroup(UUID id, boolean force) throws SiteWhereException {
+    public IDeviceGroup deleteDeviceGroup(UUID id) throws SiteWhereException {
 	Document existing = assertDeviceGroup(id);
-	if (force) {
-	    MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection();
-	    MongoPersistence.delete(groups, existing);
+	MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection();
+	MongoPersistence.delete(groups, existing);
 
-	    // Delete group elements as well.
-	    MongoCollection<Document> elements = getMongoClient().getGroupElementsCollection();
-	    Document match = new Document(MongoDeviceGroupElement.PROP_GROUP_ID, id);
-	    MongoPersistence.delete(elements, match);
+	// Delete group elements as well.
+	MongoCollection<Document> elements = getMongoClient().getGroupElementsCollection();
+	Document match = new Document(MongoDeviceGroupElement.PROP_GROUP_ID, id);
+	MongoPersistence.delete(elements, match);
 
-	    return MongoDeviceGroup.fromDocument(existing);
-	} else {
-	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    Document query = new Document(MongoDeviceGroup.PROP_ID, id);
-	    MongoCollection<Document> groups = getMongoClient().getDeviceGroupsCollection();
-	    MongoPersistence.update(groups, query, existing);
-	    return MongoDeviceGroup.fromDocument(existing);
-	}
+	return MongoDeviceGroup.fromDocument(existing);
     }
 
     /*

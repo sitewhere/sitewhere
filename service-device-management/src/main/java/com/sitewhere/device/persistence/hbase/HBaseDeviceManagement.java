@@ -168,24 +168,23 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceTypes(boolean,
-     * com.sitewhere.spi.search.ISearchCriteria)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listDeviceTypes(com.sitewhere.spi.
+     * search.ISearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceType> listDeviceTypes(boolean includeDeleted, ISearchCriteria criteria)
-	    throws SiteWhereException {
-	return HBaseDeviceType.listDeviceTypes(context, includeDeleted, criteria);
+    public ISearchResults<IDeviceType> listDeviceTypes(ISearchCriteria criteria) throws SiteWhereException {
+	return HBaseDeviceType.listDeviceTypes(context, false, criteria);
     }
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceType(java.util.UUID,
-     * boolean)
+     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceType(java.util.UUID)
      */
     @Override
-    public IDeviceType deleteDeviceType(UUID id, boolean force) throws SiteWhereException {
+    public IDeviceType deleteDeviceType(UUID id) throws SiteWhereException {
 	IDeviceType deviceType = getDeviceType(id);
-	return HBaseDeviceType.deleteDeviceType(context, deviceType, force);
+	return HBaseDeviceType.deleteDeviceType(context, deviceType, false);
     }
 
     /*
@@ -244,10 +243,10 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
     /*
      * @see
      * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceCommand(java.util.
-     * UUID, boolean)
+     * UUID)
      */
     @Override
-    public IDeviceCommand deleteDeviceCommand(UUID id, boolean force) throws SiteWhereException {
+    public IDeviceCommand deleteDeviceCommand(UUID id) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented yet for HBase device managment.");
     }
 
@@ -366,15 +365,13 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceManagement#listDevices(boolean,
-     * com.sitewhere.spi.search.device.IDeviceSearchCriteria)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listDevices(com.sitewhere.spi.
+     * search.device.IDeviceSearchCriteria)
      */
     @Override
-    public SearchResults<IDevice> listDevices(boolean includeDeleted, IDeviceSearchCriteria criteria)
-	    throws SiteWhereException {
-	return HBaseDevice.listDevices(context, includeDeleted, criteria);
+    public SearchResults<IDevice> listDevices(IDeviceSearchCriteria criteria) throws SiteWhereException {
+	return HBaseDevice.listDevices(context, false, criteria);
     }
 
     /*
@@ -400,13 +397,12 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#deleteDevice(java.util.UUID,
-     * boolean)
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteDevice(java.util.UUID)
      */
     @Override
-    public IDevice deleteDevice(UUID id, boolean force) throws SiteWhereException {
+    public IDevice deleteDevice(UUID id) throws SiteWhereException {
 	IDevice device = getDevice(id);
-	return HBaseDevice.deleteDevice(context, device, force);
+	return HBaseDevice.deleteDevice(context, device, false);
     }
 
     /*
@@ -443,12 +439,12 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
     /*
      * @see
      * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceAssignment(java.util.
-     * UUID, boolean)
+     * UUID)
      */
     @Override
-    public IDeviceAssignment deleteDeviceAssignment(UUID id, boolean force) throws SiteWhereException {
+    public IDeviceAssignment deleteDeviceAssignment(UUID id) throws SiteWhereException {
 	IDeviceAssignment assn = getDeviceAssignment(id);
-	return HBaseDeviceAssignment.deleteDeviceAssignment(context, assn, force);
+	return HBaseDeviceAssignment.deleteDeviceAssignment(context, assn, false);
     }
 
     /*
@@ -619,11 +615,10 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteCustomerType(java.util.UUID,
-     * boolean)
+     * com.sitewhere.spi.device.IDeviceManagement#deleteCustomerType(java.util.UUID)
      */
     @Override
-    public ICustomerType deleteCustomerType(UUID id, boolean force) throws SiteWhereException {
+    public ICustomerType deleteCustomerType(UUID id) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented yet for HBase device managment.");
     }
 
@@ -686,11 +681,10 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteCustomer(java.util.UUID,
-     * boolean)
+     * com.sitewhere.spi.device.IDeviceManagement#deleteCustomer(java.util.UUID)
      */
     @Override
-    public ICustomer deleteCustomer(UUID id, boolean force) throws SiteWhereException {
+    public ICustomer deleteCustomer(UUID id) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented yet for HBase device managment.");
     }
 
@@ -743,11 +737,10 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteAreaType(java.util.UUID,
-     * boolean)
+     * com.sitewhere.spi.device.IDeviceManagement#deleteAreaType(java.util.UUID)
      */
     @Override
-    public IAreaType deleteAreaType(UUID id, boolean force) throws SiteWhereException {
+    public IAreaType deleteAreaType(UUID id) throws SiteWhereException {
 	throw new SiteWhereException("Not implemented yet for HBase device managment.");
     }
 
@@ -762,13 +755,12 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#deleteArea(java.util.UUID,
-     * boolean)
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteArea(java.util.UUID)
      */
     @Override
-    public IArea deleteArea(UUID id, boolean force) throws SiteWhereException {
+    public IArea deleteArea(UUID id) throws SiteWhereException {
 	IArea area = getArea(id);
-	return HBaseArea.deleteArea(context, (Area) area, force);
+	return HBaseArea.deleteArea(context, (Area) area, false);
     }
 
     /*
@@ -865,13 +857,12 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#deleteZone(java.util.UUID,
-     * boolean)
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteZone(java.util.UUID)
      */
     @Override
-    public IZone deleteZone(UUID id, boolean force) throws SiteWhereException {
+    public IZone deleteZone(UUID id) throws SiteWhereException {
 	IZone zone = getZone(id);
-	return HBaseZone.deleteZone(context, zone, force);
+	return HBaseZone.deleteZone(context, zone, false);
     }
 
     /*
@@ -916,39 +907,34 @@ public class HBaseDeviceManagement extends TenantEngineLifecycleComponent implem
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceGroups(boolean,
-     * com.sitewhere.spi.search.ISearchCriteria)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listDeviceGroups(com.sitewhere.spi
+     * .search.ISearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceGroup> listDeviceGroups(boolean includeDeleted, ISearchCriteria criteria)
+    public ISearchResults<IDeviceGroup> listDeviceGroups(ISearchCriteria criteria) throws SiteWhereException {
+	return HBaseDeviceGroup.listDeviceGroups(context, false, criteria);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listDeviceGroupsWithRole(java.lang
+     * .String, com.sitewhere.spi.search.ISearchCriteria)
+     */
+    @Override
+    public ISearchResults<IDeviceGroup> listDeviceGroupsWithRole(String role, ISearchCriteria criteria)
 	    throws SiteWhereException {
-	return HBaseDeviceGroup.listDeviceGroups(context, includeDeleted, criteria);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listDeviceGroupsWithRole(java.
-     * lang. String , boolean, com.sitewhere.spi.search.ISearchCriteria)
-     */
-    @Override
-    public ISearchResults<IDeviceGroup> listDeviceGroupsWithRole(String role, boolean includeDeleted,
-	    ISearchCriteria criteria) throws SiteWhereException {
-	return HBaseDeviceGroup.listDeviceGroupsWithRole(context, role, includeDeleted, criteria);
+	return HBaseDeviceGroup.listDeviceGroupsWithRole(context, role, false, criteria);
     }
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceGroup(java.util.UUID,
-     * boolean)
+     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceGroup(java.util.UUID)
      */
     @Override
-    public IDeviceGroup deleteDeviceGroup(UUID id, boolean force) throws SiteWhereException {
+    public IDeviceGroup deleteDeviceGroup(UUID id) throws SiteWhereException {
 	IDeviceGroup group = getDeviceGroup(id);
-	return HBaseDeviceGroup.deleteDeviceGroup(context, group, force);
+	return HBaseDeviceGroup.deleteDeviceGroup(context, group, false);
     }
 
     /*

@@ -160,7 +160,6 @@ public class AreaTypes extends RestControllerBase {
      * Delete information for an area type based on token.
      * 
      * @param areaTypeToken
-     * @param force
      * @return
      * @throws SiteWhereException
      */
@@ -168,11 +167,10 @@ public class AreaTypes extends RestControllerBase {
     @ApiOperation(value = "Delete area type by token")
     @Secured({ SiteWhereRoles.REST })
     public IAreaType deleteAreaType(
-	    @ApiParam(value = "Token that identifies area type", required = true) @PathVariable String areaTypeToken,
-	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+	    @ApiParam(value = "Token that identifies area type", required = true) @PathVariable String areaTypeToken)
+	    throws SiteWhereException {
 	IAreaType existing = assertAreaType(areaTypeToken);
-	return getDeviceManagement().deleteAreaType(existing.getId(), force);
+	return getDeviceManagement().deleteAreaType(existing.getId());
     }
 
     /**

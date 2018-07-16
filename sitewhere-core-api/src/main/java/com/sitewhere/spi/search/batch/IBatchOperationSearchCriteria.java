@@ -15,11 +15,4 @@ import com.sitewhere.spi.search.ISearchCriteria;
  * @author Derek
  */
 public interface IBatchOperationSearchCriteria extends ISearchCriteria {
-
-    /**
-     * Indicates whether to include deleted operations.
-     * 
-     * @return
-     */
-    public boolean isIncludeDeleted();
 }

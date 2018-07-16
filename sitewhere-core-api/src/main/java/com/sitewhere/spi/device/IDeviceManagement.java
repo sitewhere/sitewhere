@@ -99,29 +99,20 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     /**
      * List device types that match the search criteria.
      * 
-     * @param includeDeleted
-     *            include types marked as deleted
      * @param criteria
-     *            search criteria
-     * @return results corresponding to search criteria
+     * @return
      * @throws SiteWhereException
-     *             if implementation encountered an error
      */
-    public ISearchResults<IDeviceType> listDeviceTypes(boolean includeDeleted, ISearchCriteria criteria)
-	    throws SiteWhereException;
+    public ISearchResults<IDeviceType> listDeviceTypes(ISearchCriteria criteria) throws SiteWhereException;
 
     /**
      * Delete an existing device type.
      * 
-     * @param token
-     *            unique id
-     * @param force
-     *            if true, deletes type. if false, marks as deleted.
-     * @return the deleted type
+     * @param id
+     * @return
      * @throws SiteWhereException
-     *             if implementation encountered an error
      */
-    public IDeviceType deleteDeviceType(UUID id, boolean force) throws SiteWhereException;
+    public IDeviceType deleteDeviceType(UUID id) throws SiteWhereException;
 
     /**
      * Create a device command.
@@ -174,11 +165,10 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
      * Delete an existing device command.
      * 
      * @param id
-     * @param force
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceCommand deleteDeviceCommand(UUID id, boolean force) throws SiteWhereException;
+    public IDeviceCommand deleteDeviceCommand(UUID id) throws SiteWhereException;
 
     /**
      * Create a device status.
@@ -276,13 +266,11 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     /**
      * List devices that meet the given criteria.
      * 
-     * @param includeDeleted
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IDevice> listDevices(boolean includeDeleted, IDeviceSearchCriteria criteria)
-	    throws SiteWhereException;
+    public ISearchResults<IDevice> listDevices(IDeviceSearchCriteria criteria) throws SiteWhereException;
 
     /**
      * Create an {@link IDeviceElementMapping} for a nested device.
@@ -308,11 +296,10 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
      * Delete an existing device.
      * 
      * @param deviceId
-     * @param force
      * @return
      * @throws SiteWhereException
      */
-    public IDevice deleteDevice(UUID deviceId, boolean force) throws SiteWhereException;
+    public IDevice deleteDevice(UUID deviceId) throws SiteWhereException;
 
     /**
      * Create a new device assignment.
@@ -381,15 +368,13 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     public IDeviceAssignment endDeviceAssignment(UUID id) throws SiteWhereException;
 
     /**
-     * Delete a device assignment. Depending on 'force' flag the assignment will be
-     * marked for delete or actually be deleted.
+     * Delete a device assignment.
      * 
      * @param id
-     * @param force
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceAssignment deleteDeviceAssignment(UUID id, boolean force) throws SiteWhereException;
+    public IDeviceAssignment deleteDeviceAssignment(UUID id) throws SiteWhereException;
 
     /**
      * Create a device alarm.
@@ -518,16 +503,13 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     public ISearchResults<ICustomerType> listCustomerTypes(ISearchCriteria criteria) throws SiteWhereException;
 
     /**
-     * Delete a customer type based on unique id. If 'force' is specified, the
-     * database object will be deleted, otherwise the deleted flag will be set to
-     * true.
+     * Delete a customer type.
      * 
      * @param id
-     * @param force
      * @return
      * @throws SiteWhereException
      */
-    public ICustomerType deleteCustomerType(UUID id, boolean force) throws SiteWhereException;
+    public ICustomerType deleteCustomerType(UUID id) throws SiteWhereException;
 
     /**
      * Create a customer based on the given input.
@@ -585,15 +567,13 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     public ISearchResults<ICustomer> listCustomers(ICustomerSearchCriteria criteria) throws SiteWhereException;
 
     /**
-     * Delete a customer based on unique id. If 'force' is specified, the database
-     * object will be deleted, otherwise the deleted flag will be set to true.
+     * Delete a customer.
      * 
      * @param id
-     * @param force
      * @return
      * @throws SiteWhereException
      */
-    public ICustomer deleteCustomer(UUID id, boolean force) throws SiteWhereException;
+    public ICustomer deleteCustomer(UUID id) throws SiteWhereException;
 
     /**
      * Create an area type based on the given input.
@@ -642,15 +622,13 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     public ISearchResults<IAreaType> listAreaTypes(ISearchCriteria criteria) throws SiteWhereException;
 
     /**
-     * Delete an area type based on unique id. If 'force' is specified, the database
-     * object will be deleted, otherwise the deleted flag will be set to true.
+     * Delete an area type.
      * 
      * @param id
-     * @param force
      * @return
      * @throws SiteWhereException
      */
-    public IAreaType deleteAreaType(UUID id, boolean force) throws SiteWhereException;
+    public IAreaType deleteAreaType(UUID id) throws SiteWhereException;
 
     /**
      * Create an area based on the given input.
@@ -708,15 +686,13 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     public ISearchResults<IArea> listAreas(IAreaSearchCriteria criteria) throws SiteWhereException;
 
     /**
-     * Delete an area based on unique id. If 'force' is specified, the database
-     * object will be deleted, otherwise the deleted flag will be set to true.
+     * Delete an area.
      * 
      * @param id
-     * @param force
      * @return
      * @throws SiteWhereException
      */
-    public IArea deleteArea(UUID id, boolean force) throws SiteWhereException;
+    public IArea deleteArea(UUID id) throws SiteWhereException;
 
     /**
      * Create a new zone.
@@ -765,14 +741,13 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     public ISearchResults<IZone> listZones(IZoneSearchCriteria criteria) throws SiteWhereException;
 
     /**
-     * Delete a zone given its unique id.
+     * Delete a zone.
      * 
      * @param id
-     * @param force
      * @return
      * @throws SiteWhereException
      */
-    public IZone deleteZone(UUID id, boolean force) throws SiteWhereException;
+    public IZone deleteZone(UUID id) throws SiteWhereException;
 
     /**
      * Create a new device group.
@@ -814,35 +789,31 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     /**
      * List device groups.
      * 
-     * @param includeDeleted
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IDeviceGroup> listDeviceGroups(boolean includeDeleted, ISearchCriteria criteria)
-	    throws SiteWhereException;
+    public ISearchResults<IDeviceGroup> listDeviceGroups(ISearchCriteria criteria) throws SiteWhereException;
 
     /**
      * Lists all device groups that have the given role.
      * 
      * @param role
-     * @param includeDeleted
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public ISearchResults<IDeviceGroup> listDeviceGroupsWithRole(String role, boolean includeDeleted,
-	    ISearchCriteria criteria) throws SiteWhereException;
+    public ISearchResults<IDeviceGroup> listDeviceGroupsWithRole(String role, ISearchCriteria criteria)
+	    throws SiteWhereException;
 
     /**
      * Delete a device group.
      * 
      * @param id
-     * @param force
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceGroup deleteDeviceGroup(UUID id, boolean force) throws SiteWhereException;
+    public IDeviceGroup deleteDeviceGroup(UUID id) throws SiteWhereException;
 
     /**
      * Add elements to a device group.

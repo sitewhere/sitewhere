@@ -21,8 +21,8 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.IndexOptions;
+import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.mongodb.MongoPersistence;
-import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
 import com.sitewhere.rest.model.user.User;
@@ -41,6 +41,7 @@ import com.sitewhere.spi.user.IUserSearchCriteria;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
 import com.sitewhere.user.persistence.UserManagementPersistence;
+import com.sitewhere.user.spi.microservice.IUserManagementMicroservice;
 
 /**
  * User management implementation that uses MongoDB for persistence.
@@ -112,7 +113,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	    if (!overwrite) {
 		throw new SiteWhereSystemException(ErrorCode.DuplicateUser, ErrorLevel.ERROR);
 	    }
-	    deleteUser(imported.getUsername(), true);
+	    deleteUser(imported.getUsername());
 	}
 	User user = User.copy(imported);
 
@@ -245,9 +246,6 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	try {
 	    MongoCollection<Document> users = getMongoClient().getUsersCollection();
 	    Document dbCriteria = new Document();
-	    if (!criteria.isIncludeDeleted()) {
-		MongoSiteWhereEntity.setDeleted(dbCriteria, false);
-	    }
 	    FindIterable<Document> found = users.find(dbCriteria).sort(new BasicDBObject(MongoUser.PROP_USERNAME, 1));
 	    MongoCursor<Document> cursor = found.iterator();
 
@@ -267,26 +265,15 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.user.IUserManagement#deleteUser(java.lang.String,
-     * boolean)
+     * @see com.sitewhere.spi.user.IUserManagement#deleteUser(java.lang.String)
      */
     @Override
-    public IUser deleteUser(String username, boolean force) throws SiteWhereException {
+    public IUser deleteUser(String username) throws SiteWhereException {
 	Document existing = assertUser(username);
-	if (force) {
-	    MongoCollection<Document> users = getMongoClient().getUsersCollection();
-	    MongoPersistence.delete(users, existing);
-	    UserManagementPersistence.userDeleteLogic(username);
-	    return MongoUser.fromDocument(existing);
-	} else {
-	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    Document query = new Document(MongoUser.PROP_USERNAME, username);
-	    MongoCollection<Document> users = getMongoClient().getUsersCollection();
-	    MongoPersistence.update(users, query, existing);
-	    return MongoUser.fromDocument(existing);
-	}
+	MongoCollection<Document> users = getMongoClient().getUsersCollection();
+	MongoPersistence.delete(users, existing);
+	UserManagementPersistence.userDeleteLogic(username, getTenantManagementApiDemux());
+	return MongoUser.fromDocument(existing);
     }
 
     /*
@@ -444,5 +431,9 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 
     public void setMongoClient(IUserManagementMongoClient mongoClient) {
 	this.mongoClient = mongoClient;
+    }
+
+    protected ITenantManagementApiChannel<?> getTenantManagementApiDemux() {
+	return ((IUserManagementMicroservice<?>) getMicroservice()).getTenantManagementApiDemux().getApiChannel();
     }
 }

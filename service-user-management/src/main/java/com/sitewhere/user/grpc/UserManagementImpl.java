@@ -207,7 +207,6 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, UserManagementGrpc.getListUsersMethod());
 	    UserSearchCriteria criteria = new UserSearchCriteria();
-	    criteria.setIncludeDeleted(request.getCriteria().getIncludeDeleted());
 	    List<IUser> apiResult = getUserMangagement().listUsers(criteria);
 	    GListUsersResponse.Builder response = GListUsersResponse.newBuilder();
 	    for (IUser apiUser : apiResult) {
@@ -233,7 +232,7 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
     public void deleteUser(GDeleteUserRequest request, StreamObserver<GDeleteUserResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, UserManagementGrpc.getDeleteUserMethod());
-	    IUser apiResult = getUserMangagement().deleteUser(request.getUsername(), request.getForce());
+	    IUser apiResult = getUserMangagement().deleteUser(request.getUsername());
 	    GDeleteUserResponse.Builder response = GDeleteUserResponse.newBuilder();
 	    response.setUser(UserModelConverter.asGrpcUser(apiResult));
 	    responseObserver.onNext(response.build());

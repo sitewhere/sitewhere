@@ -120,18 +120,15 @@ public class Schedules extends RestControllerBase {
      * Delete a schedule.
      * 
      * @param token
-     * @param force
-     * @param servletRequest
      * @return
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}", method = RequestMethod.DELETE)
     @ApiOperation(value = "Delete a schedule")
     @Secured({ SiteWhereRoles.REST })
-    public ISchedule deleteSchedule(@ApiParam(value = "Token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getScheduleManagement().deleteSchedule(token, force);
+    public ISchedule deleteSchedule(@ApiParam(value = "Token", required = true) @PathVariable String token)
+	    throws SiteWhereException {
+	return getScheduleManagement().deleteSchedule(token);
     }
 
     protected IScheduleManagement getScheduleManagement() {

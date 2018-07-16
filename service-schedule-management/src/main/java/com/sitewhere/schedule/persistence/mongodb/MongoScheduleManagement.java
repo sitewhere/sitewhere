@@ -151,31 +151,21 @@ public class MongoScheduleManagement extends TenantEngineLifecycleComponent impl
     public ISearchResults<ISchedule> listSchedules(ISearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> schedules = getMongoClient().getSchedulesCollection();
 	Document dbCriteria = new Document();
-	MongoSiteWhereEntity.setDeleted(dbCriteria, false);
 	Document sort = new Document(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
 	return MongoPersistence.search(ISchedule.class, schedules, dbCriteria, sort, criteria, LOOKUP);
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.scheduling.IScheduleManagement#deleteSchedule(java.lang
-     * .String, boolean)
+     * com.sitewhere.spi.scheduling.IScheduleManagement#deleteSchedule(java.lang.
+     * String)
      */
     @Override
-    public ISchedule deleteSchedule(String token, boolean force) throws SiteWhereException {
+    public ISchedule deleteSchedule(String token) throws SiteWhereException {
 	Document existing = assertSchedule(token);
 	MongoCollection<Document> schedules = getMongoClient().getSchedulesCollection();
-	if (force) {
-	    MongoPersistence.delete(schedules, existing);
-	    return MongoSchedule.fromDocument(existing);
-	} else {
-	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    Document query = new Document(MongoSchedule.PROP_TOKEN, token);
-	    MongoPersistence.update(schedules, query, existing);
-	    return MongoSchedule.fromDocument(existing);
-	}
+	MongoPersistence.delete(schedules, existing);
+	return MongoSchedule.fromDocument(existing);
     }
 
     /*
@@ -253,31 +243,21 @@ public class MongoScheduleManagement extends TenantEngineLifecycleComponent impl
     public ISearchResults<IScheduledJob> listScheduledJobs(ISearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> jobs = getMongoClient().getScheduledJobsCollection();
 	Document dbCriteria = new Document();
-	MongoSiteWhereEntity.setDeleted(dbCriteria, false);
 	Document sort = new Document(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
 	return MongoPersistence.search(IScheduledJob.class, jobs, dbCriteria, sort, criteria, LOOKUP);
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.scheduling.IScheduleManagement#deleteScheduledJob(java.
-     * lang.String , boolean)
+     * com.sitewhere.spi.scheduling.IScheduleManagement#deleteScheduledJob(java.lang
+     * .String)
      */
     @Override
-    public IScheduledJob deleteScheduledJob(String token, boolean force) throws SiteWhereException {
+    public IScheduledJob deleteScheduledJob(String token) throws SiteWhereException {
 	Document existing = assertScheduledJob(token);
 	MongoCollection<Document> jobs = getMongoClient().getScheduledJobsCollection();
-	if (force) {
-	    MongoPersistence.delete(jobs, existing);
-	    return MongoScheduledJob.fromDocument(existing);
-	} else {
-	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    Document query = new Document(MongoScheduledJob.PROP_TOKEN, token);
-	    MongoPersistence.update(jobs, query, existing);
-	    return MongoScheduledJob.fromDocument(existing);
-	}
+	MongoPersistence.delete(jobs, existing);
+	return MongoScheduledJob.fromDocument(existing);
     }
 
     /**

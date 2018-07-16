@@ -138,7 +138,6 @@ message GListUsersResponse {
 // Request for deleting a user.
 message GDeleteUserRequest {
 	string username = 1;
-	bool force = 2;
 }
 
 // Response for deleting a user.

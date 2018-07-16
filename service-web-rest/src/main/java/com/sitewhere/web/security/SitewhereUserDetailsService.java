@@ -53,8 +53,7 @@ public class SitewhereUserDetailsService implements UserDetailsManager {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.springframework.security.userdetails.UserDetailsManager#createUser(
+     * @see org.springframework.security.userdetails.UserDetailsManager#createUser(
      * org. springframework .security.userdetails .UserDetails)
      */
     public void createUser(UserDetails info) {
@@ -71,13 +70,12 @@ public class SitewhereUserDetailsService implements UserDetailsManager {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.springframework.security.userdetails.UserDetailsManager#deleteUser(
+     * @see org.springframework.security.userdetails.UserDetailsManager#deleteUser(
      * java.lang .String)
      */
     public void deleteUser(String username) {
 	try {
-	    getUserManagement().deleteUser(username, true);
+	    getUserManagement().deleteUser(username);
 	} catch (SiteWhereException e) {
 	    throw new RuntimeException("Unable to delete user.", e);
 	}
@@ -86,8 +84,7 @@ public class SitewhereUserDetailsService implements UserDetailsManager {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.springframework.security.userdetails.UserDetailsManager#userExists(
+     * @see org.springframework.security.userdetails.UserDetailsManager#userExists(
      * java.lang .String)
      */
     public boolean userExists(String username) {
@@ -97,8 +94,7 @@ public class SitewhereUserDetailsService implements UserDetailsManager {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.springframework.security.userdetails.UserDetailsManager#updateUser(
+     * @see org.springframework.security.userdetails.UserDetailsManager#updateUser(
      * org. springframework .security.userdetails .UserDetails)
      */
     public void updateUser(UserDetails info) {

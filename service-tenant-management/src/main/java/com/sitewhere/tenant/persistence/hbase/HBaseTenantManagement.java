@@ -134,12 +134,11 @@ public class HBaseTenantManagement extends LifecycleComponent implements ITenant
     }
 
     /*
-     * @see com.sitewhere.spi.tenant.ITenantManagement#deleteTenant(java.util.UUID,
-     * boolean)
+     * @see com.sitewhere.spi.tenant.ITenantManagement#deleteTenant(java.util.UUID)
      */
     @Override
-    public ITenant deleteTenant(UUID tenantId, boolean force) throws SiteWhereException {
-	return HBaseTenant.deleteTenant(context, null, force);
+    public ITenant deleteTenant(UUID tenantId) throws SiteWhereException {
+	return HBaseTenant.deleteTenant(context, null, false);
     }
 
     public ISiteWhereHBaseClient getClient() {

@@ -150,19 +150,17 @@ public class Tenants extends RestControllerBase {
      * Delete tenant by token.
      * 
      * @param tenantToken
-     * @param force
      * @return
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{tenantToken}", method = RequestMethod.DELETE)
     @ApiOperation(value = "Delete existing tenant")
-    public ITenant deleteTenantById(@ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken,
-	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
+    public ITenant deleteTenantById(@ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken)
 	    throws SiteWhereException {
 	checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
 	ITenant tenant = assureTenant(tenantToken);
 	checkForAdminOrEditSelf(tenant);
-	return getTenantManagement().deleteTenant(tenant.getId(), force);
+	return getTenantManagement().deleteTenant(tenant.getId());
     }
 
     /**

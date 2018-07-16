@@ -23,7 +23,6 @@ message GUserCreateRequest {
 
 // Criteria for user search.
 message GUserSearchCriteria {
-	bool includeDeleted = 1;
 }
 
 // Information for a user.

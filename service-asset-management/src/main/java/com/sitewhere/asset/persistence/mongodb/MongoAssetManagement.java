@@ -19,7 +19,6 @@ import com.sitewhere.asset.persistence.AssetManagementPersistence;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
-import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.asset.Asset;
 import com.sitewhere.rest.model.asset.AssetType;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -150,26 +149,18 @@ public class MongoAssetManagement extends TenantEngineLifecycleComponent impleme
     }
 
     /*
-     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAssetType(java.util.UUID,
-     * boolean)
+     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAssetType(java.util.UUID)
      */
     @Override
-    public IAssetType deleteAssetType(UUID assetTypeId, boolean force) throws SiteWhereException {
+    public IAssetType deleteAssetType(UUID assetTypeId) throws SiteWhereException {
 	Document existing = assertAssetTypeDocument(assetTypeId);
 
 	AssetType assetType = MongoAssetType.fromDocument(existing);
 	AssetManagementPersistence.assetTypeDeleteLogic(assetType, this);
 
 	MongoCollection<Document> types = getMongoClient().getAssetTypesCollection();
-	if (force) {
-	    MongoPersistence.delete(types, existing);
-	    return MongoAssetType.fromDocument(existing);
-	} else {
-	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    Document query = new Document(MongoAssetType.PROP_ID, assetTypeId);
-	    MongoPersistence.update(types, query, existing);
-	    return MongoAssetType.fromDocument(existing);
-	}
+	MongoPersistence.delete(types, existing);
+	return MongoAssetType.fromDocument(existing);
     }
 
     /*
@@ -262,11 +253,10 @@ public class MongoAssetManagement extends TenantEngineLifecycleComponent impleme
     }
 
     /*
-     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAsset(java.util.UUID,
-     * boolean)
+     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAsset(java.util.UUID)
      */
     @Override
-    public IAsset deleteAsset(UUID assetId, boolean force) throws SiteWhereException {
+    public IAsset deleteAsset(UUID assetId) throws SiteWhereException {
 	Document existing = assertAssetDocument(assetId);
 
 	Asset asset = MongoAsset.fromDocument(existing);
@@ -275,15 +265,8 @@ public class MongoAssetManagement extends TenantEngineLifecycleComponent impleme
 	AssetManagementPersistence.assetDeleteLogic(asset, this, deviceManagement);
 
 	MongoCollection<Document> assets = getMongoClient().getAssetsCollection();
-	if (force) {
-	    MongoPersistence.delete(assets, existing);
-	    return MongoAsset.fromDocument(existing);
-	} else {
-	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    Document query = new Document(MongoAsset.PROP_ID, assetId);
-	    MongoPersistence.update(assets, query, existing);
-	    return MongoAsset.fromDocument(existing);
-	}
+	MongoPersistence.delete(assets, existing);
+	return MongoAsset.fromDocument(existing);
     }
 
     /*

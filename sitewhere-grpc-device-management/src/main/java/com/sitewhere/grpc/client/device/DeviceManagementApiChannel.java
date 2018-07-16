@@ -197,16 +197,14 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteCustomerType(java.util.UUID,
-     * boolean)
+     * com.sitewhere.spi.device.IDeviceManagement#deleteCustomerType(java.util.UUID)
      */
     @Override
-    public ICustomerType deleteCustomerType(UUID id, boolean force) throws SiteWhereException {
+    public ICustomerType deleteCustomerType(UUID id) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getDeleteCustomerTypeMethod());
 	    GDeleteCustomerTypeRequest.Builder grequest = GDeleteCustomerTypeRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
-	    grequest.setForce(force);
 	    GDeleteCustomerTypeResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .deleteCustomerType(grequest.build());
 	    ICustomerType response = (gresponse.hasCustomerType())
@@ -345,16 +343,14 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteCustomer(java.util.UUID,
-     * boolean)
+     * com.sitewhere.spi.device.IDeviceManagement#deleteCustomer(java.util.UUID)
      */
     @Override
-    public ICustomer deleteCustomer(UUID id, boolean force) throws SiteWhereException {
+    public ICustomer deleteCustomer(UUID id) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getDeleteCustomerMethod());
 	    GDeleteCustomerRequest.Builder grequest = GDeleteCustomerRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
-	    grequest.setForce(force);
 	    GDeleteCustomerResponse gresponse = getGrpcChannel().getBlockingStub().deleteCustomer(grequest.build());
 	    ICustomer response = (gresponse.hasCustomer()) ? DeviceModelConverter.asApiCustomer(gresponse.getCustomer())
 		    : null;
@@ -470,16 +466,14 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteAreaType(java.util.UUID,
-     * boolean)
+     * com.sitewhere.spi.device.IDeviceManagement#deleteAreaType(java.util.UUID)
      */
     @Override
-    public IAreaType deleteAreaType(UUID id, boolean force) throws SiteWhereException {
+    public IAreaType deleteAreaType(UUID id) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getDeleteAreaTypeMethod());
 	    GDeleteAreaTypeRequest.Builder grequest = GDeleteAreaTypeRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
-	    grequest.setForce(force);
 	    GDeleteAreaTypeResponse gresponse = getGrpcChannel().getBlockingStub().deleteAreaType(grequest.build());
 	    IAreaType response = (gresponse.hasAreaType()) ? DeviceModelConverter.asApiAreaType(gresponse.getAreaType())
 		    : null;
@@ -607,16 +601,14 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#deleteArea(java.util.UUID,
-     * boolean)
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteArea(java.util.UUID)
      */
     @Override
-    public IArea deleteArea(UUID id, boolean force) throws SiteWhereException {
+    public IArea deleteArea(UUID id) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getDeleteAreaMethod());
 	    GDeleteAreaRequest.Builder grequest = GDeleteAreaRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
-	    grequest.setForce(force);
 	    GDeleteAreaResponse gresponse = getGrpcChannel().getBlockingStub().deleteArea(grequest.build());
 	    IArea response = (gresponse.hasArea()) ? DeviceModelConverter.asApiArea(gresponse.getArea()) : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getDeleteAreaMethod(), response);
@@ -724,16 +716,14 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#deleteZone(java.util.UUID,
-     * boolean)
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteZone(java.util.UUID)
      */
     @Override
-    public IZone deleteZone(UUID id, boolean force) throws SiteWhereException {
+    public IZone deleteZone(UUID id) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getDeleteZoneMethod());
 	    GDeleteZoneRequest.Builder grequest = GDeleteZoneRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
-	    grequest.setForce(force);
 	    GDeleteZoneResponse gresponse = getGrpcChannel().getBlockingStub().deleteZone(grequest.build());
 	    IZone response = (gresponse.hasZone()) ? DeviceModelConverter.asApiZone(gresponse.getZone()) : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getDeleteZoneMethod(), response);
@@ -832,16 +822,16 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceTypes(boolean,
-     * com.sitewhere.spi.search.ISearchCriteria)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listDeviceTypes(com.sitewhere.spi.
+     * search.ISearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceType> listDeviceTypes(boolean includeDeleted, ISearchCriteria criteria)
-	    throws SiteWhereException {
+    public ISearchResults<IDeviceType> listDeviceTypes(ISearchCriteria criteria) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getListDeviceTypesMethod());
 	    GListDeviceTypesRequest.Builder grequest = GListDeviceTypesRequest.newBuilder();
-	    grequest.setCriteria(DeviceModelConverter.asApiDeviceTypeSearchCriteria(includeDeleted, criteria));
+	    grequest.setCriteria(DeviceModelConverter.asApiDeviceTypeSearchCriteria(criteria));
 	    GListDeviceTypesResponse gresponse = getGrpcChannel().getBlockingStub().listDeviceTypes(grequest.build());
 	    ISearchResults<IDeviceType> results = DeviceModelConverter
 		    .asApiDeviceTypeSearchResults(gresponse.getResults());
@@ -854,16 +844,14 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceType(java.util.UUID,
-     * boolean)
+     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceType(java.util.UUID)
      */
     @Override
-    public IDeviceType deleteDeviceType(UUID id, boolean force) throws SiteWhereException {
+    public IDeviceType deleteDeviceType(UUID id) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceTypeMethod());
 	    GDeleteDeviceTypeRequest.Builder grequest = GDeleteDeviceTypeRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
-	    grequest.setForce(force);
 	    GDeleteDeviceTypeResponse gresponse = getGrpcChannel().getBlockingStub().deleteDeviceType(grequest.build());
 	    IDeviceType response = (gresponse.hasDeviceType())
 		    ? DeviceModelConverter.asApiDeviceType(gresponse.getDeviceType())
@@ -993,15 +981,14 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     /*
      * @see
      * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceCommand(java.util.
-     * UUID, boolean)
+     * UUID)
      */
     @Override
-    public IDeviceCommand deleteDeviceCommand(UUID id, boolean force) throws SiteWhereException {
+    public IDeviceCommand deleteDeviceCommand(UUID id) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceCommandMethod());
 	    GDeleteDeviceCommandRequest.Builder grequest = GDeleteDeviceCommandRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
-	    grequest.setForce(force);
 	    GDeleteDeviceCommandResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .deleteDeviceCommand(grequest.build());
 	    IDeviceCommand response = (gresponse.hasCommand())
@@ -1230,14 +1217,12 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceManagement#listDevices(boolean,
-     * com.sitewhere.spi.search.device.IDeviceSearchCriteria)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listDevices(com.sitewhere.spi.
+     * search.device.IDeviceSearchCriteria)
      */
     @Override
-    public ISearchResults<IDevice> listDevices(boolean includeDeleted, IDeviceSearchCriteria criteria)
-	    throws SiteWhereException {
+    public ISearchResults<IDevice> listDevices(IDeviceSearchCriteria criteria) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getListDevicesMethod());
 	    GListDevicesRequest.Builder grequest = GListDevicesRequest.newBuilder();
@@ -1296,16 +1281,14 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     }
 
     /*
-     * @see com.sitewhere.spi.device.IDeviceManagement#deleteDevice(java.util.UUID,
-     * boolean)
+     * @see com.sitewhere.spi.device.IDeviceManagement#deleteDevice(java.util.UUID)
      */
     @Override
-    public IDevice deleteDevice(UUID id, boolean force) throws SiteWhereException {
+    public IDevice deleteDevice(UUID id) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceMethod());
 	    GDeleteDeviceRequest.Builder grequest = GDeleteDeviceRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
-	    grequest.setForce(force);
 	    GDeleteDeviceResponse gresponse = getGrpcChannel().getBlockingStub().deleteDevice(grequest.build());
 	    IDevice response = (gresponse.hasDevice()) ? DeviceModelConverter.asApiDevice(gresponse.getDevice()) : null;
 	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getDeleteDeviceMethod(), response);
@@ -1413,15 +1396,14 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     /*
      * @see
      * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceAssignment(java.util.
-     * UUID, boolean)
+     * UUID)
      */
     @Override
-    public IDeviceAssignment deleteDeviceAssignment(UUID id, boolean force) throws SiteWhereException {
+    public IDeviceAssignment deleteDeviceAssignment(UUID id) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceAssignmentMethod());
 	    GDeleteDeviceAssignmentRequest.Builder grequest = GDeleteDeviceAssignmentRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
-	    grequest.setForce(force);
 	    GDeleteDeviceAssignmentResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .deleteDeviceAssignment(grequest.build());
 	    IDeviceAssignment response = (gresponse.hasAssignment())
@@ -1602,7 +1584,6 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceAlarmMethod());
 	    GDeleteDeviceAlarmRequest.Builder grequest = GDeleteDeviceAlarmRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
-	    grequest.setForce(true);
 	    GDeleteDeviceAlarmResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .deleteDeviceAlarm(grequest.build());
 	    IDeviceAlarm response = (gresponse.hasAlarm()) ? DeviceModelConverter.asApiDeviceAlarm(gresponse.getAlarm())
@@ -1776,14 +1757,12 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceGroups(boolean,
-     * com.sitewhere.spi.search.ISearchCriteria)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#listDeviceGroups(com.sitewhere.spi
+     * .search.ISearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceGroup> listDeviceGroups(boolean includeDeleted, ISearchCriteria criteria)
-	    throws SiteWhereException {
+    public ISearchResults<IDeviceGroup> listDeviceGroups(ISearchCriteria criteria) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getListDeviceGroupsMethod());
 	    GListDeviceGroupsRequest.Builder grequest = GListDeviceGroupsRequest.newBuilder();
@@ -1799,20 +1778,17 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listDeviceGroupsWithRole(java.
-     * lang.String, boolean, com.sitewhere.spi.search.ISearchCriteria)
+     * com.sitewhere.spi.device.IDeviceManagement#listDeviceGroupsWithRole(java.lang
+     * .String, com.sitewhere.spi.search.ISearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceGroup> listDeviceGroupsWithRole(String role, boolean includeDeleted,
-	    ISearchCriteria criteria) throws SiteWhereException {
+    public ISearchResults<IDeviceGroup> listDeviceGroupsWithRole(String role, ISearchCriteria criteria)
+	    throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getListDeviceGroupsWithRoleMethod());
 	    GListDeviceGroupsWithRoleRequest.Builder grequest = GListDeviceGroupsWithRoleRequest.newBuilder();
-	    grequest.setCriteria(
-		    DeviceModelConverter.asApiDeviceGroupsWithRoleSearchCriteria(role, includeDeleted, criteria));
+	    grequest.setCriteria(DeviceModelConverter.asApiDeviceGroupsWithRoleSearchCriteria(role, criteria));
 	    GListDeviceGroupsWithRoleResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .listDeviceGroupsWithRole(grequest.build());
 	    ISearchResults<IDeviceGroup> results = DeviceModelConverter
@@ -1826,16 +1802,14 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceGroup(java.util.UUID,
-     * boolean)
+     * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceGroup(java.util.UUID)
      */
     @Override
-    public IDeviceGroup deleteDeviceGroup(UUID id, boolean force) throws SiteWhereException {
+    public IDeviceGroup deleteDeviceGroup(UUID id) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceGroupMethod());
 	    GDeleteDeviceGroupRequest.Builder grequest = GDeleteDeviceGroupRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
-	    grequest.setForce(force);
 	    GDeleteDeviceGroupResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .deleteDeviceGroup(grequest.build());
 	    IDeviceGroup response = (gresponse.hasGroup()) ? DeviceModelConverter.asApiDeviceGroup(gresponse.getGroup())

@@ -82,12 +82,11 @@ public class CacheAwareUserManagement extends UserManagementDecorator {
     }
 
     /*
-     * @see com.sitewhere.user.UserManagementDecorator#deleteUser(java.lang.String,
-     * boolean)
+     * @see com.sitewhere.user.UserManagementDecorator#deleteUser(java.lang.String)
      */
     @Override
-    public IUser deleteUser(String username, boolean force) throws SiteWhereException {
-	IUser result = super.deleteUser(username, force);
+    public IUser deleteUser(String username) throws SiteWhereException {
+	IUser result = super.deleteUser(username);
 	getUserCache().removeCacheEntry(null, result.getUsername());
 	getGrantedAuthorityCache().removeCacheEntry(null, result.getUsername());
 	getLogger().trace("Removed user from cache.");

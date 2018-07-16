@@ -206,8 +206,7 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
     public void deleteTenant(GDeleteTenantRequest request, StreamObserver<GDeleteTenantResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, TenantManagementGrpc.getDeleteTenantMethod());
-	    ITenant apiResult = getTenantMangagement().deleteTenant(CommonModelConverter.asApiUuid(request.getId()),
-		    request.getForce());
+	    ITenant apiResult = getTenantMangagement().deleteTenant(CommonModelConverter.asApiUuid(request.getId()));
 	    GDeleteTenantResponse.Builder response = GDeleteTenantResponse.newBuilder();
 	    response.setTenant(TenantModelConverter.asGrpcTenant(apiResult));
 	    responseObserver.onNext(response.build());

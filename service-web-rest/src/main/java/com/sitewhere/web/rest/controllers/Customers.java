@@ -289,7 +289,6 @@ public class Customers extends RestControllerBase {
      * Delete information for a given customer based on token.
      * 
      * @param customerToken
-     * @param force
      * @return
      * @throws SiteWhereException
      */
@@ -297,11 +296,10 @@ public class Customers extends RestControllerBase {
     @ApiOperation(value = "Delete customer by token")
     @Secured({ SiteWhereRoles.REST })
     public ICustomer deleteCustomer(
-	    @ApiParam(value = "Token that identifies customer", required = true) @PathVariable String customerToken,
-	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
+	    @ApiParam(value = "Token that identifies customer", required = true) @PathVariable String customerToken)
 	    throws SiteWhereException {
 	ICustomer existing = assertCustomer(customerToken);
-	return getDeviceManagement().deleteCustomer(existing.getId(), force);
+	return getDeviceManagement().deleteCustomer(existing.getId());
     }
 
     /**

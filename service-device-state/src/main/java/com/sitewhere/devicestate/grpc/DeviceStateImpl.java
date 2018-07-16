@@ -195,7 +195,7 @@ public class DeviceStateImpl extends DeviceStateGrpc.DeviceStateImplBase impleme
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceStateGrpc.getDeleteDeviceStateMethod());
 	    IDeviceState apiResult = getDeviceStateManagement()
-		    .deleteDeviceState(CommonModelConverter.asApiUuid(request.getId()), request.getForce());
+		    .deleteDeviceState(CommonModelConverter.asApiUuid(request.getId()));
 	    GDeleteDeviceStateResponse.Builder response = GDeleteDeviceStateResponse.newBuilder();
 	    response.setDeviceState(DeviceStateModelConverter.asGrpcDeviceState(apiResult));
 	    responseObserver.onNext(response.build());

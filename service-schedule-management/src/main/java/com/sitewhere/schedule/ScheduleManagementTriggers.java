@@ -34,8 +34,7 @@ public class ScheduleManagementTriggers extends ScheduleManagementDecorator {
      * (non-Javadoc)
      * 
      * @see com.sitewhere.server.scheduling.ScheduleManagementDecorator#
-     * createSchedule(com.
-     * sitewhere.spi.scheduling.request.IScheduleCreateRequest)
+     * createSchedule(com. sitewhere.spi.scheduling.request.IScheduleCreateRequest)
      */
     @Override
     public ISchedule createSchedule(IScheduleCreateRequest request) throws SiteWhereException {
@@ -45,14 +44,13 @@ public class ScheduleManagementTriggers extends ScheduleManagementDecorator {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.server.scheduling.ScheduleManagementDecorator#
-     * deleteSchedule(java .lang.String, boolean)
+     * @see
+     * com.sitewhere.schedule.ScheduleManagementDecorator#deleteSchedule(java.lang.
+     * String)
      */
     @Override
-    public ISchedule deleteSchedule(String token, boolean force) throws SiteWhereException {
-	ISchedule schedule = super.deleteSchedule(token, force);
+    public ISchedule deleteSchedule(String token) throws SiteWhereException {
+	ISchedule schedule = super.deleteSchedule(token);
 	getScheduleManager().scheduleRemoved(schedule);
 	return schedule;
     }
@@ -72,14 +70,13 @@ public class ScheduleManagementTriggers extends ScheduleManagementDecorator {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.server.scheduling.ScheduleManagementDecorator#
-     * deleteScheduledJob( java.lang.String, boolean)
+     * @see
+     * com.sitewhere.schedule.ScheduleManagementDecorator#deleteScheduledJob(java.
+     * lang.String)
      */
     @Override
-    public IScheduledJob deleteScheduledJob(String token, boolean force) throws SiteWhereException {
-	IScheduledJob job = super.deleteScheduledJob(token, force);
+    public IScheduledJob deleteScheduledJob(String token) throws SiteWhereException {
+	IScheduledJob job = super.deleteScheduledJob(token);
 	getScheduleManager().unscheduleJob(job);
 	return job;
     }

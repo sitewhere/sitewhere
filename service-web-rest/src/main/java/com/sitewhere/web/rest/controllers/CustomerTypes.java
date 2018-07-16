@@ -160,7 +160,6 @@ public class CustomerTypes extends RestControllerBase {
      * Delete information for a customer type based on token.
      * 
      * @param customerTypeToken
-     * @param force
      * @return
      * @throws SiteWhereException
      */
@@ -168,11 +167,10 @@ public class CustomerTypes extends RestControllerBase {
     @ApiOperation(value = "Delete customer type by token")
     @Secured({ SiteWhereRoles.REST })
     public ICustomerType deleteCustomerType(
-	    @ApiParam(value = "Token that identifies customer type", required = true) @PathVariable String customerTypeToken,
-	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+	    @ApiParam(value = "Token that identifies customer type", required = true) @PathVariable String customerTypeToken)
+	    throws SiteWhereException {
 	ICustomerType existing = assertCustomerType(customerTypeToken);
-	return getDeviceManagement().deleteCustomerType(existing.getId(), force);
+	return getDeviceManagement().deleteCustomerType(existing.getId());
     }
 
     /**

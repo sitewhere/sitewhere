@@ -17,24 +17,7 @@ import com.sitewhere.spi.search.batch.IBatchOperationSearchCriteria;
  */
 public class BatchOperationSearchCriteria extends SearchCriteria implements IBatchOperationSearchCriteria {
 
-    /** Flag for whether to include deleted operations */
-    private boolean includeDeleted;
-
     public BatchOperationSearchCriteria(int pageNumber, int pageSize) {
 	super(pageNumber, pageSize);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.search.batch.IBatchOperationSearchCriteria#isIncludeDeleted
-     * ()
-     */
-    @Override
-    public boolean isIncludeDeleted() {
-	return includeDeleted;
-    }
-
-    public void setIncludeDeleted(boolean includeDeleted) {
-	this.includeDeleted = includeDeleted;
     }
 }

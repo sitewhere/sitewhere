@@ -148,8 +148,7 @@ public class DeviceGroupUtils {
 	    IDeviceManagement deviceManagement, IAssetManagement assetManagement) throws SiteWhereException {
 	Map<String, IDevice> devices = new HashMap<String, IDevice>();
 	ISearchCriteria groupCriteria = new SearchCriteria(1, 0);
-	ISearchResults<IDeviceGroup> groups = deviceManagement.listDeviceGroupsWithRole(groupRole, false,
-		groupCriteria);
+	ISearchResults<IDeviceGroup> groups = deviceManagement.listDeviceGroupsWithRole(groupRole, groupCriteria);
 	for (IDeviceGroup group : groups.getResults()) {
 	    List<IDevice> groupDevices = getDevicesInGroup(group, criteria, deviceManagement, assetManagement);
 	    for (IDevice groupDevice : groupDevices) {

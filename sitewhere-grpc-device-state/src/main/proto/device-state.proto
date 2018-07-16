@@ -93,7 +93,6 @@ message GUpdateDeviceStateResponse {
 // Request for deleting device state.
 message GDeleteDeviceStateRequest {
 	com.sitewhere.grpc.model.GUUID id = 1;
-	bool force = 2;
 }
 	
 // Response for deleting device state.

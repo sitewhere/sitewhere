@@ -197,7 +197,7 @@ public class HBaseUser {
 		HBaseUtils.closeCleanly(users);
 	    }
 	}
-	UserManagementPersistence.userDeleteLogic(username);
+	UserManagementPersistence.userDeleteLogic(username, null);
 	return existing;
     }
 
@@ -300,9 +300,6 @@ public class HBaseUser {
 		byte[] payloadType = null;
 		byte[] payload = null;
 		for (byte[] qualifier : row.keySet()) {
-		    if ((Bytes.equals(ISiteWhereHBase.DELETED, qualifier)) && (!criteria.isIncludeDeleted())) {
-			shouldAdd = false;
-		    }
 		    if (Bytes.equals(ISiteWhereHBase.PAYLOAD_TYPE, qualifier)) {
 			payloadType = row.get(qualifier);
 		    }

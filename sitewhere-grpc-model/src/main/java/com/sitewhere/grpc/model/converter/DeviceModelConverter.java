@@ -369,17 +369,13 @@ public class DeviceModelConverter {
     /**
      * Convert device type search criteria from API to GRPC.
      * 
-     * @param includeDeleted
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    public static GDeviceTypeSearchCriteria asApiDeviceTypeSearchCriteria(boolean includeDeleted,
-	    ISearchCriteria criteria) throws SiteWhereException {
+    public static GDeviceTypeSearchCriteria asApiDeviceTypeSearchCriteria(ISearchCriteria criteria)
+	    throws SiteWhereException {
 	GDeviceTypeSearchCriteria.Builder gcriteria = GDeviceTypeSearchCriteria.newBuilder();
-	if (includeDeleted) {
-	    gcriteria.setIncludeDeleted(GOptionalBoolean.newBuilder().setValue(true).build());
-	}
 	if (criteria != null) {
 	    gcriteria.setPaging(CommonModelConverter.asGrpcPaging(criteria));
 	}
@@ -1250,15 +1246,15 @@ public class DeviceModelConverter {
     /**
      * Convert device groups with role search criteria from API to GRPC.
      * 
-     * @param code
+     * @param role
+     * @param criteria
      * @return
      * @throws SiteWhereException
      */
     public static GDeviceGroupsWithRoleSearchCriteria asApiDeviceGroupsWithRoleSearchCriteria(String role,
-	    boolean includeDeleted, ISearchCriteria criteria) throws SiteWhereException {
+	    ISearchCriteria criteria) throws SiteWhereException {
 	GDeviceGroupsWithRoleSearchCriteria.Builder gcriteria = GDeviceGroupsWithRoleSearchCriteria.newBuilder();
 	gcriteria.setRole(role);
-	gcriteria.setIncludeDeleted(includeDeleted ? GOptionalBoolean.newBuilder().setValue(true).build() : null);
 	gcriteria.setPaging(CommonModelConverter.asGrpcPaging(criteria));
 	return gcriteria.build();
     }

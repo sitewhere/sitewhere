@@ -167,16 +167,14 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
     }
 
     /*
-     * @see com.sitewhere.spi.tenant.ITenantManagement#deleteTenant(java.util.UUID,
-     * boolean)
+     * @see com.sitewhere.spi.tenant.ITenantManagement#deleteTenant(java.util.UUID)
      */
     @Override
-    public ITenant deleteTenant(UUID tenantId, boolean force) throws SiteWhereException {
+    public ITenant deleteTenant(UUID tenantId) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, TenantManagementGrpc.getDeleteTenantMethod());
 	    GDeleteTenantRequest.Builder grequest = GDeleteTenantRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(tenantId));
-	    grequest.setForce(force);
 	    GDeleteTenantResponse gresponse = getGrpcChannel().getBlockingStub().deleteTenant(grequest.build());
 	    ITenant response = TenantModelConverter.asApiTenant(gresponse.getTenant());
 	    GrpcUtils.logClientMethodResponse(TenantManagementGrpc.getDeleteTenantMethod(), response);

@@ -187,10 +187,10 @@ public class DeviceTypes extends RestControllerBase {
     /**
      * List device types that meet the given criteria.
      * 
-     * @param includeDeleted
      * @param includeAsset
      * @param page
      * @param pageSize
+     * @param servletRequest
      * @return
      * @throws SiteWhereException
      */
@@ -198,13 +198,12 @@ public class DeviceTypes extends RestControllerBase {
     @ApiOperation(value = "List device types that match criteria")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceType> listDeviceTypes(
-	    @ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
 	    @ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	ISearchResults<IDeviceType> results = getDeviceManagement().listDeviceTypes(includeDeleted, criteria);
+	ISearchResults<IDeviceType> results = getDeviceManagement().listDeviceTypes(criteria);
 	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getDeviceManagement());
 	List<IDeviceType> typesConv = new ArrayList<IDeviceType>();
 	for (IDeviceType type : results.getResults()) {
@@ -217,18 +216,16 @@ public class DeviceTypes extends RestControllerBase {
      * Delete an existing device type.
      * 
      * @param token
-     * @param force
      * @return
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}", method = RequestMethod.DELETE)
     @ApiOperation(value = "Delete existing device type")
     @Secured({ SiteWhereRoles.REST })
-    public IDeviceType deleteDeviceType(@ApiParam(value = "Token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+    public IDeviceType deleteDeviceType(@ApiParam(value = "Token", required = true) @PathVariable String token)
+	    throws SiteWhereException {
 	IDeviceType existing = assertDeviceTypeByToken(token);
-	IDeviceType result = getDeviceManagement().deleteDeviceType(existing.getId(), force);
+	IDeviceType result = getDeviceManagement().deleteDeviceType(existing.getId());
 	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getDeviceManagement());
 	return helper.convert(result);
     }

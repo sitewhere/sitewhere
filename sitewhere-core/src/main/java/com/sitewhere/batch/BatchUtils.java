@@ -67,7 +67,7 @@ public class BatchUtils {
 	    matches = DeviceGroupUtils.getDevicesInGroupsWithRole(criteria.getGroupsWithRole(), deviceSearch,
 		    deviceManagement, assetManagement);
 	} else {
-	    matches = deviceManagement.listDevices(false, deviceSearch).getResults();
+	    matches = deviceManagement.listDevices(deviceSearch).getResults();
 	}
 	List<String> deviceTokens = new ArrayList<String>();
 	for (IDevice match : matches) {

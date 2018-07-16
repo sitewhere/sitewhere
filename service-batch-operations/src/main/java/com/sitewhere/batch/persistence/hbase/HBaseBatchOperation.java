@@ -174,8 +174,8 @@ public class HBaseBatchOperation {
 		return false;
 	    }
 	};
-	return HBaseUtils.getFilteredList(context, ISiteWhereHBase.DEVICES_TABLE_NAME, KEY_BUILDER,
-		criteria.isIncludeDeleted(), IBatchOperation.class, BatchOperation.class, filter, criteria, comparator);
+	return HBaseUtils.getFilteredList(context, ISiteWhereHBase.DEVICES_TABLE_NAME, KEY_BUILDER, false,
+		IBatchOperation.class, BatchOperation.class, filter, criteria, comparator);
     }
 
     /**

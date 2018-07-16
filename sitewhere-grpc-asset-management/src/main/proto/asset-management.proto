@@ -105,7 +105,6 @@ message GGetAssetTypeByTokenResponse {
 // Request for deleting an asset type.
 message GDeleteAssetTypeRequest {
 	com.sitewhere.grpc.model.GUUID assetTypeId = 1;
-	bool force = 2;
 }
 
 // Response for deleting an asset type.
@@ -171,7 +170,6 @@ message GGetAssetByTokenResponse {
 // Request for deleting an asset.
 message GDeleteAssetRequest {
 	com.sitewhere.grpc.model.GUUID assetId = 1;
-	bool force = 2;
 }
 
 // Response for deleting an asset.

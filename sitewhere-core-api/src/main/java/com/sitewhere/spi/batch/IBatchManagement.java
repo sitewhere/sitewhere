@@ -79,11 +79,10 @@ public interface IBatchManagement extends ITenantEngineLifecycleComponent {
      * Deletes a batch operation and its elements.
      * 
      * @param batchOperationId
-     * @param force
      * @return
      * @throws SiteWhereException
      */
-    public IBatchOperation deleteBatchOperation(UUID batchOperationId, boolean force) throws SiteWhereException;
+    public IBatchOperation deleteBatchOperation(UUID batchOperationId) throws SiteWhereException;
 
     /**
      * Lists elements for an {@link IBatchOperation} that meet the given criteria.

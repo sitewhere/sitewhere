@@ -244,7 +244,6 @@ public class Areas extends RestControllerBase {
      * Delete information for a given area based on token.
      * 
      * @param areaToken
-     * @param force
      * @return
      * @throws SiteWhereException
      */
@@ -252,11 +251,10 @@ public class Areas extends RestControllerBase {
     @ApiOperation(value = "Delete area by token")
     @Secured({ SiteWhereRoles.REST })
     public IArea deleteArea(
-	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
-	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
+	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken)
 	    throws SiteWhereException {
 	IArea existing = assertArea(areaToken);
-	return getDeviceManagement().deleteArea(existing.getId(), force);
+	return getDeviceManagement().deleteArea(existing.getId());
     }
 
     /**

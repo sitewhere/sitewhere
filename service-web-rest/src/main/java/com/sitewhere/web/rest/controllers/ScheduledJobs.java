@@ -134,18 +134,15 @@ public class ScheduledJobs extends RestControllerBase {
      * Delete an existing scheduled job.
      * 
      * @param token
-     * @param force
-     * @param servletRequest
      * @return
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{token}", method = RequestMethod.DELETE)
     @ApiOperation(value = "Delete scheduled job")
     @Secured({ SiteWhereRoles.REST })
-    public IScheduledJob deleteScheduledJob(@ApiParam(value = "Token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getScheduleManagement().deleteScheduledJob(token, force);
+    public IScheduledJob deleteScheduledJob(@ApiParam(value = "Token", required = true) @PathVariable String token)
+	    throws SiteWhereException {
+	return getScheduleManagement().deleteScheduledJob(token);
     }
 
     protected IScheduleManagement getScheduleManagement() {

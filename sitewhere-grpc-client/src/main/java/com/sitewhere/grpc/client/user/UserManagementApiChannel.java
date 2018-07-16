@@ -288,18 +288,14 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.user.IUserManagement#deleteUser(java.lang.String,
-     * boolean)
+     * @see com.sitewhere.spi.user.IUserManagement#deleteUser(java.lang.String)
      */
     @Override
-    public IUser deleteUser(String username, boolean force) throws SiteWhereException {
+    public IUser deleteUser(String username) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, UserManagementGrpc.getDeleteUserMethod());
 	    GDeleteUserRequest.Builder grequest = GDeleteUserRequest.newBuilder();
 	    grequest.setUsername(username);
-	    grequest.setForce(force);
 	    GDeleteUserResponse gresponse = getGrpcChannel().getBlockingStub().deleteUser(grequest.build());
 	    IUser response = UserModelConverter.asApiUser(gresponse.getUser());
 	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.getDeleteUserMethod(), response);

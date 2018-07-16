@@ -105,18 +105,18 @@ public class UserManagementPersistence extends Persistence {
      * deleting user id from tenant authorized users.
      * 
      * @param username
+     * @param tenantManagement
      * @throws SiteWhereException
      */
-    public static void userDeleteLogic(String username) throws SiteWhereException {
-	ITenantManagement management = getTenantManagement();
-	ISearchResults<ITenant> tenants = management.listTenants(new TenantSearchCriteria(1, 0));
+    public static void userDeleteLogic(String username, ITenantManagement tenantManagement) throws SiteWhereException {
+	ISearchResults<ITenant> tenants = tenantManagement.listTenants(new TenantSearchCriteria(1, 0));
 	for (ITenant tenant : tenants.getResults()) {
 	    if (tenant.getAuthorizedUserIds().contains(username)) {
 		TenantCreateRequest request = new TenantCreateRequest();
 		List<String> ids = tenant.getAuthorizedUserIds();
 		ids.remove(username);
 		request.setAuthorizedUserIds(ids);
-		management.updateTenant(tenant.getId(), request);
+		tenantManagement.updateTenant(tenant.getId(), request);
 	    }
 	}
     }
@@ -133,8 +133,8 @@ public class UserManagementPersistence extends Persistence {
 	GrantedAuthority auth = new GrantedAuthority();
 
 	require("Authority", source.getAuthority());
-
 	auth.setAuthority(source.getAuthority());
+
 	auth.setDescription(source.getDescription());
 	auth.setParent(source.getParent());
 	auth.setGroup(source.isGroup());
@@ -149,9 +149,5 @@ public class UserManagementPersistence extends Persistence {
      */
     public static boolean passwordMatches(String plaintext, String encoded) {
 	return passwordEncoder.matches(plaintext, encoded);
-    }
-
-    private static ITenantManagement getTenantManagement() {
-	return null;
     }
 }

@@ -62,11 +62,10 @@ public interface IScheduleManagement extends ITenantEngineLifecycleComponent {
      * Delete an existing schedule.
      * 
      * @param token
-     * @param force
      * @return
      * @throws SiteWhereException
      */
-    public ISchedule deleteSchedule(String token, boolean force) throws SiteWhereException;
+    public ISchedule deleteSchedule(String token) throws SiteWhereException;
 
     /**
      * Create a new scheduled job.
@@ -109,9 +108,8 @@ public interface IScheduleManagement extends ITenantEngineLifecycleComponent {
      * Delete an existing scheduled job.
      * 
      * @param token
-     * @param force
      * @return
      * @throws SiteWhereException
      */
-    public IScheduledJob deleteScheduledJob(String token, boolean force) throws SiteWhereException;
+    public IScheduledJob deleteScheduledJob(String token) throws SiteWhereException;
 }

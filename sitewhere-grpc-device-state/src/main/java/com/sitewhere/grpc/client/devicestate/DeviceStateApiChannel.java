@@ -177,15 +177,14 @@ public class DeviceStateApiChannel extends MultitenantApiChannel<DeviceStateGrpc
     /*
      * @see
      * com.sitewhere.spi.device.state.IDeviceStateManagement#deleteDeviceState(java.
-     * util.UUID, boolean)
+     * util.UUID)
      */
     @Override
-    public IDeviceState deleteDeviceState(UUID id, boolean force) throws SiteWhereException {
+    public IDeviceState deleteDeviceState(UUID id) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, DeviceStateGrpc.getDeleteDeviceStateMethod());
 	    GDeleteDeviceStateRequest.Builder grequest = GDeleteDeviceStateRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(id));
-	    grequest.setForce(force);
 	    GDeleteDeviceStateResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .deleteDeviceState(grequest.build());
 	    IDeviceState response = (gresponse.hasDeviceState())

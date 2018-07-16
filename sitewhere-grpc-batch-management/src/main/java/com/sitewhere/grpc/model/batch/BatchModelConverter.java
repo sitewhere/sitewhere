@@ -22,7 +22,6 @@ import com.sitewhere.grpc.model.BatchModel.GBatchOperationSearchResults;
 import com.sitewhere.grpc.model.BatchModel.GBatchOperationStatus;
 import com.sitewhere.grpc.model.BatchModel.GBatchOperationUpdateRequest;
 import com.sitewhere.grpc.model.BatchModel.GElementProcessingStatus;
-import com.sitewhere.grpc.model.CommonModel.GOptionalBoolean;
 import com.sitewhere.grpc.model.CommonModel.GOptionalString;
 import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.rest.model.batch.BatchElement;
@@ -217,9 +216,6 @@ public class BatchModelConverter {
 	    throws SiteWhereException {
 	BatchOperationSearchCriteria api = new BatchOperationSearchCriteria(grpc.getPaging().getPageNumber(),
 		grpc.getPaging().getPageSize());
-	if (grpc.hasIncludeDeleted()) {
-	    api.setIncludeDeleted(grpc.getIncludeDeleted().getValue());
-	}
 	return api;
     }
 
@@ -234,7 +230,6 @@ public class BatchModelConverter {
 	    throws SiteWhereException {
 	GBatchOperationSearchCriteria.Builder grpc = GBatchOperationSearchCriteria.newBuilder();
 	grpc.setPaging(CommonModelConverter.asGrpcPaging(api));
-	grpc.setIncludeDeleted(GOptionalBoolean.newBuilder().setValue(api.isIncludeDeleted()).build());
 	return grpc.build();
     }
 

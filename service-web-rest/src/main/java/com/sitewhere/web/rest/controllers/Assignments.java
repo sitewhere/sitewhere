@@ -161,11 +161,10 @@ public class Assignments extends RestControllerBase {
     @ApiOperation(value = "Delete an existing device assignment")
     @Secured({ SiteWhereRoles.REST })
     public DeviceAssignment deleteDeviceAssignment(
-	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
+	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token)
 	    throws SiteWhereException {
 	IDeviceAssignment existing = assertDeviceAssignment(token);
-	IDeviceAssignment assignment = getDeviceManagement().deleteDeviceAssignment(existing.getId(), force);
+	IDeviceAssignment assignment = getDeviceManagement().deleteDeviceAssignment(existing.getId());
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);

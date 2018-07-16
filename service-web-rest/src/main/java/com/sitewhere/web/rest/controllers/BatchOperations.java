@@ -86,12 +86,10 @@ public class BatchOperations extends RestControllerBase {
     @ApiOperation(value = "List batch operations")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IBatchOperation> listBatchOperations(
-	    @ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize)
+	    throws SiteWhereException {
 	BatchOperationSearchCriteria criteria = new BatchOperationSearchCriteria(page, pageSize);
-	criteria.setIncludeDeleted(includeDeleted);
 
 	ISearchResults<IBatchOperation> results = getBatchManagement().listBatchOperations(criteria);
 	BatchOperationMarshalHelper helper = new BatchOperationMarshalHelper();

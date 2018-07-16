@@ -187,18 +187,16 @@ public class Assets extends RestControllerBase {
      * Delete information for an asset based on token.
      * 
      * @param assetToken
-     * @param force
      * @return
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{assetToken:.+}", method = RequestMethod.DELETE)
     @ApiOperation(value = "Delete asset by token")
     @Secured({ SiteWhereRoles.REST })
-    public IAsset deleteAsset(@ApiParam(value = "Asset token", required = true) @PathVariable String assetToken,
-	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
+    public IAsset deleteAsset(@ApiParam(value = "Asset token", required = true) @PathVariable String assetToken)
 	    throws SiteWhereException {
 	IAsset existing = assureAsset(assetToken);
-	return getAssetManagement().deleteAsset(existing.getId(), force);
+	return getAssetManagement().deleteAsset(existing.getId());
     }
 
     /**

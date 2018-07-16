@@ -103,7 +103,6 @@ message GListTenantsResponse {
 // Request for deleting a tenant.
 message GDeleteTenantRequest {
 	com.sitewhere.grpc.model.GUUID id = 1;
-	bool force = 2;
 }
 
 // Response for deleting a tenant.

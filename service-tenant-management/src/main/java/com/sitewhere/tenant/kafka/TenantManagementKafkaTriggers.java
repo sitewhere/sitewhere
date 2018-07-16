@@ -60,12 +60,11 @@ public class TenantManagementKafkaTriggers extends TenantManagementDecorator {
 
     /*
      * @see
-     * com.sitewhere.tenant.TenantManagementDecorator#deleteTenant(java.util.UUID,
-     * boolean)
+     * com.sitewhere.tenant.TenantManagementDecorator#deleteTenant(java.util.UUID)
      */
     @Override
-    public ITenant deleteTenant(UUID tenantId, boolean force) throws SiteWhereException {
-	ITenant deleted = super.deleteTenant(tenantId, force);
+    public ITenant deleteTenant(UUID tenantId) throws SiteWhereException {
+	ITenant deleted = super.deleteTenant(tenantId);
 	getTenantModelProducer().onTenantDeleted(deleted);
 	return deleted;
     }

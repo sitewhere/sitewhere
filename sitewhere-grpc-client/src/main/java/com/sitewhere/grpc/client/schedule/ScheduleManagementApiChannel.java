@@ -157,15 +157,14 @@ public class ScheduleManagementApiChannel extends MultitenantApiChannel<Schedule
     /*
      * @see
      * com.sitewhere.spi.scheduling.IScheduleManagement#deleteSchedule(java.lang.
-     * String, boolean)
+     * String)
      */
     @Override
-    public ISchedule deleteSchedule(String token, boolean force) throws SiteWhereException {
+    public ISchedule deleteSchedule(String token) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, ScheduleManagementGrpc.getDeleteScheduleMethod());
 	    GDeleteScheduleRequest.Builder grequest = GDeleteScheduleRequest.newBuilder();
 	    grequest.setToken(token);
-	    grequest.setForce(force);
 	    GDeleteScheduleResponse gresponse = getGrpcChannel().getBlockingStub().deleteSchedule(grequest.build());
 	    ISchedule response = (gresponse.hasSchedule())
 		    ? ScheduleModelConverter.asApiSchedule(gresponse.getSchedule())
@@ -271,15 +270,14 @@ public class ScheduleManagementApiChannel extends MultitenantApiChannel<Schedule
     /*
      * @see
      * com.sitewhere.spi.scheduling.IScheduleManagement#deleteScheduledJob(java.lang
-     * .String, boolean)
+     * .String)
      */
     @Override
-    public IScheduledJob deleteScheduledJob(String token, boolean force) throws SiteWhereException {
+    public IScheduledJob deleteScheduledJob(String token) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, ScheduleManagementGrpc.getDeleteScheduledJobMethod());
 	    GDeleteScheduledJobRequest.Builder grequest = GDeleteScheduledJobRequest.newBuilder();
 	    grequest.setToken(token);
-	    grequest.setForce(force);
 	    GDeleteScheduledJobResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .deleteScheduledJob(grequest.build());
 	    IScheduledJob response = (gresponse.hasScheduledJob())

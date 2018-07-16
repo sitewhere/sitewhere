@@ -99,7 +99,6 @@ message GListSchedulesResponse {
 // Request for deleting a schedule.
 message GDeleteScheduleRequest {
 	string token = 1;
-	bool force = 2;
 }
 	
 // Response for deleting a schedule.
@@ -155,7 +154,6 @@ message GListScheduledJobsResponse {
 // Request for deleting a scheduled job.
 message GDeleteScheduledJobRequest {
 	string token = 1;
-	bool force = 2;
 }
 	
 // Response for deleting a scheduled job.

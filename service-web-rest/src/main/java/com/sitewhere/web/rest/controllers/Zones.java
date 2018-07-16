@@ -137,11 +137,10 @@ public class Zones extends RestControllerBase {
     @ApiOperation(value = "Delete zone by unique token")
     @Secured({ SiteWhereRoles.REST })
     public IZone deleteZone(
-	    @ApiParam(value = "Unique token that identifies zone", required = true) @PathVariable String zoneToken,
-	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+	    @ApiParam(value = "Unique token that identifies zone", required = true) @PathVariable String zoneToken)
+	    throws SiteWhereException {
 	IZone existing = assertZone(zoneToken);
-	return getDeviceManagement().deleteZone(existing.getId(), force);
+	return getDeviceManagement().deleteZone(existing.getId());
     }
 
     /**

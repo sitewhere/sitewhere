@@ -233,7 +233,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getDeleteCustomerTypeMethod());
 	    ICustomerType apiResult = getDeviceManagement()
-		    .deleteCustomerType(CommonModelConverter.asApiUuid(request.getId()), request.getForce());
+		    .deleteCustomerType(CommonModelConverter.asApiUuid(request.getId()));
 	    GDeleteCustomerTypeResponse.Builder response = GDeleteCustomerTypeResponse.newBuilder();
 	    response.setCustomerType(DeviceModelConverter.asGrpcCustomerType(apiResult));
 	    responseObserver.onNext(response.build());
@@ -412,8 +412,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GDeleteCustomerResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getDeleteCustomerMethod());
-	    ICustomer apiResult = getDeviceManagement().deleteCustomer(CommonModelConverter.asApiUuid(request.getId()),
-		    request.getForce());
+	    ICustomer apiResult = getDeviceManagement().deleteCustomer(CommonModelConverter.asApiUuid(request.getId()));
 	    GDeleteCustomerResponse.Builder response = GDeleteCustomerResponse.newBuilder();
 	    response.setCustomer(DeviceModelConverter.asGrpcCustomer(apiResult));
 	    responseObserver.onNext(response.build());
@@ -565,8 +564,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GDeleteAreaTypeResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getDeleteAreaTypeMethod());
-	    IAreaType apiResult = getDeviceManagement().deleteAreaType(CommonModelConverter.asApiUuid(request.getId()),
-		    request.getForce());
+	    IAreaType apiResult = getDeviceManagement().deleteAreaType(CommonModelConverter.asApiUuid(request.getId()));
 	    GDeleteAreaTypeResponse.Builder response = GDeleteAreaTypeResponse.newBuilder();
 	    response.setAreaType(DeviceModelConverter.asGrpcAreaType(apiResult));
 	    responseObserver.onNext(response.build());
@@ -738,8 +736,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void deleteArea(GDeleteAreaRequest request, StreamObserver<GDeleteAreaResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getDeleteAreaMethod());
-	    IArea apiResult = getDeviceManagement().deleteArea(CommonModelConverter.asApiUuid(request.getId()),
-		    request.getForce());
+	    IArea apiResult = getDeviceManagement().deleteArea(CommonModelConverter.asApiUuid(request.getId()));
 	    GDeleteAreaResponse.Builder response = GDeleteAreaResponse.newBuilder();
 	    response.setArea(DeviceModelConverter.asGrpcArea(apiResult));
 	    responseObserver.onNext(response.build());
@@ -897,8 +894,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void deleteZone(GDeleteZoneRequest request, StreamObserver<GDeleteZoneResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getDeleteZoneMethod());
-	    IZone apiResult = getDeviceManagement().deleteZone(CommonModelConverter.asApiUuid(request.getId()),
-		    request.getForce());
+	    IZone apiResult = getDeviceManagement().deleteZone(CommonModelConverter.asApiUuid(request.getId()));
 	    GDeleteZoneResponse.Builder response = GDeleteZoneResponse.newBuilder();
 	    response.setZone(DeviceModelConverter.asGrpcZone(apiResult));
 	    responseObserver.onNext(response.build());
@@ -1025,11 +1021,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GListDeviceTypesResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDeviceTypesMethod());
-	    boolean includeDeleted = request.getCriteria().hasIncludeDeleted()
-		    ? request.getCriteria().getIncludeDeleted().getValue()
-		    : false;
-	    ISearchResults<IDeviceType> apiResult = getDeviceManagement().listDeviceTypes(includeDeleted,
-		    CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
+	    ISearchResults<IDeviceType> apiResult = getDeviceManagement()
+		    .listDeviceTypes(CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
 	    GListDeviceTypesResponse.Builder response = GListDeviceTypesResponse.newBuilder();
 	    GDeviceTypeSearchResults.Builder results = GDeviceTypeSearchResults.newBuilder();
 	    for (IDeviceType apiType : apiResult.getResults()) {
@@ -1058,7 +1051,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceTypeMethod());
 	    IDeviceType apiResult = getDeviceManagement()
-		    .deleteDeviceType(CommonModelConverter.asApiUuid(request.getId()), request.getForce());
+		    .deleteDeviceType(CommonModelConverter.asApiUuid(request.getId()));
 	    GDeleteDeviceTypeResponse.Builder response = GDeleteDeviceTypeResponse.newBuilder();
 	    response.setDeviceType(DeviceModelConverter.asGrpcDeviceType(apiResult));
 	    responseObserver.onNext(response.build());
@@ -1231,7 +1224,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceCommandMethod());
 	    IDeviceCommand apiResult = getDeviceManagement()
-		    .deleteDeviceCommand(CommonModelConverter.asApiUuid(request.getId()), request.getForce());
+		    .deleteDeviceCommand(CommonModelConverter.asApiUuid(request.getId()));
 	    GDeleteDeviceCommandResponse.Builder response = GDeleteDeviceCommandResponse.newBuilder();
 	    response.setCommand(DeviceModelConverter.asGrpcDeviceCommand(apiResult));
 	    responseObserver.onNext(response.build());
@@ -1524,11 +1517,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void listDevices(GListDevicesRequest request, StreamObserver<GListDevicesResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDevicesMethod());
-	    boolean includeDeleted = request.getCriteria().hasIncludeDeleted()
-		    ? request.getCriteria().getIncludeDeleted().getValue()
-		    : false;
-	    ISearchResults<IDevice> apiResult = getDeviceManagement().listDevices(includeDeleted,
-		    DeviceModelConverter.asApiDeviceSearchCriteria(request.getCriteria()));
+	    ISearchResults<IDevice> apiResult = getDeviceManagement()
+		    .listDevices(DeviceModelConverter.asApiDeviceSearchCriteria(request.getCriteria()));
 	    GListDevicesResponse.Builder response = GListDevicesResponse.newBuilder();
 	    GDeviceSearchResults.Builder results = GDeviceSearchResults.newBuilder();
 	    for (IDevice apiDevice : apiResult.getResults()) {
@@ -1612,8 +1602,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void deleteDevice(GDeleteDeviceRequest request, StreamObserver<GDeleteDeviceResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceMethod());
-	    IDevice apiResult = getDeviceManagement().deleteDevice(CommonModelConverter.asApiUuid(request.getId()),
-		    request.getForce());
+	    IDevice apiResult = getDeviceManagement().deleteDevice(CommonModelConverter.asApiUuid(request.getId()));
 	    GDeleteDeviceResponse.Builder response = GDeleteDeviceResponse.newBuilder();
 	    response.setDevice(DeviceModelConverter.asGrpcDevice(apiResult));
 	    responseObserver.onNext(response.build());
@@ -1749,11 +1738,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GListDeviceGroupsResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDeviceGroupsMethod());
-	    boolean includeDeleted = request.getCriteria().hasIncludeDeleted()
-		    ? request.getCriteria().getIncludeDeleted().getValue()
-		    : false;
-	    ISearchResults<IDeviceGroup> apiResult = getDeviceManagement().listDeviceGroups(includeDeleted,
-		    CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
+	    ISearchResults<IDeviceGroup> apiResult = getDeviceManagement()
+		    .listDeviceGroups(CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
 	    GListDeviceGroupsResponse.Builder response = GListDeviceGroupsResponse.newBuilder();
 	    GDeviceGroupSearchResults.Builder results = GDeviceGroupSearchResults.newBuilder();
 	    for (IDeviceGroup apiGroup : apiResult.getResults()) {
@@ -1784,11 +1770,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GListDeviceGroupsWithRoleResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDeviceGroupsWithRoleMethod());
-	    boolean includeDeleted = request.getCriteria().hasIncludeDeleted()
-		    ? request.getCriteria().getIncludeDeleted().getValue()
-		    : false;
 	    ISearchResults<IDeviceGroup> apiResult = getDeviceManagement().listDeviceGroupsWithRole(
-		    request.getCriteria().getRole(), includeDeleted,
+		    request.getCriteria().getRole(),
 		    CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
 	    GListDeviceGroupsWithRoleResponse.Builder response = GListDeviceGroupsWithRoleResponse.newBuilder();
 	    GDeviceGroupSearchResults.Builder results = GDeviceGroupSearchResults.newBuilder();
@@ -1821,7 +1804,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceGroupMethod());
 	    IDeviceGroup apiResult = getDeviceManagement()
-		    .deleteDeviceGroup(CommonModelConverter.asApiUuid(request.getId()), request.getForce());
+		    .deleteDeviceGroup(CommonModelConverter.asApiUuid(request.getId()));
 	    GDeleteDeviceGroupResponse.Builder response = GDeleteDeviceGroupResponse.newBuilder();
 	    response.setGroup(DeviceModelConverter.asGrpcDeviceGroup(apiResult));
 	    responseObserver.onNext(response.build());
@@ -2054,7 +2037,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getDeleteDeviceAssignmentMethod());
 	    IDeviceAssignment apiResult = getDeviceManagement()
-		    .deleteDeviceAssignment(CommonModelConverter.asApiUuid(request.getId()), request.getForce());
+		    .deleteDeviceAssignment(CommonModelConverter.asApiUuid(request.getId()));
 	    GDeleteDeviceAssignmentResponse.Builder response = GDeleteDeviceAssignmentResponse.newBuilder();
 	    response.setAssignment(DeviceModelConverter.asGrpcDeviceAssignment(apiResult));
 	    responseObserver.onNext(response.build());

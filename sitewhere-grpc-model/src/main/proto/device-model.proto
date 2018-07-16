@@ -43,8 +43,7 @@ message GDeviceTypeCreateRequest {
 
 // Criteria for searching device types.
 message GDeviceTypeSearchCriteria {
-	GOptionalBoolean includeDeleted = 1;
-	GPaging paging = 2;
+	GPaging paging = 1;
 }
 
 // Results for device type search.
@@ -186,12 +185,11 @@ message GDeviceCreateRequest {
 
 // Criteria for searching devices.
 message GDeviceSearchCriteria {
-	GOptionalBoolean includeDeleted = 1;
-	GDeviceTypeReference deviceType = 2;
-	GOptionalBoolean excludeAssigned = 4;
-	uint64 createdAfter = 5;
-	uint64 createdBefore = 6;
-	GPaging paging = 7;
+	GDeviceTypeReference deviceType = 1;
+	GOptionalBoolean excludeAssigned = 2;
+	uint64 createdAfter = 3;
+	uint64 createdBefore = 4;
+	GPaging paging = 5;
 }
 
 // Results for device search.
@@ -248,15 +246,13 @@ message GDeviceGroupElementsSearchResults {
 
 // Criteria for searching device groups.
 message GDeviceGroupSearchCriteria {
-	GOptionalBoolean includeDeleted = 1;
-	GPaging paging = 2;
+	GPaging paging = 1;
 }
 
 // Criteria for searching device groups.
 message GDeviceGroupsWithRoleSearchCriteria {
-	GOptionalBoolean includeDeleted = 1;
-	string role = 2;
-	GPaging paging = 3;
+	string role = 1;
+	GPaging paging = 2;
 }
 
 // Results for device group search.

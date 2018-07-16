@@ -211,16 +211,14 @@ public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManage
 
     /*
      * @see
-     * com.sitewhere.spi.batch.IBatchManagement#deleteBatchOperation(java.util.UUID,
-     * boolean)
+     * com.sitewhere.spi.batch.IBatchManagement#deleteBatchOperation(java.util.UUID)
      */
     @Override
-    public IBatchOperation deleteBatchOperation(UUID batchOperationId, boolean force) throws SiteWhereException {
+    public IBatchOperation deleteBatchOperation(UUID batchOperationId) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, BatchManagementGrpc.getDeleteBatchOperationMethod());
 	    GDeleteBatchOperationRequest.Builder grequest = GDeleteBatchOperationRequest.newBuilder();
 	    grequest.setBatchOperationId(CommonModelConverter.asGrpcUuid(batchOperationId));
-	    grequest.setForce(force);
 	    GDeleteBatchOperationResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .deleteBatchOperation(grequest.build());
 	    IBatchOperation response = (gresponse.hasBatchOperation())

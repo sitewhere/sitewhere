@@ -13,11 +13,4 @@ package com.sitewhere.spi.user;
  * @author Derek Adams
  */
 public interface IUserSearchCriteria {
-
-    /**
-     * Indicates whether deleted records should be returned.
-     * 
-     * @return
-     */
-    public boolean isIncludeDeleted();
 }

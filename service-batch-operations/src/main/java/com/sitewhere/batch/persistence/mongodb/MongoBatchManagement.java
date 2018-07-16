@@ -155,38 +155,26 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
 	    throws SiteWhereException {
 	MongoCollection<Document> ops = getMongoClient().getBatchOperationsCollection();
 	Document dbCriteria = new Document();
-	if (!criteria.isIncludeDeleted()) {
-	    MongoSiteWhereEntity.setDeleted(dbCriteria, false);
-	}
 	Document sort = new Document(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
 	return MongoPersistence.search(IBatchOperation.class, ops, dbCriteria, sort, criteria, LOOKUP);
     }
 
     /*
      * @see
-     * com.sitewhere.spi.batch.IBatchManagement#deleteBatchOperation(java.util.UUID,
-     * boolean)
+     * com.sitewhere.spi.batch.IBatchManagement#deleteBatchOperation(java.util.UUID)
      */
     @Override
-    public IBatchOperation deleteBatchOperation(UUID batchOperationId, boolean force) throws SiteWhereException {
+    public IBatchOperation deleteBatchOperation(UUID batchOperationId) throws SiteWhereException {
 	Document existing = assertBatchOperation(batchOperationId);
-	if (force) {
-	    MongoCollection<Document> ops = getMongoClient().getBatchOperationsCollection();
-	    MongoPersistence.delete(ops, existing);
+	MongoCollection<Document> ops = getMongoClient().getBatchOperationsCollection();
+	MongoPersistence.delete(ops, existing);
 
-	    // Delete operation elements as well.
-	    MongoCollection<Document> elements = getMongoClient().getBatchOperationElementsCollection();
-	    Document match = new Document(MongoBatchElement.PROP_BATCH_OPERATION_ID, batchOperationId);
-	    MongoPersistence.delete(elements, match);
+	// Delete operation elements as well.
+	MongoCollection<Document> elements = getMongoClient().getBatchOperationElementsCollection();
+	Document match = new Document(MongoBatchElement.PROP_BATCH_OPERATION_ID, batchOperationId);
+	MongoPersistence.delete(elements, match);
 
-	    return MongoBatchOperation.fromDocument(existing);
-	} else {
-	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    Document query = new Document(MongoBatchOperation.PROP_ID, batchOperationId);
-	    MongoCollection<Document> ops = getMongoClient().getBatchOperationsCollection();
-	    MongoPersistence.update(ops, query, existing);
-	    return MongoBatchOperation.fromDocument(existing);
-	}
+	return MongoBatchOperation.fromDocument(existing);
     }
 
     /*

@@ -439,7 +439,7 @@ public class DeviceManagementPersistence extends Persistence {
 	    throws SiteWhereException {
 	DeviceSearchCriteria criteria = new DeviceSearchCriteria(1, 1, null, null);
 	criteria.setDeviceTypeToken(deviceType.getToken());
-	ISearchResults<IDevice> devices = deviceManagement.listDevices(false, criteria);
+	ISearchResults<IDevice> devices = deviceManagement.listDevices(criteria);
 	if (devices.getNumResults() > 0) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceTypeInUseByDevices, ErrorLevel.ERROR);
 	}

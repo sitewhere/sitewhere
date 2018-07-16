@@ -189,7 +189,6 @@ public class UserModelConverter {
      */
     public static GUserSearchCriteria asGrpcUserSearchCriteria(IUserSearchCriteria api) throws SiteWhereException {
 	GUserSearchCriteria.Builder builder = GUserSearchCriteria.newBuilder();
-	builder.setIncludeDeleted(api.isIncludeDeleted());
 	return builder.build();
     }
 

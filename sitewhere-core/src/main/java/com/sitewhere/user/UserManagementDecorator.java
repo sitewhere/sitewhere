@@ -137,14 +137,11 @@ public class UserManagementDecorator extends LifecycleComponentDecorator<IUserMa
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.user.IUserManagement#deleteUser(java.lang.String,
-     * boolean)
+     * @see com.sitewhere.spi.user.IUserManagement#deleteUser(java.lang.String)
      */
     @Override
-    public IUser deleteUser(String username, boolean force) throws SiteWhereException {
-	return getDelegate().deleteUser(username, force);
+    public IUser deleteUser(String username) throws SiteWhereException {
+	return getDelegate().deleteUser(username);
     }
 
     /*

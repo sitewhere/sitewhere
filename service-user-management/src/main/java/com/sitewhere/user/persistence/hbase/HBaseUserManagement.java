@@ -190,14 +190,11 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.user.IUserManagement#deleteUser(java.lang.String,
-     * boolean)
+     * @see com.sitewhere.spi.user.IUserManagement#deleteUser(java.lang.String)
      */
     @Override
-    public IUser deleteUser(String username, boolean force) throws SiteWhereException {
-	return HBaseUser.deleteUser(context, username, force);
+    public IUser deleteUser(String username) throws SiteWhereException {
+	return HBaseUser.deleteUser(context, username, false);
     }
 
     /*

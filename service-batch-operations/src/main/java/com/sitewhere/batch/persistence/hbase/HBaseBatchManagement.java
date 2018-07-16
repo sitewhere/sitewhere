@@ -102,11 +102,10 @@ public class HBaseBatchManagement extends TenantEngineLifecycleComponent impleme
 
     /*
      * @see
-     * com.sitewhere.spi.batch.IBatchManagement#deleteBatchOperation(java.util.UUID,
-     * boolean)
+     * com.sitewhere.spi.batch.IBatchManagement#deleteBatchOperation(java.util.UUID)
      */
     @Override
-    public IBatchOperation deleteBatchOperation(UUID batchOperationId, boolean force) throws SiteWhereException {
+    public IBatchOperation deleteBatchOperation(UUID batchOperationId) throws SiteWhereException {
 	return null;
     }
 

@@ -81,11 +81,10 @@ public class TenantManagementDecorator extends LifecycleComponentDecorator<ITena
     }
 
     /*
-     * @see com.sitewhere.spi.tenant.ITenantManagement#deleteTenant(java.util.UUID,
-     * boolean)
+     * @see com.sitewhere.spi.tenant.ITenantManagement#deleteTenant(java.util.UUID)
      */
     @Override
-    public ITenant deleteTenant(UUID tenantId, boolean force) throws SiteWhereException {
-	return getDelegate().deleteTenant(tenantId, force);
+    public ITenant deleteTenant(UUID tenantId) throws SiteWhereException {
+	return getDelegate().deleteTenant(tenantId);
     }
 }

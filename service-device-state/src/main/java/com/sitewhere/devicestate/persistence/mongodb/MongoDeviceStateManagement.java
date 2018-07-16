@@ -18,7 +18,6 @@ import com.sitewhere.devicestate.microservice.DeviceStateMicroservice;
 import com.sitewhere.devicestate.persistence.DeviceStatePersistence;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
-import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.device.state.DeviceState;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -196,22 +195,15 @@ public class MongoDeviceStateManagement extends TenantEngineLifecycleComponent i
     /*
      * @see
      * com.sitewhere.spi.device.state.IDeviceStateManagement#deleteDeviceState(java.
-     * util.UUID, boolean)
+     * util.UUID)
      */
     @Override
-    public IDeviceState deleteDeviceState(UUID id, boolean force) throws SiteWhereException {
+    public IDeviceState deleteDeviceState(UUID id) throws SiteWhereException {
 	Document existing = assertDeviceState(id);
 
 	MongoCollection<Document> states = getMongoClient().getDeviceStatesCollection();
-	if (force) {
-	    MongoPersistence.delete(states, existing);
-	    return MongoDeviceState.fromDocument(existing);
-	} else {
-	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    Document query = new Document(MongoDeviceState.PROP_ID, id);
-	    MongoPersistence.update(states, query, existing);
-	    return MongoDeviceState.fromDocument(existing);
-	}
+	MongoPersistence.delete(states, existing);
+	return MongoDeviceState.fromDocument(existing);
     }
 
     public IDeviceStateManagementMongoClient getMongoClient() {

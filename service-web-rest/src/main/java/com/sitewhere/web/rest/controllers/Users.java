@@ -131,18 +131,16 @@ public class Users extends RestControllerBase {
      * Delete information for a given user based on username.
      * 
      * @param username
-     * @param force
      * @return
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/{username:.+}", method = RequestMethod.DELETE)
     @ApiOperation(value = "Delete user by username")
     public User deleteUserByUsername(
-	    @ApiParam(value = "Unique username", required = true) @PathVariable String username,
-	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
+	    @ApiParam(value = "Unique username", required = true) @PathVariable String username)
 	    throws SiteWhereException {
 	checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
-	IUser user = getUserManagement().deleteUser(username, force);
+	IUser user = getUserManagement().deleteUser(username);
 	return User.copy(user);
     }
 
@@ -180,7 +178,6 @@ public class Users extends RestControllerBase {
 	    @ApiParam(value = "Max records to return", required = false) @RequestParam(defaultValue = "100") int count,
 	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
 	UserSearchCriteria criteria = new UserSearchCriteria();
-	criteria.setIncludeDeleted(includeDeleted);
 	List<IUser> users = getUserManagement().listUsers(criteria);
 	List<IUser> usersConv = new ArrayList<IUser>();
 	for (IUser user : users) {

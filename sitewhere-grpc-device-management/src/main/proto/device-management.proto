@@ -375,7 +375,6 @@ message GListCustomerTypesResponse {
 // Request for deleting a customer type.
 message GDeleteCustomerTypeRequest {
 	com.sitewhere.grpc.model.GUUID id = 1;
-	bool force = 2;
 }
 	
 // Response for deleting a customer type.
@@ -451,7 +450,6 @@ message GListCustomersResponse {
 // Request for deleting a customer.
 message GDeleteCustomerRequest {
 	com.sitewhere.grpc.model.GUUID id = 1;
-	bool force = 2;
 }
 	
 // Response for deleting a customer.
@@ -517,7 +515,6 @@ message GListAreaTypesResponse {
 // Request for deleting an area type.
 message GDeleteAreaTypeRequest {
 	com.sitewhere.grpc.model.GUUID id = 1;
-	bool force = 2;
 }
 	
 // Response for deleting an area type.
@@ -593,7 +590,6 @@ message GListAreasResponse {
 // Request for deleting an area.
 message GDeleteAreaRequest {
 	com.sitewhere.grpc.model.GUUID id = 1;
-	bool force = 2;
 }
 	
 // Response for deleting an area.
@@ -662,7 +658,6 @@ message GListZonesResponse {
 message GDeleteZoneRequest {
 	com.sitewhere.grpc.model.GUUID siteId = 1;
 	com.sitewhere.grpc.model.GUUID id = 2;
-	bool force = 3;
 }
 	
 // Response for deleting a zone.
@@ -728,7 +723,6 @@ message GListDeviceTypesResponse {
 // Request for deleting a device type.
 message GDeleteDeviceTypeRequest {
 	com.sitewhere.grpc.model.GUUID id = 1;
-	bool force = 2;
 }
 	
 // Response for deleting a device type.
@@ -793,8 +787,7 @@ message GListDeviceCommandsResponse {
 	
 // Request for deleting a device command.
 message GDeleteDeviceCommandRequest {
-	com.sitewhere.grpc.model.GUUID id = 2;
-	bool force = 3;
+	com.sitewhere.grpc.model.GUUID id = 1;
 }
 	
 // Response for deleting a device command.
@@ -947,7 +940,6 @@ message GDeleteDeviceElementMappingResponse {
 // Request for deleting a device.
 message GDeleteDeviceRequest {
 	com.sitewhere.grpc.model.GUUID id = 1;
-	bool force = 2;
 }
 	
 // Response for deleting a device.
@@ -1002,7 +994,6 @@ message GGetCurrentAssignmentForDeviceResponse {
 // Request for deleting a device assignment.
 message GDeleteDeviceAssignmentRequest {
 	com.sitewhere.grpc.model.GUUID id = 1;
-	bool force = 2;
 }
 	
 // Response for deleting a device assignment.
@@ -1146,7 +1137,6 @@ message GListDeviceGroupsWithRoleResponse {
 // Request for deleting a device group.
 message GDeleteDeviceGroupRequest {
 	com.sitewhere.grpc.model.GUUID id = 1;
-	bool force = 2;
 }
 	
 // Response for deleting a device group.
@@ -1235,7 +1225,6 @@ message GSearchDeviceAlarmsResponse {
 // Request for deleting a device alarm.
 message GDeleteDeviceAlarmRequest {
 	com.sitewhere.grpc.model.GUUID id = 1;
-	bool force = 2;
 }
 	
 // Response for deleting a device alarm.

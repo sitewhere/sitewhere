@@ -88,12 +88,11 @@ public class BatchManagementDecorator extends TenantEngineLifecycleComponentDeco
 
     /*
      * @see
-     * com.sitewhere.spi.batch.IBatchManagement#deleteBatchOperation(java.util.UUID,
-     * boolean)
+     * com.sitewhere.spi.batch.IBatchManagement#deleteBatchOperation(java.util.UUID)
      */
     @Override
-    public IBatchOperation deleteBatchOperation(UUID batchOperationId, boolean force) throws SiteWhereException {
-	return getDelegate().deleteBatchOperation(batchOperationId, force);
+    public IBatchOperation deleteBatchOperation(UUID batchOperationId) throws SiteWhereException {
+	return getDelegate().deleteBatchOperation(batchOperationId);
     }
 
     /*

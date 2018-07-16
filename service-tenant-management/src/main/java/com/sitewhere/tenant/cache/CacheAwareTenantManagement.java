@@ -90,12 +90,11 @@ public class CacheAwareTenantManagement extends TenantManagementDecorator {
 
     /*
      * @see
-     * com.sitewhere.tenant.TenantManagementDecorator#deleteTenant(java.util.UUID,
-     * boolean)
+     * com.sitewhere.tenant.TenantManagementDecorator#deleteTenant(java.util.UUID)
      */
     @Override
-    public ITenant deleteTenant(UUID tenantId, boolean force) throws SiteWhereException {
-	ITenant result = super.deleteTenant(tenantId, force);
+    public ITenant deleteTenant(UUID tenantId) throws SiteWhereException {
+	ITenant result = super.deleteTenant(tenantId);
 	getTenantByTokenCache().removeCacheEntry(null, result.getToken());
 	getLogger().trace("Removed tenant from cache.");
 	return result;

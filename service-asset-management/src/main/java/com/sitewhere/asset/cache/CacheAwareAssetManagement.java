@@ -113,13 +113,12 @@ public class CacheAwareAssetManagement extends AssetManagementDecorator {
     }
 
     /*
-     * @see com.sitewhere.asset.AssetManagementDecorator#deleteAsset(java.util.UUID,
-     * boolean)
+     * @see com.sitewhere.asset.AssetManagementDecorator#deleteAsset(java.util.UUID)
      */
     @Override
-    public IAsset deleteAsset(UUID assetId, boolean force) throws SiteWhereException {
+    public IAsset deleteAsset(UUID assetId) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	IAsset result = super.deleteAsset(assetId, force);
+	IAsset result = super.deleteAsset(assetId);
 	getAssetCache().removeCacheEntry(tenant, result.getToken());
 	getAssetByIdCache().removeCacheEntry(tenant, result.getId());
 	CacheUtils.logCacheRemoved(result.getToken());
@@ -191,13 +190,12 @@ public class CacheAwareAssetManagement extends AssetManagementDecorator {
 
     /*
      * @see
-     * com.sitewhere.asset.AssetManagementDecorator#deleteAssetType(java.util.UUID,
-     * boolean)
+     * com.sitewhere.asset.AssetManagementDecorator#deleteAssetType(java.util.UUID)
      */
     @Override
-    public IAssetType deleteAssetType(UUID assetTypeId, boolean force) throws SiteWhereException {
+    public IAssetType deleteAssetType(UUID assetTypeId) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
-	IAssetType result = super.deleteAssetType(assetTypeId, force);
+	IAssetType result = super.deleteAssetType(assetTypeId);
 	getAssetTypeCache().removeCacheEntry(tenant, result.getToken());
 	getAssetTypeByIdCache().removeCacheEntry(tenant, result.getId());
 	CacheUtils.logCacheRemoved(result.getToken());

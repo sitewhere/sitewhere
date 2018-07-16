@@ -174,7 +174,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, AssetManagementGrpc.getDeleteAssetTypeMethod());
 	    IAssetType apiResult = getAssetManagement()
-		    .deleteAssetType(CommonModelConverter.asApiUuid(request.getAssetTypeId()), request.getForce());
+		    .deleteAssetType(CommonModelConverter.asApiUuid(request.getAssetTypeId()));
 	    GDeleteAssetTypeResponse.Builder response = GDeleteAssetTypeResponse.newBuilder();
 	    response.setAssetType(AssetModelConverter.asGrpcAssetType(apiResult));
 	    responseObserver.onNext(response.build());
@@ -319,8 +319,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
     public void deleteAsset(GDeleteAssetRequest request, StreamObserver<GDeleteAssetResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, AssetManagementGrpc.getDeleteAssetMethod());
-	    IAsset apiResult = getAssetManagement().deleteAsset(CommonModelConverter.asApiUuid(request.getAssetId()),
-		    request.getForce());
+	    IAsset apiResult = getAssetManagement().deleteAsset(CommonModelConverter.asApiUuid(request.getAssetId()));
 	    GDeleteAssetResponse.Builder response = GDeleteAssetResponse.newBuilder();
 	    response.setAsset(AssetModelConverter.asGrpcAsset(apiResult));
 	    responseObserver.onNext(response.build());

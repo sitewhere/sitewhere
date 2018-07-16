@@ -118,11 +118,10 @@ public interface IUserManagement extends ILifecycleComponent {
      * Delete the user with the given username.
      * 
      * @param username
-     * @param force
      * @return
      * @throws SiteWhereException
      */
-    public IUser deleteUser(String username, boolean force) throws SiteWhereException;
+    public IUser deleteUser(String username) throws SiteWhereException;
 
     /**
      * Create a new granted authority.

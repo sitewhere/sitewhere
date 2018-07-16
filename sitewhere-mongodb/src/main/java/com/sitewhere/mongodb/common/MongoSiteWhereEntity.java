@@ -33,9 +33,6 @@ public class MongoSiteWhereEntity {
     /** Property for user that updated entity */
     public static final String PROP_UPDATED_BY = "upby";
 
-    /** Property for deleted flag */
-    public static final String PROP_DELETED = "dltd";
-
     /**
      * Copy information from SPI into Mongo {@link Document}.
      * 
@@ -55,7 +52,6 @@ public class MongoSiteWhereEntity {
 	if (source.getUpdatedBy() != null) {
 	    target.append(PROP_UPDATED_BY, source.getUpdatedBy());
 	}
-	target.append(PROP_DELETED, source.isDeleted());
     }
 
     /**
@@ -69,25 +65,10 @@ public class MongoSiteWhereEntity {
 	String createdBy = (String) source.get(PROP_CREATED_BY);
 	Date updatedDate = (Date) source.get(PROP_UPDATED_DATE);
 	String updatedBy = (String) source.get(PROP_UPDATED_BY);
-	Boolean deleted = (Boolean) source.get(PROP_DELETED);
 
 	target.setCreatedDate(createdDate);
 	target.setCreatedBy(createdBy);
 	target.setUpdatedDate(updatedDate);
 	target.setUpdatedBy(updatedBy);
-	target.setDeleted(false);
-	if (deleted != null) {
-	    target.setDeleted(deleted);
-	}
-    }
-
-    /**
-     * Set deleted flag on {@link Document}.
-     * 
-     * @param source
-     * @param deleted
-     */
-    public static void setDeleted(Document source, boolean deleted) {
-	source.put(PROP_DELETED, deleted);
     }
 }

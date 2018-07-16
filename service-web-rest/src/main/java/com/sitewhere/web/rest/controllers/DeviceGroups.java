@@ -149,7 +149,6 @@ public class DeviceGroups extends RestControllerBase {
      * Delete an existing device group.
      * 
      * @param groupToken
-     * @param force
      * @return
      * @throws SiteWhereException
      */
@@ -157,20 +156,19 @@ public class DeviceGroups extends RestControllerBase {
     @ApiOperation(value = "Delete device group by unique token")
     @Secured({ SiteWhereRoles.REST })
     public IDeviceGroup deleteDeviceGroup(
-	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
-	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken)
+	    throws SiteWhereException {
 	IDeviceGroup group = assureDeviceGroup(groupToken);
-	return getDeviceManagement().deleteDeviceGroup(group.getId(), force);
+	return getDeviceManagement().deleteDeviceGroup(group.getId());
     }
 
     /**
-     * List all device groups.
+     * List device groups that match criteria.
      * 
      * @param role
-     * @param includeDeleted
      * @param page
      * @param pageSize
+     * @param servletRequest
      * @return
      * @throws SiteWhereException
      */
@@ -179,16 +177,15 @@ public class DeviceGroups extends RestControllerBase {
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceGroup> listDeviceGroups(
 	    @ApiParam(value = "Role", required = false) @RequestParam(required = false) String role,
-	    @ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<IDeviceGroup> results;
 	if (role == null) {
-	    results = getDeviceManagement().listDeviceGroups(includeDeleted, criteria);
+	    results = getDeviceManagement().listDeviceGroups(criteria);
 	} else {
-	    results = getDeviceManagement().listDeviceGroupsWithRole(role, includeDeleted, criteria);
+	    results = getDeviceManagement().listDeviceGroupsWithRole(role, criteria);
 	}
 	DeviceGroupMarshalHelper helper = new DeviceGroupMarshalHelper();
 	List<IDeviceGroup> groupsConv = new ArrayList<IDeviceGroup>();

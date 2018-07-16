@@ -201,8 +201,8 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 	    StreamObserver<GDeleteBatchOperationResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, BatchManagementGrpc.getDeleteBatchOperationMethod());
-	    IBatchOperation apiResult = getBatchManagement().deleteBatchOperation(
-		    CommonModelConverter.asApiUuid(request.getBatchOperationId()), request.getForce());
+	    IBatchOperation apiResult = getBatchManagement()
+		    .deleteBatchOperation(CommonModelConverter.asApiUuid(request.getBatchOperationId()));
 	    GDeleteBatchOperationResponse.Builder response = GDeleteBatchOperationResponse.newBuilder();
 	    response.setBatchOperation(BatchModelConverter.asGrpcBatchOperation(apiResult));
 	    responseObserver.onNext(response.build());

@@ -21,7 +21,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.IndexOptions;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
-import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.tenant.Tenant;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -183,23 +182,14 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
     }
 
     /*
-     * @see com.sitewhere.spi.tenant.ITenantManagement#deleteTenant(java.util.UUID,
-     * boolean)
+     * @see com.sitewhere.spi.tenant.ITenantManagement#deleteTenant(java.util.UUID)
      */
     @Override
-    public ITenant deleteTenant(UUID tenantId, boolean force) throws SiteWhereException {
+    public ITenant deleteTenant(UUID tenantId) throws SiteWhereException {
 	Document existing = assertTenant(tenantId);
-	if (force) {
-	    MongoCollection<Document> tenants = getMongoClient().getTenantsCollection();
-	    MongoPersistence.delete(tenants, existing);
-	    return MongoTenant.fromDocument(existing);
-	} else {
-	    MongoSiteWhereEntity.setDeleted(existing, true);
-	    Document query = new Document(MongoTenant.PROP_ID, tenantId);
-	    MongoCollection<Document> tenants = getMongoClient().getTenantsCollection();
-	    MongoPersistence.update(tenants, query, existing);
-	    return MongoTenant.fromDocument(existing);
-	}
+	MongoCollection<Document> tenants = getMongoClient().getTenantsCollection();
+	MongoPersistence.delete(tenants, existing);
+	return MongoTenant.fromDocument(existing);
     }
 
     /**

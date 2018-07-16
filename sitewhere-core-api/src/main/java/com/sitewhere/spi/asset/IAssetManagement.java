@@ -65,11 +65,10 @@ public interface IAssetManagement extends ITenantEngineLifecycleComponent {
      * Delete an existing asset based on unique id.
      * 
      * @param assetId
-     * @param force
      * @return
      * @throws SiteWhereException
      */
-    public IAsset deleteAsset(UUID assetId, boolean force) throws SiteWhereException;
+    public IAsset deleteAsset(UUID assetId) throws SiteWhereException;
 
     /**
      * List assets that match the given criteria.
@@ -121,11 +120,10 @@ public interface IAssetManagement extends ITenantEngineLifecycleComponent {
      * Delete an existing asset type based on unique id.
      * 
      * @param assetTypeId
-     * @param force
      * @return
      * @throws SiteWhereException
      */
-    public IAssetType deleteAssetType(UUID assetTypeId, boolean force) throws SiteWhereException;
+    public IAssetType deleteAssetType(UUID assetTypeId) throws SiteWhereException;
 
     /**
      * List asset types that match the given criteria.

@@ -177,15 +177,15 @@ public class Devices extends RestControllerBase {
      * 
      * @param deviceToken
      * @return
+     * @throws SiteWhereException
      */
     @RequestMapping(value = "/{deviceToken:.+}", method = RequestMethod.DELETE)
     @ApiOperation(value = "Delete device based on unique hardware id")
     @Secured({ SiteWhereRoles.REST })
-    public IDevice deleteDevice(@ApiParam(value = "Device token", required = true) @PathVariable String deviceToken,
-	    @ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+    public IDevice deleteDevice(@ApiParam(value = "Device token", required = true) @PathVariable String deviceToken)
+	    throws SiteWhereException {
 	IDevice existing = assertDeviceByToken(deviceToken);
-	IDevice result = getDeviceManagement().deleteDevice(existing.getId(), force);
+	IDevice result = getDeviceManagement().deleteDevice(existing.getId());
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAssignment(true);
 	return helper.convert(result, getAssetManagement());
@@ -327,6 +327,15 @@ public class Devices extends RestControllerBase {
     /**
      * List devices that match given criteria.
      * 
+     * @param deviceType
+     * @param excludeAssigned
+     * @param includeDeviceType
+     * @param includeAssignment
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param servletRequest
      * @return
      * @throws SiteWhereException
      */
@@ -335,18 +344,17 @@ public class Devices extends RestControllerBase {
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDevice> listDevices(
 	    @ApiParam(value = "Device type filter", required = false) @RequestParam(required = false) String deviceType,
-	    @ApiParam(value = "Include deleted devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeDeleted,
 	    @ApiParam(value = "Exclude assigned devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean excludeAssigned,
 	    @ApiParam(value = "Include device type information", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeDeviceType,
 	    @ApiParam(value = "Include assignment information if associated", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeAssignment,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
+	    throws SiteWhereException {
 	IDeviceSearchCriteria criteria = new DeviceSearchCriteria(deviceType, excludeAssigned, page, pageSize,
 		startDate, endDate);
-	ISearchResults<IDevice> results = getDeviceManagement().listDevices(includeDeleted, criteria);
+	ISearchResults<IDevice> results = getDeviceManagement().listDevices(criteria);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeDeviceType(includeDeviceType);
 	helper.setIncludeAssignment(includeAssignment);

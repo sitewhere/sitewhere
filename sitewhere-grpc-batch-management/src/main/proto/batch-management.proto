@@ -116,7 +116,6 @@ message GListBatchOperationsResponse {
 // Request for deleting a batch operation.
 message GDeleteBatchOperationRequest {
 	com.sitewhere.grpc.model.GUUID batchOperationId = 1;
-	bool force = 2;
 }
 	
 // Response for deleting a batch operation.

@@ -70,12 +70,11 @@ public class AssetManagementDecorator extends TenantEngineLifecycleComponentDeco
     }
 
     /*
-     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAsset(java.util.UUID,
-     * boolean)
+     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAsset(java.util.UUID)
      */
     @Override
-    public IAsset deleteAsset(UUID assetId, boolean force) throws SiteWhereException {
-	return getDelegate().deleteAsset(assetId, force);
+    public IAsset deleteAsset(UUID assetId) throws SiteWhereException {
+	return getDelegate().deleteAsset(assetId);
     }
 
     /*
@@ -125,12 +124,11 @@ public class AssetManagementDecorator extends TenantEngineLifecycleComponentDeco
     }
 
     /*
-     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAssetType(java.util.UUID,
-     * boolean)
+     * @see com.sitewhere.spi.asset.IAssetManagement#deleteAssetType(java.util.UUID)
      */
     @Override
-    public IAssetType deleteAssetType(UUID assetTypeId, boolean force) throws SiteWhereException {
-	return getDelegate().deleteAssetType(assetTypeId, force);
+    public IAssetType deleteAssetType(UUID assetTypeId) throws SiteWhereException {
+	return getDelegate().deleteAssetType(assetTypeId);
     }
 
     /*

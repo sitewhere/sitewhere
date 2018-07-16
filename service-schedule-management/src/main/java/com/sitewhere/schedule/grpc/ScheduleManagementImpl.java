@@ -179,7 +179,7 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    StreamObserver<GDeleteScheduleResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, ScheduleManagementGrpc.getDeleteScheduleMethod());
-	    ISchedule apiResult = getScheduleManagement().deleteSchedule(request.getToken(), request.getForce());
+	    ISchedule apiResult = getScheduleManagement().deleteSchedule(request.getToken());
 	    GDeleteScheduleResponse.Builder response = GDeleteScheduleResponse.newBuilder();
 	    response.setSchedule(ScheduleModelConverter.asGrpcSchedule(apiResult));
 	    responseObserver.onNext(response.build());
@@ -311,8 +311,7 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    StreamObserver<GDeleteScheduledJobResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, ScheduleManagementGrpc.getDeleteScheduledJobMethod());
-	    IScheduledJob apiResult = getScheduleManagement().deleteScheduledJob(request.getToken(),
-		    request.getForce());
+	    IScheduledJob apiResult = getScheduleManagement().deleteScheduledJob(request.getToken());
 	    GDeleteScheduledJobResponse.Builder response = GDeleteScheduledJobResponse.newBuilder();
 	    response.setScheduledJob(ScheduleModelConverter.asGrpcScheduledJob(apiResult));
 	    responseObserver.onNext(response.build());

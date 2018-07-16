@@ -73,9 +73,8 @@ public interface IDeviceStateManagement extends ITenantEngineLifecycleComponent 
      * Delete existing device state.
      * 
      * @param id
-     * @param force
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceState deleteDeviceState(UUID id, boolean force) throws SiteWhereException;
+    public IDeviceState deleteDeviceState(UUID id) throws SiteWhereException;
 }

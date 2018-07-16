@@ -10,6 +10,8 @@ package com.sitewhere.user.microservice;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 
+import com.sitewhere.grpc.client.spi.client.ITenantManagementApiDemux;
+import com.sitewhere.grpc.client.tenant.TenantManagementApiDemux;
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.hazelcast.HazelcastManager;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
@@ -54,6 +56,9 @@ public class UserManagementMicroservice extends GlobalMicroservice<MicroserviceI
 
     /** User management implementation */
     private IUserManagement userManagement;
+
+    /** Tenant management API demux */
+    private ITenantManagementApiDemux tenantManagementApiDemux;
 
     /*
      * (non-Javadoc)
@@ -192,8 +197,8 @@ public class UserManagementMicroservice extends GlobalMicroservice<MicroserviceI
 	// Create Hazelcast manager.
 	this.hazelcastManager = new HazelcastManager();
 
-	// Create GRPC server.
-	this.userManagementGrpcServer = new UserManagementGrpcServer(this, getUserManagementAccessor());
+	// Create GRPC components.
+	createGrpcComponents();
 
 	// Composite step for initializing microservice.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
@@ -203,6 +208,9 @@ public class UserManagementMicroservice extends GlobalMicroservice<MicroserviceI
 
 	// Initialize user management GRPC server.
 	init.addInitializeStep(this, getUserManagementGrpcServer(), true);
+
+	// Initialize tenant management API demux.
+	init.addInitializeStep(this, getTenantManagementApiDemux(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -226,6 +234,9 @@ public class UserManagementMicroservice extends GlobalMicroservice<MicroserviceI
 	// Start GRPC server.
 	start.addStartStep(this, getUserManagementGrpcServer(), true);
 
+	// Start tenant management API demux.
+	start.addStartStep(this, getTenantManagementApiDemux(), true);
+
 	// Execute initialization steps.
 	start.execute(monitor);
     }
@@ -241,6 +252,9 @@ public class UserManagementMicroservice extends GlobalMicroservice<MicroserviceI
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
+	// Stop tenant management API demux.
+	stop.addStopStep(this, getTenantManagementApiDemux());
+
 	// Stop GRPC server.
 	stop.addStopStep(this, getUserManagementGrpcServer());
 
@@ -249,6 +263,14 @@ public class UserManagementMicroservice extends GlobalMicroservice<MicroserviceI
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
+    }
+
+    /**
+     * Create components that interact via GRPC.
+     */
+    protected void createGrpcComponents() {
+	this.userManagementGrpcServer = new UserManagementGrpcServer(this, getUserManagementAccessor());
+	this.tenantManagementApiDemux = new TenantManagementApiDemux();
     }
 
     /*
@@ -290,6 +312,19 @@ public class UserManagementMicroservice extends GlobalMicroservice<MicroserviceI
 
     public void setUserManagement(IUserManagement userManagement) {
 	this.userManagement = userManagement;
+    }
+
+    /*
+     * @see com.sitewhere.grpc.client.spi.provider.ITenantManagementDemuxProvider#
+     * getTenantManagementApiDemux()
+     */
+    @Override
+    public ITenantManagementApiDemux getTenantManagementApiDemux() {
+	return tenantManagementApiDemux;
+    }
+
+    public void setTenantManagementApiDemux(ITenantManagementApiDemux tenantManagementApiDemux) {
+	this.tenantManagementApiDemux = tenantManagementApiDemux;
     }
 
     public UserManagementAccessor getUserManagementAccessor() {
