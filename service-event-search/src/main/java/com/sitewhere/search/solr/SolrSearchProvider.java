@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.connectors.solr.search;
+package com.sitewhere.search.solr;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,9 +29,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sitewhere.connectors.solr.SiteWhereSolrFactory;
-import com.sitewhere.connectors.solr.SolrConnection;
+import com.sitewhere.configuration.instance.solr.SolrConfiguration;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.solr.SiteWhereSolrFactory;
+import com.sitewhere.solr.SolrConnection;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -49,23 +50,23 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public class SolrSearchProvider extends LifecycleComponent implements IDeviceEventSearchProvider {
 
-    /** Id returned for provider */
-    private static final String ID = "solr";
-
     /** Name returned for provider */
-    private static final String NAME = "Apache Solr";
+    private static final String DEFAULT_NAME = "Solr Search Provider";
 
     /** Provider id */
-    private String id = ID;
+    private String id;
 
     /** Provider name */
-    private String name = NAME;
+    private String name = DEFAULT_NAME;
 
     /** For JSON marshaling */
     private static ObjectMapper MAPPER = new ObjectMapper();
 
-    /** Solr configuration */
-    private SolrConnection solr;
+    /** Injected Solr configuration */
+    private SolrConfiguration solrConfiguration;
+
+    /** Connection to Solr instance */
+    private SolrConnection solrConnection;
 
     public SolrSearchProvider() {
 	super(LifecycleComponentType.SearchProvider);
@@ -80,13 +81,16 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	getLogger().info("Solr search provider starting.");
-	if (getSolr() == null) {
-	    throw new SiteWhereException("No Solr configuration provided to " + getClass().getName());
+	if (getSolrConfiguration() == null) {
+	    throw new SiteWhereException("No Solr configuration provided.");
 	}
 	try {
+	    // Create and start Solr connection.
+	    this.solrConnection = new SolrConnection(getSolrConfiguration());
+	    getSolrConnection().start(monitor);
+
 	    getLogger().info("Attempting to ping Solr server to verify availability...");
-	    SolrPingResponse response = getSolr().getSolrClient().ping();
+	    SolrPingResponse response = getSolrConnection().getSolrClient().ping();
 	    int pingTime = response.getQTime();
 	    getLogger().info("Solr server location verified. Ping responded in " + pingTime + " ms.");
 	} catch (SolrServerException e) {
@@ -94,7 +98,6 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
 	} catch (IOException e) {
 	    throw new SiteWhereException("Exception in ping. Verify that Solr server is available.", e);
 	}
-	getLogger().info("Solr search provider started.");
     }
 
     /**
@@ -114,11 +117,9 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.search.external.IDeviceEventSearchProvider#executeQuery
-     * (java.lang.String)
+     * com.sitewhere.spi.search.IDeviceEventSearchProvider#executeQuery(java.lang.
+     * String)
      */
     @Override
     public List<IDeviceEvent> executeQuery(String queryString) throws SiteWhereException {
@@ -127,7 +128,7 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
 	    List<IDeviceEvent> results = new ArrayList<IDeviceEvent>();
 	    SolrQuery solrQuery = new SolrQuery();
 	    solrQuery.setQuery(queryString);
-	    QueryResponse response = getSolr().getSolrClient().query(solrQuery);
+	    QueryResponse response = getSolrConnection().getSolrClient().query(solrQuery);
 	    SolrDocumentList docs = response.getResults();
 	    for (SolrDocument doc : docs) {
 		results.add(SiteWhereSolrFactory.parseDocument(doc));
@@ -141,9 +142,7 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.search.external.IDeviceEventSearchProvider#
+     * @see com.sitewhere.spi.search.IDeviceEventSearchProvider#
      * executeQueryWithRawResponse(java.lang.String)
      */
     @Override
@@ -158,7 +157,7 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
 	    query.add(createParamsFromQueryString(queryString));
 	    QueryRequest request = new QueryRequest(query);
 	    request.setResponseParser(rawJsonResponseParser);
-	    NamedList<?> results = getSolr().getSolrClient().request(request);
+	    NamedList<?> results = getSolrConnection().getSolrClient().request(request);
 	    return MAPPER.readTree((String) results.get("response"));
 	} catch (SolrServerException e) {
 	    throw new SiteWhereException("Unable to execute query.", e);
@@ -168,18 +167,16 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.search.external.IDeviceEventSearchProvider#
-     * getLocationsNear(double , double, double,
-     * com.sitewhere.spi.search.IDateRangeSearchCriteria)
+     * @see
+     * com.sitewhere.spi.search.IDeviceEventSearchProvider#getLocationsNear(double,
+     * double, double, com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
     public List<IDeviceLocation> getLocationsNear(double latitude, double longitude, double distance,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	ModifiableSolrParams params = new ModifiableSolrParams();
 	try {
-	    QueryResponse response = getSolr().getSolrClient().query(params);
+	    QueryResponse response = getSolrConnection().getSolrClient().query(params);
 	    SolrDocumentList docs = response.getResults();
 	    while (docs.iterator().hasNext()) {
 		SolrDocument doc = docs.iterator().next();
@@ -220,11 +217,19 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
 	this.name = name;
     }
 
-    public SolrConnection getSolr() {
-	return solr;
+    public SolrConfiguration getSolrConfiguration() {
+	return solrConfiguration;
     }
 
-    public void setSolr(SolrConnection solr) {
-	this.solr = solr;
+    public void setSolrConfiguration(SolrConfiguration solrConfiguration) {
+	this.solrConfiguration = solrConfiguration;
+    }
+
+    public SolrConnection getSolrConnection() {
+	return solrConnection;
+    }
+
+    public void setSolrConnection(SolrConnection solrConnection) {
+	this.solrConnection = solrConnection;
     }
 }

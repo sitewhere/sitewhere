@@ -7,6 +7,7 @@
  */
 package com.sitewhere.search.configuration;
 
+import com.sitewhere.configuration.model.CommonConnectorProvider;
 import com.sitewhere.configuration.model.ConfigurationModelProvider;
 import com.sitewhere.configuration.parser.IEventSearchParser;
 import com.sitewhere.rest.model.configuration.AttributeNode;
@@ -46,6 +47,7 @@ public class EventSearchModelProvider extends ConfigurationModelProvider {
     @Override
     public void initializeElements() {
 	addElement(createEventSearch());
+	addElement(createSearchProviders());
 	addElement(createSolrSearchProvider());
     }
 
@@ -58,6 +60,15 @@ public class EventSearchModelProvider extends ConfigurationModelProvider {
 	for (EventSearchRoles role : EventSearchRoles.values()) {
 	    getRolesById().put(role.getRole().getKey().getId(), role.getRole());
 	}
+    }
+
+    /*
+     * @see com.sitewhere.configuration.model.ConfigurationModelProvider#
+     * initializeDependencies()
+     */
+    @Override
+    public void initializeDependencies() {
+	getDependencies().add(new CommonConnectorProvider());
     }
 
     /**
@@ -73,6 +84,19 @@ public class EventSearchModelProvider extends ConfigurationModelProvider {
     }
 
     /**
+     * Create the search providers configuration.
+     * 
+     * @return
+     */
+    protected ElementNode createSearchProviders() {
+	ElementNode.Builder builder = new ElementNode.Builder("Search Providers",
+		IEventSearchParser.Elements.SearchProviders.getLocalName(), "search",
+		EventSearchRoleKeys.SearchProviders, this);
+	builder.description("A list of search providers that are available to be searched.");
+	return builder.build();
+    }
+
+    /**
      * Create element configuration for Solr search provider.
      * 
      * @return
@@ -80,7 +104,7 @@ public class EventSearchModelProvider extends ConfigurationModelProvider {
     protected ElementNode createSolrSearchProvider() {
 	ElementNode.Builder builder = new ElementNode.Builder("Solr Search Provider",
 		IEventSearchParser.SearchProvidersElements.SolrSearchProvider.getLocalName(), "search",
-		EventSearchRoleKeys.SearchProvider, this);
+		EventSearchRoleKeys.SolrSearchProvider, this);
 
 	builder.description("Provider that delegates search tasks to a linked Solr instance.");
 	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
@@ -90,7 +114,7 @@ public class EventSearchModelProvider extends ConfigurationModelProvider {
 			.defaultValue("solr").makeIndex().build()));
 	builder.attribute((new AttributeNode.Builder("Name", "name", AttributeType.String,
 		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Name shown for search provider.")
-			.defaultValue(" Apache Solr").build()));
+			.defaultValue("Apache Solr").build()));
 
 	return builder.build();
     }

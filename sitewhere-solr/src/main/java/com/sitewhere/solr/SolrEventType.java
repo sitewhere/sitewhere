@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.connectors.solr;
+package com.sitewhere.solr;
 
 /**
  * Enumerates event types that can be stored in Solr.
@@ -14,8 +14,8 @@ package com.sitewhere.connectors.solr;
  */
 public enum SolrEventType {
 
-    /** Event represents IDeviceMeasurements */
-    Measurements,
+    /** Event represents IDeviceMeasurement */
+    Measurement,
 
     /** Event represents IDeviceLocation */
     Location,

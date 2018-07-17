@@ -18,7 +18,10 @@ public enum EventSearchRoleKeys implements IRoleKey {
     SearchProviders("search_prvs"),
 
     /** Search provider */
-    SearchProvider("search_prv");
+    SearchProvider("search_prv"),
+
+    /** Solr search provider */
+    SolrSearchProvider("solr_search_prv");
 
     private String id;
 

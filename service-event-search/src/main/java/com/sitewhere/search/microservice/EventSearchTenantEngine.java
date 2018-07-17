@@ -8,10 +8,14 @@
 package com.sitewhere.search.microservice;
 
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
+import com.sitewhere.search.spi.ISearchProvidersManager;
 import com.sitewhere.search.spi.microservice.IEventSearchTenantEngine;
+import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
+import com.sitewhere.spi.microservice.spring.EventSearchBeans;
+import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -22,6 +26,9 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 public class EventSearchTenantEngine extends MicroserviceTenantEngine implements IEventSearchTenantEngine {
+
+    /** Manages the outbound connectors for this tenant */
+    private ISearchProvidersManager searchProvidersManager;
 
     public EventSearchTenantEngine(ITenant tenant) {
 	super(tenant);
@@ -34,6 +41,18 @@ public class EventSearchTenantEngine extends MicroserviceTenantEngine implements
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create search providers manager.
+	this.searchProvidersManager = (ISearchProvidersManager) getModuleContext()
+		.getBean(EventSearchBeans.BEAN_SEARCH_PROVIDERS_MANAGER);
+
+	// Create step that will initialize components.
+	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
+
+	// Initialize search providers manager.
+	init.addInitializeStep(this, getSearchProvidersManager(), true);
+
+	// Execute initialization steps.
+	init.execute(monitor);
     }
 
     /*
@@ -42,6 +61,14 @@ public class EventSearchTenantEngine extends MicroserviceTenantEngine implements
      */
     @Override
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create step that will start components.
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
+
+	// Start search providers manager.
+	start.addStartStep(this, getSearchProvidersManager(), true);
+
+	// Execute startup steps.
+	start.execute(monitor);
     }
 
     /*
@@ -60,5 +87,26 @@ public class EventSearchTenantEngine extends MicroserviceTenantEngine implements
      */
     @Override
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Create step that will stop components.
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Stop " + getComponentName());
+
+	// Stop search providers manager.
+	start.addStopStep(this, getSearchProvidersManager());
+
+	// Execute shutdown steps.
+	start.execute(monitor);
+    }
+
+    /*
+     * @see com.sitewhere.search.spi.microservice.IEventSearchTenantEngine#
+     * getSearchProvidersManager()
+     */
+    @Override
+    public ISearchProvidersManager getSearchProvidersManager() {
+	return searchProvidersManager;
+    }
+
+    protected void setSearchProvidersManager(ISearchProvidersManager searchProvidersManager) {
+	this.searchProvidersManager = searchProvidersManager;
     }
 }

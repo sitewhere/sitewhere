@@ -41,6 +41,7 @@ include ':sitewhere-hbase'
 include ':sitewhere-influxdb'
 include ':sitewhere-microservice'
 include ':sitewhere-mongodb'
+include ':sitewhere-solr'
 include ':sitewhere-spark'
 
 project(':service-asset-management').projectDir = "$rootDir/service-asset-management" as File
@@ -85,4 +86,5 @@ project(':sitewhere-hbase').projectDir = "$rootDir/sitewhere-hbase" as File
 project(':sitewhere-influxdb').projectDir = "$rootDir/sitewhere-influxdb" as File
 project(':sitewhere-microservice').projectDir = "$rootDir/sitewhere-microservice" as File
 project(':sitewhere-mongodb').projectDir = "$rootDir/sitewhere-mongodb" as File
+project(':sitewhere-solr').projectDir = "$rootDir/sitewhere-solr" as File
 project(':sitewhere-spark').projectDir = "$rootDir/sitewhere-spark" as File

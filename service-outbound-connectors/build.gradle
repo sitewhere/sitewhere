@@ -3,8 +3,9 @@ description = 'SiteWhere Outbound Connectors Microservice'
 apply plugin: 'nebula.provided-base'
 
 dependencies {
-    compile project(':sitewhere-communication')
     compile project(':sitewhere-microservice')
+    compile project(':sitewhere-communication')
+    compile project(':sitewhere-solr')
 
     // Connectivity to other microservices.
     compile project(':sitewhere-grpc-device-management')
@@ -22,9 +23,6 @@ dependencies {
 
     // RabbitMQ dependencies.
     compile group: 'com.rabbitmq', name: 'amqp-client', version:'3.6.0'
-
-    // Apache Solr
-    compile group: 'org.apache.solr', name: 'solr-solrj', version: "${rootProject.ext['solr.version']}"
 }
 
 apply plugin: 'org.springframework.boot'

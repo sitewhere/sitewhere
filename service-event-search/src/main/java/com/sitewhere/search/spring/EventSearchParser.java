@@ -7,12 +7,17 @@
  */
 package com.sitewhere.search.spring;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
+import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
+
+import com.sitewhere.configuration.parser.IEventSearchParser.Elements;
 
 /**
  * Parses elements related to event search.
@@ -34,6 +39,19 @@ public class EventSearchParser extends AbstractBeanDefinitionParser {
      */
     @Override
     protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
+	List<Element> children = DomUtils.getChildElements(element);
+	for (Element child : children) {
+	    Elements type = Elements.getByLocalName(child.getLocalName());
+	    if (type == null) {
+		throw new RuntimeException("Unknown event search element: " + child.getLocalName());
+	    }
+	    switch (type) {
+	    case SearchProviders: {
+		(new SearchProvidersParser()).parse(child, context);
+		break;
+	    }
+	    }
+	}
 	return null;
     }
 }

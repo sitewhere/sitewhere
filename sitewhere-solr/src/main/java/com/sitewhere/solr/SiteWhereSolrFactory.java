@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.connectors.solr;
+package com.sitewhere.solr;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -45,7 +45,7 @@ public class SiteWhereSolrFactory {
      */
     public static SolrInputDocument createDocumentFromMeasurement(IDeviceMeasurement mx) throws SiteWhereException {
 	SolrInputDocument document = new SolrInputDocument();
-	document.addField(ISolrFields.EVENT_TYPE, SolrEventType.Measurements.name());
+	document.addField(ISolrFields.EVENT_TYPE, SolrEventType.Measurement.name());
 	addFieldsForEvent(document, mx);
 	document.addField(ISolrFields.MX_NAME, mx.getName());
 	document.addField(ISolrFields.MX_VALUE, mx.getValue());
@@ -106,7 +106,7 @@ public class SiteWhereSolrFactory {
 	case Location: {
 	    return parseLocationFromDocument(document);
 	}
-	case Measurements: {
+	case Measurement: {
 	    return parseMeasurementFromDocument(document);
 	}
 	case Alert: {

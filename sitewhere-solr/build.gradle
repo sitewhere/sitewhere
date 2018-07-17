@@ -1,0 +1,18 @@
+description = 'SiteWhere Solr Implementation'
+
+dependencies {
+    compile project(':sitewhere-configuration')
+
+    // Apache Solr
+    compile group: 'org.apache.solr', name: 'solr-solrj', version: "${rootProject.ext['solr.version']}"
+}
+
+// Publish jar.
+apply plugin: 'maven-publish'
+publishing {
+	publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+	}
+}

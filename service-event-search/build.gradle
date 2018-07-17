@@ -2,6 +2,9 @@ description = 'SiteWhere Event Search Microservice'
 
 dependencies {
 	compile project(':sitewhere-microservice')
+    compile project(':sitewhere-solr')
+    
+	compile group: 'org.springframework', name: 'spring-web'
 }
 
 apply plugin: 'org.springframework.boot'

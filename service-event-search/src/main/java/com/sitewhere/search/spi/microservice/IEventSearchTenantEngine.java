@@ -7,6 +7,7 @@
  */
 package com.sitewhere.search.spi.microservice;
 
+import com.sitewhere.search.spi.ISearchProvidersManager;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
@@ -16,4 +17,11 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
  * @author Derek
  */
 public interface IEventSearchTenantEngine extends IMicroserviceTenantEngine {
+
+    /**
+     * Get the search providers manager.
+     * 
+     * @return
+     */
+    public ISearchProvidersManager getSearchProvidersManager();
 }

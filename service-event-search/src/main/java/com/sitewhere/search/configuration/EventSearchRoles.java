@@ -8,6 +8,7 @@
 package com.sitewhere.search.configuration;
 
 import com.sitewhere.configuration.ConfigurationRole;
+import com.sitewhere.configuration.model.CommonConnectorRoleKeys;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRole;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProvider;
 import com.sitewhere.spi.microservice.configuration.model.IRoleKey;
@@ -27,8 +28,13 @@ public enum EventSearchRoles implements IConfigurationRoleProvider {
     SearchProviders(ConfigurationRole.build(EventSearchRoleKeys.SearchProviders, "Search Providers", true, false, false,
 	    new IRoleKey[] { EventSearchRoleKeys.SearchProvider })),
 
-    /** Search provider. */
-    SearchProvider(ConfigurationRole.build(EventSearchRoleKeys.SearchProvider, "Search Provider", true, true, true));
+    /** Search provider */
+    SearchProvider(ConfigurationRole.build(EventSearchRoleKeys.SearchProvider, "Search Provider", true, true, true,
+	    new IRoleKey[0], new IRoleKey[] { EventSearchRoleKeys.SolrSearchProvider })),
+
+    /** Solr search provider */
+    SolrSearchProvider(ConfigurationRole.build(EventSearchRoleKeys.SolrSearchProvider, "Solr Search Provider", true,
+	    true, true, new IRoleKey[] { CommonConnectorRoleKeys.SolrConfigurationChoice }));
 
     private ConfigurationRole role;
 

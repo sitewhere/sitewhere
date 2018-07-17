@@ -20,23 +20,6 @@ import com.sitewhere.spi.microservice.configuration.model.IRoleKey;
  */
 public enum OutboundConnectorsRoles implements IConfigurationRoleProvider {
 
-    // /** Siddhi query. Callback. */
-    // OutboundProcessingChain_SiddhiCallback(ConfigurationRole.build("Siddhi
-    // Callbacks", true, true, true)),
-    //
-    // /** Siddhi event processsor. Siddhi query. */
-    // OutboundProcessingChain_SiddhiQuery(ConfigurationRole.build("Siddhi Queries",
-    // true, true, true,
-    // new IConfigurationRoleProvider[] { OutboundProcessingChain_SiddhiCallback
-    // })),
-    //
-    // /** Outbound processing chain. Siddhi event processor. */
-    // OutboundProcessingChain_SiddhiEventProcessor(ConfigurationRole.build("Siddhi
-    // Event Processor", true, true, true,
-    // new IConfigurationRoleProvider[] { OutboundProcessingChain_SiddhiQuery,
-    // OutboundProcessingChain_Filters })),
-    //
-
     /** Root outbound connectors role. */
     OutboundConnectors(
 	    ConfigurationRole.build(OutboundConnectorsRoleKeys.OutboundConnectors, "Outbound Connectors", false, false,

@@ -17,7 +17,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
  * 
  * @author Derek
  */
-public interface ISearchProviderManager extends ILifecycleComponent {
+public interface ISearchProvidersManager extends ILifecycleComponent {
 
     /**
      * Get list of available search providers.
