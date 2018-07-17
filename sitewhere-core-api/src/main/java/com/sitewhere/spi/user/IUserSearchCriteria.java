@@ -7,10 +7,14 @@
  */
 package com.sitewhere.spi.user;
 
+import java.io.Serializable;
+
+import com.sitewhere.spi.search.ISearchCriteria;
+
 /**
  * Criteria used when searching for users.
  * 
  * @author Derek Adams
  */
-public interface IUserSearchCriteria {
+public interface IUserSearchCriteria extends ISearchCriteria, Serializable {
 }

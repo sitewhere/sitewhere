@@ -14,14 +14,12 @@ import java.util.List;
 import org.bson.Document;
 import org.springframework.stereotype.Component;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.MongoTimeoutException;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.IndexOptions;
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
+import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
@@ -31,6 +29,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.user.IGrantedAuthority;
@@ -50,6 +49,9 @@ import com.sitewhere.user.spi.microservice.IUserManagementMicroservice;
  */
 @Component
 public class MongoUserManagement extends LifecycleComponent implements IUserManagement {
+
+    /** Converter lookup */
+    private static IMongoConverterLookup LOOKUP = new MongoConverters();
 
     /** Injected with global SiteWhere Mongo client */
     private IUserManagementMongoClient mongoClient;
@@ -76,8 +78,9 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
      * @throws SiteWhereException
      */
     protected void ensureIndexes() throws SiteWhereException {
-	getMongoClient().getUsersCollection().createIndex(new Document("username", 1), new IndexOptions().unique(true));
-	getMongoClient().getAuthoritiesCollection().createIndex(new Document("authority", 1),
+	getMongoClient().getUsersCollection().createIndex(new Document(MongoUser.PROP_USERNAME, 1),
+		new IndexOptions().unique(true));
+	getMongoClient().getAuthoritiesCollection().createIndex(new Document(MongoGrantedAuthority.PROP_AUTHORITY, 1),
 		new IndexOptions().unique(true));
     }
 
@@ -200,9 +203,9 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
     public List<IGrantedAuthority> getGrantedAuthorities(String username) throws SiteWhereException {
 	IUser user = getUserByUsername(username);
 	List<String> userAuths = user.getAuthorities();
-	List<IGrantedAuthority> all = listGrantedAuthorities(new GrantedAuthoritySearchCriteria());
+	ISearchResults<IGrantedAuthority> all = listGrantedAuthorities(new GrantedAuthoritySearchCriteria(1, 0));
 	List<IGrantedAuthority> matched = new ArrayList<IGrantedAuthority>();
-	for (IGrantedAuthority auth : all) {
+	for (IGrantedAuthority auth : all.getResults()) {
 	    if (userAuths.contains(auth.getAuthority())) {
 		matched.add(auth);
 	    }
@@ -236,32 +239,15 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.user.IUserManagement#listUsers(com.sitewhere.spi.user.
-     * request .IUserSearchCriteria)
+     * IUserSearchCriteria)
      */
     @Override
-    public List<IUser> listUsers(IUserSearchCriteria criteria) throws SiteWhereException {
-	try {
-	    MongoCollection<Document> users = getMongoClient().getUsersCollection();
-	    Document dbCriteria = new Document();
-	    FindIterable<Document> found = users.find(dbCriteria).sort(new BasicDBObject(MongoUser.PROP_USERNAME, 1));
-	    MongoCursor<Document> cursor = found.iterator();
-
-	    List<IUser> matches = new ArrayList<IUser>();
-	    try {
-		while (cursor.hasNext()) {
-		    Document match = cursor.next();
-		    matches.add(MongoUser.fromDocument(match));
-		}
-	    } finally {
-		cursor.close();
-	    }
-	    return matches;
-	} catch (MongoTimeoutException e) {
-	    throw new SiteWhereException("Connection to MongoDB lost.", e);
-	}
+    public ISearchResults<IUser> listUsers(IUserSearchCriteria criteria) throws SiteWhereException {
+	MongoCollection<Document> users = getMongoClient().getUsersCollection();
+	Document dbCriteria = new Document();
+	Document sort = new Document(MongoUser.PROP_USERNAME, 1);
+	return MongoPersistence.search(IUser.class, users, dbCriteria, sort, criteria, LOOKUP);
     }
 
     /*
@@ -301,7 +287,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
     public IGrantedAuthority getGrantedAuthorityByName(String name) throws SiteWhereException {
 	Document dbAuth = getGrantedAuthorityDocumentByName(name);
 	if (dbAuth != null) {
-	    return MongoGrantedAuthority.fromDBObject(dbAuth);
+	    return MongoGrantedAuthority.fromDocument(dbAuth);
 	}
 	return null;
     }
@@ -319,33 +305,17 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.user.IUserManagement#listGrantedAuthorities(com.
-     * sitewhere.spi .user. IGrantedAuthoritySearchCriteria)
+     * @see
+     * com.sitewhere.spi.user.IUserManagement#listGrantedAuthorities(com.sitewhere.
+     * spi.user.IGrantedAuthoritySearchCriteria)
      */
     @Override
-    public List<IGrantedAuthority> listGrantedAuthorities(IGrantedAuthoritySearchCriteria criteria)
+    public ISearchResults<IGrantedAuthority> listGrantedAuthorities(IGrantedAuthoritySearchCriteria criteria)
 	    throws SiteWhereException {
-	try {
-	    MongoCollection<Document> auths = getMongoClient().getAuthoritiesCollection();
-	    FindIterable<Document> found = auths.find()
-		    .sort(new BasicDBObject(MongoGrantedAuthority.PROP_AUTHORITY, 1));
-	    MongoCursor<Document> cursor = found.iterator();
-
-	    List<IGrantedAuthority> matches = new ArrayList<IGrantedAuthority>();
-	    try {
-		while (cursor.hasNext()) {
-		    Document match = cursor.next();
-		    matches.add(MongoGrantedAuthority.fromDBObject(match));
-		}
-	    } finally {
-		cursor.close();
-	    }
-	    return matches;
-	} catch (MongoTimeoutException e) {
-	    throw new SiteWhereException("Connection to MongoDB lost.", e);
-	}
+	MongoCollection<Document> auths = getMongoClient().getAuthoritiesCollection();
+	Document dbCriteria = new Document();
+	Document sort = new Document(MongoGrantedAuthority.PROP_AUTHORITY, 1);
+	return MongoPersistence.search(IGrantedAuthority.class, auths, dbCriteria, sort, criteria, LOOKUP);
     }
 
     /*

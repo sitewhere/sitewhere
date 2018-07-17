@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.sitewhere.server.lifecycle.LifecycleComponentDecorator;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria;
 import com.sitewhere.spi.user.IUser;
@@ -126,13 +127,11 @@ public class UserManagementDecorator extends LifecycleComponentDecorator<IUserMa
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.user.IUserManagement#listUsers(com.sitewhere.spi.user.
      * IUserSearchCriteria)
      */
     @Override
-    public List<IUser> listUsers(IUserSearchCriteria criteria) throws SiteWhereException {
+    public ISearchResults<IUser> listUsers(IUserSearchCriteria criteria) throws SiteWhereException {
 	return getDelegate().listUsers(criteria);
     }
 
@@ -179,13 +178,12 @@ public class UserManagementDecorator extends LifecycleComponentDecorator<IUserMa
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.user.IUserManagement#listGrantedAuthorities(com.
-     * sitewhere.spi. user.IGrantedAuthoritySearchCriteria)
+     * @see
+     * com.sitewhere.spi.user.IUserManagement#listGrantedAuthorities(com.sitewhere.
+     * spi.user.IGrantedAuthoritySearchCriteria)
      */
     @Override
-    public List<IGrantedAuthority> listGrantedAuthorities(IGrantedAuthoritySearchCriteria criteria)
+    public ISearchResults<IGrantedAuthority> listGrantedAuthorities(IGrantedAuthoritySearchCriteria criteria)
 	    throws SiteWhereException {
 	return getDelegate().listGrantedAuthorities(criteria);
     }

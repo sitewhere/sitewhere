@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.bson.Document;
 
+import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.user.User;
@@ -23,28 +24,42 @@ import com.sitewhere.spi.user.IUser;
  * 
  * @author dadams
  */
-public class MongoUser {
+public class MongoUser implements MongoConverter<IUser> {
 
     /** Property for username */
-    public static final String PROP_USERNAME = "username";
+    public static final String PROP_USERNAME = "usnm";
 
     /** Property for hashed password */
-    public static final String PROP_HASHED_PASSWORD = "hashedPassword";
+    public static final String PROP_HASHED_PASSWORD = "hpwd";
 
     /** Property for first name */
-    public static final String PROP_FIRST_NAME = "firstName";
+    public static final String PROP_FIRST_NAME = "fnam";
 
     /** Property for last name */
-    public static final String PROP_LAST_NAME = "lastName";
+    public static final String PROP_LAST_NAME = "lnam";
 
     /** Property for last login date */
-    public static final String PROP_LAST_LOGIN = "lastLogin";
+    public static final String PROP_LAST_LOGIN = "llog";
 
     /** Property for account status */
-    public static final String PROP_STATUS = "status";
+    public static final String PROP_STATUS = "stat";
 
     /** List of granted authority names */
-    public static final String PROP_AUTHORITIES = "authorities";
+    public static final String PROP_AUTHORITIES = "auth";
+
+    /*
+     * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
+     */
+    public Document convert(IUser source) {
+	return MongoUser.toDocument(source);
+    }
+
+    /*
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
+     */
+    public User convert(Document source) {
+	return MongoUser.fromDocument(source);
+    }
 
     /**
      * Copy information from SPI into Mongo {@link Document}.

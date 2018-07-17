@@ -9,6 +9,7 @@ package com.sitewhere.user.persistence.mongodb;
 
 import org.bson.Document;
 
+import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.spi.user.IGrantedAuthority;
 
@@ -17,7 +18,7 @@ import com.sitewhere.spi.user.IGrantedAuthority;
  * 
  * @author dadams
  */
-public class MongoGrantedAuthority {
+public class MongoGrantedAuthority implements MongoConverter<IGrantedAuthority> {
 
     /** Property for authority name */
     public static final String PROP_AUTHORITY = "authority";
@@ -30,6 +31,20 @@ public class MongoGrantedAuthority {
 
     /** Property for group indicator */
     public static final String PROP_GROUP = "group";
+
+    /*
+     * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
+     */
+    public Document convert(IGrantedAuthority source) {
+	return MongoGrantedAuthority.toDocument(source);
+    }
+
+    /*
+     * @see com.sitewhere.mongodb.MongoConverter#convert(org.bson.Document)
+     */
+    public GrantedAuthority convert(Document source) {
+	return MongoGrantedAuthority.fromDocument(source);
+    }
 
     /**
      * Copy information from SPI into Mongo {@link Document}.
@@ -82,7 +97,7 @@ public class MongoGrantedAuthority {
      * @param source
      * @return
      */
-    public static GrantedAuthority fromDBObject(Document source) {
+    public static GrantedAuthority fromDocument(Document source) {
 	GrantedAuthority result = new GrantedAuthority();
 	MongoGrantedAuthority.fromDocument(source, result);
 	return result;

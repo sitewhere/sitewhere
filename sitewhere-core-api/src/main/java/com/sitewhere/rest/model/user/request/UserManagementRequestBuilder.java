@@ -7,10 +7,9 @@
  */
 package com.sitewhere.rest.model.user.request;
 
-import java.util.List;
-
 import com.sitewhere.rest.model.search.user.UserSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
@@ -102,7 +101,7 @@ public class UserManagementRequestBuilder {
      * @return
      * @throws SiteWhereException
      */
-    public List<IUser> listUsers() throws SiteWhereException {
+    public ISearchResults<IUser> listUsers() throws SiteWhereException {
 	return getUserManagement().listUsers(new UserSearchCriteria());
     }
 
@@ -113,7 +112,7 @@ public class UserManagementRequestBuilder {
      * @throws SiteWhereException
      */
     public boolean hasUsers() throws SiteWhereException {
-	return listUsers().size() > 0;
+	return listUsers().getNumResults() > 0;
     }
 
     public IUserManagement getUserManagement() {

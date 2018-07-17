@@ -45,6 +45,7 @@ import com.sitewhere.grpc.service.GUpdateUserRequest;
 import com.sitewhere.grpc.service.GUpdateUserResponse;
 import com.sitewhere.grpc.service.UserManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.tracing.ITracerProvider;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria;
@@ -267,21 +268,19 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.user.IUserManagement#listUsers(com.sitewhere.spi.user.
      * IUserSearchCriteria)
      */
     @Override
-    public List<IUser> listUsers(IUserSearchCriteria criteria) throws SiteWhereException {
+    public ISearchResults<IUser> listUsers(IUserSearchCriteria criteria) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, UserManagementGrpc.getListUsersMethod());
 	    GListUsersRequest.Builder grequest = GListUsersRequest.newBuilder();
 	    grequest.setCriteria(UserModelConverter.asGrpcUserSearchCriteria(criteria));
 	    GListUsersResponse gresponse = getGrpcChannel().getBlockingStub().listUsers(grequest.build());
-	    List<IUser> response = UserModelConverter.asApiUsers(gresponse.getUserList());
-	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.getListUsersMethod(), response);
-	    return response;
+	    ISearchResults<IUser> results = UserModelConverter.asApiUserSearchResults(gresponse.getResults());
+	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.getListUsersMethod(), results);
+	    return results;
 	} catch (Throwable t) {
 	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.getListUsersMethod(), t);
 	}
@@ -377,23 +376,22 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.user.IUserManagement#listGrantedAuthorities(com.
-     * sitewhere.spi.user.IGrantedAuthoritySearchCriteria)
+     * @see
+     * com.sitewhere.spi.user.IUserManagement#listGrantedAuthorities(com.sitewhere.
+     * spi.user.IGrantedAuthoritySearchCriteria)
      */
     @Override
-    public List<IGrantedAuthority> listGrantedAuthorities(IGrantedAuthoritySearchCriteria criteria)
+    public ISearchResults<IGrantedAuthority> listGrantedAuthorities(IGrantedAuthoritySearchCriteria criteria)
 	    throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, UserManagementGrpc.getListGrantedAuthoritiesMethod());
 	    GListGrantedAuthoritiesRequest.Builder grequest = GListGrantedAuthoritiesRequest.newBuilder();
 	    GListGrantedAuthoritiesResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .listGrantedAuthorities(grequest.build());
-	    List<IGrantedAuthority> response = UserModelConverter
-		    .asApiGrantedAuthorities(gresponse.getAuthoritiesList());
-	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.getListGrantedAuthoritiesMethod(), response);
-	    return response;
+	    ISearchResults<IGrantedAuthority> results = UserModelConverter
+		    .asApiGrantedAuthoritySearchResults(gresponse.getResults());
+	    GrpcUtils.logClientMethodResponse(UserManagementGrpc.getListGrantedAuthoritiesMethod(), results);
+	    return results;
 	} catch (Throwable t) {
 	    throw GrpcUtils.handleClientMethodException(UserManagementGrpc.getListGrantedAuthoritiesMethod(), t);
 	}

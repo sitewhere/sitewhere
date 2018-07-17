@@ -132,7 +132,7 @@ message GListUsersRequest {
 
 // Response for listing users that meet criteria.
 message GListUsersResponse {
-	repeated com.sitewhere.grpc.model.GUser user = 1;
+	com.sitewhere.grpc.model.GUserSearchResults results = 1;
 }
 
 // Request for deleting a user.
@@ -182,11 +182,12 @@ message GUpdateGrantedAuthorityResponse {
 
 // Request for listing authorities by critieria.
 message GListGrantedAuthoritiesRequest {
+	com.sitewhere.grpc.model.GGrantedAuthoritySearchCriteria criteria = 1;
 }
 
 // Response for listing authorities by critieria.
 message GListGrantedAuthoritiesResponse {
-	repeated com.sitewhere.grpc.model.GGrantedAuthority authorities = 1; 
+	com.sitewhere.grpc.model.GGrantedAuthoritySearchResults results = 1;
 }
 
 // Request for getting granted authorities for a user.

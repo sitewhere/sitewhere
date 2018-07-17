@@ -16,16 +16,22 @@ import com.sitewhere.grpc.model.CommonModel.GUserAccountStatus;
 import com.sitewhere.grpc.model.UserModel;
 import com.sitewhere.grpc.model.UserModel.GGrantedAuthority;
 import com.sitewhere.grpc.model.UserModel.GGrantedAuthorityCreateRequest;
+import com.sitewhere.grpc.model.UserModel.GGrantedAuthoritySearchCriteria;
+import com.sitewhere.grpc.model.UserModel.GGrantedAuthoritySearchResults;
 import com.sitewhere.grpc.model.UserModel.GUser;
 import com.sitewhere.grpc.model.UserModel.GUserCreateRequest;
 import com.sitewhere.grpc.model.UserModel.GUserSearchCriteria;
+import com.sitewhere.grpc.model.UserModel.GUserSearchResults;
+import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.rest.model.user.request.GrantedAuthorityCreateRequest;
 import com.sitewhere.rest.model.user.request.UserCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.AccountStatus;
 import com.sitewhere.spi.user.IGrantedAuthority;
+import com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserSearchCriteria;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
@@ -193,6 +199,32 @@ public class UserModelConverter {
     }
 
     /**
+     * Convert user search results from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ISearchResults<IUser> asApiUserSearchResults(GUserSearchResults grpc) throws SiteWhereException {
+	List<IUser> users = UserModelConverter.asApiUsers(grpc.getUsersList());
+	return new SearchResults<IUser>(users, grpc.getCount());
+    }
+
+    /**
+     * Convert user search results from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GUserSearchResults asGrpcUserSearchResults(ISearchResults<IUser> api) throws SiteWhereException {
+	GUserSearchResults.Builder grpc = GUserSearchResults.newBuilder();
+	grpc.setCount(api.getNumResults());
+	grpc.addAllUsers(UserModelConverter.asGrpcUsers(api.getResults()));
+	return grpc.build();
+    }
+
+    /**
      * Convert a list of users from GRPC to API.
      * 
      * @param grpcs
@@ -205,6 +237,21 @@ public class UserModelConverter {
 	    api.add(UserModelConverter.asApiUser(guser));
 	}
 	return api;
+    }
+
+    /**
+     * Convert a list of users from API to GRPC.
+     * 
+     * @param apis
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<GUser> asGrpcUsers(List<IUser> apis) throws SiteWhereException {
+	List<GUser> grpcs = new ArrayList<GUser>();
+	for (IUser apiUser : apis) {
+	    grpcs.add(UserModelConverter.asGrpcUser(apiUser));
+	}
+	return grpcs;
     }
 
     /**
@@ -243,6 +290,47 @@ public class UserModelConverter {
 	}
 	builder.setGroup(api.isGroup());
 	return builder.build();
+    }
+
+    /**
+     * Convert granted authority search criteria from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GGrantedAuthoritySearchCriteria asGrpcGrantedAuthoritySearchCriteria(
+	    IGrantedAuthoritySearchCriteria api) throws SiteWhereException {
+	GGrantedAuthoritySearchCriteria.Builder builder = GGrantedAuthoritySearchCriteria.newBuilder();
+	return builder.build();
+    }
+
+    /**
+     * Convert granted authority search results from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ISearchResults<IGrantedAuthority> asApiGrantedAuthoritySearchResults(
+	    GGrantedAuthoritySearchResults grpc) throws SiteWhereException {
+	List<IGrantedAuthority> auths = UserModelConverter.asApiGrantedAuthorities(grpc.getAuthoritiesList());
+	return new SearchResults<IGrantedAuthority>(auths, grpc.getCount());
+    }
+
+    /**
+     * Convert granted authority search results from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GGrantedAuthoritySearchResults asGrpcGrantedAuthoritySearchResults(
+	    ISearchResults<IGrantedAuthority> api) throws SiteWhereException {
+	GGrantedAuthoritySearchResults.Builder grpc = GGrantedAuthoritySearchResults.newBuilder();
+	grpc.setCount(api.getNumResults());
+	grpc.addAllAuthorities(UserModelConverter.asGrpcGrantedAuthorities(api.getResults()));
+	return grpc.build();
     }
 
     /**
@@ -295,5 +383,21 @@ public class UserModelConverter {
 	}
 	builder.setGroup(api.isGroup());
 	return builder.build();
+    }
+
+    /**
+     * Convert a list of granted authorities from API to GRPC.
+     * 
+     * @param apis
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<GGrantedAuthority> asGrpcGrantedAuthorities(List<IGrantedAuthority> apis)
+	    throws SiteWhereException {
+	List<GGrantedAuthority> grpcs = new ArrayList<GGrantedAuthority>();
+	for (IGrantedAuthority api : apis) {
+	    grpcs.add(UserModelConverter.asGrpcGrantedAuthority(api));
+	}
+	return grpcs;
     }
 }

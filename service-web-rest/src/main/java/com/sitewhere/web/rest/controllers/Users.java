@@ -10,7 +10,6 @@ package com.sitewhere.web.rest.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.rest.model.search.SearchResults;
@@ -35,7 +33,6 @@ import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.AccountStatus;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
@@ -166,54 +163,16 @@ public class Users extends RestControllerBase {
     }
 
     /**
-     * List devices that match given criteria.
+     * List users matching criteria.
      * 
      * @return
      * @throws SiteWhereException
      */
     @RequestMapping(method = RequestMethod.GET)
     @ApiOperation(value = "List users matching criteria")
-    public ISearchResults<IUser> listUsers(
-	    @ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
-	    @ApiParam(value = "Max records to return", required = false) @RequestParam(defaultValue = "100") int count,
-	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
+    public ISearchResults<IUser> listUsers() throws SiteWhereException {
 	UserSearchCriteria criteria = new UserSearchCriteria();
-	List<IUser> users = getUserManagement().listUsers(criteria);
-	List<IUser> usersConv = new ArrayList<IUser>();
-	for (IUser user : users) {
-	    usersConv.add(User.copy(user));
-	}
-	SearchResults<IUser> results = new SearchResults<IUser>(usersConv);
-	return results;
-    }
-
-    /**
-     * Get tenants associated with a user.
-     * 
-     * @param username
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/{username:.+}/tenants", method = RequestMethod.GET)
-    @ApiOperation(value = "List authorized tenants for user")
-    public List<ITenant> getTenantsForUsername(
-	    @ApiParam(value = "Unique username", required = true) @PathVariable String username,
-	    @ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo,
-	    HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws SiteWhereException {
-	// checkForAdminOrEditSelf(servletRequest, servletResponse, username);
-	// List<ITenant> results =
-	// SiteWhere.getServer().getAuthorizedTenants(username, false);
-	// if (includeRuntimeInfo) {
-	// for (ITenant tenant : results) {
-	// ISiteWhereTenantEngine engine =
-	// SiteWhere.getServer().getTenantEngine(tenant.getId());
-	// if (engine != null) {
-	// ((Tenant) tenant).setEngineState(engine.getEngineState());
-	// }
-	// }
-	// }
-	// return results;
-	return null;
+	return getUserManagement().listUsers(criteria);
     }
 
     /**

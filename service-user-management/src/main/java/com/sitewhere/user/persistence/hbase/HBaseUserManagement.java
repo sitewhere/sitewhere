@@ -19,6 +19,7 @@ import com.sitewhere.hbase.encoder.IPayloadMarshaler;
 import com.sitewhere.hbase.encoder.JsonPayloadMarshaler;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.user.IGrantedAuthority;
@@ -179,14 +180,12 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.user.IUserManagement#listUsers(com.sitewhere.spi.user.
      * IUserSearchCriteria)
      */
     @Override
-    public List<IUser> listUsers(IUserSearchCriteria criteria) throws SiteWhereException {
-	return HBaseUser.listUsers(context, criteria);
+    public ISearchResults<IUser> listUsers(IUserSearchCriteria criteria) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented.");
     }
 
     /*
@@ -232,15 +231,14 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.user.IUserManagement#listGrantedAuthorities(com.
-     * sitewhere.spi .user.IGrantedAuthoritySearchCriteria)
+     * @see
+     * com.sitewhere.spi.user.IUserManagement#listGrantedAuthorities(com.sitewhere.
+     * spi.user.IGrantedAuthoritySearchCriteria)
      */
     @Override
-    public List<IGrantedAuthority> listGrantedAuthorities(IGrantedAuthoritySearchCriteria criteria)
+    public ISearchResults<IGrantedAuthority> listGrantedAuthorities(IGrantedAuthoritySearchCriteria criteria)
 	    throws SiteWhereException {
-	return HBaseGrantedAuthority.listGrantedAuthorities(context, criteria);
+	throw new SiteWhereException("Not implemented.");
     }
 
     /*

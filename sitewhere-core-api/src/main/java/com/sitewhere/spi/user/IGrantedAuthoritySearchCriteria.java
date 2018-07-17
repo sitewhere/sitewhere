@@ -9,10 +9,12 @@ package com.sitewhere.spi.user;
 
 import java.io.Serializable;
 
+import com.sitewhere.spi.search.ISearchCriteria;
+
 /**
- * Placeholder for future search criteria.
+ * Criteria for searching granted authorities.
  * 
  * @author Derek
  */
-public interface IGrantedAuthoritySearchCriteria extends Serializable {
+public interface IGrantedAuthoritySearchCriteria extends ISearchCriteria, Serializable {
 }

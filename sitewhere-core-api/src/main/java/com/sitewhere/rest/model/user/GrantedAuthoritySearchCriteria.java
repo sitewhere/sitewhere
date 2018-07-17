@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.user;
 
+import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria;
 
 /**
@@ -14,8 +15,16 @@ import com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria;
  * 
  * @author Derek
  */
-public class GrantedAuthoritySearchCriteria implements IGrantedAuthoritySearchCriteria {
+public class GrantedAuthoritySearchCriteria extends SearchCriteria implements IGrantedAuthoritySearchCriteria {
 
     /** Serial version UID */
     private static final long serialVersionUID = 3724218780869528660L;
+
+    public GrantedAuthoritySearchCriteria() {
+	super();
+    }
+
+    public GrantedAuthoritySearchCriteria(int pageNumber, int pageSize) {
+	super(pageNumber, pageSize);
+    }
 }

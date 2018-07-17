@@ -46,6 +46,7 @@ import com.sitewhere.grpc.service.UserManagementGrpc;
 import com.sitewhere.rest.model.search.user.UserSearchCriteria;
 import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
@@ -207,11 +208,9 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, UserManagementGrpc.getListUsersMethod());
 	    UserSearchCriteria criteria = new UserSearchCriteria();
-	    List<IUser> apiResult = getUserMangagement().listUsers(criteria);
+	    ISearchResults<IUser> apiResult = getUserMangagement().listUsers(criteria);
 	    GListUsersResponse.Builder response = GListUsersResponse.newBuilder();
-	    for (IUser apiUser : apiResult) {
-		response.addUser(UserModelConverter.asGrpcUser(apiUser));
-	    }
+	    response.setResults(UserModelConverter.asGrpcUserSearchResults(apiResult));
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
@@ -335,12 +334,10 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 	    StreamObserver<GListGrantedAuthoritiesResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, UserManagementGrpc.getListGrantedAuthoritiesMethod());
-	    List<IGrantedAuthority> apiResult = getUserMangagement()
+	    ISearchResults<IGrantedAuthority> apiResult = getUserMangagement()
 		    .listGrantedAuthorities(new GrantedAuthoritySearchCriteria());
 	    GListGrantedAuthoritiesResponse.Builder response = GListGrantedAuthoritiesResponse.newBuilder();
-	    for (IGrantedAuthority apiAuth : apiResult) {
-		response.addAuthorities(UserModelConverter.asGrpcGrantedAuthority(apiAuth));
-	    }
+	    response.setResults(UserModelConverter.asGrpcGrantedAuthoritySearchResults(apiResult));
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {

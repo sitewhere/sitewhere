@@ -7,7 +7,6 @@
  */
 package com.sitewhere.web.rest.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -19,10 +18,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
 import com.sitewhere.rest.model.user.request.GrantedAuthorityCreateRequest;
@@ -30,6 +27,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.SiteWhereAuthority;
@@ -97,23 +95,15 @@ public class Authorities extends RestControllerBase {
     /**
      * List authorities that match given criteria.
      * 
-     * @param count
      * @return
      * @throws SiteWhereException
      */
     @RequestMapping(method = RequestMethod.GET)
     @ApiOperation(value = "List authorities that match criteria")
-    public SearchResults<GrantedAuthority> listAuthorities(
-	    @ApiParam(value = "Max records to return", required = false) @RequestParam(defaultValue = "100") int count)
-	    throws SiteWhereException {
+    public ISearchResults<IGrantedAuthority> listAuthorities() throws SiteWhereException {
 	checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
-	List<GrantedAuthority> authsConv = new ArrayList<GrantedAuthority>();
 	GrantedAuthoritySearchCriteria criteria = new GrantedAuthoritySearchCriteria();
-	List<IGrantedAuthority> auths = getUserManagement().listGrantedAuthorities(criteria);
-	for (IGrantedAuthority auth : auths) {
-	    authsConv.add(GrantedAuthority.copy(auth));
-	}
-	return new SearchResults<GrantedAuthority>(authsConv);
+	return getUserManagement().listGrantedAuthorities(criteria);
     }
 
     /**
@@ -127,9 +117,9 @@ public class Authorities extends RestControllerBase {
     @Secured({ SiteWhereRoles.REST })
     public List<GrantedAuthorityHierarchyNode> getAuthoritiesHierarchy() throws SiteWhereException {
 	checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
-	GrantedAuthoritySearchCriteria criteria = new GrantedAuthoritySearchCriteria();
-	List<IGrantedAuthority> auths = getUserManagement().listGrantedAuthorities(criteria);
-	return GrantedAuthorityHierarchyBuilder.build(auths);
+	GrantedAuthoritySearchCriteria criteria = new GrantedAuthoritySearchCriteria(1, 0);
+	ISearchResults<IGrantedAuthority> auths = getUserManagement().listGrantedAuthorities(criteria);
+	return GrantedAuthorityHierarchyBuilder.build(auths.getResults());
     }
 
     /**
