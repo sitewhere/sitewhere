@@ -11,7 +11,6 @@ import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.MultitenantApiChannel;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
-import com.sitewhere.grpc.model.converter.ScheduleModelConverter;
 import com.sitewhere.grpc.service.GCreateScheduleRequest;
 import com.sitewhere.grpc.service.GCreateScheduleResponse;
 import com.sitewhere.grpc.service.GCreateScheduledJobRequest;

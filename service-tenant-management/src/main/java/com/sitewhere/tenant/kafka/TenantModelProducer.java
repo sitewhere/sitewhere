@@ -7,8 +7,8 @@
  */
 package com.sitewhere.tenant.kafka;
 
-import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdateType;
-import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
+import com.sitewhere.grpc.client.tenant.TenantModelMarshaler;
+import com.sitewhere.grpc.model.TenantModel.GTenantModelUpdateType;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
@@ -30,7 +30,7 @@ public class TenantModelProducer extends MicroserviceKafkaProducer implements IT
      */
     @Override
     public void onTenantAdded(ITenant tenant) throws SiteWhereException {
-	byte[] message = KafkaModelMarshaler
+	byte[] message = TenantModelMarshaler
 		.buildTenantModelUpdateMessage(GTenantModelUpdateType.TENANTMODEL_TENANT_ADDED, tenant);
 	send(tenant.getToken(), message);
 	getLogger().info("Sent Kafka tenant model update for added tenant.");
@@ -44,7 +44,7 @@ public class TenantModelProducer extends MicroserviceKafkaProducer implements IT
      */
     @Override
     public void onTenantUpdated(ITenant tenant) throws SiteWhereException {
-	byte[] message = KafkaModelMarshaler
+	byte[] message = TenantModelMarshaler
 		.buildTenantModelUpdateMessage(GTenantModelUpdateType.TENANTMODEL_TENANT_UPDATED, tenant);
 	send(tenant.getToken(), message);
 	getLogger().info("Sent Kafka tenant model update for updated tenant.");
@@ -58,7 +58,7 @@ public class TenantModelProducer extends MicroserviceKafkaProducer implements IT
      */
     @Override
     public void onTenantDeleted(ITenant tenant) throws SiteWhereException {
-	byte[] message = KafkaModelMarshaler
+	byte[] message = TenantModelMarshaler
 		.buildTenantModelUpdateMessage(GTenantModelUpdateType.TENANTMODEL_TENANT_DELETED, tenant);
 	send(tenant.getToken(), message);
 	getLogger().info("Sent Kafka tenant model update for deleted tenant.");

@@ -7,7 +7,7 @@
  */
 package com.sitewhere.inbound.spi.microservice;
 
-import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
+import com.sitewhere.grpc.model.DeviceEventModel.GInboundEventPayload;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 

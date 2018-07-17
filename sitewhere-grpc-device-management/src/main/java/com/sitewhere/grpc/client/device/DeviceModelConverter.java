@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.grpc.model.converter;
+package com.sitewhere.grpc.client.device;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,7 +13,6 @@ import java.util.Date;
 import java.util.List;
 
 import com.sitewhere.grpc.model.CommonModel.GDeviceAlarmState;
-import com.sitewhere.grpc.model.CommonModel.GDeviceAssignmentStatus;
 import com.sitewhere.grpc.model.CommonModel.GDeviceContainerPolicy;
 import com.sitewhere.grpc.model.CommonModel.GOptionalBoolean;
 import com.sitewhere.grpc.model.CommonModel.GOptionalDouble;
@@ -82,6 +81,7 @@ import com.sitewhere.grpc.model.DeviceModel.GZone;
 import com.sitewhere.grpc.model.DeviceModel.GZoneCreateRequest;
 import com.sitewhere.grpc.model.DeviceModel.GZoneSearchCriteria;
 import com.sitewhere.grpc.model.DeviceModel.GZoneSearchResults;
+import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.rest.model.area.Area;
 import com.sitewhere.rest.model.area.AreaType;
 import com.sitewhere.rest.model.area.Zone;
@@ -136,7 +136,6 @@ import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.customer.request.ICustomerCreateRequest;
 import com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest;
 import com.sitewhere.spi.device.DeviceAlarmState;
-import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAlarm;
@@ -1470,53 +1469,6 @@ public class DeviceModelConverter {
     }
 
     /**
-     * Convert device assignment status from GRPC to API.
-     * 
-     * @param grpc
-     * @return
-     * @throws SiteWhereException
-     */
-    public static DeviceAssignmentStatus asApiDeviceAssignmentStatus(GDeviceAssignmentStatus grpc)
-	    throws SiteWhereException {
-	switch (grpc) {
-	case ASSN_STATUS_ACTIVE:
-	    return DeviceAssignmentStatus.Active;
-	case ASSN_STATUS_MISSING:
-	    return DeviceAssignmentStatus.Missing;
-	case ASSN_STATUS_RELEASED:
-	    return DeviceAssignmentStatus.Released;
-	case ASSN_STATUS_UNSPECIFIED:
-	    return null;
-	case UNRECOGNIZED:
-	    throw new SiteWhereException("Unknown device assignment status: " + grpc.name());
-	}
-	return null;
-    }
-
-    /**
-     * Convert device assignment status from API to GRPC.
-     * 
-     * @param api
-     * @return
-     * @throws SiteWhereException
-     */
-    public static GDeviceAssignmentStatus asGrpcDeviceAssignmentStatus(DeviceAssignmentStatus api)
-	    throws SiteWhereException {
-	if (api == null) {
-	    return GDeviceAssignmentStatus.ASSN_STATUS_UNSPECIFIED;
-	}
-	switch (api) {
-	case Active:
-	    return GDeviceAssignmentStatus.ASSN_STATUS_ACTIVE;
-	case Missing:
-	    return GDeviceAssignmentStatus.ASSN_STATUS_MISSING;
-	case Released:
-	    return GDeviceAssignmentStatus.ASSN_STATUS_RELEASED;
-	}
-	throw new SiteWhereException("Unknown device assignment status: " + api.name());
-    }
-
-    /**
      * Convert device assignment search criteria from GRPC to API.
      * 
      * @param grpc
@@ -1527,7 +1479,7 @@ public class DeviceModelConverter {
 	    GDeviceAssignmentSearchCriteria grpc) throws SiteWhereException {
 	DeviceAssignmentSearchCriteria api = new DeviceAssignmentSearchCriteria(grpc.getPaging().getPageNumber(),
 		grpc.getPaging().getPageSize());
-	api.setStatus(DeviceModelConverter.asApiDeviceAssignmentStatus(grpc.getStatus()));
+	api.setStatus(CommonModelConverter.asApiDeviceAssignmentStatus(grpc.getStatus()));
 	api.setDeviceId(grpc.hasDeviceId() ? CommonModelConverter.asApiUuid(grpc.getDeviceId()) : null);
 	api.setDeviceTypeIds(CommonModelConverter.asApiUuids(grpc.getDeviceTypeIdsList()));
 	api.setCustomerIds(CommonModelConverter.asApiUuids(grpc.getCustomerIdsList()));
@@ -1546,7 +1498,7 @@ public class DeviceModelConverter {
     public static GDeviceAssignmentSearchCriteria asGrpcDeviceAssignmentSearchCriteria(
 	    IDeviceAssignmentSearchCriteria api) throws SiteWhereException {
 	GDeviceAssignmentSearchCriteria.Builder grpc = GDeviceAssignmentSearchCriteria.newBuilder();
-	grpc.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(api.getStatus()));
+	grpc.setStatus(CommonModelConverter.asGrpcDeviceAssignmentStatus(api.getStatus()));
 	if (api.getDeviceId() != null) {
 	    grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
 	}
@@ -1597,7 +1549,7 @@ public class DeviceModelConverter {
 	api.setCustomerToken(grpc.hasCustomerToken() ? grpc.getCustomerToken().getValue() : null);
 	api.setAreaToken(grpc.hasAreaToken() ? grpc.getAreaToken().getValue() : null);
 	api.setAssetToken(grpc.hasAssetToken() ? grpc.getAssetToken().getValue() : null);
-	api.setStatus(DeviceModelConverter.asApiDeviceAssignmentStatus(grpc.getStatus()));
+	api.setStatus(CommonModelConverter.asApiDeviceAssignmentStatus(grpc.getStatus()));
 	api.setMetadata(grpc.getMetadataMap());
 	return api;
     }
@@ -1628,7 +1580,7 @@ public class DeviceModelConverter {
 	    grpc.setAssetToken(GOptionalString.newBuilder().setValue(api.getAssetToken()));
 	}
 	if (api.getStatus() != null) {
-	    grpc.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(api.getStatus()));
+	    grpc.setStatus(CommonModelConverter.asGrpcDeviceAssignmentStatus(api.getStatus()));
 	}
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
@@ -1647,7 +1599,7 @@ public class DeviceModelConverter {
 	DeviceAssignment api = new DeviceAssignment();
 	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
 	api.setToken(grpc.getToken());
-	api.setStatus(DeviceModelConverter.asApiDeviceAssignmentStatus(grpc.getStatus()));
+	api.setStatus(CommonModelConverter.asApiDeviceAssignmentStatus(grpc.getStatus()));
 	api.setDeviceId(CommonModelConverter.asApiUuid(grpc.getDeviceId()));
 	api.setDeviceTypeId(CommonModelConverter.asApiUuid(grpc.getDeviceTypeId()));
 	api.setCustomerId(grpc.hasCustomerId() ? CommonModelConverter.asApiUuid(grpc.getCustomerId()) : null);
@@ -1671,7 +1623,7 @@ public class DeviceModelConverter {
 	GDeviceAssignment.Builder grpc = GDeviceAssignment.newBuilder();
 	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
 	grpc.setToken(api.getToken());
-	grpc.setStatus(DeviceModelConverter.asGrpcDeviceAssignmentStatus(api.getStatus()));
+	grpc.setStatus(CommonModelConverter.asGrpcDeviceAssignmentStatus(api.getStatus()));
 	grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
 	grpc.setDeviceTypeId(CommonModelConverter.asGrpcUuid(api.getDeviceTypeId()));
 	if (api.getAreaId() != null) {

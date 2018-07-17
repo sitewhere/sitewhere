@@ -24,9 +24,11 @@ dependencies {
 	compile project(':sitewhere-grpc-asset-management')
 	compile project(':sitewhere-grpc-batch-management')
 	compile project(':sitewhere-grpc-device-management')
+	compile project(':sitewhere-grpc-device-state')
 	compile project(':sitewhere-grpc-event-management')
 	compile project(':sitewhere-grpc-label-generation')
-	compile project(':sitewhere-grpc-device-state')
+	compile project(':sitewhere-grpc-schedule-management')
+	compile project(':sitewhere-grpc-user-management')
 	
 	compile ('org.springframework.boot:spring-boot-starter-web')
 	compile ('org.springframework.boot:spring-boot-starter-websocket')    

@@ -15,9 +15,9 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
-import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
-import com.sitewhere.grpc.model.converter.KafkaModelConverter;
-import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
+import com.sitewhere.grpc.client.event.EventModelConverter;
+import com.sitewhere.grpc.client.event.EventModelMarshaler;
+import com.sitewhere.grpc.model.DeviceEventModel.GInboundEventPayload;
 import com.sitewhere.inbound.spi.kafka.IUnregisteredEventsProducer;
 import com.sitewhere.inbound.spi.microservice.IInboundEventStorageStrategy;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
@@ -137,9 +137,9 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
      * @throws SiteWhereException
      */
     protected GInboundEventPayload decodeRequest(ConsumerRecord<String, byte[]> record) throws SiteWhereException {
-	GInboundEventPayload message = KafkaModelMarshaler.parseInboundEventPayloadMessage(record.value());
+	GInboundEventPayload message = EventModelMarshaler.parseInboundEventPayloadMessage(record.value());
 	if (getLogger().isDebugEnabled()) {
-	    InboundEventPayload payload = KafkaModelConverter.asApiInboundEventPayload(message);
+	    InboundEventPayload payload = EventModelConverter.asApiInboundEventPayload(message);
 	    getLogger().debug("Received decoded event payload:\n\n" + MarshalUtils.marshalJsonAsPrettyString(payload));
 	}
 	return message;
@@ -199,7 +199,7 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
     protected void handleUnregisteredDevice(GInboundEventPayload payload) throws SiteWhereException {
 	getLogger().info("Device '" + payload.getDeviceToken()
 		+ "' is not registered. Forwarding to unregistered devices topic.");
-	byte[] marshaled = KafkaModelMarshaler.buildInboundEventPayloadMessage(payload);
+	byte[] marshaled = EventModelMarshaler.buildInboundEventPayloadMessage(payload);
 	getUnregisteredDeviceEventsProducer().send(payload.getDeviceToken(), marshaled);
     }
 
@@ -213,7 +213,7 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
     protected void handleUnassignedDevice(GInboundEventPayload payload) throws SiteWhereException {
 	getLogger().info("Device '" + payload.getDeviceToken()
 		+ "' is not currently assigned. Forwarding to unassigned devices topic.");
-	byte[] marshaled = KafkaModelMarshaler.buildInboundEventPayloadMessage(payload);
+	byte[] marshaled = EventModelMarshaler.buildInboundEventPayloadMessage(payload);
 	getUnregisteredDeviceEventsProducer().send(payload.getDeviceToken(), marshaled);
     }
 

@@ -14,7 +14,6 @@ import com.sitewhere.grpc.client.MultitenantApiChannel;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceStateApiChannel;
 import com.sitewhere.grpc.model.converter.CommonModelConverter;
-import com.sitewhere.grpc.model.converter.DeviceStateModelConverter;
 import com.sitewhere.grpc.service.DeviceStateGrpc;
 import com.sitewhere.grpc.service.GCreateDeviceStateRequest;
 import com.sitewhere.grpc.service.GCreateDeviceStateResponse;

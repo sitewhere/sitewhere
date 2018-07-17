@@ -10,7 +10,7 @@ package com.sitewhere.sources;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
+import com.sitewhere.grpc.client.event.EventModelMarshaler;
 import com.sitewhere.rest.model.microservice.kafka.payload.DeviceRegistrationPayload;
 import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
@@ -161,7 +161,7 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 		payload.setOriginator(decoded.getOriginator());
 		payload.setEventCreateRequest((IDeviceEventCreateRequest) decoded.getRequest());
 		getDecodedEventsProducer().send(decoded.getDeviceToken(),
-			KafkaModelMarshaler.buildInboundEventPayloadMessage(payload));
+			EventModelMarshaler.buildInboundEventPayloadMessage(payload));
 	    } else {
 		getLogger().warn("Producer not started. Unable to add decoded event to topic.");
 	    }
@@ -174,7 +174,7 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 		payload.setOriginator(decoded.getOriginator());
 		payload.setDeviceRegistrationRequest((IDeviceRegistrationRequest) decoded.getRequest());
 		getDeviceRegistrationEventsProducer().send(decoded.getDeviceToken(),
-			KafkaModelMarshaler.buildDeviceRegistrationPayloadMessage(payload));
+			EventModelMarshaler.buildDeviceRegistrationPayloadMessage(payload));
 	    } else {
 		getLogger().warn("Producer not started. Unable to add device registration event to topic.");
 	    }

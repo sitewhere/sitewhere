@@ -3,6 +3,9 @@ description = 'SiteWhere Instance Management Microservice'
 dependencies {
 	compile project(':sitewhere-core')
 	compile project(':sitewhere-microservice')
+	
+	// Connectivity to other microservices.
+	compile project(':sitewhere-grpc-user-management')
 }
 
 apply plugin: 'org.springframework.boot'

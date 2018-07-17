@@ -10,11 +10,10 @@ package com.sitewhere.inbound.processing;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitewhere.grpc.kafka.model.KafkaModel.GEnrichedEventPayload;
-import com.sitewhere.grpc.kafka.model.KafkaModel.GPersistedEventPayload;
-import com.sitewhere.grpc.model.converter.EventModelConverter;
-import com.sitewhere.grpc.model.converter.KafkaModelConverter;
-import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
+import com.sitewhere.grpc.client.event.EventModelConverter;
+import com.sitewhere.grpc.client.event.EventModelMarshaler;
+import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
+import com.sitewhere.grpc.model.DeviceEventModel.GPersistedEventPayload;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.rest.model.device.event.DeviceEventContext;
@@ -82,8 +81,8 @@ public class OutboundPayloadEnrichmentLogic {
 	enriched.setEvent(event);
 
 	// Send enriched payload to topic.
-	GEnrichedEventPayload grpc = KafkaModelConverter.asGrpcEnrichedEventPayload(enriched);
-	byte[] message = KafkaModelMarshaler.buildEnrichedEventPayloadMessage(grpc);
+	GEnrichedEventPayload grpc = EventModelConverter.asGrpcEnrichedEventPayload(enriched);
+	byte[] message = EventModelMarshaler.buildEnrichedEventPayloadMessage(grpc);
 	getTenantEngine().getEnrichedEventsProducer().send(device.getToken(), message);
 
 	// Send enriched command invocations to topic.

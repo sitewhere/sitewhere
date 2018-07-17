@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.grpc.model.converter;
+package com.sitewhere.grpc.client.user;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +22,7 @@ import com.sitewhere.grpc.model.UserModel.GUser;
 import com.sitewhere.grpc.model.UserModel.GUserCreateRequest;
 import com.sitewhere.grpc.model.UserModel.GUserSearchCriteria;
 import com.sitewhere.grpc.model.UserModel.GUserSearchResults;
+import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;

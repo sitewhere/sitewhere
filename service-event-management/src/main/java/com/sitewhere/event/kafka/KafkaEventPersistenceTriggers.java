@@ -16,9 +16,9 @@ import org.apache.commons.logging.LogFactory;
 import com.sitewhere.event.DeviceEventManagementDecorator;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
-import com.sitewhere.grpc.kafka.model.KafkaModel.GPersistedEventPayload;
-import com.sitewhere.grpc.model.converter.KafkaModelConverter;
-import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
+import com.sitewhere.grpc.client.event.EventModelConverter;
+import com.sitewhere.grpc.client.event.EventModelMarshaler;
+import com.sitewhere.grpc.model.DeviceEventModel.GPersistedEventPayload;
 import com.sitewhere.rest.model.microservice.kafka.payload.PersistedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -76,10 +76,10 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
 	    PersistedEventPayload api = new PersistedEventPayload();
 	    api.setDeviceId(assignment.getDeviceId());
 	    api.setEvent(event);
-	    GPersistedEventPayload payload = KafkaModelConverter.asGrpcPersistedEventPayload(api);
+	    GPersistedEventPayload payload = EventModelConverter.asGrpcPersistedEventPayload(api);
 
 	    getTenantEngine().getInboundPersistedEventsProducer().send(assignment.getId().toString(),
-		    KafkaModelMarshaler.buildPersistedEventPayloadMessage(payload));
+		    EventModelMarshaler.buildPersistedEventPayloadMessage(payload));
 	}
 	return events;
     }

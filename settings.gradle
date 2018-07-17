@@ -34,6 +34,9 @@ include ':sitewhere-grpc-device-state'
 include ':sitewhere-grpc-event-management'
 include ':sitewhere-grpc-label-generation'
 include ':sitewhere-grpc-model'
+include ':sitewhere-grpc-schedule-management'
+include ':sitewhere-grpc-tenant-management'
+include ':sitewhere-grpc-user-management'
 include ':sitewhere-hbase'
 include ':sitewhere-influxdb'
 include ':sitewhere-microservice'
@@ -75,6 +78,9 @@ project(':sitewhere-grpc-device-state').projectDir = "$rootDir/sitewhere-grpc-de
 project(':sitewhere-grpc-event-management').projectDir = "$rootDir/sitewhere-grpc-event-management" as File
 project(':sitewhere-grpc-label-generation').projectDir = "$rootDir/sitewhere-grpc-label-generation" as File
 project(':sitewhere-grpc-model').projectDir = "$rootDir/sitewhere-grpc-model" as File
+project(':sitewhere-grpc-schedule-management').projectDir = "$rootDir/sitewhere-grpc-schedule-management" as File
+project(':sitewhere-grpc-tenant-management').projectDir = "$rootDir/sitewhere-grpc-tenant-management" as File
+project(':sitewhere-grpc-user-management').projectDir = "$rootDir/sitewhere-grpc-user-management" as File
 project(':sitewhere-hbase').projectDir = "$rootDir/sitewhere-hbase" as File
 project(':sitewhere-influxdb').projectDir = "$rootDir/sitewhere-influxdb" as File
 project(':sitewhere-microservice').projectDir = "$rootDir/sitewhere-microservice" as File

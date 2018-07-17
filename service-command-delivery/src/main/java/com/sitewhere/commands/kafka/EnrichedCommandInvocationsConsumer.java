@@ -23,9 +23,9 @@ import com.sitewhere.commands.spi.ICommandProcessingStrategy;
 import com.sitewhere.commands.spi.kafka.IEnrichedCommandInvocationsConsumer;
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryTenantEngine;
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.grpc.kafka.model.KafkaModel.GEnrichedEventPayload;
-import com.sitewhere.grpc.model.converter.KafkaModelConverter;
-import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
+import com.sitewhere.grpc.client.event.EventModelConverter;
+import com.sitewhere.grpc.client.event.EventModelMarshaler;
+import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
 import com.sitewhere.microservice.kafka.DirectKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.rest.model.microservice.kafka.payload.EnrichedEventPayload;
@@ -157,8 +157,8 @@ public class EnrichedCommandInvocationsConsumer extends DirectKafkaConsumer
 	@Override
 	public void runAsSystemUser() throws SiteWhereException {
 	    try {
-		GEnrichedEventPayload grpc = KafkaModelMarshaler.parseEnrichedEventPayloadMessage(encoded);
-		EnrichedEventPayload eventPayload = KafkaModelConverter.asApiEnrichedEventPayload(grpc);
+		GEnrichedEventPayload grpc = EventModelMarshaler.parseEnrichedEventPayloadMessage(encoded);
+		EnrichedEventPayload eventPayload = EventModelConverter.asApiEnrichedEventPayload(grpc);
 		if (getLogger().isDebugEnabled()) {
 		    getLogger().debug(
 			    "Received command invocation:\n\n" + MarshalUtils.marshalJsonAsPrettyString(eventPayload));

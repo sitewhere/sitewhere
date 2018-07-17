@@ -25,9 +25,9 @@ import org.apache.kafka.common.TopicPartition;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.connectors.spi.IOutboundConnector;
-import com.sitewhere.grpc.kafka.model.KafkaModel.GEnrichedEventPayload;
-import com.sitewhere.grpc.model.converter.KafkaModelConverter;
-import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
+import com.sitewhere.grpc.client.event.EventModelConverter;
+import com.sitewhere.grpc.client.event.EventModelMarshaler;
+import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.rest.model.microservice.kafka.payload.EnrichedEventPayload;
@@ -192,8 +192,8 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
 	    List<IEnrichedEventPayload> decoded = new ArrayList<>();
 	    for (ConsumerRecord<String, byte[]> record : getRecords()) {
 		try {
-		    GEnrichedEventPayload grpc = KafkaModelMarshaler.parseEnrichedEventPayloadMessage(record.value());
-		    EnrichedEventPayload payload = KafkaModelConverter.asApiEnrichedEventPayload(grpc);
+		    GEnrichedEventPayload grpc = EventModelMarshaler.parseEnrichedEventPayloadMessage(record.value());
+		    EnrichedEventPayload payload = EventModelConverter.asApiEnrichedEventPayload(grpc);
 		    if (getLogger().isDebugEnabled()) {
 			getLogger().debug("Received enriched event payload:\n\n"
 				+ MarshalUtils.marshalJsonAsPrettyString(payload));

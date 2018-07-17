@@ -8,10 +8,10 @@
 package com.sitewhere.schedule.grpc;
 
 import com.sitewhere.grpc.client.GrpcUtils;
+import com.sitewhere.grpc.client.schedule.ScheduleModelConverter;
 import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
 import com.sitewhere.grpc.model.ScheduleModel.GScheduleSearchResults;
 import com.sitewhere.grpc.model.ScheduleModel.GScheduledJobSearchResults;
-import com.sitewhere.grpc.model.converter.ScheduleModelConverter;
 import com.sitewhere.grpc.service.GCreateScheduleRequest;
 import com.sitewhere.grpc.service.GCreateScheduleResponse;
 import com.sitewhere.grpc.service.GCreateScheduledJobRequest;

@@ -20,10 +20,10 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.zookeeper.data.Stat;
 
-import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdate;
-import com.sitewhere.grpc.kafka.model.KafkaModel.GTenantModelUpdateType;
-import com.sitewhere.grpc.model.converter.TenantModelConverter;
-import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
+import com.sitewhere.grpc.client.tenant.TenantModelConverter;
+import com.sitewhere.grpc.client.tenant.TenantModelMarshaler;
+import com.sitewhere.grpc.model.TenantModel.GTenantModelUpdate;
+import com.sitewhere.grpc.model.TenantModel.GTenantModelUpdateType;
 import com.sitewhere.microservice.kafka.DirectKafkaConsumer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -123,7 +123,7 @@ public class TenantBootstrapModelConsumer extends DirectKafkaConsumer implements
     }
 
     public void received(String key, byte[] message) throws SiteWhereException {
-	GTenantModelUpdate update = KafkaModelMarshaler.parseTenantModelUpdateMessage(message);
+	GTenantModelUpdate update = TenantModelMarshaler.parseTenantModelUpdateMessage(message);
 
 	// If a tenant was added, bootstrap it.
 	if (update.getType() == GTenantModelUpdateType.TENANTMODEL_TENANT_ADDED) {

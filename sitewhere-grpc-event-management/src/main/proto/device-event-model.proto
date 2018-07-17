@@ -214,17 +214,6 @@ message GAnyDeviceEvent {
 	}
 }
 
-// Context information for a device event.
-message GDeviceEventContext {
-	GUUID deviceId = 1;
-	GUUID deviceTypeId = 2;
-	GUUID parentDeviceId = 3;
-	GOptionalString deviceStatus = 4;
-	map<string, string> deviceMetadata = 5;
-	GDeviceAssignmentStatus assignmentStatus = 6;
-	map<string, string> assignmentMetadata = 7;
-}
-
 // Criteria for searching device events.
 message GDeviceEventSearchCriteria {
 	GDateRangeSearchCriteria criteria = 1;
@@ -289,4 +278,47 @@ message GDeviceEventBatchResponse {
 	repeated GDeviceMeasurement measurements = 1;
 	repeated GDeviceAlert alerts = 2;
 	repeated GDeviceLocation locations = 3;
+}
+
+// ######################
+// ### KAFKA PAYLOADS ###
+// ######################
+
+// Context information for a device event.
+message GDeviceEventContext {
+	GUUID deviceId = 1;
+	GUUID deviceTypeId = 2;
+	GUUID parentDeviceId = 3;
+	GOptionalString deviceStatus = 4;
+	map<string, string> deviceMetadata = 5;
+	GDeviceAssignmentStatus assignmentStatus = 6;
+	map<string, string> assignmentMetadata = 7;
+}
+
+// Device registration payload.
+message GDeviceRegistationPayload {
+	string sourceId = 1;
+	string deviceToken = 2;
+	com.sitewhere.grpc.model.GOptionalString originator = 3;
+	com.sitewhere.grpc.model.GDeviceRegistrationRequest registration = 4;
+}
+
+// Inbound event payload.
+message GInboundEventPayload {
+	string sourceId = 1;
+	string deviceToken = 2;
+	com.sitewhere.grpc.model.GOptionalString originator = 3;
+	com.sitewhere.grpc.model.GAnyDeviceEventCreateRequest event = 4;
+}
+
+// Persisted event payload.
+message GPersistedEventPayload {
+	com.sitewhere.grpc.model.GUUID deviceId = 1;
+	com.sitewhere.grpc.model.GAnyDeviceEvent event = 2;
+}
+
+// Enriched event payload.
+message GEnrichedEventPayload {
+	com.sitewhere.grpc.model.GDeviceEventContext context = 1;
+	com.sitewhere.grpc.model.GAnyDeviceEvent event = 2;
 }

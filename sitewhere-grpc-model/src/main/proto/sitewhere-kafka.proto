@@ -6,58 +6,6 @@ option java_outer_classname = "KafkaModel";
 
 import "sitewhere-common.proto";
 import "microservice-model.proto";
-import "tenant-model.proto";
-import "device-model.proto";
-import "device-event-model.proto";
-
-// ############################
-// ### TENANT MODEL UPDATES ###
-// ############################
-
-// Tenant model update type.
-enum GTenantModelUpdateType {
-	TENANTMODEL_TENANT_ADDED = 0;
-	TENANTMODEL_TENANT_UPDATED = 1;
-	TENANTMODEL_TENANT_DELETED = 2;
-}
-
-// Tenant model update message.
-message GTenantModelUpdate {
-	GTenantModelUpdateType type = 1;
-	com.sitewhere.grpc.model.GTenant tenant = 2;
-}
-
-// ########################
-// ### EVENT PROCESSING ###
-// ########################
-
-// Device registration payload.
-message GDeviceRegistationPayload {
-	string sourceId = 1;
-	string deviceToken = 2;
-	com.sitewhere.grpc.model.GOptionalString originator = 3;
-	com.sitewhere.grpc.model.GDeviceRegistrationRequest registration = 4;
-}
-
-// Inbound event payload.
-message GInboundEventPayload {
-	string sourceId = 1;
-	string deviceToken = 2;
-	com.sitewhere.grpc.model.GOptionalString originator = 3;
-	com.sitewhere.grpc.model.GAnyDeviceEventCreateRequest event = 4;
-}
-
-// Persisted event payload.
-message GPersistedEventPayload {
-	com.sitewhere.grpc.model.GUUID deviceId = 1;
-	com.sitewhere.grpc.model.GAnyDeviceEvent event = 2;
-}
-
-// Enriched event payload.
-message GEnrichedEventPayload {
-	com.sitewhere.grpc.model.GDeviceEventContext context = 1;
-	com.sitewhere.grpc.model.GAnyDeviceEvent event = 2;
-}
 
 // ########################
 // ### STATE MANAGEMENT ###

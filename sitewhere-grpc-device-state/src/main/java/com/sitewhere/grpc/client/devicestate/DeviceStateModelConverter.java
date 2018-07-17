@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.grpc.model.converter;
+package com.sitewhere.grpc.client.devicestate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +16,7 @@ import com.sitewhere.grpc.model.DeviceStateModel.GDeviceState;
 import com.sitewhere.grpc.model.DeviceStateModel.GDeviceStateCreateRequest;
 import com.sitewhere.grpc.model.DeviceStateModel.GDeviceStateSearchCriteria;
 import com.sitewhere.grpc.model.DeviceStateModel.GDeviceStateSearchResults;
+import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.rest.model.device.state.DeviceState;
 import com.sitewhere.rest.model.device.state.request.DeviceStateCreateRequest;
 import com.sitewhere.rest.model.search.SearchResults;

@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.grpc.model.converter;
+package com.sitewhere.grpc.client.tenant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +21,7 @@ import com.sitewhere.grpc.model.TenantModel.GTenantCreateRequest;
 import com.sitewhere.grpc.model.TenantModel.GTenantSearchCriteria;
 import com.sitewhere.grpc.model.TenantModel.GTenantSearchResults;
 import com.sitewhere.grpc.model.TenantModel.GTenantTemplate;
+import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.tenant.DatasetTemplate;

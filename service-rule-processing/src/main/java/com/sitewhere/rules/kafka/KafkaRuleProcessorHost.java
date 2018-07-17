@@ -20,9 +20,9 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
 
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.grpc.kafka.model.KafkaModel.GEnrichedEventPayload;
-import com.sitewhere.grpc.model.converter.KafkaModelConverter;
-import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
+import com.sitewhere.grpc.client.event.EventModelConverter;
+import com.sitewhere.grpc.client.event.EventModelMarshaler;
+import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
 import com.sitewhere.microservice.kafka.DirectKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.rest.model.microservice.kafka.payload.EnrichedEventPayload;
@@ -182,8 +182,8 @@ public class KafkaRuleProcessorHost extends DirectKafkaConsumer {
 	@Override
 	public void runAsSystemUser() throws SiteWhereException {
 	    try {
-		GEnrichedEventPayload grpc = KafkaModelMarshaler.parseEnrichedEventPayloadMessage(encoded);
-		EnrichedEventPayload payload = KafkaModelConverter.asApiEnrichedEventPayload(grpc);
+		GEnrichedEventPayload grpc = EventModelMarshaler.parseEnrichedEventPayloadMessage(encoded);
+		EnrichedEventPayload payload = EventModelConverter.asApiEnrichedEventPayload(grpc);
 		if (getLogger().isDebugEnabled()) {
 		    getLogger().debug(
 			    "Received enriched event payload:\n\n" + MarshalUtils.marshalJsonAsPrettyString(payload));

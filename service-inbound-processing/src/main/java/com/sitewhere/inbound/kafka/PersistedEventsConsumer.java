@@ -19,9 +19,9 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
 
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.grpc.kafka.model.KafkaModel.GPersistedEventPayload;
-import com.sitewhere.grpc.model.converter.KafkaModelConverter;
-import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
+import com.sitewhere.grpc.client.event.EventModelConverter;
+import com.sitewhere.grpc.client.event.EventModelMarshaler;
+import com.sitewhere.grpc.model.DeviceEventModel.GPersistedEventPayload;
 import com.sitewhere.inbound.processing.OutboundPayloadEnrichmentLogic;
 import com.sitewhere.inbound.spi.kafka.IPersistedEventsConsumer;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
@@ -171,9 +171,9 @@ public class PersistedEventsConsumer extends DirectKafkaConsumer implements IPer
 	@Override
 	public void runAsSystemUser() throws SiteWhereException {
 	    try {
-		GPersistedEventPayload grpc = KafkaModelMarshaler.parsePersistedEventPayloadMessage(encoded);
+		GPersistedEventPayload grpc = EventModelMarshaler.parsePersistedEventPayloadMessage(encoded);
 		if (getLogger().isDebugEnabled()) {
-		    PersistedEventPayload payload = KafkaModelConverter.asApiPersisedEventPayload(grpc);
+		    PersistedEventPayload payload = EventModelConverter.asApiPersisedEventPayload(grpc);
 		    getLogger().debug(
 			    "Received persisted event payload:\n\n" + MarshalUtils.marshalJsonAsPrettyString(payload));
 		}

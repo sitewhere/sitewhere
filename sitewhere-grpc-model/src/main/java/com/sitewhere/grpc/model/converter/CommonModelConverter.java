@@ -14,6 +14,7 @@ import java.util.UUID;
 
 import com.sitewhere.grpc.model.CommonModel;
 import com.sitewhere.grpc.model.CommonModel.GDateRangeSearchCriteria;
+import com.sitewhere.grpc.model.CommonModel.GDeviceAssignmentStatus;
 import com.sitewhere.grpc.model.CommonModel.GEntityInformation;
 import com.sitewhere.grpc.model.CommonModel.GLocation;
 import com.sitewhere.grpc.model.CommonModel.GOptionalDouble;
@@ -27,6 +28,7 @@ import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.ILocation;
 import com.sitewhere.spi.common.ISiteWhereEntity;
+import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 
@@ -288,5 +290,52 @@ public class CommonModelConverter {
 	    grpcs.add(CommonModelConverter.asGrpcUuid(api));
 	}
 	return grpcs;
+    }
+
+    /**
+     * Convert device assignment status from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceAssignmentStatus asApiDeviceAssignmentStatus(GDeviceAssignmentStatus grpc)
+	    throws SiteWhereException {
+	switch (grpc) {
+	case ASSN_STATUS_ACTIVE:
+	    return DeviceAssignmentStatus.Active;
+	case ASSN_STATUS_MISSING:
+	    return DeviceAssignmentStatus.Missing;
+	case ASSN_STATUS_RELEASED:
+	    return DeviceAssignmentStatus.Released;
+	case ASSN_STATUS_UNSPECIFIED:
+	    return null;
+	case UNRECOGNIZED:
+	    throw new SiteWhereException("Unknown device assignment status: " + grpc.name());
+	}
+	return null;
+    }
+
+    /**
+     * Convert device assignment status from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceAssignmentStatus asGrpcDeviceAssignmentStatus(DeviceAssignmentStatus api)
+	    throws SiteWhereException {
+	if (api == null) {
+	    return GDeviceAssignmentStatus.ASSN_STATUS_UNSPECIFIED;
+	}
+	switch (api) {
+	case Active:
+	    return GDeviceAssignmentStatus.ASSN_STATUS_ACTIVE;
+	case Missing:
+	    return GDeviceAssignmentStatus.ASSN_STATUS_MISSING;
+	case Released:
+	    return GDeviceAssignmentStatus.ASSN_STATUS_RELEASED;
+	}
+	throw new SiteWhereException("Unknown device assignment status: " + api.name());
     }
 }

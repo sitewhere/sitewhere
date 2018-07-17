@@ -20,9 +20,9 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
 
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.grpc.kafka.model.KafkaModel.GInboundEventPayload;
-import com.sitewhere.grpc.model.converter.KafkaModelConverter;
-import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
+import com.sitewhere.grpc.client.event.EventModelConverter;
+import com.sitewhere.grpc.client.event.EventModelMarshaler;
+import com.sitewhere.grpc.model.DeviceEventModel.GInboundEventPayload;
 import com.sitewhere.microservice.kafka.DirectKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.registration.spi.kafka.IUnregisteredEventsConsumer;
@@ -154,8 +154,8 @@ public class UnregisteredEventsConsumer extends DirectKafkaConsumer implements I
 	@Override
 	public void runAsSystemUser() throws SiteWhereException {
 	    try {
-		GInboundEventPayload grpc = KafkaModelMarshaler.parseInboundEventPayloadMessage(encoded);
-		InboundEventPayload eventPayload = KafkaModelConverter.asApiInboundEventPayload(grpc);
+		GInboundEventPayload grpc = EventModelMarshaler.parseInboundEventPayloadMessage(encoded);
+		InboundEventPayload eventPayload = EventModelConverter.asApiInboundEventPayload(grpc);
 		if (getLogger().isDebugEnabled()) {
 		    getLogger().debug("Received event for unregistered device:\n\n"
 			    + MarshalUtils.marshalJsonAsPrettyString(eventPayload));

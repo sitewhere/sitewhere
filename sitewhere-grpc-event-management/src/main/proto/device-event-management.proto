@@ -8,7 +8,6 @@ option java_outer_classname = "DeviceEventServices";
 
 import "sitewhere-common.proto";
 import "device-event-model.proto";
-import "device-model.proto";
 
 // Device event management APIs.
 service DeviceEventManagement {

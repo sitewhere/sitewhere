@@ -62,3 +62,20 @@ message GDatasetTemplate {
 	string id = 1;
 	string name = 2;
 }
+
+// #####################
+// ### KAFKA UPDATES ###
+// #####################
+
+// Tenant model update type.
+enum GTenantModelUpdateType {
+	TENANTMODEL_TENANT_ADDED = 0;
+	TENANTMODEL_TENANT_UPDATED = 1;
+	TENANTMODEL_TENANT_DELETED = 2;
+}
+
+// Tenant model update message.
+message GTenantModelUpdate {
+	GTenantModelUpdateType type = 1;
+	com.sitewhere.grpc.model.GTenant tenant = 2;
+}

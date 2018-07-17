@@ -6,6 +6,7 @@ dependencies {
 	
 	// Connectivity to other microservices.
 	compile project(':sitewhere-grpc-device-management')
+	compile project(':sitewhere-grpc-event-management')
 	
 	// Twilio dependencies.
     compile group: 'com.twilio.sdk', name: 'twilio-java-sdk', version:'3.4.5'

@@ -16,9 +16,9 @@ import com.codahale.metrics.Meter;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
 import com.sitewhere.devicestate.spi.processing.IDeviceStateProcessingLogic;
-import com.sitewhere.grpc.kafka.model.KafkaModel.GEnrichedEventPayload;
-import com.sitewhere.grpc.model.converter.KafkaModelConverter;
-import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
+import com.sitewhere.grpc.client.event.EventModelConverter;
+import com.sitewhere.grpc.client.event.EventModelMarshaler;
+import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
 import com.sitewhere.rest.model.device.state.request.DeviceStateCreateRequest;
 import com.sitewhere.rest.model.microservice.kafka.payload.EnrichedEventPayload;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -93,8 +93,8 @@ public class DeviceStateProcessingLogic extends TenantEngineLifecycleComponent i
     protected void processRecord(ConsumerRecord<String, byte[]> record) throws SiteWhereException {
 	getProcessedEvents().mark();
 	try {
-	    GEnrichedEventPayload grpc = KafkaModelMarshaler.parseEnrichedEventPayloadMessage(record.value());
-	    EnrichedEventPayload payload = KafkaModelConverter.asApiEnrichedEventPayload(grpc);
+	    GEnrichedEventPayload grpc = EventModelMarshaler.parseEnrichedEventPayloadMessage(record.value());
+	    EnrichedEventPayload payload = EventModelConverter.asApiEnrichedEventPayload(grpc);
 	    if (getLogger().isDebugEnabled()) {
 		getLogger().debug(
 			"Received enriched event payload:\n\n" + MarshalUtils.marshalJsonAsPrettyString(payload));
