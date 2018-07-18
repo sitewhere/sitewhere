@@ -16,6 +16,7 @@ import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.customer.ICustomer;
 import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -38,6 +39,9 @@ public class MarshaledDeviceState extends DeviceState {
 
     /** Device type */
     private IDeviceType deviceType;
+
+    /** Device assignment */
+    private IDeviceAssignment deviceAssignment;
 
     /** Assigned customer */
     private ICustomer customer;
@@ -71,6 +75,14 @@ public class MarshaledDeviceState extends DeviceState {
 
     public void setDeviceType(IDeviceType deviceType) {
 	this.deviceType = deviceType;
+    }
+
+    public IDeviceAssignment getDeviceAssignment() {
+	return deviceAssignment;
+    }
+
+    public void setDeviceAssignment(IDeviceAssignment deviceAssignment) {
+	this.deviceAssignment = deviceAssignment;
     }
 
     public ICustomer getCustomer() {

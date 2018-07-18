@@ -22,6 +22,7 @@ import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.customer.ICustomer;
 import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.event.IDeviceAlert;
@@ -43,6 +44,9 @@ public class DeviceStateMarshalHelper {
 
     /** Indicates whether to include device type */
     private boolean includeDeviceType = false;
+
+    /** Indicates whether to include device assignment information */
+    private boolean includeDeviceAssignment = false;
 
     /** Indicates whether to include customer information */
     private boolean includeCustomer = false;
@@ -115,6 +119,15 @@ public class DeviceStateMarshalHelper {
 	    IDeviceType deviceType = getDeviceManagement().getDeviceType(source.getDeviceTypeId());
 	    if (deviceType != null) {
 		result.setDeviceType(deviceType);
+	    }
+	}
+
+	// Add device assignment information.
+	if (isIncludeDeviceAssignment()) {
+	    IDeviceAssignment deviceAssignment = getDeviceManagement()
+		    .getDeviceAssignment(source.getDeviceAssignmentId());
+	    if (deviceAssignment != null) {
+		result.setDeviceAssignment(deviceAssignment);
 	    }
 	}
 
@@ -220,6 +233,14 @@ public class DeviceStateMarshalHelper {
 
     public void setIncludeDeviceType(boolean includeDeviceType) {
 	this.includeDeviceType = includeDeviceType;
+    }
+
+    public boolean isIncludeDeviceAssignment() {
+	return includeDeviceAssignment;
+    }
+
+    public void setIncludeDeviceAssignment(boolean includeDeviceAssignment) {
+	this.includeDeviceAssignment = includeDeviceAssignment;
     }
 
     public boolean isIncludeCustomer() {
