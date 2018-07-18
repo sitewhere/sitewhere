@@ -4,7 +4,7 @@
 
 ---
 
-## NOTE: SiteWhere 2.0 EA5 is an early access release of the new architecture and is considered an "alpha" quality preview. This release is not intended for production use! Some of the core functionality will change significantly before the 2.0 GA release
+## NOTE: SiteWhere 2.0 RC1 is an early release candidate of the new architecture and is considered an "beta" quality preview. This release is not intended for production use! Some features will change before the 2.0 GA release.
 
 SiteWhere is an industrial-strength open source IoT Application Enablement Platform 
 that facilitates the ingestion, storage, processing, and integration of device data 
@@ -16,7 +16,7 @@ projects. Rather than using a monolithic architecture, SiteWhere embraces a comp
 distributed approach using microservices to allow scaling at the component level so 
 that the system may be tailored to the customer use case.
 
-![SiteWhere Administration](http://sitewhere.io/docs/en/2.0.EA1/_images/vue-user-interface.png "SiteWhere Administration")
+![SiteWhere Administration](http://sitewhere.io/docs/en/2.0.RC1/_images/vue-user-interface.png "SiteWhere Administration")
 
 The SiteWhere microservices are built with a framework approach using clearly defined
 APIs so that new technologies can easily be integrated as the IoT ecosystem
@@ -146,7 +146,7 @@ Since new events can be allowed to stack up in Kafka, the tenant engine can be s
 and restarted, then resume where it left off with no data loss.
 
 ## Release Documentation
-More documentation for this "early access" release can be found [here](http://sitewhere.io/docs/en/2.0.EA5/index.html).
+More documentation for this "early access" release can be found [here](http://sitewhere.io/docs/en/2.0.RC1/index.html).
 
 * * * *
 
