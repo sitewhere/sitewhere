@@ -73,8 +73,6 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
     protected void ensureIndexes() throws SiteWhereException {
 	getMongoClient().getTenantsCollection().createIndex(new Document(MongoTenant.PROP_TOKEN, 1),
 		new IndexOptions().unique(true));
-	getMongoClient().getTenantsCollection().createIndex(new Document(MongoTenant.PROP_AUTH_TOKEN, 1),
-		new IndexOptions().unique(true));
     }
 
     /*
