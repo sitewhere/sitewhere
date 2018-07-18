@@ -166,7 +166,6 @@ public class HBaseZone {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidZoneToken, ErrorLevel.ERROR);
 	}
 	Zone existing = getZone(context, zone.getToken());
-	existing.setDeleted(true);
 	if (force) {
 	    context.getDeviceIdManager().getZoneKeys().delete(zone.getToken());
 	    Table sites = null;

@@ -260,7 +260,6 @@ public class HBaseUtils {
 	    byte[] tableName, String token, boolean force, IRowKeyBuilder builder, Class<T> type)
 	    throws SiteWhereException {
 	T existing = get(context, tableName, token, builder, type);
-	existing.setDeleted(true);
 
 	byte[] primary = builder.buildPrimaryKey(context, token);
 	if (force) {

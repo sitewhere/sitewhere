@@ -272,7 +272,6 @@ public class HBaseDevice {
 	}
 
 	Device existing = getDeviceByToken(context, device.getToken());
-	existing.setDeleted(true);
 	byte[] primary = getDeviceRowKey(deviceId);
 	if (force) {
 	    context.getDeviceIdManager().getDeviceKeys().delete(device.getToken());

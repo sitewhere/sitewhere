@@ -505,7 +505,6 @@ public class HBaseArea {
 	if (area == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
 	}
-	area.setDeleted(true);
 
 	Long areaId = context.getDeviceIdManager().getSiteKeys().getValue(area.getToken());
 	byte[] rowkey = getPrimaryRowkey(areaId);

@@ -36,9 +36,6 @@ public abstract class SiteWhereEntity extends MetadataProvider implements ISiteW
     /** Username that updated entity */
     private String updatedBy;
 
-    /** Indicates if entity has been deleted */
-    private boolean deleted;
-
     @JsonSerialize(using = JsonDateSerializer.class)
     public Date getCreatedDate() {
 	return createdDate;
@@ -88,19 +85,6 @@ public abstract class SiteWhereEntity extends MetadataProvider implements ISiteW
 	this.updatedBy = updatedBy;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.common.ISiteWhereEntity#isDeleted()
-     */
-    public boolean isDeleted() {
-	return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-	this.deleted = deleted;
-    }
-
     /**
      * Copy fields from source to target.
      * 
@@ -112,7 +96,6 @@ public abstract class SiteWhereEntity extends MetadataProvider implements ISiteW
 	target.setCreatedBy(source.getCreatedBy());
 	target.setUpdatedDate(source.getUpdatedDate());
 	target.setUpdatedBy(source.getUpdatedBy());
-	target.setDeleted(source.isDeleted());
 	MetadataProvider.copy(source, target);
     }
 }

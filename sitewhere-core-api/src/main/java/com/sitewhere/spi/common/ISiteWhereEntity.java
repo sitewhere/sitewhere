@@ -59,11 +59,4 @@ public interface ISiteWhereEntity extends IMetadataProvider, Serializable {
      * @return
      */
     public String getUpdatedBy();
-
-    /**
-     * Indicates if entity has been deleted.
-     * 
-     * @return
-     */
-    public boolean isDeleted();
 }

@@ -34,7 +34,6 @@ public class Persistence {
     public static void initializeEntityMetadata(SiteWhereEntity entity) throws SiteWhereException {
 	entity.setCreatedDate(new Date());
 	entity.setCreatedBy(null);
-	entity.setDeleted(false);
     }
 
     /**

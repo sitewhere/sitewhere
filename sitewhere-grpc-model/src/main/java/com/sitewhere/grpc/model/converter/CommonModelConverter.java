@@ -210,7 +210,6 @@ public class CommonModelConverter {
 	    grpc.setUpdatedBy(ref);
 	}
 	grpc.setUpdatedDate(CommonModelConverter.asGrpcDate(api.getUpdatedDate()));
-	grpc.setDeleted(api.isDeleted());
 	return grpc.build();
     }
 
@@ -227,7 +226,6 @@ public class CommonModelConverter {
 	    api.setCreatedDate(CommonModelConverter.asApiDate(grpc.getCreatedDate()));
 	    api.setUpdatedBy(grpc.hasUpdatedBy() ? grpc.getUpdatedBy().getUsername() : null);
 	    api.setUpdatedDate(CommonModelConverter.asApiDate(grpc.getUpdatedDate()));
-	    api.setDeleted(grpc.getDeleted());
 	}
     }
 

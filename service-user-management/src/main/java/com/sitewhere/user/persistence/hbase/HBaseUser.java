@@ -167,7 +167,6 @@ public class HBaseUser {
 	if (existing == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR);
 	}
-	existing.setDeleted(true);
 	byte[] primary = getUserRowKey(username);
 	if (force) {
 	    Table users = null;

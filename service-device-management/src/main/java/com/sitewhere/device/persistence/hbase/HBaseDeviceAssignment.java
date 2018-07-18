@@ -333,7 +333,6 @@ public class HBaseDeviceAssignment {
 	byte[] primary = getPrimaryRowkey(assnKey);
 
 	DeviceAssignment existing = getDeviceAssignment(context, assn);
-	existing.setDeleted(true);
 	// try {
 	// HBaseDevice.removeDeviceAssignment(context, existing.getDeviceHardwareId());
 	// } catch (SiteWhereSystemException e) {

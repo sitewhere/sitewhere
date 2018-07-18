@@ -213,7 +213,6 @@ public class HBaseDeviceCommand {
     public static IDeviceCommand deleteDeviceCommand(IHBaseContext context, IDeviceCommand command, boolean force)
 	    throws SiteWhereException {
 	DeviceCommand existing = assertDeviceCommand(context, command.getToken());
-	existing.setDeleted(true);
 
 	byte[] rowkey = context.getDeviceIdManager().getCommandKeys().getValue(command.getToken());
 	if (force) {
