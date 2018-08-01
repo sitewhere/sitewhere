@@ -8,6 +8,7 @@
 package com.sitewhere.commands.destination.mqtt;
 
 import com.sitewhere.commands.destination.CommandDestination;
+import com.sitewhere.commands.encoding.json.JsonCommandExecutionEncoder;
 import com.sitewhere.commands.spi.ICommandDestination;
 
 /**
@@ -19,6 +20,7 @@ import com.sitewhere.commands.spi.ICommandDestination;
 public class MqttCommandDestination extends CommandDestination<byte[], MqttParameters> {
 
     public MqttCommandDestination() {
+	setCommandExecutionEncoder(new JsonCommandExecutionEncoder());
 	setCommandDeliveryParameterExtractor(new HardwareIdMqttParameterExtractor());
     }
 }

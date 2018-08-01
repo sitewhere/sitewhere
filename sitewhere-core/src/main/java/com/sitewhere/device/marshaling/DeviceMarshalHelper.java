@@ -133,9 +133,10 @@ public class DeviceMarshalHelper {
     protected DeviceAssignmentMarshalHelper getAssignmentHelper() {
 	if (assignmentHelper == null) {
 	    assignmentHelper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
-	    assignmentHelper.setIncludeAsset(false);
 	    assignmentHelper.setIncludeDevice(false);
-	    assignmentHelper.setIncludeArea(false);
+	    assignmentHelper.setIncludeCustomer(true);
+	    assignmentHelper.setIncludeArea(true);
+	    assignmentHelper.setIncludeAsset(true);
 	}
 	return assignmentHelper;
     }

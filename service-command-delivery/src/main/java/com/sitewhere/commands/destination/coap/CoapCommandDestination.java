@@ -8,6 +8,7 @@
 package com.sitewhere.commands.destination.coap;
 
 import com.sitewhere.commands.destination.CommandDestination;
+import com.sitewhere.commands.encoding.json.JsonCommandExecutionEncoder;
 
 /**
  * Command destination that makes a CoAP client request to send command data.
@@ -17,6 +18,7 @@ import com.sitewhere.commands.destination.CommandDestination;
 public class CoapCommandDestination extends CommandDestination<byte[], CoapParameters> {
 
     public CoapCommandDestination() {
+	setCommandExecutionEncoder(new JsonCommandExecutionEncoder());
 	setCommandDeliveryParameterExtractor(new MetadataCoapParameterExtractor());
     }
 }

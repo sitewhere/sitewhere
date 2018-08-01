@@ -43,34 +43,34 @@ public enum CommandDeliveryRoles implements IConfigurationRoleProvider {
 	    new IRoleKey[] { CommandDeliveryRoleKeys.CommandEncoder, CommandDeliveryRoleKeys.ParameterExtractor })),
 
     /** Command encoder. */
-    CommandEncoder(ConfigurationRole.build(CommandDeliveryRoleKeys.CommandEncoder, "Command Encoder", false, false,
+    CommandEncoder(ConfigurationRole.build(CommandDeliveryRoleKeys.CommandEncoder, "Command Encoder", true, false,
 	    false, new IRoleKey[0], new IRoleKey[] { CommandDeliveryRoleKeys.BinaryCommandEncoder,
 		    CommandDeliveryRoleKeys.StringCommandEncoder })),
 
     /** Binary command encoder. */
     BinaryCommandEncoder(ConfigurationRole.build(CommandDeliveryRoleKeys.BinaryCommandEncoder, "Binary Command Encoder",
-	    false, false, false)),
+	    true, false, false)),
 
     /** String command encoder. */
     StringCommandEncoder(ConfigurationRole.build(CommandDeliveryRoleKeys.StringCommandEncoder, "String Command Encoder",
-	    false, false, false)),
+	    true, false, false)),
 
     /** Parameter extractor. */
-    ParameterExtractor(ConfigurationRole.build(CommandDeliveryRoleKeys.ParameterExtractor, "Parameter Extractor", false,
+    ParameterExtractor(ConfigurationRole.build(CommandDeliveryRoleKeys.ParameterExtractor, "Parameter Extractor", true,
 	    false, false, new IRoleKey[0], new IRoleKey[] { CommandDeliveryRoleKeys.MqttParameterExtractor,
 		    CommandDeliveryRoleKeys.SmsParameterExtractor, CommandDeliveryRoleKeys.CoapParameterExtractor })),
 
     /** MQTT parameter extractor. */
     MqttParameterExtractor(ConfigurationRole.build(CommandDeliveryRoleKeys.MqttParameterExtractor,
-	    "MQTT Parameter Extractor", false, false, false)),
+	    "MQTT Parameter Extractor", true, false, false)),
 
     /** SMS parameter extractor. */
     SmsParameterExtractor(ConfigurationRole.build(CommandDeliveryRoleKeys.SmsParameterExtractor,
-	    "SMS Parameter Extractor", false, false, false)),
+	    "SMS Parameter Extractor", true, false, false)),
 
     /** CoAP parameter extractor. */
     CoapParameterExtractor(ConfigurationRole.build(CommandDeliveryRoleKeys.CoapParameterExtractor,
-	    "CoAP Parameter Extractor", false, false, false));
+	    "CoAP Parameter Extractor", true, false, false));
 
     private ConfigurationRole role;
 

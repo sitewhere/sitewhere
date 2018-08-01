@@ -326,7 +326,7 @@
 		<xsd:complexContent>
 			<xsd:extension base="abstractParameterExtractorType">
 				<xsd:attribute name="hostnameMetadataField"
-					type="xsd:string">
+					type="xsd:string" default="coap_hostname">
 					<xsd:annotation>
 						<xsd:documentation>
 							Metadata field that holds hostname for CoAP
@@ -335,7 +335,7 @@
 					</xsd:annotation>
 				</xsd:attribute>
 				<xsd:attribute name="portMetadataField"
-					type="xsd:string">
+					type="xsd:string" default="coap_port">
 					<xsd:annotation>
 						<xsd:documentation>
 							Metadata field that holds port for CoAP client
@@ -344,11 +344,20 @@
 					</xsd:annotation>
 				</xsd:attribute>
 				<xsd:attribute name="urlMetadataField"
-					type="xsd:string">
+					type="xsd:string" default="coap_url">
 					<xsd:annotation>
 						<xsd:documentation>
 							Metadata field that holds URL for CoAP client
-							connection.
+							request.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="methodMetadataField"
+					type="xsd:string" default="coap_method">
+					<xsd:annotation>
+						<xsd:documentation>
+							Metadata field that holds HTTP method for CoAP
+							client request.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -365,8 +374,6 @@
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-
-	<!-- Common command destination information -->
 	<xsd:complexType name="abstractCommandDestinationType">
 		<xsd:attribute name="destinationId" type="xsd:token"
 			use="required">
@@ -376,25 +383,6 @@
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-	</xsd:complexType>
-
-	<!-- Reference to a command destination defined as a Spring bean -->
-	<xsd:element name="command-destination"
-		type="commandDestinationReferenceType"
-		substitutionGroup="abstract-command-destination">
-		<xsd:annotation>
-			<xsd:documentation>
-				Reference to a custom command destination
-				implementation.
-			</xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="commandDestinationReferenceType">
-		<xsd:complexContent>
-			<xsd:extension base="abstractCommandDestinationType">
-				<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
-			</xsd:extension>
-		</xsd:complexContent>
 	</xsd:complexType>
 
 	<!-- Command destination that delivers to an MQTT topic -->
@@ -412,8 +400,10 @@
 		<xsd:complexContent>
 			<xsd:extension base="abstractCommandDestinationType">
 				<xsd:sequence>
-					<xsd:element ref="abstract-command-encoder" />
-					<xsd:element ref="abstract-parameter-extractor" />
+					<xsd:element ref="abstract-command-encoder"
+						minOccurs="0" maxOccurs="1" />
+					<xsd:element ref="abstract-parameter-extractor"
+						minOccurs="0" maxOccurs="1" />
 				</xsd:sequence>
 				<xsd:attributeGroup
 					ref="cn:mqtt-broker-attributes" />
@@ -435,8 +425,10 @@
 		<xsd:complexContent>
 			<xsd:extension base="abstractCommandDestinationType">
 				<xsd:sequence>
-					<xsd:element ref="abstract-command-encoder" />
-					<xsd:element ref="abstract-parameter-extractor" />
+					<xsd:element ref="abstract-command-encoder"
+						minOccurs="0" maxOccurs="1" />
+					<xsd:element ref="abstract-parameter-extractor"
+						minOccurs="0" maxOccurs="1" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -471,8 +463,10 @@
 		<xsd:complexContent>
 			<xsd:extension base="abstractCommandDestinationType">
 				<xsd:sequence>
-					<xsd:element ref="abstract-command-encoder" />
-					<xsd:element ref="abstract-parameter-extractor" />
+					<xsd:element ref="abstract-command-encoder"
+						minOccurs="0" maxOccurs="1" />
+					<xsd:element ref="abstract-parameter-extractor"
+						minOccurs="0" maxOccurs="1" />
 				</xsd:sequence>
 				<xsd:attribute name="accountSid" type="xsd:string"></xsd:attribute>
 				<xsd:attribute name="authToken" type="xsd:string"></xsd:attribute>

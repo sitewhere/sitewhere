@@ -77,6 +77,9 @@ public class MetadataCoapParameterExtractor extends TenantEngineLifecycleCompone
 
 	CoapParameters coap = new CoapParameters();
 	coap.setHostname(hostname);
+	if (hostname == null) {
+	    throw new SiteWhereException("Hostname not found in device metadata. Unable to deliver command.");
+	}
 	if (port != null) {
 	    coap.setPort(Integer.parseInt(port));
 	}

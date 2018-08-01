@@ -8,6 +8,7 @@
 package com.sitewhere.commands.destination.sms;
 
 import com.sitewhere.commands.destination.CommandDestination;
+import com.sitewhere.commands.encoding.string.JsonStringCommandExecutionEncoder;
 import com.sitewhere.commands.spi.ICommandDeliveryProvider;
 import com.sitewhere.commands.spi.ICommandDestination;
 
@@ -19,4 +20,9 @@ import com.sitewhere.commands.spi.ICommandDestination;
  * @author Derek
  */
 public class SmsCommandDestination extends CommandDestination<String, SmsParameters> {
+
+    public SmsCommandDestination() {
+	setCommandExecutionEncoder(new JsonStringCommandExecutionEncoder());
+	setCommandDeliveryParameterExtractor(new SmsParameterExtractor());
+    }
 }

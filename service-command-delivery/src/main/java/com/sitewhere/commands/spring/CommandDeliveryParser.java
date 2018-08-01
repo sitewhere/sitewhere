@@ -169,9 +169,7 @@ public class CommandDeliveryParser extends AbstractBeanDefinitionParser {
 	addCommonAttributes(mqtt, element, context);
 
 	// Add encoder reference.
-	if (!parseBinaryCommandEncoder(element, context, mqtt)) {
-	    throw new RuntimeException("Command encoder required for MQTT command destination but was not specified.");
-	}
+	parseBinaryCommandEncoder(element, context, mqtt);
 
 	// Add MQTT command delivery provider bean.
 	AbstractBeanDefinition delivery = createMqttDeliveryProvider(element);
@@ -179,10 +177,8 @@ public class CommandDeliveryParser extends AbstractBeanDefinitionParser {
 	context.getRegistry().registerBeanDefinition(deliveryName, delivery);
 	mqtt.addPropertyReference("commandDeliveryProvider", deliveryName);
 
-	// Locate parameter extractor reference.
-	if (!addParameterExtractor(mqtt, element, context, MqttParameters.class)) {
-	    throw new RuntimeException("Parameter extractor required but not specified.");
-	}
+	// Add parameter extractor reference.
+	addParameterExtractor(mqtt, element, context, MqttParameters.class);
 
 	return mqtt.getBeanDefinition();
     }
@@ -259,9 +255,7 @@ public class CommandDeliveryParser extends AbstractBeanDefinitionParser {
 	addCommonAttributes(mqtt, element, context);
 
 	// Add encoder reference.
-	if (!parseBinaryCommandEncoder(element, context, mqtt)) {
-	    throw new RuntimeException("Command encoder required for CoAP command destination but was not specified.");
-	}
+	parseBinaryCommandEncoder(element, context, mqtt);
 
 	// Add CoAP command delivery provider bean.
 	AbstractBeanDefinition delivery = createCoapDeliveryProvider(element);
@@ -269,10 +263,8 @@ public class CommandDeliveryParser extends AbstractBeanDefinitionParser {
 	context.getRegistry().registerBeanDefinition(deliveryName, delivery);
 	mqtt.addPropertyReference("commandDeliveryProvider", deliveryName);
 
-	// Locate parameter extractor reference.
-	if (!addParameterExtractor(mqtt, element, context, CoapParameters.class)) {
-	    throw new RuntimeException("Parameter extractor required but not specified.");
-	}
+	// Add parameter extractor reference.
+	addParameterExtractor(mqtt, element, context, CoapParameters.class);
 
 	return mqtt.getBeanDefinition();
     }
@@ -301,10 +293,7 @@ public class CommandDeliveryParser extends AbstractBeanDefinitionParser {
 	addCommonAttributes(sms, element, context);
 
 	// Add encoder reference.
-	if (!parseStringCommandEncoder(element, context, sms)) {
-	    throw new RuntimeException(
-		    "Command encoder required for Twilio command destination but was not specified.");
-	}
+	parseStringCommandEncoder(element, context, sms);
 
 	// Add Twilio command delivery provider bean.
 	AbstractBeanDefinition twilioDef = createTwilioDeliveryProvider(element);
@@ -312,10 +301,8 @@ public class CommandDeliveryParser extends AbstractBeanDefinitionParser {
 	context.getRegistry().registerBeanDefinition(twilioName, twilioDef);
 	sms.addPropertyReference("commandDeliveryProvider", twilioName);
 
-	// Locate parameter extractor reference.
-	if (!addParameterExtractor(sms, element, context, SmsParameters.class)) {
-	    throw new RuntimeException("Parameter extractor required but not specified.");
-	}
+	// Add parameter extractor reference.
+	addParameterExtractor(sms, element, context, SmsParameters.class);
 
 	return sms.getBeanDefinition();
     }
