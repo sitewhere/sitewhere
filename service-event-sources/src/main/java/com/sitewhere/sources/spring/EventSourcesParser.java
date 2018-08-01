@@ -39,6 +39,7 @@ import com.sitewhere.sources.activemq.ActiveMQBrokerEventReceiver;
 import com.sitewhere.sources.activemq.ActiveMQClientEventReceiver;
 import com.sitewhere.sources.azure.EventHubInboundEventReceiver;
 import com.sitewhere.sources.coap.CoapServerEventReceiver;
+import com.sitewhere.sources.coap.CoapServerEventSource;
 import com.sitewhere.sources.decoder.GroovyEventDecoder;
 import com.sitewhere.sources.decoder.GroovyStringEventDecoder;
 import com.sitewhere.sources.decoder.coap.CoapJsonDecoder;
@@ -188,10 +189,7 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 	source.addPropertyValue("inboundEventReceivers", list);
 
 	// Add decoder reference.
-	boolean hadDecoder = parseBinaryDecoder(element, context, source);
-	if (!hadDecoder) {
-	    throw new RuntimeException("No event decoder specified for MQTT event source: " + element.toString());
-	}
+	parseBinaryDecoder(element, context, source);
 
 	// Parse deduplicator if configured.
 	parseDeduplicator(element, context, source);
@@ -317,10 +315,7 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 	source.addPropertyValue("inboundEventReceivers", list);
 
 	// Add decoder reference.
-	boolean hadDecoder = parseBinaryDecoder(element, context, source);
-	if (!hadDecoder) {
-	    throw new RuntimeException("No event decoder specified for RabbitMQ event source: " + element.toString());
-	}
+	parseBinaryDecoder(element, context, source);
 
 	// Parse deduplicator if configured.
 	parseDeduplicator(element, context, source);
@@ -394,10 +389,7 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 	source.addPropertyValue("inboundEventReceivers", list);
 
 	// Add decoder reference.
-	boolean hadDecoder = parseBinaryDecoder(element, context, source);
-	if (!hadDecoder) {
-	    throw new RuntimeException("No event decoder specified for EvenHub event source: " + element.toString());
-	}
+	parseBinaryDecoder(element, context, source);
 
 	// Parse deduplicator if configured.
 	parseDeduplicator(element, context, source);
@@ -484,10 +476,7 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 	source.addPropertyValue("inboundEventReceivers", list);
 
 	// Add decoder reference.
-	boolean hadDecoder = parseBinaryDecoder(element, context, source);
-	if (!hadDecoder) {
-	    throw new RuntimeException("No event decoder specified for ActiveMQ event source: " + element.toString());
-	}
+	parseBinaryDecoder(element, context, source);
 
 	// Parse deduplicator if configured.
 	parseDeduplicator(element, context, source);
@@ -561,11 +550,7 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 	source.addPropertyValue("inboundEventReceivers", list);
 
 	// Add decoder reference.
-	boolean hadDecoder = parseBinaryDecoder(element, context, source);
-	if (!hadDecoder) {
-	    throw new RuntimeException(
-		    "No event decoder specified for ActiveMQ client event source: " + element.toString());
-	}
+	parseBinaryDecoder(element, context, source);
 
 	// Parse deduplicator if configured.
 	parseDeduplicator(element, context, source);
@@ -637,10 +622,7 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 	source.addPropertyValue("inboundEventReceivers", list);
 
 	// Add decoder reference.
-	boolean hadDecoder = parseBinaryDecoder(element, context, source);
-	if (!hadDecoder) {
-	    throw new RuntimeException("No event decoder specified for socket event source: " + element.toString());
-	}
+	parseBinaryDecoder(element, context, source);
 
 	// Parse deduplicator if configured.
 	parseDeduplicator(element, context, source);
@@ -829,10 +811,7 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 	source.addPropertyValue("inboundEventReceivers", list);
 
 	// Add decoder reference.
-	boolean hadDecoder = parseBinaryDecoder(element, context, source);
-	if (!hadDecoder) {
-	    throw new RuntimeException("No event decoder specified for socket event source: " + element.toString());
-	}
+	parseBinaryDecoder(element, context, source);
 
 	// Parse deduplicator if configured.
 	parseDeduplicator(element, context, source);
@@ -916,16 +895,10 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 	source.addPropertyValue("inboundEventReceivers", list);
 
 	// Add decoder reference.
-	boolean hadDecoder = false;
 	if ("string".equals(type)) {
-	    hadDecoder = parseStringDecoder(element, context, source);
+	    parseStringDecoder(element, context, source);
 	} else if ("binary".equals(type)) {
-	    hadDecoder = parseBinaryDecoder(element, context, source);
-	}
-
-	if (!hadDecoder) {
-	    throw new RuntimeException(
-		    "No valid event decoder specified for web socket event source: " + element.toString());
+	    parseBinaryDecoder(element, context, source);
 	}
 
 	// Parse deduplicator if configured.
@@ -985,7 +958,7 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
      * @return
      */
     protected AbstractBeanDefinition parseCoapServerEventSource(Element element, ParserContext context) {
-	BeanDefinitionBuilder source = BeanDefinitionBuilder.rootBeanDefinition(BinaryInboundEventSource.class);
+	BeanDefinitionBuilder source = BeanDefinitionBuilder.rootBeanDefinition(CoapServerEventSource.class);
 
 	// Verify that a sourceId was provided and set it on the bean.
 	parseEventSourceId(element, source);
@@ -1002,11 +975,7 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 	source.addPropertyValue("inboundEventReceivers", list);
 
 	// Add decoder reference.
-	boolean hadDecoder = parseCoapDecoder(element, context, source);
-	if (!hadDecoder) {
-	    throw new RuntimeException(
-		    "No event decoder specified for CoAP server event source: " + element.toString());
-	}
+	parseCoapDecoder(element, context, source);
 
 	// Parse deduplicator if configured.
 	parseDeduplicator(element, context, source);

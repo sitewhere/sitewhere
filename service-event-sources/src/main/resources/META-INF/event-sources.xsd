@@ -385,7 +385,7 @@
 	<!-- Common event source information -->
 	<xsd:complexType name="abstractEventSourceType">
 		<xsd:sequence>
-			<xsd:element ref="abstract-decoder" minOccurs="1"
+			<xsd:element ref="abstract-decoder" minOccurs="0"
 				maxOccurs="1" />
 			<xsd:element ref="abstract-deduplicator" minOccurs="0"
 				maxOccurs="1" />

@@ -7,6 +7,7 @@
  */
 package com.sitewhere.sources;
 
+import com.sitewhere.sources.decoder.json.JsonStringDeviceRequestDecoder;
 import com.sitewhere.sources.spi.IInboundEventSource;
 
 /**
@@ -15,6 +16,11 @@ import com.sitewhere.sources.spi.IInboundEventSource;
  * @author Derek
  */
 public class StringInboundEventSource extends InboundEventSource<String> {
+
+    public StringInboundEventSource() {
+	super();
+	setDeviceEventDecoder(new JsonStringDeviceRequestDecoder());
+    }
 
     /*
      * @see

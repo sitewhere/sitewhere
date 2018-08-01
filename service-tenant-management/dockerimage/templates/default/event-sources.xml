@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:sw="http://sitewhere.io/schema/sitewhere/microservice/common"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:es="http://sitewhere.io/schema/sitewhere/microservice/event-sources"
 	xsi:schemaLocation="
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
@@ -17,24 +18,17 @@
 	<es:event-sources>
 
 		<!-- Event source for protobuf messages over MQTT -->
-		<es:mqtt-event-source sourceId="protobuf" numThreads="1"
-			hostname="${mqtt.host:localhost}" port="${mqtt.port:1883}" 
+		<es:mqtt-event-source sourceId="protobuf"
+			numThreads="1" hostname="${mqtt.host:localhost}"
+			port="${mqtt.port:1883}"
 			topic="SiteWhere/${tenant.token}/input/protobuf">
 			<es:protobuf-event-decoder />
 		</es:mqtt-event-source>
 
 		<!-- Event source for JSON device requests over MQTT -->
-		<es:mqtt-event-source sourceId="json" numThreads="5"
-			hostname="${mqtt.host:localhost}" port="${mqtt.port:1883}" 
-			topic="SiteWhere/${tenant.token}/input/json">
-			<es:json-device-request-decoder />
-		</es:mqtt-event-source>
-
-		<!-- Event source for JSON event batches over MQTT -->
-		<es:mqtt-event-source sourceId="json-batch" numThreads="1"
-			hostname="${mqtt.host:localhost}" port="${mqtt.port:1883}" 
-			topic="SiteWhere/${tenant.token}/input/jsonbatch">
-			<es:json-batch-event-decoder />
+		<es:mqtt-event-source sourceId="json"
+			numThreads="5" hostname="${mqtt.host:localhost}"
+			port="${mqtt.port:1883}" topic="SiteWhere/${tenant.token}/input/json">
 		</es:mqtt-event-source>
 
 	</es:event-sources>

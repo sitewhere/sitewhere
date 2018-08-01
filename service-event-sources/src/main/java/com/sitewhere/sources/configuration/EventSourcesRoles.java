@@ -52,17 +52,17 @@ public enum EventSourcesRoles implements IConfigurationRoleProvider {
 	    "CoAP Server Event Source", true, true, true, new IRoleKey[] { EventSourcesRoleKeys.CoapEventDecoder })),
 
     /** Event source. Event decoder. */
-    EventDecoder(ConfigurationRole.build(EventSourcesRoleKeys.EventDecoder, "Event Decoder", false, false, false,
+    EventDecoder(ConfigurationRole.build(EventSourcesRoleKeys.EventDecoder, "Event Decoder", true, false, false,
 	    new IRoleKey[0], new IRoleKey[] { EventSourcesRoleKeys.BinaryEventDecoder,
 		    EventSourcesRoleKeys.StringEventDecoder, EventSourcesRoleKeys.CoapEventDecoder })),
 
     /** Binary event decoder */
-    BinaryEventDecoder(ConfigurationRole.build(EventSourcesRoleKeys.BinaryEventDecoder, "Binary Event Decoder", false,
+    BinaryEventDecoder(ConfigurationRole.build(EventSourcesRoleKeys.BinaryEventDecoder, "Binary Event Decoder", true,
 	    false, false, new IRoleKey[0], new IRoleKey[] { EventSourcesRoleKeys.CompositeEventDecoder }, false)),
 
     /** Composite event decoder */
     CompositeEventDecoder(ConfigurationRole.build(EventSourcesRoleKeys.CompositeEventDecoder, "Composite Event Decoder",
-	    false, false, false,
+	    true, false, false,
 	    new IRoleKey[] { EventSourcesRoleKeys.CED_MetadataExtractor, EventSourcesRoleKeys.CED_DecoderChoices })),
 
     /** Composite event decoder metadata extractor. */
@@ -84,7 +84,7 @@ public enum EventSourcesRoles implements IConfigurationRoleProvider {
 
     /** Event source. CoAP event decoder. */
     CoapEventDecoder(
-	    ConfigurationRole.build(EventSourcesRoleKeys.CoapEventDecoder, "CoAP Event Decoder", false, false, false)),
+	    ConfigurationRole.build(EventSourcesRoleKeys.CoapEventDecoder, "CoAP Event Decoder", true, false, false)),
 
     /** Event source. Event deduplicator. */
     EventDeduplicator(ConfigurationRole.build(EventSourcesRoleKeys.EventDeduplicator, "Event Deduplicator", true, false,
