@@ -168,7 +168,7 @@ public class MqttTests {
 	public void sendNonStandardMeasurements() throws SiteWhereException {
 	    DeviceRequest request = new DeviceRequest();
 	    request.setDeviceToken("123-TEST-4567890");
-	    request.setType(Type.DeviceMeasurements);
+	    request.setType(Type.DeviceMeasurement);
 	    DeviceMeasurementCreateRequest mx = new DeviceMeasurementCreateRequest();
 	    mx.setName("normal");
 	    mx.setValue(1.234);

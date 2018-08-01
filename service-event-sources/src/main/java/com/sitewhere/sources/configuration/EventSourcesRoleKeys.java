@@ -29,6 +29,9 @@ public enum EventSourcesRoleKeys implements IRoleKey {
     /** WebSocket event source header */
     WebSocketHeader("ws_header"),
 
+    /** CoAP server event source */
+    CoapServerEventSource("coap_svr_evt_src"),
+
     /** Binary event decoder */
     BinaryEventDecoder("bin_evt_dcd"),
 
@@ -49,6 +52,9 @@ public enum EventSourcesRoleKeys implements IRoleKey {
 
     /** String event decoder */
     StringEventDecoder("str_evt_dcd"),
+
+    /** CoAP event decoder */
+    CoapEventDecoder("coap_dcd"),
 
     /** Event deduplicator */
     EventDeduplicator("evt_dedup");

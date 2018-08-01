@@ -74,8 +74,8 @@ public class DeviceRequest {
 	/** Send a device alert event */
 	DeviceAlert,
 
-	/** Send a device measurements event */
-	DeviceMeasurements,
+	/** Send a device measurement event */
+	DeviceMeasurement,
 
 	/** Send a device steam create request */
 	DeviceStream,

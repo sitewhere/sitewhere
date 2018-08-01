@@ -81,6 +81,9 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 	addElement(createGroovyStringEventDecoderElement());
 	addElement(createEchoStringEventDecoderElement());
 
+	// CoAP event decoders.
+	addElement(createCoapJsonEventDecoderElement());
+
 	// Device event deduplicators.
 	addElement(createAlternateIdDeduplicatorElement());
 	addElement(createGroovyEventDeduplicatorElement());
@@ -430,19 +433,16 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     protected ElementNode createCoapServerEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("CoAP Server Event Source",
 		IEventSourcesParser.Elements.CoapServerEventSource.getLocalName(), "sign-in",
-		EventSourcesRoleKeys.EventSource, this);
+		EventSourcesRoleKeys.CoapServerEventSource, this);
 
 	builder.description("Event source that acts as a CoAP server, allowing events to be created "
 		+ "by posting data to well-known system URLs.");
 	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 	addEventSourceAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
-	// Only accept binary event decoders.
-	builder.specializes(EventSourcesRoleKeys.EventDecoder, EventSourcesRoleKeys.BinaryEventDecoder);
+	// Only accept CoAP event decoders.
+	builder.specializes(EventSourcesRoleKeys.EventDecoder, EventSourcesRoleKeys.CoapEventDecoder);
 
-	builder.attribute((new AttributeNode.Builder("Hostname", "hostname", AttributeType.String,
-		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
-			.description("Host name used when binding server socket.").defaultValue("localhost").build()));
 	builder.attribute((new AttributeNode.Builder("Port", "port", AttributeType.Integer,
 		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("Port used when binding server socket.")
 			.defaultValue("5683").build()));
@@ -553,6 +553,21 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script,
 		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Script used for decoding payload.")
 			.makeRequired().build()));
+	return builder.build();
+    }
+
+    /**
+     * Create element configuration for CoAP JSON event decoder.
+     * 
+     * @return
+     */
+    protected ElementNode createCoapJsonEventDecoderElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("CoAP JSON Decoder",
+		IEventSourcesParser.CoapDecoders.CoapJsonDecoder.getLocalName(), "cogs",
+		EventSourcesRoleKeys.CoapEventDecoder, this);
+
+	builder.description("Event decoder that processes messages from a CoAP server event source "
+		+ "which have a body in JSON format.");
 	return builder.build();
     }
 

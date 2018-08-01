@@ -11,11 +11,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 
+import org.eclipse.californium.core.CaliforniumLogger;
 import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
-import org.eclipse.californium.core.network.config.NetworkConfig;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.sitewhere.common.MarshalUtils;
@@ -31,117 +33,71 @@ public class CoapTests {
     private static final String COAP_SERVER = "192.168.171.129";
 
     /** Supplies standard CoAP port */
-    private static final int COAP_PORT = NetworkConfig.getStandard().getInt(NetworkConfig.Keys.COAP_PORT);
+    private static final int COAP_PORT = 8583;
+
+    /** Device token used for operations */
+    private static final String DEVICE_TOKEN = "1123902-TEST-234873";
+
+    @Before
+    public void setup() {
+	CaliforniumLogger.initialize();
+	CaliforniumLogger.setLevel(Level.FINE);
+    }
 
     @Test
-    public void testRegisterDevice() {
-	CoapClient client = createClientFor("devices");
+    public void testRegisterDevice() throws Exception {
+	CoapClient client = createClientFor(getBaseDeviceUrl());
 	DeviceRegistrationRequest registration = new DeviceRegistrationRequest();
-	registration.setDeviceTypeToken("da05f689-2056-4786-ac9f-4f25b406369a");
-	registration.setAreaToken("bb105f8d-3150-41f5-b9d1-db04965668d3");
+	registration.setDeviceTypeToken("mega2560");
+	registration.setAreaToken("peachtree");
 	Map<String, String> metadata = new HashMap<String, String>();
 	metadata.put("ipaddress", "localhost");
 	registration.setMetadata(metadata);
-	CoapResponse response = client.post(MarshalUtils.marshalJson(registration), MediaTypeRegistry.APPLICATION_JSON);
-	System.out.println(response.getCode());
-	System.out.println(response.getOptions());
-	System.out.println(response.getResponseText());
+	handleResponse(client.post(MarshalUtils.marshalJson(registration), MediaTypeRegistry.APPLICATION_JSON));
     }
 
     @Test
-    public void testRegisterDeviceSimple() {
-	CoapClient client = createClientFor("devices");
-	String payload = "hwid=111-COAP-TEST-555,spec=da05f689-2056-4786-ac9f-4f25b406369a,site=bb105f8d-3150-41f5-b9d1-db04965668d3";
-	CoapResponse response = client.post(payload, MediaTypeRegistry.APPLICATION_JSON);
-	System.out.println(response.getCode());
-	System.out.println(response.getOptions());
-	System.out.println(response.getResponseText());
-    }
-
-    @Test
-    public void testAddDeviceMeasurements() {
-	CoapClient client = createClientFor("devices/111-COAP-TEST-444/measurements");
+    public void testAddDeviceMeasurements() throws Exception {
+	CoapClient client = createClientFor(getBaseDeviceUrl() + "/measurements");
 	DeviceMeasurementCreateRequest mx = new DeviceMeasurementCreateRequest();
 	mx.setName("pwr");
 	mx.setValue(38.23);
 	mx.setEventDate(new Date());
-	CoapResponse response = client.post(MarshalUtils.marshalJson(mx), MediaTypeRegistry.APPLICATION_JSON);
-	System.out.println(response.getCode());
-	System.out.println(response.getOptions());
-	System.out.println(response.getResponseText());
+	handleResponse(client.post(MarshalUtils.marshalJson(mx), MediaTypeRegistry.APPLICATION_JSON));
     }
 
     @Test
-    public void testAddDeviceMeasurementsSimple() {
-	CoapClient client = createClientFor("devices/111-COAP-TEST-555/measurements");
-	String payload = "pwr=38.23,fln=59.95";
-	CoapResponse response = client.post(payload, MediaTypeRegistry.APPLICATION_JSON);
-	System.out.println(response.getCode());
-	System.out.println(response.getOptions());
-	System.out.println(response.getResponseText());
-    }
-
-    @Test
-    public void testAddDeviceAlert() {
-	CoapClient client = createClientFor("devices/111-COAP-TEST-444/alerts");
+    public void testAddDeviceAlert() throws Exception {
+	CoapClient client = createClientFor(getBaseDeviceUrl() + "/alerts");
 	DeviceAlertCreateRequest alert = new DeviceAlertCreateRequest();
 	alert.setType("alert.test");
 	alert.setMessage("Danger! Danger!");
-	CoapResponse response = client.post(MarshalUtils.marshalJson(alert), MediaTypeRegistry.APPLICATION_JSON);
-	System.out.println(response.getCode());
-	System.out.println(response.getOptions());
-	System.out.println(response.getResponseText());
+	handleResponse(client.post(MarshalUtils.marshalJson(alert), MediaTypeRegistry.APPLICATION_JSON));
     }
 
     @Test
-    public void testAddDeviceAlertSimple() {
-	CoapClient client = createClientFor("devices/111-COAP-TEST-555/alerts");
-	String payload = "type=alert.test,message=Danger! Danger!";
-	CoapResponse response = client.post(payload, MediaTypeRegistry.APPLICATION_JSON);
-	System.out.println(response.getCode());
-	System.out.println(response.getOptions());
-	System.out.println(response.getResponseText());
-    }
-
-    @Test
-    public void testAddDeviceLocation() {
-	CoapClient client = createClientFor("devices/111-COAP-TEST-444/locations");
+    public void testAddDeviceLocation() throws Exception {
+	CoapClient client = createClientFor(getBaseDeviceUrl() + "/locations");
 	DeviceLocationCreateRequest location = new DeviceLocationCreateRequest();
 	location.setLatitude(33.7490);
 	location.setLongitude(-84.3880);
 	location.setElevation(0.0);
-	CoapResponse response = client.post(MarshalUtils.marshalJson(location), MediaTypeRegistry.APPLICATION_JSON);
-	System.out.println(response.getCode());
-	System.out.println(response.getOptions());
-	System.out.println(response.getResponseText());
+	handleResponse(client.post(MarshalUtils.marshalJson(location), MediaTypeRegistry.APPLICATION_JSON));
     }
 
     @Test
-    public void testAddDeviceLocationSimple() {
-	CoapClient client = createClientFor("devices/111-COAP-TEST-555/locations");
-	String payload = "lat=33.7490,lon=-84.3880,ele=0.0";
-	CoapResponse response = client.post(payload, MediaTypeRegistry.APPLICATION_JSON);
-	System.out.println(response.getCode());
-	System.out.println(response.getOptions());
-	System.out.println(response.getResponseText());
-    }
-
-    @Test
-    public void testAddAcknowledgement() {
-	CoapClient client = createClientFor("devices/82aed708-f49f-4d19-a58f-5668339595d9/acks");
+    public void testAddAcknowledgement() throws Exception {
+	CoapClient client = createClientFor(getBaseDeviceUrl() + "/acks");
 	DeviceCommandResponseCreateRequest ack = new DeviceCommandResponseCreateRequest();
 	ack.setOriginatingEventId(UUID.randomUUID());
 	ack.setResponse("Arbitrary string containing response content.");
 	ack.setMetadata(new HashMap<String, String>());
 	ack.getMetadata().put("meta1", "value");
-	CoapResponse response = client.post(MarshalUtils.marshalJson(ack), MediaTypeRegistry.APPLICATION_JSON);
-	System.out.println(response.getCode());
-	System.out.println(response.getOptions());
-	System.out.println(response.getResponseText());
+	handleResponse(client.post(MarshalUtils.marshalJson(ack), MediaTypeRegistry.APPLICATION_JSON));
     }
 
     @Test
-    public void sendSilecticaRules() {
+    public void sendSilecticaRules() throws Exception {
 	sendSilecticaRuleAck(
 		"{\"rule\":{\"r\":0,\"n\":\"netup\",\"v\":\"Networking Up\",\"s\":\"dis\",\"rc\":0,\"c\":[{\"n\":\"s/sys/net/ucup\",\"v\":1,\"r\":\"eq\",\"l\":\"or\",\"dt\":1}]},\"ruleQty\":6,\"OEId\":\"manualtest\"}");
 	sendSilecticaRuleAck(
@@ -157,44 +113,54 @@ public class CoapTests {
     }
 
     /** Send Silectica rule as an ack */
-    protected void sendSilecticaRuleAck(String rule) {
-	CoapClient client = createClientFor("devices/00173B1200210024/acks");
+    protected void sendSilecticaRuleAck(String rule) throws Exception {
+	CoapClient client = createClientFor(getBaseDeviceUrl() + "/acks");
 	DeviceCommandResponseCreateRequest ack = new DeviceCommandResponseCreateRequest();
 	ack.setOriginatingEventId(UUID.randomUUID());
 	ack.setResponse(rule);
-	CoapResponse response = client.post(MarshalUtils.marshalJson(ack), MediaTypeRegistry.APPLICATION_JSON);
-	System.out.println(response.getCode());
-	System.out.println(response.getOptions());
-	System.out.println(response.getResponseText());
+	handleResponse(client.post(MarshalUtils.marshalJson(ack), MediaTypeRegistry.APPLICATION_JSON));
     }
 
     /** Send Silectica rule as an ack (payload only version) */
     @Test
-    public void sendSilecticaRuleAckPayloadOnly() {
+    public void sendSilecticaRuleAckPayloadOnly() throws Exception {
 	CoapClient client = createClientFor("devices/00173B1200210024/acks");
 	String rule = "{\"rule\":{\"r\":0,\"n\":\"netup\",\"v\":\"Networking Up\",\"s\":\"dis\",\"rc\":0,\"c\":[{\"n\":\"s/sys/net/ucup\",\"v\":1,\"r\":\"eq\",\"l\":\"or\",\"dt\":1}]},\"ruleQty\":6,\"OEId\":\"manualtest\"}";
-	try {
-	    CoapResponse response = client.post(rule.getBytes(), MediaTypeRegistry.APPLICATION_JSON);
+	handleResponse(client.post(rule.getBytes(), MediaTypeRegistry.APPLICATION_JSON));
+    }
+
+    /**
+     * Get base URL for interacting with device.
+     * 
+     * @return
+     */
+    private static String getBaseDeviceUrl() {
+	return "devices/" + DEVICE_TOKEN;
+    }
+
+    /**
+     * Create a CoAP client for the given URL.
+     * 
+     * @param relativeUrl
+     * @return
+     */
+    private static CoapClient createClientFor(String relativeUrl) {
+	return new CoapClient("coap://" + COAP_SERVER + ":" + COAP_PORT + "/" + relativeUrl);
+    }
+
+    /**
+     * Handle a CoAP response.
+     * 
+     * @param response
+     * @throws Exception
+     */
+    private static void handleResponse(CoapResponse response) throws Exception {
+	if (response != null) {
 	    System.out.println(response.getCode());
 	    System.out.println(response.getOptions());
 	    System.out.println(response.getResponseText());
-	    Thread.sleep(100);
-	} catch (InterruptedException e) {
-	    e.printStackTrace();
+	} else {
+	    throw new Exception("Response was null.");
 	}
-    }
-
-    @Test
-    public void testAddAcknowledgementSimple() {
-	CoapClient client = createClientFor("devices/82aed708-f49f-4d19-a58f-5668339595d9/acks");
-	String payload = "orig=1234567890,response=Arbitrary string containing response content.,m:meta1=value";
-	CoapResponse response = client.post(payload, MediaTypeRegistry.APPLICATION_JSON);
-	System.out.println(response.getCode());
-	System.out.println(response.getOptions());
-	System.out.println(response.getResponseText());
-    }
-
-    protected CoapClient createClientFor(String relativeUrl) {
-	return new CoapClient("coap://" + COAP_SERVER + ":" + COAP_PORT + "/" + relativeUrl);
     }
 }

@@ -94,7 +94,7 @@ public class JsonDeviceRequestMarshaler extends JsonDeserializer<DecodedDeviceRe
      * @throws JsonProcessingException
      */
     @SuppressWarnings("deprecation")
-    protected DecodedDeviceRequest<?> unmarshal(String deviceToken, String originator, Type type, JsonNode json)
+    public static DecodedDeviceRequest<?> unmarshal(String deviceToken, String originator, Type type, JsonNode json)
 	    throws JsonProcessingException {
 	switch (type) {
 	case RegisterDevice: {
@@ -113,7 +113,7 @@ public class JsonDeviceRequestMarshaler extends JsonDeserializer<DecodedDeviceRe
 	    decoded.setRequest(req);
 	    return decoded;
 	}
-	case DeviceMeasurements: {
+	case DeviceMeasurement: {
 	    DecodedDeviceRequest<IDeviceMeasurementCreateRequest> decoded = new DecodedDeviceRequest<IDeviceMeasurementCreateRequest>();
 	    decoded.setDeviceToken(deviceToken);
 	    decoded.setOriginator(originator);

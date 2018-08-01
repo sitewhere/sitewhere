@@ -7,6 +7,7 @@
  */
 package com.sitewhere.sources.coap;
 
+import org.eclipse.californium.core.CoapServer;
 import org.eclipse.californium.core.network.config.NetworkConfig;
 
 import com.sitewhere.sources.InboundEventReceiver;
@@ -23,19 +24,28 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public class CoapServerEventReceiver extends InboundEventReceiver<byte[]> {
 
     /** Supplies standard CoAP port */
-    private static final int COAP_PORT = NetworkConfig.getStandard().getInt(NetworkConfig.Keys.COAP_PORT);
-
-    /** Default hostname */
-    private static final String DEFAULT_HOSTNAME = "localhost";
-
-    /** Hostname for binding socket */
-    private String hostname = DEFAULT_HOSTNAME;
+    private static final int COAP_PORT = 8583;
 
     /** Port for binding socket */
     private int port = COAP_PORT;
 
     /** Customized SiteWhere CoAP server */
-    private SiteWhereCoapServer server;
+    private CoapServer server;
+
+    /** CoAP message deliverer */
+    private CoapMessageDeliverer messageDeliverer;
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	this.messageDeliverer = new CoapMessageDeliverer(this);
+	this.server = new CoapServer(NetworkConfig.createStandardWithoutFile(), getPort());
+	server.setMessageDeliverer(getMessageDeliverer());
+    }
 
     /*
      * (non-Javadoc)
@@ -46,10 +56,7 @@ public class CoapServerEventReceiver extends InboundEventReceiver<byte[]> {
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	if (server == null) {
-	    server = new SiteWhereCoapServer(this, getHostname(), getPort());
-	}
-	server.start();
+	getServer().start();
     }
 
     /*
@@ -61,34 +68,23 @@ public class CoapServerEventReceiver extends InboundEventReceiver<byte[]> {
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	server.stop();
+	getServer().stop();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
-     * getDisplayName()
-     */
-    @Override
-    public String getDisplayName() {
-	return "coap:" + getHostname();
-    }
-
-    public SiteWhereCoapServer getServer() {
+    protected CoapServer getServer() {
 	return server;
     }
 
-    public void setServer(SiteWhereCoapServer server) {
+    protected void setServer(CoapServer server) {
 	this.server = server;
     }
 
-    public String getHostname() {
-	return hostname;
+    protected CoapMessageDeliverer getMessageDeliverer() {
+	return messageDeliverer;
     }
 
-    public void setHostname(String hostname) {
-	this.hostname = hostname;
+    protected void setMessageDeliverer(CoapMessageDeliverer messageDeliverer) {
+	this.messageDeliverer = messageDeliverer;
     }
 
     public int getPort() {

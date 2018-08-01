@@ -26,6 +26,7 @@ import org.w3c.dom.Element;
 
 import com.sitewhere.configuration.parser.IEventSourcesParser.BinaryDecoders;
 import com.sitewhere.configuration.parser.IEventSourcesParser.BinarySocketInteractionHandlers;
+import com.sitewhere.configuration.parser.IEventSourcesParser.CoapDecoders;
 import com.sitewhere.configuration.parser.IEventSourcesParser.CompositeDecoderChoiceElements;
 import com.sitewhere.configuration.parser.IEventSourcesParser.CompositeDecoderMetadataExtractorElements;
 import com.sitewhere.configuration.parser.IEventSourcesParser.Deduplicators;
@@ -40,6 +41,7 @@ import com.sitewhere.sources.azure.EventHubInboundEventReceiver;
 import com.sitewhere.sources.coap.CoapServerEventReceiver;
 import com.sitewhere.sources.decoder.GroovyEventDecoder;
 import com.sitewhere.sources.decoder.GroovyStringEventDecoder;
+import com.sitewhere.sources.decoder.coap.CoapJsonDecoder;
 import com.sitewhere.sources.decoder.composite.BinaryCompositeDeviceEventDecoder;
 import com.sitewhere.sources.decoder.composite.DeviceTypeDecoderChoice;
 import com.sitewhere.sources.decoder.composite.GroovyMessageMetadataExtractor;
@@ -1000,7 +1002,7 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 	source.addPropertyValue("inboundEventReceivers", list);
 
 	// Add decoder reference.
-	boolean hadDecoder = parseBinaryDecoder(element, context, source);
+	boolean hadDecoder = parseCoapDecoder(element, context, source);
 	if (!hadDecoder) {
 	    throw new RuntimeException(
 		    "No event decoder specified for CoAP server event source: " + element.toString());
@@ -1022,11 +1024,6 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
     protected AbstractBeanDefinition createCoapServerEventReceiver(Element element, ParserContext context) {
 	BeanDefinitionBuilder receiver = BeanDefinitionBuilder.rootBeanDefinition(CoapServerEventReceiver.class);
 
-	Attr hostname = element.getAttributeNode("hostname");
-	if (hostname != null) {
-	    receiver.addPropertyValue("hostname", hostname.getValue());
-	}
-
 	Attr port = element.getAttributeNode("port");
 	if (port != null) {
 	    receiver.addPropertyValue("port", port.getValue());
@@ -1043,7 +1040,6 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
      * @param source
      * @return
      */
-    @SuppressWarnings("deprecation")
     protected boolean parseBinaryDecoder(Element parent, ParserContext context, BeanDefinitionBuilder source) {
 	List<Element> children = DomUtils.getChildElements(parent);
 	AbstractBeanDefinition decoder = null;
@@ -1061,7 +1057,6 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 		decoder = parseJsonDeviceRequestDecoder(parent, child, context);
 		break;
 	    }
-	    case JsonEventDecoder:
 	    case JsonBatchEventDecoder: {
 		decoder = parseJsonBatchDecoder(parent, child, context);
 		break;
@@ -1073,10 +1068,6 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 	    case CompositeDecoder: {
 		decoder = parseCompositeDecoder(parent, child, context);
 		break;
-	    }
-	    case EventDecoder: {
-		parseDecoderRef(parent, child, context, source);
-		return true;
 	    }
 	    }
 	}
@@ -1114,10 +1105,6 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 	    case GroovyStringDecoder: {
 		decoder = parseGroovyStringDecoder(parent, child, context);
 		break;
-	    }
-	    case EventDecoder: {
-		parseDecoderRef(parent, child, context, source);
-		return true;
 	    }
 	    }
 	}
@@ -1226,24 +1213,6 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
     }
 
     /**
-     * Create parser for SiteWhere Google Protocol Buffer format.
-     * 
-     * @param parent
-     * @param decoder
-     * @param context
-     * @param source
-     */
-    protected void parseDecoderRef(Element parent, Element decoder, ParserContext context,
-	    BeanDefinitionBuilder source) {
-	Attr decoderRef = decoder.getAttributeNode("ref");
-	if (decoderRef == null) {
-	    throw new RuntimeException("Event decoder 'ref' attribute is required.");
-	}
-	LOGGER.debug("Configuring reference to " + decoderRef.getValue() + " for " + parent.getLocalName());
-	source.addPropertyReference("deviceEventDecoder", decoderRef.getValue());
-    }
-
-    /**
      * Parse information for a composite device event decoder.
      * 
      * @param parent
@@ -1316,6 +1285,51 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 	// Parse decoder associated with choice.
 	parseBinaryDecoder(element, context, builder);
 
+	return builder.getBeanDefinition();
+    }
+
+    /**
+     * Parse a CoAP decoder from the list of possibilities.
+     * 
+     * @param decoder
+     * @param context
+     * @param source
+     * @return
+     */
+    protected boolean parseCoapDecoder(Element parent, ParserContext context, BeanDefinitionBuilder source) {
+	List<Element> children = DomUtils.getChildElements(parent);
+	AbstractBeanDefinition decoder = null;
+	for (Element child : children) {
+	    CoapDecoders type = CoapDecoders.getByLocalName(child.getLocalName());
+	    if (type == null) {
+		continue;
+	    }
+	    switch (type) {
+	    case CoapJsonDecoder: {
+		decoder = parseCoapJsonDecoder(parent, child, context);
+		break;
+	    }
+	    }
+	}
+	if (decoder != null) {
+	    String name = nameGenerator.generateBeanName(decoder, context.getRegistry());
+	    context.getRegistry().registerBeanDefinition(name, decoder);
+	    source.addPropertyReference("deviceEventDecoder", name);
+	    return true;
+	}
+	return false;
+    }
+
+    /**
+     * Parse decoder for CoAP server event source with JSON payload.
+     * 
+     * @param parent
+     * @param decoder
+     * @param context
+     * @return
+     */
+    protected AbstractBeanDefinition parseCoapJsonDecoder(Element parent, Element decoder, ParserContext context) {
+	BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(CoapJsonDecoder.class);
 	return builder.getBeanDefinition();
     }
 

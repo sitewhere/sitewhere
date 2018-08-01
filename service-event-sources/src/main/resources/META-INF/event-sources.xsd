@@ -7,7 +7,8 @@
 	targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/event-sources"
 	elementFormDefault="qualified" attributeFormDefault="unqualified">
 
-	<xsd:import namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
+	<xsd:import
+		namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
 		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
 
 	<xsd:import
@@ -44,25 +45,9 @@
 	<!-- Common decoder information -->
 	<xsd:complexType name="abstractDecoderType" />
 
-	<!-- Reference to an event decoder defined as a Spring bean -->
-	<xsd:element name="event-decoder" type="eventDecoderReferenceType"
-		substitutionGroup="abstract-decoder">
-		<xsd:annotation>
-			<xsd:documentation>References a decoder defined in an external bean
-			</xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="eventDecoderReferenceType">
-		<xsd:complexContent>
-			<xsd:extension base="abstractDecoderType">
-				<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-
 	<!-- Decode using the standard SiteWhere Google Protocol Buffer definition -->
-	<xsd:element name="protobuf-event-decoder" type="swProtobufDecoderType"
-		substitutionGroup="abstract-decoder">
+	<xsd:element name="protobuf-event-decoder"
+		type="swProtobufDecoderType" substitutionGroup="abstract-decoder">
 		<xsd:annotation>
 			<xsd:documentation>Decoder that expects a message in the SiteWhere
 				Google Protocol
@@ -78,7 +63,8 @@
 	</xsd:complexType>
 
 	<!-- Decode using the standard SiteWhere JSON device interaction representation -->
-	<xsd:element name="json-device-request-decoder" type="swJsonDeviceRequestDecoderType"
+	<xsd:element name="json-device-request-decoder"
+		type="swJsonDeviceRequestDecoderType"
 		substitutionGroup="abstract-decoder">
 		<xsd:annotation>
 			<xsd:documentation>Decoder that parses requests from devices.
@@ -93,7 +79,8 @@
 	</xsd:complexType>
 
 	<!-- Decode using the standard SiteWhere JSON batch representation -->
-	<xsd:element name="json-event-decoder" type="swJsonEventBatchDecoderType"
+	<xsd:element name="json-event-decoder"
+		type="swJsonEventBatchDecoderType"
 		substitutionGroup="abstract-decoder">
 		<xsd:annotation>
 			<xsd:documentation>DEPRECATED: Use json-batch=event-decoder for JSON
@@ -102,7 +89,8 @@
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:element name="json-batch-event-decoder" type="swJsonEventBatchDecoderType"
+	<xsd:element name="json-batch-event-decoder"
+		type="swJsonEventBatchDecoderType"
 		substitutionGroup="abstract-decoder">
 		<xsd:annotation>
 			<xsd:documentation>Decoder that parses batches of device events.
@@ -117,8 +105,8 @@
 	</xsd:complexType>
 
 	<!-- Decode binary payload using a Groovy script -->
-	<xsd:element name="groovy-event-decoder" type="swGroovyDecoderType"
-		substitutionGroup="abstract-decoder">
+	<xsd:element name="groovy-event-decoder"
+		type="swGroovyDecoderType" substitutionGroup="abstract-decoder">
 		<xsd:annotation>
 			<xsd:documentation>Decoder that uses a Groovy script to parse a
 				binary payload into decoded events.
@@ -128,7 +116,8 @@
 	<xsd:complexType name="swGroovyDecoderType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractDecoderType">
-				<xsd:attribute name="scriptId" type="xsd:string" use="required">
+				<xsd:attribute name="scriptId" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Unique script id for decoder.
@@ -140,8 +129,8 @@
 	</xsd:complexType>
 
 	<!-- Decode String payload using a Groovy script -->
-	<xsd:element name="groovy-string-event-decoder" type="swGroovyStringDecoderType"
-		substitutionGroup="abstract-decoder">
+	<xsd:element name="groovy-string-event-decoder"
+		type="swGroovyStringDecoderType" substitutionGroup="abstract-decoder">
 		<xsd:annotation>
 			<xsd:documentation>Decoder that uses a Groovy script to parse a
 				String payload into
@@ -152,7 +141,8 @@
 	<xsd:complexType name="swGroovyStringDecoderType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractDecoderType">
-				<xsd:attribute name="scriptId" type="xsd:string" use="required">
+				<xsd:attribute name="scriptId" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Unique script id for decoder.
@@ -163,9 +153,25 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<!-- Decode payload from CoAP server endpoint with JSON payload -->
+	<xsd:element name="coap-json-decoder"
+		type="swCoapJsonDecoderType" substitutionGroup="abstract-decoder">
+		<xsd:annotation>
+			<xsd:documentation>Decoder for events received via the CoAP server
+				event source which contain a JSON payload.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swCoapJsonDecoderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDecoderType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<!-- Echo String payload for debugging purposes -->
-	<xsd:element name="echo-string-decoder" type="swEchoStringDecoderType"
-		substitutionGroup="abstract-decoder">
+	<xsd:element name="echo-string-decoder"
+		type="swEchoStringDecoderType" substitutionGroup="abstract-decoder">
 		<xsd:annotation>
 			<xsd:documentation>Decoder for event receivers with String payloads
 				that simply echoes
@@ -192,10 +198,12 @@
 	</xsd:element>
 
 	<!-- Common device metadata extractor information -->
-	<xsd:complexType name="abstractDeviceMetadataExtractorType" />
+	<xsd:complexType
+		name="abstractDeviceMetadataExtractorType" />
 
 	<!-- Groovy device metadata extractor -->
-	<xsd:element name="groovy-device-metadata-extractor" type="swGroovyDeviceMetadataExtractorType"
+	<xsd:element name="groovy-device-metadata-extractor"
+		type="swGroovyDeviceMetadataExtractorType"
 		substitutionGroup="abstract-device-metadata-extractor">
 		<xsd:annotation>
 			<xsd:documentation>Uses a Groovy script to extract device/payload
@@ -203,10 +211,13 @@
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:complexType name="swGroovyDeviceMetadataExtractorType">
+	<xsd:complexType
+		name="swGroovyDeviceMetadataExtractorType">
 		<xsd:complexContent>
-			<xsd:extension base="abstractDeviceMetadataExtractorType">
-				<xsd:attribute name="scriptId" type="xsd:string" use="required">
+			<xsd:extension
+				base="abstractDeviceMetadataExtractorType">
+				<xsd:attribute name="scriptId" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Unique script is for extractor.
@@ -229,7 +240,8 @@
 	</xsd:element>
 
 	<!-- Common composite decoder choice information -->
-	<xsd:complexType name="abstractCompositeDecoderChoiceType">
+	<xsd:complexType
+		name="abstractCompositeDecoderChoiceType">
 		<xsd:sequence>
 			<xsd:element ref="abstract-decoder">
 				<xsd:annotation>
@@ -242,17 +254,21 @@
 
 	<!-- Composite decoder choice based on device specification -->
 	<xsd:element name="device-specification-decoder-choice"
-		type="swDeviceSpecificationDecoderChoiceType" substitutionGroup="abstract-decoder-choice">
+		type="swDeviceSpecificationDecoderChoiceType"
+		substitutionGroup="abstract-decoder-choice">
 		<xsd:annotation>
 			<xsd:documentation>Uses device specification token as the criteria
 				for choosing the associated decoder.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:complexType name="swDeviceSpecificationDecoderChoiceType">
+	<xsd:complexType
+		name="swDeviceSpecificationDecoderChoiceType">
 		<xsd:complexContent>
-			<xsd:extension base="abstractCompositeDecoderChoiceType">
-				<xsd:attribute name="token" type="xsd:string" use="required">
+			<xsd:extension
+				base="abstractCompositeDecoderChoiceType">
+				<xsd:attribute name="token" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Token for device specification to match.
@@ -272,8 +288,8 @@
 	</xsd:complexType>
 
 	<!-- Decoder that extracts metadata and delegates to sub-decoders -->
-	<xsd:element name="composite-decoder" type="swCompositeDecoderType"
-		substitutionGroup="abstract-decoder">
+	<xsd:element name="composite-decoder"
+		type="swCompositeDecoderType" substitutionGroup="abstract-decoder">
 		<xsd:annotation>
 			<xsd:documentation>Decoder that extracts metadata from the initial
 				message in order to determine which of a list of sub-decoders should
@@ -286,8 +302,8 @@
 			<xsd:extension base="abstractDecoderType">
 				<xsd:all>
 					<xsd:element ref="abstract-device-metadata-extractor" />
-					<xsd:element name="choices" type="swCompositeDecoderChoicesType"
-						minOccurs="0">
+					<xsd:element name="choices"
+						type="swCompositeDecoderChoicesType" minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation>
 								List of choices available for the composite
@@ -314,7 +330,8 @@
 	<xsd:complexType name="abstractDeduplicatorType" />
 
 	<!-- Deduplicate events using a Groovy script -->
-	<xsd:element name="groovy-event-deduplicator" type="swGroovyDeduplicatorType"
+	<xsd:element name="groovy-event-deduplicator"
+		type="swGroovyDeduplicatorType"
 		substitutionGroup="abstract-deduplicator">
 		<xsd:annotation>
 			<xsd:documentation>Event deduplicator that uses a Groovy script to
@@ -325,7 +342,8 @@
 	<xsd:complexType name="swGroovyDeduplicatorType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractDeduplicatorType">
-				<xsd:attribute name="scriptId" type="xsd:string" use="required">
+				<xsd:attribute name="scriptId" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Unique script id for deduplicator.
@@ -337,7 +355,8 @@
 	</xsd:complexType>
 
 	<!-- Deduplicate events by checking for event alternate id in datastore -->
-	<xsd:element name="alternate-id-deduplicator" type="swAlternateIdDeduplicatorType"
+	<xsd:element name="alternate-id-deduplicator"
+		type="swAlternateIdDeduplicatorType"
 		substitutionGroup="abstract-deduplicator">
 		<xsd:annotation>
 			<xsd:documentation>Event deduplicator that checks the alternate id
@@ -376,7 +395,8 @@
 
 	<!-- Attributes common to all event sources -->
 	<xsd:attributeGroup name="event-source-attributes">
-		<xsd:attribute name="sourceId" type="xsd:token" use="required">
+		<xsd:attribute name="sourceId" type="xsd:token"
+			use="required">
 			<xsd:annotation>
 				<xsd:documentation>
 					Unique identifier for event source.
@@ -386,7 +406,8 @@
 	</xsd:attributeGroup>
 
 	<!-- Reference to an event source defined in Spring beans -->
-	<xsd:element name="event-source" type="eventSourceReferenceType"
+	<xsd:element name="event-source"
+		type="eventSourceReferenceType"
 		substitutionGroup="abstract-event-source">
 		<xsd:annotation>
 			<xsd:documentation>Event source defined externally as a Spring bean
@@ -401,8 +422,8 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
-	<xsd:element name="mqtt-event-source" type="mqttEventSourceType"
-		substitutionGroup="abstract-event-source">
+	<xsd:element name="mqtt-event-source"
+		type="mqttEventSourceType" substitutionGroup="abstract-event-source">
 		<xsd:annotation>
 			<xsd:documentation>Event source that pulls binary information from an
 				MQTT topic and decodes it
@@ -412,7 +433,8 @@
 	<xsd:complexType name="mqttEventSourceType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
-				<xsd:attributeGroup ref="cn:mqtt-broker-attributes" />
+				<xsd:attributeGroup
+					ref="cn:mqtt-broker-attributes" />
 				<xsd:attribute name="topic" type="xsd:string">
 					<xsd:annotation>
 						<xsd:documentation>
@@ -420,7 +442,8 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="numThreads" type="sw:substitutableInt">
+				<xsd:attribute name="numThreads"
+					type="sw:substitutableInt">
 					<xsd:annotation>
 						<xsd:documentation>
 							MQTT topic used to deliver inbound events.
@@ -433,7 +456,8 @@
 
 	<!-- Event source that pulls binary information from a RabbitMQ queue and 
 		decodes it -->
-	<xsd:element name="rabbit-mq-event-source" type="rabbitMqEventSourceType"
+	<xsd:element name="rabbit-mq-event-source"
+		type="rabbitMqEventSourceType"
 		substitutionGroup="abstract-event-source">
 		<xsd:annotation>
 			<xsd:documentation>Event source that pulls binary information from a
@@ -469,7 +493,8 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="numConsumers" type="sw:substitutableInt">
+				<xsd:attribute name="numConsumers"
+					type="sw:substitutableInt">
 					<xsd:annotation>
 						<xsd:documentation>
 							Number of consumer threads used to consume the
@@ -483,7 +508,8 @@
 
 	<!-- Event source that pulls binary information from an EventHub endpoint 
 		and decodes it -->
-	<xsd:element name="azure-eventhub-event-source" type="azureEventhubEventSourceType"
+	<xsd:element name="azure-eventhub-event-source"
+		type="azureEventhubEventSourceType"
 		substitutionGroup="abstract-event-source">
 		<xsd:annotation>
 			<xsd:documentation>Event source that pulls binary information from an
@@ -496,13 +522,15 @@
 	<xsd:complexType name="azureEventhubEventSourceType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
-				<xsd:attributeGroup ref="azure-eventhub-inbound-attributes" />
+				<xsd:attributeGroup
+					ref="azure-eventhub-inbound-attributes" />
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
 
 	<!-- Attributes used for inbound eventhub processing -->
-	<xsd:attributeGroup name="azure-eventhub-inbound-attributes">
+	<xsd:attributeGroup
+		name="azure-eventhub-inbound-attributes">
 		<xsd:attribute name="targetFqn" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation>
@@ -524,7 +552,8 @@
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="partitionCount" type="sw:substitutableInt">
+		<xsd:attribute name="partitionCount"
+			type="sw:substitutableInt">
 			<xsd:annotation>
 				<xsd:documentation>
 					EventHub partition count.
@@ -556,7 +585,8 @@
 	</xsd:attributeGroup>
 
 	<!-- Event source that creates an embedded ActiveMQ broker -->
-	<xsd:element name="activemq-event-source" type="activemqEventSourceType"
+	<xsd:element name="activemq-event-source"
+		type="activemqEventSourceType"
 		substitutionGroup="abstract-event-source">
 		<xsd:annotation>
 			<xsd:documentation>Event source that creates an embedded ActiveMQ
@@ -588,7 +618,8 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="queueName" type="xsd:string" use="required">
+				<xsd:attribute name="queueName" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Name of JMS queue for consumers to pull
@@ -596,7 +627,8 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="numConsumers" type="sw:substitutableInt" use="optional">
+				<xsd:attribute name="numConsumers"
+					type="sw:substitutableInt" use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
 							Number of consumers used to read data from the
@@ -610,7 +642,8 @@
 	</xsd:complexType>
 
 	<!-- Event source that reads messages from a remote ActiveMQ source -->
-	<xsd:element name="activemq-client-event-source" type="activeMQClientEventSourceType"
+	<xsd:element name="activemq-client-event-source"
+		type="activeMQClientEventSourceType"
 		substitutionGroup="abstract-event-source">
 		<xsd:annotation>
 			<xsd:documentation>Event source connects to a remote broker and
@@ -622,14 +655,16 @@
 	<xsd:complexType name="activeMQClientEventSourceType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
-				<xsd:attribute name="remoteUri" type="xsd:string" use="required">
+				<xsd:attribute name="remoteUri" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							URI of remote broker to connect to.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="queueName" type="xsd:string" use="required">
+				<xsd:attribute name="queueName" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Name of JMS queue for consumers to pull
@@ -637,7 +672,8 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="numConsumers" type="sw:substitutableInt" use="optional">
+				<xsd:attribute name="numConsumers"
+					type="sw:substitutableInt" use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
 							Number of consumers used to read data from the
@@ -651,7 +687,8 @@
 	</xsd:complexType>
 
 	<!-- Event source that polls REST services for data -->
-	<xsd:element name="polling-rest-event-source" type="pollingRestEventSourceType"
+	<xsd:element name="polling-rest-event-source"
+		type="pollingRestEventSourceType"
 		substitutionGroup="abstract-event-source">
 		<xsd:annotation>
 			<xsd:documentation>Event source that supports connecting to REST
@@ -664,8 +701,8 @@
 	<xsd:complexType name="pollingRestEventSourceType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
-				<xsd:attribute name="pollIntervalMs" type="sw:substitutableInt"
-					use="required">
+				<xsd:attribute name="pollIntervalMs"
+					type="sw:substitutableInt" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Interval (in milliseconds) to wait between
@@ -673,7 +710,8 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="scriptId" type="xsd:string" use="required">
+				<xsd:attribute name="scriptId" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Unique id for Groovy script that executes logic
@@ -681,7 +719,8 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="baseUrl" type="xsd:string" use="required">
+				<xsd:attribute name="baseUrl" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Base URL used for REST requests. Within Groovy
@@ -690,7 +729,8 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="username" type="xsd:string" use="optional">
+				<xsd:attribute name="username" type="xsd:string"
+					use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
 							Username if REST services requires
@@ -698,7 +738,8 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="password" type="xsd:string" use="optional">
+				<xsd:attribute name="password" type="xsd:string"
+					use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
 							Password if REST services requires
@@ -711,8 +752,10 @@
 	</xsd:complexType>
 
 	<!-- Reference to an interaction handler factory defined in a Spring bean -->
-	<xsd:complexType name="interactionHandlerFactoryReferenceType">
-		<xsd:attribute name="ref" type="xsd:string" use="required">
+	<xsd:complexType
+		name="interactionHandlerFactoryReferenceType">
+		<xsd:attribute name="ref" type="xsd:string"
+			use="required">
 			<xsd:annotation>
 				<xsd:documentation>
 					Bean that implements the
@@ -723,16 +766,20 @@
 	</xsd:complexType>
 
 	<!-- Reads all of the client data from the socket and returns a byte array -->
-	<xsd:complexType name="readAllInteractionHandlerFactoryType">
+	<xsd:complexType
+		name="readAllInteractionHandlerFactoryType">
 	</xsd:complexType>
 
 	<!-- Treats socket input as HTTP request and processes entity payload -->
-	<xsd:complexType name="httpInteractionHandlerFactoryType">
+	<xsd:complexType
+		name="httpInteractionHandlerFactoryType">
 	</xsd:complexType>
 
 	<!-- Hands off socket interaction processing to a Groovy script -->
-	<xsd:complexType name="groovyInteractionHandlerFactoryType">
-		<xsd:attribute name="scriptId" type="xsd:string" use="required">
+	<xsd:complexType
+		name="groovyInteractionHandlerFactoryType">
+		<xsd:attribute name="scriptId" type="xsd:string"
+			use="required">
 			<xsd:annotation>
 				<xsd:documentation>
 					Unique id for Groovy script that handles socket
@@ -744,8 +791,8 @@
 
 	<!-- Event source that pulls binary information from a server socket and 
 		decodes it -->
-	<xsd:element name="socket-event-source" type="socketEventSourceType"
-		substitutionGroup="abstract-event-source">
+	<xsd:element name="socket-event-source"
+		type="socketEventSourceType" substitutionGroup="abstract-event-source">
 		<xsd:annotation>
 			<xsd:documentation>Event source that pulls binary information from
 				connections to a
@@ -769,7 +816,8 @@
 								</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
-						<xsd:element name="read-all-interaction-handler-factory"
+						<xsd:element
+							name="read-all-interaction-handler-factory"
 							type="readAllInteractionHandlerFactoryType">
 							<xsd:annotation>
 								<xsd:documentation>Interaction handler that reads all content
@@ -802,14 +850,16 @@
 						</xsd:element>
 					</xsd:choice>
 				</xsd:sequence>
-				<xsd:attribute name="port" type="sw:substitutableInt" use="required">
+				<xsd:attribute name="port" type="sw:substitutableInt"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Port on which the server socket will listen.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="numThreads" type="sw:substitutableInt" use="optional">
+				<xsd:attribute name="numThreads"
+					type="sw:substitutableInt" use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
 							Number of threads used to handle client
@@ -824,14 +874,16 @@
 
 	<!-- Contains web socket header information -->
 	<xsd:complexType name="webSocketHeaderType">
-		<xsd:attribute name="name" type="xsd:string" use="required">
+		<xsd:attribute name="name" type="xsd:string"
+			use="required">
 			<xsd:annotation>
 				<xsd:documentation>
 					Header name.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="value" type="xsd:string" use="required">
+		<xsd:attribute name="value" type="xsd:string"
+			use="required">
 			<xsd:annotation>
 				<xsd:documentation>
 					Header value.
@@ -849,7 +901,8 @@
 	</xsd:simpleType>
 
 	<!-- Event source that pulls data from a web socket and decodes it -->
-	<xsd:element name="web-socket-event-source" type="webSocketEventSourceType"
+	<xsd:element name="web-socket-event-source"
+		type="webSocketEventSourceType"
 		substitutionGroup="abstract-event-source">
 		<xsd:annotation>
 			<xsd:documentation>Event source that pulls data from a web socket.
@@ -877,14 +930,15 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="payloadType" type="webSocketPayloadType"
-					use="required" />
+				<xsd:attribute name="payloadType"
+					type="webSocketPayloadType" use="required" />
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
 
 	<!-- Event source that accepts CoAP requests for SiteWhere resources -->
-	<xsd:element name="coap-server-event-source" type="coapServerEventSourceType"
+	<xsd:element name="coap-server-event-source"
+		type="coapServerEventSourceType"
 		substitutionGroup="abstract-event-source">
 		<xsd:annotation>
 			<xsd:documentation>Event source that accepts CoAP requests for
@@ -895,14 +949,8 @@
 	<xsd:complexType name="coapServerEventSourceType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
-				<xsd:attribute name="hostname" type="xsd:string" use="optional">
-					<xsd:annotation>
-						<xsd:documentation>
-							Hostname used when binding CoAP server socket.
-						</xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-				<xsd:attribute name="port" type="sw:substitutableInt" use="optional">
+				<xsd:attribute name="port" type="sw:substitutableInt"
+					use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
 							Port used when binding CoAP server socket.

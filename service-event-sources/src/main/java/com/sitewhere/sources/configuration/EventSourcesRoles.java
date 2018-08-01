@@ -26,7 +26,8 @@ public enum EventSourcesRoles implements IConfigurationRoleProvider {
     /** Event sources container. Event source. */
     EventSource(ConfigurationRole.build(EventSourcesRoleKeys.EventSource, "Event Source", true, true, true,
 	    new IRoleKey[] { EventSourcesRoleKeys.EventDecoder, EventSourcesRoleKeys.EventDeduplicator },
-	    new IRoleKey[] { EventSourcesRoleKeys.SocketEventSource, EventSourcesRoleKeys.WebSocketEventSource })),
+	    new IRoleKey[] { EventSourcesRoleKeys.SocketEventSource, EventSourcesRoleKeys.WebSocketEventSource,
+		    EventSourcesRoleKeys.CoapServerEventSource })),
 
     /** Event sources container. Event source. */
     SocketEventSource(ConfigurationRole.build(EventSourcesRoleKeys.SocketEventSource, "Socket Event Source", true, true,
@@ -46,10 +47,14 @@ public enum EventSourcesRoles implements IConfigurationRoleProvider {
     WebSocketHeader(
 	    ConfigurationRole.build(EventSourcesRoleKeys.WebSocketHeader, "WebSocket Headers", true, true, true)),
 
+    /** CoAP event source. */
+    CoapServerEventSource(ConfigurationRole.build(EventSourcesRoleKeys.CoapServerEventSource,
+	    "CoAP Server Event Source", true, true, true, new IRoleKey[] { EventSourcesRoleKeys.CoapEventDecoder })),
+
     /** Event source. Event decoder. */
     EventDecoder(ConfigurationRole.build(EventSourcesRoleKeys.EventDecoder, "Event Decoder", false, false, false,
-	    new IRoleKey[0],
-	    new IRoleKey[] { EventSourcesRoleKeys.BinaryEventDecoder, EventSourcesRoleKeys.StringEventDecoder })),
+	    new IRoleKey[0], new IRoleKey[] { EventSourcesRoleKeys.BinaryEventDecoder,
+		    EventSourcesRoleKeys.StringEventDecoder, EventSourcesRoleKeys.CoapEventDecoder })),
 
     /** Binary event decoder */
     BinaryEventDecoder(ConfigurationRole.build(EventSourcesRoleKeys.BinaryEventDecoder, "Binary Event Decoder", false,
@@ -76,6 +81,10 @@ public enum EventSourcesRoles implements IConfigurationRoleProvider {
     /** Event source. String event decoder. */
     StringEventDecoder(ConfigurationRole.build(EventSourcesRoleKeys.StringEventDecoder, "String Event Decoder", false,
 	    false, false)),
+
+    /** Event source. CoAP event decoder. */
+    CoapEventDecoder(
+	    ConfigurationRole.build(EventSourcesRoleKeys.CoapEventDecoder, "CoAP Event Decoder", false, false, false)),
 
     /** Event source. Event deduplicator. */
     EventDeduplicator(ConfigurationRole.build(EventSourcesRoleKeys.EventDeduplicator, "Event Deduplicator", true, false,

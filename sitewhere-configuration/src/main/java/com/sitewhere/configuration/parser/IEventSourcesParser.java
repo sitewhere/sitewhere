@@ -93,17 +93,10 @@ public interface IEventSourcesParser {
 	JsonDeviceRequestDecoder("json-device-request-decoder"),
 
 	/** SiteWhere JSON batch decoder */
-	@Deprecated
-	JsonEventDecoder("json-event-decoder"),
-
-	/** SiteWhere JSON batch decoder */
 	JsonBatchEventDecoder("json-batch-event-decoder"),
 
 	/** Uses Groovy script to parse events */
 	GroovyEventDecoder("groovy-event-decoder"),
-
-	/** Reference to externally defined event decoder */
-	EventDecoder("event-decoder"),
 
 	/** Decoder that defers to nested decoders based on criteria */
 	CompositeDecoder("composite-decoder");
@@ -144,10 +137,7 @@ public interface IEventSourcesParser {
 	EchoStringDecoder("echo-string-decoder"),
 
 	/** Uses Groovy script to parse events */
-	GroovyStringDecoder("groovy-string-event-decoder"),
-
-	/** Reference to externally defined event decoder */
-	EventDecoder("event-decoder");
+	GroovyStringDecoder("groovy-string-event-decoder");
 
 	/** Event code */
 	private String localName;
@@ -158,6 +148,41 @@ public interface IEventSourcesParser {
 
 	public static StringDecoders getByLocalName(String localName) {
 	    for (StringDecoders value : StringDecoders.values()) {
+		if (value.getLocalName().equals(localName)) {
+		    return value;
+		}
+	    }
+	    return null;
+	}
+
+	public String getLocalName() {
+	    return localName;
+	}
+
+	public void setLocalName(String localName) {
+	    this.localName = localName;
+	}
+    }
+
+    /**
+     * Expected CoAP decoder elements.
+     * 
+     * @author Derek
+     */
+    public static enum CoapDecoders {
+
+	/** CoAP decoder that expects JSON payload */
+	CoapJsonDecoder("coap-json-decoder");
+
+	/** Event code */
+	private String localName;
+
+	private CoapDecoders(String localName) {
+	    this.localName = localName;
+	}
+
+	public static CoapDecoders getByLocalName(String localName) {
+	    for (CoapDecoders value : CoapDecoders.values()) {
 		if (value.getLocalName().equals(localName)) {
 		    return value;
 		}
