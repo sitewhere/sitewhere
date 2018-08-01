@@ -26,16 +26,16 @@ public class MetadataCoapParameterExtractor extends TenantEngineLifecycleCompone
 	implements ICommandDeliveryParameterExtractor<CoapParameters> {
 
     /** Default metadata field for remote hostname */
-    public static final String DEFAULT_HOSTNAME_METADATA = "hostname";
+    public static final String DEFAULT_HOSTNAME_METADATA = "coap_hostname";
 
     /** Default metadata field for remote port */
-    public static final String DEFAULT_PORT_METADATA = "port";
+    public static final String DEFAULT_PORT_METADATA = "coap_port";
 
     /** Default metadata field for CoAP URL */
-    public static final String DEFAULT_URL_METADATA = "url";
+    public static final String DEFAULT_URL_METADATA = "coap_url";
 
     /** Default metadata field for CoAP invocation method */
-    public static final String DEFAULT_METHOD_METADATA = "method";
+    public static final String DEFAULT_METHOD_METADATA = "coap_method";
 
     /** Hostname metadata field name */
     private String hostnameMetadataField = DEFAULT_HOSTNAME_METADATA;
@@ -49,16 +49,8 @@ public class MetadataCoapParameterExtractor extends TenantEngineLifecycleCompone
     /** CoAP invocation method metadata field name */
     private String methodMetadataField = DEFAULT_METHOD_METADATA;
 
-    /** Overrides port metadata */
-    private Integer portOverride;
-
     public MetadataCoapParameterExtractor() {
 	super(LifecycleComponentType.CommandParameterExtractor);
-    }
-
-    public MetadataCoapParameterExtractor(int portOverride) {
-	super(LifecycleComponentType.CommandParameterExtractor);
-	this.portOverride = portOverride;
     }
 
     /*
@@ -73,11 +65,16 @@ public class MetadataCoapParameterExtractor extends TenantEngineLifecycleCompone
     @Override
     public CoapParameters extractDeliveryParameters(IDeviceNestingContext nesting, IDeviceAssignment assignment,
 	    IDeviceCommandExecution execution) throws SiteWhereException {
-	Map<String, String> metadata = nesting.getGateway().getMetadata();
-	String hostname = metadata.get(getHostnameMetadataField());
-	String port = metadata.get(getPortMetadataField());
-	String url = metadata.get(getUrlMetadataField());
-	String method = metadata.get(getMethodMetadataField());
+	// Load hostname and port from device metadata.
+	Map<String, String> deviceMeta = nesting.getGateway().getMetadata();
+	String hostname = deviceMeta.get(getHostnameMetadataField());
+	String port = deviceMeta.get(getPortMetadataField());
+
+	// Load url and method from command metadata.
+	Map<String, String> commandMeta = execution.getCommand().getMetadata();
+	String url = commandMeta.get(getUrlMetadataField());
+	String method = commandMeta.get(getMethodMetadataField());
+
 	CoapParameters coap = new CoapParameters();
 	coap.setHostname(hostname);
 	if (port != null) {
@@ -122,13 +119,5 @@ public class MetadataCoapParameterExtractor extends TenantEngineLifecycleCompone
 
     public void setMethodMetadataField(String methodMetadataField) {
 	this.methodMetadataField = methodMetadataField;
-    }
-
-    public Integer getPortOverride() {
-	return portOverride;
-    }
-
-    public void setPortOverride(Integer portOverride) {
-	this.portOverride = portOverride;
     }
 }

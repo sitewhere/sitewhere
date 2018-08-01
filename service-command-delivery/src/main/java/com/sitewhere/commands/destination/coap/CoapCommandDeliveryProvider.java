@@ -17,7 +17,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -36,27 +35,6 @@ public class CoapCommandDeliveryProvider extends TenantEngineLifecycleComponent
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
-     * .spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.communication.ICommandDeliveryProvider#deliver(
      * com. sitewhere.spi.device.IDeviceNestingContext,
      * com.sitewhere.spi.device.IDeviceAssignment,
@@ -68,8 +46,8 @@ public class CoapCommandDeliveryProvider extends TenantEngineLifecycleComponent
 	    byte[] encoded, CoapParameters parameters) throws SiteWhereException {
 	CoapClient client = createCoapClient(parameters);
 	CoapResponse response = null;
-	getLogger().info(parameters.toString());
-	getLogger().info("Delivering command as " + parameters.getMethod().toUpperCase() + " to " + client.getURI());
+	getLogger().debug(parameters.toString());
+	getLogger().debug("Delivering command as " + parameters.getMethod().toUpperCase() + " to " + client.getURI());
 	if ("put".equalsIgnoreCase(parameters.getMethod())) {
 	    response = client.put(encoded, MediaTypeRegistry.APPLICATION_JSON);
 	} else {
@@ -95,8 +73,8 @@ public class CoapCommandDeliveryProvider extends TenantEngineLifecycleComponent
 	    CoapParameters parameters) throws SiteWhereException {
 	CoapClient client = createCoapClient(parameters);
 	CoapResponse response = null;
-	getLogger().info(parameters.toString());
-	getLogger().info(
+	getLogger().debug(parameters.toString());
+	getLogger().debug(
 		"Delivering system command as " + parameters.getMethod().toUpperCase() + " to " + client.getURI());
 	if ("put".equalsIgnoreCase(parameters.getMethod())) {
 	    response = client.put(encoded, MediaTypeRegistry.APPLICATION_JSON);
@@ -119,6 +97,5 @@ public class CoapCommandDeliveryProvider extends TenantEngineLifecycleComponent
     protected CoapClient createCoapClient(CoapParameters parameters) {
 	return new CoapClient(
 		"coap://" + parameters.getHostname() + ":" + parameters.getPort() + "/" + parameters.getUrl());
-
     }
 }
