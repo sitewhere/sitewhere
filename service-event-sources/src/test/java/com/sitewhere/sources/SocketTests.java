@@ -51,7 +51,7 @@ public class SocketTests {
     @Test
     public void doSocketTest() throws Exception {
 	Socket socket = new Socket("localhost", SERVER_SOCKET_PORT);
-	byte[] encoded = EventsHelper.generateEncodedMeasurementsMessage(HARDWARE_ID);
+	byte[] encoded = EventsHelper.generateJsonMeasurementsMessage(HARDWARE_ID);
 	socket.getOutputStream().write(encoded);
 	socket.getOutputStream().flush();
 	socket.getOutputStream().close();

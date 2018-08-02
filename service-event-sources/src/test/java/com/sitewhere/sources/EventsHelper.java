@@ -9,12 +9,12 @@ package com.sitewhere.sources;
 
 import java.util.Date;
 
+import com.sitewhere.common.MarshalUtils;
+import com.sitewhere.rest.model.device.communication.DeviceRequest;
+import com.sitewhere.rest.model.device.communication.DeviceRequest.Type;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
-import com.sitewhere.sources.decoder.protobuf.ProtobufDeviceEventEncoder;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 
 /**
  * Helper class for generating encoded messages using the SiteWhere GPB format.
@@ -24,40 +24,63 @@ import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 public class EventsHelper {
 
     /**
-     * Generate an encoded measurements message for the given hardware id.
+     * Generate a JSON encoded measurements message for the given device.
      * 
      * @param deviceToken
      * @return
      * @throws SiteWhereException
      */
-    public static byte[] generateEncodedMeasurementsMessage(String deviceToken) throws SiteWhereException {
-	DecodedDeviceRequest<IDeviceMeasurementCreateRequest> request = new DecodedDeviceRequest<IDeviceMeasurementCreateRequest>();
+    public static byte[] generateJsonMeasurementsMessage(String deviceToken) throws SiteWhereException {
+	return MarshalUtils.marshalJson(generateMeasurementsRequest(deviceToken));
+    }
+
+    /**
+     * Generate a protobuf encoded device registration message for the given device.
+     * 
+     * @param deviceToken
+     * @return
+     * @throws SiteWhereException
+     */
+    public static byte[] generateJsonRegistrationMessage(String deviceToken) throws SiteWhereException {
+	return MarshalUtils.marshalJson(generateRegistrationRequest(deviceToken));
+    }
+
+    /**
+     * Generate a device request containing a device measurements create request.
+     * 
+     * @param deviceToken
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceRequest generateMeasurementsRequest(String deviceToken) throws SiteWhereException {
+	DeviceRequest request = new DeviceRequest();
 	request.setDeviceToken(deviceToken);
+	request.setType(Type.DeviceMeasurement);
 
 	DeviceMeasurementCreateRequest mx = new DeviceMeasurementCreateRequest();
 	mx.setEventDate(new Date());
 	mx.setName("fuel.level");
 	mx.setValue(123.4);
 	request.setRequest(mx);
-
-	return (new ProtobufDeviceEventEncoder()).encode(request);
+	return request;
     }
 
     /**
-     * Generate an encoded measurements message for the given hardware id.
+     * Generate a device request containing a device registration request.
      * 
+     * @param deviceToken
      * @return
      * @throws SiteWhereException
      */
-    public static byte[] generateEncodedRegistrationMessage() throws SiteWhereException {
-	DecodedDeviceRequest<IDeviceRegistrationRequest> request = new DecodedDeviceRequest<IDeviceRegistrationRequest>();
-	request.setDeviceToken("e5cd9ed7-f974-400f-bfa7-bf2df17211b2");
+    public static DeviceRequest generateRegistrationRequest(String deviceToken) throws SiteWhereException {
+	DeviceRequest request = new DeviceRequest();
+	request.setDeviceToken(deviceToken);
+	request.setType(Type.RegisterDevice);
 
 	DeviceRegistrationRequest mx = new DeviceRegistrationRequest();
-	mx.setAreaToken("bb105f8d-3150-41f5-b9d1-db04965668d3");
-	mx.setDeviceTypeToken("d2604433-e4eb-419b-97c7-88efe9b2cd41");
+	mx.setDeviceTypeToken("mega2560");
+	mx.setAreaToken("peachtree");
 	request.setRequest(mx);
-
-	return (new ProtobufDeviceEventEncoder()).encode(request);
+	return request;
     }
 }

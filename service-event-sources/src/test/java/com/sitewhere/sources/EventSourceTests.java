@@ -30,16 +30,24 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
-public class ActiveMQTests {
+/**
+ * Test cases for various types of event sources.
+ * 
+ * @author Derek
+ */
+public class EventSourceTests {
 
-    /** Hardware id for test message */
-    private static final String HARDWARE_ID = "4eceeda1-9ab2-4069-9372-7aa007a3dccc";
+    /** Hostname for SiteWhere instance */
+    private static final String HOSTNAME = "192.168.171.129";
+
+    /** Device token for test message */
+    private static final String DEVICE_TOKEN = "20544-OPENHAB-7313064";
 
     /** Nunber of threads for multithreaded tests */
-    private static final int NUM_THREADS = 150;
+    private static final int NUM_THREADS = 5;
 
     /** Nunber of calls performed per thread */
-    private static final int NUM_CALLS_PER_THREAD = 400;
+    private static final int NUM_CALLS_PER_THREAD = 100;
 
     @Test
     public void doJMSTest() throws Exception {
@@ -66,7 +74,7 @@ public class ActiveMQTests {
 	String routingKey = "sitewhere";
 
 	ConnectionFactory factory = new ConnectionFactory();
-	factory.setUri("amqp://localhost:5672");
+	factory.setUri("amqp://" + HOSTNAME + ":5672");
 	Connection connection = factory.newConnection();
 	Channel channel = connection.createChannel();
 
@@ -74,7 +82,7 @@ public class ActiveMQTests {
 	channel.queueDeclare(queueName, true, false, false, null);
 	channel.queueBind(queueName, exchangeName, routingKey);
 
-	byte[] messageBodyBytes = EventsHelper.generateEncodedMeasurementsMessage(HARDWARE_ID);
+	byte[] messageBodyBytes = EventsHelper.generateJsonMeasurementsMessage(DEVICE_TOKEN);
 	channel.basicPublish(exchangeName, routingKey, null, messageBodyBytes);
 
 	channel.close();
@@ -86,10 +94,10 @@ public class ActiveMQTests {
 	Messenger messenger = Proton.messenger();
 	messenger.start();
 
-	Data data = new Data(new Binary(EventsHelper.generateEncodedMeasurementsMessage(HARDWARE_ID)));
+	Data data = new Data(new Binary(EventsHelper.generateJsonMeasurementsMessage(DEVICE_TOKEN)));
 
 	Message message = Proton.message();
-	message.setAddress("amqp://127.0.0.1:5672/SITEWHERE.IN");
+	message.setAddress("amqp://" + HOSTNAME + ":5672/SITEWHERE.IN");
 	message.setBody(data);
 	messenger.put(message);
 
@@ -107,7 +115,7 @@ public class ActiveMQTests {
 
 	@Override
 	public Void call() throws Exception {
-	    ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:1234");
+	    ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://" + HOSTNAME + ":8500");
 	    javax.jms.Connection connection = connectionFactory.createConnection();
 	    connection.start();
 
@@ -118,8 +126,7 @@ public class ActiveMQTests {
 
 	    for (int i = 0; i < messageCount; i++) {
 		BytesMessage message = session.createBytesMessage();
-		// message.writeBytes(EventsHelper.generateEncodedMeasurementsMessage(HARDWARE_ID));
-		message.writeBytes(EventsHelper.generateEncodedRegistrationMessage());
+		message.writeBytes(EventsHelper.generateJsonMeasurementsMessage(DEVICE_TOKEN));
 		producer.send(message);
 	    }
 

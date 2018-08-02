@@ -66,7 +66,13 @@ public class ActiveMQBrokerEventReceiver extends InboundEventReceiver<byte[]> {
     /** Thread pool for consumer processing */
     private ExecutorService consumersPool;
 
-    public ActiveMQBrokerEventReceiver() {
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	this.brokerService = new BrokerService();
     }
 
@@ -89,13 +95,13 @@ public class ActiveMQBrokerEventReceiver extends InboundEventReceiver<byte[]> {
 	    throw new SiteWhereException("Queue name is required.");
 	}
 	try {
-	    brokerService.setBrokerName(getBrokerName());
+	    getBrokerService().setBrokerName(getBrokerName());
 	    TransportConnector connector = new TransportConnector();
 	    connector.setUri(new URI(getTransportUri()));
-	    brokerService.addConnector(connector);
-	    brokerService.setUseShutdownHook(false);
-	    brokerService.setUseJmx(false);
-	    brokerService.start();
+	    getBrokerService().addConnector(connector);
+	    getBrokerService().setUseShutdownHook(false);
+	    getBrokerService().setUseJmx(false);
+	    getBrokerService().start();
 	    startConsumers();
 	} catch (Exception e) {
 	    throw new SiteWhereException("Error starting ActiveMQ inbound event receiver.", e);
@@ -119,13 +125,13 @@ public class ActiveMQBrokerEventReceiver extends InboundEventReceiver<byte[]> {
      * @throws SiteWhereException
      */
     protected void startConsumers() throws SiteWhereException {
-	consumers.clear();
-	consumersPool = Executors.newFixedThreadPool(getNumConsumers(), new ConsumersThreadFactory());
+	getConsumers().clear();
+	this.consumersPool = Executors.newFixedThreadPool(getNumConsumers(), new ConsumersThreadFactory());
 	for (int i = 0; i < getNumConsumers(); i++) {
 	    Consumer consumer = new Consumer();
 	    consumer.start();
-	    consumersPool.execute(consumer);
-	    consumers.add(consumer);
+	    getConsumersPool().execute(consumer);
+	    getConsumers().add(consumer);
 	}
 	getLogger().info("Created " + consumers.size() + " consumers for processing ActiveMQ messages.");
     }
@@ -139,9 +145,9 @@ public class ActiveMQBrokerEventReceiver extends InboundEventReceiver<byte[]> {
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	if (brokerService != null) {
+	if (getBrokerService() != null) {
 	    try {
-		brokerService.stop();
+		getBrokerService().stop();
 	    } catch (Exception e) {
 		throw new SiteWhereException("Error stopping ActiveMQ broker.", e);
 	    }
@@ -155,7 +161,7 @@ public class ActiveMQBrokerEventReceiver extends InboundEventReceiver<byte[]> {
      * @throws SiteWhereException
      */
     protected void stopConsumers() throws SiteWhereException {
-	consumersPool.shutdownNow();
+	getConsumersPool().shutdownNow();
 	for (Consumer consumer : consumers) {
 	    consumer.stop();
 	}
@@ -194,14 +200,14 @@ public class ActiveMQBrokerEventReceiver extends InboundEventReceiver<byte[]> {
 		// Create a VM connection to the broker.
 		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("vm://" + getBrokerName());
 		this.connection = connectionFactory.createConnection();
-		connection.setExceptionListener(this);
-		connection.start();
+		getConnection().setExceptionListener(this);
+		getConnection().start();
 
 		// Create a Session
-		this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+		this.session = getConnection().createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-		Destination destination = session.createQueue(getQueueName());
-		this.consumer = session.createConsumer(destination);
+		Destination destination = getSession().createQueue(getQueueName());
+		this.consumer = getSession().createConsumer(destination);
 	    } catch (Exception e) {
 		throw new SiteWhereException("Error starting ActiveMQ consumer.", e);
 	    }
@@ -209,9 +215,9 @@ public class ActiveMQBrokerEventReceiver extends InboundEventReceiver<byte[]> {
 
 	public void stop() throws SiteWhereException {
 	    try {
-		consumer.close();
-		session.close();
-		connection.close();
+		getConsumer().close();
+		getSession().close();
+		getConnection().close();
 	    } catch (Exception e) {
 		throw new SiteWhereException("Error shutting down ActiveMQ consumer.", e);
 	    }
@@ -260,6 +266,30 @@ public class ActiveMQBrokerEventReceiver extends InboundEventReceiver<byte[]> {
 	    } catch (SiteWhereException e1) {
 	    }
 	}
+
+	protected Connection getConnection() {
+	    return connection;
+	}
+
+	protected Session getSession() {
+	    return session;
+	}
+
+	protected MessageConsumer getConsumer() {
+	    return consumer;
+	}
+    }
+
+    protected BrokerService getBrokerService() {
+	return brokerService;
+    }
+
+    protected ExecutorService getConsumersPool() {
+	return consumersPool;
+    }
+
+    protected List<Consumer> getConsumers() {
+	return consumers;
     }
 
     public String getBrokerName() {

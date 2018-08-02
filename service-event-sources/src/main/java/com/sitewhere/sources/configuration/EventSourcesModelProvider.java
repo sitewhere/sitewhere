@@ -251,7 +251,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 
 	builder.attribute((new AttributeNode.Builder("Transport URI", "transportUri", AttributeType.String,
 		ATTR_GROUP_CONNECTIVITY)
-			.description("URI used to configure the trasport for the embedded ActiveMQ broker.")
+			.description("URI used to configure the transport for the embedded ActiveMQ broker.")
 			.makeRequired().build()));
 	builder.attribute((new AttributeNode.Builder("Queue name", "queueName", AttributeType.String,
 		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
