@@ -29,7 +29,7 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
 	implements IApiChannel<T> {
 
     /** Interval at which GRPC connection will be checked */
-    private static final long CONNECTION_CHECK_INTERVAL = 2 * 1000;
+    private static final long CONNECTION_CHECK_INTERVAL = 100;
 
     /** Parent demux */
     private IApiDemux<?> demux;
