@@ -73,6 +73,15 @@ public class ActiveMQBrokerEventReceiver extends InboundEventReceiver<byte[]> {
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	if (getBrokerName() == null) {
+	    throw new SiteWhereException("Broker name must be configured.");
+	}
+	if (getTransportUri() == null) {
+	    throw new SiteWhereException("Transport URI must be configured.");
+	}
+	if (getQueueName() == null) {
+	    throw new SiteWhereException("Queue name must be configured.");
+	}
 	this.brokerService = new BrokerService();
     }
 
@@ -85,15 +94,6 @@ public class ActiveMQBrokerEventReceiver extends InboundEventReceiver<byte[]> {
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	if (getBrokerName() == null) {
-	    throw new SiteWhereException("Broker name is required.");
-	}
-	if (getTransportUri() == null) {
-	    throw new SiteWhereException("Transport URI is required.");
-	}
-	if (getQueueName() == null) {
-	    throw new SiteWhereException("Queue name is required.");
-	}
 	try {
 	    getBrokerService().setBrokerName(getBrokerName());
 	    TransportConnector connector = new TransportConnector();
