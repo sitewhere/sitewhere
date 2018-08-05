@@ -1,234 +1,337 @@
-/*******************************************************************************
- Copyright (c) Microsoft Open Technologies (Shanghai) Company Limited.  All rights reserved.
-
- The MIT License (MIT)
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
-
- *******************************************************************************/
+/*
+ * Copyright (c) SiteWhere, LLC. All rights reserved. http://www.sitewhere.com
+ *
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
 package com.sitewhere.sources.azure;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
-import org.apache.qpid.amqp_1_0.client.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.microsoft.azure.eventhubs.ConnectionStringBuilder;
+import com.microsoft.azure.eventhubs.EventData;
+import com.microsoft.azure.eventprocessorhost.CloseReason;
+import com.microsoft.azure.eventprocessorhost.EventProcessorHost;
+import com.microsoft.azure.eventprocessorhost.EventProcessorOptions;
+import com.microsoft.azure.eventprocessorhost.ExceptionReceivedEventArgs;
+import com.microsoft.azure.eventprocessorhost.IEventProcessor;
+import com.microsoft.azure.eventprocessorhost.PartitionContext;
+import com.sitewhere.server.lifecycle.parameters.StringComponentParameter;
 import com.sitewhere.sources.InboundEventReceiver;
-import com.sitewhere.sources.azure.client.Constants;
-import com.sitewhere.sources.azure.client.EventData;
-import com.sitewhere.sources.azure.client.EventHubReceiverTask;
-import com.sitewhere.sources.azure.client.EventHubReceiverTaskConfig;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponentParameter;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
+/**
+ * Inbound event receiver that acts as a client for an Azure Event Hub.
+ * 
+ * @author Derek
+ */
 public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
-    private static String username = "";
-    private static String password = "";
-    private static String namespace = "";
-    private static String entityPath = "";
-    private static int partitionCount = 0;
-    private static String zkStateStore = "";
-    private static String targetFqn = "";
-    private ArrayList<EventHubReceiverTask> taskPool = new ArrayList<EventHubReceiverTask>();
+    /** Consumer group name */
+    private String consumerGroupName;
 
-    private static EventHubReceiverTaskConfig config;
+    /** Namespace name */
+    private String namespaceName;
 
-    private ExecutorService executor = Executors.newCachedThreadPool(new ReceiverThreadFactory());
+    /** Event Hub name */
+    private String eventHubName;
 
-    /**
-     * Used for naming consumer threads
+    /** SAS key name */
+    private String sasKeyName;
+
+    /** SAS key */
+    private String sasKey;
+
+    /** Storage connection string */
+    private String storageConnectionString;
+
+    /** Storage container name */
+    private String storageContainerName;
+
+    /** Host name prefix */
+    private String hostNamePrefix;
+
+    /** Consumer group name parameter */
+    private ILifecycleComponentParameter<String> consumerGroupNameParameter;
+
+    /** Namespace name parameter */
+    private ILifecycleComponentParameter<String> namespaceNameParameter;
+
+    /** Event Hub name parameter */
+    private ILifecycleComponentParameter<String> eventHubNameParameter;
+
+    /** SAS key name parameter */
+    private ILifecycleComponentParameter<String> sasKeyNameParameter;
+
+    /** SAS key parameter */
+    private ILifecycleComponentParameter<String> sasKeyParameter;
+
+    /** Storage connection string parameter */
+    private ILifecycleComponentParameter<String> storageConnectionStringParameter;
+
+    /** Storage container name parameter */
+    private ILifecycleComponentParameter<String> storageContainerNameParameter;
+
+    /** Host name prefix parameter */
+    private ILifecycleComponentParameter<String> hostNamePrefixParameter;
+
+    /** Connection string builder */
+    private ConnectionStringBuilder connectionStringBuilder;
+
+    /** Event processor host */
+    private EventProcessorHost eventProcessorHost;
+
+    /*
+     * @see com.sitewhere.server.lifecycle.LifecycleComponent#initializeParameters()
      */
-    private class ReceiverThreadFactory implements ThreadFactory {
+    @Override
+    public void initializeParameters() throws SiteWhereException {
+	// Add consumer group name.
+	this.consumerGroupNameParameter = StringComponentParameter.newBuilder(this, "Consumer Group Name")
+		.value(getConsumerGroupName()).makeRequired().build();
+	getParameters().add(consumerGroupNameParameter);
 
-	/**
-	 * Counts threads
-	 */
-	private AtomicInteger counter = new AtomicInteger();
+	// Add namespace name.
+	this.namespaceNameParameter = StringComponentParameter.newBuilder(this, "Namespace Name")
+		.value(getNamespaceName()).makeRequired().build();
+	getParameters().add(namespaceNameParameter);
 
-	public Thread newThread(Runnable r) {
-	    return new Thread(r,
-		    "SiteWhere EventHub(" + namespace + " - " + entityPath + ") Receiver " + counter.incrementAndGet());
-	}
+	// Add Event Hub name.
+	this.eventHubNameParameter = StringComponentParameter.newBuilder(this, "Event Hub Name")
+		.value(getEventHubName()).makeRequired().build();
+	getParameters().add(eventHubNameParameter);
+
+	// Add SAS key name.
+	this.sasKeyNameParameter = StringComponentParameter.newBuilder(this, "SAS Key Name").value(getSasKeyName())
+		.makeRequired().build();
+	getParameters().add(sasKeyNameParameter);
+
+	// Add SAS key.
+	this.sasKeyParameter = StringComponentParameter.newBuilder(this, "SAS Key").value(getSasKey()).makeRequired()
+		.build();
+	getParameters().add(sasKeyParameter);
+
+	// Add Storage connection string.
+	this.storageConnectionStringParameter = StringComponentParameter.newBuilder(this, "Storage Connection String")
+		.value(getStorageConnectionString()).makeRequired().build();
+	getParameters().add(storageConnectionStringParameter);
+
+	// Add Storage container name.
+	this.storageContainerNameParameter = StringComponentParameter.newBuilder(this, "Storage Container Name")
+		.value(getStorageContainerName()).makeRequired().build();
+	getParameters().add(storageContainerNameParameter);
+
+	// Add Host name prefix.
+	this.hostNamePrefixParameter = StringComponentParameter.newBuilder(this, "Host Name Prefix")
+		.value(getHostNamePrefix()).makeRequired().build();
+	getParameters().add(hostNamePrefixParameter);
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
-     * .server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Use parameters to build connection string.
+	this.connectionStringBuilder = new ConnectionStringBuilder().setNamespaceName(namespaceNameParameter.getValue())
+		.setEventHubName(eventHubNameParameter.getValue()).setSasKeyName(sasKeyNameParameter.getValue())
+		.setSasKey(sasKeyParameter.getValue());
+
+	// Use parameters to build event processor host.
+	this.eventProcessorHost = new EventProcessorHost(
+		EventProcessorHost.createHostName(hostNamePrefixParameter.getValue()), eventHubNameParameter.getValue(),
+		consumerGroupNameParameter.getValue(), connectionStringBuilder.toString(),
+		storageConnectionStringParameter.getValue(), storageContainerNameParameter.getValue());
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	config = new EventHubReceiverTaskConfig(username, password, namespace, entityPath, partitionCount,
-		zkStateStore);
-	config.setTargetAddress(targetFqn);
+	EventProcessorOptions options = new EventProcessorOptions();
+	options.setExceptionNotification(new Consumer<ExceptionReceivedEventArgs>() {
 
-	for (int i = 0; i < partitionCount; i++) {
-	    executor.execute(new EventProcessor(partitionCount, i));
+	    @Override
+	    public void accept(ExceptionReceivedEventArgs t) {
+		getLogger().info("SAMPLE: Host " + t.getHostname() + " received general error notification during "
+			+ t.getAction() + ": " + t.getException().toString());
+	    }
+	});
+
+	try {
+	    getEventProcessorHost().registerEventProcessor(EventProcessor.class, options).get();
+	} catch (InterruptedException e) {
+	    throw new SiteWhereException("Interrupted while registering event processor");
+	} catch (ExecutionException e) {
+	    throw new SiteWhereException("Unable to register Event Hub event processor.", e);
 	}
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
      * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
      * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	for (EventHubReceiverTask task : taskPool) {
-	    task.deactivate();
-	}
-	executor.shutdownNow();
+	getEventProcessorHost().unregisterEventProcessor();
     }
 
-    private class EventProcessor implements Runnable {
+    /**
+     * Event processor implementation.
+     * 
+     * @author Derek
+     */
+    public static class EventProcessor implements IEventProcessor {
 
-	int taskIndex;
-	int totalTasks;
+	/** Static logger instance */
+	private static Logger LOGGER = LoggerFactory.getLogger(EventProcessor.class);
 
-	public EventProcessor(int totalTasks, int taskIndex) {
-	    this.totalTasks = totalTasks;
-	    this.taskIndex = taskIndex;
+	private int checkpointBatchingCount = 0;
+
+	/*
+	 * @see
+	 * com.microsoft.azure.eventprocessorhost.IEventProcessor#onOpen(com.microsoft.
+	 * azure.eventprocessorhost.PartitionContext)
+	 */
+	@Override
+	public void onOpen(PartitionContext context) throws Exception {
+	    LOGGER.info("Partition " + context.getPartitionId() + " is opening");
 	}
 
+	/*
+	 * @see
+	 * com.microsoft.azure.eventprocessorhost.IEventProcessor#onClose(com.microsoft.
+	 * azure.eventprocessorhost.PartitionContext,
+	 * com.microsoft.azure.eventprocessorhost.CloseReason)
+	 */
 	@Override
-	public void run() {
-	    EventHubReceiverTask task = new EventHubReceiverTask(config);
-	    taskPool.add(task);
+	public void onClose(PartitionContext context, CloseReason reason) throws Exception {
+	    LOGGER.info("Partition " + context.getPartitionId() + " is closing for reason " + reason.toString());
+	}
 
-	    Map<String, Integer> context = new HashMap<String, Integer>();
-	    context.put(Constants.TotalTaskKey, this.totalTasks);
-	    context.put(Constants.TaskIndexKey, this.taskIndex);
-	    boolean SWITCH = true;
-	    int EH_RETRY_SLEEP_SECONDS = 10;
+	/*
+	 * @see
+	 * com.microsoft.azure.eventprocessorhost.IEventProcessor#onError(com.microsoft.
+	 * azure.eventprocessorhost.PartitionContext, java.lang.Throwable)
+	 */
+	@Override
+	public void onError(PartitionContext context, Throwable error) {
+	    LOGGER.info("Partition " + context.getPartitionId() + " onError: " + error.toString());
+	}
 
-	    while (SWITCH) {
-
+	/*
+	 * @see
+	 * com.microsoft.azure.eventprocessorhost.IEventProcessor#onEvents(com.microsoft
+	 * .azure.eventprocessorhost.PartitionContext, java.lang.Iterable)
+	 */
+	@Override
+	public void onEvents(PartitionContext context, Iterable<EventData> events) throws Exception {
+	    LOGGER.info("Partition " + context.getPartitionId() + " got event batch");
+	    int eventCount = 0;
+	    for (EventData data : events) {
 		try {
-		    task.open(context);
+		    LOGGER.info("SAMPLE (" + context.getPartitionId() + "," + data.getSystemProperties().getOffset()
+			    + "," + data.getSystemProperties().getSequenceNumber() + "): "
+			    + new String(data.getBytes(), "UTF8"));
+		    eventCount++;
+		    this.checkpointBatchingCount++;
+		    if ((checkpointBatchingCount % 5) == 0) {
+			LOGGER.info("SAMPLE: Partition " + context.getPartitionId() + " checkpointing at "
+				+ data.getSystemProperties().getOffset() + ","
+				+ data.getSystemProperties().getSequenceNumber());
+			context.checkpoint(data).get();
+		    }
 		} catch (Exception e) {
-		    getLogger().warn(
-			    "Task " + taskIndex + " failed to open, retry in " + EH_RETRY_SLEEP_SECONDS + "seconds.",
-			    e);
-		    try {
-			task.close();
-			Thread.sleep(EH_RETRY_SLEEP_SECONDS * 1000);
-		    } catch (Exception ignored) {
-		    }
-		    continue;
-		}
-
-		while (SWITCH) {
-		    try {
-			EventData data = task.receive();
-			if (data == null) {
-			    continue;
-			}
-			Message p = data.getMessage();
-
-			if (p == null || p.getApplicationProperties() == null
-				|| p.getApplicationProperties().getValue() == null
-				|| p.getApplicationProperties().getValue().get(Constants.AmqpPayloadKey) == null) {
-			    getLogger().warn("Skipped message without a valid payload received.");
-			    continue;
-			}
-			byte[] payload = p.getApplicationProperties().getValue().get(Constants.AmqpPayloadKey)
-				.toString().getBytes();
-			// Map eventContext = new HashMap();
-			// eventContext.put("enqueueTime",
-			// data.getEnqueueTime());
-			onEventPayloadReceived(payload, null);
-		    } catch (Exception e) {
-			e.printStackTrace();
-			getLogger().warn(
-				"Task " + taskIndex + " exception, restart in " + EH_RETRY_SLEEP_SECONDS + " seconds",
-				e);
-			try {
-			    task.close();
-			} catch (Exception ignored) {
-			}
-			break;
-		    } catch (Throwable t) {
-			getLogger().error("Error in task " + taskIndex + ":" + t.getMessage());
-			try {
-			    task.close();
-			} catch (Throwable t1) {
-			    getLogger().error(t1.getMessage());
-			}
-			SWITCH = false;
-		    }
-		}
-
-		try {
-		    Thread.sleep(EH_RETRY_SLEEP_SECONDS * 1000);
-		} catch (InterruptedException ie) {
-		    break;
+		    LOGGER.error("Processing failed for an event: " + e.toString(), e);
 		}
 	    }
+	    LOGGER.info("Partition " + context.getPartitionId() + " batch size was " + eventCount + " for host "
+		    + context.getOwner());
 	}
     }
 
-    public static void setUsername(String username) {
-	EventHubInboundEventReceiver.username = username;
+    protected ConnectionStringBuilder getConnectionStringBuilder() {
+	return connectionStringBuilder;
     }
 
-    public static void setPassword(String password) {
-	EventHubInboundEventReceiver.password = password;
+    protected EventProcessorHost getEventProcessorHost() {
+	return eventProcessorHost;
     }
 
-    public static void setNamespace(String namespace) {
-	EventHubInboundEventReceiver.namespace = namespace;
+    public String getConsumerGroupName() {
+	return consumerGroupName;
     }
 
-    public static void setEntityPath(String entityPath) {
-	EventHubInboundEventReceiver.entityPath = entityPath;
+    public void setConsumerGroupName(String consumerGroupName) {
+	this.consumerGroupName = consumerGroupName;
     }
 
-    public static void setPartitionCount(int partitionCount) {
-	EventHubInboundEventReceiver.partitionCount = partitionCount;
+    public String getNamespaceName() {
+	return namespaceName;
     }
 
-    public static void setZkStateStore(String zkStateStore) {
-	EventHubInboundEventReceiver.zkStateStore = zkStateStore;
+    public void setNamespaceName(String namespaceName) {
+	this.namespaceName = namespaceName;
     }
 
-    public static void setTargetFqn(String targetFqn) {
-	EventHubInboundEventReceiver.targetFqn = targetFqn;
+    public String getEventHubName() {
+	return eventHubName;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
-     * getDisplayName()
-     */
-    @Override
-    public String getDisplayName() {
-	return targetFqn + ":" + namespace + "/" + entityPath;
+    public void setEventHubName(String eventHubName) {
+	this.eventHubName = eventHubName;
+    }
+
+    public String getSasKeyName() {
+	return sasKeyName;
+    }
+
+    public void setSasKeyName(String sasKeyName) {
+	this.sasKeyName = sasKeyName;
+    }
+
+    public String getSasKey() {
+	return sasKey;
+    }
+
+    public void setSasKey(String sasKey) {
+	this.sasKey = sasKey;
+    }
+
+    public String getStorageConnectionString() {
+	return storageConnectionString;
+    }
+
+    public void setStorageConnectionString(String storageConnectionString) {
+	this.storageConnectionString = storageConnectionString;
+    }
+
+    public String getStorageContainerName() {
+	return storageContainerName;
+    }
+
+    public void setStorageContainerName(String storageContainerName) {
+	this.storageContainerName = storageContainerName;
+    }
+
+    public String getHostNamePrefix() {
+	return hostNamePrefix;
+    }
+
+    public void setHostNamePrefix(String hostNamePrefix) {
+	this.hostNamePrefix = hostNamePrefix;
     }
 }

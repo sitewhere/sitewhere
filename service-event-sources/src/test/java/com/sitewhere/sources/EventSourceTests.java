@@ -25,11 +25,6 @@ import javax.jms.TextMessage;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.TransportConnector;
-import org.apache.qpid.proton.Proton;
-import org.apache.qpid.proton.amqp.Binary;
-import org.apache.qpid.proton.amqp.messaging.Data;
-import org.apache.qpid.proton.message.Message;
-import org.apache.qpid.proton.messenger.Messenger;
 import org.junit.Test;
 
 import com.rabbitmq.client.Channel;
@@ -154,22 +149,6 @@ public class EventSourceTests {
 
 	channel.close();
 	connection.close();
-    }
-
-    @Test
-    public void doQpidTest() throws Exception {
-	Messenger messenger = Proton.messenger();
-	messenger.start();
-
-	Data data = new Data(new Binary(EventsHelper.generateJsonMeasurementsMessage(DEVICE_TOKEN)));
-
-	Message message = Proton.message();
-	message.setAddress("amqp://" + HOSTNAME + ":5672/SITEWHERE.IN");
-	message.setBody(data);
-	messenger.put(message);
-
-	messenger.send();
-	messenger.stop();
     }
 
     public class JmsTester implements Callable<Void> {

@@ -24,9 +24,6 @@ public interface IEventSourcesParser {
      */
     public static enum Elements {
 
-	/** Event source */
-	EventSource("event-source"),
-
 	/** ActiveMQ event source */
 	ActiveMQEventSource("activemq-event-source"),
 

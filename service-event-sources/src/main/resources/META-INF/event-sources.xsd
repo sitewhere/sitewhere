@@ -381,8 +381,6 @@
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-
-	<!-- Common event source information -->
 	<xsd:complexType name="abstractEventSourceType">
 		<xsd:sequence>
 			<xsd:element ref="abstract-decoder" minOccurs="0"
@@ -404,23 +402,6 @@
 			</xsd:annotation>
 		</xsd:attribute>
 	</xsd:attributeGroup>
-
-	<!-- Reference to an event source defined in Spring beans -->
-	<xsd:element name="event-source"
-		type="eventSourceReferenceType"
-		substitutionGroup="abstract-event-source">
-		<xsd:annotation>
-			<xsd:documentation>Event source defined externally as a Spring bean
-			</xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="eventSourceReferenceType">
-		<xsd:complexContent>
-			<xsd:extension base="abstractEventSourceType">
-				<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
 
 	<xsd:element name="mqtt-event-source"
 		type="mqttEventSourceType" substitutionGroup="abstract-event-source">
@@ -512,10 +493,8 @@
 		type="azureEventhubEventSourceType"
 		substitutionGroup="abstract-event-source">
 		<xsd:annotation>
-			<xsd:documentation>Event source that pulls binary information from an
-				Azure EventHub
-				endpoint and
-				decodes it
+			<xsd:documentation>Event source that pulls events from an Azure Event
+				Hub
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -531,54 +510,62 @@
 	<!-- Attributes used for inbound eventhub processing -->
 	<xsd:attributeGroup
 		name="azure-eventhub-inbound-attributes">
-		<xsd:attribute name="targetFqn" type="xsd:string">
+		<xsd:attribute name="consumerGroupName"
+			type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation>
-					EventHub targetFqn address.
+					Consumer group name.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="namespace" type="xsd:string">
+		<xsd:attribute name="namespaceName" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation>
-					EventHub namespace.
+					Namespace name.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="entityPath" type="xsd:string">
+		<xsd:attribute name="eventHubName" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation>
-					EventHub entityPath.
+					Event Hub name.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="partitionCount"
-			type="sw:substitutableInt">
+		<xsd:attribute name="sasKeyName" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation>
-					EventHub partition count.
+					SAS key name.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="zkStateStore" type="xsd:string">
+		<xsd:attribute name="sasKey" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation>
-					zookeeper store url for EventHub state
-					persistence.
+					SAS key.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="username" type="xsd:string">
+		<xsd:attribute name="storageConnectionString"
+			type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation>
-					username for EventHub connection.
+					Storage connection string.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="password" type="xsd:string">
+		<xsd:attribute name="storageContainerName"
+			type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation>
-					password for EventHub connection.
+					Storage container name.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="hostNamePrefix" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>
+					Host name prefix.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>

@@ -49,11 +49,11 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
     public void initializeElements() {
 	// Event sources.
 	addElement(createEventSourcesElement());
-	addElement(createMqttEventSourceElement());
-	addElement(createRabbitMqEventSourceElement());
-	addElement(createAzureEventHubEventSourceElement());
 	addElement(createActiveMQBrokerEventSourceElement());
 	addElement(createActiveMQClientEventSourceElement());
+	addElement(createAzureEventHubEventSourceElement());
+	addElement(createMqttEventSourceElement());
+	addElement(createRabbitMqEventSourceElement());
 	addElement(createPollingRestEventSourceElement());
 	addElement(createCoapServerEventSourceElement());
 
@@ -203,30 +203,32 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 		EventSourcesRoleKeys.EventSource, this);
 
 	builder.description(
-		"Event source that pulls binary information from an Azure EventHub endpoint and decodes it.");
+		"Event source that pulls event information from an Azure EventHub endpoint and decodes it.");
 	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 	addEventSourceAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
 	// Only accept binary event decoders.
 	builder.specializes(EventSourcesRoleKeys.EventDecoder, EventSourcesRoleKeys.BinaryEventDecoder);
 
-	builder.attribute((new AttributeNode.Builder("Target FQN", "targetFqn", AttributeType.String,
-		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("EventHub targetFqn address.")
-			.build()));
-	builder.attribute((new AttributeNode.Builder("Namespace", "namespace", AttributeType.String,
-		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("EventHub namespace.").build()));
-	builder.attribute((new AttributeNode.Builder("Entity path", "entityPath", AttributeType.String,
-		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("EventHub entityPath.").build()));
-	builder.attribute((new AttributeNode.Builder("Partition count", "partitionCount", AttributeType.Integer,
-		ATTR_GROUP_CONNECTIVITY).description("EventHub partition count.").build()));
-	builder.attribute((new AttributeNode.Builder("Zookeeper state store", "zkStateStore", AttributeType.String,
-		ATTR_GROUP_CONNECTIVITY).description("Zookeeper store url for EventHub state persistence.").build()));
-	builder.attribute((new AttributeNode.Builder("Username", "username", AttributeType.String,
-		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("Username for EventHub connection.")
-			.build()));
-	builder.attribute((new AttributeNode.Builder("Password", "password", AttributeType.String,
-		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("Password for EventHub connection.")
-			.build()));
+	builder.attribute((new AttributeNode.Builder("Consumer group name", "consumerGroupName", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("Consumer group name.").build()));
+	builder.attribute((new AttributeNode.Builder("Namespace name", "namespaceName", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("Namespace name.").build()));
+	builder.attribute((new AttributeNode.Builder("Event Hub name", "eventHubName", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("Event Hub name.").build()));
+	builder.attribute(
+		(new AttributeNode.Builder("SAS key name", "sasKeyName", AttributeType.String, ATTR_GROUP_CONNECTIVITY)
+			.description("SAS key name.").build()));
+	builder.attribute((new AttributeNode.Builder("SAS key", "sasKey", AttributeType.String, ATTR_GROUP_CONNECTIVITY)
+		.description("SAS key.").build()));
+	builder.attribute((new AttributeNode.Builder("Storage connection string", "storageConnectionString",
+		AttributeType.String, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("Storage connection string.").build()));
+	builder.attribute((new AttributeNode.Builder("Storage container name", "storageContainerName",
+		AttributeType.String, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+			.description("Storage container name.").build()));
+	builder.attribute((new AttributeNode.Builder("Host name prefix", "hostNamePrefix", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("Host name prefix.").build()));
 
 	return builder.build();
     }

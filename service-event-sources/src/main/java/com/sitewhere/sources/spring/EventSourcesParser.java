@@ -97,10 +97,6 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 		throw new RuntimeException("Unknown event source element: " + child.getLocalName());
 	    }
 	    switch (type) {
-	    case EventSource: {
-		sources.add(parseEventSource(child, context));
-		break;
-	    }
 	    case ActiveMQEventSource: {
 		sources.add(parseActiveMQEventSource(child, context));
 		break;
@@ -147,21 +143,6 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 		manager.getBeanDefinition());
 
 	return null;
-    }
-
-    /**
-     * Parse an event source reference.
-     * 
-     * @param element
-     * @param context
-     * @return
-     */
-    protected RuntimeBeanReference parseEventSource(Element element, ParserContext context) {
-	Attr ref = element.getAttributeNode("ref");
-	if (ref != null) {
-	    return new RuntimeBeanReference(ref.getValue());
-	}
-	throw new RuntimeException("Event source reference does not have ref defined.");
     }
 
     /**
@@ -406,47 +387,53 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
     protected AbstractBeanDefinition createEventHubEventReceiver(Element element) {
 	BeanDefinitionBuilder eh = BeanDefinitionBuilder.rootBeanDefinition(EventHubInboundEventReceiver.class);
 
-	Attr targetFqn = element.getAttributeNode("targetFqn");
-	if (targetFqn == null) {
-	    throw new RuntimeException("targetFqn attribute not provided.");
+	Attr consumerGroupName = element.getAttributeNode("consumerGroupName");
+	if (consumerGroupName == null) {
+	    throw new RuntimeException("Consumer group name not provided.");
 	}
-	eh.addPropertyValue("targetFqn", targetFqn.getValue());
+	eh.addPropertyValue("consumerGroupName", consumerGroupName.getValue());
 
-	Attr namespace = element.getAttributeNode("namespace");
-	if (namespace == null) {
-	    throw new RuntimeException("namespace attribute not provided.");
+	Attr namespaceName = element.getAttributeNode("namespaceName");
+	if (namespaceName == null) {
+	    throw new RuntimeException("Namespace name not provided.");
 	}
-	eh.addPropertyValue("namespace", namespace.getValue());
+	eh.addPropertyValue("namespaceName", namespaceName.getValue());
 
-	Attr entityPath = element.getAttributeNode("entityPath");
-	if (entityPath == null) {
-	    throw new RuntimeException("entityPath attribute not provided.");
+	Attr eventHubName = element.getAttributeNode("eventHubName");
+	if (eventHubName == null) {
+	    throw new RuntimeException("Event hub name not provided.");
 	}
-	eh.addPropertyValue("entityPath", entityPath.getValue());
+	eh.addPropertyValue("eventHubName", eventHubName.getValue());
 
-	Attr partitionCount = element.getAttributeNode("partitionCount");
-	if (partitionCount == null) {
-	    throw new RuntimeException("partitionCount attribute not provided.");
+	Attr sasKeyName = element.getAttributeNode("sasKeyName");
+	if (sasKeyName == null) {
+	    throw new RuntimeException("SAS key name not provided.");
 	}
-	eh.addPropertyValue("partitionCount", partitionCount.getValue());
+	eh.addPropertyValue("sasKeyName", sasKeyName.getValue());
 
-	Attr zkStateStore = element.getAttributeNode("zkStateStore");
-	if (zkStateStore == null) {
-	    throw new RuntimeException("zkStateStore attribute not provided.");
+	Attr sasKey = element.getAttributeNode("sasKey");
+	if (sasKey == null) {
+	    throw new RuntimeException("SAS key not provided.");
 	}
-	eh.addPropertyValue("zkStateStore", zkStateStore.getValue());
+	eh.addPropertyValue("sasKey", sasKey.getValue());
 
-	Attr username = element.getAttributeNode("username");
-	if (username == null) {
-	    throw new RuntimeException("username attribute not provided.");
+	Attr storageConnectionString = element.getAttributeNode("storageConnectionString");
+	if (storageConnectionString == null) {
+	    throw new RuntimeException("Storage connection string not provided.");
 	}
-	eh.addPropertyValue("username", username.getValue());
+	eh.addPropertyValue("storageConnectionString", storageConnectionString.getValue());
 
-	Attr password = element.getAttributeNode("password");
-	if (password == null) {
-	    throw new RuntimeException("password attribute not provided.");
+	Attr storageContainerName = element.getAttributeNode("storageContainerName");
+	if (storageContainerName == null) {
+	    throw new RuntimeException("Storage container name not provided.");
 	}
-	eh.addPropertyValue("password", password.getValue());
+	eh.addPropertyValue("storageContainerName", storageContainerName.getValue());
+
+	Attr hostNamePrefix = element.getAttributeNode("hostNamePrefix");
+	if (hostNamePrefix == null) {
+	    throw new RuntimeException("Host name prefix not provided.");
+	}
+	eh.addPropertyValue("hostNamePrefix", hostNamePrefix.getValue());
 
 	return eh.getBeanDefinition();
     }

@@ -17,8 +17,7 @@ dependencies {
     compile group: 'org.apache.activemq', name: 'activemq-kahadb-store', version:'5.14.0'
     
     // Azure dependencies.
-    compile group: 'org.apache.qpid', name: 'qpid-amqp-1-0-client', version:'0.32'
-    compile group: 'org.apache.activemq', name: 'activemq-broker'
+    compile group: 'com.microsoft.azure', name: 'azure-eventhubs-eph', version:'1.0.0'
     
     // RabbitMQ dependencies.
     compile group: 'com.rabbitmq', name: 'amqp-client', version:'3.6.0'
