@@ -22,6 +22,7 @@ import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
 import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
+import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.rest.model.device.event.request.DeviceStateChangeCreateRequest;
 import com.sitewhere.rest.model.device.state.request.DeviceStateCreateRequest;
 import com.sitewhere.rest.model.search.device.DeviceStateSearchCriteria;
@@ -32,9 +33,11 @@ import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.state.PresenceState;
 import com.sitewhere.spi.device.state.IDeviceState;
 import com.sitewhere.spi.device.state.IDeviceStateManagement;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Monitors assignment state to detect device presence information.
@@ -82,7 +85,7 @@ public class DevicePresenceManager extends TenantEngineLifecycleComponent implem
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	this.executor = Executors.newSingleThreadExecutor();
-	executor.execute(new PresenceChecker());
+	executor.execute(new PresenceChecker(getMicroservice(), getTenantEngine().getTenant()));
     }
 
     /*
@@ -104,11 +107,14 @@ public class DevicePresenceManager extends TenantEngineLifecycleComponent implem
      * 
      * @author Derek
      */
-    private class PresenceChecker implements Runnable {
+    private class PresenceChecker extends SystemUserRunnable {
+
+	public PresenceChecker(IMicroservice<?> microservice, ITenant tenant) {
+	    super(microservice, tenant);
+	}
 
 	@Override
-	public void run() {
-
+	public void runAsSystemUser() throws SiteWhereException {
 	    Period missingInterval;
 	    try {
 		missingInterval = Period.parse(getPresenceMissingInterval(), ISOPeriodFormat.standard());
