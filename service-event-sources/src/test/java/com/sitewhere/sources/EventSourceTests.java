@@ -27,6 +27,9 @@ import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.TransportConnector;
 import org.junit.Test;
 
+import com.microsoft.azure.eventhubs.ConnectionStringBuilder;
+import com.microsoft.azure.eventhubs.EventData;
+import com.microsoft.azure.eventhubs.EventHubClient;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -127,6 +130,21 @@ public class EventSourceTests {
 
 	session.close();
 	connection.close();
+    }
+
+    @Test
+    public void doAzureEventSourceSendTest() throws Exception {
+	ExecutorService executor = Executors.newSingleThreadExecutor();
+	final ConnectionStringBuilder connStr = new ConnectionStringBuilder().setNamespaceName("sitewhere")
+		.setEventHubName("events").setSasKeyName("RootManageSharedAccessKey").setSasKey("xxx");
+
+	byte[] payloadBytes = EventsHelper.generateJsonMeasurementsMessage(DEVICE_TOKEN);
+	EventData sendEvent = EventData.create(payloadBytes);
+
+	final EventHubClient ehClient = EventHubClient.createSync(connStr.toString(), executor);
+	ehClient.sendSync(sendEvent);
+	ehClient.closeSync();
+	executor.shutdown();
     }
 
     @Test
