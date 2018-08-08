@@ -473,7 +473,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 			.description("Script which makes REST calls and parses responses.").makeRequired().build()));
 	builder.attribute((new AttributeNode.Builder("Base REST url", "baseUrl", AttributeType.String,
 		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description(
-			"Base URL for REST calls. All calls in the Groovy script are made " + "relative to this URL.")
+			"Base URL for REST calls. All calls in the Groovy script are made relative to this URL.")
 			.makeRequired().build()));
 	builder.attribute((new AttributeNode.Builder("Polling interval (ms)", "pollIntervalMs", AttributeType.Integer,
 		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)

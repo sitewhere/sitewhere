@@ -9,15 +9,15 @@ package com.sitewhere.sources.rest;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.groovy.IGroovyVariables;
-import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.sources.PollingInboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
+import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 import groovy.lang.Binding;
@@ -32,17 +32,11 @@ public class PollingRestInboundEventReceiver extends PollingInboundEventReceiver
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(PollingRestInboundEventReceiver.class);
 
-    /** Groovy variable that contains rest client helper class */
-    private static final String VAR_REST_CLIENT = "rest";
+    /** Script metadata */
+    private IScriptMetadata scriptMetadata;
 
-    /** Groovy variable that contains json payloads to be parsed */
-    private static final String VAR_PAYLOADS = "payloads";
-
-    /** Groovy configuration */
-    private GroovyConfiguration groovyConfiguration;
-
-    /** Path to script used for decoder */
-    private String scriptPath;
+    /** Unique script id to execute */
+    private String scriptId;
 
     /** Base URL used for REST calls */
     private String baseUrl;
@@ -55,6 +49,25 @@ public class PollingRestInboundEventReceiver extends PollingInboundEventReceiver
 
     /** Helper class for REST operations */
     private RestHelper rest;
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+
+	if (getScriptId() == null) {
+	    throw new SiteWhereException("Script id was not initialized properly.");
+	}
+	this.scriptMetadata = ((IConfigurableMicroservice<?>) getMicroservice()).getScriptManagement()
+		.getScriptMetadata(getTenantEngine().getTenant().getId(), getScriptId());
+	if (getScriptMetadata() == null) {
+	    throw new SiteWhereException("Script '" + getScriptId() + "' was not found.");
+	}
+    }
 
     /*
      * (non-Javadoc)
@@ -79,56 +92,35 @@ public class PollingRestInboundEventReceiver extends PollingInboundEventReceiver
     public void doPoll() throws SiteWhereException {
 	Binding binding = new Binding();
 	List<byte[]> payloads = new ArrayList<byte[]>();
-	binding.setVariable(VAR_REST_CLIENT, rest);
-	binding.setVariable(VAR_PAYLOADS, payloads);
+	binding.setVariable(IGroovyVariables.VAR_REST_CLIENT, rest);
+	binding.setVariable(IGroovyVariables.VAR_EVENT_PAYLOADS, payloads);
 	binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
-	LOGGER.debug("About to execute '" + getScriptPath() + "'");
-	// getGroovyConfiguration().getGroovyScriptEngine().run(getScriptPath(),
-	// binding);
-	payloads = (List<byte[]>) binding.getVariable(VAR_PAYLOADS);
 
-	// Process each payload individually.
-	for (byte[] payload : payloads) {
-	    onEventPayloadReceived(payload, null);
+	try {
+	    getTenantEngine().getGroovyConfiguration().run(getScriptMetadata(), binding);
+	    payloads = (List<byte[]>) binding.getVariable(IGroovyVariables.VAR_EVENT_PAYLOADS);
+
+	    // Process each payload individually.
+	    for (byte[] payload : payloads) {
+		onEventPayloadReceived(payload, null);
+	    }
+	} catch (SiteWhereException e) {
+	    throw e;
+	} catch (Exception e) {
+	    throw new SiteWhereException("Unhandled exception in Groovy script.", e);
 	}
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
-     * onEventPayloadReceived (java.lang.Object, java.util.Map)
-     */
-    @Override
-    public void onEventPayloadReceived(byte[] payload, Map<String, Object> metadata) {
-	getEventSource().onEncodedEventReceived(this, payload, metadata);
+    protected IScriptMetadata getScriptMetadata() {
+	return scriptMetadata;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
-     * getDisplayName()
-     */
-    @Override
-    public String getDisplayName() {
-	return "Polling REST Receiver";
+    public String getScriptId() {
+	return scriptId;
     }
 
-    public GroovyConfiguration getGroovyConfiguration() {
-	return groovyConfiguration;
-    }
-
-    public void setGroovyConfiguration(GroovyConfiguration groovyConfiguration) {
-	this.groovyConfiguration = groovyConfiguration;
-    }
-
-    public String getScriptPath() {
-	return scriptPath;
-    }
-
-    public void setScriptPath(String scriptPath) {
-	this.scriptPath = scriptPath;
+    public void setScriptId(String scriptId) {
+	this.scriptId = scriptId;
     }
 
     public String getBaseUrl() {

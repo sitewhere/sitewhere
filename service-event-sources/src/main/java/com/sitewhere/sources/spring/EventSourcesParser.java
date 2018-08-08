@@ -821,9 +821,9 @@ public class EventSourcesParser extends AbstractBeanDefinitionParser {
 	    builder.addPropertyValue("pollIntervalMs", pollIntervalMs.getValue());
 	}
 
-	Attr scriptPath = element.getAttributeNode("scriptPath");
-	if (scriptPath != null) {
-	    builder.addPropertyValue("scriptPath", scriptPath.getValue());
+	Attr scriptId = element.getAttributeNode("scriptId");
+	if (scriptId != null) {
+	    builder.addPropertyValue("scriptId", scriptId.getValue());
 	}
 
 	Attr baseUrl = element.getAttributeNode("baseUrl");

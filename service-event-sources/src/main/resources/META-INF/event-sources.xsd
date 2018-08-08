@@ -679,8 +679,7 @@
 		substitutionGroup="abstract-event-source">
 		<xsd:annotation>
 			<xsd:documentation>Event source that supports connecting to REST
-				services and parsing
-				the response data with a Groovy script in order
+				services and parsing the response data with a Groovy script in order
 				to generate event payloads.
 			</xsd:documentation>
 		</xsd:annotation>

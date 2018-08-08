@@ -41,6 +41,12 @@ public interface IGroovyVariables {
     /** Groovy variable used for passing payload metadata */
     public static final String VAR_PAYLOAD_METADATA = "metadata";
 
+    /** Groovy variable used for a list of event payloads */
+    public static final String VAR_EVENT_PAYLOADS = "payloads";
+
+    /** Groovy variable used for passing a REST client */
+    public static final String VAR_REST_CLIENT = "rest";
+
     /** Groovy variable used for passing logger */
     public static final String VAR_LOGGER = "logger";
 
