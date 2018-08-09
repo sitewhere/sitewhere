@@ -383,6 +383,25 @@ public class Instance extends RestControllerBase {
     }
 
     /**
+     * Delete a tenant script. This action causes the script metadata, content, and
+     * all version information to be deleted.
+     * 
+     * @param tenantToken
+     * @param scriptId
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/scripting/tenants/{tenantToken}/scripts/{scriptId}", method = RequestMethod.DELETE)
+    @ApiOperation(value = "Delete a tenant script and version history")
+    @Secured({ SiteWhereRoles.REST })
+    public IScriptMetadata deleteTenantScript(
+	    @ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken,
+	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId) throws SiteWhereException {
+	ITenant tenant = assureTenant(tenantToken);
+	return getScriptManagement().deleteScript(tenant.getId(), scriptId);
+    }
+
+    /**
      * Verify that a tenant exists based on reference token.
      * 
      * @param tenantToken

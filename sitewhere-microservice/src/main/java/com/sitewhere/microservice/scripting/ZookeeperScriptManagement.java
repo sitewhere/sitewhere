@@ -247,6 +247,39 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
 	}
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.scripting.IScriptManagement#deleteScript(java.
+     * util.UUID, java.lang.String)
+     */
+    @Override
+    public IScriptMetadata deleteScript(UUID tenantId, String scriptId) throws SiteWhereException {
+	IScriptMetadata meta = assureScriptMetadata(tenantId, scriptId);
+
+	try {
+	    // Delete metadata.
+	    String metaPath = getScriptMetadataZkPath(tenantId) + "/" + getMetadataFilePath(meta);
+	    if (getZookeeperManager().getCurator().checkExists().forPath(metaPath) != null) {
+		getZookeeperManager().getCurator().delete().forPath(metaPath);
+	    }
+
+	    // Delete all versions.
+	    String versionsPath = getScriptMetadataZkPath(tenantId) + "/" + meta.getId();
+	    if (getZookeeperManager().getCurator().checkExists().forPath(versionsPath) != null) {
+		getZookeeperManager().getCurator().delete().deletingChildrenIfNeeded().forPath(versionsPath);
+	    }
+
+	    // Delete content.
+	    String contentPath = getScriptContentZkPath(tenantId) + "/" + meta.getId() + "." + meta.getType();
+	    if (getZookeeperManager().getCurator().checkExists().forPath(contentPath) != null) {
+		getZookeeperManager().getCurator().delete().forPath(contentPath);
+	    }
+	    return meta;
+	} catch (Exception e) {
+	    throw new SiteWhereException("Unable to delete script.", e);
+	}
+    }
+
     /**
      * Assure that script metadata exists for the given id.
      * 

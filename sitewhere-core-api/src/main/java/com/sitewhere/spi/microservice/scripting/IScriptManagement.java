@@ -100,6 +100,16 @@ public interface IScriptManagement extends ILifecycleComponent {
     public IScriptMetadata activateScript(UUID tenantId, String scriptId, String versionId) throws SiteWhereException;
 
     /**
+     * Delete an existing script including metadata and all versions.
+     * 
+     * @param tenantId
+     * @param scriptId
+     * @return
+     * @throws SiteWhereException
+     */
+    public IScriptMetadata deleteScript(UUID tenantId, String scriptId) throws SiteWhereException;
+
+    /**
      * Get path for Zk container that holds script metadata.
      * 
      * @param tenantId
