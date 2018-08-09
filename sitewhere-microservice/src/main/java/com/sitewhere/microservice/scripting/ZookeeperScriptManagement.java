@@ -126,7 +126,9 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
 	}
 	ScriptMetadata created = createScriptMetadata(request);
 	try {
-	    store(tenantId, created, created.getVersions().get(0), request.getContent());
+	    IScriptVersion version = created.getVersions().get(0);
+	    store(tenantId, created, version, request.getContent());
+	    activateScript(tenantId, request.getId(), version.getVersionId());
 	    return created;
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to store script metadata.", e);
