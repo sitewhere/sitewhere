@@ -30,6 +30,16 @@ service MicroserviceManagement {
 
 	// Update tenant configuration content.
 	rpc UpdateTenantConfiguration (GUpdateTenantConfigurationRequest) returns (GUpdateTenantConfigurationResponse) {}
+
+	// ########################
+	// ### SCRIPT TEMPLATES ###
+	// ########################
+
+	// Get script templates list.
+	rpc GetScriptTemplates (GGetScriptTemplatesRequest) returns (GGetScriptTemplatesResponse) {}
+
+	// Get script template content.
+	rpc GetScriptTemplateContent (GGetScriptTemplateContentRequest) returns (GGetScriptTemplateContentResponse) {}
 }
 
 // #####################
@@ -51,7 +61,7 @@ message GGetGlobalConfigurationRequest {
 	
 // Response for getting global configuration data.
 message GGetGlobalConfigurationResponse {
-	com.sitewhere.grpc.model.GConfigurationContent configuration = 1;
+	com.sitewhere.grpc.model.GBinaryContent configuration = 1;
 }
 
 // Request for getting tenant configuration data.
@@ -61,12 +71,12 @@ message GGetTenantConfigurationRequest {
 	
 // Response for getting tenant configuration data.
 message GGetTenantConfigurationResponse {
-	com.sitewhere.grpc.model.GConfigurationContent configuration = 1;
+	com.sitewhere.grpc.model.GBinaryContent configuration = 1;
 }
 
 // Request for updating global configuration data.
 message GUpdateGlobalConfigurationRequest {
-	com.sitewhere.grpc.model.GConfigurationContent configuration = 1;
+	com.sitewhere.grpc.model.GBinaryContent configuration = 1;
 }
 	
 // Response for updating global configuration data.
@@ -76,9 +86,32 @@ message GUpdateGlobalConfigurationResponse {
 // Request for updating tenant configuration data.
 message GUpdateTenantConfigurationRequest {
 	com.sitewhere.grpc.model.GUUID tenantId = 1;
-	com.sitewhere.grpc.model.GConfigurationContent configuration = 2;
+	com.sitewhere.grpc.model.GBinaryContent configuration = 2;
 }
 	
 // Response for updating tenant configuration data.
 message GUpdateTenantConfigurationResponse {
+}
+
+// ########################
+// ### SCRIPT TEMPLATES ###
+// ########################
+
+// Request for getting list of script templates.
+message GGetScriptTemplatesRequest {
+}
+	
+// Response for getting list of script templates.
+message GGetScriptTemplatesResponse {
+	repeated com.sitewhere.grpc.model.GScriptTemplate templates = 1;
+}
+
+// Request for getting script template content.
+message GGetScriptTemplateContentRequest {
+	string id = 1;
+}
+	
+// Response for getting script template content.
+message GGetScriptTemplateContentResponse {
+	com.sitewhere.grpc.model.GBinaryContent template = 1;
 }

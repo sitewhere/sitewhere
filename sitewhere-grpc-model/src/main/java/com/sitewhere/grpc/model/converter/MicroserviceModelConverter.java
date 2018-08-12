@@ -22,6 +22,7 @@ import com.sitewhere.grpc.model.MicroserviceModel.GMicroserviceConfiguration;
 import com.sitewhere.grpc.model.MicroserviceModel.GMicroserviceDetails;
 import com.sitewhere.grpc.model.MicroserviceModel.GMicroserviceIdentifier;
 import com.sitewhere.grpc.model.MicroserviceModel.GNodeType;
+import com.sitewhere.grpc.model.MicroserviceModel.GScriptTemplate;
 import com.sitewhere.grpc.model.MicroserviceModel.GXmlNode;
 import com.sitewhere.rest.model.configuration.AttributeChoice;
 import com.sitewhere.rest.model.configuration.AttributeNode;
@@ -29,6 +30,7 @@ import com.sitewhere.rest.model.configuration.ConfigurationModel;
 import com.sitewhere.rest.model.configuration.ElementNode;
 import com.sitewhere.rest.model.configuration.ElementRole;
 import com.sitewhere.rest.model.configuration.XmlNode;
+import com.sitewhere.rest.model.microservice.scripting.ScriptTemplate;
 import com.sitewhere.rest.model.microservice.state.MicroserviceDetails;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
@@ -40,6 +42,7 @@ import com.sitewhere.spi.microservice.configuration.model.IElementNode;
 import com.sitewhere.spi.microservice.configuration.model.IElementRole;
 import com.sitewhere.spi.microservice.configuration.model.IXmlNode;
 import com.sitewhere.spi.microservice.configuration.model.NodeType;
+import com.sitewhere.spi.microservice.scripting.IScriptTemplate;
 import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 
 /**
@@ -611,6 +614,38 @@ public class MicroserviceModelConverter {
 	    IElementRole role = api.getRolesById().get(roleId);
 	    grpc.putRolesById(roleId, MicroserviceModelConverter.asGrpcElementRole(role));
 	}
+	return grpc.build();
+    }
+
+    /**
+     * Convert script template from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static ScriptTemplate asApiScriptTemplate(GScriptTemplate grpc) throws SiteWhereException {
+	ScriptTemplate api = new ScriptTemplate();
+	api.setId(grpc.getId());
+	api.setName(grpc.getName());
+	api.setDescription(grpc.getDescription());
+	api.setType(grpc.getType());
+	return api;
+    }
+
+    /**
+     * Convert script template from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GScriptTemplate asGrpcScriptTemplate(IScriptTemplate api) throws SiteWhereException {
+	GScriptTemplate.Builder grpc = GScriptTemplate.newBuilder();
+	grpc.setId(api.getId());
+	grpc.setName(api.getName());
+	grpc.setDescription(api.getDescription());
+	grpc.setType(api.getType());
 	return grpc.build();
     }
 }

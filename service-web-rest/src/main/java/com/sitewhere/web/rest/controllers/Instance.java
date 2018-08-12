@@ -12,6 +12,10 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +38,7 @@ import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordinator;
 import com.sitewhere.spi.microservice.scripting.IScriptManagement;
 import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
+import com.sitewhere.spi.microservice.scripting.IScriptTemplate;
 import com.sitewhere.spi.microservice.scripting.IScriptVersion;
 import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
@@ -246,6 +251,47 @@ public class Instance extends RestControllerBase {
 	String config = ConfigurationContentParser.format(xml);
 	ITenant tenant = assureTenant(tenantToken);
 	management.updateTenantConfiguration(tenant.getId(), config.getBytes());
+    }
+
+    /**
+     * Get list of script templates for a given microservice.
+     * 
+     * @param identifier
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/microservice/{identifier}/scripting/templates", method = RequestMethod.GET)
+    @ApiOperation(value = "Get list of script templates for a given microservice")
+    @Secured({ SiteWhereRoles.REST })
+    public List<IScriptTemplate> getMicroserviceScriptTemplates(
+	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier)
+	    throws SiteWhereException {
+	IMicroserviceManagement management = getMicroserviceManagementCoordinator()
+		.getMicroserviceManagement(identifier);
+	return management.getScriptTemplates();
+    }
+
+    /**
+     * Get content for a script template for a given microservice.
+     * 
+     * @param identifier
+     * @param templateId
+     * @return
+     * @throws SiteWhereException
+     */
+    @RequestMapping(value = "/microservice/{identifier}/scripting/templates/{templateId}", method = RequestMethod.GET)
+    @ApiOperation(value = "Get list of script templates for a given microservice")
+    @Secured({ SiteWhereRoles.REST })
+    public ResponseEntity<byte[]> getMicroserviceScriptTemplate(
+	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
+	    @ApiParam(value = "Template id", required = true) @PathVariable String templateId)
+	    throws SiteWhereException {
+	IMicroserviceManagement management = getMicroserviceManagementCoordinator()
+		.getMicroserviceManagement(identifier);
+	byte[] content = management.getScriptTemplateContent(templateId);
+	final HttpHeaders headers = new HttpHeaders();
+	headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+	return new ResponseEntity<byte[]>(content, headers, HttpStatus.OK);
     }
 
     /**

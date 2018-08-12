@@ -125,6 +125,9 @@ public enum LifecycleComponentType {
     /** Dataset template manager */
     DatasetTemplateManager,
 
+    /** Script template manager */
+    ScriptTemplateManager,
+
     /** Unclassified component */
     Other,
 }

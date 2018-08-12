@@ -7,10 +7,12 @@
  */
 package com.sitewhere.spi.microservice;
 
+import java.util.List;
 import java.util.UUID;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
+import com.sitewhere.spi.microservice.scripting.IScriptTemplate;
 
 /**
  * Management interface offered by all microservices.
@@ -60,4 +62,21 @@ public interface IMicroserviceManagement {
      * @throws SiteWhereException
      */
     public void updateTenantConfiguration(UUID tenantId, byte[] config) throws SiteWhereException;
+
+    /**
+     * Get list of templates that provide examples of various types of scripts.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public List<IScriptTemplate> getScriptTemplates() throws SiteWhereException;
+
+    /**
+     * Get content for a script template.
+     * 
+     * @param id
+     * @return
+     * @throws SiteWhereException
+     */
+    public byte[] getScriptTemplateContent(String id) throws SiteWhereException;
 }

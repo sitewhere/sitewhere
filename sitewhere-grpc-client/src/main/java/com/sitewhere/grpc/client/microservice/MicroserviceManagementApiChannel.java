@@ -7,6 +7,8 @@
  */
 package com.sitewhere.grpc.client.microservice;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import com.google.protobuf.ByteString;
@@ -14,13 +16,18 @@ import com.sitewhere.grpc.client.ApiChannel;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IMicroserviceManagementApiChannel;
-import com.sitewhere.grpc.model.MicroserviceModel.GConfigurationContent;
+import com.sitewhere.grpc.model.MicroserviceModel.GBinaryContent;
+import com.sitewhere.grpc.model.MicroserviceModel.GScriptTemplate;
 import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.grpc.model.converter.MicroserviceModelConverter;
 import com.sitewhere.grpc.service.GGetConfigurationModelRequest;
 import com.sitewhere.grpc.service.GGetConfigurationModelResponse;
 import com.sitewhere.grpc.service.GGetGlobalConfigurationRequest;
 import com.sitewhere.grpc.service.GGetGlobalConfigurationResponse;
+import com.sitewhere.grpc.service.GGetScriptTemplateContentRequest;
+import com.sitewhere.grpc.service.GGetScriptTemplateContentResponse;
+import com.sitewhere.grpc.service.GGetScriptTemplatesRequest;
+import com.sitewhere.grpc.service.GGetScriptTemplatesResponse;
 import com.sitewhere.grpc.service.GGetTenantConfigurationRequest;
 import com.sitewhere.grpc.service.GGetTenantConfigurationResponse;
 import com.sitewhere.grpc.service.GUpdateGlobalConfigurationRequest;
@@ -28,6 +35,7 @@ import com.sitewhere.grpc.service.GUpdateTenantConfigurationRequest;
 import com.sitewhere.grpc.service.MicroserviceManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
+import com.sitewhere.spi.microservice.scripting.IScriptTemplate;
 import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
@@ -125,8 +133,7 @@ public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceMan
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, MicroserviceManagementGrpc.getUpdateGlobalConfigurationMethod());
 	    GUpdateGlobalConfigurationRequest.Builder grequest = GUpdateGlobalConfigurationRequest.newBuilder();
-	    GConfigurationContent content = GConfigurationContent.newBuilder().setContent(ByteString.copyFrom(config))
-		    .build();
+	    GBinaryContent content = GBinaryContent.newBuilder().setContent(ByteString.copyFrom(config)).build();
 	    grequest.setConfiguration(content);
 	    getGrpcChannel().getBlockingStub().updateGlobalConfiguration(grequest.build());
 	    return;
@@ -145,14 +152,56 @@ public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceMan
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, MicroserviceManagementGrpc.getUpdateTenantConfigurationMethod());
 	    GUpdateTenantConfigurationRequest.Builder grequest = GUpdateTenantConfigurationRequest.newBuilder();
-	    GConfigurationContent content = GConfigurationContent.newBuilder().setContent(ByteString.copyFrom(config))
-		    .build();
+	    GBinaryContent content = GBinaryContent.newBuilder().setContent(ByteString.copyFrom(config)).build();
 	    grequest.setConfiguration(content);
 	    grequest.setTenantId(CommonModelConverter.asGrpcUuid(tenantId));
 	    getGrpcChannel().getBlockingStub().updateTenantConfiguration(grequest.build());
 	    return;
 	} catch (Throwable t) {
 	    throw GrpcUtils.handleClientMethodException(MicroserviceManagementGrpc.getUpdateTenantConfigurationMethod(),
+		    t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.IMicroserviceManagement#getScriptTemplates()
+     */
+    @Override
+    public List<IScriptTemplate> getScriptTemplates() throws SiteWhereException {
+	try {
+	    GrpcUtils.handleClientMethodEntry(this, MicroserviceManagementGrpc.getGetScriptTemplatesMethod());
+	    GGetScriptTemplatesRequest.Builder grequest = GGetScriptTemplatesRequest.newBuilder();
+	    GGetScriptTemplatesResponse response = getGrpcChannel().getBlockingStub()
+		    .getScriptTemplates(grequest.build());
+	    List<IScriptTemplate> result = new ArrayList<>();
+	    for (GScriptTemplate template : response.getTemplatesList()) {
+		result.add(MicroserviceModelConverter.asApiScriptTemplate(template));
+	    }
+	    GrpcUtils.logClientMethodResponse(MicroserviceManagementGrpc.getGetScriptTemplatesMethod(), response);
+	    return result;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(MicroserviceManagementGrpc.getGetScriptTemplatesMethod(), t);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroserviceManagement#
+     * getScriptTemplateContent(java.lang.String)
+     */
+    @Override
+    public byte[] getScriptTemplateContent(String id) throws SiteWhereException {
+	try {
+	    GrpcUtils.handleClientMethodEntry(this, MicroserviceManagementGrpc.getGetScriptTemplateContentMethod());
+	    GGetScriptTemplateContentRequest.Builder grequest = GGetScriptTemplateContentRequest.newBuilder();
+	    grequest.setId(id);
+	    GGetScriptTemplateContentResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .getScriptTemplateContent(grequest.build());
+	    byte[] response = gresponse.getTemplate().getContent().toByteArray();
+	    GrpcUtils.logClientMethodResponse(MicroserviceManagementGrpc.getGetScriptTemplateContentMethod(), response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(MicroserviceManagementGrpc.getGetScriptTemplateContentMethod(),
 		    t);
 	}
     }

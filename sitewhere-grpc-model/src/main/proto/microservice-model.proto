@@ -130,7 +130,19 @@ message GMicroserviceConfiguration {
 	map<string, GElementRole> rolesById = 5;
 }
 
-// Configuration content for a microservice.
-message GConfigurationContent {
+// Binary content.
+message GBinaryContent {
 	bytes content = 1;
+}
+
+// ########################
+// ### SCRIPT TEMPLATES ###
+// ########################
+
+// Script template.
+message GScriptTemplate {
+	string id = 1;
+	string name = 2;
+	string description = 3;
+	string type = 4;
 }

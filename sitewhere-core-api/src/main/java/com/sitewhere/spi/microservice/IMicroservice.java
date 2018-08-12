@@ -7,6 +7,7 @@
  */
 package com.sitewhere.spi.microservice;
 
+import java.io.File;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
@@ -19,6 +20,7 @@ import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.microservice.logging.IMicroserviceLogProducer;
+import com.sitewhere.spi.microservice.scripting.IScriptTemplateManager;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
@@ -177,6 +179,14 @@ public interface IMicroservice<T extends IFunctionIdentifier>
     public IMicroserviceLogProducer getMicroserviceLogProducer();
 
     /**
+     * Get manager for script templates which provide examples of
+     * microservice-specific scripting funcionality.
+     * 
+     * @return
+     */
+    public IScriptTemplateManager getScriptTemplateManager();
+
+    /**
      * Code executed after microservice has been started.
      */
     public void afterMicroserviceStarted();
@@ -209,6 +219,13 @@ public interface IMicroservice<T extends IFunctionIdentifier>
      * @throws SiteWhereException
      */
     public String getInstanceBootstrappedMarker() throws SiteWhereException;
+
+    /**
+     * Get root folder on local filesystem where script templates may be found.
+     * 
+     * @return
+     */
+    public File getScriptTemplatesRoot();
 
     /**
      * Get Zookeeper manager.

@@ -7,6 +7,7 @@
  */
 package com.sitewhere.microservice;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -24,6 +25,7 @@ import com.codahale.metrics.Slf4jReporter;
 import com.sitewhere.Version;
 import com.sitewhere.microservice.logging.MicroserviceLogProducer;
 import com.sitewhere.microservice.management.MicroserviceManagementGrpcServer;
+import com.sitewhere.microservice.scripting.ScriptTemplateManager;
 import com.sitewhere.microservice.state.MicroserviceStateUpdatesKafkaProducer;
 import com.sitewhere.microservice.state.TopologyStateAggregator;
 import com.sitewhere.rest.model.configuration.ConfigurationModel;
@@ -43,6 +45,7 @@ import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.microservice.logging.IMicroserviceLogProducer;
+import com.sitewhere.spi.microservice.scripting.IScriptTemplateManager;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
@@ -80,6 +83,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     /** Heartbeat interval in seconds */
     private static final int HEARTBEAT_INTERVAL_SECS = 20;
+
+    /** Relative path on local filesystem to script templates folder */
+    private static final String SCRIPT_TEMPLATES_FOLDER_PATH = "/script-templates";
 
     /** Instance settings */
     @Autowired
@@ -123,6 +129,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     /** Kafka producer for centralized log handling */
     private IMicroserviceLogProducer microserviceLogProducer;
 
+    /** Script template manager instance */
+    private IScriptTemplateManager scriptTemplateManager;
+
     /** Lifecycle operations thread pool */
     private ExecutorService microserviceOperationsService;
 
@@ -143,6 +152,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
 	// Create log producer so it can buffer log output.
 	this.microserviceLogProducer = new MicroserviceLogProducer();
+
+	// Create script template manager.
+	this.scriptTemplateManager = new ScriptTemplateManager();
     }
 
     /*
@@ -172,6 +184,12 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
 	// Organizes steps for initializing microservice.
 	ICompositeLifecycleStep initialize = new CompositeLifecycleStep("Initialize " + getName());
+
+	// Initialize script template manager.
+	initialize.addInitializeStep(this, getScriptTemplateManager(), true);
+
+	// Start script template manager.
+	initialize.addStartStep(this, getScriptTemplateManager(), true);
 
 	// Initialize Kafka producer for centralized logging.
 	initialize.addInitializeStep(this, getMicroserviceLogProducer(), true);
@@ -281,6 +299,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
 	// Terminate log producer.
 	terminate.addStopStep(this, getMicroserviceLogProducer());
+
+	// Terminate script template manager.
+	terminate.addStopStep(this, getScriptTemplateManager());
 
 	// Execute shutdown steps.
 	terminate.execute(monitor);
@@ -459,6 +480,14 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     }
 
     /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getScriptTemplatesRoot()
+     */
+    @Override
+    public File getScriptTemplatesRoot() {
+	return new File(SCRIPT_TEMPLATES_FOLDER_PATH);
+    }
+
+    /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getConfigurationModel()
      */
     @Override
@@ -569,6 +598,18 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     public void setMicroserviceLogProducer(IMicroserviceLogProducer microserviceLogProducer) {
 	this.microserviceLogProducer = microserviceLogProducer;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getScriptTemplateManager()
+     */
+    @Override
+    public IScriptTemplateManager getScriptTemplateManager() {
+	return scriptTemplateManager;
+    }
+
+    public void setScriptTemplateManager(IScriptTemplateManager scriptTemplateManager) {
+	this.scriptTemplateManager = scriptTemplateManager;
     }
 
     /*

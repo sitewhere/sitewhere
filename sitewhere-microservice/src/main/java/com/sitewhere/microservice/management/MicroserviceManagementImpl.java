@@ -7,16 +7,22 @@
  */
 package com.sitewhere.microservice.management;
 
+import java.util.List;
+
 import com.google.protobuf.ByteString;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
-import com.sitewhere.grpc.model.MicroserviceModel.GConfigurationContent;
+import com.sitewhere.grpc.model.MicroserviceModel.GBinaryContent;
 import com.sitewhere.grpc.model.converter.CommonModelConverter;
 import com.sitewhere.grpc.model.converter.MicroserviceModelConverter;
 import com.sitewhere.grpc.service.GGetConfigurationModelRequest;
 import com.sitewhere.grpc.service.GGetConfigurationModelResponse;
 import com.sitewhere.grpc.service.GGetGlobalConfigurationRequest;
 import com.sitewhere.grpc.service.GGetGlobalConfigurationResponse;
+import com.sitewhere.grpc.service.GGetScriptTemplateContentRequest;
+import com.sitewhere.grpc.service.GGetScriptTemplateContentResponse;
+import com.sitewhere.grpc.service.GGetScriptTemplatesRequest;
+import com.sitewhere.grpc.service.GGetScriptTemplatesResponse;
 import com.sitewhere.grpc.service.GGetTenantConfigurationRequest;
 import com.sitewhere.grpc.service.GGetTenantConfigurationResponse;
 import com.sitewhere.grpc.service.GUpdateGlobalConfigurationRequest;
@@ -29,6 +35,7 @@ import com.sitewhere.spi.microservice.IGlobalMicroservice;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
+import com.sitewhere.spi.microservice.scripting.IScriptTemplate;
 
 import io.grpc.stub.StreamObserver;
 
@@ -81,7 +88,7 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, MicroserviceManagementGrpc.getGetGlobalConfigurationMethod());
 	    GGetGlobalConfigurationResponse.Builder response = GGetGlobalConfigurationResponse.newBuilder();
-	    GConfigurationContent.Builder configuration = GConfigurationContent.newBuilder();
+	    GBinaryContent.Builder configuration = GBinaryContent.newBuilder();
 
 	    if (getMicroservice() instanceof IGlobalMicroservice) {
 		byte[] content = ((IGlobalMicroservice<?>) getMicroservice()).getConfiguration();
@@ -112,7 +119,7 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, MicroserviceManagementGrpc.getGetTenantConfigurationMethod());
 	    GGetTenantConfigurationResponse.Builder response = GGetTenantConfigurationResponse.newBuilder();
-	    GConfigurationContent.Builder configuration = GConfigurationContent.newBuilder();
+	    GBinaryContent.Builder configuration = GBinaryContent.newBuilder();
 
 	    if (getMicroservice() instanceof IMultitenantMicroservice) {
 		byte[] content = ((IMultitenantMicroservice<?, ?>) getMicroservice())
@@ -189,6 +196,57 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 		    responseObserver);
 	} finally {
 	    GrpcUtils.handleServerMethodExit(MicroserviceManagementGrpc.getUpdateTenantConfigurationMethod());
+	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.MicroserviceManagementGrpc.
+     * MicroserviceManagementImplBase#getScriptTemplates(com.sitewhere.grpc.service.
+     * GGetScriptTemplatesRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getScriptTemplates(GGetScriptTemplatesRequest request,
+	    StreamObserver<GGetScriptTemplatesResponse> responseObserver) {
+	try {
+	    GrpcUtils.handleServerMethodEntry(this, MicroserviceManagementGrpc.getGetScriptTemplatesMethod());
+	    List<IScriptTemplate> templates = getMicroservice().getScriptTemplateManager().getScriptTemplates();
+
+	    GGetScriptTemplatesResponse.Builder response = GGetScriptTemplatesResponse.newBuilder();
+	    for (IScriptTemplate template : templates) {
+		response.addTemplates(MicroserviceModelConverter.asGrpcScriptTemplate(template));
+	    }
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(MicroserviceManagementGrpc.getGetScriptTemplatesMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(MicroserviceManagementGrpc.getGetScriptTemplatesMethod());
+	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.MicroserviceManagementGrpc.
+     * MicroserviceManagementImplBase#getScriptTemplateContent(com.sitewhere.grpc.
+     * service.GGetScriptTemplateContentRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getScriptTemplateContent(GGetScriptTemplateContentRequest request,
+	    StreamObserver<GGetScriptTemplateContentResponse> responseObserver) {
+	try {
+	    GrpcUtils.handleServerMethodEntry(this, MicroserviceManagementGrpc.getGetScriptTemplateContentMethod());
+	    byte[] content = getMicroservice().getScriptTemplateManager().getScriptTemplateContent(request.getId());
+
+	    GGetScriptTemplateContentResponse.Builder response = GGetScriptTemplateContentResponse.newBuilder();
+	    GBinaryContent binary = GBinaryContent.newBuilder().setContent(ByteString.copyFrom(content)).build();
+	    response.setTemplate(binary);
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(MicroserviceManagementGrpc.getGetScriptTemplateContentMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(MicroserviceManagementGrpc.getGetScriptTemplateContentMethod());
 	}
     }
 
