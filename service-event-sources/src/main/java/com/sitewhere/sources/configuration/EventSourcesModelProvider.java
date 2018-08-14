@@ -550,8 +550,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 
 	builder.description("Decoder that uses a Groovy script to parse a binary payload into decoded events.");
 	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
-	addEventSourceAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_GENERAL);
-
+	
 	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script,
 		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Script used for decoding payload.")
 			.makeRequired().build()));
@@ -585,7 +584,6 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
 
 	builder.description("Decoder that uses a Groovy script to parse a String payload into decoded events.");
 	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
-	addEventSourceAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_GENERAL);
 
 	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script,
 		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Script used for decoding payload.")
