@@ -88,6 +88,14 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
     public String getConfigurationPath() throws SiteWhereException;
 
     /**
+     * Subpath of instance configuration that contains global script data.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getInstanceGlobalScriptsPath() throws SiteWhereException;
+
+    /**
      * Get path for instance management configuration.
      * 
      * @return

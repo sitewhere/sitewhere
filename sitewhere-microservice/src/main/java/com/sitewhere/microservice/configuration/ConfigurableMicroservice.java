@@ -117,6 +117,15 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getInstanceGlobalScriptsPath()
+     */
+    @Override
+    public String getInstanceGlobalScriptsPath() throws SiteWhereException {
+	return getInstanceConfigurationPath() + SCRIPTS_SUBPATH;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
      * getInstanceManagementConfigurationPath()
      */
     @Override

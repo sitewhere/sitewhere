@@ -49,7 +49,7 @@ public class TenantEngineScriptSynchronizer extends ScriptSynchronizer {
 	super.initialize(monitor);
 	setFileSystemRoot(computeFilesystemPathForTenant());
 	setZkScriptRootPath(((IMultitenantMicroservice<?, ?>) getMicroservice()).getScriptManagement()
-		.getScriptContentZkPath(getTenantEngine().getTenant().getId()));
+		.getScriptContentZkPath(getMicroservice().getIdentifier(), getTenantEngine().getTenant().getId()));
     }
 
     /**

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
@@ -21,48 +22,57 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 public interface IScriptManagement extends ILifecycleComponent {
 
     /**
-     * Get list of metadata entries for all scripts.
+     * Get list of metadata entries for all scripts in the given microservice.
      * 
+     * @param identifier
      * @param tenantId
      * @return
      * @throws SiteWhereException
      */
-    public List<IScriptMetadata> getScriptMetadataList(UUID tenantId) throws SiteWhereException;
+    public List<IScriptMetadata> getScriptMetadataList(IFunctionIdentifier identifier, UUID tenantId)
+	    throws SiteWhereException;
 
     /**
      * Get metadata for a given script.
      * 
+     * @param identifier
      * @param tenantId
      * @param scriptId
      * @return
      * @throws SiteWhereException
      */
-    public IScriptMetadata getScriptMetadata(UUID tenantId, String scriptId) throws SiteWhereException;
+    public IScriptMetadata getScriptMetadata(IFunctionIdentifier identifier, UUID tenantId, String scriptId)
+	    throws SiteWhereException;
 
     /**
      * Creates a new script.
      * 
+     * @param identifier
      * @param tenantId
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public IScriptMetadata createScript(UUID tenantId, IScriptCreateRequest request) throws SiteWhereException;
+    public IScriptMetadata createScript(IFunctionIdentifier identifier, UUID tenantId, IScriptCreateRequest request)
+	    throws SiteWhereException;
 
     /**
      * Get content for script based on unique script id and version identifier.
      * 
+     * @param identifier
      * @param tenantId
      * @param scriptId
      * @param versionId
      * @return
      * @throws SiteWhereException
      */
-    public byte[] getScriptContent(UUID tenantId, String scriptId, String versionId) throws SiteWhereException;
+    public byte[] getScriptContent(IFunctionIdentifier identifier, UUID tenantId, String scriptId, String versionId)
+	    throws SiteWhereException;
 
     /**
      * Update an existing script.
      * 
+     * @param identifier
      * @param tenantId
      * @param scriptId
      * @param versionId
@@ -70,12 +80,13 @@ public interface IScriptManagement extends ILifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public IScriptMetadata updateScript(UUID tenantId, String scriptId, String versionId, IScriptCreateRequest request)
-	    throws SiteWhereException;
+    public IScriptMetadata updateScript(IFunctionIdentifier identifier, UUID tenantId, String scriptId,
+	    String versionId, IScriptCreateRequest request) throws SiteWhereException;
 
     /**
      * Creates a new version of a script that is a clone of the given version.
      * 
+     * @param identifier
      * @param tenantId
      * @param scriptId
      * @param versionId
@@ -83,47 +94,53 @@ public interface IScriptManagement extends ILifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public IScriptVersion cloneScript(UUID tenantId, String scriptId, String versionId, String comment)
-	    throws SiteWhereException;
+    public IScriptVersion cloneScript(IFunctionIdentifier identifier, UUID tenantId, String scriptId, String versionId,
+	    String comment) throws SiteWhereException;
 
     /**
      * Activate the given version of the script. This sets the active id and forces
      * the content to be copied into the scripts content folder whether it has been
      * updated or not.
      * 
+     * @param identifier
      * @param tenantId
      * @param scriptId
      * @param versionId
      * @return
      * @throws SiteWhereException
      */
-    public IScriptMetadata activateScript(UUID tenantId, String scriptId, String versionId) throws SiteWhereException;
+    public IScriptMetadata activateScript(IFunctionIdentifier identifier, UUID tenantId, String scriptId,
+	    String versionId) throws SiteWhereException;
 
     /**
      * Delete an existing script including metadata and all versions.
      * 
+     * @param identifier
      * @param tenantId
      * @param scriptId
      * @return
      * @throws SiteWhereException
      */
-    public IScriptMetadata deleteScript(UUID tenantId, String scriptId) throws SiteWhereException;
+    public IScriptMetadata deleteScript(IFunctionIdentifier identifier, UUID tenantId, String scriptId)
+	    throws SiteWhereException;
 
     /**
      * Get path for Zk container that holds script metadata.
      * 
+     * @param identifier
      * @param tenantId
      * @return
      * @throws SiteWhereException
      */
-    public String getScriptMetadataZkPath(UUID tenantId) throws SiteWhereException;
+    public String getScriptMetadataZkPath(IFunctionIdentifier identifier, UUID tenantId) throws SiteWhereException;
 
     /**
      * Get path for Zk container that holds script content.
      * 
+     * @param identifier
      * @param tenantId
      * @return
      * @throws SiteWhereException
      */
-    public String getScriptContentZkPath(UUID tenantId) throws SiteWhereException;
+    public String getScriptContentZkPath(IFunctionIdentifier identifier, UUID tenantId) throws SiteWhereException;
 }

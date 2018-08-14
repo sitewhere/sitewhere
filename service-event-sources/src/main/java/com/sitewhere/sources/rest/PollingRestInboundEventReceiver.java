@@ -63,7 +63,8 @@ public class PollingRestInboundEventReceiver extends PollingInboundEventReceiver
 	    throw new SiteWhereException("Script id was not initialized properly.");
 	}
 	this.scriptMetadata = ((IConfigurableMicroservice<?>) getMicroservice()).getScriptManagement()
-		.getScriptMetadata(getTenantEngine().getTenant().getId(), getScriptId());
+		.getScriptMetadata(getMicroservice().getIdentifier(), getTenantEngine().getTenant().getId(),
+			getScriptId());
 	if (getScriptMetadata() == null) {
 	    throw new SiteWhereException("Script '" + getScriptId() + "' was not found.");
 	}

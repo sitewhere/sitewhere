@@ -21,6 +21,7 @@ import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.core.Base58;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
 import com.sitewhere.spi.microservice.scripting.IScriptCreateRequest;
@@ -47,37 +48,52 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
 
     /*
      * @see com.sitewhere.spi.microservice.scripting.IScriptManagement#
-     * getScriptMetadataZkPath(java.util.UUID)
+     * getScriptMetadataZkPath(com.sitewhere.spi.microservice.IFunctionIdentifier,
+     * java.util.UUID)
      */
     @Override
-    public String getScriptMetadataZkPath(UUID tenantId) throws SiteWhereException {
-	return ((IConfigurableMicroservice<?>) getMicroservice()).getInstanceTenantScriptsPath(tenantId) + "/"
-		+ METADATA_FOLDER;
+    public String getScriptMetadataZkPath(IFunctionIdentifier identifier, UUID tenantId) throws SiteWhereException {
+	if (tenantId == null) {
+	    return ((IConfigurableMicroservice<?>) getMicroservice()).getInstanceGlobalScriptsPath() + "/"
+		    + identifier.getPath() + "/" + METADATA_FOLDER;
+	} else {
+	    return ((IConfigurableMicroservice<?>) getMicroservice()).getInstanceTenantScriptsPath(tenantId) + "/"
+		    + identifier.getPath() + "/" + METADATA_FOLDER;
+	}
     }
 
     /*
      * @see com.sitewhere.spi.microservice.scripting.IScriptManagement#
-     * getScriptContentZkPath(java.util.UUID)
+     * getScriptContentZkPath(com.sitewhere.spi.microservice.IFunctionIdentifier,
+     * java.util.UUID)
      */
     @Override
-    public String getScriptContentZkPath(UUID tenantId) throws SiteWhereException {
-	return ((IConfigurableMicroservice<?>) getMicroservice()).getInstanceTenantScriptsPath(tenantId) + "/"
-		+ CONTENT_FOLDER;
+    public String getScriptContentZkPath(IFunctionIdentifier identifier, UUID tenantId) throws SiteWhereException {
+	if (tenantId == null) {
+	    return ((IConfigurableMicroservice<?>) getMicroservice()).getInstanceGlobalScriptsPath() + "/"
+		    + identifier.getPath() + "/" + CONTENT_FOLDER;
+	} else {
+	    return ((IConfigurableMicroservice<?>) getMicroservice()).getInstanceTenantScriptsPath(tenantId) + "/"
+		    + identifier.getPath() + "/" + CONTENT_FOLDER;
+	}
     }
 
     /*
      * @see com.sitewhere.spi.microservice.scripting.IScriptManagement#
-     * getScriptMetadataList(java.util.UUID)
+     * getScriptMetadataList(com.sitewhere.spi.microservice.IFunctionIdentifier,
+     * java.util.UUID)
      */
     @Override
-    public List<IScriptMetadata> getScriptMetadataList(UUID tenantId) throws SiteWhereException {
+    public List<IScriptMetadata> getScriptMetadataList(IFunctionIdentifier identifier, UUID tenantId)
+	    throws SiteWhereException {
 	try {
 	    List<String> children = getZookeeperManager().getCurator().getChildren()
-		    .forPath(getScriptMetadataZkPath(tenantId));
+		    .forPath(getScriptMetadataZkPath(identifier, tenantId));
 	    List<IScriptMetadata> result = new ArrayList<>();
 	    for (String child : children) {
 		if (child.endsWith(METADATA_SUFFIX)) {
-		    result.add(getScriptMetadata(tenantId, child.substring(0, child.indexOf(METADATA_SUFFIX))));
+		    result.add(getScriptMetadata(identifier, tenantId,
+			    child.substring(0, child.indexOf(METADATA_SUFFIX))));
 		}
 	    }
 	    result.sort(new Comparator<IScriptMetadata>() {
@@ -98,12 +114,14 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
     /*
      * @see
      * com.sitewhere.spi.microservice.scripting.IScriptManagement#getScriptMetadata(
-     * java.util.UUID, java.lang.String)
+     * com.sitewhere.spi.microservice.IFunctionIdentifier, java.util.UUID,
+     * java.lang.String)
      */
     @Override
-    public IScriptMetadata getScriptMetadata(UUID tenantId, String scriptId) throws SiteWhereException {
+    public IScriptMetadata getScriptMetadata(IFunctionIdentifier identifier, UUID tenantId, String scriptId)
+	    throws SiteWhereException {
 	try {
-	    String path = getScriptMetadataZkPath(tenantId) + "/" + scriptId + METADATA_SUFFIX;
+	    String path = getScriptMetadataZkPath(identifier, tenantId) + "/" + scriptId + METADATA_SUFFIX;
 	    byte[] content = getZookeeperManager().getCurator().getData().forPath(path);
 	    return MarshalUtils.unmarshalJson(content, ScriptMetadata.class);
 	} catch (NoNodeException e) {
@@ -115,20 +133,22 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
 
     /*
      * @see
-     * com.sitewhere.spi.microservice.scripting.IScriptManagement#createScript(java.
-     * util.UUID, com.sitewhere.spi.microservice.scripting.IScriptCreateRequest)
+     * com.sitewhere.spi.microservice.scripting.IScriptManagement#createScript(com.
+     * sitewhere.spi.microservice.IFunctionIdentifier, java.util.UUID,
+     * com.sitewhere.spi.microservice.scripting.IScriptCreateRequest)
      */
     @Override
-    public IScriptMetadata createScript(UUID tenantId, IScriptCreateRequest request) throws SiteWhereException {
-	IScriptMetadata existing = getScriptMetadata(tenantId, request.getId());
+    public IScriptMetadata createScript(IFunctionIdentifier identifier, UUID tenantId, IScriptCreateRequest request)
+	    throws SiteWhereException {
+	IScriptMetadata existing = getScriptMetadata(identifier, tenantId, request.getId());
 	if (existing != null) {
 	    throw new SiteWhereException("A script with that id already exists.");
 	}
 	ScriptMetadata created = createScriptMetadata(request);
 	try {
 	    IScriptVersion version = created.getVersions().get(0);
-	    store(tenantId, created, version, request.getContent());
-	    activateScript(tenantId, request.getId(), version.getVersionId());
+	    store(identifier, tenantId, created, version, request.getContent());
+	    activateScript(identifier, tenantId, request.getId(), version.getVersionId());
 	    return created;
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to store script metadata.", e);
@@ -138,13 +158,15 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
     /*
      * @see
      * com.sitewhere.spi.microservice.scripting.IScriptManagement#getScriptContent(
-     * java.util.UUID, java.lang.String, java.lang.String)
+     * com.sitewhere.spi.microservice.IFunctionIdentifier, java.util.UUID,
+     * java.lang.String, java.lang.String)
      */
     @Override
-    public byte[] getScriptContent(UUID tenantId, String scriptId, String versionId) throws SiteWhereException {
-	IScriptMetadata meta = assureScriptMetadata(tenantId, scriptId);
+    public byte[] getScriptContent(IFunctionIdentifier identifier, UUID tenantId, String scriptId, String versionId)
+	    throws SiteWhereException {
+	IScriptMetadata meta = assureScriptMetadata(identifier, tenantId, scriptId);
 	IScriptVersion version = assureScriptVersion(meta, versionId);
-	String contentPath = getScriptMetadataZkPath(tenantId) + "/" + getVersionContentPath(meta, version);
+	String contentPath = getScriptMetadataZkPath(identifier, tenantId) + "/" + getVersionContentPath(meta, version);
 	try {
 	    return getZookeeperManager().getCurator().getData().forPath(contentPath);
 	} catch (Exception e) {
@@ -154,17 +176,18 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
 
     /*
      * @see
-     * com.sitewhere.spi.microservice.scripting.IScriptManagement#updateScript(java.
-     * util.UUID, java.lang.String, java.lang.String,
+     * com.sitewhere.spi.microservice.scripting.IScriptManagement#updateScript(com.
+     * sitewhere.spi.microservice.IFunctionIdentifier, java.util.UUID,
+     * java.lang.String, java.lang.String,
      * com.sitewhere.spi.microservice.scripting.IScriptCreateRequest)
      */
     @Override
-    public IScriptMetadata updateScript(UUID tenantId, String scriptId, String versionId, IScriptCreateRequest request)
-	    throws SiteWhereException {
-	IScriptMetadata meta = assureScriptMetadata(tenantId, scriptId);
+    public IScriptMetadata updateScript(IFunctionIdentifier identifier, UUID tenantId, String scriptId,
+	    String versionId, IScriptCreateRequest request) throws SiteWhereException {
+	IScriptMetadata meta = assureScriptMetadata(identifier, tenantId, scriptId);
 	IScriptVersion version = assureScriptVersion(meta, versionId);
 	try {
-	    store(tenantId, meta, version, request.getContent());
+	    store(identifier, tenantId, meta, version, request.getContent());
 	    return meta;
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to store script metadata.", e);
@@ -173,13 +196,14 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
 
     /*
      * @see
-     * com.sitewhere.spi.microservice.scripting.IScriptManagement#cloneScript(java.
-     * util.UUID, java.lang.String, java.lang.String, java.lang.String)
+     * com.sitewhere.spi.microservice.scripting.IScriptManagement#cloneScript(com.
+     * sitewhere.spi.microservice.IFunctionIdentifier, java.util.UUID,
+     * java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public IScriptVersion cloneScript(UUID tenantId, String scriptId, String versionId, String comment)
-	    throws SiteWhereException {
-	IScriptMetadata meta = assureScriptMetadata(tenantId, scriptId);
+    public IScriptVersion cloneScript(IFunctionIdentifier identifier, UUID tenantId, String scriptId, String versionId,
+	    String comment) throws SiteWhereException {
+	IScriptMetadata meta = assureScriptMetadata(identifier, tenantId, scriptId);
 	assureScriptVersion(meta, versionId);
 	ScriptVersion created = new ScriptVersion();
 	created.setVersionId(generateUniqueId());
@@ -189,7 +213,7 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
 
 	try {
 	    // Save updated metadata.
-	    String metaPath = getScriptMetadataZkPath(tenantId) + "/" + getMetadataFilePath(meta);
+	    String metaPath = getScriptMetadataZkPath(identifier, tenantId) + "/" + getMetadataFilePath(meta);
 	    byte[] metaContent = MarshalUtils.marshalJson(meta);
 	    if (getZookeeperManager().getCurator().checkExists().forPath(metaPath) == null) {
 		getZookeeperManager().getCurator().create().creatingParentsIfNeeded().forPath(metaPath, metaContent);
@@ -198,8 +222,9 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
 	    }
 
 	    // Save new version.
-	    String contentPath = getScriptMetadataZkPath(tenantId) + "/" + getVersionContentPath(meta, created);
-	    byte[] content = getScriptContent(tenantId, scriptId, versionId);
+	    String contentPath = getScriptMetadataZkPath(identifier, tenantId) + "/"
+		    + getVersionContentPath(meta, created);
+	    byte[] content = getScriptContent(identifier, tenantId, scriptId, versionId);
 	    if (getZookeeperManager().getCurator().checkExists().forPath(contentPath) == null) {
 		getZookeeperManager().getCurator().create().creatingParentsIfNeeded().forPath(contentPath, content);
 	    } else {
@@ -213,19 +238,21 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
 
     /*
      * @see
-     * com.sitewhere.spi.microservice.scripting.IScriptManagement#activateScript(
-     * java.util.UUID, java.lang.String, java.lang.String)
+     * com.sitewhere.spi.microservice.scripting.IScriptManagement#activateScript(com
+     * .sitewhere.spi.microservice.IFunctionIdentifier, java.util.UUID,
+     * java.lang.String, java.lang.String)
      */
     @Override
-    public IScriptMetadata activateScript(UUID tenantId, String scriptId, String versionId) throws SiteWhereException {
-	IScriptMetadata meta = assureScriptMetadata(tenantId, scriptId);
+    public IScriptMetadata activateScript(IFunctionIdentifier identifier, UUID tenantId, String scriptId,
+	    String versionId) throws SiteWhereException {
+	IScriptMetadata meta = assureScriptMetadata(identifier, tenantId, scriptId);
 	assureScriptVersion(meta, versionId);
 
 	try {
 	    // Update active version id if changed.
 	    if (!meta.getActiveVersion().equals(versionId)) {
 		((ScriptMetadata) meta).setActiveVersion(versionId);
-		String metaPath = getScriptMetadataZkPath(tenantId) + "/" + getMetadataFilePath(meta);
+		String metaPath = getScriptMetadataZkPath(identifier, tenantId) + "/" + getMetadataFilePath(meta);
 		byte[] metaContent = MarshalUtils.marshalJson(meta);
 		if (getZookeeperManager().getCurator().checkExists().forPath(metaPath) == null) {
 		    getZookeeperManager().getCurator().create().creatingParentsIfNeeded().forPath(metaPath,
@@ -236,8 +263,9 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
 	    }
 
 	    // Create content file.
-	    String contentPath = getScriptContentZkPath(tenantId) + "/" + meta.getId() + "." + meta.getType();
-	    byte[] content = getScriptContent(tenantId, scriptId, versionId);
+	    String contentPath = getScriptContentZkPath(identifier, tenantId) + "/" + meta.getId() + "."
+		    + meta.getType();
+	    byte[] content = getScriptContent(identifier, tenantId, scriptId, versionId);
 	    if (getZookeeperManager().getCurator().checkExists().forPath(contentPath) == null) {
 		getZookeeperManager().getCurator().create().creatingParentsIfNeeded().forPath(contentPath, content);
 	    } else {
@@ -251,28 +279,31 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
 
     /*
      * @see
-     * com.sitewhere.spi.microservice.scripting.IScriptManagement#deleteScript(java.
-     * util.UUID, java.lang.String)
+     * com.sitewhere.spi.microservice.scripting.IScriptManagement#deleteScript(com.
+     * sitewhere.spi.microservice.IFunctionIdentifier, java.util.UUID,
+     * java.lang.String)
      */
     @Override
-    public IScriptMetadata deleteScript(UUID tenantId, String scriptId) throws SiteWhereException {
-	IScriptMetadata meta = assureScriptMetadata(tenantId, scriptId);
+    public IScriptMetadata deleteScript(IFunctionIdentifier identifier, UUID tenantId, String scriptId)
+	    throws SiteWhereException {
+	IScriptMetadata meta = assureScriptMetadata(identifier, tenantId, scriptId);
 
 	try {
 	    // Delete metadata.
-	    String metaPath = getScriptMetadataZkPath(tenantId) + "/" + getMetadataFilePath(meta);
+	    String metaPath = getScriptMetadataZkPath(identifier, tenantId) + "/" + getMetadataFilePath(meta);
 	    if (getZookeeperManager().getCurator().checkExists().forPath(metaPath) != null) {
 		getZookeeperManager().getCurator().delete().forPath(metaPath);
 	    }
 
 	    // Delete all versions.
-	    String versionsPath = getScriptMetadataZkPath(tenantId) + "/" + meta.getId();
+	    String versionsPath = getScriptMetadataZkPath(identifier, tenantId) + "/" + meta.getId();
 	    if (getZookeeperManager().getCurator().checkExists().forPath(versionsPath) != null) {
 		getZookeeperManager().getCurator().delete().deletingChildrenIfNeeded().forPath(versionsPath);
 	    }
 
 	    // Delete content.
-	    String contentPath = getScriptContentZkPath(tenantId) + "/" + meta.getId() + "." + meta.getType();
+	    String contentPath = getScriptContentZkPath(identifier, tenantId) + "/" + meta.getId() + "."
+		    + meta.getType();
 	    if (getZookeeperManager().getCurator().checkExists().forPath(contentPath) != null) {
 		getZookeeperManager().getCurator().delete().forPath(contentPath);
 	    }
@@ -285,13 +316,15 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
     /**
      * Assure that script metadata exists for the given id.
      * 
+     * @param identifier
      * @param tenantId
      * @param scriptId
      * @return
      * @throws SiteWhereException
      */
-    protected IScriptMetadata assureScriptMetadata(UUID tenantId, String scriptId) throws SiteWhereException {
-	IScriptMetadata meta = getScriptMetadata(tenantId, scriptId);
+    protected IScriptMetadata assureScriptMetadata(IFunctionIdentifier identifier, UUID tenantId, String scriptId)
+	    throws SiteWhereException {
+	IScriptMetadata meta = getScriptMetadata(identifier, tenantId, scriptId);
 	if (meta == null) {
 	    throw new SiteWhereException("Script not found: " + scriptId);
 	}
@@ -317,17 +350,18 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
     /**
      * Store updated metadata and content for a script/version.
      * 
+     * @param identifier
      * @param tenantId
      * @param meta
      * @param version
      * @param contentStr
      * @throws SiteWhereException
      */
-    protected void store(UUID tenantId, IScriptMetadata meta, IScriptVersion version, String contentStr)
-	    throws SiteWhereException {
+    protected void store(IFunctionIdentifier identifier, UUID tenantId, IScriptMetadata meta, IScriptVersion version,
+	    String contentStr) throws SiteWhereException {
 	try {
 	    // Store metadata.
-	    String metaPath = getScriptMetadataZkPath(tenantId) + "/" + getMetadataFilePath(meta);
+	    String metaPath = getScriptMetadataZkPath(identifier, tenantId) + "/" + getMetadataFilePath(meta);
 	    byte[] metaContent = MarshalUtils.marshalJson(meta);
 	    if (getZookeeperManager().getCurator().checkExists().forPath(metaPath) == null) {
 		getZookeeperManager().getCurator().create().creatingParentsIfNeeded().forPath(metaPath, metaContent);
@@ -336,7 +370,8 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
 	    }
 
 	    // Store version content.
-	    String contentPath = getScriptMetadataZkPath(tenantId) + "/" + getVersionContentPath(meta, version);
+	    String contentPath = getScriptMetadataZkPath(identifier, tenantId) + "/"
+		    + getVersionContentPath(meta, version);
 	    byte[] content = Base64.getDecoder().decode(contentStr);
 	    if (getZookeeperManager().getCurator().checkExists().forPath(contentPath) == null) {
 		getZookeeperManager().getCurator().create().creatingParentsIfNeeded().forPath(contentPath, content);
