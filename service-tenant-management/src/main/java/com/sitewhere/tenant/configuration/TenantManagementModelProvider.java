@@ -74,7 +74,7 @@ public class TenantManagementModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createTenantManagementElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Tenant Management", ITenantManagementParser.ROOT,
-		"sign-in", TenantManagementRoleKeys.TenantManagement, this);
+		"layer-group", TenantManagementRoleKeys.TenantManagement, this);
 
 	builder.description("Handles tenant model operations including persistence.");
 

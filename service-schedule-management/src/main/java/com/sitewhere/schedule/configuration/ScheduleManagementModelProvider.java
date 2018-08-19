@@ -74,7 +74,7 @@ public class ScheduleManagementModelProvider extends ConfigurationModelProvider 
      */
     protected ElementNode createScheduleManagementElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Schedule Management", IScheduleManagementParser.ROOT,
-		"calendar", ScheduleManagementRoleKeys.ScheduleManagement, this);
+		"calendar-alt", ScheduleManagementRoleKeys.ScheduleManagement, this);
 
 	builder.description("Handles schedule persistence and processing.");
 

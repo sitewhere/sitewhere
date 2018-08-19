@@ -64,7 +64,7 @@ public class StreamingMediaModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createStreamingMedia() {
 	ElementNode.Builder builder = new ElementNode.Builder(StreamingMediaRoles.StreamingMedia.getRole().getName(),
-		IStreamingMediaParser.ROOT, "image", StreamingMediaRoleKeys.StreamingMedia, this);
+		IStreamingMediaParser.ROOT, "video", StreamingMediaRoleKeys.StreamingMedia, this);
 	builder.description("Provides support for streaming data from media sources such as audio and video.");
 	return builder.build();
     }

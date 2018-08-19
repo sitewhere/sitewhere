@@ -77,7 +77,7 @@ public class BatchOperationsModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createBatchOperationsElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Batch Operation Management", IBatchOperationsParser.ROOT,
-		"list-ol", BatchOperationsRoleKeys.BatchOperations, this);
+		"list-alt", BatchOperationsRoleKeys.BatchOperations, this);
 
 	builder.description("Manage processing of batch operations including persistence and throttling.");
 	return builder.build();

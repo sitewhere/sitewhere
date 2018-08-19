@@ -98,7 +98,7 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
     protected ElementNode createOutboundConnectorsElement() {
 	ElementNode.Builder builder = new ElementNode.Builder(
 		OutboundConnectorsRoles.OutboundConnectors.getRole().getName(), IOutboundConnectorsParser.ROOT,
-		"sign-out", OutboundConnectorsRoleKeys.OutboundConnectors, this);
+		"sign-out-alt", OutboundConnectorsRoleKeys.OutboundConnectors, this);
 
 	builder.description("Manages a list of connectors used to forward events to external systems.");
 

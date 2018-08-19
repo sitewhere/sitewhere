@@ -70,8 +70,8 @@ public class RuleProcessingModelProvider extends ConfigurationModelProvider {
      * @return
      */
     protected ElementNode createRuleProcessingElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Rule Processing", IRuleProcessingParser.ROOT, "gear",
-		RuleProcessingRoleKeys.RuleProcessing, this);
+	ElementNode.Builder builder = new ElementNode.Builder("Rule Processing", IRuleProcessingParser.ROOT,
+		"code-branch", RuleProcessingRoleKeys.RuleProcessing, this);
 
 	builder.description("Adds processors that apply rules to the stream of device events.");
 

@@ -58,29 +58,13 @@ task pullSwaggerUserInterface() {
 	repo.close()
 }
 
-// Pull SiteWhere admin user interface from GitHub.
-task pullAdminUserInterface() {
-	// Clone SiteWhere repository.
-	delete "${projectDir}/sitewhere-ui-build/sitewhere2-admin-ui"
-	println "Pulling sitewhere2-admin-ui from GitHub..."
-	def repo = Grgit.clone(dir: "${projectDir}/sitewhere-ui-build/sitewhere2-admin-ui", 
-		uri: 'https://github.com/sitewhere/sitewhere2-admin-ui.git')
-	repo.close()
-}
-
-// Build user interface.
-task buildUserInterface(type: NpmTask, dependsOn: ['pullSwaggerUserInterface', 'pullAdminUserInterface', 'npm_install']) {
-	args = ['run', 'build']
-}
-
-// Before building the Spring Boot WAR, generate user interface.
+// Before building the Spring Boot WAR, copy Swagger interface.
 apply plugin: 'war'
 bootWar {
 	classifier = 'boot'
-	dependsOn buildUserInterface
+	dependsOn pullSwaggerUserInterface
 	with {
 		from( "${projectDir}/sitewhere-ui-build/sitewhere2-swagger-ui" )
-		from( "${projectDir}/sitewhere-ui-build/sitewhere2-admin-ui/dist" )
 	}
 }
 

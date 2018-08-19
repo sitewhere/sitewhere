@@ -73,7 +73,7 @@ public class UserManagementModelProvider extends ConfigurationModelProvider {
      * @return
      */
     protected ElementNode createUserManagementElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("User Management", IUserManagementParser.ROOT, "sign-in",
+	ElementNode.Builder builder = new ElementNode.Builder("User Management", IUserManagementParser.ROOT, "users",
 		UserManagementRoleKeys.UserManagement, this);
 
 	builder.description("Handles user model operations including persistence.");
