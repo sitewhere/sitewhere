@@ -28,13 +28,13 @@ def randomItem = { items ->
 
 // Construction company type.
 def companyCustomerType = deviceBuilder.newCustomerType 'construction', 'Construction Company'
-companyCustomerType.withDescription 'A company that manages one or more construction areas.' withIcon 'fa-building'
+companyCustomerType.withDescription 'A company that manages one or more construction areas.' withIcon 'building'
 companyCustomerType = deviceBuilder.persist companyCustomerType
 logger.info "[Create Customer Type] ${companyCustomerType.name}"
 
 // Subcontractor company type.
 def subCustomerType = deviceBuilder.newCustomerType 'subcontractor', 'Subcontractor'
-subCustomerType.withDescription 'A subcontractor that works for a company.' withIcon 'fa-truck'
+subCustomerType.withDescription 'A subcontractor that works for a company.' withIcon 'truck'
 subCustomerType = deviceBuilder.persist subCustomerType
 logger.info "[Create Customer Type] ${subCustomerType.name}"
 
@@ -65,13 +65,13 @@ logger.info "[Create Customer] ${subBCustomer.name}"
 
 // Construction area type.
 def constAreaType = deviceBuilder.newAreaType 'construction', 'Construction Area'
-constAreaType.withDescription 'A construction area.' withIcon 'fa-truck'
+constAreaType.withDescription 'A construction area.' withIcon 'truck'
 constAreaType = deviceBuilder.persist constAreaType
 logger.info "[Create Area Type] ${constAreaType.name}"
 
 // Region type.
 def regionType = deviceBuilder.newAreaType 'region', 'Region'
-regionType.withDescription 'Subsection of the United States.' withIcon 'fa-map'
+regionType.withDescription 'Subsection of the United States.' withIcon 'map'
 regionType.withContainedAreaType constAreaType.token
 regionType = deviceBuilder.persist regionType
 logger.info "[Create Area Type] ${regionType.name}"
