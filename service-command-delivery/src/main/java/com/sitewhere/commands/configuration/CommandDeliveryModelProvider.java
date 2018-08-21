@@ -139,7 +139,7 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
      * @return
      */
     protected ElementNode createDeviceTypeMappingRouterMappingElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Device Type Mapping", "mapping", "arrows-h",
+	ElementNode.Builder builder = new ElementNode.Builder("Device Type Mapping", "mapping", "sitemap",
 		CommandDeliveryRoleKeys.DeviceTypeMappingRouterMapping, this);
 
 	builder.description("Maps a device type to a command destination that should process it.");
@@ -193,7 +193,7 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createMqttCommandDestinationElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("MQTT Command Destination",
-		ICommandDeliveryParser.Elements.MqttCommandDestination.getLocalName(), "sign-out",
+		ICommandDeliveryParser.Elements.MqttCommandDestination.getLocalName(), "sign-out-alt",
 		CommandDeliveryRoleKeys.CommandDestination, this);
 
 	builder.description("Sends commands to remote devices using the MQTT protocol. Commands are first encoded "
@@ -225,7 +225,7 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createCoapCommandDestinationElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("CoAP Command Destination",
-		ICommandDeliveryParser.Elements.CoapCommandDestination.getLocalName(), "sign-out",
+		ICommandDeliveryParser.Elements.CoapCommandDestination.getLocalName(), "sign-out-alt",
 		CommandDeliveryRoleKeys.CommandDestination, this);
 
 	builder.description("Sends commands to remote devices using the CoAP protocol. Commands are first encoded "

@@ -85,7 +85,7 @@ public class RuleProcessingModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createZoneTestProcessorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder(RuleProcessingRoles.ZoneTestProcessor.getRole().getName(),
-		IRuleProcessingParser.Elements.ZoneTestProcessor.getLocalName(), "map-pin",
+		IRuleProcessingParser.Elements.ZoneTestProcessor.getLocalName(), "map-marker-alt",
 		RuleProcessingRoleKeys.ZoneTestProcessor, this);
 	builder.description("Allows alerts to be generated if location events are inside "
 		+ "or outside of a zone based on criteria.");
@@ -102,7 +102,7 @@ public class RuleProcessingModelProvider extends ConfigurationModelProvider {
      * @return
      */
     protected ElementNode createZoneTestElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Zone Test", "zone-test", "map-pin",
+	ElementNode.Builder builder = new ElementNode.Builder("Zone Test", "zone-test", "map-marker-alt",
 		RuleProcessingRoleKeys.ZoneTestElement, this);
 	builder.description("Describes zone test criteria and alert to be generated in case of a match.");
 	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);

@@ -112,7 +112,7 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
      */
     protected ElementNode createMqttConnectorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("MQTT Connector",
-		IOutboundConnectorsParser.Elements.MqttConnector.getLocalName(), "sign-out",
+		IOutboundConnectorsParser.Elements.MqttConnector.getLocalName(), "sign-out-alt",
 		OutboundConnectorsRoleKeys.MqttConnector, this);
 	builder.description("Allows events to be forwarded to any number of MQTT topics based on configuration "
 		+ "of filters and (optionally) a route builder. If no route builder is specified, the MQTT topic "
@@ -136,7 +136,7 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
      */
     protected ElementNode createRabbitMqConnectorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("RabbitMQ Connector",
-		IOutboundConnectorsParser.Elements.RabbitMqConnector.getLocalName(), "sign-out",
+		IOutboundConnectorsParser.Elements.RabbitMqConnector.getLocalName(), "sign-out-alt",
 		OutboundConnectorsRoleKeys.RabbitMqConnector, this);
 	builder.description("Allows events to be forwarded to any number of RabbitMQ exchanges based on configuration "
 		+ "of filters and (optionally) a route builder. If no route builder is specified, the exchange "
@@ -161,7 +161,7 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
      */
     protected ElementNode createSolrConnectorElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Apache Solr Connector",
-		IOutboundConnectorsParser.Elements.SolrConnector.getLocalName(), "sign-out",
+		IOutboundConnectorsParser.Elements.SolrConnector.getLocalName(), "sign-out-alt",
 		OutboundConnectorsRoleKeys.SolrConnector, this);
 	builder.description("Forwards outbound events to Apache Solr for indexing in the search engine.");
 	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
@@ -304,7 +304,7 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
      */
     protected ElementNode createGroovyRouteBuilderElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Groovy Route Builder",
-		IOutboundConnectorsParser.RouteBuilders.GroovyRouteBuilder.getLocalName(), "sign-out",
+		IOutboundConnectorsParser.RouteBuilders.GroovyRouteBuilder.getLocalName(), "sign-out-alt",
 		OutboundConnectorsRoleKeys.GroovyRouteBuilder, this);
 	builder.description(
 		"Route builder which executes a Groovy script to choose routes where events will be delivered.");

@@ -132,7 +132,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createMqttEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("MQTT Event Source",
-		IEventSourcesParser.Elements.MqttEventSource.getLocalName(), "sign-in",
+		IEventSourcesParser.Elements.MqttEventSource.getLocalName(), "sign-in-alt",
 		EventSourcesRoleKeys.EventSource, this);
 
 	builder.description("Listen for events on an MQTT topic.");
@@ -164,7 +164,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createRabbitMqEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("RabbitMQ Event Source",
-		IEventSourcesParser.Elements.RabbitMqEventSource.getLocalName(), "sign-in",
+		IEventSourcesParser.Elements.RabbitMqEventSource.getLocalName(), "sign-in-alt",
 		EventSourcesRoleKeys.EventSource, this);
 
 	builder.description("Listen for events on an RabbitMQ queue.");
@@ -240,7 +240,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createActiveMQBrokerEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("ActiveMQ Broker Event Source",
-		IEventSourcesParser.Elements.ActiveMQEventSource.getLocalName(), "sign-in",
+		IEventSourcesParser.Elements.ActiveMQEventSource.getLocalName(), "sign-in-alt",
 		EventSourcesRoleKeys.EventSource, this);
 
 	builder.description("Event source that starts an ActiveMQ broker and listens on the transport "
@@ -272,7 +272,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createActiveMQClientEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("ActiveMQ Client Event Source",
-		IEventSourcesParser.Elements.ActiveMQClientEventSource.getLocalName(), "sign-in",
+		IEventSourcesParser.Elements.ActiveMQClientEventSource.getLocalName(), "sign-in-alt",
 		EventSourcesRoleKeys.EventSource, this);
 
 	builder.description("Event source that uses ActiveMQ consumers to ingest "
@@ -434,7 +434,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createCoapServerEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("CoAP Server Event Source",
-		IEventSourcesParser.Elements.CoapServerEventSource.getLocalName(), "sign-in",
+		IEventSourcesParser.Elements.CoapServerEventSource.getLocalName(), "sign-in-alt",
 		EventSourcesRoleKeys.CoapServerEventSource, this);
 
 	builder.description("Event source that acts as a CoAP server, allowing events to be created "
@@ -459,7 +459,7 @@ public class EventSourcesModelProvider extends ConfigurationModelProvider {
      */
     protected ElementNode createPollingRestEventSourceElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Polling REST Event Source",
-		IEventSourcesParser.Elements.PollingRestEventSource.getLocalName(), "sign-in",
+		IEventSourcesParser.Elements.PollingRestEventSource.getLocalName(), "sign-in-alt",
 		EventSourcesRoleKeys.EventSource, this);
 
 	builder.description("Event source that polls a REST service at a given interval to generate payloads. "
