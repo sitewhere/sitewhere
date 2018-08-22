@@ -73,10 +73,10 @@ public class ScheduleManagementModelProvider extends ConfigurationModelProvider 
      * @return
      */
     protected ElementNode createScheduleManagementElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Schedule Management", IScheduleManagementParser.ROOT,
+	ElementNode.Builder builder = new ElementNode.Builder("Schedule Management API", IScheduleManagementParser.ROOT,
 		"calendar-alt", ScheduleManagementRoleKeys.ScheduleManagement, this);
 
-	builder.description("Handles schedule persistence and processing.");
+	builder.description("Handles schedule model persistence and processing.");
 
 	return builder.build();
     }

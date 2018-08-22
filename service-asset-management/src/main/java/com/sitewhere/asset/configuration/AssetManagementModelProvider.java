@@ -73,9 +73,9 @@ public class AssetManagementModelProvider extends ConfigurationModelProvider {
      * @return
      */
     protected ElementNode createAssetManagement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Asset Management", IAssetManagementParser.ROOT, "tag",
-		AssetManagementRoleKeys.AssetManagement, this);
-	builder.description("Configure asset management features such as persistence and external modules.");
+	ElementNode.Builder builder = new ElementNode.Builder("Asset Management API", IAssetManagementParser.ROOT,
+		"tag", AssetManagementRoleKeys.AssetManagement, this);
+	builder.description("Configure asset management API features such as persistence.");
 	return builder.build();
     }
 }
