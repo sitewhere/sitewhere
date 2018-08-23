@@ -46,10 +46,10 @@ public class SiteWhereSolrFactory {
     public static SolrInputDocument createDocumentFromMeasurements(IDeviceMeasurements measurements)
 	    throws SiteWhereException {
 	SolrInputDocument document = new SolrInputDocument();
-	document.addField(ISolrFields.EVENT_TYPE, SolrEventType.Measurements.name());
+	addField(document, ISolrFields.EVENT_TYPE, SolrEventType.Measurements.name());
 	addFieldsForEvent(document, measurements);
 	for (String key : measurements.getMeasurements().keySet()) {
-	    document.addField(ISolrFields.MEASUREMENT_PREFIX + key, measurements.getMeasurement(key));
+	    addField(document, ISolrFields.MEASUREMENT_PREFIX + key, measurements.getMeasurement(key));
 	}
 	return document;
     }
@@ -64,11 +64,11 @@ public class SiteWhereSolrFactory {
      */
     public static SolrInputDocument createDocumentFromLocation(IDeviceLocation location) throws SiteWhereException {
 	SolrInputDocument document = new SolrInputDocument();
-	document.addField(ISolrFields.EVENT_TYPE, SolrEventType.Location.name());
+	addField(document, ISolrFields.EVENT_TYPE, SolrEventType.Location.name());
 	addFieldsForEvent(document, location);
 	String latLong = "" + location.getLatitude() + ", " + location.getLongitude();
-	document.addField(ISolrFields.LOCATION, latLong);
-	document.addField(ISolrFields.ELEVATION, location.getElevation());
+	addField(document, ISolrFields.LOCATION, latLong);
+	addField(document, ISolrFields.ELEVATION, location.getElevation());
 	return document;
     }
 
@@ -84,10 +84,10 @@ public class SiteWhereSolrFactory {
 	SolrInputDocument document = new SolrInputDocument();
 	document.addField(ISolrFields.EVENT_TYPE, SolrEventType.Alert.name());
 	addFieldsForEvent(document, alert);
-	document.addField(ISolrFields.ALERT_TYPE, alert.getType());
-	document.addField(ISolrFields.ALERT_MESSAGE, alert.getMessage());
-	document.addField(ISolrFields.ALERT_LEVEL, alert.getLevel().name());
-	document.addField(ISolrFields.ALERT_SOURCE, alert.getSource().name());
+	addField(document, ISolrFields.ALERT_TYPE, alert.getType());
+	addField(document, ISolrFields.ALERT_MESSAGE, alert.getMessage());
+	addField(document, ISolrFields.ALERT_LEVEL, alert.getLevel().name());
+	addField(document, ISolrFields.ALERT_SOURCE, alert.getSource().name());
 	return document;
     }
 
@@ -236,6 +236,21 @@ public class SiteWhereSolrFactory {
     }
 
     /**
+     * Add a field to a Solr document.
+     * 
+     * @param document
+     * @param fieldName
+     * @param fieldValue
+     * @throws SiteWhereException
+     */
+    protected static void addField(SolrInputDocument document, String fieldName, Object fieldValue)
+	    throws SiteWhereException {
+	if (fieldValue != null) {
+	    document.addField(fieldName, fieldValue);
+	}
+    }
+
+    /**
      * Adds common fields from base SiteWhere {@link IDeviceEvent} object.
      * 
      * @param document
@@ -243,13 +258,13 @@ public class SiteWhereSolrFactory {
      * @throws SiteWhereException
      */
     protected static void addFieldsForEvent(SolrInputDocument document, IDeviceEvent event) throws SiteWhereException {
-	document.addField(ISolrFields.EVENT_ID, event.getId());
-	document.addField(ISolrFields.ASSIGNMENT_TOKEN, event.getDeviceAssignmentToken());
-	document.addField(ISolrFields.ASSIGNMENT_TYPE, event.getAssignmentType().name());
-	document.addField(ISolrFields.ASSET_ID, event.getAssetId());
-	document.addField(ISolrFields.SITE_TOKEN, event.getSiteToken());
-	document.addField(ISolrFields.EVENT_DATE, event.getEventDate());
-	document.addField(ISolrFields.RECEIVED_DATE, event.getReceivedDate());
+	addField(document, ISolrFields.EVENT_ID, event.getId());
+	addField(document, ISolrFields.ASSIGNMENT_TOKEN, event.getDeviceAssignmentToken());
+	addField(document, ISolrFields.ASSIGNMENT_TYPE, event.getAssignmentType().name());
+	addField(document, ISolrFields.ASSET_ID, event.getAssetId());
+	addField(document, ISolrFields.SITE_TOKEN, event.getSiteToken());
+	addField(document, ISolrFields.EVENT_DATE, event.getEventDate());
+	addField(document, ISolrFields.RECEIVED_DATE, event.getReceivedDate());
 	addMetadata(document, event.getMetadata());
     }
 
@@ -263,7 +278,7 @@ public class SiteWhereSolrFactory {
     protected static void addMetadata(SolrInputDocument document, Map<String, String> metadata)
 	    throws SiteWhereException {
 	for (String key : metadata.keySet()) {
-	    document.addField(ISolrFields.META_PREFIX + key, metadata.get(key));
+	    addField(document, ISolrFields.META_PREFIX + key, metadata.get(key));
 	}
     }
 }
