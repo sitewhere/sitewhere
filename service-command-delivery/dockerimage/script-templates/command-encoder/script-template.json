@@ -1,0 +1,6 @@
+{
+	"id": "command-encoder",
+	"name": "Command Encoder",
+	"description": "Performs custom device-specific command encoding.",
+	"type": "groovy"
+}

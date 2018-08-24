@@ -1,3 +1,15 @@
+// Available variable bindings:
+// ----------------------------
+// deviceBuilder: (DeviceManagementRequestBuilder) Used for device management tasks.
+// eventBuilder: (DeviceEventRequestBuilder) Used for event management tasks.
+// events: (List<IDecodedDeviceRequest<?>>) For adding events decoded from the payload.
+// payload: (byte[]) Binary payload that is being decoded.
+// metadata: (Map<String, Object>) Extra payload metadata.
+// logger: (Logger) Supports output to system logs.
+// ----------------------------
+// return value: None. Decoded vents are added to the 'events' binding.
+// ----------------------------
+
 import com.sitewhere.rest.model.device.communication.*;
 import com.sitewhere.rest.model.device.event.request.*;
 import com.sitewhere.spi.device.event.request.*;
