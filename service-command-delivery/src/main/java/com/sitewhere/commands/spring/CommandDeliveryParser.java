@@ -147,9 +147,9 @@ public class CommandDeliveryParser extends AbstractBeanDefinitionParser {
     protected void parseGroovyCommandRouter(Element element, ParserContext context) {
 	BeanDefinitionBuilder router = BeanDefinitionBuilder.rootBeanDefinition(GroovyCommandRouter.class);
 
-	Attr scriptPath = element.getAttributeNode("scriptPath");
-	if (scriptPath != null) {
-	    router.addPropertyValue("scriptPath", scriptPath.getValue());
+	Attr scriptId = element.getAttributeNode("scriptId");
+	if (scriptId != null) {
+	    router.addPropertyValue("scriptId", scriptId.getValue());
 	}
 
 	context.getRegistry().registerBeanDefinition(CommandDestinationsBeans.BEAN_COMMAND_ROUTER,
@@ -386,10 +386,6 @@ public class CommandDeliveryParser extends AbstractBeanDefinitionParser {
 		parseGroovyCommandEncoder(child, context, destination);
 		return true;
 	    }
-	    case CommandEncoder: {
-		parseEncoderRef(child, context, destination);
-		return true;
-	    }
 	    }
 	}
 	return false;
@@ -454,31 +450,15 @@ public class CommandDeliveryParser extends AbstractBeanDefinitionParser {
 	    BeanDefinitionBuilder destination) {
 	BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(GroovyCommandExecutionEncoder.class);
 
-	Attr scriptPath = encoder.getAttributeNode("scriptPath");
-	if (scriptPath == null) {
-	    throw new RuntimeException("Script path required but not specified.");
+	Attr scriptId = encoder.getAttributeNode("scriptId");
+	if (scriptId != null) {
+	    builder.addPropertyValue("scriptId", scriptId.getValue());
 	}
-	builder.addPropertyValue("scriptPath", scriptPath.getValue());
 
 	AbstractBeanDefinition bean = builder.getBeanDefinition();
 	String name = nameGenerator.generateBeanName(bean, context.getRegistry());
 	context.getRegistry().registerBeanDefinition(name, bean);
 	destination.addPropertyReference("commandExecutionEncoder", name);
-    }
-
-    /**
-     * Parse reference to a command encoder defined in an external bean.
-     * 
-     * @param encoder
-     * @param context
-     * @param destination
-     */
-    protected void parseEncoderRef(Element encoder, ParserContext context, BeanDefinitionBuilder destination) {
-	Attr encoderRef = encoder.getAttributeNode("ref");
-	if (encoderRef == null) {
-	    throw new RuntimeException("Command encoder 'ref' attribute is required.");
-	}
-	destination.addPropertyReference("commandExecutionEncoder", encoderRef.getValue());
     }
 
     /**
@@ -519,11 +499,10 @@ public class CommandDeliveryParser extends AbstractBeanDefinitionParser {
 	BeanDefinitionBuilder builder = BeanDefinitionBuilder
 		.rootBeanDefinition(GroovyStringCommandExecutionEncoder.class);
 
-	Attr scriptPath = encoder.getAttributeNode("scriptPath");
-	if (scriptPath == null) {
-	    throw new RuntimeException("Script path required but not specified.");
+	Attr scriptId = encoder.getAttributeNode("scriptId");
+	if (scriptId != null) {
+	    builder.addPropertyValue("scriptId", scriptId.getValue());
 	}
-	builder.addPropertyValue("scriptPath", scriptPath.getValue());
 
 	AbstractBeanDefinition bean = builder.getBeanDefinition();
 	String name = nameGenerator.generateBeanName(bean, context.getRegistry());
@@ -644,9 +623,9 @@ public class CommandDeliveryParser extends AbstractBeanDefinitionParser {
     protected AbstractBeanDefinition createGroovySmsParameterExtractor(Element element) {
 	BeanDefinitionBuilder extractor = BeanDefinitionBuilder.rootBeanDefinition(GroovySmsParameterExtractor.class);
 
-	Attr scriptPath = element.getAttributeNode("scriptPath");
-	if (scriptPath != null) {
-	    extractor.addPropertyValue("scriptPath", scriptPath.getValue());
+	Attr scriptId = element.getAttributeNode("scriptId");
+	if (scriptId != null) {
+	    extractor.addPropertyValue("scriptId", scriptId.getValue());
 	}
 
 	return extractor.getBeanDefinition();

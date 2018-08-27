@@ -342,9 +342,9 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
 		+ "script for the encoding logic.");
 	builder.attributeGroup(CommandDeliveryModelProvider.ATTR_GROUP_CMDENC);
 
-	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String,
-		CommandDeliveryModelProvider.ATTR_GROUP_CMDENC)
-			.description("Path to Groovy script which encodes commands.").makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script,
+		CommandDeliveryModelProvider.ATTR_GROUP_CMDENC).description("Script used for encoding command.")
+			.makeRequired().build()));
 
 	return builder.build();
     }
@@ -364,9 +364,9 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
 		+ "as the command payload.");
 	builder.attributeGroup(CommandDeliveryModelProvider.ATTR_GROUP_CMDENC);
 
-	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String,
-		CommandDeliveryModelProvider.ATTR_GROUP_CMDENC)
-			.description("Path to Groovy script which encodes commands.").makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script,
+		CommandDeliveryModelProvider.ATTR_GROUP_CMDENC).description("Script used for encoding command.")
+			.makeRequired().build()));
 
 	return builder.build();
     }
@@ -439,9 +439,9 @@ public class CommandDeliveryModelProvider extends ConfigurationModelProvider {
 	builder.description("Uses a Groovy script to extract SMS parameter information for delivering a command.");
 	builder.attributeGroup(CommandDeliveryModelProvider.ATTR_GROUP_CMDEXT);
 
-	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String,
-		CommandDeliveryModelProvider.ATTR_GROUP_CMDEXT)
-			.description("Path to Groovy script which encodes commands.").makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script,
+		CommandDeliveryModelProvider.ATTR_GROUP_CMDENC)
+			.description("Script used for extracting SMS parameters.").makeRequired().build()));
 
 	return builder.build();
     }

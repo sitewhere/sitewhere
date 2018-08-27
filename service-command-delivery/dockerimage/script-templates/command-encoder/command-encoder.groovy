@@ -9,4 +9,11 @@
 // ----------------------------
 
 logger.info 'Building command execution...'
-return (new String("output")).getBytes()
+
+if (execution.command.name == 'serialPrintln') {
+    def message = execution.parameters['message']
+    logger.info "Attempting serial println with message '" + message + "'"
+    return (new String("{'command': 'print', 'message': '" + message + "'}")).getBytes()
+}
+
+return (new String("{'command': 'unknown'}")).getBytes()

@@ -78,10 +78,7 @@ public interface ICommandDeliveryParser {
 	JsonCommandEncoder("json-command-encoder"),
 
 	/** Uses a Groovy script to encode commands */
-	GroovyCommandEncoder("groovy-command-encoder"),
-
-	/** Reference to externally defined event decoder */
-	CommandEncoder("command-encoder");
+	GroovyCommandEncoder("groovy-command-encoder");
 
 	/** Event code */
 	private String localName;
