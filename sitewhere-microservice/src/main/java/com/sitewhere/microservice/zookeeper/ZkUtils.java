@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -37,19 +38,41 @@ public class ZkUtils {
      * @param zkRoot
      * @param root
      * @param current
-     * @throws Exception
+     * @throws SiteWhereException
      */
     public static void copyFolderRecursivelytoZk(CuratorFramework curator, String zkRoot, File root, File current)
 	    throws SiteWhereException {
+	ZkUtils.copyFolderRecursivelytoZk(curator, zkRoot, root, current, Collections.emptyList());
+    }
+
+    /**
+     * Copy a folder recursively into Zk. This version of the method includes a list
+     * of top-level folder names to skip.
+     * 
+     * @param curator
+     * @param zkRoot
+     * @param root
+     * @param current
+     * @param skip
+     * @throws SiteWhereException
+     */
+    public static void copyFolderRecursivelytoZk(CuratorFramework curator, String zkRoot, File root, File current,
+	    List<String> skip) throws SiteWhereException {
 	String relative = root.toPath().relativize(current.toPath()).toString();
 	String folderPath = zkRoot + ((relative.length() > 0) ? "/" + relative : "");
 	File[] contents = current.listFiles();
 	for (File file : contents) {
 	    String subFile = folderPath + "/" + file.getName();
 	    if (file.isDirectory()) {
+		// Skip selected top-level paths.
+		if (root.getAbsolutePath().equals(current.getAbsolutePath()) && skip.contains(file.getName())) {
+		    continue;
+		}
 		try {
-		    curator.create().forPath(subFile);
-		    LOGGER.debug("Created folder for '" + file.getAbsolutePath() + "' in '" + subFile + "'.");
+		    if (curator.checkExists().forPath(subFile) == null) {
+			curator.create().forPath(subFile);
+			LOGGER.debug("Created folder for '" + file.getAbsolutePath() + "' in '" + subFile + "'.");
+		    }
 		} catch (Exception e) {
 		    throw new SiteWhereException(
 			    "Unable to copy folder '" + file.getAbsolutePath() + "' into '" + subFile + "'.", e);

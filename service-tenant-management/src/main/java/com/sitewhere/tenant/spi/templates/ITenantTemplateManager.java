@@ -14,6 +14,7 @@ import org.apache.curator.framework.CuratorFramework;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Manages the list of available tenant templates that can be used when creating
@@ -32,13 +33,12 @@ public interface ITenantTemplateManager extends ILifecycleComponent {
     public List<ITenantTemplate> getTenantTemplates() throws SiteWhereException;
 
     /**
-     * Copy template contents to the given Zk path (to bootstrap a tenant).
+     * Initialize tenant Zookeeper information based on tenant template.
      * 
-     * @param templateId
      * @param curator
-     * @param tenantPath
+     * @param tenant
      * @throws SiteWhereException
      */
-    public void copyTemplateContentsToZk(String templateId, CuratorFramework curator, String tenantPath)
+    public void initializeTenantZkFromTemplateContents(CuratorFramework curator, ITenant tenant)
 	    throws SiteWhereException;
 }

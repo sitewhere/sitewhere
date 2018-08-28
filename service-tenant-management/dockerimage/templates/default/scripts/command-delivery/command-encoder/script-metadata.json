@@ -1,0 +1,6 @@
+{
+	"id": "custom-encoder",
+	"name": "Custom Command Encoder",
+	"description": "This is an example of custom command encoding.",
+	"type": "groovy"
+}
