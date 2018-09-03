@@ -7,25 +7,18 @@
  */
 package com.sitewhere.spi.area.request;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
+import com.sitewhere.spi.common.IAccessible;
 import com.sitewhere.spi.common.ILocation;
+import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
 
 /**
  * Interface for arguments needed to create an area.
  * 
  * @author Derek
  */
-public interface IAreaCreateRequest extends Serializable {
-
-    /**
-     * Area token. Can be set to null if token should be auto-generated.
-     * 
-     * @return
-     */
-    public String getToken();
+public interface IAreaCreateRequest extends IAccessible, IPersistentEntityCreateRequest {
 
     /**
      * Get token for corresponding area type.
@@ -42,20 +35,6 @@ public interface IAreaCreateRequest extends Serializable {
     public String getParentAreaToken();
 
     /**
-     * Get name.
-     * 
-     * @return
-     */
-    public String getName();
-
-    /**
-     * Get description.
-     * 
-     * @return
-     */
-    public String getDescription();
-
-    /**
      * Get URL for logo image.
      * 
      * @return
@@ -68,11 +47,4 @@ public interface IAreaCreateRequest extends Serializable {
      * @return
      */
     public List<? extends ILocation> getBounds();
-
-    /**
-     * Get metadata values.
-     * 
-     * @return
-     */
-    public Map<String, String> getMetadata();
 }

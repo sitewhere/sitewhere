@@ -7,12 +7,11 @@
  */
 package com.sitewhere.rest.model.device.request;
 
-import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.rest.model.device.element.DeviceSlot;
 import com.sitewhere.rest.model.device.element.DeviceUnit;
@@ -26,13 +25,10 @@ import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
  * @author Derek Adams
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceTypeCreateRequest implements IDeviceTypeCreateRequest, Serializable {
+public class DeviceTypeCreateRequest extends PersistentEntityCreateRequest implements IDeviceTypeCreateRequest {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = 1L;
-
-    /** Reference token (Optional) */
-    private String token;
 
     /** Name */
     private String name;
@@ -48,9 +44,6 @@ public class DeviceTypeCreateRequest implements IDeviceTypeCreateRequest, Serial
 
     /** Device element schema for specifications that support nested devices */
     private DeviceElementSchema deviceElementSchema;
-
-    /** Metadata values */
-    private Map<String, String> metadata;
 
     /*
      * @see com.sitewhere.spi.device.request.IDeviceTypeCreateRequest#getName()
@@ -90,18 +83,6 @@ public class DeviceTypeCreateRequest implements IDeviceTypeCreateRequest, Serial
     }
 
     /*
-     * @see com.sitewhere.spi.device.request.IDeviceTypeCreateRequest#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
-
-    /*
      * @see
      * com.sitewhere.spi.device.request.IDeviceTypeCreateRequest#getContainerPolicy(
      * )
@@ -126,18 +107,6 @@ public class DeviceTypeCreateRequest implements IDeviceTypeCreateRequest, Serial
 
     public void setDeviceElementSchema(DeviceElementSchema deviceElementSchema) {
 	this.deviceElementSchema = deviceElementSchema;
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.request.IDeviceTypeCreateRequest#getMetadata()
-     */
-    @Override
-    public Map<String, String> getMetadata() {
-	return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-	this.metadata = metadata;
     }
 
     public static class Builder {

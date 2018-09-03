@@ -10,14 +10,14 @@ package com.sitewhere.spi.scheduling;
 import java.util.Date;
 import java.util.Map;
 
-import com.sitewhere.spi.common.ISiteWhereEntity;
+import com.sitewhere.spi.common.IPersistentEntity;
 
 /**
  * Represents a named schedule that can be applied to system actions.
  * 
  * @author Derek
  */
-public interface ISchedule extends ISiteWhereEntity {
+public interface ISchedule extends IPersistentEntity {
 
     /**
      * Schedule name.

@@ -24,9 +24,6 @@ import com.sitewhere.spi.customer.ICustomer;
  */
 public class MongoCustomer implements MongoConverter<ICustomer> {
 
-    /** Property for id */
-    public static final String PROP_ID = "_id";
-
     /** Property for customer type id */
     public static final String PROP_CUSTOMER_TYPE_ID = "ctid";
 
@@ -41,9 +38,6 @@ public class MongoCustomer implements MongoConverter<ICustomer> {
 
     /** Property for image URL */
     public static final String PROP_IMAGE_URL = "imgu";
-
-    /** Property for token */
-    public static final String PROP_TOKEN = "tokn";
 
     /*
      * (non-Javadoc)
@@ -72,13 +66,11 @@ public class MongoCustomer implements MongoConverter<ICustomer> {
      * @param target
      */
     public static void toDocument(ICustomer source, Document target) {
-	target.append(PROP_ID, source.getId());
 	target.append(PROP_CUSTOMER_TYPE_ID, source.getCustomerTypeId());
 	target.append(PROP_PARENT_CUSTOMER_ID, source.getParentCustomerId());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_DESCRIPTION, source.getDescription());
 	target.append(PROP_IMAGE_URL, source.getImageUrl());
-	target.append(PROP_TOKEN, source.getToken());
 
 	MongoSiteWhereEntity.toDocument(source, target);
 	MongoMetadataProvider.toDocument(source, target);
@@ -91,21 +83,17 @@ public class MongoCustomer implements MongoConverter<ICustomer> {
      * @param target
      */
     public static void fromDocument(Document source, Customer target) {
-	UUID id = (UUID) source.get(PROP_ID);
 	UUID customerTypeId = (UUID) source.get(PROP_CUSTOMER_TYPE_ID);
 	UUID parentCustomerId = (UUID) source.get(PROP_PARENT_CUSTOMER_ID);
 	String name = (String) source.get(PROP_NAME);
 	String description = (String) source.get(PROP_DESCRIPTION);
 	String imageUrl = (String) source.get(PROP_IMAGE_URL);
-	String token = (String) source.get(PROP_TOKEN);
 
-	target.setId(id);
 	target.setCustomerTypeId(customerTypeId);
 	target.setParentCustomerId(parentCustomerId);
 	target.setName(name);
 	target.setDescription(description);
 	target.setImageUrl(imageUrl);
-	target.setToken(token);
 
 	MongoSiteWhereEntity.fromDocument(source, target);
 	MongoMetadataProvider.fromDocument(source, target);

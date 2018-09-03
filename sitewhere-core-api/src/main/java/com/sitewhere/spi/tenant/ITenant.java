@@ -9,14 +9,14 @@ package com.sitewhere.spi.tenant;
 
 import java.util.List;
 
-import com.sitewhere.spi.common.ISiteWhereEntity;
+import com.sitewhere.spi.common.IBrandedEntity;
 
 /**
  * Interface for information about a tenant.
  * 
  * @author Derek
  */
-public interface ITenant extends ISiteWhereEntity {
+public interface ITenant extends IBrandedEntity {
 
     /**
      * Get tenant name.
@@ -26,18 +26,18 @@ public interface ITenant extends ISiteWhereEntity {
     public String getName();
 
     /**
-     * Get token that devices pass to identify tenant.
-     * 
-     * @return
-     */
-    public String getAuthenticationToken();
-
-    /**
      * Get URL for tenant logo.
      * 
      * @return
      */
     public String getLogoUrl();
+
+    /**
+     * Get token that devices pass to identify tenant.
+     * 
+     * @return
+     */
+    public String getAuthenticationToken();
 
     /**
      * Get list of users authorized to access the tenant.

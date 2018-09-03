@@ -9,10 +9,10 @@ package com.sitewhere.rest.model.device.request;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 
@@ -22,13 +22,10 @@ import com.sitewhere.spi.device.request.IDeviceCreateRequest;
  * @author Derek Adams
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceCreateRequest implements IDeviceCreateRequest {
+public class DeviceCreateRequest extends PersistentEntityCreateRequest implements IDeviceCreateRequest {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = 5102270168736590229L;
-
-    /** Token for new device */
-    private String token;
 
     /** Device type token */
     private String deviceTypeToken;
@@ -47,21 +44,6 @@ public class DeviceCreateRequest implements IDeviceCreateRequest {
 
     /** Device status indicator */
     private String status;
-
-    /** Metadata values */
-    private Map<String, String> metadata;
-
-    /*
-     * @see com.sitewhere.spi.device.request.IDeviceCreateRequest#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see
@@ -141,20 +123,6 @@ public class DeviceCreateRequest implements IDeviceCreateRequest {
 
     public void setStatus(String status) {
 	this.status = status;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.request.IDeviceCreateRequest#getMetadata()
-     */
-    @Override
-    public Map<String, String> getMetadata() {
-	return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-	this.metadata = metadata;
     }
 
     public static class Builder {

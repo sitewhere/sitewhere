@@ -7,26 +7,17 @@
  */
 package com.sitewhere.spi.asset.request;
 
-import java.io.Serializable;
-import java.util.Map;
-
 import com.sitewhere.spi.asset.AssetCategory;
 import com.sitewhere.spi.common.IAccessible;
 import com.sitewhere.spi.common.IImageProvider;
+import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
 
 /**
  * Information needed to create a new asset type.
  * 
  * @author Derek
  */
-public interface IAssetTypeCreateRequest extends IAccessible, IImageProvider, Serializable {
-
-    /**
-     * Get token used to reference asset type.
-     * 
-     * @return
-     */
-    public String getToken();
+public interface IAssetTypeCreateRequest extends IAccessible, IImageProvider, IPersistentEntityCreateRequest {
 
     /**
      * Get category of asset type.
@@ -34,11 +25,4 @@ public interface IAssetTypeCreateRequest extends IAccessible, IImageProvider, Se
      * @return
      */
     public AssetCategory getAssetCategory();
-
-    /**
-     * Get metadata values.
-     * 
-     * @return
-     */
-    public Map<String, String> getMetadata();
 }

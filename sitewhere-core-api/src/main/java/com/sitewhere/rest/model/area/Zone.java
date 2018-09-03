@@ -14,7 +14,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.Location;
-import com.sitewhere.rest.model.common.SiteWhereEntity;
+import com.sitewhere.rest.model.common.PersistentEntity;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IZone;
 
@@ -24,16 +24,10 @@ import com.sitewhere.spi.area.IZone;
  * @author dadams
  */
 @JsonInclude(Include.NON_NULL)
-public class Zone extends SiteWhereEntity implements IZone {
+public class Zone extends PersistentEntity implements IZone {
 
     /** Serial version UID */
     private static final long serialVersionUID = 7526239754356991844L;
-
-    /** Unique zone id */
-    private UUID id;
-
-    /** Unique zone token */
-    private String token;
 
     /** Id for associated area */
     private UUID areaId;
@@ -52,30 +46,6 @@ public class Zone extends SiteWhereEntity implements IZone {
 
     /** Opacity */
     private Double opacity;
-
-    /*
-     * @see com.sitewhere.spi.area.IZone#getId()
-     */
-    @Override
-    public UUID getId() {
-	return id;
-    }
-
-    public void setId(UUID id) {
-	this.id = id;
-    }
-
-    /*
-     * @see com.sitewhere.spi.area.IZone#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.area.IZone#getAreaId()
@@ -167,7 +137,7 @@ public class Zone extends SiteWhereEntity implements IZone {
 	result.setOpacity(input.getOpacity());
 	result.setBounds(Location.copy(input.getBounds()));
 
-	SiteWhereEntity.copy(input, result);
+	PersistentEntity.copy(input, result);
 	return result;
     }
 }

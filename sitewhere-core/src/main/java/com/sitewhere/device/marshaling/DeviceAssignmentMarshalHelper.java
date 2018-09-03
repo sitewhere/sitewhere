@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sitewhere.device.marshaling.invalid.InvalidAsset;
-import com.sitewhere.rest.model.common.SiteWhereEntity;
+import com.sitewhere.rest.model.common.PersistentEntity;
 import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceAssignment;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
@@ -72,7 +72,7 @@ public class DeviceAssignmentMarshalHelper {
 	result.setActiveDate(source.getActiveDate());
 	result.setReleasedDate(source.getReleasedDate());
 	result.setStatus(source.getStatus());
-	SiteWhereEntity.copy(source, result);
+	PersistentEntity.copy(source, result);
 
 	// If asset is assigned, look it up.
 	result.setAssetId(source.getAssetId());

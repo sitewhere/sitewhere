@@ -9,14 +9,14 @@ package com.sitewhere.spi.device.streaming;
 
 import java.util.UUID;
 
-import com.sitewhere.spi.common.ISiteWhereEntity;
+import com.sitewhere.spi.common.IPersistentEntity;
 
 /**
  * A data stream associated with a device assignment.
  * 
  * @author Derek
  */
-public interface IDeviceStream extends ISiteWhereEntity {
+public interface IDeviceStream extends IPersistentEntity {
 
     /**
      * Get assignment stream belongs to.

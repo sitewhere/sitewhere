@@ -8,6 +8,7 @@
 package com.sitewhere.user.persistence;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,22 +44,29 @@ public class UserManagementPersistence extends Persistence {
      * @return
      * @throws SiteWhereException
      */
-    public static User userCreateLogic(IUserCreateRequest source, boolean encodePassword) throws SiteWhereException {
-	String password = (encodePassword) ? passwordEncoder.encode(source.getPassword()) : source.getPassword();
-
+    public static User userCreateLogic(IUserCreateRequest request, boolean encodePassword) throws SiteWhereException {
 	User user = new User();
+	user.setId(UUID.randomUUID());
 
-	require("Username", source.getUsername());
+	// Use token if provided, otherwise generate one.
+	if (request.getUsername() != null) {
+	    user.setToken(request.getUsername());
+	} else {
+	    user.setToken(UUID.randomUUID().toString());
+	}
 
-	user.setUsername(source.getUsername());
+	require("Username", request.getUsername());
+	String password = (encodePassword) ? passwordEncoder.encode(request.getPassword()) : request.getPassword();
+
+	user.setUsername(request.getUsername());
 	user.setHashedPassword(password);
-	user.setFirstName(source.getFirstName());
-	user.setLastName(source.getLastName());
+	user.setFirstName(request.getFirstName());
+	user.setLastName(request.getLastName());
 	user.setLastLogin(null);
-	user.setStatus(source.getStatus());
-	user.setAuthorities(source.getAuthorities());
+	user.setStatus(request.getStatus());
+	user.setAuthorities(request.getAuthorities());
 
-	MetadataProvider.copy(source, user);
+	MetadataProvider.copy(request, user);
 	Persistence.initializeEntityMetadata(user);
 	return user;
     }
@@ -124,20 +132,20 @@ public class UserManagementPersistence extends Persistence {
     /**
      * Common logic for creating a granted authority based on an incoming request.
      * 
-     * @param source
+     * @param request
      * @return
      * @throws SiteWhereException
      */
-    public static GrantedAuthority grantedAuthorityCreateLogic(IGrantedAuthorityCreateRequest source)
+    public static GrantedAuthority grantedAuthorityCreateLogic(IGrantedAuthorityCreateRequest request)
 	    throws SiteWhereException {
 	GrantedAuthority auth = new GrantedAuthority();
 
-	require("Authority", source.getAuthority());
-	auth.setAuthority(source.getAuthority());
+	require("Authority", request.getAuthority());
+	auth.setAuthority(request.getAuthority());
 
-	auth.setDescription(source.getDescription());
-	auth.setParent(source.getParent());
-	auth.setGroup(source.isGroup());
+	auth.setDescription(request.getDescription());
+	auth.setParent(request.getParent());
+	auth.setGroup(request.isGroup());
 	return auth;
     }
 

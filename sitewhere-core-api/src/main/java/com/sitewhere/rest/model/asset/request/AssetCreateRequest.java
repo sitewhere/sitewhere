@@ -8,10 +8,10 @@
 package com.sitewhere.rest.model.asset.request;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
 import com.sitewhere.spi.asset.request.IAssetCreateRequest;
 
 /**
@@ -20,13 +20,10 @@ import com.sitewhere.spi.asset.request.IAssetCreateRequest;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class AssetCreateRequest implements IAssetCreateRequest {
+public class AssetCreateRequest extends PersistentEntityCreateRequest implements IAssetCreateRequest {
 
     /** Serial version UID */
     private static final long serialVersionUID = -3557255561907642778L;
-
-    /** Reference token */
-    private String token;
 
     /** Asset type token */
     private String assetTypeToken;
@@ -36,21 +33,6 @@ public class AssetCreateRequest implements IAssetCreateRequest {
 
     /** Asset image url */
     private String imageUrl;
-
-    /** Metadata values */
-    private Map<String, String> metadata;
-
-    /*
-     * @see com.sitewhere.spi.asset.request.IAssetCreateRequest#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.asset.request.IAssetCreateRequest#getAssetTypeToken()
@@ -86,18 +68,6 @@ public class AssetCreateRequest implements IAssetCreateRequest {
 
     public void setImageUrl(String imageUrl) {
 	this.imageUrl = imageUrl;
-    }
-
-    /*
-     * @see com.sitewhere.spi.asset.request.IAssetCreateRequest#getMetadata()
-     */
-    @Override
-    public Map<String, String> getMetadata() {
-	return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-	this.metadata = metadata;
     }
 
     public static class Builder {

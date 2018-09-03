@@ -7,14 +7,13 @@
  */
 package com.sitewhere.rest.model.device.request;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
 import com.sitewhere.rest.model.device.command.CommandParameter;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.ParameterType;
@@ -26,13 +25,10 @@ import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceCommandCreateRequest implements IDeviceCommandCreateRequest, Serializable {
+public class DeviceCommandCreateRequest extends PersistentEntityCreateRequest implements IDeviceCommandCreateRequest {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = 7791276552702413783L;
-
-    /** Unqiue token */
-    private String token;
 
     /** Token for device type */
     private String deviceTypeToken;
@@ -48,23 +44,6 @@ public class DeviceCommandCreateRequest implements IDeviceCommandCreateRequest, 
 
     /** Command parameters */
     private List<CommandParameter> parameters = new ArrayList<CommandParameter>();
-
-    /** Metadata values */
-    private Map<String, String> metadata;
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.request.IDeviceCommandCreateRequest#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.device.request.IDeviceCommandCreateRequest#
@@ -137,20 +116,6 @@ public class DeviceCommandCreateRequest implements IDeviceCommandCreateRequest, 
 
     public void setParameters(List<CommandParameter> parameters) {
 	this.parameters = parameters;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.device.request.IDeviceCommandCreateRequest#getMetadata( )
-     */
-    public Map<String, String> getMetadata() {
-	return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-	this.metadata = metadata;
     }
 
     public static class Builder {

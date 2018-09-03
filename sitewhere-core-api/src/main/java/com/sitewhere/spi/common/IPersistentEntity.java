@@ -12,11 +12,11 @@ import java.util.Date;
 import java.util.UUID;
 
 /**
- * Base interface for entites managed by SiteWhere.
+ * Base interface for persistent entites.
  * 
  * @author Derek Adams
  */
-public interface ISiteWhereEntity extends IMetadataProvider, Serializable {
+public interface IPersistentEntity extends IMetadataProvider, Serializable {
 
     /**
      * Get unique id.

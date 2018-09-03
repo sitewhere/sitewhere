@@ -29,12 +29,6 @@ import com.sitewhere.spi.device.command.ParameterType;
  */
 public class MongoDeviceCommand implements MongoConverter<IDeviceCommand> {
 
-    /** Property for id */
-    public static final String PROP_ID = "_id";
-
-    /** Property for token */
-    public static final String PROP_TOKEN = "tokn";
-
     /** Property for device type id */
     public static final String PROP_DEVICE_TYPE_ID = "dtid";
 
@@ -86,8 +80,6 @@ public class MongoDeviceCommand implements MongoConverter<IDeviceCommand> {
      * @param target
      */
     public static void toDocument(IDeviceCommand source, Document target) {
-	target.append(PROP_ID, source.getId());
-	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_DEVICE_TYPE_ID, source.getDeviceTypeId());
 	target.append(PROP_NAMESPACE, source.getNamespace());
 	target.append(PROP_NAME, source.getName());
@@ -116,15 +108,11 @@ public class MongoDeviceCommand implements MongoConverter<IDeviceCommand> {
      */
     @SuppressWarnings("unchecked")
     public static void fromDocument(Document source, DeviceCommand target) {
-	UUID id = (UUID) source.get(PROP_ID);
-	String token = (String) source.get(PROP_TOKEN);
 	UUID deviceTypeId = (UUID) source.get(PROP_DEVICE_TYPE_ID);
 	String namespace = (String) source.get(PROP_NAMESPACE);
 	String name = (String) source.get(PROP_NAME);
 	String desc = (String) source.get(PROP_DESCRIPTION);
 
-	target.setId(id);
-	target.setToken(token);
 	target.setDeviceTypeId(deviceTypeId);
 	target.setNamespace(namespace);
 	target.setName(name);

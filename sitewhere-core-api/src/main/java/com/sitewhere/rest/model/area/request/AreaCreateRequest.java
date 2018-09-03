@@ -10,11 +10,11 @@ package com.sitewhere.rest.model.area.request;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.Location;
+import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
 import com.sitewhere.spi.area.request.IAreaCreateRequest;
 
 /**
@@ -23,13 +23,10 @@ import com.sitewhere.spi.area.request.IAreaCreateRequest;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class AreaCreateRequest implements IAreaCreateRequest {
+public class AreaCreateRequest extends PersistentEntityCreateRequest implements IAreaCreateRequest {
 
     /** Serial version UID */
     private static final long serialVersionUID = 2232101100201358496L;
-
-    /** Unique token */
-    private String token;
 
     /** Area type token */
     public String areaTypeToken;
@@ -48,21 +45,6 @@ public class AreaCreateRequest implements IAreaCreateRequest {
 
     /** Locations that define area boundaries */
     private List<Location> bounds = new ArrayList<Location>();
-
-    /** Metadata values */
-    private Map<String, String> metadata;
-
-    /*
-     * @see com.sitewhere.spi.area.request.IAreaCreateRequest#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.area.request.IAreaCreateRequest#getAreaTypeToken()
@@ -134,18 +116,6 @@ public class AreaCreateRequest implements IAreaCreateRequest {
 
     public void setBounds(List<Location> bounds) {
 	this.bounds = bounds;
-    }
-
-    /*
-     * @see com.sitewhere.spi.area.request.IAreaCreateRequest#getMetadata()
-     */
-    @Override
-    public Map<String, String> getMetadata() {
-	return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-	this.metadata = metadata;
     }
 
     public static class Builder {

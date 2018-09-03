@@ -8,8 +8,7 @@
 package com.sitewhere.spi.device;
 
 import com.sitewhere.spi.common.IAccessible;
-import com.sitewhere.spi.common.IImageProvider;
-import com.sitewhere.spi.common.ISiteWhereEntity;
+import com.sitewhere.spi.common.IBrandedEntity;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 
 /**
@@ -17,7 +16,7 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
  * 
  * @author Derek
  */
-public interface IDeviceType extends ISiteWhereEntity, IAccessible, IImageProvider {
+public interface IDeviceType extends IBrandedEntity, IAccessible {
 
     /**
      * Indicates whether this device contains other devices.

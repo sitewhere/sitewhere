@@ -14,6 +14,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
 import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.TriggerConstants;
 import com.sitewhere.spi.scheduling.TriggerType;
@@ -25,13 +26,10 @@ import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
  * @author Derek Adams
  */
 @JsonInclude(Include.NON_NULL)
-public class ScheduleCreateRequest implements IScheduleCreateRequest {
+public class ScheduleCreateRequest extends PersistentEntityCreateRequest implements IScheduleCreateRequest {
 
     /** Serial version UID */
     private static final long serialVersionUID = 1453554726838184776L;
-
-    /** Unique token */
-    private String token;
 
     /** Name */
     private String name;
@@ -48,28 +46,10 @@ public class ScheduleCreateRequest implements IScheduleCreateRequest {
     /** Date schedule is no longer in effect */
     private Date endDate;
 
-    /** Metadata */
-    private Map<String, String> metadata;
-
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.scheduling.request.IScheduleCreateRequest#getToken()
-     */
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.scheduling.request.IScheduleCreateRequest#getName()
+     * @see com.sitewhere.spi.scheduling.request.IScheduleCreateRequest#getName()
      */
     public String getName() {
 	return name;
@@ -111,8 +91,7 @@ public class ScheduleCreateRequest implements IScheduleCreateRequest {
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.scheduling.request.IScheduleCreateRequest#getStartDate(
-     * )
+     * com.sitewhere.spi.scheduling.request.IScheduleCreateRequest#getStartDate( )
      */
     public Date getStartDate() {
 	return startDate;
@@ -125,8 +104,7 @@ public class ScheduleCreateRequest implements IScheduleCreateRequest {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.scheduling.request.IScheduleCreateRequest#getEndDate()
+     * @see com.sitewhere.spi.scheduling.request.IScheduleCreateRequest#getEndDate()
      */
     public Date getEndDate() {
 	return endDate;
@@ -134,20 +112,6 @@ public class ScheduleCreateRequest implements IScheduleCreateRequest {
 
     public void setEndDate(Date endDate) {
 	this.endDate = endDate;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.scheduling.request.IScheduleCreateRequest#getMetadata()
-     */
-    public Map<String, String> getMetadata() {
-	return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-	this.metadata = metadata;
     }
 
     public static class Builder {

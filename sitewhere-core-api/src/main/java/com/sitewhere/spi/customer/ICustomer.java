@@ -9,7 +9,8 @@ package com.sitewhere.spi.customer;
 
 import java.util.UUID;
 
-import com.sitewhere.spi.common.ISiteWhereEntity;
+import com.sitewhere.spi.common.IAccessible;
+import com.sitewhere.spi.common.IBrandedEntity;
 
 /**
  * An entity that represents a customer (device owner) based on a previously
@@ -17,7 +18,7 @@ import com.sitewhere.spi.common.ISiteWhereEntity;
  * 
  * @author Derek
  */
-public interface ICustomer extends ISiteWhereEntity {
+public interface ICustomer extends IBrandedEntity, IAccessible {
 
     /**
      * Get id of corresponding customer type.
@@ -32,25 +33,4 @@ public interface ICustomer extends ISiteWhereEntity {
      * @return
      */
     public UUID getParentCustomerId();
-
-    /**
-     * Get the customer name.
-     * 
-     * @return
-     */
-    public String getName();
-
-    /**
-     * Get the description.
-     * 
-     * @return
-     */
-    public String getDescription();
-
-    /**
-     * Get the image URL.
-     * 
-     * @return
-     */
-    public String getImageUrl();
 }

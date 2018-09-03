@@ -8,11 +8,12 @@
 package com.sitewhere.mongodb.common;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.bson.Document;
 
-import com.sitewhere.rest.model.common.SiteWhereEntity;
-import com.sitewhere.spi.common.ISiteWhereEntity;
+import com.sitewhere.rest.model.common.PersistentEntity;
+import com.sitewhere.spi.common.IPersistentEntity;
 
 /**
  * Used to load or save SiteWhereEntity data to MongoDB.
@@ -20,6 +21,12 @@ import com.sitewhere.spi.common.ISiteWhereEntity;
  * @author dadams
  */
 public class MongoSiteWhereEntity {
+
+    /** Property for tenant id */
+    public static final String PROP_ID = "_id";
+
+    /** Property for token */
+    public static final String PROP_TOKEN = "tokn";
 
     /** Property for date entity was created */
     public static final String PROP_CREATED_DATE = "crdt";
@@ -39,7 +46,9 @@ public class MongoSiteWhereEntity {
      * @param source
      * @param target
      */
-    public static void toDocument(ISiteWhereEntity source, Document target) {
+    public static void toDocument(IPersistentEntity source, Document target) {
+	target.append(PROP_ID, source.getId());
+	target.append(PROP_TOKEN, source.getToken());
 	if (source.getCreatedDate() != null) {
 	    target.append(PROP_CREATED_DATE, source.getCreatedDate());
 	}
@@ -60,12 +69,16 @@ public class MongoSiteWhereEntity {
      * @param source
      * @param target
      */
-    public static void fromDocument(Document source, SiteWhereEntity target) {
+    public static void fromDocument(Document source, PersistentEntity target) {
+	UUID id = (UUID) source.get(PROP_ID);
+	String token = (String) source.get(PROP_TOKEN);
 	Date createdDate = (Date) source.get(PROP_CREATED_DATE);
 	String createdBy = (String) source.get(PROP_CREATED_BY);
 	Date updatedDate = (Date) source.get(PROP_UPDATED_DATE);
 	String updatedBy = (String) source.get(PROP_UPDATED_BY);
 
+	target.setId(id);
+	target.setToken(token);
 	target.setCreatedDate(createdDate);
 	target.setCreatedBy(createdBy);
 	target.setUpdatedDate(updatedDate);

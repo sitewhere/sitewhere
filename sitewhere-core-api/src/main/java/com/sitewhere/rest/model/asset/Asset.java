@@ -11,7 +11,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.common.SiteWhereEntity;
+import com.sitewhere.rest.model.common.BrandedEntity;
 import com.sitewhere.spi.asset.IAsset;
 
 /**
@@ -20,49 +20,16 @@ import com.sitewhere.spi.asset.IAsset;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class Asset extends SiteWhereEntity implements IAsset {
+public class Asset extends BrandedEntity implements IAsset {
 
     /** Serial version UID */
     private static final long serialVersionUID = -853673101089583873L;
-
-    /** Unique id */
-    private UUID id;
-
-    /** Reference token */
-    private String token;
 
     /** Asset type id */
     private UUID assetTypeId;
 
     /** Asset name */
     private String name;
-
-    /** Asset image url */
-    private String imageUrl;
-
-    /*
-     * @see com.sitewhere.spi.asset.IAsset#getId()
-     */
-    @Override
-    public UUID getId() {
-	return id;
-    }
-
-    public void setId(UUID id) {
-	this.id = id;
-    }
-
-    /*
-     * @see com.sitewhere.spi.asset.IAsset#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.asset.IAsset#getAssetTypeId()
@@ -86,17 +53,5 @@ public class Asset extends SiteWhereEntity implements IAsset {
 
     public void setName(String name) {
 	this.name = name;
-    }
-
-    /*
-     * @see com.sitewhere.spi.asset.IAsset#getImageUrl()
-     */
-    @Override
-    public String getImageUrl() {
-	return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-	this.imageUrl = imageUrl;
     }
 }

@@ -9,15 +9,14 @@ package com.sitewhere.spi.asset;
 
 import java.util.UUID;
 
-import com.sitewhere.spi.common.IImageProvider;
-import com.sitewhere.spi.common.ISiteWhereEntity;
+import com.sitewhere.spi.common.IBrandedEntity;
 
 /**
  * Item that represents a tangible object (person, place, thing) in the world.
  * 
  * @author Derek
  */
-public interface IAsset extends ISiteWhereEntity, IImageProvider {
+public interface IAsset extends IBrandedEntity {
 
     /**
      * Get unique id of asset type.

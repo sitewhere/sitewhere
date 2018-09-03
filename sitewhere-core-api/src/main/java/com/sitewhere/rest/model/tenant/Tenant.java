@@ -9,11 +9,10 @@ package com.sitewhere.rest.model.tenant;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.common.SiteWhereEntity;
+import com.sitewhere.rest.model.common.BrandedEntity;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -22,25 +21,19 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class Tenant extends SiteWhereEntity implements ITenant {
+public class Tenant extends BrandedEntity implements ITenant {
 
     /** Serial version UUID */
     private static final long serialVersionUID = -353489785570975056L;
 
-    /** Unique tenant id */
-    private UUID id;
-
-    /** Reference token */
-    private String token;
-
     /** Tenant name */
     private String name;
 
+    /** Logo URL */
+    private String logoUrl;
+
     /** Device authentication token */
     private String authenticationToken;
-
-    /** Tenant logo URL */
-    private String logoUrl;
 
     /** List of user ids authorized to access tenant */
     private List<String> authorizedUserIds = new ArrayList<String>();
@@ -50,30 +43,6 @@ public class Tenant extends SiteWhereEntity implements ITenant {
 
     /** Dataset template id */
     private String datasetTemplateId;
-
-    /*
-     * @see com.sitewhere.spi.common.ISiteWhereEntity#getId()
-     */
-    @Override
-    public UUID getId() {
-	return id;
-    }
-
-    public void setId(UUID id) {
-	this.id = id;
-    }
-
-    /*
-     * @see com.sitewhere.spi.common.ISiteWhereEntity#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * (non-Javadoc)
@@ -90,6 +59,17 @@ public class Tenant extends SiteWhereEntity implements ITenant {
     }
 
     /*
+     * @see com.sitewhere.spi.tenant.ITenant#getLogoUrl()
+     */
+    public String getLogoUrl() {
+	return logoUrl;
+    }
+
+    public void setLogoUrl(String logoUrl) {
+	this.logoUrl = logoUrl;
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.user.ITenant#getAuthenticationToken()
@@ -101,20 +81,6 @@ public class Tenant extends SiteWhereEntity implements ITenant {
 
     public void setAuthenticationToken(String authenticationToken) {
 	this.authenticationToken = authenticationToken;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.user.ITenant#getLogoUrl()
-     */
-    @Override
-    public String getLogoUrl() {
-	return logoUrl;
-    }
-
-    public void setLogoUrl(String logoUrl) {
-	this.logoUrl = logoUrl;
     }
 
     /*

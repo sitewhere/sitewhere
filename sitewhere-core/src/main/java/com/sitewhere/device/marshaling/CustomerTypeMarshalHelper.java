@@ -14,7 +14,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sitewhere.rest.model.common.SiteWhereEntity;
+import com.sitewhere.rest.model.common.PersistentEntity;
 import com.sitewhere.rest.model.customer.CustomerType;
 import com.sitewhere.rest.model.device.marshaling.MarshaledCustomerType;
 import com.sitewhere.spi.SiteWhereException;
@@ -57,7 +57,7 @@ public class CustomerTypeMarshalHelper {
 	type.setDescription(source.getDescription());
 	type.setIcon(source.getIcon());
 	type.setContainedCustomerTypeIds(source.getContainedCustomerTypeIds());
-	SiteWhereEntity.copy(source, type);
+	PersistentEntity.copy(source, type);
 	if (isIncludeContainedCustomerTypes()) {
 	    List<ICustomerType> ccts = new ArrayList<ICustomerType>();
 	    for (UUID ctid : source.getContainedCustomerTypeIds()) {

@@ -7,10 +7,9 @@
  */
 package com.sitewhere.spi.device.request;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
+import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 
 /**
@@ -18,14 +17,7 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
  * 
  * @author Derek
  */
-public interface IDeviceCreateRequest extends Serializable {
-
-    /**
-     * Get reference token.
-     * 
-     * @return
-     */
-    public String getToken();
+public interface IDeviceCreateRequest extends IPersistentEntityCreateRequest {
 
     /**
      * Get the device type token.
@@ -68,11 +60,4 @@ public interface IDeviceCreateRequest extends Serializable {
      * @return
      */
     public String getStatus();
-
-    /**
-     * Get metadata values.
-     * 
-     * @return
-     */
-    public Map<String, String> getMetadata();
 }

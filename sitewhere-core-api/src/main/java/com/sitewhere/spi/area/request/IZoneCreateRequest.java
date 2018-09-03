@@ -7,25 +7,17 @@
  */
 package com.sitewhere.spi.area.request;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 import com.sitewhere.spi.common.ILocation;
+import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
 
 /**
  * Interface for arguments needed to create a zone.
  * 
  * @author Derek
  */
-public interface IZoneCreateRequest extends Serializable {
-
-    /**
-     * Token for referencing zone.
-     * 
-     * @return
-     */
-    public String getToken();
+public interface IZoneCreateRequest extends IPersistentEntityCreateRequest {
 
     /**
      * Get token of parent area.
@@ -68,11 +60,4 @@ public interface IZoneCreateRequest extends Serializable {
      * @return
      */
     public Double getOpacity();
-
-    /**
-     * Get metadata values.
-     * 
-     * @return
-     */
-    public Map<String, String> getMetadata();
 }

@@ -11,7 +11,7 @@ import java.util.UUID;
 
 import com.sitewhere.spi.common.IColorProvider;
 import com.sitewhere.spi.common.IIconProvider;
-import com.sitewhere.spi.common.ISiteWhereEntity;
+import com.sitewhere.spi.common.IPersistentEntity;
 
 /**
  * Indicates a possible status for a device. A device status is tied to a device
@@ -19,7 +19,7 @@ import com.sitewhere.spi.common.ISiteWhereEntity;
  * 
  * @author Derek
  */
-public interface IDeviceStatus extends ISiteWhereEntity, IColorProvider, IIconProvider {
+public interface IDeviceStatus extends IPersistentEntity, IColorProvider, IIconProvider {
 
     /**
      * Get the unique status code.

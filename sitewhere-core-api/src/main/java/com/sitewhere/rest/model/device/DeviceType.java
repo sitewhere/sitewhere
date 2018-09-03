@@ -7,11 +7,9 @@
  */
 package com.sitewhere.rest.model.device;
 
-import java.util.UUID;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.common.SiteWhereEntity;
+import com.sitewhere.rest.model.common.BrandedEntity;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.IDeviceType;
@@ -23,16 +21,10 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceType extends SiteWhereEntity implements IDeviceType {
+public class DeviceType extends BrandedEntity implements IDeviceType {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = -2798346634280966544L;
-
-    /** Unique device specification id */
-    private UUID id;
-
-    /** Unique token */
-    private String token;
 
     /** Name */
     private String name;
@@ -40,38 +32,11 @@ public class DeviceType extends SiteWhereEntity implements IDeviceType {
     /** Decription */
     private String description;
 
-    /** Image URL */
-    private String imageUrl;
-
     /** Device container policy */
     private DeviceContainerPolicy containerPolicy = DeviceContainerPolicy.Standalone;
 
     /** Schema that specifies allowable locations of nested devices */
     private DeviceElementSchema deviceElementSchema;
-
-    /*
-     * @see com.sitewhere.spi.device.IDeviceType#getId()
-     */
-    @Override
-    public UUID getId() {
-	return id;
-    }
-
-    public void setId(UUID id) {
-	this.id = id;
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.IDeviceType#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.device.IDeviceType#getName()
@@ -95,18 +60,6 @@ public class DeviceType extends SiteWhereEntity implements IDeviceType {
 
     public void setDescription(String description) {
 	this.description = description;
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.IDeviceType#getImageUrl()
-     */
-    @Override
-    public String getImageUrl() {
-	return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-	this.imageUrl = imageUrl;
     }
 
     /*

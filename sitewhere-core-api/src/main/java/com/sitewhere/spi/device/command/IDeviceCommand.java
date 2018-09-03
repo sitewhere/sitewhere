@@ -10,14 +10,15 @@ package com.sitewhere.spi.device.command;
 import java.util.List;
 import java.util.UUID;
 
-import com.sitewhere.spi.common.ISiteWhereEntity;
+import com.sitewhere.spi.common.IAccessible;
+import com.sitewhere.spi.common.IPersistentEntity;
 
 /**
  * A parameterized command issued to a device.
  * 
  * @author Derek
  */
-public interface IDeviceCommand extends ISiteWhereEntity {
+public interface IDeviceCommand extends IPersistentEntity, IAccessible {
 
     /**
      * Get unique id of parent device type.
@@ -32,20 +33,6 @@ public interface IDeviceCommand extends ISiteWhereEntity {
      * @return
      */
     public String getNamespace();
-
-    /**
-     * Get command name.
-     * 
-     * @return
-     */
-    public String getName();
-
-    /**
-     * Get a description of the command.
-     * 
-     * @return
-     */
-    public String getDescription();
 
     /**
      * Get list of parameters.

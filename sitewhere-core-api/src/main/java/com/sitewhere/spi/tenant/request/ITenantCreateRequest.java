@@ -7,24 +7,16 @@
  */
 package com.sitewhere.spi.tenant.request;
 
-import java.io.Serializable;
 import java.util.List;
 
-import com.sitewhere.spi.common.IMetadataProvider;
+import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
 
 /**
  * Interface for arguments needed to create a tenant.
  * 
  * @author Derek
  */
-public interface ITenantCreateRequest extends IMetadataProvider, Serializable {
-
-    /**
-     * Get reference token.
-     * 
-     * @return
-     */
-    public String getToken();
+public interface ITenantCreateRequest extends IPersistentEntityCreateRequest {
 
     /**
      * Get tenant name.

@@ -13,8 +13,8 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.rest.model.common.BrandedEntity;
 import com.sitewhere.rest.model.common.Location;
-import com.sitewhere.rest.model.common.SiteWhereEntity;
 import com.sitewhere.spi.area.IArea;
 
 /**
@@ -23,16 +23,10 @@ import com.sitewhere.spi.area.IArea;
  * @author dadams
  */
 @JsonInclude(Include.NON_NULL)
-public class Area extends SiteWhereEntity implements IArea {
+public class Area extends BrandedEntity implements IArea {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = -566693689485715028L;
-
-    /** Unique area id */
-    private UUID id;
-
-    /** Unique token */
-    private String token;
 
     /** Area type id */
     private UUID areaTypeId;
@@ -51,30 +45,6 @@ public class Area extends SiteWhereEntity implements IArea {
 
     /** Area boundary coordinates */
     private List<Location> bounds = new ArrayList<Location>();
-
-    /*
-     * @see com.sitewhere.spi.area.IArea#getId()
-     */
-    @Override
-    public UUID getId() {
-	return id;
-    }
-
-    public void setId(UUID id) {
-	this.id = id;
-    }
-
-    /*
-     * @see com.sitewhere.spi.area.IArea#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.area.IArea#getAreaTypeId()

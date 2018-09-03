@@ -7,7 +7,7 @@
  */
 package com.sitewhere.rest.model.device.request;
 
-import com.sitewhere.rest.model.common.MetadataProvider;
+import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 
 /**
@@ -15,13 +15,10 @@ import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
  * 
  * @author Derek
  */
-public class DeviceStatusCreateRequest extends MetadataProvider implements IDeviceStatusCreateRequest {
+public class DeviceStatusCreateRequest extends PersistentEntityCreateRequest implements IDeviceStatusCreateRequest {
 
     /** Serial version UID */
     private static final long serialVersionUID = -1667891345754538713L;
-
-    /** Unqiue token */
-    private String token;
 
     /** Token for device type */
     private String deviceTypeToken;
@@ -43,18 +40,6 @@ public class DeviceStatusCreateRequest extends MetadataProvider implements IDevi
 
     /** Icon */
     private String icon;
-
-    /*
-     * @see com.sitewhere.spi.device.request.IDeviceStatusCreateRequest#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.device.request.IDeviceStatusCreateRequest#

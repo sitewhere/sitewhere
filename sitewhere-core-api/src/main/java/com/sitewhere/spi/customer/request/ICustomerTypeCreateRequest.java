@@ -7,37 +7,17 @@
  */
 package com.sitewhere.spi.customer.request;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
+
+import com.sitewhere.spi.common.IAccessible;
+import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
 
 /**
  * Provides information needed to create a customer type.
  * 
  * @author Derek
  */
-public interface ICustomerTypeCreateRequest extends Serializable {
-
-    /**
-     * Get token that acts as an alias for customer type id.
-     * 
-     * @return
-     */
-    public String getToken();
-
-    /**
-     * Get the customer type name.
-     * 
-     * @return
-     */
-    public String getName();
-
-    /**
-     * Get the customer type description.
-     * 
-     * @return
-     */
-    public String getDescription();
+public interface ICustomerTypeCreateRequest extends IAccessible, IPersistentEntityCreateRequest {
 
     /**
      * Get icon shown for customer type.
@@ -45,13 +25,6 @@ public interface ICustomerTypeCreateRequest extends Serializable {
      * @return
      */
     public String getIcon();
-
-    /**
-     * Get metadata values.
-     * 
-     * @return
-     */
-    public Map<String, String> getMetadata();
 
     /**
      * Get list of customer type tokens which may be contained.

@@ -10,12 +10,11 @@ package com.sitewhere.rest.model.scheduling;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.sitewhere.rest.model.common.SiteWhereEntity;
+import com.sitewhere.rest.model.common.PersistentEntity;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.TriggerType;
@@ -26,16 +25,10 @@ import com.sitewhere.spi.scheduling.TriggerType;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class Schedule extends SiteWhereEntity implements ISchedule {
+public class Schedule extends PersistentEntity implements ISchedule {
 
     /** Serial version UID */
     private static final long serialVersionUID = -1316208751255296000L;
-
-    /** Unique id */
-    private UUID id;
-
-    /** Reference token */
-    private String token;
 
     /** Schedule name */
     private String name;
@@ -51,30 +44,6 @@ public class Schedule extends SiteWhereEntity implements ISchedule {
 
     /** Date schedule is no longer in effect */
     private Date endDate;
-
-    /*
-     * @see com.sitewhere.spi.common.ISiteWhereEntity#getId()
-     */
-    @Override
-    public UUID getId() {
-	return id;
-    }
-
-    public void setId(UUID id) {
-	this.id = id;
-    }
-
-    /*
-     * @see com.sitewhere.spi.common.ISiteWhereEntity#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * (non-Javadoc)

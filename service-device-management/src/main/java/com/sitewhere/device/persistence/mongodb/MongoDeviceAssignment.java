@@ -26,12 +26,6 @@ import com.sitewhere.spi.device.IDeviceAssignment;
  */
 public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> {
 
-    /** Property for id */
-    public static final String PROP_ID = "_id";
-
-    /** Property for token */
-    public static final String PROP_TOKEN = "tokn";
-
     /** Property for device id */
     public static final String PROP_DEVICE_ID = "dvid";
 
@@ -81,8 +75,6 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
      * @param target
      */
     public static void toDocument(IDeviceAssignment source, Document target) {
-	target.append(PROP_ID, source.getId());
-	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_DEVICE_ID, source.getDeviceId());
 	target.append(PROP_DEVICE_TYPE_ID, source.getDeviceTypeId());
 	target.append(PROP_CUSTOMER_ID, source.getCustomerId());
@@ -110,8 +102,6 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
      * @param target
      */
     public static void fromDocument(Document source, DeviceAssignment target) {
-	UUID id = (UUID) source.get(PROP_ID);
-	String token = (String) source.get(PROP_TOKEN);
 	UUID deviceId = (UUID) source.get(PROP_DEVICE_ID);
 	UUID deviceTypeId = (UUID) source.get(PROP_DEVICE_TYPE_ID);
 	UUID customerId = (UUID) source.get(PROP_CUSTOMER_ID);
@@ -121,8 +111,6 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
 	Date activeDate = (Date) source.get(PROP_ACTIVE_DATE);
 	Date releasedDate = (Date) source.get(PROP_RELEASED_DATE);
 
-	target.setId(id);
-	target.setToken(token);
 	target.setDeviceId(deviceId);
 	target.setDeviceTypeId(deviceTypeId);
 	target.setCustomerId(customerId);

@@ -11,12 +11,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.sitewhere.rest.model.common.SiteWhereEntity;
+import com.sitewhere.rest.model.common.PersistentEntity;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.user.AccountStatus;
@@ -28,16 +27,10 @@ import com.sitewhere.spi.user.IUser;
  * @author Derek Adams
  */
 @JsonInclude(Include.NON_NULL)
-public class User extends SiteWhereEntity implements IUser {
+public class User extends PersistentEntity implements IUser {
 
     /** For {@link Serializable} */
     private static final long serialVersionUID = -3322129570954465956L;
-
-    /** Unique id */
-    private UUID id;
-
-    /** Reference token */
-    private String token;
 
     /** Unique username */
     private String username;
@@ -59,30 +52,6 @@ public class User extends SiteWhereEntity implements IUser {
 
     /** List of granted authorities */
     private List<String> authorities = new ArrayList<>();
-
-    /*
-     * @see com.sitewhere.spi.common.ISiteWhereEntity#getId()
-     */
-    @Override
-    public UUID getId() {
-	return id;
-    }
-
-    public void setId(UUID id) {
-	this.id = id;
-    }
-
-    /*
-     * @see com.sitewhere.spi.common.ISiteWhereEntity#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.user.IUser#getUsername()
@@ -184,7 +153,7 @@ public class User extends SiteWhereEntity implements IUser {
 	result.setLastLogin(input.getLastLogin());
 	result.setStatus(input.getStatus());
 	result.setAuthorities(new ArrayList<String>(input.getAuthorities()));
-	SiteWhereEntity.copy(input, result);
+	PersistentEntity.copy(input, result);
 	return result;
     }
 }

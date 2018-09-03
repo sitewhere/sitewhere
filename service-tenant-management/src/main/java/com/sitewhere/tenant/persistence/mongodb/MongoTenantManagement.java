@@ -21,6 +21,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.IndexOptions;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
+import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.tenant.Tenant;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -71,7 +72,7 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
      * @throws SiteWhereException
      */
     protected void ensureIndexes() throws SiteWhereException {
-	getMongoClient().getTenantsCollection().createIndex(new Document(MongoTenant.PROP_TOKEN, 1),
+	getMongoClient().getTenantsCollection().createIndex(new Document(MongoSiteWhereEntity.PROP_TOKEN, 1),
 		new IndexOptions().unique(true));
     }
 
@@ -107,7 +108,7 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
 	TenantManagementPersistenceLogic.tenantUpdateLogic(request, existing);
 	Document updated = MongoTenant.toDocument(existing);
 
-	Document query = new Document(MongoTenant.PROP_ID, id);
+	Document query = new Document(MongoSiteWhereEntity.PROP_ID, id);
 	MongoCollection<Document> tenants = getMongoClient().getTenantsCollection();
 	MongoPersistence.update(tenants, query, updated);
 
@@ -134,7 +135,7 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
     public ITenant getTenantByToken(String token) throws SiteWhereException {
 	try {
 	    MongoCollection<Document> tenants = getMongoClient().getTenantsCollection();
-	    Document query = new Document(MongoTenant.PROP_TOKEN, token);
+	    Document query = new Document(MongoSiteWhereEntity.PROP_TOKEN, token);
 	    Document dbTenant = tenants.find(query).first();
 	    if (dbTenant != null) {
 		return MongoTenant.fromDocument(dbTenant);
@@ -159,7 +160,7 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
 	if (criteria.getTextSearch() != null) {
 	    try {
 		Pattern regex = Pattern.compile(Pattern.quote(criteria.getTextSearch()));
-		DBObject idSearch = new BasicDBObject(MongoTenant.PROP_ID, regex);
+		DBObject idSearch = new BasicDBObject(MongoSiteWhereEntity.PROP_ID, regex);
 		DBObject nameSearch = new BasicDBObject(MongoTenant.PROP_NAME, regex);
 		BasicDBList or = new BasicDBList();
 		or.add(idSearch);
@@ -216,7 +217,7 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
     protected Document getTenantDocumentById(UUID id) throws SiteWhereException {
 	try {
 	    MongoCollection<Document> tenants = getMongoClient().getTenantsCollection();
-	    Document query = new Document(MongoTenant.PROP_ID, id);
+	    Document query = new Document(MongoSiteWhereEntity.PROP_ID, id);
 	    return tenants.find(query).first();
 	} catch (MongoClientException e) {
 	    throw MongoPersistence.handleClientException(e);

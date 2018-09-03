@@ -10,8 +10,8 @@ package com.sitewhere.rest.model.customer.request;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
 import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest;
 
@@ -20,13 +20,10 @@ import com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest;
  * 
  * @author Derek
  */
-public class CustomerTypeCreateRequest implements ICustomerTypeCreateRequest {
+public class CustomerTypeCreateRequest extends PersistentEntityCreateRequest implements ICustomerTypeCreateRequest {
 
     /** Serial version UID */
     private static final long serialVersionUID = 2776911532638550509L;
-
-    /** Alias token */
-    private String token;
 
     /** Name */
     private String name;
@@ -37,23 +34,8 @@ public class CustomerTypeCreateRequest implements ICustomerTypeCreateRequest {
     /** Icon */
     private String icon;
 
-    /** Metadata values */
-    private Map<String, String> metadata;
-
     /** List of contained customer type tokens */
     private List<String> containedCustomerTypeTokens;
-
-    /*
-     * @see com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest#getName()
@@ -91,19 +73,6 @@ public class CustomerTypeCreateRequest implements ICustomerTypeCreateRequest {
 
     public void setIcon(String icon) {
 	this.icon = icon;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest#getMetadata()
-     */
-    @Override
-    public Map<String, String> getMetadata() {
-	return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-	this.metadata = metadata;
     }
 
     /*

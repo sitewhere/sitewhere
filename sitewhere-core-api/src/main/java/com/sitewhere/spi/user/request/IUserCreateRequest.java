@@ -7,10 +7,9 @@
  */
 package com.sitewhere.spi.user.request;
 
-import java.io.Serializable;
 import java.util.List;
 
-import com.sitewhere.spi.common.IMetadataProvider;
+import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
 import com.sitewhere.spi.user.AccountStatus;
 
 /**
@@ -18,7 +17,7 @@ import com.sitewhere.spi.user.AccountStatus;
  * 
  * @author Derek
  */
-public interface IUserCreateRequest extends IMetadataProvider, Serializable {
+public interface IUserCreateRequest extends IPersistentEntityCreateRequest {
 
     /**
      * Get the username.

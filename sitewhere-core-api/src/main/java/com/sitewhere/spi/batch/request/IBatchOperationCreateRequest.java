@@ -11,23 +11,17 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitewhere.spi.batch.IBatchOperation;
+import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
 
 /**
  * Provides information needex to create an {@link IBatchOperation}.
  * 
  * @author Derek
  */
-public interface IBatchOperationCreateRequest {
+public interface IBatchOperationCreateRequest extends IPersistentEntityCreateRequest {
 
     /** Metadata property with token for batch operation that generated event */
     public static final String META_BATCH_OPERATION_TOKEN = "batch";
-
-    /**
-     * Get the unique token.
-     * 
-     * @return
-     */
-    public String getToken();
 
     /**
      * Get operation to be performed.
@@ -49,11 +43,4 @@ public interface IBatchOperationCreateRequest {
      * @return
      */
     public List<String> getDeviceTokens();
-
-    /**
-     * Get metadata entries.
-     * 
-     * @return
-     */
-    public Map<String, String> getMetadata();
 }

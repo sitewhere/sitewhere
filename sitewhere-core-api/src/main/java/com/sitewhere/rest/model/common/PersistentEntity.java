@@ -8,21 +8,29 @@
 package com.sitewhere.rest.model.common;
 
 import java.util.Date;
+import java.util.UUID;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.common.ISiteWhereEntity;
+import com.sitewhere.spi.common.IPersistentEntity;
 
 /**
- * Metadata provider that also contains SiteWhere entity information.
+ * Base class for persistent entities that have a unique UUID along with a
+ * user-definable token. The entities also track create/update information.
  * 
  * @author Derek Adams
  */
-public abstract class SiteWhereEntity extends MetadataProvider implements ISiteWhereEntity {
+public class PersistentEntity extends MetadataProvider implements IPersistentEntity {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = 1858151633970096161L;
+
+    /** Unique device specification id */
+    private UUID id;
+
+    /** Unique token */
+    private String token;
 
     /** Date entity was created */
     private Date createdDate;
@@ -36,6 +44,34 @@ public abstract class SiteWhereEntity extends MetadataProvider implements ISiteW
     /** Username that updated entity */
     private String updatedBy;
 
+    /*
+     * @see com.sitewhere.spi.common.IPersistentEntity#getId()
+     */
+    @Override
+    public UUID getId() {
+	return id;
+    }
+
+    public void setId(UUID id) {
+	this.id = id;
+    }
+
+    /*
+     * @see com.sitewhere.spi.common.IPersistentEntity#getToken()
+     */
+    @Override
+    public String getToken() {
+	return token;
+    }
+
+    public void setToken(String token) {
+	this.token = token;
+    }
+
+    /*
+     * @see com.sitewhere.spi.common.IPersistentEntity#getCreatedDate()
+     */
+    @Override
     @JsonSerialize(using = JsonDateSerializer.class)
     public Date getCreatedDate() {
 	return createdDate;
@@ -46,10 +82,9 @@ public abstract class SiteWhereEntity extends MetadataProvider implements ISiteW
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.common.ISiteWhereEntity#getCreatedBy()
+     * @see com.sitewhere.spi.common.IPersistentEntity#getCreatedBy()
      */
+    @Override
     public String getCreatedBy() {
 	return createdBy;
     }
@@ -59,10 +94,9 @@ public abstract class SiteWhereEntity extends MetadataProvider implements ISiteW
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.common.ISiteWhereEntity#getUpdatedDate()
+     * @see com.sitewhere.spi.common.IPersistentEntity#getUpdatedDate()
      */
+    @Override
     @JsonSerialize(using = JsonDateSerializer.class)
     public Date getUpdatedDate() {
 	return updatedDate;
@@ -73,10 +107,9 @@ public abstract class SiteWhereEntity extends MetadataProvider implements ISiteW
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.common.ISiteWhereEntity#getUpdatedBy()
+     * @see com.sitewhere.spi.common.IPersistentEntity#getUpdatedBy()
      */
+    @Override
     public String getUpdatedBy() {
 	return updatedBy;
     }
@@ -91,7 +124,7 @@ public abstract class SiteWhereEntity extends MetadataProvider implements ISiteW
      * @param source
      * @param target
      */
-    public static void copy(ISiteWhereEntity source, SiteWhereEntity target) throws SiteWhereException {
+    public static void copy(IPersistentEntity source, PersistentEntity target) throws SiteWhereException {
 	target.setCreatedDate(source.getCreatedDate());
 	target.setCreatedBy(source.getCreatedBy());
 	target.setUpdatedDate(source.getUpdatedDate());

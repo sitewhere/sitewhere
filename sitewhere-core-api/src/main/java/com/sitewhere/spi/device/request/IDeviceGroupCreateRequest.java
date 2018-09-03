@@ -7,26 +7,18 @@
  */
 package com.sitewhere.spi.device.request;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 import com.sitewhere.spi.common.IAccessible;
 import com.sitewhere.spi.common.IImageProvider;
+import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
 
 /**
  * Interface for arguments needed to create a device group.
  * 
  * @author Derek
  */
-public interface IDeviceGroupCreateRequest extends IAccessible, IImageProvider, Serializable {
-
-    /**
-     * Get the unique token.
-     * 
-     * @return
-     */
-    public String getToken();
+public interface IDeviceGroupCreateRequest extends IAccessible, IImageProvider, IPersistentEntityCreateRequest {
 
     /**
      * Get list of roles associated with group.
@@ -34,11 +26,4 @@ public interface IDeviceGroupCreateRequest extends IAccessible, IImageProvider, 
      * @return
      */
     public List<String> getRoles();
-
-    /**
-     * Get metadata values.
-     * 
-     * @return
-     */
-    public Map<String, String> getMetadata();
 }

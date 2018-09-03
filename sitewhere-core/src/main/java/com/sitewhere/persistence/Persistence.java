@@ -11,7 +11,7 @@ import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.sitewhere.rest.model.common.SiteWhereEntity;
+import com.sitewhere.rest.model.common.PersistentEntity;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
@@ -31,7 +31,7 @@ public class Persistence {
      * @param entity
      * @throws SiteWhereException
      */
-    public static void initializeEntityMetadata(SiteWhereEntity entity) throws SiteWhereException {
+    public static void initializeEntityMetadata(PersistentEntity entity) throws SiteWhereException {
 	entity.setCreatedDate(new Date());
 	entity.setCreatedBy(null);
     }
@@ -43,7 +43,7 @@ public class Persistence {
      * @param entity
      * @throws SiteWhereException
      */
-    public static void setUpdatedEntityMetadata(SiteWhereEntity entity) throws SiteWhereException {
+    public static void setUpdatedEntityMetadata(PersistentEntity entity) throws SiteWhereException {
 	entity.setUpdatedDate(new Date());
 	entity.setUpdatedBy(null);
     }

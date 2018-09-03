@@ -9,11 +9,10 @@ package com.sitewhere.rest.model.device.group;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.common.SiteWhereEntity;
+import com.sitewhere.rest.model.common.BrandedEntity;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 
 /**
@@ -22,16 +21,10 @@ import com.sitewhere.spi.device.group.IDeviceGroup;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceGroup extends SiteWhereEntity implements IDeviceGroup {
+public class DeviceGroup extends BrandedEntity implements IDeviceGroup {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = -4993194128786517276L;
-
-    /** Unique device id */
-    private UUID id;
-
-    /** Unique token */
-    private String token;
 
     /** Group name */
     private String name;
@@ -39,37 +32,8 @@ public class DeviceGroup extends SiteWhereEntity implements IDeviceGroup {
     /** Group description */
     private String description;
 
-    /** Image URL */
-    private String imageUrl;
-
     /** List of roles */
     private List<String> roles = new ArrayList<String>();
-
-    /*
-     * @see com.sitewhere.spi.device.group.IDeviceGroup#getId()
-     */
-    @Override
-    public UUID getId() {
-	return id;
-    }
-
-    public void setId(UUID id) {
-	this.id = id;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.group.IDeviceGroup#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * (non-Javadoc)
@@ -97,18 +61,6 @@ public class DeviceGroup extends SiteWhereEntity implements IDeviceGroup {
 
     public void setDescription(String description) {
 	this.description = description;
-    }
-
-    /*
-     * @see com.sitewhere.spi.common.IAccessible#getImageUrl()
-     */
-    @Override
-    public String getImageUrl() {
-	return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-	this.imageUrl = imageUrl;
     }
 
     /*

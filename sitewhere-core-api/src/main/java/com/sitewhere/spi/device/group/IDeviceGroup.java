@@ -10,15 +10,14 @@ package com.sitewhere.spi.device.group;
 import java.util.List;
 
 import com.sitewhere.spi.common.IAccessible;
-import com.sitewhere.spi.common.IImageProvider;
-import com.sitewhere.spi.common.ISiteWhereEntity;
+import com.sitewhere.spi.common.IBrandedEntity;
 
 /**
  * Interface for a group of related devices.
  * 
  * @author Derek
  */
-public interface IDeviceGroup extends ISiteWhereEntity, IAccessible, IImageProvider {
+public interface IDeviceGroup extends IBrandedEntity, IAccessible {
 
     /**
      * Get list of roles associated with element.

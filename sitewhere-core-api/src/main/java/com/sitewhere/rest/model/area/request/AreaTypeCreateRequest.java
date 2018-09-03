@@ -10,8 +10,8 @@ package com.sitewhere.rest.model.area.request;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
 import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 
@@ -20,13 +20,10 @@ import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
  * 
  * @author Derek
  */
-public class AreaTypeCreateRequest implements IAreaTypeCreateRequest {
+public class AreaTypeCreateRequest extends PersistentEntityCreateRequest implements IAreaTypeCreateRequest {
 
     /** Serial version UID */
     private static final long serialVersionUID = 7654388850917582565L;
-
-    /** Alias token */
-    private String token;
 
     /** Name */
     private String name;
@@ -37,23 +34,8 @@ public class AreaTypeCreateRequest implements IAreaTypeCreateRequest {
     /** Icon */
     private String icon;
 
-    /** Metadata values */
-    private Map<String, String> metadata;
-
     /** List of contained area type tokens */
     private List<String> containedAreaTypeTokens;
-
-    /*
-     * @see com.sitewhere.spi.area.request.IAreaTypeCreateRequest#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.area.request.IAreaTypeCreateRequest#getName()
@@ -89,18 +71,6 @@ public class AreaTypeCreateRequest implements IAreaTypeCreateRequest {
 
     public void setIcon(String icon) {
 	this.icon = icon;
-    }
-
-    /*
-     * @see com.sitewhere.spi.area.request.IAreaTypeCreateRequest#getMetadata()
-     */
-    @Override
-    public Map<String, String> getMetadata() {
-	return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-	this.metadata = metadata;
     }
 
     /*

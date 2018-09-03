@@ -25,12 +25,6 @@ import com.sitewhere.spi.customer.ICustomerType;
  */
 public class MongoCustomerType implements MongoConverter<ICustomerType> {
 
-    /** Property for id */
-    public static final String PROP_ID = "_id";
-
-    /** Property for token */
-    public static final String PROP_TOKEN = "tokn";
-
     /** Property for name */
     public static final String PROP_NAME = "name";
 
@@ -70,8 +64,6 @@ public class MongoCustomerType implements MongoConverter<ICustomerType> {
      * @param target
      */
     public static void toDocument(ICustomerType source, Document target) {
-	target.append(PROP_ID, source.getId());
-	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_DESCRIPTION, source.getDescription());
 	target.append(PROP_ICON, source.getIcon());
@@ -89,15 +81,11 @@ public class MongoCustomerType implements MongoConverter<ICustomerType> {
      */
     @SuppressWarnings("unchecked")
     public static void fromDocument(Document source, CustomerType target) {
-	UUID id = (UUID) source.get(PROP_ID);
-	String token = (String) source.get(PROP_TOKEN);
 	String name = (String) source.get(PROP_NAME);
 	String description = (String) source.get(PROP_DESCRIPTION);
 	String icon = (String) source.get(PROP_ICON);
 	List<UUID> containedCustomerTypeIds = (List<UUID>) source.get(PROP_CONTAINED_CUSTOMER_TYPE_IDS);
 
-	target.setId(id);
-	target.setToken(token);
 	target.setName(name);
 	target.setDescription(description);
 	target.setIcon(icon);

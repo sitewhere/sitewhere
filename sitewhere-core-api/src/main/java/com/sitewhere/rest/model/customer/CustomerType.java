@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.sitewhere.rest.model.common.SiteWhereEntity;
+import com.sitewhere.rest.model.common.BrandedEntity;
 import com.sitewhere.spi.customer.ICustomerType;
 
 /**
@@ -19,16 +19,10 @@ import com.sitewhere.spi.customer.ICustomerType;
  * 
  * @author Derek
  */
-public class CustomerType extends SiteWhereEntity implements ICustomerType {
+public class CustomerType extends BrandedEntity implements ICustomerType {
 
     /** Serial version UID */
     private static final long serialVersionUID = -2203663173210728449L;
-
-    /** Unique id */
-    private UUID id;
-
-    /** Alias token */
-    private String token;
 
     /** Name */
     private String name;
@@ -36,35 +30,8 @@ public class CustomerType extends SiteWhereEntity implements ICustomerType {
     /** Description */
     private String description;
 
-    /** Icon */
-    private String icon;
-
     /** List of contained area type ids */
     private List<UUID> containedCustomerTypeIds = new ArrayList<>();
-
-    /*
-     * @see com.sitewhere.spi.common.ISiteWhereEntity#getId()
-     */
-    @Override
-    public UUID getId() {
-	return id;
-    }
-
-    public void setId(UUID id) {
-	this.id = id;
-    }
-
-    /*
-     * @see com.sitewhere.spi.common.ISiteWhereEntity#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.customer.ICustomerType#getName()
@@ -88,18 +55,6 @@ public class CustomerType extends SiteWhereEntity implements ICustomerType {
 
     public void setDescription(String description) {
 	this.description = description;
-    }
-
-    /*
-     * @see com.sitewhere.spi.customer.ICustomerType#getIcon()
-     */
-    @Override
-    public String getIcon() {
-	return icon;
-    }
-
-    public void setIcon(String icon) {
-	this.icon = icon;
     }
 
     /*

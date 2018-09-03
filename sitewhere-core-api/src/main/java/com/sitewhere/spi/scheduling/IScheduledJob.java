@@ -9,14 +9,14 @@ package com.sitewhere.spi.scheduling;
 
 import java.util.Map;
 
-import com.sitewhere.spi.common.ISiteWhereEntity;
+import com.sitewhere.spi.common.IPersistentEntity;
 
 /**
  * Unit of work that should be executed on a schedule.
  * 
  * @author Derek
  */
-public interface IScheduledJob extends ISiteWhereEntity {
+public interface IScheduledJob extends IPersistentEntity {
 
     /**
      * Get unique schedule token.

@@ -7,37 +7,17 @@
  */
 package com.sitewhere.spi.area.request;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
+
+import com.sitewhere.spi.common.IAccessible;
+import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
 
 /**
  * Provides information needed to create an area type.
  * 
  * @author Derek
  */
-public interface IAreaTypeCreateRequest extends Serializable {
-
-    /**
-     * Get token that acts as an alias for area type id.
-     * 
-     * @return
-     */
-    public String getToken();
-
-    /**
-     * Get the area type name.
-     * 
-     * @return
-     */
-    public String getName();
-
-    /**
-     * Get the area type description.
-     * 
-     * @return
-     */
-    public String getDescription();
+public interface IAreaTypeCreateRequest extends IAccessible, IPersistentEntityCreateRequest {
 
     /**
      * Get icon shown for area type.
@@ -45,13 +25,6 @@ public interface IAreaTypeCreateRequest extends Serializable {
      * @return
      */
     public String getIcon();
-
-    /**
-     * Get metadata values.
-     * 
-     * @return
-     */
-    public Map<String, String> getMetadata();
 
     /**
      * Get list of area type tokens which may be contained.

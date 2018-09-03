@@ -11,7 +11,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.common.SiteWhereEntity;
+import com.sitewhere.rest.model.common.BrandedEntity;
 import com.sitewhere.spi.customer.ICustomer;
 
 /**
@@ -20,16 +20,10 @@ import com.sitewhere.spi.customer.ICustomer;
  * @author dadams
  */
 @JsonInclude(Include.NON_NULL)
-public class Customer extends SiteWhereEntity implements ICustomer {
+public class Customer extends BrandedEntity implements ICustomer {
 
     /** Serial version UID */
     private static final long serialVersionUID = -3637398272972673831L;
-
-    /** Unique area id */
-    private UUID id;
-
-    /** Unique token */
-    private String token;
 
     /** Customer type id */
     private UUID customerTypeId;
@@ -42,33 +36,6 @@ public class Customer extends SiteWhereEntity implements ICustomer {
 
     /** Area description */
     private String description;
-
-    /** Image URL */
-    private String imageUrl;
-
-    /*
-     * @see com.sitewhere.spi.common.ISiteWhereEntity#getId()
-     */
-    @Override
-    public UUID getId() {
-	return id;
-    }
-
-    public void setId(UUID id) {
-	this.id = id;
-    }
-
-    /*
-     * @see com.sitewhere.spi.common.ISiteWhereEntity#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.customer.ICustomer#getCustomerTypeId()
@@ -116,17 +83,5 @@ public class Customer extends SiteWhereEntity implements ICustomer {
 
     public void setDescription(String description) {
 	this.description = description;
-    }
-
-    /*
-     * @see com.sitewhere.spi.customer.ICustomer#getImageUrl()
-     */
-    @Override
-    public String getImageUrl() {
-	return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-	this.imageUrl = imageUrl;
     }
 }

@@ -8,15 +8,14 @@
 package com.sitewhere.spi.asset;
 
 import com.sitewhere.spi.common.IAccessible;
-import com.sitewhere.spi.common.IImageProvider;
-import com.sitewhere.spi.common.ISiteWhereEntity;
+import com.sitewhere.spi.common.IBrandedEntity;
 
 /**
  * Information about a class of assets with common information.
  * 
  * @author Derek
  */
-public interface IAssetType extends ISiteWhereEntity, IAccessible, IImageProvider {
+public interface IAssetType extends IBrandedEntity, IAccessible {
 
     /**
      * Get category of asset type.

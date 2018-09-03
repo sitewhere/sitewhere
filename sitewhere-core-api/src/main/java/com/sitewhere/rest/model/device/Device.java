@@ -7,14 +7,13 @@
  */
 package com.sitewhere.rest.model.device;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.common.SiteWhereEntity;
+import com.sitewhere.rest.model.common.PersistentEntity;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
@@ -25,16 +24,10 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
  * @author dadams
  */
 @JsonInclude(Include.NON_NULL)
-public class Device extends SiteWhereEntity implements IDevice, Serializable {
+public class Device extends PersistentEntity implements IDevice {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = -5409798557113797549L;
-
-    /** Unique device id */
-    private UUID id;
-
-    /** Reference token */
-    private String token;
 
     /** Device type id */
     private UUID deviceTypeId;
@@ -53,30 +46,6 @@ public class Device extends SiteWhereEntity implements IDevice, Serializable {
 
     /** Status indicator */
     private String status;
-
-    /*
-     * @see com.sitewhere.spi.device.IDevice#getId()
-     */
-    @Override
-    public UUID getId() {
-	return id;
-    }
-
-    public void setId(UUID id) {
-	this.id = id;
-    }
-
-    /*
-     * @see com.sitewhere.spi.common.ISiteWhereEntity#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.device.IDevice#getDeviceTypeId()

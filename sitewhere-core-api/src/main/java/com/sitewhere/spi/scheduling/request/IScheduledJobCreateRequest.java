@@ -7,9 +7,9 @@
  */
 package com.sitewhere.spi.scheduling.request;
 
-import java.io.Serializable;
 import java.util.Map;
 
+import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
 import com.sitewhere.spi.scheduling.ScheduledJobState;
 import com.sitewhere.spi.scheduling.ScheduledJobType;
 
@@ -18,14 +18,7 @@ import com.sitewhere.spi.scheduling.ScheduledJobType;
  * 
  * @author Derek
  */
-public interface IScheduledJobCreateRequest extends Serializable {
-
-    /**
-     * Get unique job token.
-     * 
-     * @return
-     */
-    public String getToken();
+public interface IScheduledJobCreateRequest extends IPersistentEntityCreateRequest {
 
     /**
      * Get unique schedule token.
@@ -54,11 +47,4 @@ public interface IScheduledJobCreateRequest extends Serializable {
      * @return
      */
     public ScheduledJobState getJobState();
-
-    /**
-     * Get metadata values.
-     * 
-     * @return
-     */
-    public Map<String, String> getMetadata();
 }

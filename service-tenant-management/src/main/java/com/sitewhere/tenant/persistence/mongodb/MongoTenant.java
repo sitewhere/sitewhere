@@ -8,7 +8,6 @@
 package com.sitewhere.tenant.persistence.mongodb;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.bson.Document;
 
@@ -24,12 +23,6 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 public class MongoTenant implements MongoConverter<ITenant> {
-
-    /** Property for tenant id */
-    public static final String PROP_ID = "_id";
-
-    /** Property for token */
-    public static final String PROP_TOKEN = "tokn";
 
     /** Property for tenant name */
     public static final String PROP_NAME = "name";
@@ -76,8 +69,6 @@ public class MongoTenant implements MongoConverter<ITenant> {
      * @param target
      */
     public static void toDocument(ITenant source, Document target) {
-	target.append(PROP_ID, source.getId());
-	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_AUTH_TOKEN, source.getAuthenticationToken());
 	target.append(PROP_LOGO_URL, source.getLogoUrl());
@@ -97,8 +88,6 @@ public class MongoTenant implements MongoConverter<ITenant> {
      */
     @SuppressWarnings("unchecked")
     public static void fromDocument(Document source, Tenant target) {
-	UUID id = (UUID) source.get(PROP_ID);
-	String token = (String) source.get(PROP_TOKEN);
 	String name = (String) source.get(PROP_NAME);
 	String authToken = (String) source.get(PROP_AUTH_TOKEN);
 	String logo = (String) source.get(PROP_LOGO_URL);
@@ -106,8 +95,6 @@ public class MongoTenant implements MongoConverter<ITenant> {
 	String tenantTemplateId = (String) source.get(PROP_TENANT_TEMPLATE_ID);
 	String datasetTemplateId = (String) source.get(PROP_DATASET_TEMPLATE_ID);
 
-	target.setId(id);
-	target.setToken(token);
 	target.setName(name);
 	target.setAuthenticationToken(authToken);
 	target.setLogoUrl(logo);

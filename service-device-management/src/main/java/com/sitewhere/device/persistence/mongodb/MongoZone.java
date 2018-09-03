@@ -24,12 +24,6 @@ import com.sitewhere.spi.area.IZone;
  */
 public class MongoZone implements MongoConverter<IZone> {
 
-    /** Property for id */
-    public static final String PROP_ID = "_id";
-
-    /** Property for unique token */
-    public static final String PROP_TOKEN = "tokn";
-
     /** Property for area id */
     public static final String PROP_AREA_ID = "arid";
 
@@ -72,8 +66,6 @@ public class MongoZone implements MongoConverter<IZone> {
      * @param target
      */
     public static void toDocument(IZone source, Document target) {
-	target.append(PROP_ID, source.getId());
-	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_AREA_ID, source.getAreaId());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_BORDER_COLOR, source.getBorderColor());
@@ -92,16 +84,12 @@ public class MongoZone implements MongoConverter<IZone> {
      * @param target
      */
     public static void fromDocument(Document source, Zone target) {
-	UUID id = (UUID) source.get(PROP_ID);
-	String token = (String) source.get(PROP_TOKEN);
 	UUID areaId = (UUID) source.get(PROP_AREA_ID);
 	String name = (String) source.get(PROP_NAME);
 	String borderColor = (String) source.get(PROP_BORDER_COLOR);
 	String fillColor = (String) source.get(PROP_FILL_COLOR);
 	Double opacity = (Double) source.get(PROP_OPACITY);
 
-	target.setId(id);
-	target.setToken(token);
 	target.setAreaId(areaId);
 	target.setName(name);
 	target.setBorderColor(borderColor);

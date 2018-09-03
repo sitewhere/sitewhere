@@ -9,7 +9,7 @@ package com.sitewhere.rest.model.device;
 
 import java.util.UUID;
 
-import com.sitewhere.rest.model.common.SiteWhereEntity;
+import com.sitewhere.rest.model.common.PersistentEntity;
 import com.sitewhere.spi.device.IDeviceStatus;
 
 /**
@@ -17,16 +17,10 @@ import com.sitewhere.spi.device.IDeviceStatus;
  * 
  * @author Derek
  */
-public class DeviceStatus extends SiteWhereEntity implements IDeviceStatus {
+public class DeviceStatus extends PersistentEntity implements IDeviceStatus {
 
     /** Serial version UID */
     private static final long serialVersionUID = 3276455653992126853L;
-
-    /** Unique device command id */
-    private UUID id;
-
-    /** Unique token */
-    private String token;
 
     /** Status code */
     private String code;
@@ -48,30 +42,6 @@ public class DeviceStatus extends SiteWhereEntity implements IDeviceStatus {
 
     /** Icon */
     private String icon;
-
-    /*
-     * @see com.sitewhere.spi.device.IDeviceStatus#getId()
-     */
-    @Override
-    public UUID getId() {
-	return id;
-    }
-
-    public void setId(UUID id) {
-	this.id = id;
-    }
-
-    /*
-     * @see com.sitewhere.spi.common.ISiteWhereEntity#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * (non-Javadoc)

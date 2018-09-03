@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
 import com.sitewhere.spi.scheduling.ScheduledJobState;
 import com.sitewhere.spi.scheduling.ScheduledJobType;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
@@ -21,13 +22,10 @@ import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
  * @author Derek Adams
  */
 @JsonInclude(Include.NON_NULL)
-public class ScheduledJobCreateRequest implements IScheduledJobCreateRequest {
+public class ScheduledJobCreateRequest extends PersistentEntityCreateRequest implements IScheduledJobCreateRequest {
 
     /** Serial version UID */
     private static final long serialVersionUID = -627595397893118687L;
-
-    /** Unique token */
-    private String token;
 
     /** Token for associated schedule */
     private String scheduleToken;
@@ -40,24 +38,6 @@ public class ScheduledJobCreateRequest implements IScheduledJobCreateRequest {
 
     /** Job state */
     private ScheduledJobState jobState;
-
-    /** Metadata */
-    private Map<String, String> metadata;
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest#getToken(
-     * )
-     */
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * (non-Javadoc)
@@ -113,19 +93,5 @@ public class ScheduledJobCreateRequest implements IScheduledJobCreateRequest {
 
     public void setJobState(ScheduledJobState jobState) {
 	this.jobState = jobState;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest#
-     * getMetadata()
-     */
-    public Map<String, String> getMetadata() {
-	return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-	this.metadata = metadata;
     }
 }

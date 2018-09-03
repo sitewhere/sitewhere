@@ -9,14 +9,14 @@ package com.sitewhere.spi.area;
 
 import java.util.UUID;
 
-import com.sitewhere.spi.common.ISiteWhereEntity;
+import com.sitewhere.spi.common.IPersistentEntity;
 
 /**
  * A polygonal area associated with a site that can be used to trigger events.
  * 
  * @author dadams
  */
-public interface IZone extends IBoundedEntity, ISiteWhereEntity {
+public interface IZone extends IBoundedEntity, IPersistentEntity {
 
     /**
      * Get id for associated area.

@@ -10,14 +10,14 @@ package com.sitewhere.spi.user;
 import java.util.Date;
 import java.util.List;
 
-import com.sitewhere.spi.common.ISiteWhereEntity;
+import com.sitewhere.spi.common.IPersistentEntity;
 
 /**
  * Interface for accessing user information.
  * 
  * @author Derek
  */
-public interface IUser extends ISiteWhereEntity {
+public interface IUser extends IPersistentEntity {
 
     /**
      * Get the username.

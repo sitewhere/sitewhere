@@ -10,11 +10,11 @@ package com.sitewhere.rest.model.area.request;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.Location;
+import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.request.IZoneCreateRequest;
 
@@ -24,13 +24,10 @@ import com.sitewhere.spi.area.request.IZoneCreateRequest;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class ZoneCreateRequest implements IZoneCreateRequest {
+public class ZoneCreateRequest extends PersistentEntityCreateRequest implements IZoneCreateRequest {
 
     /** Serial version UID */
     private static final long serialVersionUID = -2226478978161539653L;
-
-    /** Zone token */
-    private String token;
 
     /** Area token */
     private String areaToken;
@@ -49,21 +46,6 @@ public class ZoneCreateRequest implements IZoneCreateRequest {
 
     /** Opacity in UI */
     private Double opacity;
-
-    /** Metadata values */
-    private Map<String, String> metadata;
-
-    /*
-     * @see com.sitewhere.spi.area.request.IZoneCreateRequest#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.area.request.IZoneCreateRequest#getAreaToken()
@@ -135,18 +117,6 @@ public class ZoneCreateRequest implements IZoneCreateRequest {
 
     public void setOpacity(Double opacity) {
 	this.opacity = opacity;
-    }
-
-    /*
-     * @see com.sitewhere.spi.area.request.IZoneCreateRequest#getMetadata()
-     */
-    @Override
-    public Map<String, String> getMetadata() {
-	return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-	this.metadata = metadata;
     }
 
     public static class Builder {

@@ -13,7 +13,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.common.MetadataProvider;
+import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
 
@@ -24,13 +24,10 @@ import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class TenantCreateRequest extends MetadataProvider implements ITenantCreateRequest {
+public class TenantCreateRequest extends PersistentEntityCreateRequest implements ITenantCreateRequest {
 
     /** Serial version UID */
     private static final long serialVersionUID = -5706275554835627264L;
-
-    /** Unique tenant id */
-    private String token;
 
     /** Tenant name */
     private String name;
@@ -49,18 +46,6 @@ public class TenantCreateRequest extends MetadataProvider implements ITenantCrea
 
     /** Dataset template id */
     private String datasetTemplateId;
-
-    /*
-     * @see com.sitewhere.spi.tenant.request.ITenantCreateRequest#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.tenant.request.ITenantCreateRequest#getName()

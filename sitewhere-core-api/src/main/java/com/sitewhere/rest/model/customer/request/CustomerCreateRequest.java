@@ -8,10 +8,10 @@
 package com.sitewhere.rest.model.customer.request;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
 import com.sitewhere.spi.customer.request.ICustomerCreateRequest;
 
 /**
@@ -20,13 +20,10 @@ import com.sitewhere.spi.customer.request.ICustomerCreateRequest;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class CustomerCreateRequest implements ICustomerCreateRequest {
+public class CustomerCreateRequest extends PersistentEntityCreateRequest implements ICustomerCreateRequest {
 
     /** Serial version UID */
     private static final long serialVersionUID = -1744483793661325449L;
-
-    /** Unique token */
-    private String token;
 
     /** Customer type token */
     public String customerTypeToken;
@@ -42,21 +39,6 @@ public class CustomerCreateRequest implements ICustomerCreateRequest {
 
     /** Logo image URL */
     private String imageUrl;
-
-    /** Metadata values */
-    private Map<String, String> metadata;
-
-    /*
-     * @see com.sitewhere.spi.customer.request.ICustomerCreateRequest#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.customer.request.ICustomerCreateRequest#
@@ -119,18 +101,6 @@ public class CustomerCreateRequest implements ICustomerCreateRequest {
 
     public void setImageUrl(String imageUrl) {
 	this.imageUrl = imageUrl;
-    }
-
-    /*
-     * @see com.sitewhere.spi.customer.request.ICustomerCreateRequest#getMetadata()
-     */
-    @Override
-    public Map<String, String> getMetadata() {
-	return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-	this.metadata = metadata;
     }
 
     public static class Builder {

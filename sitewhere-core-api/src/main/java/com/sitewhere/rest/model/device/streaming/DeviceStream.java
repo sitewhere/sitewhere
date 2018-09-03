@@ -9,7 +9,7 @@ package com.sitewhere.rest.model.device.streaming;
 
 import java.util.UUID;
 
-import com.sitewhere.rest.model.common.SiteWhereEntity;
+import com.sitewhere.rest.model.common.PersistentEntity;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 
@@ -18,16 +18,10 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
  * 
  * @author Derek
  */
-public class DeviceStream extends SiteWhereEntity implements IDeviceStream {
+public class DeviceStream extends PersistentEntity implements IDeviceStream {
 
     /** Serial version UID */
     private static final long serialVersionUID = -5721420122887571143L;
-
-    /** Unique stream id */
-    private UUID id;
-
-    /** Reference token */
-    private String token;
 
     /** Parent assignment id */
     private UUID assignmentId;
@@ -37,30 +31,6 @@ public class DeviceStream extends SiteWhereEntity implements IDeviceStream {
 
     /** Stream content type */
     private String contentType;
-
-    /*
-     * @see com.sitewhere.spi.device.streaming.IDeviceStream#getId()
-     */
-    @Override
-    public UUID getId() {
-	return id;
-    }
-
-    public void setId(UUID id) {
-	this.id = id;
-    }
-
-    /*
-     * @see com.sitewhere.spi.common.ISiteWhereEntity#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.device.streaming.IDeviceStream#getAssignmentId()
@@ -109,7 +79,7 @@ public class DeviceStream extends SiteWhereEntity implements IDeviceStream {
 	result.setStreamId(input.getStreamId());
 	result.setContentType(input.getContentType());
 
-	SiteWhereEntity.copy(input, result);
+	PersistentEntity.copy(input, result);
 	return result;
     }
 }

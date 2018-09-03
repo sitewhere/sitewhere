@@ -13,7 +13,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.sitewhere.rest.model.common.SiteWhereEntity;
+import com.sitewhere.rest.model.common.PersistentEntity;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -24,16 +24,10 @@ import com.sitewhere.spi.device.IDeviceAssignment;
  * @author dadams
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceAssignment extends SiteWhereEntity implements IDeviceAssignment {
+public class DeviceAssignment extends PersistentEntity implements IDeviceAssignment {
 
     /** Serial version UID */
     private static final long serialVersionUID = 7566369590280015769L;
-
-    /** Unique device id */
-    private UUID id;
-
-    /** Unique assignment token */
-    private String token;
 
     /** Device id */
     private UUID deviceId;
@@ -58,32 +52,6 @@ public class DeviceAssignment extends SiteWhereEntity implements IDeviceAssignme
 
     /** Assignment end date */
     private Date releasedDate;
-
-    /*
-     * @see com.sitewhere.spi.device.IDeviceAssignment#getId()
-     */
-    @Override
-    public UUID getId() {
-	return id;
-    }
-
-    public void setId(UUID id) {
-	this.id = id;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceAssignment#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.device.IDeviceAssignment#getDeviceId()

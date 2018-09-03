@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.sitewhere.rest.model.area.Area;
 import com.sitewhere.rest.model.area.Zone;
 import com.sitewhere.rest.model.common.Location;
-import com.sitewhere.rest.model.common.SiteWhereEntity;
+import com.sitewhere.rest.model.common.PersistentEntity;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.marshaling.MarshaledArea;
 import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
@@ -96,7 +96,7 @@ public class AreaMarshalHelper {
 	area.setDescription(source.getDescription());
 	area.setImageUrl(source.getImageUrl());
 	area.setBounds(Location.copy(source.getBounds()));
-	SiteWhereEntity.copy(source, area);
+	PersistentEntity.copy(source, area);
 	if (isIncludeAreaType()) {
 	    area.setAreaType(getDeviceManagement().getAreaType(source.getAreaTypeId()));
 	}

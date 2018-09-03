@@ -7,10 +7,10 @@
  */
 package com.sitewhere.spi.scheduling.request;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
+import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
 import com.sitewhere.spi.scheduling.TriggerType;
 
 /**
@@ -18,14 +18,7 @@ import com.sitewhere.spi.scheduling.TriggerType;
  * 
  * @author Derek
  */
-public interface IScheduleCreateRequest extends Serializable {
-
-    /**
-     * Unique token for schedule.
-     * 
-     * @return
-     */
-    public String getToken();
+public interface IScheduleCreateRequest extends IPersistentEntityCreateRequest {
 
     /**
      * Schedule name.
@@ -61,11 +54,4 @@ public interface IScheduleCreateRequest extends Serializable {
      * @return
      */
     public Date getEndDate();
-
-    /**
-     * Get metadata values.
-     * 
-     * @return
-     */
-    public Map<String, String> getMetadata();
 }

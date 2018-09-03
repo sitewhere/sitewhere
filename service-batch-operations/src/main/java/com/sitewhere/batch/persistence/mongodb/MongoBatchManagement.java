@@ -60,7 +60,7 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
      */
     protected void ensureIndexes() throws SiteWhereException {
 	// Batch operation indexes.
-	getMongoClient().getBatchOperationsCollection().createIndex(new Document(MongoBatchOperation.PROP_TOKEN, 1),
+	getMongoClient().getBatchOperationsCollection().createIndex(new Document(MongoSiteWhereEntity.PROP_TOKEN, 1),
 		new IndexOptions().unique(true));
 	getMongoClient().getBatchOperationElementsCollection().createIndex(
 		new Document(MongoBatchElement.PROP_BATCH_OPERATION_ID, 1).append(MongoBatchElement.PROP_DEVICE_ID, 1),
@@ -113,7 +113,7 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
 
 	Document updated = MongoBatchOperation.toDocument(operation);
 
-	Document query = new Document(MongoBatchOperation.PROP_ID, batchOperationId);
+	Document query = new Document(MongoSiteWhereEntity.PROP_ID, batchOperationId);
 	MongoPersistence.update(batchops, query, updated);
 	return MongoBatchOperation.fromDocument(updated);
     }
@@ -242,7 +242,7 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
     protected Document getBatchOperationDocumentByToken(String token) throws SiteWhereException {
 	try {
 	    MongoCollection<Document> ops = getMongoClient().getBatchOperationsCollection();
-	    Document query = new Document(MongoBatchOperation.PROP_TOKEN, token);
+	    Document query = new Document(MongoSiteWhereEntity.PROP_TOKEN, token);
 	    return ops.find(query).first();
 	} catch (MongoClientException e) {
 	    throw MongoPersistence.handleClientException(e);
@@ -276,7 +276,7 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
     protected Document getBatchOperationDocument(UUID id) throws SiteWhereException {
 	try {
 	    MongoCollection<Document> ops = getMongoClient().getBatchOperationsCollection();
-	    Document query = new Document(MongoBatchOperation.PROP_ID, id);
+	    Document query = new Document(MongoSiteWhereEntity.PROP_ID, id);
 	    return ops.find(query).first();
 	} catch (MongoClientException e) {
 	    throw MongoPersistence.handleClientException(e);

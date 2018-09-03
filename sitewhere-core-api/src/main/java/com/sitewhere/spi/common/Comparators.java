@@ -21,7 +21,7 @@ public class Comparators {
      * 
      * @author Derek
      */
-    public static class InverseCreatedDateComparator implements Comparator<ISiteWhereEntity> {
+    public static class InverseCreatedDateComparator implements Comparator<IPersistentEntity> {
 
 	/*
 	 * (non-Javadoc)
@@ -29,7 +29,7 @@ public class Comparators {
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
 	@Override
-	public int compare(ISiteWhereEntity arg0, ISiteWhereEntity arg1) {
+	public int compare(IPersistentEntity arg0, IPersistentEntity arg1) {
 	    if ((arg0.getCreatedDate() == null) || (arg0.getCreatedDate() == null)) {
 		return 0;
 	    }

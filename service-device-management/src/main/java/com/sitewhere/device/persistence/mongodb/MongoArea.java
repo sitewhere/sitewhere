@@ -24,9 +24,6 @@ import com.sitewhere.spi.area.IArea;
  */
 public class MongoArea implements MongoConverter<IArea> {
 
-    /** Property for id */
-    public static final String PROP_ID = "_id";
-
     /** Property for area type id */
     public static final String PROP_AREA_TYPE_ID = "atid";
 
@@ -41,9 +38,6 @@ public class MongoArea implements MongoConverter<IArea> {
 
     /** Property for image URL */
     public static final String PROP_IMAGE_URL = "imgu";
-
-    /** Property for token */
-    public static final String PROP_TOKEN = "tokn";
 
     /*
      * (non-Javadoc)
@@ -72,13 +66,11 @@ public class MongoArea implements MongoConverter<IArea> {
      * @param target
      */
     public static void toDocument(IArea source, Document target) {
-	target.append(PROP_ID, source.getId());
 	target.append(PROP_AREA_TYPE_ID, source.getAreaTypeId());
 	target.append(PROP_PARENT_AREA_ID, source.getParentAreaId());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_DESCRIPTION, source.getDescription());
 	target.append(PROP_IMAGE_URL, source.getImageUrl());
-	target.append(PROP_TOKEN, source.getToken());
 
 	MongoBoundedEntity.saveBounds(source, target);
 	MongoSiteWhereEntity.toDocument(source, target);
@@ -92,21 +84,17 @@ public class MongoArea implements MongoConverter<IArea> {
      * @param target
      */
     public static void fromDocument(Document source, Area target) {
-	UUID id = (UUID) source.get(PROP_ID);
 	UUID areaTypeId = (UUID) source.get(PROP_AREA_TYPE_ID);
 	UUID parentAreaId = (UUID) source.get(PROP_PARENT_AREA_ID);
 	String name = (String) source.get(PROP_NAME);
 	String description = (String) source.get(PROP_DESCRIPTION);
 	String imageUrl = (String) source.get(PROP_IMAGE_URL);
-	String token = (String) source.get(PROP_TOKEN);
 
-	target.setId(id);
 	target.setAreaTypeId(areaTypeId);
 	target.setParentAreaId(parentAreaId);
 	target.setName(name);
 	target.setDescription(description);
 	target.setImageUrl(imageUrl);
-	target.setToken(token);
 	target.setBounds(MongoBoundedEntity.loadBounds(source));
 
 	MongoSiteWhereEntity.fromDocument(source, target);

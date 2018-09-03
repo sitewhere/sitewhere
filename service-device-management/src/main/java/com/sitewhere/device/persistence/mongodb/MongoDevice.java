@@ -27,12 +27,6 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
  */
 public class MongoDevice implements MongoConverter<IDevice> {
 
-    /** Property for id */
-    public static final String PROP_ID = "_id";
-
-    /** Property for token */
-    public static final String PROP_TOKEN = "tokn";
-
     /** Property for device type id */
     public static final String PROP_DEVICE_TYPE_ID = "dtid";
 
@@ -73,8 +67,6 @@ public class MongoDevice implements MongoConverter<IDevice> {
      * @param target
      */
     public static void toDocument(IDevice source, Document target) {
-	target.append(PROP_ID, source.getId());
-	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_DEVICE_TYPE_ID, source.getDeviceTypeId());
 	target.append(PROP_PARENT_DEVICE_ID, source.getParentDeviceId());
 	target.append(PROP_COMMENTS, source.getComments());
@@ -99,15 +91,11 @@ public class MongoDevice implements MongoConverter<IDevice> {
      */
     @SuppressWarnings("unchecked")
     public static void fromDocument(Document source, Device target) {
-	UUID id = (UUID) source.get(PROP_ID);
-	String token = (String) source.get(PROP_TOKEN);
 	UUID typeId = (UUID) source.get(PROP_DEVICE_TYPE_ID);
 	UUID parentDeviceId = (UUID) source.get(PROP_PARENT_DEVICE_ID);
 	String comments = (String) source.get(PROP_COMMENTS);
 	UUID assignmentId = (UUID) source.get(PROP_ASSIGNMENT_ID);
 
-	target.setId(id);
-	target.setToken(token);
 	target.setDeviceTypeId(typeId);
 	target.setParentDeviceId(parentDeviceId);
 	target.setComments(comments);

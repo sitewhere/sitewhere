@@ -24,12 +24,6 @@ import com.sitewhere.spi.device.IDeviceStatus;
  */
 public class MongoDeviceStatus implements MongoConverter<IDeviceStatus> {
 
-    /** Property for id */
-    public static final String PROP_ID = "_id";
-
-    /** Property for token */
-    public static final String PROP_TOKEN = "tokn";
-
     /** Property for device type id */
     public static final String PROP_DEVICE_TYPE_ID = "dtid";
 
@@ -78,8 +72,6 @@ public class MongoDeviceStatus implements MongoConverter<IDeviceStatus> {
      * @param target
      */
     public static void toDocument(IDeviceStatus source, Document target) {
-	target.append(PROP_ID, source.getId());
-	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_DEVICE_TYPE_ID, source.getDeviceTypeId());
 	target.append(PROP_CODE, source.getCode());
 	target.append(PROP_NAME, source.getName());
@@ -99,8 +91,6 @@ public class MongoDeviceStatus implements MongoConverter<IDeviceStatus> {
      * @param target
      */
     public static void fromDocument(Document source, DeviceStatus target) {
-	UUID id = (UUID) source.get(PROP_ID);
-	String token = (String) source.get(PROP_TOKEN);
 	UUID deviceTypeId = (UUID) source.get(PROP_DEVICE_TYPE_ID);
 	String code = (String) source.get(PROP_CODE);
 	String name = (String) source.get(PROP_NAME);
@@ -109,8 +99,6 @@ public class MongoDeviceStatus implements MongoConverter<IDeviceStatus> {
 	String bdColor = (String) source.get(PROP_BORDER_COLOR);
 	String icon = (String) source.get(PROP_ICON);
 
-	target.setId(id);
-	target.setToken(token);
 	target.setDeviceTypeId(deviceTypeId);
 	target.setCode(code);
 	target.setName(name);

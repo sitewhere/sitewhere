@@ -10,7 +10,8 @@ package com.sitewhere.spi.customer;
 import java.util.List;
 import java.util.UUID;
 
-import com.sitewhere.spi.common.ISiteWhereEntity;
+import com.sitewhere.spi.common.IAccessible;
+import com.sitewhere.spi.common.IBrandedEntity;
 
 /**
  * Represents a domain-specific customer (device owner) type that can be used
@@ -18,28 +19,7 @@ import com.sitewhere.spi.common.ISiteWhereEntity;
  * 
  * @author Derek
  */
-public interface ICustomerType extends ISiteWhereEntity {
-
-    /**
-     * Get the customer type name.
-     * 
-     * @return
-     */
-    public String getName();
-
-    /**
-     * Get the customer type description.
-     * 
-     * @return
-     */
-    public String getDescription();
-
-    /**
-     * Get icon shown for customer type.
-     * 
-     * @return
-     */
-    public String getIcon();
+public interface ICustomerType extends IBrandedEntity, IAccessible {
 
     /**
      * Get list of customer type ids which may be contained.

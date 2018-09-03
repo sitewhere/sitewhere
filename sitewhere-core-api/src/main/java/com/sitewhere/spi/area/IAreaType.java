@@ -10,7 +10,8 @@ package com.sitewhere.spi.area;
 import java.util.List;
 import java.util.UUID;
 
-import com.sitewhere.spi.common.ISiteWhereEntity;
+import com.sitewhere.spi.common.IAccessible;
+import com.sitewhere.spi.common.IBrandedEntity;
 
 /**
  * Represents a domain-specific area type that can be used for building a
@@ -18,28 +19,7 @@ import com.sitewhere.spi.common.ISiteWhereEntity;
  * 
  * @author Derek
  */
-public interface IAreaType extends ISiteWhereEntity {
-
-    /**
-     * Get the area type name.
-     * 
-     * @return
-     */
-    public String getName();
-
-    /**
-     * Get the area type description.
-     * 
-     * @return
-     */
-    public String getDescription();
-
-    /**
-     * Get icon shown for area type.
-     * 
-     * @return
-     */
-    public String getIcon();
+public interface IAreaType extends IBrandedEntity, IAccessible {
 
     /**
      * Get list of area type ids which may be contained.

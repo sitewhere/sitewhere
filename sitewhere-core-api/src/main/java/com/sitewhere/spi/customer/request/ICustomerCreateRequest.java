@@ -7,22 +7,14 @@
  */
 package com.sitewhere.spi.customer.request;
 
-import java.io.Serializable;
-import java.util.Map;
+import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
 
 /**
  * Interface for arguments needed to create a customer.
  * 
  * @author Derek
  */
-public interface ICustomerCreateRequest extends Serializable {
-
-    /**
-     * Customer token. Can be set to null if token should be auto-generated.
-     * 
-     * @return
-     */
-    public String getToken();
+public interface ICustomerCreateRequest extends IPersistentEntityCreateRequest {
 
     /**
      * Get token for corresponding customer type.
@@ -58,11 +50,4 @@ public interface ICustomerCreateRequest extends Serializable {
      * @return
      */
     public String getImageUrl();
-
-    /**
-     * Get metadata values.
-     * 
-     * @return
-     */
-    public Map<String, String> getMetadata();
 }

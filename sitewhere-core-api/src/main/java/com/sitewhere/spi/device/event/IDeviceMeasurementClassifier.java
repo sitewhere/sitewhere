@@ -10,14 +10,14 @@ package com.sitewhere.spi.device.event;
 import com.sitewhere.spi.common.IAccessible;
 import com.sitewhere.spi.common.IColorProvider;
 import com.sitewhere.spi.common.IIconProvider;
-import com.sitewhere.spi.common.ISiteWhereEntity;
+import com.sitewhere.spi.common.IPersistentEntity;
 
 /**
  * Provides extra metadata about measurement events that have a common function.
  * 
  * @author Derek
  */
-public interface IDeviceMeasurementClassifier extends ISiteWhereEntity, IAccessible, IColorProvider, IIconProvider {
+public interface IDeviceMeasurementClassifier extends IPersistentEntity, IAccessible, IColorProvider, IIconProvider {
 
     /**
      * Get unit associated with measurement.

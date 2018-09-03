@@ -7,9 +7,7 @@
  */
 package com.sitewhere.spi.device.request;
 
-import java.io.Serializable;
-import java.util.Map;
-
+import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 
 /**
@@ -17,14 +15,7 @@ import com.sitewhere.spi.device.DeviceAssignmentStatus;
  * 
  * @author Derek
  */
-public interface IDeviceAssignmentCreateRequest extends Serializable {
-
-    /**
-     * Get token for assignment. (Auto-assign if null).
-     * 
-     * @return
-     */
-    public String getToken();
+public interface IDeviceAssignmentCreateRequest extends IPersistentEntityCreateRequest {
 
     /**
      * Get the device token.
@@ -60,11 +51,4 @@ public interface IDeviceAssignmentCreateRequest extends Serializable {
      * @return
      */
     public DeviceAssignmentStatus getStatus();
-
-    /**
-     * Get metadata values.
-     * 
-     * @return
-     */
-    public Map<String, String> getMetadata();
 }

@@ -7,10 +7,9 @@
  */
 package com.sitewhere.rest.model.device.request;
 
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 
 /**
@@ -19,16 +18,16 @@ import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceStreamCreateRequest implements IDeviceStreamCreateRequest {
+public class DeviceStreamCreateRequest extends PersistentEntityCreateRequest implements IDeviceStreamCreateRequest {
+
+    /** Serial version UID */
+    private static final long serialVersionUID = -8887616206756385150L;
 
     /** Stream id */
     private String streamId;
 
     /** Content type */
     private String contentType;
-
-    /** Metadata */
-    private Map<String, String> metadata;
 
     /*
      * (non-Javadoc)
@@ -56,19 +55,5 @@ public class DeviceStreamCreateRequest implements IDeviceStreamCreateRequest {
 
     public void setContentType(String contentType) {
 	this.contentType = contentType;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest#
-     * getMetadata()
-     */
-    public Map<String, String> getMetadata() {
-	return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-	this.metadata = metadata;
     }
 }

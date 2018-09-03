@@ -8,10 +8,10 @@
 package com.sitewhere.rest.model.device.request;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 
@@ -21,13 +21,11 @@ import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
  * @author Derek Adams
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateRequest {
+public class DeviceAssignmentCreateRequest extends PersistentEntityCreateRequest
+	implements IDeviceAssignmentCreateRequest {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = -6880578458870122016L;
-
-    /** Token */
-    private String token;
 
     /** Device token */
     private String deviceToken;
@@ -43,24 +41,6 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
 
     /** Status */
     private DeviceAssignmentStatus status;
-
-    /** Metadata values */
-    private Map<String, String> metadata;
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#getToken( )
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#
@@ -127,20 +107,6 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
 
     public void setStatus(DeviceAssignmentStatus status) {
 	this.status = status;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#
-     * getMetadata()
-     */
-    public Map<String, String> getMetadata() {
-	return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-	this.metadata = metadata;
     }
 
     public static class Builder {

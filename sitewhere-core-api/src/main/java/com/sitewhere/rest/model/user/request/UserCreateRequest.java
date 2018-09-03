@@ -13,7 +13,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.common.MetadataProvider;
+import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
 import com.sitewhere.spi.user.AccountStatus;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
@@ -24,7 +24,7 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
  * @author Derek Adams
  */
 @JsonInclude(Include.NON_NULL)
-public class UserCreateRequest extends MetadataProvider implements IUserCreateRequest {
+public class UserCreateRequest extends PersistentEntityCreateRequest implements IUserCreateRequest {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = -8552286827982676928L;

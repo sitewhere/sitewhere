@@ -7,12 +7,12 @@
  */
 package com.sitewhere.rest.model.batch.request;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
 
 /**
@@ -20,13 +20,10 @@ import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
  * 
  * @author Derek
  */
-public class BatchOperationCreateRequest implements IBatchOperationCreateRequest, Serializable {
+public class BatchOperationCreateRequest extends PersistentEntityCreateRequest implements IBatchOperationCreateRequest {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = 276630436113821199L;
-
-    /** Unqiue token */
-    private String token;
 
     /** Operation type requested */
     private String operationType;
@@ -36,21 +33,6 @@ public class BatchOperationCreateRequest implements IBatchOperationCreateRequest
 
     /** List of tokens for affected devices */
     private List<String> deviceTokens = new ArrayList<>();
-
-    /** Metadata values */
-    private Map<String, String> metadata;
-
-    /*
-     * @see com.sitewhere.spi.batch.request.IBatchOperationCreateRequest#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see
@@ -91,18 +73,5 @@ public class BatchOperationCreateRequest implements IBatchOperationCreateRequest
 
     public void setDeviceTokens(List<String> deviceTokens) {
 	this.deviceTokens = deviceTokens;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.batch.request.IBatchOperationCreateRequest#getMetadata()
-     */
-    @Override
-    public Map<String, String> getMetadata() {
-	return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-	this.metadata = metadata;
     }
 }

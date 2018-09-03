@@ -7,8 +7,6 @@
  */
 package com.sitewhere.device.persistence.mongodb;
 
-import java.util.UUID;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
@@ -33,12 +31,6 @@ public class MongoDeviceType implements MongoConverter<IDeviceType> {
 
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(MongoDeviceType.class);
-
-    /** Property for id */
-    public static final String PROP_ID = "_id";
-
-    /** Property for unique token */
-    public static final String PROP_TOKEN = "tokn";
 
     /** Property for name */
     public static final String PROP_NAME = "name";
@@ -82,8 +74,6 @@ public class MongoDeviceType implements MongoConverter<IDeviceType> {
      * @param target
      */
     public static void toDocument(IDeviceType source, Document target) {
-	target.append(PROP_ID, source.getId());
-	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_DESCRIPTION, source.getDescription());
 	target.append(PROP_IMAGE_URL, source.getImageUrl());
@@ -110,16 +100,12 @@ public class MongoDeviceType implements MongoConverter<IDeviceType> {
      * @param target
      */
     public static void fromDocument(Document source, DeviceType target) {
-	UUID id = (UUID) source.get(PROP_ID);
-	String token = (String) source.get(PROP_TOKEN);
 	String name = (String) source.get(PROP_NAME);
 	String description = (String) source.get(PROP_DESCRIPTION);
 	String imageUrl = (String) source.get(PROP_IMAGE_URL);
 	String containerPolicy = (String) source.get(PROP_CONTAINER_POLICY);
 	Binary schemaBytes = (Binary) source.get(PROP_DEVICE_ELEMENT_SCHEMA);
 
-	target.setId(id);
-	target.setToken(token);
 	target.setName(name);
 	target.setDescription(description);
 	target.setImageUrl(imageUrl);

@@ -7,14 +7,13 @@
  */
 package com.sitewhere.rest.model.device.request;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 
@@ -24,13 +23,10 @@ import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceGroupCreateRequest implements IDeviceGroupCreateRequest, Serializable {
+public class DeviceGroupCreateRequest extends PersistentEntityCreateRequest implements IDeviceGroupCreateRequest {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = 1657559631108464556L;
-
-    /** Unique token */
-    private String token;
 
     /** Group name */
     private String name;
@@ -43,23 +39,6 @@ public class DeviceGroupCreateRequest implements IDeviceGroupCreateRequest, Seri
 
     /** List of roles */
     private List<String> roles;
-
-    /** Metadata values */
-    private Map<String, String> metadata;
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.request.IDeviceGroupCreateRequest#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * (non-Javadoc)
@@ -114,20 +93,6 @@ public class DeviceGroupCreateRequest implements IDeviceGroupCreateRequest, Seri
 
     public void setRoles(List<String> roles) {
 	this.roles = roles;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.request.IDeviceGroupCreateRequest#getMetadata()
-     */
-    @Override
-    public Map<String, String> getMetadata() {
-	return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-	this.metadata = metadata;
     }
 
     public static class Builder {

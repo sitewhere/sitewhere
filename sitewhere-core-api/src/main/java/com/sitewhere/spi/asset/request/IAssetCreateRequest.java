@@ -7,22 +7,14 @@
  */
 package com.sitewhere.spi.asset.request;
 
-import java.io.Serializable;
-import java.util.Map;
+import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
 
 /**
  * Information needed to create a new asset.
  * 
  * @author Derek
  */
-public interface IAssetCreateRequest extends Serializable {
-
-    /**
-     * Get token used to reference asset.
-     * 
-     * @return
-     */
-    public String getToken();
+public interface IAssetCreateRequest extends IPersistentEntityCreateRequest {
 
     /**
      * Get reference token for asset type.
@@ -44,11 +36,4 @@ public interface IAssetCreateRequest extends Serializable {
      * @return
      */
     public String getImageUrl();
-
-    /**
-     * Get metadata values.
-     * 
-     * @return
-     */
-    public Map<String, String> getMetadata();
 }

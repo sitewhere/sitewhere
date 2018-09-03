@@ -9,11 +9,10 @@ package com.sitewhere.rest.model.scheduling;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.common.SiteWhereEntity;
+import com.sitewhere.rest.model.common.PersistentEntity;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.scheduling.ScheduledJobState;
 import com.sitewhere.spi.scheduling.ScheduledJobType;
@@ -24,16 +23,10 @@ import com.sitewhere.spi.scheduling.ScheduledJobType;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class ScheduledJob extends SiteWhereEntity implements IScheduledJob {
+public class ScheduledJob extends PersistentEntity implements IScheduledJob {
 
     /** Serial version UID */
     private static final long serialVersionUID = -8440919585518011992L;
-
-    /** Unique id */
-    private UUID id;
-
-    /** Unique token */
-    private String token;
 
     /** Token for associated schedule */
     private String scheduleToken;
@@ -51,30 +44,6 @@ public class ScheduledJob extends SiteWhereEntity implements IScheduledJob {
 
     /** Extra context information based on job type */
     private Map<String, Object> context;
-
-    /*
-     * @see com.sitewhere.spi.common.ISiteWhereEntity#getId()
-     */
-    @Override
-    public UUID getId() {
-	return id;
-    }
-
-    public void setId(UUID id) {
-	this.id = id;
-    }
-
-    /*
-     * @see com.sitewhere.spi.common.ISiteWhereEntity#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.scheduling.IScheduledJob#getScheduleToken()

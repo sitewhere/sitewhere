@@ -7,11 +7,9 @@
  */
 package com.sitewhere.rest.model.asset;
 
-import java.util.UUID;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.common.SiteWhereEntity;
+import com.sitewhere.rest.model.common.BrandedEntity;
 import com.sitewhere.spi.asset.AssetCategory;
 import com.sitewhere.spi.asset.IAssetType;
 
@@ -21,16 +19,10 @@ import com.sitewhere.spi.asset.IAssetType;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class AssetType extends SiteWhereEntity implements IAssetType {
+public class AssetType extends BrandedEntity implements IAssetType {
 
     /** Serial version UID */
     private static final long serialVersionUID = -112992823230126026L;
-
-    /** Unique id */
-    private UUID id;
-
-    /** Reference token */
-    private String token;
 
     /** Name */
     private String name;
@@ -38,35 +30,8 @@ public class AssetType extends SiteWhereEntity implements IAssetType {
     /** Description */
     private String description;
 
-    /** Image URL */
-    private String imageUrl;
-
     /** Asset category */
     private AssetCategory assetCategory = AssetCategory.Device;
-
-    /*
-     * @see com.sitewhere.spi.asset.IAssetType#getId()
-     */
-    @Override
-    public UUID getId() {
-	return id;
-    }
-
-    public void setId(UUID id) {
-	this.id = id;
-    }
-
-    /*
-     * @see com.sitewhere.spi.asset.IAssetType#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.asset.IAssetType#getName()
@@ -90,18 +55,6 @@ public class AssetType extends SiteWhereEntity implements IAssetType {
 
     public void setDescription(String description) {
 	this.description = description;
-    }
-
-    /*
-     * @see com.sitewhere.spi.asset.IAssetType#getImageUrl()
-     */
-    @Override
-    public String getImageUrl() {
-	return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-	this.imageUrl = imageUrl;
     }
 
     /*

@@ -8,10 +8,10 @@
 package com.sitewhere.rest.model.asset.request;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
 import com.sitewhere.spi.asset.AssetCategory;
 import com.sitewhere.spi.asset.request.IAssetTypeCreateRequest;
 
@@ -21,13 +21,10 @@ import com.sitewhere.spi.asset.request.IAssetTypeCreateRequest;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class AssetTypeCreateRequest implements IAssetTypeCreateRequest {
+public class AssetTypeCreateRequest extends PersistentEntityCreateRequest implements IAssetTypeCreateRequest {
 
     /** Serial version UID */
     private static final long serialVersionUID = 4980888004733279548L;
-
-    /** Reference token */
-    private String token;
 
     /** Name */
     private String name;
@@ -40,21 +37,6 @@ public class AssetTypeCreateRequest implements IAssetTypeCreateRequest {
 
     /** Asset category */
     private AssetCategory assetCategory;
-
-    /** Metadata values */
-    private Map<String, String> metadata;
-
-    /*
-     * @see com.sitewhere.spi.asset.request.IAssetTypeCreateRequest#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.asset.request.IAssetTypeCreateRequest#getName()
@@ -103,18 +85,6 @@ public class AssetTypeCreateRequest implements IAssetTypeCreateRequest {
 
     public void setAssetCategory(AssetCategory assetCategory) {
 	this.assetCategory = assetCategory;
-    }
-
-    /*
-     * @see com.sitewhere.spi.asset.request.IAssetTypeCreateRequest#getMetadata()
-     */
-    @Override
-    public Map<String, String> getMetadata() {
-	return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-	this.metadata = metadata;
     }
 
     public static class Builder {

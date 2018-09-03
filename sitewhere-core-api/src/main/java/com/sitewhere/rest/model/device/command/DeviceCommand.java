@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.sitewhere.rest.model.common.SiteWhereEntity;
+import com.sitewhere.rest.model.common.PersistentEntity;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
@@ -21,16 +21,10 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
  * 
  * @author Derek
  */
-public class DeviceCommand extends SiteWhereEntity implements IDeviceCommand {
+public class DeviceCommand extends PersistentEntity implements IDeviceCommand {
 
     /** For Java serialization */
     private static final long serialVersionUID = -9098150828821813365L;
-
-    /** Unique device command id */
-    private UUID id;
-
-    /** Unique token for command */
-    private String token;
 
     /** Unique id for parent specification */
     private UUID deviceTypeId;
@@ -46,32 +40,6 @@ public class DeviceCommand extends SiteWhereEntity implements IDeviceCommand {
 
     /** Parameter list */
     private List<CommandParameter> parameters = new ArrayList<CommandParameter>();
-
-    /*
-     * @see com.sitewhere.spi.device.command.IDeviceCommand#getId()
-     */
-    @Override
-    public UUID getId() {
-	return id;
-    }
-
-    public void setId(UUID id) {
-	this.id = id;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.command.IDeviceCommand#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.device.command.IDeviceCommand#getDeviceTypeId()
@@ -150,7 +118,7 @@ public class DeviceCommand extends SiteWhereEntity implements IDeviceCommand {
      */
     public static DeviceCommand copy(IDeviceCommand input) throws SiteWhereException {
 	DeviceCommand result = new DeviceCommand();
-	SiteWhereEntity.copy(input, result);
+	PersistentEntity.copy(input, result);
 	result.setId(input.getId());
 	result.setToken(input.getToken());
 	result.setDeviceTypeId(input.getDeviceTypeId());

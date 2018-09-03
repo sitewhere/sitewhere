@@ -10,12 +10,11 @@ package com.sitewhere.rest.model.batch;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.sitewhere.rest.model.common.SiteWhereEntity;
+import com.sitewhere.rest.model.common.PersistentEntity;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.spi.batch.BatchOperationStatus;
 import com.sitewhere.spi.batch.IBatchOperation;
@@ -26,16 +25,10 @@ import com.sitewhere.spi.batch.IBatchOperation;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class BatchOperation extends SiteWhereEntity implements IBatchOperation {
+public class BatchOperation extends PersistentEntity implements IBatchOperation {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = -228183022121018340L;
-
-    /** Unique id */
-    private UUID id;
-
-    /** Unqiue token */
-    private String token;
 
     /** Operation type requested */
     private String operationType;
@@ -51,30 +44,6 @@ public class BatchOperation extends SiteWhereEntity implements IBatchOperation {
 
     /** Date when operation processing ended */
     private Date processingEndedDate;
-
-    /*
-     * @see com.sitewhere.spi.common.ISiteWhereEntity#getId()
-     */
-    @Override
-    public UUID getId() {
-	return id;
-    }
-
-    public void setId(UUID id) {
-	this.id = id;
-    }
-
-    /*
-     * @see com.sitewhere.spi.common.ISiteWhereEntity#getToken()
-     */
-    @Override
-    public String getToken() {
-	return token;
-    }
-
-    public void setToken(String token) {
-	this.token = token;
-    }
 
     /*
      * @see com.sitewhere.spi.batch.IBatchOperation#getOperationType()
