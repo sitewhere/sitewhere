@@ -7,14 +7,14 @@
  */
 package com.sitewhere.spi.asset.request;
 
-import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
+import com.sitewhere.spi.common.request.IBrandedEntityCreateRequest;
 
 /**
  * Information needed to create a new asset.
  * 
  * @author Derek
  */
-public interface IAssetCreateRequest extends IPersistentEntityCreateRequest {
+public interface IAssetCreateRequest extends IBrandedEntityCreateRequest {
 
     /**
      * Get reference token for asset type.
@@ -29,11 +29,4 @@ public interface IAssetCreateRequest extends IPersistentEntityCreateRequest {
      * @return
      */
     public String getName();
-
-    /**
-     * Get URL for asset image.
-     * 
-     * @return
-     */
-    public String getImageUrl();
 }

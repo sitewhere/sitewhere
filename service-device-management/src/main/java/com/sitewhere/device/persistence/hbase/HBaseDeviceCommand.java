@@ -229,7 +229,6 @@ public class HBaseDeviceCommand {
 	    }
 	} else {
 	    byte[] marker = { (byte) 0x01 };
-	    DeviceManagementPersistence.setUpdatedEntityMetadata(existing);
 	    byte[] updated = context.getPayloadMarshaler().encodeDeviceCommand(existing);
 
 	    Table devices = null;

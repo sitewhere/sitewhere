@@ -181,7 +181,6 @@ public class HBaseUser {
 	    }
 	} else {
 	    byte[] marker = { (byte) 0x01 };
-	    UserManagementPersistence.setUpdatedEntityMetadata(existing);
 	    byte[] payload = context.getPayloadMarshaler().encodeUser(existing);
 	    Table users = null;
 	    try {

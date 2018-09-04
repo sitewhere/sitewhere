@@ -7,10 +7,9 @@
  */
 package com.sitewhere.rest.model.batch.request;
 
-import java.io.Serializable;
 import java.util.Date;
-import java.util.Map;
 
+import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
 import com.sitewhere.spi.batch.BatchOperationStatus;
 import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
 
@@ -19,7 +18,7 @@ import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
  * 
  * @author Derek
  */
-public class BatchOperationUpdateRequest implements IBatchOperationUpdateRequest, Serializable {
+public class BatchOperationUpdateRequest extends PersistentEntityCreateRequest implements IBatchOperationUpdateRequest {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = 7636526750514669256L;
@@ -32,9 +31,6 @@ public class BatchOperationUpdateRequest implements IBatchOperationUpdateRequest
 
     /** Date when operation processing ended */
     private Date processingEndedDate;
-
-    /** Metadata values */
-    private Map<String, String> metadata;
 
     /*
      * @see com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest#
@@ -73,18 +69,5 @@ public class BatchOperationUpdateRequest implements IBatchOperationUpdateRequest
 
     public void setProcessingEndedDate(Date processingEndedDate) {
 	this.processingEndedDate = processingEndedDate;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest#getMetadata()
-     */
-    @Override
-    public Map<String, String> getMetadata() {
-	return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-	this.metadata = metadata;
     }
 }

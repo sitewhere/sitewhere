@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
+import com.sitewhere.rest.model.common.request.BrandedEntityCreateRequest;
 import com.sitewhere.spi.customer.request.ICustomerCreateRequest;
 
 /**
@@ -20,7 +20,7 @@ import com.sitewhere.spi.customer.request.ICustomerCreateRequest;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class CustomerCreateRequest extends PersistentEntityCreateRequest implements ICustomerCreateRequest {
+public class CustomerCreateRequest extends BrandedEntityCreateRequest implements ICustomerCreateRequest {
 
     /** Serial version UID */
     private static final long serialVersionUID = -1744483793661325449L;
@@ -36,9 +36,6 @@ public class CustomerCreateRequest extends PersistentEntityCreateRequest impleme
 
     /** Site description */
     private String description;
-
-    /** Logo image URL */
-    private String imageUrl;
 
     /*
      * @see com.sitewhere.spi.customer.request.ICustomerCreateRequest#
@@ -89,18 +86,6 @@ public class CustomerCreateRequest extends PersistentEntityCreateRequest impleme
 
     public void setDescription(String description) {
 	this.description = description;
-    }
-
-    /*
-     * @see com.sitewhere.spi.customer.request.ICustomerCreateRequest#getImageUrl()
-     */
-    @Override
-    public String getImageUrl() {
-	return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-	this.imageUrl = imageUrl;
     }
 
     public static class Builder {

@@ -180,7 +180,6 @@ public class HBaseZone {
 	    }
 	} else {
 	    byte[] marker = { (byte) 0x01 };
-	    DeviceManagementPersistence.setUpdatedEntityMetadata(existing);
 	    byte[] payload = context.getPayloadMarshaler().encodeZone(existing);
 	    Table sites = null;
 	    try {

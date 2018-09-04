@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
+import com.sitewhere.rest.model.common.request.BrandedEntityCreateRequest;
 import com.sitewhere.spi.asset.request.IAssetCreateRequest;
 
 /**
@@ -20,7 +20,7 @@ import com.sitewhere.spi.asset.request.IAssetCreateRequest;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class AssetCreateRequest extends PersistentEntityCreateRequest implements IAssetCreateRequest {
+public class AssetCreateRequest extends BrandedEntityCreateRequest implements IAssetCreateRequest {
 
     /** Serial version UID */
     private static final long serialVersionUID = -3557255561907642778L;
@@ -30,9 +30,6 @@ public class AssetCreateRequest extends PersistentEntityCreateRequest implements
 
     /** Asset name */
     private String name;
-
-    /** Asset image url */
-    private String imageUrl;
 
     /*
      * @see com.sitewhere.spi.asset.request.IAssetCreateRequest#getAssetTypeToken()
@@ -56,18 +53,6 @@ public class AssetCreateRequest extends PersistentEntityCreateRequest implements
 
     public void setName(String name) {
 	this.name = name;
-    }
-
-    /*
-     * @see com.sitewhere.spi.asset.request.IAssetCreateRequest#getImageUrl()
-     */
-    @Override
-    public String getImageUrl() {
-	return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-	this.imageUrl = imageUrl;
     }
 
     public static class Builder {

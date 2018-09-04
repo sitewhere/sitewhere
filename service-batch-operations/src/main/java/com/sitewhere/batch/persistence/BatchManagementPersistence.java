@@ -43,20 +43,11 @@ public class BatchManagementPersistence extends Persistence {
     public static BatchOperation batchOperationCreateLogic(IBatchOperationCreateRequest request)
 	    throws SiteWhereException {
 	BatchOperation operation = new BatchOperation();
-	operation.setId(UUID.randomUUID());
-
-	// Use token if provided, otherwise generate one.
-	if (request.getToken() != null) {
-	    operation.setToken(request.getToken());
-	} else {
-	    operation.setToken(UUID.randomUUID().toString());
-	}
+	Persistence.entityCreateLogic(request, operation);
 
 	operation.setOperationType(request.getOperationType());
 	operation.getParameters().putAll(request.getParameters());
 
-	Persistence.initializeEntityMetadata(operation);
-	MetadataProvider.copy(request.getMetadata(), operation);
 	return operation;
     }
 
@@ -69,6 +60,8 @@ public class BatchManagementPersistence extends Persistence {
      */
     public static void batchOperationUpdateLogic(IBatchOperationUpdateRequest request, BatchOperation target)
 	    throws SiteWhereException {
+	Persistence.entityUpdateLogic(request, target);
+
 	if (request.getProcessingStatus() != null) {
 	    target.setProcessingStatus(request.getProcessingStatus());
 	}
@@ -78,12 +71,6 @@ public class BatchManagementPersistence extends Persistence {
 	if (request.getProcessingEndedDate() != null) {
 	    target.setProcessingEndedDate(request.getProcessingEndedDate());
 	}
-
-	if (request.getMetadata() != null) {
-	    target.getMetadata().clear();
-	    MetadataProvider.copy(request.getMetadata(), target);
-	}
-	Persistence.setUpdatedEntityMetadata(target);
     }
 
     /**

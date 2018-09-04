@@ -7,10 +7,7 @@
  */
 package com.sitewhere.schedule.persistence;
 
-import java.util.UUID;
-
 import com.sitewhere.persistence.Persistence;
-import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.scheduling.Schedule;
 import com.sitewhere.rest.model.scheduling.ScheduledJob;
 import com.sitewhere.spi.SiteWhereException;
@@ -38,14 +35,7 @@ public class ScheduleManagementPersistence extends Persistence {
      */
     public static Schedule scheduleCreateLogic(IScheduleCreateRequest request, String token) throws SiteWhereException {
 	Schedule schedule = new Schedule();
-	schedule.setId(UUID.randomUUID());
-
-	// Use token if provided, otherwise generate one.
-	if (request.getToken() != null) {
-	    schedule.setToken(request.getToken());
-	} else {
-	    schedule.setToken(UUID.randomUUID().toString());
-	}
+	Persistence.entityCreateLogic(request, schedule);
 
 	// Name is required.
 	if (request.getName() == null) {
@@ -63,9 +53,6 @@ public class ScheduleManagementPersistence extends Persistence {
 	schedule.setStartDate(request.getStartDate());
 	schedule.setEndDate(request.getEndDate());
 
-	Persistence.initializeEntityMetadata(schedule);
-	MetadataProvider.copy(request.getMetadata(), schedule);
-
 	return schedule;
     }
 
@@ -78,9 +65,8 @@ public class ScheduleManagementPersistence extends Persistence {
      */
     public static void scheduleUpdateLogic(Schedule schedule, IScheduleCreateRequest request)
 	    throws SiteWhereException {
-	if (request.getToken() != null) {
-	    schedule.setToken(request.getToken());
-	}
+	Persistence.entityUpdateLogic(request, schedule);
+
 	if (request.getName() != null) {
 	    schedule.setName(request.getName());
 	}
@@ -94,8 +80,6 @@ public class ScheduleManagementPersistence extends Persistence {
 
 	schedule.setStartDate(request.getStartDate());
 	schedule.setEndDate(request.getEndDate());
-
-	Persistence.setUpdatedEntityMetadata(schedule);
     }
 
     /**
@@ -109,14 +93,7 @@ public class ScheduleManagementPersistence extends Persistence {
     public static ScheduledJob scheduledJobCreateLogic(IScheduledJobCreateRequest request, String token)
 	    throws SiteWhereException {
 	ScheduledJob job = new ScheduledJob();
-	job.setId(UUID.randomUUID());
-
-	// Use token if provided, otherwise generate one.
-	if (request.getToken() != null) {
-	    job.setToken(request.getToken());
-	} else {
-	    job.setToken(UUID.randomUUID().toString());
-	}
+	Persistence.entityCreateLogic(request, job);
 
 	// Schedule token is required.
 	if (request.getScheduleToken() == null) {
@@ -133,9 +110,6 @@ public class ScheduleManagementPersistence extends Persistence {
 
 	job.setJobState(ScheduledJobState.Unsubmitted);
 
-	Persistence.initializeEntityMetadata(job);
-	MetadataProvider.copy(request.getMetadata(), job);
-
 	return job;
     }
 
@@ -148,9 +122,8 @@ public class ScheduleManagementPersistence extends Persistence {
      */
     public static void scheduledJobUpdateLogic(ScheduledJob job, IScheduledJobCreateRequest request)
 	    throws SiteWhereException {
-	if (request.getToken() != null) {
-	    job.setToken(request.getToken());
-	}
+	Persistence.entityUpdateLogic(request, job);
+
 	if (request.getScheduleToken() != null) {
 	    job.setScheduleToken(request.getScheduleToken());
 	}
@@ -164,6 +137,5 @@ public class ScheduleManagementPersistence extends Persistence {
 	if (request.getJobState() != null) {
 	    job.setJobState(request.getJobState());
 	}
-	Persistence.setUpdatedEntityMetadata(job);
     }
 }

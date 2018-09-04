@@ -24,7 +24,6 @@ import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 
-import com.sitewhere.device.persistence.DeviceManagementPersistence;
 import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.common.HBaseUtils;
@@ -287,7 +286,6 @@ public class HBaseDevice {
 	    }
 	} else {
 	    byte[] marker = { (byte) 0x01 };
-	    DeviceManagementPersistence.setUpdatedEntityMetadata(existing);
 	    byte[] updated = context.getPayloadMarshaler().encodeDevice(existing);
 
 	    Table devices = null;

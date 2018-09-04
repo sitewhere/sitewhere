@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
+import com.sitewhere.rest.model.common.request.BrandedEntityCreateRequest;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.rest.model.device.element.DeviceSlot;
 import com.sitewhere.rest.model.device.element.DeviceUnit;
@@ -25,7 +25,7 @@ import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
  * @author Derek Adams
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceTypeCreateRequest extends PersistentEntityCreateRequest implements IDeviceTypeCreateRequest {
+public class DeviceTypeCreateRequest extends BrandedEntityCreateRequest implements IDeviceTypeCreateRequest {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = 1L;
@@ -35,9 +35,6 @@ public class DeviceTypeCreateRequest extends PersistentEntityCreateRequest imple
 
     /** Decription */
     private String description;
-
-    /** Image URL */
-    private String imageUrl;
 
     /** Indicates if device instances can contain nested devices */
     private DeviceContainerPolicy containerPolicy;
@@ -68,18 +65,6 @@ public class DeviceTypeCreateRequest extends PersistentEntityCreateRequest imple
 
     public void setDescription(String description) {
 	this.description = description;
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.request.IDeviceTypeCreateRequest#getImageUrl()
-     */
-    @Override
-    public String getImageUrl() {
-	return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-	this.imageUrl = imageUrl;
     }
 
     /*

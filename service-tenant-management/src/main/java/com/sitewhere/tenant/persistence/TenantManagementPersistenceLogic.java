@@ -8,10 +8,8 @@
 package com.sitewhere.tenant.persistence;
 
 import java.util.List;
-import java.util.UUID;
 
 import com.sitewhere.persistence.Persistence;
-import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.tenant.Tenant;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.error.ErrorCode;
@@ -35,14 +33,7 @@ public class TenantManagementPersistenceLogic extends Persistence {
      */
     public static Tenant tenantCreateLogic(ITenantCreateRequest request) throws SiteWhereException {
 	Tenant tenant = new Tenant();
-	tenant.setId(UUID.randomUUID());
-
-	// Use token if provided, otherwise generate one.
-	if (request.getToken() != null) {
-	    tenant.setToken(request.getToken());
-	} else {
-	    tenant.setToken(UUID.randomUUID().toString());
-	}
+	Persistence.entityCreateLogic(request, tenant);
 
 	// Validate tenant token.
 	requireFormat("Token", tenant.getToken(), "^[\\w-]+$", ErrorCode.TenantIdFormat);
@@ -69,9 +60,6 @@ public class TenantManagementPersistenceLogic extends Persistence {
 
 	tenant.getAuthorizedUserIds().addAll(request.getAuthorizedUserIds());
 
-	MetadataProvider.copy(request.getMetadata(), tenant);
-	Persistence.initializeEntityMetadata(tenant);
-
 	return tenant;
     }
 
@@ -84,6 +72,8 @@ public class TenantManagementPersistenceLogic extends Persistence {
      * @throws SiteWhereException
      */
     public static Tenant tenantUpdateLogic(ITenantCreateRequest request, Tenant existing) throws SiteWhereException {
+	Persistence.entityUpdateLogic(request, existing);
+
 	if (request.getTenantTemplateId() != null) {
 	    if (!request.getTenantTemplateId().equals(existing.getTenantTemplateId())) {
 		throw new SiteWhereException("Can not change the tenant template of an existing tenant.");
@@ -93,10 +83,6 @@ public class TenantManagementPersistenceLogic extends Persistence {
 	    if (!request.getDatasetTemplateId().equals(existing.getDatasetTemplateId())) {
 		throw new SiteWhereException("Can not change the dataset template of an existing tenant.");
 	    }
-	}
-
-	if (request.getToken() != null) {
-	    existing.setToken(request.getToken());
 	}
 
 	if (request.getName() != null) {
@@ -115,12 +101,6 @@ public class TenantManagementPersistenceLogic extends Persistence {
 	    existing.getAuthorizedUserIds().clear();
 	    existing.getAuthorizedUserIds().addAll(request.getAuthorizedUserIds());
 	}
-
-	if (request.getMetadata() != null) {
-	    existing.getMetadata().clear();
-	    MetadataProvider.copy(request.getMetadata(), existing);
-	}
-	Persistence.setUpdatedEntityMetadata(existing);
 
 	return existing;
     }

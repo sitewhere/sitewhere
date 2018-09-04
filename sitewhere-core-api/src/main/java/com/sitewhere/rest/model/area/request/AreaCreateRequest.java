@@ -14,7 +14,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.Location;
-import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
+import com.sitewhere.rest.model.common.request.BrandedEntityCreateRequest;
 import com.sitewhere.spi.area.request.IAreaCreateRequest;
 
 /**
@@ -23,7 +23,7 @@ import com.sitewhere.spi.area.request.IAreaCreateRequest;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class AreaCreateRequest extends PersistentEntityCreateRequest implements IAreaCreateRequest {
+public class AreaCreateRequest extends BrandedEntityCreateRequest implements IAreaCreateRequest {
 
     /** Serial version UID */
     private static final long serialVersionUID = 2232101100201358496L;
@@ -39,9 +39,6 @@ public class AreaCreateRequest extends PersistentEntityCreateRequest implements 
 
     /** Site description */
     private String description;
-
-    /** Logo image URL */
-    private String imageUrl;
 
     /** Locations that define area boundaries */
     private List<Location> bounds = new ArrayList<Location>();
@@ -92,18 +89,6 @@ public class AreaCreateRequest extends PersistentEntityCreateRequest implements 
 
     public void setDescription(String description) {
 	this.description = description;
-    }
-
-    /*
-     * @see com.sitewhere.spi.area.request.IAreaCreateRequest#getImageUrl()
-     */
-    @Override
-    public String getImageUrl() {
-	return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-	this.imageUrl = imageUrl;
     }
 
     /*

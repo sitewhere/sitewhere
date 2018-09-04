@@ -8,8 +8,7 @@
 package com.sitewhere.spi.device.request;
 
 import com.sitewhere.spi.common.IAccessible;
-import com.sitewhere.spi.common.IImageProvider;
-import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
+import com.sitewhere.spi.common.request.IBrandedEntityCreateRequest;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 
@@ -18,7 +17,7 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
  * 
  * @author Derek
  */
-public interface IDeviceTypeCreateRequest extends IAccessible, IImageProvider, IPersistentEntityCreateRequest {
+public interface IDeviceTypeCreateRequest extends IAccessible, IBrandedEntityCreateRequest {
 
     /**
      * Get container policy.

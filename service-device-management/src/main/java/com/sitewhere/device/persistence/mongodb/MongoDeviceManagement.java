@@ -1120,7 +1120,6 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 
 	DeviceManagementPersistence.deviceAssignmentUpdateLogic(device, customer, area, asset, request, assignment);
 
-	DeviceManagementPersistence.setUpdatedEntityMetadata(assignment);
 	Document query = new Document(MongoSiteWhereEntity.PROP_ID, id);
 	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
 	MongoPersistence.update(assignments, query, MongoDeviceAssignment.toDocument(assignment));

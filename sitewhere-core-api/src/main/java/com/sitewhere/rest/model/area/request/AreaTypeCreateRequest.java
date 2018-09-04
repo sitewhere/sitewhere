@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
+import com.sitewhere.rest.model.common.request.BrandedEntityCreateRequest;
 import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
 
@@ -20,7 +20,7 @@ import com.sitewhere.spi.area.request.IAreaTypeCreateRequest;
  * 
  * @author Derek
  */
-public class AreaTypeCreateRequest extends PersistentEntityCreateRequest implements IAreaTypeCreateRequest {
+public class AreaTypeCreateRequest extends BrandedEntityCreateRequest implements IAreaTypeCreateRequest {
 
     /** Serial version UID */
     private static final long serialVersionUID = 7654388850917582565L;
@@ -30,9 +30,6 @@ public class AreaTypeCreateRequest extends PersistentEntityCreateRequest impleme
 
     /** Description */
     private String description;
-
-    /** Icon */
-    private String icon;
 
     /** List of contained area type tokens */
     private List<String> containedAreaTypeTokens;
@@ -59,18 +56,6 @@ public class AreaTypeCreateRequest extends PersistentEntityCreateRequest impleme
 
     public void setDescription(String description) {
 	this.description = description;
-    }
-
-    /*
-     * @see com.sitewhere.spi.area.request.IAreaTypeCreateRequest#getIcon()
-     */
-    @Override
-    public String getIcon() {
-	return icon;
-    }
-
-    public void setIcon(String icon) {
-	this.icon = icon;
     }
 
     /*

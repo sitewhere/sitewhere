@@ -14,7 +14,6 @@ import java.util.UUID;
 import com.sitewhere.persistence.Persistence;
 import com.sitewhere.rest.model.asset.Asset;
 import com.sitewhere.rest.model.asset.AssetType;
-import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.search.asset.AssetSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
@@ -47,24 +46,15 @@ public class AssetManagementPersistence extends Persistence {
      */
     public static AssetType assetTypeCreateLogic(IAssetTypeCreateRequest request) throws SiteWhereException {
 	AssetType type = new AssetType();
-	type.setId(UUID.randomUUID());
-	type.setDescription(request.getDescription());
+	Persistence.entityCreateLogic(request, type);
 
-	// Use token if provided, otherwise generate one.
-	if (request.getToken() != null) {
-	    type.setToken(request.getToken());
-	} else {
-	    type.setToken(UUID.randomUUID().toString());
-	}
+	type.setDescription(request.getDescription());
 
 	require("Name", request.getName());
 	type.setName(request.getName());
 
 	require("Image URL", request.getImageUrl());
 	type.setImageUrl(request.getImageUrl());
-
-	MetadataProvider.copy(request.getMetadata(), type);
-	AssetManagementPersistence.initializeEntityMetadata(type);
 
 	return type;
     }
@@ -78,9 +68,8 @@ public class AssetManagementPersistence extends Persistence {
      */
     public static void assetTypeUpdateLogic(AssetType target, IAssetTypeCreateRequest request)
 	    throws SiteWhereException {
-	if (request.getToken() != null) {
-	    target.setToken(request.getToken());
-	}
+	Persistence.entityUpdateLogic(request, target);
+
 	if (request.getName() != null) {
 	    target.setName(request.getName());
 	}
@@ -90,11 +79,6 @@ public class AssetManagementPersistence extends Persistence {
 	if (request.getImageUrl() != null) {
 	    target.setImageUrl(request.getImageUrl());
 	}
-	if (request.getMetadata() != null) {
-	    target.getMetadata().clear();
-	    MetadataProvider.copy(request.getMetadata(), target);
-	}
-	AssetManagementPersistence.setUpdatedEntityMetadata(target);
     }
 
     /**
@@ -124,24 +108,15 @@ public class AssetManagementPersistence extends Persistence {
      */
     public static Asset assetCreateLogic(IAssetType assetType, IAssetCreateRequest request) throws SiteWhereException {
 	Asset asset = new Asset();
-	asset.setId(UUID.randomUUID());
-	asset.setAssetTypeId(assetType.getId());
+	Persistence.entityCreateLogic(request, asset);
 
-	// Use token if provided, otherwise generate one.
-	if (request.getToken() != null) {
-	    asset.setToken(request.getToken());
-	} else {
-	    asset.setToken(UUID.randomUUID().toString());
-	}
+	asset.setAssetTypeId(assetType.getId());
 
 	require("Name", request.getName());
 	asset.setName(request.getName());
 
 	require("Image URL", request.getImageUrl());
 	asset.setImageUrl(request.getImageUrl());
-
-	MetadataProvider.copy(request.getMetadata(), asset);
-	AssetManagementPersistence.initializeEntityMetadata(asset);
 
 	return asset;
     }
@@ -156,11 +131,10 @@ public class AssetManagementPersistence extends Persistence {
      */
     public static void assetUpdateLogic(IAssetType assetType, Asset target, IAssetCreateRequest request)
 	    throws SiteWhereException {
+	Persistence.entityUpdateLogic(request, target);
+
 	if (request.getAssetTypeToken() != null) {
 	    target.setAssetTypeId(assetType.getId());
-	}
-	if (request.getToken() != null) {
-	    target.setToken(request.getToken());
 	}
 	if (request.getName() != null) {
 	    target.setName(request.getName());
@@ -168,11 +142,6 @@ public class AssetManagementPersistence extends Persistence {
 	if (request.getImageUrl() != null) {
 	    target.setImageUrl(request.getImageUrl());
 	}
-	if (request.getMetadata() != null) {
-	    target.getMetadata().clear();
-	    MetadataProvider.copy(request.getMetadata(), target);
-	}
-	AssetManagementPersistence.setUpdatedEntityMetadata(target);
     }
 
     /**

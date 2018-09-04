@@ -8,17 +8,17 @@
 package com.sitewhere.spi.batch.request;
 
 import java.util.Date;
-import java.util.Map;
 
 import com.sitewhere.spi.batch.BatchOperationStatus;
 import com.sitewhere.spi.batch.IBatchOperation;
+import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
 
 /**
  * Defines fields that can be updated on an {@link IBatchOperation}.
  * 
  * @author Derek
  */
-public interface IBatchOperationUpdateRequest {
+public interface IBatchOperationUpdateRequest extends IPersistentEntityCreateRequest {
 
     /**
      * Get updated processing status for the batch operation.
@@ -40,11 +40,4 @@ public interface IBatchOperationUpdateRequest {
      * @return
      */
     public Date getProcessingEndedDate();
-
-    /**
-     * Get metadata values.
-     * 
-     * @return
-     */
-    public Map<String, String> getMetadata();
 }

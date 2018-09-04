@@ -8,12 +8,15 @@
 package com.sitewhere.persistence;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.common.PersistentEntity;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 
@@ -25,27 +28,44 @@ import com.sitewhere.spi.error.ErrorLevel;
 public class Persistence {
 
     /**
-     * Initialize entity fields. TODO: Use credentials for subject.
+     * Common logic for populating a persistent entity.
      * 
-     * @param createdBy
+     * @param request
      * @param entity
      * @throws SiteWhereException
      */
-    public static void initializeEntityMetadata(PersistentEntity entity) throws SiteWhereException {
+    public static void entityCreateLogic(IPersistentEntityCreateRequest request, PersistentEntity entity)
+	    throws SiteWhereException {
+	entity.setId(UUID.randomUUID());
+	if (request.getToken() != null) {
+	    entity.setToken(request.getToken());
+	} else {
+	    entity.setToken(UUID.randomUUID().toString());
+	}
 	entity.setCreatedDate(new Date());
 	entity.setCreatedBy(null);
+	MetadataProvider.copy(request.getMetadata(), entity);
     }
 
     /**
-     * Set updated fields. TODO: Use credentials for subject.
+     * Common entity update logic.
      * 
-     * @param updatedBy
+     * @param request
      * @param entity
      * @throws SiteWhereException
      */
-    public static void setUpdatedEntityMetadata(PersistentEntity entity) throws SiteWhereException {
+    public static void entityUpdateLogic(IPersistentEntityCreateRequest request, PersistentEntity entity)
+	    throws SiteWhereException {
+	if (request.getToken() != null) {
+	    entity.setToken(request.getToken());
+	}
 	entity.setUpdatedDate(new Date());
 	entity.setUpdatedBy(null);
+
+	if (request.getMetadata() != null) {
+	    entity.getMetadata().clear();
+	    MetadataProvider.copy(request.getMetadata(), entity);
+	}
     }
 
     /**

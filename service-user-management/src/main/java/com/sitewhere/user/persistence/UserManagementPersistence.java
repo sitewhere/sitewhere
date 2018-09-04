@@ -8,13 +8,11 @@
 package com.sitewhere.user.persistence;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.sitewhere.persistence.Persistence;
-import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
 import com.sitewhere.rest.model.user.GrantedAuthority;
@@ -46,14 +44,7 @@ public class UserManagementPersistence extends Persistence {
      */
     public static User userCreateLogic(IUserCreateRequest request, boolean encodePassword) throws SiteWhereException {
 	User user = new User();
-	user.setId(UUID.randomUUID());
-
-	// Use token if provided, otherwise generate one.
-	if (request.getUsername() != null) {
-	    user.setToken(request.getUsername());
-	} else {
-	    user.setToken(UUID.randomUUID().toString());
-	}
+	Persistence.entityCreateLogic(request, user);
 
 	require("Username", request.getUsername());
 	String password = (encodePassword) ? passwordEncoder.encode(request.getPassword()) : request.getPassword();
@@ -66,8 +57,6 @@ public class UserManagementPersistence extends Persistence {
 	user.setStatus(request.getStatus());
 	user.setAuthorities(request.getAuthorities());
 
-	MetadataProvider.copy(request, user);
-	Persistence.initializeEntityMetadata(user);
 	return user;
     }
 
@@ -80,32 +69,29 @@ public class UserManagementPersistence extends Persistence {
      * @param encodePassword
      * @throws SiteWhereException
      */
-    public static void userUpdateLogic(IUserCreateRequest source, User target, boolean encodePassword)
+    public static void userUpdateLogic(IUserCreateRequest request, User target, boolean encodePassword)
 	    throws SiteWhereException {
-	if (source.getUsername() != null) {
-	    target.setUsername(source.getUsername());
+	Persistence.entityUpdateLogic(request, target);
+
+	if (request.getUsername() != null) {
+	    target.setUsername(request.getUsername());
 	}
-	if (source.getPassword() != null) {
-	    String password = (encodePassword) ? passwordEncoder.encode(source.getPassword()) : source.getPassword();
+	if (request.getPassword() != null) {
+	    String password = (encodePassword) ? passwordEncoder.encode(request.getPassword()) : request.getPassword();
 	    target.setHashedPassword(password);
 	}
-	if (source.getFirstName() != null) {
-	    target.setFirstName(source.getFirstName());
+	if (request.getFirstName() != null) {
+	    target.setFirstName(request.getFirstName());
 	}
-	if (source.getLastName() != null) {
-	    target.setLastName(source.getLastName());
+	if (request.getLastName() != null) {
+	    target.setLastName(request.getLastName());
 	}
-	if (source.getStatus() != null) {
-	    target.setStatus(source.getStatus());
+	if (request.getStatus() != null) {
+	    target.setStatus(request.getStatus());
 	}
-	if (source.getAuthorities() != null) {
-	    target.setAuthorities(source.getAuthorities());
+	if (request.getAuthorities() != null) {
+	    target.setAuthorities(request.getAuthorities());
 	}
-	if (source.getMetadata() != null) {
-	    target.getMetadata().clear();
-	    MetadataProvider.copy(source, target);
-	}
-	Persistence.setUpdatedEntityMetadata(target);
     }
 
     /**

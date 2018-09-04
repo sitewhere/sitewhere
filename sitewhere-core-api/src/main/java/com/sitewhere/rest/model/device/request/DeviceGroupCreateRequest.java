@@ -13,7 +13,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
+import com.sitewhere.rest.model.common.request.BrandedEntityCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 
@@ -23,7 +23,7 @@ import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceGroupCreateRequest extends PersistentEntityCreateRequest implements IDeviceGroupCreateRequest {
+public class DeviceGroupCreateRequest extends BrandedEntityCreateRequest implements IDeviceGroupCreateRequest {
 
     /** Serialization version identifier */
     private static final long serialVersionUID = 1657559631108464556L;
@@ -33,9 +33,6 @@ public class DeviceGroupCreateRequest extends PersistentEntityCreateRequest impl
 
     /** Group description */
     private String description;
-
-    /** Image URL */
-    private String imageUrl;
 
     /** List of roles */
     private List<String> roles;
@@ -67,18 +64,6 @@ public class DeviceGroupCreateRequest extends PersistentEntityCreateRequest impl
 
     public void setDescription(String description) {
 	this.description = description;
-    }
-
-    /*
-     * @see com.sitewhere.spi.common.IAccessible#getImageUrl()
-     */
-    @Override
-    public String getImageUrl() {
-	return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-	this.imageUrl = imageUrl;
     }
 
     /*

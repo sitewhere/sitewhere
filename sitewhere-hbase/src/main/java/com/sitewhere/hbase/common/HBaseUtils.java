@@ -30,7 +30,6 @@ import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
 import com.sitewhere.hbase.encoder.PayloadEncoding;
 import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
-import com.sitewhere.persistence.Persistence;
 import com.sitewhere.rest.model.common.PersistentEntity;
 import com.sitewhere.rest.model.search.Pager;
 import com.sitewhere.rest.model.search.SearchResults;
@@ -276,7 +275,6 @@ public class HBaseUtils {
 	    }
 	} else {
 	    byte[] marker = { (byte) 0x01 };
-	    Persistence.setUpdatedEntityMetadata(existing);
 	    byte[] updated = marshaler.encode(existing);
 
 	    Table table = null;

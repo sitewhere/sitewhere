@@ -99,22 +99,13 @@ public class DeviceManagementPersistence extends Persistence {
     public static CustomerType customerTypeCreateLogic(ICustomerTypeCreateRequest request,
 	    List<UUID> containedCustomerTypeIds) throws SiteWhereException {
 	CustomerType type = new CustomerType();
-	type.setId(UUID.randomUUID());
-
-	// Use token if provided, otherwise generate one.
-	if (request.getToken() != null) {
-	    type.setToken(request.getToken());
-	} else {
-	    type.setToken(UUID.randomUUID().toString());
-	}
+	Persistence.entityCreateLogic(request, type);
 
 	type.setName(request.getName());
 	type.setDescription(request.getDescription());
 	type.setIcon(request.getIcon());
 	type.setContainedCustomerTypeIds(containedCustomerTypeIds);
 
-	DeviceManagementPersistence.initializeEntityMetadata(type);
-	MetadataProvider.copy(request.getMetadata(), type);
 	return type;
     }
 
@@ -129,9 +120,8 @@ public class DeviceManagementPersistence extends Persistence {
      */
     public static void customerTypeUpdateLogic(ICustomerTypeCreateRequest request, List<UUID> containedCustomerTypeIds,
 	    CustomerType target) throws SiteWhereException {
-	if (request.getToken() != null) {
-	    target.setToken(request.getToken());
-	}
+	Persistence.entityUpdateLogic(request, target);
+
 	if (request.getName() != null) {
 	    target.setName(request.getName());
 	}
@@ -144,11 +134,6 @@ public class DeviceManagementPersistence extends Persistence {
 	if (request.getContainedCustomerTypeTokens() != null) {
 	    target.setContainedCustomerTypeIds(containedCustomerTypeIds);
 	}
-	if (request.getMetadata() != null) {
-	    target.getMetadata().clear();
-	    MetadataProvider.copy(request.getMetadata(), target);
-	}
-	DeviceManagementPersistence.setUpdatedEntityMetadata(target);
     }
 
     /**
@@ -163,14 +148,7 @@ public class DeviceManagementPersistence extends Persistence {
     public static Customer customerCreateLogic(ICustomerCreateRequest request, ICustomerType customerType,
 	    ICustomer parentCustomer) throws SiteWhereException {
 	Customer area = new Customer();
-	area.setId(UUID.randomUUID());
-
-	// Use token if provided, otherwise generate one.
-	if (request.getToken() != null) {
-	    area.setToken(request.getToken());
-	} else {
-	    area.setToken(UUID.randomUUID().toString());
-	}
+	Persistence.entityCreateLogic(request, area);
 
 	area.setCustomerTypeId(customerType.getId());
 	area.setParentCustomerId(parentCustomer != null ? parentCustomer.getId() : null);
@@ -178,8 +156,6 @@ public class DeviceManagementPersistence extends Persistence {
 	area.setDescription(request.getDescription());
 	area.setImageUrl(request.getImageUrl());
 
-	DeviceManagementPersistence.initializeEntityMetadata(area);
-	MetadataProvider.copy(request.getMetadata(), area);
 	return area;
     }
 
@@ -192,9 +168,8 @@ public class DeviceManagementPersistence extends Persistence {
      * @throws SiteWhereException
      */
     public static void customerUpdateLogic(ICustomerCreateRequest request, Customer target) throws SiteWhereException {
-	if (request.getToken() != null) {
-	    target.setToken(request.getToken());
-	}
+	Persistence.entityUpdateLogic(request, target);
+
 	if (request.getName() != null) {
 	    target.setName(request.getName());
 	}
@@ -204,11 +179,6 @@ public class DeviceManagementPersistence extends Persistence {
 	if (request.getImageUrl() != null) {
 	    target.setImageUrl(request.getImageUrl());
 	}
-	if (request.getMetadata() != null) {
-	    target.getMetadata().clear();
-	    MetadataProvider.copy(request.getMetadata(), target);
-	}
-	DeviceManagementPersistence.setUpdatedEntityMetadata(target);
     }
 
     /**
@@ -223,22 +193,13 @@ public class DeviceManagementPersistence extends Persistence {
     public static AreaType areaTypeCreateLogic(IAreaTypeCreateRequest request, List<UUID> containedAreaTypeIds)
 	    throws SiteWhereException {
 	AreaType type = new AreaType();
-	type.setId(UUID.randomUUID());
-
-	// Use token if provided, otherwise generate one.
-	if (request.getToken() != null) {
-	    type.setToken(request.getToken());
-	} else {
-	    type.setToken(UUID.randomUUID().toString());
-	}
+	Persistence.entityCreateLogic(request, type);
 
 	type.setName(request.getName());
 	type.setDescription(request.getDescription());
 	type.setIcon(request.getIcon());
 	type.setContainedAreaTypeIds(containedAreaTypeIds);
 
-	DeviceManagementPersistence.initializeEntityMetadata(type);
-	MetadataProvider.copy(request.getMetadata(), type);
 	return type;
     }
 
@@ -253,9 +214,8 @@ public class DeviceManagementPersistence extends Persistence {
      */
     public static void areaTypeUpdateLogic(IAreaTypeCreateRequest request, List<UUID> containedAreaTypeIds,
 	    AreaType target) throws SiteWhereException {
-	if (request.getToken() != null) {
-	    target.setToken(request.getToken());
-	}
+	Persistence.entityUpdateLogic(request, target);
+
 	if (request.getName() != null) {
 	    target.setName(request.getName());
 	}
@@ -268,11 +228,6 @@ public class DeviceManagementPersistence extends Persistence {
 	if (request.getContainedAreaTypeTokens() != null) {
 	    target.setContainedAreaTypeIds(containedAreaTypeIds);
 	}
-	if (request.getMetadata() != null) {
-	    target.getMetadata().clear();
-	    MetadataProvider.copy(request.getMetadata(), target);
-	}
-	DeviceManagementPersistence.setUpdatedEntityMetadata(target);
     }
 
     /**
@@ -287,14 +242,7 @@ public class DeviceManagementPersistence extends Persistence {
     public static Area areaCreateLogic(IAreaCreateRequest request, IAreaType areaType, IArea parentArea)
 	    throws SiteWhereException {
 	Area area = new Area();
-	area.setId(UUID.randomUUID());
-
-	// Use token if provided, otherwise generate one.
-	if (request.getToken() != null) {
-	    area.setToken(request.getToken());
-	} else {
-	    area.setToken(UUID.randomUUID().toString());
-	}
+	Persistence.entityCreateLogic(request, area);
 
 	area.setAreaTypeId(areaType.getId());
 	area.setParentAreaId(parentArea != null ? parentArea.getId() : null);
@@ -303,8 +251,6 @@ public class DeviceManagementPersistence extends Persistence {
 	area.setImageUrl(request.getImageUrl());
 	area.setBounds(Location.copy(request.getBounds()));
 
-	DeviceManagementPersistence.initializeEntityMetadata(area);
-	MetadataProvider.copy(request.getMetadata(), area);
 	return area;
     }
 
@@ -316,9 +262,8 @@ public class DeviceManagementPersistence extends Persistence {
      * @throws SiteWhereException
      */
     public static void areaUpdateLogic(IAreaCreateRequest request, Area target) throws SiteWhereException {
-	if (request.getToken() != null) {
-	    target.setToken(request.getToken());
-	}
+	Persistence.entityUpdateLogic(request, target);
+
 	if (request.getName() != null) {
 	    target.setName(request.getName());
 	}
@@ -331,11 +276,6 @@ public class DeviceManagementPersistence extends Persistence {
 	if (request.getBounds() != null) {
 	    target.setBounds(Location.copy(request.getBounds()));
 	}
-	if (request.getMetadata() != null) {
-	    target.getMetadata().clear();
-	    MetadataProvider.copy(request.getMetadata(), target);
-	}
-	DeviceManagementPersistence.setUpdatedEntityMetadata(target);
     }
 
     /**
@@ -347,15 +287,9 @@ public class DeviceManagementPersistence extends Persistence {
      */
     public static DeviceType deviceTypeCreateLogic(IDeviceTypeCreateRequest request) throws SiteWhereException {
 	DeviceType type = new DeviceType();
-	type.setId(UUID.randomUUID());
-	type.setDescription(request.getDescription() != null ? request.getDescription() : "");
+	Persistence.entityCreateLogic(request, type);
 
-	// Use token if provided, otherwise generate one.
-	if (request.getToken() != null) {
-	    type.setToken(request.getToken());
-	} else {
-	    type.setToken(UUID.randomUUID().toString());
-	}
+	type.setDescription(request.getDescription() != null ? request.getDescription() : "");
 
 	// Name is required.
 	require("Name", request.getName());
@@ -379,8 +313,6 @@ public class DeviceManagementPersistence extends Persistence {
 	    type.setDeviceElementSchema((DeviceElementSchema) schema);
 	}
 
-	MetadataProvider.copy(request.getMetadata(), type);
-	DeviceManagementPersistence.initializeEntityMetadata(type);
 	return type;
     }
 
@@ -393,9 +325,8 @@ public class DeviceManagementPersistence extends Persistence {
      */
     public static void deviceTypeUpdateLogic(IDeviceTypeCreateRequest request, DeviceType target)
 	    throws SiteWhereException {
-	if (request.getToken() != null) {
-	    target.setToken(request.getToken());
-	}
+	Persistence.entityUpdateLogic(request, target);
+
 	if (request.getName() != null) {
 	    target.setName(request.getName());
 	}
@@ -421,11 +352,6 @@ public class DeviceManagementPersistence extends Persistence {
 		target.setDeviceElementSchema((DeviceElementSchema) schema);
 	    }
 	}
-	if (request.getMetadata() != null) {
-	    target.getMetadata().clear();
-	    MetadataProvider.copy(request.getMetadata(), target);
-	}
-	DeviceManagementPersistence.setUpdatedEntityMetadata(target);
     }
 
     /**
@@ -457,15 +383,9 @@ public class DeviceManagementPersistence extends Persistence {
     public static DeviceCommand deviceCommandCreateLogic(IDeviceType deviceType, IDeviceCommandCreateRequest request,
 	    List<IDeviceCommand> existing) throws SiteWhereException {
 	DeviceCommand command = new DeviceCommand();
-	command.setId(UUID.randomUUID());
-	command.setDeviceTypeId(deviceType.getId());
+	Persistence.entityCreateLogic(request, command);
 
-	// Use token if provided, otherwise generate one.
-	if (request.getToken() != null) {
-	    command.setToken(request.getToken());
-	} else {
-	    command.setToken(UUID.randomUUID().toString());
-	}
+	command.setDeviceTypeId(deviceType.getId());
 
 	// Name is required.
 	require("Name", request.getName());
@@ -477,8 +397,6 @@ public class DeviceManagementPersistence extends Persistence {
 
 	checkDuplicateCommand(command, existing);
 
-	MetadataProvider.copy(request.getMetadata(), command);
-	DeviceManagementPersistence.initializeEntityMetadata(command);
 	return command;
     }
 
@@ -522,9 +440,8 @@ public class DeviceManagementPersistence extends Persistence {
      */
     public static void deviceCommandUpdateLogic(IDeviceType deviceType, IDeviceCommandCreateRequest request,
 	    DeviceCommand target, List<IDeviceCommand> existing) throws SiteWhereException {
-	if (request.getToken() != null) {
-	    target.setToken(request.getToken());
-	}
+	Persistence.entityUpdateLogic(request, target);
+
 	if (request.getDeviceTypeToken() != null) {
 	    target.setDeviceTypeId(deviceType.getId());
 	}
@@ -548,11 +465,6 @@ public class DeviceManagementPersistence extends Persistence {
 	    target.getParameters().clear();
 	    target.getParameters().addAll(request.getParameters());
 	}
-	if (request.getMetadata() != null) {
-	    target.getMetadata().clear();
-	    MetadataProvider.copy(request.getMetadata(), target);
-	}
-	DeviceManagementPersistence.setUpdatedEntityMetadata(target);
     }
 
     /**
@@ -567,15 +479,9 @@ public class DeviceManagementPersistence extends Persistence {
     public static DeviceStatus deviceStatusCreateLogic(IDeviceType deviceType, IDeviceStatusCreateRequest request,
 	    List<IDeviceStatus> existing) throws SiteWhereException {
 	DeviceStatus status = new DeviceStatus();
-	status.setId(UUID.randomUUID());
-	status.setDeviceTypeId(deviceType.getId());
+	Persistence.entityCreateLogic(request, status);
 
-	// Use token if provided, otherwise generate one.
-	if (request.getToken() != null) {
-	    status.setToken(request.getToken());
-	} else {
-	    status.setToken(UUID.randomUUID().toString());
-	}
+	status.setDeviceTypeId(deviceType.getId());
 
 	// Code is required.
 	require("Code", request.getCode());
@@ -603,8 +509,6 @@ public class DeviceManagementPersistence extends Persistence {
 
 	checkDuplicateStatus(status, existing);
 
-	MetadataProvider.copy(request.getMetadata(), status);
-	DeviceManagementPersistence.initializeEntityMetadata(status);
 	return status;
     }
 
@@ -618,9 +522,8 @@ public class DeviceManagementPersistence extends Persistence {
      */
     public static void deviceStatusUpdateLogic(IDeviceType deviceType, IDeviceStatusCreateRequest request,
 	    DeviceStatus target, List<IDeviceStatus> existing) throws SiteWhereException {
-	if (request.getToken() != null) {
-	    target.setToken(request.getToken());
-	}
+	Persistence.entityUpdateLogic(request, target);
+
 	if (request.getDeviceTypeToken() != null) {
 	    target.setDeviceTypeId(deviceType.getId());
 	}
@@ -643,11 +546,6 @@ public class DeviceManagementPersistence extends Persistence {
 	if (request.getIcon() != null) {
 	    target.setIcon(request.getIcon());
 	}
-	if (request.getMetadata() != null) {
-	    target.getMetadata().clear();
-	    MetadataProvider.copy(request.getMetadata(), target);
-	}
-	DeviceManagementPersistence.setUpdatedEntityMetadata(target);
     }
 
     /**
@@ -677,14 +575,7 @@ public class DeviceManagementPersistence extends Persistence {
     public static Device deviceCreateLogic(IDeviceCreateRequest request, IDeviceType deviceType)
 	    throws SiteWhereException {
 	Device device = new Device();
-	device.setId(UUID.randomUUID());
-
-	// Use token if provided, otherwise generate one.
-	if (request.getToken() != null) {
-	    device.setToken(request.getToken());
-	} else {
-	    device.setToken(UUID.randomUUID().toString());
-	}
+	Persistence.entityCreateLogic(request, device);
 
 	Matcher matcher = HARDWARE_ID_REGEX.matcher(request.getToken());
 	if (!matcher.matches()) {
@@ -695,8 +586,6 @@ public class DeviceManagementPersistence extends Persistence {
 	device.setComments(request.getComments());
 	device.setStatus(request.getStatus());
 
-	MetadataProvider.copy(request.getMetadata(), device);
-	DeviceManagementPersistence.initializeEntityMetadata(device);
 	return device;
     }
 
@@ -709,6 +598,8 @@ public class DeviceManagementPersistence extends Persistence {
      */
     public static void deviceUpdateLogic(IDeviceCreateRequest request, IDeviceType deviceType, IDevice parent,
 	    Device target) throws SiteWhereException {
+	Persistence.entityUpdateLogic(request, target);
+
 	if (deviceType != null) {
 	    target.setDeviceTypeId(deviceType.getId());
 	}
@@ -731,11 +622,6 @@ public class DeviceManagementPersistence extends Persistence {
 	if (request.getStatus() != null) {
 	    target.setStatus(request.getStatus());
 	}
-	if (request.getMetadata() != null) {
-	    target.getMetadata().clear();
-	    MetadataProvider.copy(request.getMetadata(), target);
-	}
-	DeviceManagementPersistence.setUpdatedEntityMetadata(target);
     }
 
     /**
@@ -858,7 +744,7 @@ public class DeviceManagementPersistence extends Persistence {
     /**
      * Common logic for creating a device assignment from a request.
      * 
-     * @param source
+     * @param request
      * @param customer
      * @param area
      * @param asset
@@ -866,21 +752,18 @@ public class DeviceManagementPersistence extends Persistence {
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceAssignment deviceAssignmentCreateLogic(IDeviceAssignmentCreateRequest source,
+    public static DeviceAssignment deviceAssignmentCreateLogic(IDeviceAssignmentCreateRequest request,
 	    ICustomer customer, IArea area, IAsset asset, IDevice device) throws SiteWhereException {
 	DeviceAssignment assignment = new DeviceAssignment();
-	assignment.setId(UUID.randomUUID());
-	assignment.setToken(source.getToken());
+	Persistence.entityCreateLogic(request, assignment);
+
 	assignment.setCustomerId(customer != null ? customer.getId() : null);
 	assignment.setAreaId(area != null ? area.getId() : null);
 	assignment.setAssetId(asset != null ? asset.getId() : null);
 	assignment.setDeviceId(device.getId());
 	assignment.setDeviceTypeId(device.getDeviceTypeId());
 	assignment.setActiveDate(new Date());
-	assignment.setStatus(source.getStatus() != null ? source.getStatus() : DeviceAssignmentStatus.Active);
-
-	DeviceManagementPersistence.initializeEntityMetadata(assignment);
-	MetadataProvider.copy(source.getMetadata(), assignment);
+	assignment.setStatus(request.getStatus() != null ? request.getStatus() : DeviceAssignmentStatus.Active);
 
 	return assignment;
     }
@@ -898,9 +781,8 @@ public class DeviceManagementPersistence extends Persistence {
      */
     public static void deviceAssignmentUpdateLogic(IDevice device, ICustomer customer, IArea area, IAsset asset,
 	    IDeviceAssignmentCreateRequest request, DeviceAssignment target) throws SiteWhereException {
-	if (request.getToken() != null) {
-	    target.setToken(request.getToken());
-	}
+	Persistence.entityUpdateLogic(request, target);
+
 	if (device != null) {
 	    target.setDeviceId(device.getId());
 	    target.setDeviceTypeId(device.getDeviceTypeId());
@@ -917,11 +799,6 @@ public class DeviceManagementPersistence extends Persistence {
 	if (request.getStatus() != null) {
 	    target.setStatus(request.getStatus());
 	}
-	if (request.getMetadata() != null) {
-	    target.getMetadata().clear();
-	    MetadataProvider.copy(request.getMetadata(), target);
-	}
-	DeviceManagementPersistence.setUpdatedEntityMetadata(target);
     }
 
     /**
@@ -1041,8 +918,6 @@ public class DeviceManagementPersistence extends Persistence {
 	require("Content Type", request.getContentType());
 	stream.setContentType(request.getContentType());
 
-	MetadataProvider.copy(request.getMetadata(), stream);
-	DeviceManagementPersistence.initializeEntityMetadata(stream);
 	return stream;
     }
 
@@ -1124,14 +999,7 @@ public class DeviceManagementPersistence extends Persistence {
      */
     public static Zone zoneCreateLogic(IZoneCreateRequest request, IArea area, String uuid) throws SiteWhereException {
 	Zone zone = new Zone();
-	zone.setId(UUID.randomUUID());
-
-	// Use token if provided, otherwise generate one.
-	if (request.getToken() != null) {
-	    zone.setToken(request.getToken());
-	} else {
-	    zone.setToken(UUID.randomUUID().toString());
-	}
+	Persistence.entityCreateLogic(request, zone);
 
 	zone.setAreaId(area.getId());
 	zone.setName(request.getName());
@@ -1139,9 +1007,6 @@ public class DeviceManagementPersistence extends Persistence {
 	zone.setFillColor(request.getFillColor());
 	zone.setOpacity(request.getOpacity());
 	zone.setBounds(Location.copy(request.getBounds()));
-
-	DeviceManagementPersistence.initializeEntityMetadata(zone);
-	MetadataProvider.copy(request.getMetadata(), zone);
 
 	return zone;
     }
@@ -1155,9 +1020,8 @@ public class DeviceManagementPersistence extends Persistence {
      * @throws SiteWhereException
      */
     public static void zoneUpdateLogic(IZoneCreateRequest request, Zone target) throws SiteWhereException {
-	if (request.getToken() != null) {
-	    target.setToken(request.getToken());
-	}
+	Persistence.entityUpdateLogic(request, target);
+
 	if (request.getName() != null) {
 	    target.setName(request.getName());
 	}
@@ -1173,11 +1037,6 @@ public class DeviceManagementPersistence extends Persistence {
 	if (request.getBounds() != null) {
 	    target.setBounds(Location.copy(request.getBounds()));
 	}
-	if (request.getMetadata() != null) {
-	    target.getMetadata().clear();
-	    MetadataProvider.copy(request.getMetadata(), target);
-	}
-	DeviceManagementPersistence.setUpdatedEntityMetadata(target);
     }
 
     /**
@@ -1190,15 +1049,9 @@ public class DeviceManagementPersistence extends Persistence {
      */
     public static DeviceGroup deviceGroupCreateLogic(IDeviceGroupCreateRequest request) throws SiteWhereException {
 	DeviceGroup group = new DeviceGroup();
-	group.setId(UUID.randomUUID());
-	group.setDescription(request.getDescription());
+	Persistence.entityCreateLogic(request, group);
 
-	// Use token if provided, otherwise generate one.
-	if (request.getToken() != null) {
-	    group.setToken(request.getToken());
-	} else {
-	    group.setToken(UUID.randomUUID().toString());
-	}
+	group.setDescription(request.getDescription());
 
 	require("Name", request.getName());
 	group.setName(request.getName());
@@ -1210,8 +1063,6 @@ public class DeviceManagementPersistence extends Persistence {
 	    group.getRoles().addAll(request.getRoles());
 	}
 
-	DeviceManagementPersistence.initializeEntityMetadata(group);
-	MetadataProvider.copy(request.getMetadata(), group);
 	return group;
     }
 
@@ -1224,6 +1075,8 @@ public class DeviceManagementPersistence extends Persistence {
      */
     public static void deviceGroupUpdateLogic(IDeviceGroupCreateRequest request, DeviceGroup target)
 	    throws SiteWhereException {
+	Persistence.entityUpdateLogic(request, target);
+
 	if (request.getName() != null) {
 	    target.setName(request.getName());
 	}
@@ -1237,11 +1090,6 @@ public class DeviceManagementPersistence extends Persistence {
 	    target.getRoles().clear();
 	    target.getRoles().addAll(request.getRoles());
 	}
-	if (request.getMetadata() != null) {
-	    target.getMetadata().clear();
-	    MetadataProvider.copy(request.getMetadata(), target);
-	}
-	DeviceManagementPersistence.setUpdatedEntityMetadata(target);
     }
 
     /**

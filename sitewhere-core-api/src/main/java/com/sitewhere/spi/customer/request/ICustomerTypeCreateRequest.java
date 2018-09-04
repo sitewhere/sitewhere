@@ -10,21 +10,14 @@ package com.sitewhere.spi.customer.request;
 import java.util.List;
 
 import com.sitewhere.spi.common.IAccessible;
-import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
+import com.sitewhere.spi.common.request.IBrandedEntityCreateRequest;
 
 /**
  * Provides information needed to create a customer type.
  * 
  * @author Derek
  */
-public interface ICustomerTypeCreateRequest extends IAccessible, IPersistentEntityCreateRequest {
-
-    /**
-     * Get icon shown for customer type.
-     * 
-     * @return
-     */
-    public String getIcon();
+public interface ICustomerTypeCreateRequest extends IAccessible, IBrandedEntityCreateRequest {
 
     /**
      * Get list of customer type tokens which may be contained.

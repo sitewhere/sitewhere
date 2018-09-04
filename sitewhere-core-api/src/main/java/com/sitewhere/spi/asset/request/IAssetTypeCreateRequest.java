@@ -9,15 +9,14 @@ package com.sitewhere.spi.asset.request;
 
 import com.sitewhere.spi.asset.AssetCategory;
 import com.sitewhere.spi.common.IAccessible;
-import com.sitewhere.spi.common.IImageProvider;
-import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
+import com.sitewhere.spi.common.request.IBrandedEntityCreateRequest;
 
 /**
  * Information needed to create a new asset type.
  * 
  * @author Derek
  */
-public interface IAssetTypeCreateRequest extends IAccessible, IImageProvider, IPersistentEntityCreateRequest {
+public interface IAssetTypeCreateRequest extends IAccessible, IBrandedEntityCreateRequest {
 
     /**
      * Get category of asset type.

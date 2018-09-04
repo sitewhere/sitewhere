@@ -10,15 +10,14 @@ package com.sitewhere.spi.device.request;
 import java.util.List;
 
 import com.sitewhere.spi.common.IAccessible;
-import com.sitewhere.spi.common.IImageProvider;
-import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
+import com.sitewhere.spi.common.request.IBrandedEntityCreateRequest;
 
 /**
  * Interface for arguments needed to create a device group.
  * 
  * @author Derek
  */
-public interface IDeviceGroupCreateRequest extends IAccessible, IImageProvider, IPersistentEntityCreateRequest {
+public interface IDeviceGroupCreateRequest extends IAccessible, IBrandedEntityCreateRequest {
 
     /**
      * Get list of roles associated with group.

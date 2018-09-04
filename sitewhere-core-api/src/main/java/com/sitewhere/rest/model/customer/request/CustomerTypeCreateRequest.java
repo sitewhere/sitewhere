@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
+import com.sitewhere.rest.model.common.request.BrandedEntityCreateRequest;
 import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest;
 
@@ -20,7 +20,7 @@ import com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest;
  * 
  * @author Derek
  */
-public class CustomerTypeCreateRequest extends PersistentEntityCreateRequest implements ICustomerTypeCreateRequest {
+public class CustomerTypeCreateRequest extends BrandedEntityCreateRequest implements ICustomerTypeCreateRequest {
 
     /** Serial version UID */
     private static final long serialVersionUID = 2776911532638550509L;
@@ -30,9 +30,6 @@ public class CustomerTypeCreateRequest extends PersistentEntityCreateRequest imp
 
     /** Description */
     private String description;
-
-    /** Icon */
-    private String icon;
 
     /** List of contained customer type tokens */
     private List<String> containedCustomerTypeTokens;
@@ -61,18 +58,6 @@ public class CustomerTypeCreateRequest extends PersistentEntityCreateRequest imp
 
     public void setDescription(String description) {
 	this.description = description;
-    }
-
-    /*
-     * @see com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest#getIcon()
-     */
-    @Override
-    public String getIcon() {
-	return icon;
-    }
-
-    public void setIcon(String icon) {
-	this.icon = icon;
     }
 
     /*

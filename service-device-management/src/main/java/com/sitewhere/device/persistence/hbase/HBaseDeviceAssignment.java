@@ -21,12 +21,10 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 
-import com.sitewhere.device.persistence.DeviceManagementPersistence;
 import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
-import com.sitewhere.persistence.Persistence;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
@@ -187,7 +185,6 @@ public class HBaseDeviceAssignment {
 	DeviceAssignment updated = getDeviceAssignment(context, assn);
 	updated.getMetadata().clear();
 	MetadataProvider.copy(metadata, updated);
-	DeviceManagementPersistence.setUpdatedEntityMetadata(updated);
 
 	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assn.getToken());
 	byte[] payload = context.getPayloadMarshaler().encodeDeviceAssignment(updated);
@@ -252,7 +249,6 @@ public class HBaseDeviceAssignment {
 	    DeviceAssignmentStatus status) throws SiteWhereException {
 	DeviceAssignment updated = getDeviceAssignment(context, assn);
 	updated.setStatus(status);
-	Persistence.setUpdatedEntityMetadata(updated);
 
 	byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assn.getToken());
 	byte[] payload = context.getPayloadMarshaler().encodeDeviceAssignment(updated);
@@ -286,7 +282,6 @@ public class HBaseDeviceAssignment {
 	DeviceAssignment updated = getDeviceAssignment(context, assn);
 	updated.setStatus(DeviceAssignmentStatus.Released);
 	updated.setReleasedDate(new Date());
-	DeviceManagementPersistence.setUpdatedEntityMetadata(updated);
 
 	// Remove assignment reference from device.
 	// HBaseDevice.removeDeviceAssignment(context, updated.getDeviceId());
@@ -351,7 +346,6 @@ public class HBaseDeviceAssignment {
 	    }
 	} else {
 	    byte[] marker = { (byte) 0x01 };
-	    DeviceManagementPersistence.setUpdatedEntityMetadata(existing);
 	    byte[] updated = context.getPayloadMarshaler().encodeDeviceAssignment(existing);
 	    Table sites = null;
 	    try {

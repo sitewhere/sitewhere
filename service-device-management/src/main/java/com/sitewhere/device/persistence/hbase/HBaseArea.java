@@ -522,7 +522,6 @@ public class HBaseArea {
 	    }
 	} else {
 	    byte[] marker = { (byte) 0x01 };
-	    DeviceManagementPersistence.setUpdatedEntityMetadata(area);
 	    byte[] updated = context.getPayloadMarshaler().encodeArea(area);
 	    Table sites = null;
 	    try {

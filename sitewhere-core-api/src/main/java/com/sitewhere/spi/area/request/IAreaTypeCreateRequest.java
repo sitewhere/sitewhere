@@ -10,21 +10,14 @@ package com.sitewhere.spi.area.request;
 import java.util.List;
 
 import com.sitewhere.spi.common.IAccessible;
-import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
+import com.sitewhere.spi.common.request.IBrandedEntityCreateRequest;
 
 /**
  * Provides information needed to create an area type.
  * 
  * @author Derek
  */
-public interface IAreaTypeCreateRequest extends IAccessible, IPersistentEntityCreateRequest {
-
-    /**
-     * Get icon shown for area type.
-     * 
-     * @return
-     */
-    public String getIcon();
+public interface IAreaTypeCreateRequest extends IAccessible, IBrandedEntityCreateRequest {
 
     /**
      * Get list of area type tokens which may be contained.
