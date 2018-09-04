@@ -99,7 +99,7 @@ public class DeviceManagementPersistence extends Persistence {
     public static CustomerType customerTypeCreateLogic(ICustomerTypeCreateRequest request,
 	    List<UUID> containedCustomerTypeIds) throws SiteWhereException {
 	CustomerType type = new CustomerType();
-	Persistence.entityCreateLogic(request, type);
+	Persistence.brandedEntityCreateLogic(request, type);
 
 	type.setName(request.getName());
 	type.setDescription(request.getDescription());
@@ -120,7 +120,7 @@ public class DeviceManagementPersistence extends Persistence {
      */
     public static void customerTypeUpdateLogic(ICustomerTypeCreateRequest request, List<UUID> containedCustomerTypeIds,
 	    CustomerType target) throws SiteWhereException {
-	Persistence.entityUpdateLogic(request, target);
+	Persistence.brandedEntityUpdateLogic(request, target);
 
 	if (request.getName() != null) {
 	    target.setName(request.getName());
@@ -148,7 +148,7 @@ public class DeviceManagementPersistence extends Persistence {
     public static Customer customerCreateLogic(ICustomerCreateRequest request, ICustomerType customerType,
 	    ICustomer parentCustomer) throws SiteWhereException {
 	Customer area = new Customer();
-	Persistence.entityCreateLogic(request, area);
+	Persistence.brandedEntityCreateLogic(request, area);
 
 	area.setCustomerTypeId(customerType.getId());
 	area.setParentCustomerId(parentCustomer != null ? parentCustomer.getId() : null);
@@ -168,7 +168,7 @@ public class DeviceManagementPersistence extends Persistence {
      * @throws SiteWhereException
      */
     public static void customerUpdateLogic(ICustomerCreateRequest request, Customer target) throws SiteWhereException {
-	Persistence.entityUpdateLogic(request, target);
+	Persistence.brandedEntityUpdateLogic(request, target);
 
 	if (request.getName() != null) {
 	    target.setName(request.getName());
@@ -193,7 +193,7 @@ public class DeviceManagementPersistence extends Persistence {
     public static AreaType areaTypeCreateLogic(IAreaTypeCreateRequest request, List<UUID> containedAreaTypeIds)
 	    throws SiteWhereException {
 	AreaType type = new AreaType();
-	Persistence.entityCreateLogic(request, type);
+	Persistence.brandedEntityCreateLogic(request, type);
 
 	type.setName(request.getName());
 	type.setDescription(request.getDescription());
@@ -214,7 +214,7 @@ public class DeviceManagementPersistence extends Persistence {
      */
     public static void areaTypeUpdateLogic(IAreaTypeCreateRequest request, List<UUID> containedAreaTypeIds,
 	    AreaType target) throws SiteWhereException {
-	Persistence.entityUpdateLogic(request, target);
+	Persistence.brandedEntityUpdateLogic(request, target);
 
 	if (request.getName() != null) {
 	    target.setName(request.getName());
@@ -242,7 +242,7 @@ public class DeviceManagementPersistence extends Persistence {
     public static Area areaCreateLogic(IAreaCreateRequest request, IAreaType areaType, IArea parentArea)
 	    throws SiteWhereException {
 	Area area = new Area();
-	Persistence.entityCreateLogic(request, area);
+	Persistence.brandedEntityCreateLogic(request, area);
 
 	area.setAreaTypeId(areaType.getId());
 	area.setParentAreaId(parentArea != null ? parentArea.getId() : null);
@@ -262,7 +262,7 @@ public class DeviceManagementPersistence extends Persistence {
      * @throws SiteWhereException
      */
     public static void areaUpdateLogic(IAreaCreateRequest request, Area target) throws SiteWhereException {
-	Persistence.entityUpdateLogic(request, target);
+	Persistence.brandedEntityUpdateLogic(request, target);
 
 	if (request.getName() != null) {
 	    target.setName(request.getName());
@@ -287,7 +287,7 @@ public class DeviceManagementPersistence extends Persistence {
      */
     public static DeviceType deviceTypeCreateLogic(IDeviceTypeCreateRequest request) throws SiteWhereException {
 	DeviceType type = new DeviceType();
-	Persistence.entityCreateLogic(request, type);
+	Persistence.brandedEntityCreateLogic(request, type);
 
 	type.setDescription(request.getDescription() != null ? request.getDescription() : "");
 
@@ -325,7 +325,7 @@ public class DeviceManagementPersistence extends Persistence {
      */
     public static void deviceTypeUpdateLogic(IDeviceTypeCreateRequest request, DeviceType target)
 	    throws SiteWhereException {
-	Persistence.entityUpdateLogic(request, target);
+	Persistence.brandedEntityUpdateLogic(request, target);
 
 	if (request.getName() != null) {
 	    target.setName(request.getName());
@@ -1049,7 +1049,7 @@ public class DeviceManagementPersistence extends Persistence {
      */
     public static DeviceGroup deviceGroupCreateLogic(IDeviceGroupCreateRequest request) throws SiteWhereException {
 	DeviceGroup group = new DeviceGroup();
-	Persistence.entityCreateLogic(request, group);
+	Persistence.brandedEntityCreateLogic(request, group);
 
 	group.setDescription(request.getDescription());
 
@@ -1075,7 +1075,7 @@ public class DeviceManagementPersistence extends Persistence {
      */
     public static void deviceGroupUpdateLogic(IDeviceGroupCreateRequest request, DeviceGroup target)
 	    throws SiteWhereException {
-	Persistence.entityUpdateLogic(request, target);
+	Persistence.brandedEntityUpdateLogic(request, target);
 
 	if (request.getName() != null) {
 	    target.setName(request.getName());

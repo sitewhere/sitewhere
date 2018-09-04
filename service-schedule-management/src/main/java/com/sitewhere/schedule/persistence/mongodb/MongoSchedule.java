@@ -13,8 +13,7 @@ import java.util.UUID;
 import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
-import com.sitewhere.mongodb.common.MongoMetadataProvider;
-import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
+import com.sitewhere.mongodb.common.MongoPersistentEntity;
 import com.sitewhere.rest.model.scheduling.Schedule;
 import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.TriggerType;
@@ -87,8 +86,7 @@ public class MongoSchedule implements MongoConverter<ISchedule> {
 	}
 	target.put(PROP_TRIGGER_CONFIGURATION, config);
 
-	MongoSiteWhereEntity.toDocument(source, target);
-	MongoMetadataProvider.toDocument(source, target);
+	MongoPersistentEntity.toDocument(source, target);
     }
 
     /**
@@ -119,8 +117,7 @@ public class MongoSchedule implements MongoConverter<ISchedule> {
 	    }
 	}
 
-	MongoSiteWhereEntity.fromDocument(source, target);
-	MongoMetadataProvider.fromDocument(source, target);
+	MongoPersistentEntity.fromDocument(source, target);
     }
 
     /**

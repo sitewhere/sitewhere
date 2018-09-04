@@ -56,10 +56,10 @@ public class TenantModelConverter {
 	api.setName(grpc.hasName() ? grpc.getName().getValue() : null);
 	api.setAuthenticationToken(grpc.hasAuthenticationToken() ? grpc.getAuthenticationToken().getValue() : null);
 	api.setAuthorizedUserIds(grpc.getAuthorizedUserIdsList());
-	api.setLogoUrl(grpc.hasLogoUrl() ? grpc.getLogoUrl().getValue() : null);
 	api.setTenantTemplateId(grpc.hasTenantTemplateId() ? grpc.getTenantTemplateId().getValue() : null);
 	api.setDatasetTemplateId(grpc.hasDatasetTemplateId() ? grpc.getDatasetTemplateId().getValue() : null);
 	api.setMetadata(grpc.getMetadataMap());
+	CommonModelConverter.setBrandingInformation(api, grpc.getBranding());
 	return api;
     }
 
@@ -71,28 +71,26 @@ public class TenantModelConverter {
      * @throws SiteWhereException
      */
     public static GTenantCreateRequest asGrpcTenantCreateRequest(ITenantCreateRequest api) throws SiteWhereException {
-	GTenantCreateRequest.Builder builder = GTenantCreateRequest.newBuilder();
+	GTenantCreateRequest.Builder grpc = GTenantCreateRequest.newBuilder();
 	if (api.getToken() != null) {
-	    builder.setToken(GOptionalString.newBuilder().setValue(api.getToken()));
+	    grpc.setToken(GOptionalString.newBuilder().setValue(api.getToken()));
 	}
 	if (api.getName() != null) {
-	    builder.setName(GOptionalString.newBuilder().setValue(api.getName()));
+	    grpc.setName(GOptionalString.newBuilder().setValue(api.getName()));
 	}
 	if (api.getAuthenticationToken() != null) {
-	    builder.setAuthenticationToken(GOptionalString.newBuilder().setValue(api.getAuthenticationToken()));
+	    grpc.setAuthenticationToken(GOptionalString.newBuilder().setValue(api.getAuthenticationToken()));
 	}
-	builder.addAllAuthorizedUserIds(api.getAuthorizedUserIds());
-	if (api.getLogoUrl() != null) {
-	    builder.setLogoUrl(GOptionalString.newBuilder().setValue(api.getLogoUrl()));
-	}
+	grpc.addAllAuthorizedUserIds(api.getAuthorizedUserIds());
 	if (api.getTenantTemplateId() != null) {
-	    builder.setTenantTemplateId(GOptionalString.newBuilder().setValue(api.getTenantTemplateId()));
+	    grpc.setTenantTemplateId(GOptionalString.newBuilder().setValue(api.getTenantTemplateId()));
 	}
 	if (api.getDatasetTemplateId() != null) {
-	    builder.setDatasetTemplateId(GOptionalString.newBuilder().setValue(api.getDatasetTemplateId()));
+	    grpc.setDatasetTemplateId(GOptionalString.newBuilder().setValue(api.getDatasetTemplateId()));
 	}
-	builder.putAllMetadata(api.getMetadata());
-	return builder.build();
+	grpc.putAllMetadata(api.getMetadata());
+	grpc.setBranding(CommonModelConverter.asGrpcBrandingInformation(api));
+	return grpc.build();
     }
 
     /**
@@ -104,16 +102,13 @@ public class TenantModelConverter {
      */
     public static ITenant asApiTenant(GTenant grpc) throws SiteWhereException {
 	Tenant api = new Tenant();
-	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
-	api.setToken(grpc.getToken());
 	api.setName(grpc.getName());
 	api.setAuthenticationToken(grpc.getAuthenticationToken());
 	api.setAuthorizedUserIds(grpc.getAuthorizedUserIdsList());
-	api.setLogoUrl(grpc.getLogoUrl());
 	api.setTenantTemplateId(grpc.getTenantTemplateId());
 	api.setDatasetTemplateId(grpc.getDatasetTemplateId());
-	api.setMetadata(grpc.getMetadataMap());
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
+	CommonModelConverter.setBrandingInformation(api, grpc.getBranding());
 	return api;
     }
 
@@ -156,16 +151,13 @@ public class TenantModelConverter {
      */
     public static GTenant asGrpcTenant(ITenant api) throws SiteWhereException {
 	GTenant.Builder builder = TenantModel.GTenant.newBuilder();
-	builder.setId(CommonModelConverter.asGrpcUuid(api.getId()));
-	builder.setToken(api.getToken());
 	builder.setName(api.getName());
 	builder.setAuthenticationToken(api.getAuthenticationToken());
 	builder.addAllAuthorizedUserIds(api.getAuthorizedUserIds());
-	builder.setLogoUrl(api.getLogoUrl());
 	builder.setTenantTemplateId(api.getTenantTemplateId());
 	builder.setDatasetTemplateId(api.getDatasetTemplateId());
-	builder.putAllMetadata(api.getMetadata());
 	builder.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
+	builder.setBranding(CommonModelConverter.asGrpcBrandingInformation(api));
 	return builder.build();
     }
 

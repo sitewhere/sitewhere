@@ -33,7 +33,7 @@ public class TenantManagementPersistenceLogic extends Persistence {
      */
     public static Tenant tenantCreateLogic(ITenantCreateRequest request) throws SiteWhereException {
 	Tenant tenant = new Tenant();
-	Persistence.entityCreateLogic(request, tenant);
+	Persistence.brandedEntityCreateLogic(request, tenant);
 
 	// Validate tenant token.
 	requireFormat("Token", tenant.getToken(), "^[\\w-]+$", ErrorCode.TenantIdFormat);
@@ -41,10 +41,6 @@ public class TenantManagementPersistenceLogic extends Persistence {
 	// Name is required.
 	require("Name", request.getName());
 	tenant.setName(request.getName());
-
-	// Logo is required.
-	require("Logo Url", request.getLogoUrl());
-	tenant.setLogoUrl(request.getLogoUrl());
 
 	// Auth token is required.
 	require("Auth Token", request.getAuthenticationToken());
@@ -72,7 +68,7 @@ public class TenantManagementPersistenceLogic extends Persistence {
      * @throws SiteWhereException
      */
     public static Tenant tenantUpdateLogic(ITenantCreateRequest request, Tenant existing) throws SiteWhereException {
-	Persistence.entityUpdateLogic(request, existing);
+	Persistence.brandedEntityUpdateLogic(request, existing);
 
 	if (request.getTenantTemplateId() != null) {
 	    if (!request.getTenantTemplateId().equals(existing.getTenantTemplateId())) {
@@ -87,10 +83,6 @@ public class TenantManagementPersistenceLogic extends Persistence {
 
 	if (request.getName() != null) {
 	    existing.setName(request.getName());
-	}
-
-	if (request.getLogoUrl() != null) {
-	    existing.setLogoUrl(request.getLogoUrl());
 	}
 
 	if (request.getAuthenticationToken() != null) {

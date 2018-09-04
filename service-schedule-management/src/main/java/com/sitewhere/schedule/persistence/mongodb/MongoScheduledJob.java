@@ -12,8 +12,7 @@ import java.util.UUID;
 import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
-import com.sitewhere.mongodb.common.MongoMetadataProvider;
-import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
+import com.sitewhere.mongodb.common.MongoPersistentEntity;
 import com.sitewhere.rest.model.scheduling.ScheduledJob;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.scheduling.ScheduledJobState;
@@ -83,8 +82,7 @@ public class MongoScheduledJob implements MongoConverter<IScheduledJob> {
 	}
 	target.put(PROP_JOB_CONFIGURATION, config);
 
-	MongoSiteWhereEntity.toDocument(source, target);
-	MongoMetadataProvider.toDocument(source, target);
+	MongoPersistentEntity.toDocument(source, target);
     }
 
     /**
@@ -113,8 +111,7 @@ public class MongoScheduledJob implements MongoConverter<IScheduledJob> {
 	    }
 	}
 
-	MongoSiteWhereEntity.fromDocument(source, target);
-	MongoMetadataProvider.fromDocument(source, target);
+	MongoPersistentEntity.fromDocument(source, target);
     }
 
     /**

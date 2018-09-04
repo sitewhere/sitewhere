@@ -410,10 +410,10 @@ public class DeviceModelConverter {
 	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
 	api.setName(grpc.hasName() ? grpc.getName().getValue() : null);
 	api.setDescription(grpc.hasDescription() ? grpc.getDescription().getValue() : null);
-	api.setImageUrl(grpc.hasImageUrl() ? grpc.getImageUrl().getValue() : null);
 	api.setContainerPolicy(DeviceModelConverter.asApiDeviceContainerPolicy(grpc.getContainerPolicy()));
 	api.setDeviceElementSchema(DeviceModelConverter.asApiDeviceElementSchema(grpc.getDeviceElementSchema()));
 	api.setMetadata(grpc.getMetadataMap());
+	CommonModelConverter.setBrandingInformation(api, grpc.getBranding());
 	return api;
     }
 
@@ -436,14 +436,12 @@ public class DeviceModelConverter {
 	if (api.getDescription() != null) {
 	    grpc.setDescription(GOptionalString.newBuilder().setValue(api.getDescription()));
 	}
-	if (api.getImageUrl() != null) {
-	    grpc.setImageUrl(GOptionalString.newBuilder().setValue(api.getImageUrl()));
-	}
 	grpc.setContainerPolicy(DeviceModelConverter.asGrpcDeviceContainerPolicy(api.getContainerPolicy()));
 	if (api.getDeviceElementSchema() != null) {
 	    grpc.setDeviceElementSchema(DeviceModelConverter.asGrpcDeviceElementSchema(api.getDeviceElementSchema()));
 	}
 	grpc.putAllMetadata(api.getMetadata());
+	grpc.setBranding(CommonModelConverter.asGrpcBrandingInformation(api));
 	return grpc.build();
     }
 
@@ -456,15 +454,12 @@ public class DeviceModelConverter {
      */
     public static IDeviceType asApiDeviceType(GDeviceType grpc) throws SiteWhereException {
 	DeviceType api = new DeviceType();
-	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
-	api.setToken(grpc.getToken());
 	api.setName(grpc.getName());
 	api.setDescription(grpc.getDescription());
-	api.setImageUrl(grpc.getImageUrl());
 	api.setContainerPolicy(DeviceModelConverter.asApiDeviceContainerPolicy(grpc.getContainerPolicy()));
 	api.setDeviceElementSchema(DeviceModelConverter.asApiDeviceElementSchema(grpc.getDeviceElementSchema()));
-	api.setMetadata(grpc.getMetadataMap());
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
+	CommonModelConverter.setBrandingInformation(api, grpc.getBranding());
 	return api;
     }
 
@@ -477,19 +472,14 @@ public class DeviceModelConverter {
      */
     public static GDeviceType asGrpcDeviceType(IDeviceType api) throws SiteWhereException {
 	GDeviceType.Builder grpc = GDeviceType.newBuilder();
-	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
-	grpc.setToken(api.getToken());
 	grpc.setName(api.getName());
 	grpc.setDescription(api.getDescription());
-	grpc.setImageUrl(api.getImageUrl());
 	grpc.setContainerPolicy(DeviceModelConverter.asGrpcDeviceContainerPolicy(api.getContainerPolicy()));
 	if (api.getDeviceElementSchema() != null) {
 	    grpc.setDeviceElementSchema(DeviceModelConverter.asGrpcDeviceElementSchema(api.getDeviceElementSchema()));
 	}
-	if (api.getMetadata() != null) {
-	    grpc.putAllMetadata(api.getMetadata());
-	}
 	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
+	grpc.setBranding(CommonModelConverter.asGrpcBrandingInformation(api));
 	return grpc.build();
     }
 
@@ -752,14 +742,11 @@ public class DeviceModelConverter {
      */
     public static DeviceCommand asApiDeviceCommand(GDeviceCommand grpc) throws SiteWhereException {
 	DeviceCommand api = new DeviceCommand();
-	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
-	api.setToken(grpc.getToken());
 	api.setDeviceTypeId(CommonModelConverter.asApiUuid(grpc.getDeviceTypeId()));
 	api.setName(grpc.getName());
 	api.setDescription(grpc.getDescription());
 	api.setNamespace(grpc.getNamespace());
 	api.setParameters(DeviceModelConverter.asApiCommandParameters(grpc.getParametersList()));
-	api.setMetadata(grpc.getMetadataMap());
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
 	return api;
     }
@@ -773,16 +760,11 @@ public class DeviceModelConverter {
      */
     public static GDeviceCommand asGrpcDeviceCommand(IDeviceCommand api) throws SiteWhereException {
 	GDeviceCommand.Builder grpc = GDeviceCommand.newBuilder();
-	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
-	grpc.setToken(api.getToken());
 	grpc.setDeviceTypeId(CommonModelConverter.asGrpcUuid(api.getDeviceTypeId()));
 	grpc.setName(api.getName());
 	grpc.setDescription(api.getDescription());
 	grpc.setNamespace(api.getNamespace());
 	grpc.addAllParameters(DeviceModelConverter.asGrpcCommandParameters(api.getParameters()));
-	if (api.getMetadata() != null) {
-	    grpc.putAllMetadata(api.getMetadata());
-	}
 	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
 	return grpc.build();
     }
@@ -910,8 +892,6 @@ public class DeviceModelConverter {
      */
     public static DeviceStatus asApiDeviceStatus(GDeviceStatus grpc) throws SiteWhereException {
 	DeviceStatus api = new DeviceStatus();
-	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
-	api.setToken(grpc.getToken());
 	api.setDeviceTypeId(CommonModelConverter.asApiUuid(grpc.getDeviceTypeId()));
 	api.setCode(grpc.getCode());
 	api.setName(grpc.getName());
@@ -920,7 +900,6 @@ public class DeviceModelConverter {
 	api.setForegroundColor(grpc.getForegroundColor());
 	api.setBorderColor(grpc.getBorderColor());
 	api.setIcon(grpc.getIcon());
-	api.setMetadata(grpc.getMetadataMap());
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
 	return api;
     }
@@ -934,8 +913,6 @@ public class DeviceModelConverter {
      */
     public static GDeviceStatus asGrpcDeviceStatus(IDeviceStatus api) throws SiteWhereException {
 	GDeviceStatus.Builder grpc = GDeviceStatus.newBuilder();
-	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
-	grpc.setToken(api.getToken());
 	grpc.setDeviceTypeId(CommonModelConverter.asGrpcUuid(api.getDeviceTypeId()));
 	grpc.setCode(api.getCode());
 	grpc.setName(api.getName());
@@ -944,9 +921,6 @@ public class DeviceModelConverter {
 	grpc.setForegroundColor(api.getForegroundColor());
 	grpc.setBorderColor(api.getBorderColor());
 	grpc.setIcon(api.getIcon());
-	if (api.getMetadata() != null) {
-	    grpc.putAllMetadata(api.getMetadata());
-	}
 	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
 	return grpc.build();
     }
@@ -1091,8 +1065,6 @@ public class DeviceModelConverter {
      */
     public static Device asApiDevice(GDevice grpc) throws SiteWhereException {
 	Device api = new Device();
-	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
-	api.setToken(grpc.getToken());
 	api.setDeviceTypeId(CommonModelConverter.asApiUuid(grpc.getDeviceTypeId()));
 	api.setStatus(grpc.hasStatus() ? grpc.getStatus().getValue() : null);
 	api.setDeviceAssignmentId(
@@ -1102,7 +1074,6 @@ public class DeviceModelConverter {
 	api.setComments(grpc.hasComments() ? grpc.getComments().getValue() : null);
 	api.setDeviceElementMappings(
 		DeviceModelConverter.asApiDeviceElementMappings(grpc.getDeviceElementMappingsList()));
-	api.setMetadata(grpc.getMetadataMap());
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
 	return api;
     }
@@ -1116,8 +1087,6 @@ public class DeviceModelConverter {
      */
     public static GDevice asGrpcDevice(IDevice api) throws SiteWhereException {
 	GDevice.Builder grpc = GDevice.newBuilder();
-	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
-	grpc.setToken(api.getToken());
 	if (api.getParentDeviceId() != null) {
 	    grpc.setParentDeviceId(CommonModelConverter.asGrpcUuid(api.getParentDeviceId()));
 	}
@@ -1133,9 +1102,6 @@ public class DeviceModelConverter {
 	}
 	grpc.addAllDeviceElementMappings(
 		DeviceModelConverter.asGrpcDeviceElementMappings(api.getDeviceElementMappings()));
-	if (api.getMetadata() != null) {
-	    grpc.putAllMetadata(api.getMetadata());
-	}
 	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
 	return grpc.build();
     }
@@ -1193,9 +1159,9 @@ public class DeviceModelConverter {
 	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
 	api.setName(grpc.hasName() ? grpc.getName().getValue() : null);
 	api.setDescription(grpc.hasDescription() ? grpc.getDescription().getValue() : null);
-	api.setImageUrl(grpc.hasImageUrl() ? grpc.getImageUrl().getValue() : null);
 	api.setRoles(grpc.getRolesList());
 	api.setMetadata(grpc.getMetadataMap());
+	CommonModelConverter.setBrandingInformation(api, grpc.getBranding());
 	return api;
     }
 
@@ -1218,13 +1184,11 @@ public class DeviceModelConverter {
 	if (api.getDescription() != null) {
 	    grpc.setDescription(GOptionalString.newBuilder().setValue(api.getDescription()));
 	}
-	if (api.getImageUrl() != null) {
-	    grpc.setImageUrl(GOptionalString.newBuilder().setValue(api.getImageUrl()));
-	}
 	grpc.addAllRoles(api.getRoles());
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
 	}
+	grpc.setBranding(CommonModelConverter.asGrpcBrandingInformation(api));
 	return grpc.build();
     }
 
@@ -1283,14 +1247,11 @@ public class DeviceModelConverter {
      */
     public static DeviceGroup asApiDeviceGroup(GDeviceGroup grpc) throws SiteWhereException {
 	DeviceGroup api = new DeviceGroup();
-	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
-	api.setToken(grpc.getToken());
 	api.setName(grpc.getName());
 	api.setDescription(grpc.getDescription());
-	api.setImageUrl(grpc.getImageUrl());
 	api.setRoles(grpc.getRolesList());
-	api.setMetadata(grpc.getMetadataMap());
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
+	CommonModelConverter.setBrandingInformation(api, grpc.getBranding());
 	return api;
     }
 
@@ -1303,16 +1264,11 @@ public class DeviceModelConverter {
      */
     public static GDeviceGroup asGrpcDeviceGroup(IDeviceGroup api) throws SiteWhereException {
 	GDeviceGroup.Builder grpc = GDeviceGroup.newBuilder();
-	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
-	grpc.setToken(api.getToken());
 	grpc.setName(api.getName());
 	grpc.setDescription(api.getDescription());
-	grpc.setImageUrl(api.getImageUrl());
 	grpc.addAllRoles(api.getRoles());
-	if (api.getMetadata() != null) {
-	    grpc.putAllMetadata(api.getMetadata());
-	}
 	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
+	grpc.setBranding(CommonModelConverter.asGrpcBrandingInformation(api));
 	return grpc.build();
     }
 
@@ -1597,8 +1553,6 @@ public class DeviceModelConverter {
      */
     public static DeviceAssignment asApiDeviceAssignment(GDeviceAssignment grpc) throws SiteWhereException {
 	DeviceAssignment api = new DeviceAssignment();
-	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
-	api.setToken(grpc.getToken());
 	api.setStatus(CommonModelConverter.asApiDeviceAssignmentStatus(grpc.getStatus()));
 	api.setDeviceId(CommonModelConverter.asApiUuid(grpc.getDeviceId()));
 	api.setDeviceTypeId(CommonModelConverter.asApiUuid(grpc.getDeviceTypeId()));
@@ -1607,7 +1561,6 @@ public class DeviceModelConverter {
 	api.setAssetId(grpc.hasAssetId() ? CommonModelConverter.asApiUuid(grpc.getAssetId()) : null);
 	api.setActiveDate(CommonModelConverter.asApiDate(grpc.getActiveDate()));
 	api.setReleasedDate(CommonModelConverter.asApiDate(grpc.getReleasedDate()));
-	api.setMetadata(grpc.getMetadataMap());
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
 	return api;
     }
@@ -1621,8 +1574,6 @@ public class DeviceModelConverter {
      */
     public static GDeviceAssignment asGrpcDeviceAssignment(IDeviceAssignment api) throws SiteWhereException {
 	GDeviceAssignment.Builder grpc = GDeviceAssignment.newBuilder();
-	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
-	grpc.setToken(api.getToken());
 	grpc.setStatus(CommonModelConverter.asGrpcDeviceAssignmentStatus(api.getStatus()));
 	grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
 	grpc.setDeviceTypeId(CommonModelConverter.asGrpcUuid(api.getDeviceTypeId()));
@@ -1634,9 +1585,6 @@ public class DeviceModelConverter {
 	}
 	grpc.setActiveDate(CommonModelConverter.asGrpcDate(api.getActiveDate()));
 	grpc.setReleasedDate(CommonModelConverter.asGrpcDate(api.getReleasedDate()));
-	if (api.getMetadata() != null) {
-	    grpc.putAllMetadata(api.getMetadata());
-	}
 	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
 	return grpc.build();
     }
@@ -2006,9 +1954,9 @@ public class DeviceModelConverter {
 	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
 	api.setName(grpc.hasName() ? grpc.getName().getValue() : null);
 	api.setDescription(grpc.hasDescription() ? grpc.getDescription().getValue() : null);
-	api.setIcon(grpc.hasIcon() ? grpc.getIcon().getValue() : null);
 	api.setContainedCustomerTypeTokens(grpc.getContainedCustomerTypeTokensList());
 	api.setMetadata(grpc.getMetadataMap());
+	CommonModelConverter.setBrandingInformation(api, grpc.getBranding());
 	return api;
     }
 
@@ -2031,15 +1979,13 @@ public class DeviceModelConverter {
 	if (api.getDescription() != null) {
 	    grpc.setDescription(GOptionalString.newBuilder().setValue(api.getDescription()));
 	}
-	if (api.getIcon() != null) {
-	    grpc.setIcon(GOptionalString.newBuilder().setValue(api.getIcon()));
-	}
 	if (api.getContainedCustomerTypeTokens() != null) {
 	    grpc.addAllContainedCustomerTypeTokens(api.getContainedCustomerTypeTokens());
 	}
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
 	}
+	grpc.setBranding(CommonModelConverter.asGrpcBrandingInformation(api));
 	return grpc.build();
     }
 
@@ -2082,14 +2028,11 @@ public class DeviceModelConverter {
      */
     public static CustomerType asApiCustomerType(GCustomerType grpc) throws SiteWhereException {
 	CustomerType api = new CustomerType();
-	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
-	api.setToken(grpc.getToken());
 	api.setName(grpc.getName());
 	api.setDescription(grpc.getDescription());
-	api.setIcon(grpc.getIcon());
 	api.setContainedCustomerTypeIds(CommonModelConverter.asApiUuids(grpc.getContainedCustomerTypeIdsList()));
-	api.setMetadata(grpc.getMetadataMap());
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
+	CommonModelConverter.setBrandingInformation(api, grpc.getBranding());
 	return api;
     }
 
@@ -2102,18 +2045,13 @@ public class DeviceModelConverter {
      */
     public static GCustomerType asGrpcCustomerType(ICustomerType api) throws SiteWhereException {
 	GCustomerType.Builder grpc = GCustomerType.newBuilder();
-	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
-	grpc.setToken(api.getToken());
 	grpc.setName(api.getName());
 	grpc.setDescription(api.getDescription());
-	grpc.setIcon(api.getIcon());
 	if (api.getContainedCustomerTypeIds() != null) {
 	    grpc.addAllContainedCustomerTypeIds(CommonModelConverter.asGrpcUuids(api.getContainedCustomerTypeIds()));
 	}
-	if (api.getMetadata() != null) {
-	    grpc.putAllMetadata(api.getMetadata());
-	}
 	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
+	grpc.setBranding(CommonModelConverter.asGrpcBrandingInformation(api));
 	return grpc.build();
     }
 
@@ -2132,8 +2070,8 @@ public class DeviceModelConverter {
 	api.setParentCustomerToken(grpc.hasParentCustomerToken() ? grpc.getParentCustomerToken().getValue() : null);
 	api.setName(grpc.hasName() ? grpc.getName().getValue() : null);
 	api.setDescription(grpc.hasDescription() ? grpc.getDescription().getValue() : null);
-	api.setImageUrl(grpc.hasImageUrl() ? grpc.getImageUrl().getValue() : null);
 	api.setMetadata(grpc.getMetadataMap());
+	CommonModelConverter.setBrandingInformation(api, grpc.getBranding());
 	return api;
     }
 
@@ -2162,12 +2100,10 @@ public class DeviceModelConverter {
 	if (api.getDescription() != null) {
 	    grpc.setDescription(GOptionalString.newBuilder().setValue(api.getDescription()));
 	}
-	if (api.getImageUrl() != null) {
-	    grpc.setImageUrl(GOptionalString.newBuilder().setValue(api.getImageUrl()));
-	}
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
 	}
+	grpc.setBranding(CommonModelConverter.asGrpcBrandingInformation(api));
 	return grpc.build();
     }
 
@@ -2238,16 +2174,13 @@ public class DeviceModelConverter {
      */
     public static Customer asApiCustomer(GCustomer grpc) throws SiteWhereException {
 	Customer api = new Customer();
-	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
-	api.setToken(grpc.getToken());
 	api.setCustomerTypeId(CommonModelConverter.asApiUuid(grpc.getCustomerTypeId()));
 	api.setParentCustomerId(
 		grpc.hasParentCustomerId() ? CommonModelConverter.asApiUuid(grpc.getParentCustomerId()) : null);
 	api.setName(grpc.getName());
 	api.setDescription(grpc.getDescription());
-	api.setImageUrl(grpc.getImageUrl());
-	api.setMetadata(grpc.getMetadataMap());
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
+	CommonModelConverter.setBrandingInformation(api, grpc.getBranding());
 	return api;
     }
 
@@ -2275,19 +2208,14 @@ public class DeviceModelConverter {
      */
     public static GCustomer asGrpcCustomer(ICustomer api) throws SiteWhereException {
 	GCustomer.Builder grpc = GCustomer.newBuilder();
-	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
-	grpc.setToken(api.getToken());
 	grpc.setCustomerTypeId(CommonModelConverter.asGrpcUuid(api.getCustomerTypeId()));
 	if (api.getParentCustomerId() != null) {
 	    grpc.setParentCustomerId(CommonModelConverter.asGrpcUuid(api.getParentCustomerId()));
 	}
 	grpc.setName(api.getName());
 	grpc.setDescription(api.getDescription());
-	grpc.setImageUrl(api.getImageUrl());
-	if (api.getMetadata() != null) {
-	    grpc.putAllMetadata(api.getMetadata());
-	}
 	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
+	grpc.setBranding(CommonModelConverter.asGrpcBrandingInformation(api));
 	return grpc.build();
     }
 
@@ -2319,9 +2247,9 @@ public class DeviceModelConverter {
 	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
 	api.setName(grpc.getName());
 	api.setDescription(grpc.getDescription());
-	api.setIcon(grpc.getIcon());
 	api.setContainedAreaTypeTokens(grpc.getContainedAreaTypeTokensList());
 	api.setMetadata(grpc.getMetadataMap());
+	CommonModelConverter.setBrandingInformation(api, grpc.getBranding());
 	return api;
     }
 
@@ -2340,13 +2268,13 @@ public class DeviceModelConverter {
 	}
 	grpc.setName(api.getName());
 	grpc.setDescription(api.getDescription());
-	grpc.setIcon(api.getIcon());
 	if (api.getContainedAreaTypeTokens() != null) {
 	    grpc.addAllContainedAreaTypeTokens(api.getContainedAreaTypeTokens());
 	}
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
 	}
+	grpc.setBranding(CommonModelConverter.asGrpcBrandingInformation(api));
 	return grpc.build();
     }
 
@@ -2389,14 +2317,11 @@ public class DeviceModelConverter {
      */
     public static AreaType asApiAreaType(GAreaType grpc) throws SiteWhereException {
 	AreaType api = new AreaType();
-	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
-	api.setToken(grpc.getToken());
 	api.setName(grpc.getName());
 	api.setDescription(grpc.getDescription());
-	api.setIcon(grpc.getIcon());
 	api.setContainedAreaTypeIds(CommonModelConverter.asApiUuids(grpc.getContainedAreaTypeIdsList()));
-	api.setMetadata(grpc.getMetadataMap());
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
+	CommonModelConverter.setBrandingInformation(api, grpc.getBranding());
 	return api;
     }
 
@@ -2409,18 +2334,13 @@ public class DeviceModelConverter {
      */
     public static GAreaType asGrpcAreaType(IAreaType api) throws SiteWhereException {
 	GAreaType.Builder grpc = GAreaType.newBuilder();
-	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
-	grpc.setToken(api.getToken());
 	grpc.setName(api.getName());
 	grpc.setDescription(api.getDescription());
-	grpc.setIcon(api.getIcon());
 	if (api.getContainedAreaTypeIds() != null) {
 	    grpc.addAllContainedAreaTypeIds(CommonModelConverter.asGrpcUuids(api.getContainedAreaTypeIds()));
 	}
-	if (api.getMetadata() != null) {
-	    grpc.putAllMetadata(api.getMetadata());
-	}
 	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
+	grpc.setBranding(CommonModelConverter.asGrpcBrandingInformation(api));
 	return grpc.build();
     }
 
@@ -2438,9 +2358,9 @@ public class DeviceModelConverter {
 	api.setParentAreaToken(grpc.hasParentAreaToken() ? grpc.getParentAreaToken().getValue() : null);
 	api.setName(grpc.hasName() ? grpc.getName().getValue() : null);
 	api.setDescription(grpc.hasDescription() ? grpc.getDescription().getValue() : null);
-	api.setImageUrl(grpc.hasImageUrl() ? grpc.getImageUrl().getValue() : null);
 	api.setBounds(CommonModelConverter.asApiLocations(grpc.getBoundsList()));
 	api.setMetadata(grpc.getMetadataMap());
+	CommonModelConverter.setBrandingInformation(api, grpc.getBranding());
 	return api;
     }
 
@@ -2468,15 +2388,13 @@ public class DeviceModelConverter {
 	if (api.getDescription() != null) {
 	    grpc.setDescription(GOptionalString.newBuilder().setValue(api.getDescription()));
 	}
-	if (api.getImageUrl() != null) {
-	    grpc.setImageUrl(GOptionalString.newBuilder().setValue(api.getImageUrl()));
-	}
 	if (api.getBounds() != null) {
 	    grpc.addAllBounds(CommonModelConverter.asGrpcLocations(api.getBounds()));
 	}
 	if (api.getMetadata() != null) {
 	    grpc.putAllMetadata(api.getMetadata());
 	}
+	grpc.setBranding(CommonModelConverter.asGrpcBrandingInformation(api));
 	return grpc.build();
     }
 
@@ -2542,16 +2460,13 @@ public class DeviceModelConverter {
      */
     public static Area asApiArea(GArea grpc) throws SiteWhereException {
 	Area api = new Area();
-	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
-	api.setToken(grpc.getToken());
 	api.setAreaTypeId(CommonModelConverter.asApiUuid(grpc.getAreaTypeId()));
 	api.setParentAreaId(grpc.hasParentAreaId() ? CommonModelConverter.asApiUuid(grpc.getParentAreaId()) : null);
 	api.setName(grpc.getName());
 	api.setDescription(grpc.getDescription());
-	api.setImageUrl(grpc.getImageUrl());
 	api.setBounds(CommonModelConverter.asApiLocations(grpc.getBoundsList()));
-	api.setMetadata(grpc.getMetadataMap());
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
+	CommonModelConverter.setBrandingInformation(api, grpc.getBranding());
 	return api;
     }
 
@@ -2579,20 +2494,15 @@ public class DeviceModelConverter {
      */
     public static GArea asGrpcArea(IArea api) throws SiteWhereException {
 	GArea.Builder grpc = GArea.newBuilder();
-	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
-	grpc.setToken(api.getToken());
 	grpc.setAreaTypeId(CommonModelConverter.asGrpcUuid(api.getAreaTypeId()));
 	if (api.getParentAreaId() != null) {
 	    grpc.setParentAreaId(CommonModelConverter.asGrpcUuid(api.getParentAreaId()));
 	}
 	grpc.setName(api.getName());
 	grpc.setDescription(api.getDescription());
-	grpc.setImageUrl(api.getImageUrl());
 	grpc.addAllBounds(CommonModelConverter.asGrpcLocations(api.getBounds()));
-	if (api.getMetadata() != null) {
-	    grpc.putAllMetadata(api.getMetadata());
-	}
 	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
+	grpc.setBranding(CommonModelConverter.asGrpcBrandingInformation(api));
 	return grpc.build();
     }
 
@@ -2719,14 +2629,11 @@ public class DeviceModelConverter {
      */
     public static Zone asApiZone(GZone grpc) throws SiteWhereException {
 	Zone api = new Zone();
-	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
-	api.setToken(grpc.getToken());
 	api.setName(grpc.getName());
 	api.setBounds(CommonModelConverter.asApiLocations(grpc.getBoundsList()));
 	api.setFillColor(grpc.getFillColor());
 	api.setBorderColor(grpc.getBorderColor());
 	api.setOpacity(grpc.getOpacity());
-	api.setMetadata(grpc.getMetadataMap());
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
 	return api;
     }
@@ -2740,16 +2647,11 @@ public class DeviceModelConverter {
      */
     public static GZone asGrpcZone(IZone api) throws SiteWhereException {
 	GZone.Builder grpc = GZone.newBuilder();
-	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
-	grpc.setToken(api.getToken());
 	grpc.setName(api.getName());
 	grpc.addAllBounds(CommonModelConverter.asGrpcLocations(api.getBounds()));
 	grpc.setFillColor(api.getFillColor());
 	grpc.setBorderColor(api.getBorderColor());
 	grpc.setOpacity(api.getOpacity());
-	if (api.getMetadata() != null) {
-	    grpc.putAllMetadata(api.getMetadata());
-	}
 	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
 	return grpc.build();
     }

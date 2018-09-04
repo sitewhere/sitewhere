@@ -14,8 +14,7 @@ import java.util.UUID;
 import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
-import com.sitewhere.mongodb.common.MongoMetadataProvider;
-import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
+import com.sitewhere.mongodb.common.MongoPersistentEntity;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceElementMapping;
@@ -79,8 +78,7 @@ public class MongoDevice implements MongoConverter<IDevice> {
 	}
 	target.append(PROP_DEVICE_ELEMENT_MAPPINGS, mappings);
 
-	MongoSiteWhereEntity.toDocument(source, target);
-	MongoMetadataProvider.toDocument(source, target);
+	MongoPersistentEntity.toDocument(source, target);
     }
 
     /**
@@ -108,8 +106,7 @@ public class MongoDevice implements MongoConverter<IDevice> {
 	    }
 	}
 
-	MongoSiteWhereEntity.fromDocument(source, target);
-	MongoMetadataProvider.fromDocument(source, target);
+	MongoPersistentEntity.fromDocument(source, target);
     }
 
     /**

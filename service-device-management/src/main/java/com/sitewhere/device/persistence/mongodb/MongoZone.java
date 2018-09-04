@@ -12,8 +12,7 @@ import java.util.UUID;
 import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
-import com.sitewhere.mongodb.common.MongoMetadataProvider;
-import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
+import com.sitewhere.mongodb.common.MongoPersistentEntity;
 import com.sitewhere.rest.model.area.Zone;
 import com.sitewhere.spi.area.IZone;
 
@@ -73,8 +72,7 @@ public class MongoZone implements MongoConverter<IZone> {
 	target.append(PROP_OPACITY, source.getOpacity());
 
 	MongoBoundedEntity.saveBounds(source, target);
-	MongoSiteWhereEntity.toDocument(source, target);
-	MongoMetadataProvider.toDocument(source, target);
+	MongoPersistentEntity.toDocument(source, target);
     }
 
     /**
@@ -97,8 +95,7 @@ public class MongoZone implements MongoConverter<IZone> {
 	target.setOpacity(opacity);
 	target.setBounds(MongoBoundedEntity.loadBounds(source));
 
-	MongoSiteWhereEntity.fromDocument(source, target);
-	MongoMetadataProvider.fromDocument(source, target);
+	MongoPersistentEntity.fromDocument(source, target);
     }
 
     /**

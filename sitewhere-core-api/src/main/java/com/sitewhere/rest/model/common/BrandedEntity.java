@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.common;
 
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IBrandedEntity;
 
 /**
@@ -87,5 +88,20 @@ public abstract class BrandedEntity extends PersistentEntity implements IBranded
 
     public void setBorderColor(String borderColor) {
 	this.borderColor = borderColor;
+    }
+
+    /**
+     * Copy fields from source to target.
+     * 
+     * @param source
+     * @param target
+     */
+    public static void copy(IBrandedEntity source, BrandedEntity target) throws SiteWhereException {
+	target.setImageUrl(source.getImageUrl());
+	target.setIcon(source.getIcon());
+	target.setBackgroundColor(source.getBackgroundColor());
+	target.setForegroundColor(source.getForegroundColor());
+	target.setBorderColor(source.getBorderColor());
+	PersistentEntity.copy(source, target);
     }
 }

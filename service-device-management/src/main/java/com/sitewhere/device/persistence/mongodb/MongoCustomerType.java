@@ -13,8 +13,7 @@ import java.util.UUID;
 import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
-import com.sitewhere.mongodb.common.MongoMetadataProvider;
-import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
+import com.sitewhere.mongodb.common.MongoBrandedEntity;
 import com.sitewhere.rest.model.customer.CustomerType;
 import com.sitewhere.spi.customer.ICustomerType;
 
@@ -30,9 +29,6 @@ public class MongoCustomerType implements MongoConverter<ICustomerType> {
 
     /** Property for description */
     public static final String PROP_DESCRIPTION = "desc";
-
-    /** Property for icon */
-    public static final String PROP_ICON = "icon";
 
     /** Property for contained customer type ids */
     public static final String PROP_CONTAINED_CUSTOMER_TYPE_IDS = "ccty";
@@ -66,11 +62,9 @@ public class MongoCustomerType implements MongoConverter<ICustomerType> {
     public static void toDocument(ICustomerType source, Document target) {
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_DESCRIPTION, source.getDescription());
-	target.append(PROP_ICON, source.getIcon());
 	target.append(PROP_CONTAINED_CUSTOMER_TYPE_IDS, source.getContainedCustomerTypeIds());
 
-	MongoSiteWhereEntity.toDocument(source, target);
-	MongoMetadataProvider.toDocument(source, target);
+	MongoBrandedEntity.toDocument(source, target);
     }
 
     /**
@@ -83,16 +77,13 @@ public class MongoCustomerType implements MongoConverter<ICustomerType> {
     public static void fromDocument(Document source, CustomerType target) {
 	String name = (String) source.get(PROP_NAME);
 	String description = (String) source.get(PROP_DESCRIPTION);
-	String icon = (String) source.get(PROP_ICON);
 	List<UUID> containedCustomerTypeIds = (List<UUID>) source.get(PROP_CONTAINED_CUSTOMER_TYPE_IDS);
 
 	target.setName(name);
 	target.setDescription(description);
-	target.setIcon(icon);
 	target.setContainedCustomerTypeIds(containedCustomerTypeIds);
 
-	MongoSiteWhereEntity.fromDocument(source, target);
-	MongoMetadataProvider.fromDocument(source, target);
+	MongoBrandedEntity.fromDocument(source, target);
     }
 
     /**

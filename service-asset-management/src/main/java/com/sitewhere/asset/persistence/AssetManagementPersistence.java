@@ -46,7 +46,7 @@ public class AssetManagementPersistence extends Persistence {
      */
     public static AssetType assetTypeCreateLogic(IAssetTypeCreateRequest request) throws SiteWhereException {
 	AssetType type = new AssetType();
-	Persistence.entityCreateLogic(request, type);
+	Persistence.brandedEntityCreateLogic(request, type);
 
 	type.setDescription(request.getDescription());
 
@@ -68,7 +68,7 @@ public class AssetManagementPersistence extends Persistence {
      */
     public static void assetTypeUpdateLogic(AssetType target, IAssetTypeCreateRequest request)
 	    throws SiteWhereException {
-	Persistence.entityUpdateLogic(request, target);
+	Persistence.brandedEntityUpdateLogic(request, target);
 
 	if (request.getName() != null) {
 	    target.setName(request.getName());
@@ -108,7 +108,7 @@ public class AssetManagementPersistence extends Persistence {
      */
     public static Asset assetCreateLogic(IAssetType assetType, IAssetCreateRequest request) throws SiteWhereException {
 	Asset asset = new Asset();
-	Persistence.entityCreateLogic(request, asset);
+	Persistence.brandedEntityCreateLogic(request, asset);
 
 	asset.setAssetTypeId(assetType.getId());
 
@@ -131,7 +131,7 @@ public class AssetManagementPersistence extends Persistence {
      */
     public static void assetUpdateLogic(IAssetType assetType, Asset target, IAssetCreateRequest request)
 	    throws SiteWhereException {
-	Persistence.entityUpdateLogic(request, target);
+	Persistence.brandedEntityUpdateLogic(request, target);
 
 	if (request.getAssetTypeToken() != null) {
 	    target.setAssetTypeId(assetType.getId());

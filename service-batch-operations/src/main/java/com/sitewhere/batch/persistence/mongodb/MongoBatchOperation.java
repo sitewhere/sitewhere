@@ -12,8 +12,7 @@ import java.util.Date;
 import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
-import com.sitewhere.mongodb.common.MongoMetadataProvider;
-import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
+import com.sitewhere.mongodb.common.MongoPersistentEntity;
 import com.sitewhere.rest.model.batch.BatchOperation;
 import com.sitewhere.spi.batch.BatchOperationStatus;
 import com.sitewhere.spi.batch.IBatchOperation;
@@ -87,8 +86,7 @@ public class MongoBatchOperation implements MongoConverter<IBatchOperation> {
 	}
 	target.put(PROP_PARAMETERS, params);
 
-	MongoSiteWhereEntity.toDocument(source, target);
-	MongoMetadataProvider.toDocument(source, target);
+	MongoPersistentEntity.toDocument(source, target);
     }
 
     /**
@@ -120,8 +118,7 @@ public class MongoBatchOperation implements MongoConverter<IBatchOperation> {
 	    }
 	}
 
-	MongoSiteWhereEntity.fromDocument(source, target);
-	MongoMetadataProvider.fromDocument(source, target);
+	MongoPersistentEntity.fromDocument(source, target);
     }
 
     /**

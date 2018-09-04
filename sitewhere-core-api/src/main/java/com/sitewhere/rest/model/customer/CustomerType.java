@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.BrandedEntity;
 import com.sitewhere.spi.customer.ICustomerType;
 
@@ -19,6 +21,7 @@ import com.sitewhere.spi.customer.ICustomerType;
  * 
  * @author Derek
  */
+@JsonInclude(Include.NON_NULL)
 public class CustomerType extends BrandedEntity implements ICustomerType {
 
     /** Serial version UID */

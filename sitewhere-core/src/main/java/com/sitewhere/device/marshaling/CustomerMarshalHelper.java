@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.sitewhere.rest.model.common.PersistentEntity;
+import com.sitewhere.rest.model.common.BrandedEntity;
 import com.sitewhere.rest.model.customer.Customer;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.marshaling.MarshaledCustomer;
@@ -72,14 +72,11 @@ public class CustomerMarshalHelper {
 	    return null;
 	}
 	MarshaledCustomer customer = new MarshaledCustomer();
-	customer.setId(source.getId());
-	customer.setToken(source.getToken());
 	customer.setCustomerTypeId(source.getCustomerTypeId());
 	customer.setParentCustomerId(source.getParentCustomerId());
 	customer.setName(source.getName());
 	customer.setDescription(source.getDescription());
-	customer.setImageUrl(source.getImageUrl());
-	PersistentEntity.copy(source, customer);
+	BrandedEntity.copy(source, customer);
 	if (isIncludeCustomerType()) {
 	    customer.setCustomerType(getDeviceManagement().getCustomerType(source.getCustomerTypeId()));
 	}

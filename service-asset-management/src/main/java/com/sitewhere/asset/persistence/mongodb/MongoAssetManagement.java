@@ -19,6 +19,7 @@ import com.sitewhere.asset.persistence.AssetManagementPersistence;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
+import com.sitewhere.mongodb.common.MongoPersistentEntity;
 import com.sitewhere.rest.model.asset.Asset;
 import com.sitewhere.rest.model.asset.AssetType;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -73,9 +74,9 @@ public class MongoAssetManagement extends TenantEngineLifecycleComponent impleme
      * @throws SiteWhereException
      */
     protected void ensureIndexes() throws SiteWhereException {
-	getMongoClient().getAssetTypesCollection().createIndex(Indexes.ascending(MongoAssetType.PROP_TOKEN),
+	getMongoClient().getAssetTypesCollection().createIndex(Indexes.ascending(MongoPersistentEntity.PROP_TOKEN),
 		new IndexOptions().unique(true));
-	getMongoClient().getAssetsCollection().createIndex(Indexes.ascending(MongoAsset.PROP_TOKEN),
+	getMongoClient().getAssetsCollection().createIndex(Indexes.ascending(MongoPersistentEntity.PROP_TOKEN),
 		new IndexOptions().unique(true));
     }
 
@@ -110,7 +111,7 @@ public class MongoAssetManagement extends TenantEngineLifecycleComponent impleme
 	AssetManagementPersistence.assetTypeUpdateLogic(assetType, request);
 	Document updated = MongoAssetType.toDocument(assetType);
 
-	Document query = new Document(MongoAssetType.PROP_ID, assetTypeId);
+	Document query = new Document(MongoPersistentEntity.PROP_ID, assetTypeId);
 	MongoCollection<Document> types = getMongoClient().getAssetTypesCollection();
 	MongoPersistence.update(types, query, updated);
 
@@ -137,7 +138,7 @@ public class MongoAssetManagement extends TenantEngineLifecycleComponent impleme
     public IAssetType getAssetTypeByToken(String token) throws SiteWhereException {
 	try {
 	    MongoCollection<Document> types = getMongoClient().getAssetTypesCollection();
-	    Document query = new Document(MongoAssetType.PROP_TOKEN, token);
+	    Document query = new Document(MongoPersistentEntity.PROP_TOKEN, token);
 	    Document dbAssetType = types.find(query).first();
 	    if (dbAssetType != null) {
 		return MongoAssetType.fromDocument(dbAssetType);
@@ -214,7 +215,7 @@ public class MongoAssetManagement extends TenantEngineLifecycleComponent impleme
 	AssetManagementPersistence.assetUpdateLogic(assetType, asset, request);
 	Document updated = MongoAsset.toDocument(asset);
 
-	Document query = new Document(MongoAsset.PROP_ID, assetId);
+	Document query = new Document(MongoPersistentEntity.PROP_ID, assetId);
 	MongoCollection<Document> assets = getMongoClient().getAssetsCollection();
 	MongoPersistence.update(assets, query, updated);
 
@@ -241,7 +242,7 @@ public class MongoAssetManagement extends TenantEngineLifecycleComponent impleme
     public IAsset getAssetByToken(String token) throws SiteWhereException {
 	try {
 	    MongoCollection<Document> assets = getMongoClient().getAssetsCollection();
-	    Document query = new Document(MongoAsset.PROP_TOKEN, token);
+	    Document query = new Document(MongoPersistentEntity.PROP_TOKEN, token);
 	    Document dbAsset = assets.find(query).first();
 	    if (dbAsset != null) {
 		return MongoAsset.fromDocument(dbAsset);
@@ -299,7 +300,7 @@ public class MongoAssetManagement extends TenantEngineLifecycleComponent impleme
     protected Document getAssetTypeDocument(UUID assetTypeId) throws SiteWhereException {
 	try {
 	    MongoCollection<Document> types = getMongoClient().getAssetTypesCollection();
-	    Document query = new Document(MongoAssetType.PROP_ID, assetTypeId);
+	    Document query = new Document(MongoPersistentEntity.PROP_ID, assetTypeId);
 	    return types.find(query).first();
 	} catch (MongoClientException e) {
 	    throw MongoPersistence.handleClientException(e);
@@ -332,7 +333,7 @@ public class MongoAssetManagement extends TenantEngineLifecycleComponent impleme
     protected Document getAssetDocument(UUID assetId) throws SiteWhereException {
 	try {
 	    MongoCollection<Document> assets = getMongoClient().getAssetsCollection();
-	    Document query = new Document(MongoAsset.PROP_ID, assetId);
+	    Document query = new Document(MongoPersistentEntity.PROP_ID, assetId);
 	    return assets.find(query).first();
 	} catch (MongoClientException e) {
 	    throw MongoPersistence.handleClientException(e);

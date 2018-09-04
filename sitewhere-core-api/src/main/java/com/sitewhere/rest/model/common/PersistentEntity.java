@@ -125,6 +125,8 @@ public class PersistentEntity extends MetadataProvider implements IPersistentEnt
      * @param target
      */
     public static void copy(IPersistentEntity source, PersistentEntity target) throws SiteWhereException {
+	target.setId(source.getId());
+	target.setToken(source.getToken());
 	target.setCreatedDate(source.getCreatedDate());
 	target.setCreatedBy(source.getCreatedBy());
 	target.setUpdatedDate(source.getUpdatedDate());

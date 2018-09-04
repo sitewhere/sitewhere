@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sitewhere.rest.model.area.AreaType;
-import com.sitewhere.rest.model.common.PersistentEntity;
+import com.sitewhere.rest.model.common.BrandedEntity;
 import com.sitewhere.rest.model.device.marshaling.MarshaledAreaType;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IAreaType;
@@ -51,13 +51,10 @@ public class AreaTypeMarshalHelper {
      */
     public MarshaledAreaType convert(IAreaType source) throws SiteWhereException {
 	MarshaledAreaType type = new MarshaledAreaType();
-	type.setId(source.getId());
-	type.setToken(source.getToken());
 	type.setName(source.getName());
 	type.setDescription(source.getDescription());
-	type.setIcon(source.getIcon());
 	type.setContainedAreaTypeIds(source.getContainedAreaTypeIds());
-	PersistentEntity.copy(source, type);
+	BrandedEntity.copy(source, type);
 	if (isIncludeContainedAreaTypes()) {
 	    List<IAreaType> cats = new ArrayList<IAreaType>();
 	    for (UUID atid : source.getContainedAreaTypeIds()) {

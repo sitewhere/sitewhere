@@ -13,7 +13,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.common.request.PersistentEntityCreateRequest;
+import com.sitewhere.rest.model.common.request.BrandedEntityCreateRequest;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
 
@@ -24,7 +24,7 @@ import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class TenantCreateRequest extends PersistentEntityCreateRequest implements ITenantCreateRequest {
+public class TenantCreateRequest extends BrandedEntityCreateRequest implements ITenantCreateRequest {
 
     /** Serial version UID */
     private static final long serialVersionUID = -5706275554835627264L;
@@ -34,9 +34,6 @@ public class TenantCreateRequest extends PersistentEntityCreateRequest implement
 
     /** Device authentication token */
     private String authenticationToken;
-
-    /** Tenant logo URL */
-    private String logoUrl;
 
     /** List of users authorized for access */
     private List<String> authorizedUserIds;
@@ -71,18 +68,6 @@ public class TenantCreateRequest extends PersistentEntityCreateRequest implement
 
     public void setAuthenticationToken(String authenticationToken) {
 	this.authenticationToken = authenticationToken;
-    }
-
-    /*
-     * @see com.sitewhere.spi.tenant.request.ITenantCreateRequest#getLogoUrl()
-     */
-    @Override
-    public String getLogoUrl() {
-	return logoUrl;
-    }
-
-    public void setLogoUrl(String logoUrl) {
-	this.logoUrl = logoUrl;
     }
 
     /*
@@ -134,7 +119,7 @@ public class TenantCreateRequest extends PersistentEntityCreateRequest implement
 	    request.setToken(token);
 	    request.setName(name);
 	    request.setAuthenticationToken(authenticationToken);
-	    request.setLogoUrl(logoUrl);
+	    request.setImageUrl(logoUrl);
 	    request.setTenantTemplateId(tenantTemplateId);
 	    request.setDatasetTemplateId(datasetTemplateId);
 	}
@@ -142,7 +127,7 @@ public class TenantCreateRequest extends PersistentEntityCreateRequest implement
 	public Builder(ITenant existing) {
 	    request.setToken(existing.getToken());
 	    request.setName(existing.getName());
-	    request.setLogoUrl(existing.getLogoUrl());
+	    request.setImageUrl(existing.getImageUrl());
 	    request.setAuthenticationToken(existing.getAuthenticationToken());
 	    request.setAuthorizedUserIds(existing.getAuthorizedUserIds());
 	    request.setTenantTemplateId(existing.getTenantTemplateId());

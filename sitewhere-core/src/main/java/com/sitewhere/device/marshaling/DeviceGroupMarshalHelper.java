@@ -10,7 +10,7 @@ package com.sitewhere.device.marshaling;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sitewhere.rest.model.common.PersistentEntity;
+import com.sitewhere.rest.model.common.BrandedEntity;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.group.IDeviceGroup;
@@ -32,15 +32,12 @@ public class DeviceGroupMarshalHelper {
      */
     public DeviceGroup convert(IDeviceGroup source) throws SiteWhereException {
 	DeviceGroup group = new DeviceGroup();
-	group.setId(source.getId());
-	group.setToken(source.getToken());
 	group.setName(source.getName());
 	group.setDescription(source.getDescription());
-	group.setImageUrl(source.getImageUrl());
 	List<String> roles = new ArrayList<String>();
 	roles.addAll(source.getRoles());
 	group.setRoles(roles);
-	PersistentEntity.copy(source, group);
+	BrandedEntity.copy(source, group);
 	return group;
     }
 }

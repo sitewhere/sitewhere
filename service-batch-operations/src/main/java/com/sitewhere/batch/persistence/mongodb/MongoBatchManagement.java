@@ -18,7 +18,7 @@ import com.sitewhere.batch.persistence.BatchManagementPersistence;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
-import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
+import com.sitewhere.mongodb.common.MongoPersistentEntity;
 import com.sitewhere.rest.model.batch.BatchElement;
 import com.sitewhere.rest.model.batch.BatchOperation;
 import com.sitewhere.rest.model.search.SearchResults;
@@ -60,7 +60,7 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
      */
     protected void ensureIndexes() throws SiteWhereException {
 	// Batch operation indexes.
-	getMongoClient().getBatchOperationsCollection().createIndex(new Document(MongoSiteWhereEntity.PROP_TOKEN, 1),
+	getMongoClient().getBatchOperationsCollection().createIndex(new Document(MongoPersistentEntity.PROP_TOKEN, 1),
 		new IndexOptions().unique(true));
 	getMongoClient().getBatchOperationElementsCollection().createIndex(
 		new Document(MongoBatchElement.PROP_BATCH_OPERATION_ID, 1).append(MongoBatchElement.PROP_DEVICE_ID, 1),
@@ -113,7 +113,7 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
 
 	Document updated = MongoBatchOperation.toDocument(operation);
 
-	Document query = new Document(MongoSiteWhereEntity.PROP_ID, batchOperationId);
+	Document query = new Document(MongoPersistentEntity.PROP_ID, batchOperationId);
 	MongoPersistence.update(batchops, query, updated);
 	return MongoBatchOperation.fromDocument(updated);
     }
@@ -155,7 +155,7 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
 	    throws SiteWhereException {
 	MongoCollection<Document> ops = getMongoClient().getBatchOperationsCollection();
 	Document dbCriteria = new Document();
-	Document sort = new Document(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
+	Document sort = new Document(MongoPersistentEntity.PROP_CREATED_DATE, -1);
 	return MongoPersistence.search(IBatchOperation.class, ops, dbCriteria, sort, criteria, LOOKUP);
     }
 
@@ -242,7 +242,7 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
     protected Document getBatchOperationDocumentByToken(String token) throws SiteWhereException {
 	try {
 	    MongoCollection<Document> ops = getMongoClient().getBatchOperationsCollection();
-	    Document query = new Document(MongoSiteWhereEntity.PROP_TOKEN, token);
+	    Document query = new Document(MongoPersistentEntity.PROP_TOKEN, token);
 	    return ops.find(query).first();
 	} catch (MongoClientException e) {
 	    throw MongoPersistence.handleClientException(e);
@@ -276,7 +276,7 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
     protected Document getBatchOperationDocument(UUID id) throws SiteWhereException {
 	try {
 	    MongoCollection<Document> ops = getMongoClient().getBatchOperationsCollection();
-	    Document query = new Document(MongoSiteWhereEntity.PROP_ID, id);
+	    Document query = new Document(MongoPersistentEntity.PROP_ID, id);
 	    return ops.find(query).first();
 	} catch (MongoClientException e) {
 	    throw MongoPersistence.handleClientException(e);

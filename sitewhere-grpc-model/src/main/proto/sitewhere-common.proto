@@ -38,11 +38,22 @@ message GUUID {
 
 // Common entity information.
 message GEntityInformation {
-	uint64 createdDate = 1;
-	GUserReference createdBy = 2;
-	uint64 updatedDate = 3;
-	GUserReference updatedBy = 4;
-	bool deleted = 5;
+	GUUID id = 1;
+	string token = 2;
+	uint64 createdDate = 3;
+	GUserReference createdBy = 4;
+	uint64 updatedDate = 5;
+	GUserReference updatedBy = 6;
+	map<string, string> metadata = 7;
+}
+
+// Common branding information.
+message GBrandingInformation {
+	GOptionalString imageUrl = 1;
+	GOptionalString icon = 2;
+	GOptionalString backgroundColor = 3;
+	GOptionalString foregroundColor = 4;
+	GOptionalString borderColor = 5;
 }
 
 // Information about paging for searches.

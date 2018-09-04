@@ -12,8 +12,7 @@ import java.util.List;
 import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
-import com.sitewhere.mongodb.common.MongoMetadataProvider;
-import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
+import com.sitewhere.mongodb.common.MongoBrandedEntity;
 import com.sitewhere.rest.model.tenant.Tenant;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -29,9 +28,6 @@ public class MongoTenant implements MongoConverter<ITenant> {
 
     /** Property for authentication token */
     public static final String PROP_AUTH_TOKEN = "auth";
-
-    /** Property for logo URL */
-    public static final String PROP_LOGO_URL = "logo";
 
     /** Property for authorized users */
     public static final String PROP_AUTH_USERS = "users";
@@ -71,13 +67,11 @@ public class MongoTenant implements MongoConverter<ITenant> {
     public static void toDocument(ITenant source, Document target) {
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_AUTH_TOKEN, source.getAuthenticationToken());
-	target.append(PROP_LOGO_URL, source.getLogoUrl());
 	target.append(PROP_AUTH_USERS, source.getAuthorizedUserIds());
 	target.append(PROP_TENANT_TEMPLATE_ID, source.getTenantTemplateId());
 	target.append(PROP_DATASET_TEMPLATE_ID, source.getDatasetTemplateId());
 
-	MongoSiteWhereEntity.toDocument(source, target);
-	MongoMetadataProvider.toDocument(source, target);
+	MongoBrandedEntity.toDocument(source, target);
     }
 
     /**
@@ -90,20 +84,17 @@ public class MongoTenant implements MongoConverter<ITenant> {
     public static void fromDocument(Document source, Tenant target) {
 	String name = (String) source.get(PROP_NAME);
 	String authToken = (String) source.get(PROP_AUTH_TOKEN);
-	String logo = (String) source.get(PROP_LOGO_URL);
 	List<String> authUsers = (List<String>) source.get(PROP_AUTH_USERS);
 	String tenantTemplateId = (String) source.get(PROP_TENANT_TEMPLATE_ID);
 	String datasetTemplateId = (String) source.get(PROP_DATASET_TEMPLATE_ID);
 
 	target.setName(name);
 	target.setAuthenticationToken(authToken);
-	target.setLogoUrl(logo);
 	target.setAuthorizedUserIds(authUsers);
 	target.setTenantTemplateId(tenantTemplateId);
 	target.setDatasetTemplateId(datasetTemplateId);
 
-	MongoSiteWhereEntity.fromDocument(source, target);
-	MongoMetadataProvider.fromDocument(source, target);
+	MongoBrandedEntity.fromDocument(source, target);
     }
 
     /**

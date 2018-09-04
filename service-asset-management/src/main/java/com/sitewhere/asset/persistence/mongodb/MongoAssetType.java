@@ -7,13 +7,10 @@
  */
 package com.sitewhere.asset.persistence.mongodb;
 
-import java.util.UUID;
-
 import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
-import com.sitewhere.mongodb.common.MongoMetadataProvider;
-import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
+import com.sitewhere.mongodb.common.MongoBrandedEntity;
 import com.sitewhere.rest.model.asset.AssetType;
 import com.sitewhere.spi.asset.AssetCategory;
 import com.sitewhere.spi.asset.IAssetType;
@@ -25,20 +22,11 @@ import com.sitewhere.spi.asset.IAssetType;
  */
 public class MongoAssetType implements MongoConverter<IAssetType> {
 
-    /** Property for asset type id */
-    public static final String PROP_ID = "_id";
-
-    /** Property for token */
-    public static final String PROP_TOKEN = "tokn";
-
     /** Property for name */
     public static final String PROP_NAME = "name";
 
     /** Property for description */
     public static final String PROP_DESCRIPTION = "desc";
-
-    /** Property for asset type image URL */
-    public static final String PROP_IMAGE_URL = "imgu";
 
     /** Property for asset category */
     public static final String PROP_ASSET_CATEGORY = "asct";
@@ -70,15 +58,11 @@ public class MongoAssetType implements MongoConverter<IAssetType> {
      * @param target
      */
     public static void toDocument(IAssetType source, Document target) {
-	target.append(PROP_ID, source.getId());
-	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_DESCRIPTION, source.getDescription());
-	target.append(PROP_IMAGE_URL, source.getImageUrl());
 	target.append(PROP_ASSET_CATEGORY, source.getAssetCategory().name());
 
-	MongoSiteWhereEntity.toDocument(source, target);
-	MongoMetadataProvider.toDocument(source, target);
+	MongoBrandedEntity.toDocument(source, target);
     }
 
     /**
@@ -88,24 +72,17 @@ public class MongoAssetType implements MongoConverter<IAssetType> {
      * @param target
      */
     public static void fromDocument(Document source, AssetType target) {
-	UUID id = (UUID) source.get(PROP_ID);
-	String token = (String) source.get(PROP_TOKEN);
 	String name = (String) source.get(PROP_NAME);
 	String description = (String) source.get(PROP_DESCRIPTION);
-	String imageUrl = (String) source.get(PROP_IMAGE_URL);
 
 	String assetCategoryStr = (String) source.get(PROP_ASSET_CATEGORY);
 	AssetCategory category = (assetCategoryStr != null) ? AssetCategory.valueOf(assetCategoryStr) : null;
 
-	target.setId(id);
-	target.setToken(token);
 	target.setName(name);
 	target.setDescription(description);
-	target.setImageUrl(imageUrl);
 	target.setAssetCategory(category);
 
-	MongoSiteWhereEntity.fromDocument(source, target);
-	MongoMetadataProvider.fromDocument(source, target);
+	MongoBrandedEntity.fromDocument(source, target);
     }
 
     /**

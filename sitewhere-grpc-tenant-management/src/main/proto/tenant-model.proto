@@ -15,11 +15,11 @@ message GTenantCreateRequest {
 	GOptionalString token = 1;
 	GOptionalString name = 2;
 	GOptionalString authenticationToken = 3;
-	GOptionalString logoUrl = 4;
-	GOptionalString tenantTemplateId = 5;
-	GOptionalString datasetTemplateId = 6;
-	repeated string authorizedUserIds = 7;
-	map<string, string> metadata = 8;
+	GOptionalString tenantTemplateId = 4;
+	GOptionalString datasetTemplateId = 5;
+	repeated string authorizedUserIds = 6;
+	map<string, string> metadata = 7;
+	GBrandingInformation branding = 8;
 }
 
 // Criteria for tenant search.
@@ -37,16 +37,13 @@ message GTenantSearchResults {
 
 // Information for a tenant.
 message GTenant {
-	GUUID id = 1;
-	string token = 2;
-	string name = 3;
-	string authenticationToken = 4;
-	string logoUrl = 5;
-	string tenantTemplateId = 6;
-	string datasetTemplateId = 7;
-	repeated string authorizedUserIds = 8;
-	map<string, string> metadata = 9;
-	GEntityInformation entityInformation = 10;
+	string name = 1;
+	string authenticationToken = 2;
+	string tenantTemplateId = 3;
+	string datasetTemplateId = 4;
+	repeated string authorizedUserIds = 5;
+	GEntityInformation entityInformation = 6;
+	GBrandingInformation branding = 7;
 }
 
 // ########################

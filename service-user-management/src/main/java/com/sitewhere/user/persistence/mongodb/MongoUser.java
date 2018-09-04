@@ -13,8 +13,7 @@ import java.util.List;
 import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
-import com.sitewhere.mongodb.common.MongoMetadataProvider;
-import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
+import com.sitewhere.mongodb.common.MongoPersistentEntity;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.spi.user.AccountStatus;
 import com.sitewhere.spi.user.IUser;
@@ -77,8 +76,8 @@ public class MongoUser implements MongoConverter<IUser> {
 	if (source.getStatus() != null) {
 	    target.append(PROP_STATUS, source.getStatus().name());
 	}
-	MongoSiteWhereEntity.toDocument(source, target);
-	MongoMetadataProvider.toDocument(source, target);
+
+	MongoPersistentEntity.toDocument(source, target);
     }
 
     /**
@@ -106,8 +105,8 @@ public class MongoUser implements MongoConverter<IUser> {
 	if (status != null) {
 	    target.setStatus(AccountStatus.valueOf(status));
 	}
-	MongoSiteWhereEntity.fromDocument(source, target);
-	MongoMetadataProvider.fromDocument(source, target);
+
+	MongoPersistentEntity.fromDocument(source, target);
     }
 
     /**

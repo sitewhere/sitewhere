@@ -12,8 +12,7 @@ import java.util.UUID;
 import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
-import com.sitewhere.mongodb.common.MongoMetadataProvider;
-import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
+import com.sitewhere.mongodb.common.MongoBrandedEntity;
 import com.sitewhere.rest.model.customer.Customer;
 import com.sitewhere.spi.customer.ICustomer;
 
@@ -35,9 +34,6 @@ public class MongoCustomer implements MongoConverter<ICustomer> {
 
     /** Property for description */
     public static final String PROP_DESCRIPTION = "desc";
-
-    /** Property for image URL */
-    public static final String PROP_IMAGE_URL = "imgu";
 
     /*
      * (non-Javadoc)
@@ -70,10 +66,8 @@ public class MongoCustomer implements MongoConverter<ICustomer> {
 	target.append(PROP_PARENT_CUSTOMER_ID, source.getParentCustomerId());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_DESCRIPTION, source.getDescription());
-	target.append(PROP_IMAGE_URL, source.getImageUrl());
 
-	MongoSiteWhereEntity.toDocument(source, target);
-	MongoMetadataProvider.toDocument(source, target);
+	MongoBrandedEntity.toDocument(source, target);
     }
 
     /**
@@ -87,16 +81,13 @@ public class MongoCustomer implements MongoConverter<ICustomer> {
 	UUID parentCustomerId = (UUID) source.get(PROP_PARENT_CUSTOMER_ID);
 	String name = (String) source.get(PROP_NAME);
 	String description = (String) source.get(PROP_DESCRIPTION);
-	String imageUrl = (String) source.get(PROP_IMAGE_URL);
 
 	target.setCustomerTypeId(customerTypeId);
 	target.setParentCustomerId(parentCustomerId);
 	target.setName(name);
 	target.setDescription(description);
-	target.setImageUrl(imageUrl);
 
-	MongoSiteWhereEntity.fromDocument(source, target);
-	MongoMetadataProvider.fromDocument(source, target);
+	MongoBrandedEntity.fromDocument(source, target);
     }
 
     /**

@@ -13,8 +13,7 @@ import java.util.UUID;
 import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
-import com.sitewhere.mongodb.common.MongoMetadataProvider;
-import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
+import com.sitewhere.mongodb.common.MongoPersistentEntity;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -91,8 +90,7 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
 	    target.append(PROP_STATUS, source.getStatus().name());
 	}
 
-	MongoSiteWhereEntity.toDocument(source, target);
-	MongoMetadataProvider.toDocument(source, target);
+	MongoPersistentEntity.toDocument(source, target);
     }
 
     /**
@@ -126,8 +124,7 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
 	    target.setStatus(DeviceAssignmentStatus.valueOf(status));
 	}
 
-	MongoSiteWhereEntity.fromDocument(source, target);
-	MongoMetadataProvider.fromDocument(source, target);
+	MongoPersistentEntity.fromDocument(source, target);
     }
 
     /**

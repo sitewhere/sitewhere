@@ -98,9 +98,9 @@ public class AssetModelConverter {
 	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
 	api.setName(grpc.getName());
 	api.setDescription(grpc.getDescription());
-	api.setImageUrl(grpc.getImageUrl());
 	api.setAssetCategory(AssetModelConverter.asApiAssetCategory(grpc.getAssetCategory()));
 	api.setMetadata(grpc.getMetadataMap());
+	CommonModelConverter.setBrandingInformation(api, grpc.getBranding());
 	return api;
     }
 
@@ -119,9 +119,9 @@ public class AssetModelConverter {
 	}
 	grpc.setName(api.getName());
 	grpc.setDescription(api.getDescription());
-	grpc.setImageUrl(api.getImageUrl());
 	grpc.setAssetCategory(AssetModelConverter.asGrpcAssetCategory(api.getAssetCategory()));
 	grpc.putAllMetadata(api.getMetadata());
+	grpc.setBranding(CommonModelConverter.asGrpcBrandingInformation(api));
 	return grpc.build();
     }
 
@@ -134,13 +134,11 @@ public class AssetModelConverter {
      */
     public static AssetType asApiAssetType(GAssetType grpc) throws SiteWhereException {
 	AssetType api = new AssetType();
-	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
-	api.setToken(grpc.getToken());
 	api.setName(grpc.getName());
 	api.setDescription(grpc.getDescription());
-	api.setImageUrl(grpc.getImageUrl());
 	api.setAssetCategory(AssetModelConverter.asApiAssetCategory(grpc.getAssetCategory()));
-	api.setMetadata(grpc.getMetadataMap());
+	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
+	CommonModelConverter.setBrandingInformation(api, grpc.getBranding());
 	return api;
     }
 
@@ -153,13 +151,11 @@ public class AssetModelConverter {
      */
     public static GAssetType asGrpcAssetType(IAssetType api) throws SiteWhereException {
 	GAssetType.Builder grpc = GAssetType.newBuilder();
-	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
-	grpc.setToken(api.getToken());
 	grpc.setName(api.getName());
 	grpc.setDescription(api.getDescription());
-	grpc.setImageUrl(api.getImageUrl());
 	grpc.setAssetCategory(AssetModelConverter.asGrpcAssetCategory(api.getAssetCategory()));
-	grpc.putAllMetadata(api.getMetadata());
+	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
+	grpc.setBranding(CommonModelConverter.asGrpcBrandingInformation(api));
 	return grpc.build();
     }
 
@@ -219,8 +215,8 @@ public class AssetModelConverter {
 	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
 	api.setAssetTypeToken(grpc.getAssetTypeToken());
 	api.setName(grpc.getName());
-	api.setImageUrl(grpc.getImageUrl());
 	api.setMetadata(grpc.getMetadataMap());
+	CommonModelConverter.setBrandingInformation(api, grpc.getBranding());
 	return api;
     }
 
@@ -238,8 +234,8 @@ public class AssetModelConverter {
 	}
 	grpc.setAssetTypeToken(api.getAssetTypeToken());
 	grpc.setName(api.getName());
-	grpc.setImageUrl(api.getImageUrl());
 	grpc.putAllMetadata(api.getMetadata());
+	grpc.setBranding(CommonModelConverter.asGrpcBrandingInformation(api));
 	return grpc.build();
     }
 
@@ -252,12 +248,10 @@ public class AssetModelConverter {
      */
     public static Asset asApiAsset(GAsset grpc) throws SiteWhereException {
 	Asset api = new Asset();
-	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
-	api.setToken(grpc.getToken());
 	api.setAssetTypeId(CommonModelConverter.asApiUuid(grpc.getAssetTypeId()));
 	api.setName(grpc.getName());
-	api.setImageUrl(grpc.getImageUrl());
-	api.setMetadata(grpc.getMetadataMap());
+	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
+	CommonModelConverter.setBrandingInformation(api, grpc.getBranding());
 	return api;
     }
 
@@ -270,12 +264,10 @@ public class AssetModelConverter {
      */
     public static GAsset asGrpcAsset(IAsset api) throws SiteWhereException {
 	GAsset.Builder grpc = GAsset.newBuilder();
-	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
-	grpc.setToken(api.getToken());
 	grpc.setAssetTypeId(CommonModelConverter.asGrpcUuid(api.getAssetTypeId()));
 	grpc.setName(api.getName());
-	grpc.setImageUrl(api.getImageUrl());
-	grpc.putAllMetadata(api.getMetadata());
+	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
+	grpc.setBranding(CommonModelConverter.asGrpcBrandingInformation(api));
 	return grpc.build();
     }
 

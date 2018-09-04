@@ -26,13 +26,6 @@ public interface ITenant extends IBrandedEntity {
     public String getName();
 
     /**
-     * Get URL for tenant logo.
-     * 
-     * @return
-     */
-    public String getLogoUrl();
-
-    /**
      * Get token that devices pass to identify tenant.
      * 
      * @return

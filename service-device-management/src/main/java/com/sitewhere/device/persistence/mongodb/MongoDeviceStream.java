@@ -12,8 +12,7 @@ import java.util.UUID;
 import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
-import com.sitewhere.mongodb.common.MongoMetadataProvider;
-import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
+import com.sitewhere.mongodb.common.MongoPersistentEntity;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 
@@ -64,8 +63,7 @@ public class MongoDeviceStream implements MongoConverter<IDeviceStream> {
 	target.append(PROP_STREAM_ID, source.getStreamId());
 	target.append(PROP_CONTENT_TYPE, source.getContentType());
 
-	MongoSiteWhereEntity.toDocument(source, target);
-	MongoMetadataProvider.toDocument(source, target);
+	MongoPersistentEntity.toDocument(source, target);
     }
 
     /**
@@ -83,8 +81,7 @@ public class MongoDeviceStream implements MongoConverter<IDeviceStream> {
 	target.setStreamId(streamId);
 	target.setContentType(contentType);
 
-	MongoSiteWhereEntity.fromDocument(source, target);
-	MongoMetadataProvider.fromDocument(source, target);
+	MongoPersistentEntity.fromDocument(source, target);
     }
 
     /**

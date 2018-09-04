@@ -40,15 +40,12 @@ message GScheduleSearchResults {
 
 // Schedule.
 message GSchedule {
-	GUUID id = 1;
-	string token = 2;
-	string name = 3;
-	GTriggerType triggerType = 4;
-	map<string, string> triggerConfiguration = 5;
-	uint64 startDate = 6;
-	uint64 endDate = 7;
-	map<string, string> metadata = 8;
-	GEntityInformation entityInformation = 9;
+	string name = 1;
+	GTriggerType triggerType = 2;
+	map<string, string> triggerConfiguration = 3;
+	uint64 startDate = 4;
+	uint64 endDate = 5;
+	GEntityInformation entityInformation = 6;
 }
 
 // ######################
@@ -91,12 +88,9 @@ message GScheduledJobSearchResults {
 
 // Scheduled job.
 message GScheduledJob {
-	GUUID id = 1;
-	string token = 2;
-	string scheduleToken = 3;
-	GScheduledJobType jobType = 4;
-	map<string, string> jobConfiguration = 5;
-	GScheduledJobState jobState = 6;
-	map<string, string> metadata = 7;
-	GEntityInformation entityInformation = 8;
+	string scheduleToken = 1;
+	GScheduledJobType jobType = 2;
+	map<string, string> jobConfiguration = 3;
+	GScheduledJobState jobState = 4;
+	GEntityInformation entityInformation = 5;
 }

@@ -175,14 +175,11 @@ public class ScheduleModelConverter {
      */
     public static Schedule asApiSchedule(GSchedule grpc) throws SiteWhereException {
 	Schedule api = new Schedule();
-	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
-	api.setToken(grpc.getToken());
 	api.setName(grpc.getName());
 	api.setTriggerType(ScheduleModelConverter.asApiTriggerType(grpc.getTriggerType()));
 	api.setStartDate(CommonModelConverter.asApiDate(grpc.getStartDate()));
 	api.setEndDate(CommonModelConverter.asApiDate(grpc.getEndDate()));
 	api.setTriggerConfiguration(grpc.getTriggerConfigurationMap());
-	api.setMetadata(grpc.getMetadataMap());
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
 	return api;
     }
@@ -196,14 +193,11 @@ public class ScheduleModelConverter {
      */
     public static GSchedule asGrpcSchedule(ISchedule api) throws SiteWhereException {
 	GSchedule.Builder grpc = GSchedule.newBuilder();
-	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
-	grpc.setToken(api.getToken());
 	grpc.setName(api.getName());
 	grpc.setTriggerType(ScheduleModelConverter.asGrpcTriggerType(api.getTriggerType()));
 	grpc.setStartDate(CommonModelConverter.asGrpcDate(api.getStartDate()));
 	grpc.setEndDate(CommonModelConverter.asGrpcDate(api.getEndDate()));
 	grpc.putAllTriggerConfiguration(api.getTriggerConfiguration());
-	grpc.putAllMetadata(api.getMetadata());
 	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
 	return grpc.build();
     }
@@ -377,13 +371,10 @@ public class ScheduleModelConverter {
      */
     public static ScheduledJob asApiScheduledJob(GScheduledJob grpc) throws SiteWhereException {
 	ScheduledJob api = new ScheduledJob();
-	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
-	api.setToken(grpc.getToken());
 	api.setScheduleToken(grpc.getScheduleToken());
 	api.setJobType(ScheduleModelConverter.asApiScheduledJobType(grpc.getJobType()));
 	api.setJobConfiguration(grpc.getJobConfigurationMap());
 	api.setJobState(ScheduleModelConverter.asApiScheduledJobState(grpc.getJobState()));
-	api.setMetadata(grpc.getMetadataMap());
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
 	return api;
     }
@@ -397,13 +388,10 @@ public class ScheduleModelConverter {
      */
     public static GScheduledJob asGrpcScheduledJob(IScheduledJob api) throws SiteWhereException {
 	GScheduledJob.Builder grpc = GScheduledJob.newBuilder();
-	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
-	grpc.setToken(api.getToken());
 	grpc.setScheduleToken(api.getScheduleToken());
 	grpc.setJobType(ScheduleModelConverter.asGrpcScheduledJobType(api.getJobType()));
 	grpc.putAllJobConfiguration(api.getJobConfiguration());
 	grpc.setJobState(ScheduleModelConverter.asGrpcScheduledJobState(api.getJobState()));
-	grpc.putAllMetadata(api.getMetadata());
 	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
 	return grpc.build();
     }

@@ -12,10 +12,12 @@ import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.sitewhere.rest.model.common.BrandedEntity;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.common.PersistentEntity;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.common.request.IBrandedEntityCreateRequest;
 import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
@@ -37,7 +39,7 @@ public class Persistence {
     public static void entityCreateLogic(IPersistentEntityCreateRequest request, PersistentEntity entity)
 	    throws SiteWhereException {
 	entity.setId(UUID.randomUUID());
-	if (request.getToken() != null) {
+	if (!StringUtils.isEmpty(request.getToken())) {
 	    entity.setToken(request.getToken());
 	} else {
 	    entity.setToken(UUID.randomUUID().toString());
@@ -56,7 +58,7 @@ public class Persistence {
      */
     public static void entityUpdateLogic(IPersistentEntityCreateRequest request, PersistentEntity entity)
 	    throws SiteWhereException {
-	if (request.getToken() != null) {
+	if (!StringUtils.isEmpty(request.getToken())) {
 	    entity.setToken(request.getToken());
 	}
 	entity.setUpdatedDate(new Date());
@@ -65,6 +67,62 @@ public class Persistence {
 	if (request.getMetadata() != null) {
 	    entity.getMetadata().clear();
 	    MetadataProvider.copy(request.getMetadata(), entity);
+	}
+    }
+
+    /**
+     * Common logic for creating a branded entity.
+     * 
+     * @param request
+     * @param entity
+     * @throws SiteWhereException
+     */
+    public static void brandedEntityCreateLogic(IBrandedEntityCreateRequest request, BrandedEntity entity)
+	    throws SiteWhereException {
+	entityCreateLogic(request, entity);
+
+	if (!StringUtils.isEmpty(request.getImageUrl())) {
+	    entity.setImageUrl(request.getImageUrl());
+	}
+	if (!StringUtils.isEmpty(request.getIcon())) {
+	    entity.setIcon(request.getIcon());
+	}
+	if (!StringUtils.isEmpty(request.getBackgroundColor())) {
+	    entity.setBackgroundColor(request.getBackgroundColor());
+	}
+	if (!StringUtils.isEmpty(request.getForegroundColor())) {
+	    entity.setForegroundColor(request.getForegroundColor());
+	}
+	if (!StringUtils.isEmpty(request.getBorderColor())) {
+	    entity.setBorderColor(request.getBorderColor());
+	}
+    }
+
+    /**
+     * Common logic for updating a branded entity.
+     * 
+     * @param request
+     * @param entity
+     * @throws SiteWhereException
+     */
+    public static void brandedEntityUpdateLogic(IBrandedEntityCreateRequest request, BrandedEntity entity)
+	    throws SiteWhereException {
+	entityUpdateLogic(request, entity);
+
+	if (!StringUtils.isEmpty(request.getImageUrl())) {
+	    entity.setImageUrl(request.getImageUrl());
+	}
+	if (!StringUtils.isEmpty(request.getIcon())) {
+	    entity.setIcon(request.getIcon());
+	}
+	if (!StringUtils.isEmpty(request.getBackgroundColor())) {
+	    entity.setBackgroundColor(request.getBackgroundColor());
+	}
+	if (!StringUtils.isEmpty(request.getForegroundColor())) {
+	    entity.setForegroundColor(request.getForegroundColor());
+	}
+	if (!StringUtils.isEmpty(request.getBorderColor())) {
+	    entity.setBorderColor(request.getBorderColor());
 	}
     }
 

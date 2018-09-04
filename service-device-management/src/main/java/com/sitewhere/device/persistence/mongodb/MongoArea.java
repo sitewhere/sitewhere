@@ -12,8 +12,7 @@ import java.util.UUID;
 import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
-import com.sitewhere.mongodb.common.MongoMetadataProvider;
-import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
+import com.sitewhere.mongodb.common.MongoBrandedEntity;
 import com.sitewhere.rest.model.area.Area;
 import com.sitewhere.spi.area.IArea;
 
@@ -35,9 +34,6 @@ public class MongoArea implements MongoConverter<IArea> {
 
     /** Property for description */
     public static final String PROP_DESCRIPTION = "desc";
-
-    /** Property for image URL */
-    public static final String PROP_IMAGE_URL = "imgu";
 
     /*
      * (non-Javadoc)
@@ -70,11 +66,9 @@ public class MongoArea implements MongoConverter<IArea> {
 	target.append(PROP_PARENT_AREA_ID, source.getParentAreaId());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_DESCRIPTION, source.getDescription());
-	target.append(PROP_IMAGE_URL, source.getImageUrl());
 
 	MongoBoundedEntity.saveBounds(source, target);
-	MongoSiteWhereEntity.toDocument(source, target);
-	MongoMetadataProvider.toDocument(source, target);
+	MongoBrandedEntity.toDocument(source, target);
     }
 
     /**
@@ -88,17 +82,14 @@ public class MongoArea implements MongoConverter<IArea> {
 	UUID parentAreaId = (UUID) source.get(PROP_PARENT_AREA_ID);
 	String name = (String) source.get(PROP_NAME);
 	String description = (String) source.get(PROP_DESCRIPTION);
-	String imageUrl = (String) source.get(PROP_IMAGE_URL);
 
 	target.setAreaTypeId(areaTypeId);
 	target.setParentAreaId(parentAreaId);
 	target.setName(name);
 	target.setDescription(description);
-	target.setImageUrl(imageUrl);
 	target.setBounds(MongoBoundedEntity.loadBounds(source));
 
-	MongoSiteWhereEntity.fromDocument(source, target);
-	MongoMetadataProvider.fromDocument(source, target);
+	MongoBrandedEntity.fromDocument(source, target);
     }
 
     /**

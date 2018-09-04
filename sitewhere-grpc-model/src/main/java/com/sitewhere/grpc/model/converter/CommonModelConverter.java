@@ -12,22 +12,30 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.util.StringUtils;
+
 import com.sitewhere.grpc.model.CommonModel;
+import com.sitewhere.grpc.model.CommonModel.GBrandingInformation;
 import com.sitewhere.grpc.model.CommonModel.GDateRangeSearchCriteria;
 import com.sitewhere.grpc.model.CommonModel.GDeviceAssignmentStatus;
 import com.sitewhere.grpc.model.CommonModel.GEntityInformation;
 import com.sitewhere.grpc.model.CommonModel.GLocation;
 import com.sitewhere.grpc.model.CommonModel.GOptionalDouble;
+import com.sitewhere.grpc.model.CommonModel.GOptionalString;
 import com.sitewhere.grpc.model.CommonModel.GPaging;
 import com.sitewhere.grpc.model.CommonModel.GUUID;
 import com.sitewhere.grpc.model.CommonModel.GUserReference;
+import com.sitewhere.rest.model.common.BrandedEntity;
 import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.common.PersistentEntity;
+import com.sitewhere.rest.model.common.request.BrandedEntityCreateRequest;
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.common.IBrandedEntity;
 import com.sitewhere.spi.common.ILocation;
 import com.sitewhere.spi.common.IPersistentEntity;
+import com.sitewhere.spi.common.request.IBrandedEntityCreateRequest;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
@@ -198,6 +206,8 @@ public class CommonModelConverter {
      */
     public static GEntityInformation asGrpcEntityInformation(IPersistentEntity api) throws SiteWhereException {
 	GEntityInformation.Builder grpc = CommonModel.GEntityInformation.newBuilder();
+	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
+	grpc.setToken(api.getToken());
 	if (api.getCreatedBy() != null) {
 	    GUserReference.Builder ref = GUserReference.newBuilder();
 	    ref.setUsername(api.getCreatedBy());
@@ -210,6 +220,9 @@ public class CommonModelConverter {
 	    grpc.setUpdatedBy(ref);
 	}
 	grpc.setUpdatedDate(CommonModelConverter.asGrpcDate(api.getUpdatedDate()));
+	if (api.getMetadata() != null) {
+	    grpc.putAllMetadata(api.getMetadata());
+	}
 	return grpc.build();
     }
 
@@ -222,10 +235,103 @@ public class CommonModelConverter {
      */
     public static void setEntityInformation(PersistentEntity api, GEntityInformation grpc) throws SiteWhereException {
 	if (grpc != null) {
+	    api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
+	    api.setToken(grpc.getToken());
 	    api.setCreatedBy(grpc.hasCreatedBy() ? grpc.getCreatedBy().getUsername() : null);
 	    api.setCreatedDate(CommonModelConverter.asApiDate(grpc.getCreatedDate()));
 	    api.setUpdatedBy(grpc.hasUpdatedBy() ? grpc.getUpdatedBy().getUsername() : null);
 	    api.setUpdatedDate(CommonModelConverter.asApiDate(grpc.getUpdatedDate()));
+	    api.setMetadata(grpc.getMetadataMap());
+	}
+    }
+
+    /**
+     * Convert branding information from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GBrandingInformation asGrpcBrandingInformation(IBrandedEntity api) throws SiteWhereException {
+	GBrandingInformation.Builder grpc = CommonModel.GBrandingInformation.newBuilder();
+	if (!StringUtils.isEmpty(api.getImageUrl())) {
+	    grpc.setImageUrl(GOptionalString.newBuilder().setValue(api.getImageUrl()));
+	}
+	if (!StringUtils.isEmpty(api.getIcon())) {
+	    grpc.setIcon(GOptionalString.newBuilder().setValue(api.getIcon()));
+	}
+	if (!StringUtils.isEmpty(api.getBackgroundColor())) {
+	    grpc.setBackgroundColor(GOptionalString.newBuilder().setValue(api.getBackgroundColor()));
+	}
+	if (!StringUtils.isEmpty(api.getForegroundColor())) {
+	    grpc.setForegroundColor(GOptionalString.newBuilder().setValue(api.getForegroundColor()));
+	}
+	if (!StringUtils.isEmpty(api.getBorderColor())) {
+	    grpc.setBorderColor(GOptionalString.newBuilder().setValue(api.getBorderColor()));
+	}
+	return grpc.build();
+    }
+
+    /**
+     * Convert branded entity create request from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GBrandingInformation asGrpcBrandingInformation(IBrandedEntityCreateRequest api)
+	    throws SiteWhereException {
+	GBrandingInformation.Builder grpc = CommonModel.GBrandingInformation.newBuilder();
+	if (!StringUtils.isEmpty(api.getImageUrl())) {
+	    grpc.setImageUrl(GOptionalString.newBuilder().setValue(api.getImageUrl()));
+	}
+	if (!StringUtils.isEmpty(api.getIcon())) {
+	    grpc.setIcon(GOptionalString.newBuilder().setValue(api.getIcon()));
+	}
+	if (!StringUtils.isEmpty(api.getBackgroundColor())) {
+	    grpc.setBackgroundColor(GOptionalString.newBuilder().setValue(api.getBackgroundColor()));
+	}
+	if (!StringUtils.isEmpty(api.getForegroundColor())) {
+	    grpc.setForegroundColor(GOptionalString.newBuilder().setValue(api.getForegroundColor()));
+	}
+	if (!StringUtils.isEmpty(api.getBorderColor())) {
+	    grpc.setBorderColor(GOptionalString.newBuilder().setValue(api.getBorderColor()));
+	}
+	return grpc.build();
+    }
+
+    /**
+     * Set branding information.
+     * 
+     * @param api
+     * @param grpc
+     * @throws SiteWhereException
+     */
+    public static void setBrandingInformation(BrandedEntity api, GBrandingInformation grpc) throws SiteWhereException {
+	if (grpc != null) {
+	    api.setImageUrl(grpc.hasImageUrl() ? grpc.getImageUrl().getValue() : null);
+	    api.setIcon(grpc.hasIcon() ? grpc.getIcon().getValue() : null);
+	    api.setBackgroundColor(grpc.hasBackgroundColor() ? grpc.getBackgroundColor().getValue() : null);
+	    api.setForegroundColor(grpc.hasForegroundColor() ? grpc.getForegroundColor().getValue() : null);
+	    api.setBorderColor(grpc.hasForegroundColor() ? grpc.getBorderColor().getValue() : null);
+	}
+    }
+
+    /**
+     * Set branding information.
+     * 
+     * @param api
+     * @param grpc
+     * @throws SiteWhereException
+     */
+    public static void setBrandingInformation(BrandedEntityCreateRequest api, GBrandingInformation grpc)
+	    throws SiteWhereException {
+	if (grpc != null) {
+	    api.setImageUrl(grpc.hasImageUrl() ? grpc.getImageUrl().getValue() : null);
+	    api.setIcon(grpc.hasIcon() ? grpc.getIcon().getValue() : null);
+	    api.setBackgroundColor(grpc.hasBackgroundColor() ? grpc.getBackgroundColor().getValue() : null);
+	    api.setForegroundColor(grpc.hasForegroundColor() ? grpc.getForegroundColor().getValue() : null);
+	    api.setBorderColor(grpc.hasForegroundColor() ? grpc.getBorderColor().getValue() : null);
 	}
     }
 

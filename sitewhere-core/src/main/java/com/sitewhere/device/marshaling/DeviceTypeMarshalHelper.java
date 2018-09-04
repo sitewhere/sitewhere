@@ -10,7 +10,7 @@ package com.sitewhere.device.marshaling;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sitewhere.rest.model.common.PersistentEntity;
+import com.sitewhere.rest.model.common.BrandedEntity;
 import com.sitewhere.rest.model.device.DeviceType;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.spi.SiteWhereException;
@@ -45,14 +45,11 @@ public class DeviceTypeMarshalHelper {
      */
     public DeviceType convert(IDeviceType source) throws SiteWhereException {
 	DeviceType deviceType = new DeviceType();
-	PersistentEntity.copy(source, deviceType);
-	deviceType.setId(source.getId());
-	deviceType.setToken(source.getToken());
 	deviceType.setName(source.getName());
 	deviceType.setDescription(source.getDescription());
-	deviceType.setImageUrl(source.getImageUrl());
 	deviceType.setContainerPolicy(source.getContainerPolicy());
 	deviceType.setDeviceElementSchema((DeviceElementSchema) source.getDeviceElementSchema());
+	BrandedEntity.copy(source, deviceType);
 	return deviceType;
     }
 

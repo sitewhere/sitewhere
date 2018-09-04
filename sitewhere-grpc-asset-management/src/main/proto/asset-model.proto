@@ -19,17 +19,17 @@ message GAssetTypeCreateRequest {
 	string imageUrl = 4;
 	GAssetCategory assetCategory = 5;
 	map<string, string> metadata = 6;
+	GBrandingInformation branding = 7;
 }
 
 // Asset type.
 message GAssetType {
-	GUUID id = 1;
-	string token = 2;
-	string name = 3;
-	string description = 4;
-	string imageUrl = 5;
-	GAssetCategory assetCategory = 6;
-	map<string, string> metadata = 7;
+	string name = 1;
+	string description = 2;
+	string imageUrl = 3;
+	GAssetCategory assetCategory = 4;
+	GEntityInformation entityInformation = 5;
+	GBrandingInformation branding = 6;
 }
 
 // Criteria for searching asset types.
@@ -54,16 +54,16 @@ message GAssetCreateRequest {
 	string name = 3;
 	string imageUrl = 4;
 	map<string, string> metadata = 5;
+	GBrandingInformation branding = 6;
 }
 
 // Asset.
 message GAsset {
-	GUUID id = 1;
-	string token = 2;
-	GUUID assetTypeId = 3;
-	string name = 4;
-	string imageUrl = 5;
-	map<string, string> metadata = 6;
+	GUUID assetTypeId = 1;
+	string name = 2;
+	string imageUrl = 3;
+	GEntityInformation entityInformation = 4;
+	GBrandingInformation branding = 5;
 }
 
 // Criteria for searching assets.

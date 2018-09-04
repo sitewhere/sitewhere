@@ -16,11 +16,11 @@ import com.sitewhere.rest.model.common.PersistentEntity;
 import com.sitewhere.spi.common.IPersistentEntity;
 
 /**
- * Used to load or save SiteWhereEntity data to MongoDB.
+ * Used to load or save {@link PersistentEntity} data to MongoDB.
  * 
  * @author dadams
  */
-public class MongoSiteWhereEntity {
+public class MongoPersistentEntity {
 
     /** Property for tenant id */
     public static final String PROP_ID = "_id";
@@ -49,6 +49,7 @@ public class MongoSiteWhereEntity {
     public static void toDocument(IPersistentEntity source, Document target) {
 	target.append(PROP_ID, source.getId());
 	target.append(PROP_TOKEN, source.getToken());
+
 	if (source.getCreatedDate() != null) {
 	    target.append(PROP_CREATED_DATE, source.getCreatedDate());
 	}
@@ -61,6 +62,8 @@ public class MongoSiteWhereEntity {
 	if (source.getUpdatedBy() != null) {
 	    target.append(PROP_UPDATED_BY, source.getUpdatedBy());
 	}
+
+	MongoMetadataProvider.toDocument(source, target);
     }
 
     /**
@@ -83,5 +86,7 @@ public class MongoSiteWhereEntity {
 	target.setCreatedBy(createdBy);
 	target.setUpdatedDate(updatedDate);
 	target.setUpdatedBy(updatedBy);
+
+	MongoMetadataProvider.fromDocument(source, target);
     }
 }

@@ -9,14 +9,14 @@ package com.sitewhere.spi.tenant.request;
 
 import java.util.List;
 
-import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
+import com.sitewhere.spi.common.request.IBrandedEntityCreateRequest;
 
 /**
  * Interface for arguments needed to create a tenant.
  * 
  * @author Derek
  */
-public interface ITenantCreateRequest extends IPersistentEntityCreateRequest {
+public interface ITenantCreateRequest extends IBrandedEntityCreateRequest {
 
     /**
      * Get tenant name.
@@ -31,13 +31,6 @@ public interface ITenantCreateRequest extends IPersistentEntityCreateRequest {
      * @return
      */
     public String getAuthenticationToken();
-
-    /**
-     * Get URL for tenant logo.
-     * 
-     * @return
-     */
-    public String getLogoUrl();
 
     /**
      * Get list of users authorized to access the tenant.

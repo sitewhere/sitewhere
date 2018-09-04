@@ -16,7 +16,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.IndexOptions;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
-import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
+import com.sitewhere.mongodb.common.MongoPersistentEntity;
 import com.sitewhere.rest.model.scheduling.Schedule;
 import com.sitewhere.rest.model.scheduling.ScheduledJob;
 import com.sitewhere.schedule.persistence.ScheduleManagementPersistence;
@@ -151,7 +151,7 @@ public class MongoScheduleManagement extends TenantEngineLifecycleComponent impl
     public ISearchResults<ISchedule> listSchedules(ISearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> schedules = getMongoClient().getSchedulesCollection();
 	Document dbCriteria = new Document();
-	Document sort = new Document(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
+	Document sort = new Document(MongoPersistentEntity.PROP_CREATED_DATE, -1);
 	return MongoPersistence.search(ISchedule.class, schedules, dbCriteria, sort, criteria, LOOKUP);
     }
 
@@ -243,7 +243,7 @@ public class MongoScheduleManagement extends TenantEngineLifecycleComponent impl
     public ISearchResults<IScheduledJob> listScheduledJobs(ISearchCriteria criteria) throws SiteWhereException {
 	MongoCollection<Document> jobs = getMongoClient().getScheduledJobsCollection();
 	Document dbCriteria = new Document();
-	Document sort = new Document(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
+	Document sort = new Document(MongoPersistentEntity.PROP_CREATED_DATE, -1);
 	return MongoPersistence.search(IScheduledJob.class, jobs, dbCriteria, sort, criteria, LOOKUP);
     }
 

@@ -12,8 +12,7 @@ import java.util.UUID;
 import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
-import com.sitewhere.mongodb.common.MongoMetadataProvider;
-import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
+import com.sitewhere.mongodb.common.MongoBrandedEntity;
 import com.sitewhere.rest.model.asset.Asset;
 import com.sitewhere.spi.asset.IAsset;
 
@@ -24,20 +23,11 @@ import com.sitewhere.spi.asset.IAsset;
  */
 public class MongoAsset implements MongoConverter<IAsset> {
 
-    /** Property for asset id */
-    public static final String PROP_ID = "_id";
-
-    /** Property for token */
-    public static final String PROP_TOKEN = "tokn";
-
     /** Property for asset type id */
     public static final String PROP_ASSET_TYPE_ID = "atid";
 
     /** Property for asset name */
     public static final String PROP_NAME = "name";
-
-    /** Property for asset image URL */
-    public static final String PROP_IMAGE_URL = "image";
 
     /*
      * (non-Javadoc)
@@ -66,14 +56,10 @@ public class MongoAsset implements MongoConverter<IAsset> {
      * @param target
      */
     public static void toDocument(IAsset source, Document target) {
-	target.append(PROP_ID, source.getId());
-	target.append(PROP_TOKEN, source.getToken());
 	target.append(PROP_ASSET_TYPE_ID, source.getAssetTypeId());
 	target.append(PROP_NAME, source.getName());
-	target.append(PROP_IMAGE_URL, source.getImageUrl());
 
-	MongoSiteWhereEntity.toDocument(source, target);
-	MongoMetadataProvider.toDocument(source, target);
+	MongoBrandedEntity.toDocument(source, target);
     }
 
     /**
@@ -83,20 +69,13 @@ public class MongoAsset implements MongoConverter<IAsset> {
      * @param target
      */
     public static void fromDocument(Document source, Asset target) {
-	UUID id = (UUID) source.get(PROP_ID);
-	String token = (String) source.get(PROP_TOKEN);
 	UUID assetTypeId = (UUID) source.get(PROP_ASSET_TYPE_ID);
 	String name = (String) source.get(PROP_NAME);
-	String imageUrl = (String) source.get(PROP_IMAGE_URL);
 
-	target.setId(id);
-	target.setToken(token);
 	target.setAssetTypeId(assetTypeId);
 	target.setName(name);
-	target.setImageUrl(imageUrl);
 
-	MongoSiteWhereEntity.fromDocument(source, target);
-	MongoMetadataProvider.fromDocument(source, target);
+	MongoBrandedEntity.fromDocument(source, target);
     }
 
     /**

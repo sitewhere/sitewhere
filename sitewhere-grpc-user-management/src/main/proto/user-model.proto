@@ -41,8 +41,7 @@ message GUser {
 	uint64 lastLogin = 5;
 	GUserAccountStatus status = 6;
 	repeated string authorities = 7;
-	map<string, string> metadata = 8;
-	GEntityInformation entityInformation = 9;
+	GEntityInformation entityInformation = 8;
 }
 
 // ###########################

@@ -67,8 +67,6 @@ public class DeviceAssignmentMarshalHelper {
     public MarshaledDeviceAssignment convert(IDeviceAssignment source, IAssetManagement assetManagement)
 	    throws SiteWhereException {
 	MarshaledDeviceAssignment result = new MarshaledDeviceAssignment();
-	result.setId(source.getId());
-	result.setToken(source.getToken());
 	result.setActiveDate(source.getActiveDate());
 	result.setReleasedDate(source.getReleasedDate());
 	result.setStatus(source.getStatus());

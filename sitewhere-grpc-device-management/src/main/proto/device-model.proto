@@ -39,6 +39,7 @@ message GDeviceTypeCreateRequest {
 	GDeviceContainerPolicy containerPolicy = 5;
 	GDeviceElementSchema deviceElementSchema = 6;
 	map<string, string> metadata = 7;
+	GBrandingInformation branding = 8;
 }
 
 // Criteria for searching device types.
@@ -59,15 +60,13 @@ message GDeviceTypeReference {
 
 // Device type.
 message GDeviceType {
-	GUUID id = 1;
-	string token = 2;
-	string name = 3;
-	string description = 4;
-	string imageUrl = 5;
-	GDeviceContainerPolicy containerPolicy = 6;
-	GDeviceElementSchema deviceElementSchema = 7;
-	map<string, string> metadata = 8;
-	GEntityInformation entityInformation = 9;
+	string name = 1;
+	string description = 2;
+	string imageUrl = 3;
+	GDeviceContainerPolicy containerPolicy = 4;
+	GDeviceElementSchema deviceElementSchema = 5;
+	GEntityInformation entityInformation = 6;
+	GBrandingInformation branding = 7;
 }
 
 // #######################
@@ -106,15 +105,12 @@ message GDeviceCommandSearchResults {
 
 // Device command.
 message GDeviceCommand {
-	GUUID id = 1;
-	string token = 2;
-	GUUID deviceTypeId = 3;
-	string namespace = 4;
-	string name = 5;
-	string description = 6;
-	repeated GCommandParameter parameters = 7;
-	map<string, string> metadata = 8;
-	GEntityInformation entityInformation = 9;
+	GUUID deviceTypeId = 1;
+	string namespace = 2;
+	string name = 3;
+	string description = 4;
+	repeated GCommandParameter parameters = 5;
+	GEntityInformation entityInformation = 6;
 }
 
 // #######################
@@ -149,17 +145,14 @@ message GDeviceStatusSearchResults {
 
 // Device status.
 message GDeviceStatus {
-	GUUID id = 1;
-	string token = 2;
-	GUUID deviceTypeId = 3;
-	string code = 4;
-	string name = 5;
-	string backgroundColor = 6;
-	string foregroundColor = 7;
-	string borderColor = 8;
-	string icon = 9;
-	map<string, string> metadata = 10;
-	GEntityInformation entityInformation = 11;
+	GUUID deviceTypeId = 1;
+	string code = 2;
+	string name = 3;
+	string backgroundColor = 4;
+	string foregroundColor = 5;
+	string borderColor = 6;
+	string icon = 7;
+	GEntityInformation entityInformation = 8;
 }
 
 // ###############
@@ -200,16 +193,13 @@ message GDeviceSearchResults {
 
 // Device.
 message GDevice {
-	GUUID id = 1;
-	string token = 2;
-	GUUID deviceTypeId = 4;
-	GUUID deviceAssignmentId = 5;
-	GUUID parentDeviceId = 6;
-	repeated GDeviceElementMapping deviceElementMappings = 7;
-	GOptionalString comments = 8;
-	GOptionalString status = 9;
-	map<string, string> metadata = 10;
-	GEntityInformation entityInformation = 11;
+	GUUID deviceTypeId = 1;
+	GUUID deviceAssignmentId = 2;
+	GUUID parentDeviceId = 3;
+	repeated GDeviceElementMapping deviceElementMappings = 4;
+	GOptionalString comments = 5;
+	GOptionalString status = 6;
+	GEntityInformation entityInformation = 7;
 }
 
 // #####################
@@ -231,6 +221,7 @@ message GDeviceGroupCreateRequest {
 	GOptionalString imageUrl = 4;
 	repeated string roles = 5;
 	map<string, string> metadata = 6;
+	GBrandingInformation branding = 7;
 }
 
 // Criteria for searching device group elements.
@@ -272,14 +263,12 @@ message GDeviceGroupElement {
 
 // Device group.
 message GDeviceGroup {
-	GUUID id = 1;
-	string token = 2;
-	string name = 3;
-	string description = 4;
-	string imageUrl = 5;
-	repeated string roles = 6;
-	map<string, string> metadata = 7;
-	GEntityInformation entityInformation = 8;
+	string name = 1;
+	string description = 2;
+	string imageUrl = 3;
+	repeated string roles = 4;
+	GEntityInformation entityInformation = 5;
+	GBrandingInformation branding = 6;
 }
 
 // ##########################
@@ -316,18 +305,15 @@ message GDeviceAssignmentSearchResults {
 
 // Device assignment.
 message GDeviceAssignment {
-	GUUID id = 1;
-	string token = 2;
-	GUUID deviceId = 3;
-	GUUID deviceTypeId = 4;
-	GUUID customerId = 5;
-	GUUID areaId = 6;
-	GUUID assetId = 7;
-	GDeviceAssignmentStatus status = 8;
-	uint64 activeDate = 9;
-	uint64 releasedDate = 10;
-	map<string, string> metadata = 11;
-	GEntityInformation entityInformation = 12;
+	GUUID deviceId = 1;
+	GUUID deviceTypeId = 2;
+	GUUID customerId = 3;
+	GUUID areaId = 4;
+	GUUID assetId = 5;
+	GDeviceAssignmentStatus status = 6;
+	uint64 activeDate = 7;
+	uint64 releasedDate = 8;
+	GEntityInformation entityInformation = 9;
 }
 
 // ######################
@@ -374,6 +360,7 @@ message GCustomerTypeCreateRequest {
 	GOptionalString icon = 4;
 	repeated string containedCustomerTypeTokens = 5;
 	map<string, string> metadata = 6;
+	GBrandingInformation branding = 7;
 }
 
 // Criteria for searching customer types.
@@ -389,14 +376,12 @@ message GCustomerTypeSearchResults {
 
 // Customer type.
 message GCustomerType {
-	GUUID id = 1;
-	string token = 2;
-	string name = 3;
-	string description = 4;
-	string icon = 5;
-	repeated GUUID containedCustomerTypeIds = 6;
-	map<string, string> metadata = 7;
-	GEntityInformation entityInformation = 8;
+	string name = 1;
+	string description = 2;
+	string icon = 3;
+	repeated GUUID containedCustomerTypeIds = 4;
+	GEntityInformation entityInformation = 5;
+	GBrandingInformation branding = 6;
 }
 
 // #################
@@ -412,6 +397,7 @@ message GCustomerCreateRequest {
 	GOptionalString description = 5;
 	GOptionalString imageUrl = 6;
 	map<string, string> metadata = 8;
+	GBrandingInformation branding = 9;
 }
 
 // Criteria for searching customers.
@@ -430,15 +416,13 @@ message GCustomerSearchResults {
 
 // Customer.
 message GCustomer {
-	GUUID id = 1;
-	string token = 2;
-	GUUID customerTypeId = 3;
-	GUUID parentCustomerId = 4;
-	string name = 5;
-	string description = 6;
-	string imageUrl = 7;
-	map<string, string> metadata = 9;
-	GEntityInformation entityInformation = 10;
+	GUUID customerTypeId = 1;
+	GUUID parentCustomerId = 2;
+	string name = 3;
+	string description = 4;
+	string imageUrl = 5;
+	GEntityInformation entityInformation = 6;
+	GBrandingInformation branding = 7;
 }
 
 // ##################
@@ -453,6 +437,7 @@ message GAreaTypeCreateRequest {
 	string icon = 4;
 	repeated string containedAreaTypeTokens = 5;
 	map<string, string> metadata = 6;
+	GBrandingInformation branding = 7;
 }
 
 // Criteria for searching area types.
@@ -468,14 +453,12 @@ message GAreaTypeSearchResults {
 
 // Area type.
 message GAreaType {
-	GUUID id = 1;
-	string token = 2;
-	string name = 3;
-	string description = 4;
-	string icon = 5;
-	repeated GUUID containedAreaTypeIds = 6;
-	map<string, string> metadata = 7;
-	GEntityInformation entityInformation = 8;
+	string name = 1;
+	string description = 2;
+	string icon = 3;
+	repeated GUUID containedAreaTypeIds = 4;
+	GEntityInformation entityInformation = 5;
+	GBrandingInformation branding = 6;
 }
 
 // #############
@@ -492,6 +475,7 @@ message GAreaCreateRequest {
 	GOptionalString imageUrl = 6;
 	repeated GLocation bounds = 7;
 	map<string, string> metadata = 8;
+	GBrandingInformation branding = 9;
 }
 
 // Criteria for searching areas.
@@ -510,16 +494,14 @@ message GAreaSearchResults {
 
 // Area.
 message GArea {
-	GUUID id = 1;
-	string token = 2;
-	GUUID areaTypeId = 3;
-	GUUID parentAreaId = 4;
-	string name = 5;
-	string description = 6;
-	string imageUrl = 7;
-	repeated GLocation bounds = 8;
-	map<string, string> metadata = 9;
-	GEntityInformation entityInformation = 10;
+	GUUID areaTypeId = 1;
+	GUUID parentAreaId = 2;
+	string name = 3;
+	string description = 4;
+	string imageUrl = 5;
+	repeated GLocation bounds = 6;
+	GEntityInformation entityInformation = 7;
+	GBrandingInformation branding = 8;
 }
 
 // #############
@@ -552,16 +534,13 @@ message GZoneSearchResults {
 
 // Zone.
 message GZone {
-	GUUID id = 1;
-	string token = 2;
-	GUUID areaId = 3;
-	string name = 4;
-	repeated GLocation bounds = 5;
-	string borderColor = 6;
-	string fillColor = 7;
-	double opacity = 8;
-	map<string, string> metadata = 9;
-	GEntityInformation entityInformation = 10;
+	GUUID areaId = 1;
+	string name = 2;
+	repeated GLocation bounds = 3;
+	string borderColor = 4;
+	string fillColor = 5;
+	double opacity = 6;
+	GEntityInformation entityInformation = 7;
 }
 
 // #####################

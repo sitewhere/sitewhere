@@ -13,8 +13,7 @@ import java.util.UUID;
 import org.bson.Document;
 
 import com.sitewhere.mongodb.MongoConverter;
-import com.sitewhere.mongodb.common.MongoMetadataProvider;
-import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
+import com.sitewhere.mongodb.common.MongoBrandedEntity;
 import com.sitewhere.rest.model.area.AreaType;
 import com.sitewhere.spi.area.IAreaType;
 
@@ -30,9 +29,6 @@ public class MongoAreaType implements MongoConverter<IAreaType> {
 
     /** Property for description */
     public static final String PROP_DESCRIPTION = "desc";
-
-    /** Property for icon */
-    public static final String PROP_ICON = "icon";
 
     /** Property for contained area type ids */
     public static final String PROP_CONTAINED_AREA_TYPE_IDS = "caty";
@@ -66,11 +62,9 @@ public class MongoAreaType implements MongoConverter<IAreaType> {
     public static void toDocument(IAreaType source, Document target) {
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_DESCRIPTION, source.getDescription());
-	target.append(PROP_ICON, source.getIcon());
 	target.append(PROP_CONTAINED_AREA_TYPE_IDS, source.getContainedAreaTypeIds());
 
-	MongoSiteWhereEntity.toDocument(source, target);
-	MongoMetadataProvider.toDocument(source, target);
+	MongoBrandedEntity.toDocument(source, target);
     }
 
     /**
@@ -83,16 +77,13 @@ public class MongoAreaType implements MongoConverter<IAreaType> {
     public static void fromDocument(Document source, AreaType target) {
 	String name = (String) source.get(PROP_NAME);
 	String description = (String) source.get(PROP_DESCRIPTION);
-	String icon = (String) source.get(PROP_ICON);
 	List<UUID> containedAreaTypeIds = (List<UUID>) source.get(PROP_CONTAINED_AREA_TYPE_IDS);
 
 	target.setName(name);
 	target.setDescription(description);
-	target.setIcon(icon);
 	target.setContainedAreaTypeIds(containedAreaTypeIds);
 
-	MongoSiteWhereEntity.fromDocument(source, target);
-	MongoMetadataProvider.fromDocument(source, target);
+	MongoBrandedEntity.fromDocument(source, target);
     }
 
     /**
