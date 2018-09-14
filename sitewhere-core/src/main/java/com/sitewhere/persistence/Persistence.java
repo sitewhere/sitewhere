@@ -81,21 +81,13 @@ public class Persistence {
 	    throws SiteWhereException {
 	entityCreateLogic(request, entity);
 
-	if (!StringUtils.isEmpty(request.getImageUrl())) {
-	    entity.setImageUrl(request.getImageUrl());
-	}
-	if (!StringUtils.isEmpty(request.getIcon())) {
-	    entity.setIcon(request.getIcon());
-	}
-	if (!StringUtils.isEmpty(request.getBackgroundColor())) {
-	    entity.setBackgroundColor(request.getBackgroundColor());
-	}
-	if (!StringUtils.isEmpty(request.getForegroundColor())) {
-	    entity.setForegroundColor(request.getForegroundColor());
-	}
-	if (!StringUtils.isEmpty(request.getBorderColor())) {
-	    entity.setBorderColor(request.getBorderColor());
-	}
+	entity.setImageUrl(!StringUtils.isEmpty(request.getImageUrl()) ? request.getImageUrl() : null);
+	entity.setIcon(!StringUtils.isEmpty(request.getIcon()) ? request.getIcon() : null);
+	entity.setBackgroundColor(
+		!StringUtils.isEmpty(request.getBackgroundColor()) ? request.getBackgroundColor() : null);
+	entity.setForegroundColor(
+		!StringUtils.isEmpty(request.getForegroundColor()) ? request.getForegroundColor() : null);
+	entity.setBorderColor(!StringUtils.isEmpty(request.getBorderColor()) ? request.getBorderColor() : null);
     }
 
     /**
@@ -109,21 +101,13 @@ public class Persistence {
 	    throws SiteWhereException {
 	entityUpdateLogic(request, entity);
 
-	if (!StringUtils.isEmpty(request.getImageUrl())) {
-	    entity.setImageUrl(request.getImageUrl());
-	}
-	if (!StringUtils.isEmpty(request.getIcon())) {
-	    entity.setIcon(request.getIcon());
-	}
-	if (!StringUtils.isEmpty(request.getBackgroundColor())) {
-	    entity.setBackgroundColor(request.getBackgroundColor());
-	}
-	if (!StringUtils.isEmpty(request.getForegroundColor())) {
-	    entity.setForegroundColor(request.getForegroundColor());
-	}
-	if (!StringUtils.isEmpty(request.getBorderColor())) {
-	    entity.setBorderColor(request.getBorderColor());
-	}
+	entity.setImageUrl(!StringUtils.isEmpty(request.getImageUrl()) ? request.getImageUrl() : null);
+	entity.setIcon(!StringUtils.isEmpty(request.getIcon()) ? request.getIcon() : null);
+	entity.setBackgroundColor(
+		!StringUtils.isEmpty(request.getBackgroundColor()) ? request.getBackgroundColor() : null);
+	entity.setForegroundColor(
+		!StringUtils.isEmpty(request.getForegroundColor()) ? request.getForegroundColor() : null);
+	entity.setBorderColor(!StringUtils.isEmpty(request.getBorderColor()) ? request.getBorderColor() : null);
     }
 
     /**

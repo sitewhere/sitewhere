@@ -338,7 +338,7 @@ public class Instance extends RestControllerBase {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/microservice/{identifier}/scripting/scripts", method = RequestMethod.POST)
-    @ApiOperation(value = "Create a new tenant script")
+    @ApiOperation(value = "Create a new global script")
     @Secured({ SiteWhereRoles.REST })
     public IScriptMetadata createGlobalScript(
 	    @ApiParam(value = "Function identifier", required = true) @PathVariable String identifier,
@@ -357,7 +357,7 @@ public class Instance extends RestControllerBase {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/microservice/{identifier}/scripting/scripts/{scriptId}/versions/{versionId}/content", method = RequestMethod.GET)
-    @ApiOperation(value = "Get content for a tenant script based on unique script id and version id")
+    @ApiOperation(value = "Get content for a global script based on unique script id and version id")
     @Secured({ SiteWhereRoles.REST })
     public String getGlobalScriptContent(
 	    @ApiParam(value = "Function identifier", required = true) @PathVariable String identifier,
@@ -378,7 +378,7 @@ public class Instance extends RestControllerBase {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/microservice/{identifier}/scripting/scripts/{scriptId}/versions/{versionId}", method = RequestMethod.POST)
-    @ApiOperation(value = "Create a new tenant script")
+    @ApiOperation(value = "Update an existing global script")
     @Secured({ SiteWhereRoles.REST })
     public IScriptMetadata updateGlobalScript(
 	    @ApiParam(value = "Function identifier", required = true) @PathVariable String identifier,
@@ -400,7 +400,7 @@ public class Instance extends RestControllerBase {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/microservice/{identifier}/scripting/scripts/{scriptId}/versions/{versionId}/clone", method = RequestMethod.POST)
-    @ApiOperation(value = "Clone an existing tenant script version to create a new version")
+    @ApiOperation(value = "Clone an existing global script version to create a new version")
     @Secured({ SiteWhereRoles.REST })
     public IScriptVersion cloneGlobalScript(
 	    @ApiParam(value = "Function identifier", required = true) @PathVariable String identifier,
@@ -422,7 +422,7 @@ public class Instance extends RestControllerBase {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/microservice/{identifier}/scripting/scripts/{scriptId}/versions/{versionId}/activate", method = RequestMethod.POST)
-    @ApiOperation(value = "Activate a tenant script version")
+    @ApiOperation(value = "Activate a global script version")
     @Secured({ SiteWhereRoles.REST })
     public IScriptMetadata activateGlobalScript(
 	    @ApiParam(value = "Function identifier", required = true) @PathVariable String identifier,
@@ -442,7 +442,7 @@ public class Instance extends RestControllerBase {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/microservice/{identifier}/scripting/scripts/{scriptId}", method = RequestMethod.DELETE)
-    @ApiOperation(value = "Delete a tenant script and version history")
+    @ApiOperation(value = "Delete a global script and version history")
     @Secured({ SiteWhereRoles.REST })
     public IScriptMetadata deleteGlobalScript(
 	    @ApiParam(value = "Function identifier", required = true) @PathVariable String identifier,
@@ -548,7 +548,7 @@ public class Instance extends RestControllerBase {
      * @throws SiteWhereException
      */
     @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}", method = RequestMethod.POST)
-    @ApiOperation(value = "Create a new tenant script")
+    @ApiOperation(value = "Update an existing tenant script")
     @Secured({ SiteWhereRoles.REST })
     public IScriptMetadata updateTenantScript(
 	    @ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken,
