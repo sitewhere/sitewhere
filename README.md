@@ -4,8 +4,6 @@
 
 ---
 
-## NOTE: SiteWhere 2.0 RC1 is an early release candidate of the new architecture and is considered an "beta" quality preview. This release is not intended for production use! Some features will change before the 2.0 GA release.
-
 SiteWhere is an industrial-strength open source IoT Application Enablement Platform 
 that facilitates the ingestion, storage, processing, and integration of device data 
 at massive scale. The platform is based on a modern microservices architecture and has 
@@ -16,7 +14,7 @@ projects. Rather than using a monolithic architecture, SiteWhere embraces a comp
 distributed approach using microservices to allow scaling at the component level so 
 that the system may be tailored to the customer use case.
 
-![SiteWhere Administration](http://sitewhere.io/docs/en/2.0.RC1/_images/vue-user-interface.png "SiteWhere Administration")
+![SiteWhere Electron App](https://s3.amazonaws.com/sitewhere-web/github-readme/vue-user-interface.png "SiteWhere Electron Application")
 
 The SiteWhere microservices are built with a framework approach using clearly defined
 APIs so that new technologies can easily be integrated as the IoT ecosystem
