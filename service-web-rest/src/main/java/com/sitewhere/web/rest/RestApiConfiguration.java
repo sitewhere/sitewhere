@@ -8,6 +8,7 @@
 package com.sitewhere.web.rest;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -28,8 +29,11 @@ import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.ApiKey;
 import springfox.documentation.service.AuthorizationScope;
+import springfox.documentation.service.ObjectVendorExtension;
 import springfox.documentation.service.SecurityReference;
 import springfox.documentation.service.SecurityScheme;
+import springfox.documentation.service.StringVendorExtension;
+import springfox.documentation.service.VendorExtension;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
@@ -84,9 +88,15 @@ public class RestApiConfiguration implements WebMvcConfigurer {
 
     @Bean
     public ApiInfo apiInfo() {
-	return new ApiInfoBuilder().title(API_TITLE).description(API_DESCRIPTION)
-		.termsOfServiceUrl("http://www.sitewhere.com").license(API_LICENSE_TYPE).licenseUrl(API_LICENSE_URL)
-		.version(microservice.getVersion().getVersionIdentifier()).build();
+	return new ApiInfoBuilder()
+		.title(API_TITLE)
+		.description(API_DESCRIPTION)
+		.termsOfServiceUrl("http://www.sitewhere.com")
+		.license(API_LICENSE_TYPE)
+		.licenseUrl(API_LICENSE_URL)
+		.version(microservice.getVersion().getVersionIdentifier())
+		.extensions(Collections.singletonList(xLogoVendorExtensios()))
+		.build();
     }
 
     /*
@@ -128,5 +138,14 @@ public class RestApiConfiguration implements WebMvcConfigurer {
 
     public void setMicroservice(IWebRestMicroservice<?> microservice) {
 	this.microservice = microservice;
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private static VendorExtension xLogoVendorExtensios () {
+	ObjectVendorExtension xLogoVendorExtension = new ObjectVendorExtension("x-logo");
+	xLogoVendorExtension.addProperty(new StringVendorExtension("url", "../images/logo.svg"));
+	xLogoVendorExtension.addProperty(new StringVendorExtension("backgroundColor", "#FFFFFF"));
+	xLogoVendorExtension.addProperty(new StringVendorExtension("altText", "SiteWhere API"));
+	return xLogoVendorExtension;
     }
 }
