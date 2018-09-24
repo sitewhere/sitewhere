@@ -9,24 +9,6 @@ assetType.asPerson() withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/sitew
 assetType.withDescription 'An employee of SiteWhere'
 assetBuilder.persist assetType
 
-// ##################################### //
-// Create Air Traffic Devices Asset Type //
-// ##################################### //
-
-assetType = assetBuilder.newAssetType 'at-devices', 'Air Traffic Devices'
-assetType.asDevice() withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/sitewhere-symbol.png'
-assetType.withDescription 'A Device at AirTraffic'
-assetBuilder.persist assetType
-
-// #################################### //
-// Create Air Traffic Planes Asset Type //
-// #################################### //
-
-assetType = assetBuilder.newAssetType 'at-planes', 'Air Traffic Planes'
-assetType.asHardware() withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/sitewhere-symbol.png'
-assetType.withDescription 'A Traffic Plane at AirTraffic'
-assetBuilder.persist assetType
-
 // ##################### //
 // Create Tracker Asset Type //
 // ##################### //

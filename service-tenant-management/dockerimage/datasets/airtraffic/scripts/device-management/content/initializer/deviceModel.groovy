@@ -37,13 +37,23 @@ logger.info "[Create Customer Type] ${airPortCustomerType.name}"
 // Create Areas //
 // ############ //
 
+def customers = []
 
 // American Airlines.
 def aaCustomer = deviceBuilder.newCustomer airPortCustomerType.token, null, 'american', 'American Airlines, Inc.'
 aaCustomer.withDescription 'American Airlines, Inc. is is a major United States airline headquartered in Fort Worth, Texas, within the Dallas-Fort Worth metroplex.'
 aaCustomer.withImageUrl 'https://upload.wikimedia.org/wikipedia/commons/f/f2/N124AA_LAX_%2826109389861%29.jpg'
 aaCustomer = deviceBuilder.persist aaCustomer
+customers << aaCustomer
 logger.info "[Create Customer] ${aaCustomer.name}"
+
+// Southwest Airlines Co.
+def swCustomer = deviceBuilder.newCustomer airPortCustomerType.token, null, 'southwest', 'Southwest Airlines Co.'
+swCustomer.withDescription 'Southwest Airlines Co. is a major United States airline headquartered in Dallas, Texas, and is the world’s largest low-cost carrier.'
+swCustomer.withImageUrl 'https://upload.wikimedia.org/wikipedia/commons/6/6a/N8675A.jpg'
+swCustomer = deviceBuilder.persist swCustomer
+customers << swCustomer
+logger.info "[Create Customer] ${swCustomer.name}"
 
 // ################################# //
 // Create Area Types, Areas and Zone //
@@ -120,9 +130,9 @@ def addCommand = { type, command ->
 	return command;
 }
 
-// Air Trafic Decice Type
-def atDevice = deviceBuilder.newDeviceType 'airtrafic-device', 'Air Trafic Device'
-atDevice.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/misc/android-logo.png'
+// Air Traffic Decice Type
+def atDevice = deviceBuilder.newDeviceType 'airtraffic-device', 'Air Traffic Device'
+atDevice.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/airport/fmz2000.jpg'
 atDevice.withDescription 'This thin, lightweight Air Traffic Device display along with the same familiar interface.'
 atDevice.metadata 'manufacturer', 'Honeywell'
 atDevice = addDeviceType atDevice
@@ -131,6 +141,12 @@ def atDevice_bgcolor = deviceBuilder.newCommand atDevice.token, randomId(), 'htt
 addCommand atDevice, atDevice_bgcolor
 personnel << atDevice
 
+// Air Traffic Decice Type
+def atPlane = deviceBuilder.newDeviceType 'airtraffic-plane', 'Air Traffic Plane'
+atPlane.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/airport/a330-200.jpg'
+atPlane.withDescription 'An airplane or aeroplane (informally plane) is a powered, fixed-wing aircraft that is propelled forward by thrust from a jet engine, propeller or rocket engine. Airplanes come in a variety of sizes, shapes, and wing configurations.'
+atPlane = addDeviceType atPlane
+heavyEquipment << atPlane
 
 // Add common commands.
 allDeviceTypes.each { type ->
@@ -283,12 +299,12 @@ def addGroup = { group ->
 
 def heavyGroup = deviceBuilder.newGroup randomId(), 'Heavy Transport' withRole('heavy-transport') withRole('heavy')
 heavyGroup.withDescription 'Heavy transport aircraft.'
-heavyGroup.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/cat/cat-416f.jpg'
+heavyGroup.withImageUrl 'https://upload.wikimedia.org/wikipedia/commons/a/a1/C-130J_135th_AS_Maryland_ANG_in_flight.jpg'
 heavyGroup = addGroup heavyGroup
 
 def personalGroup = deviceBuilder.newGroup randomId(), 'Personal Transport' withRole('personal-transport') withRole('personal')
 personalGroup.withDescription 'Personal transport aircraft.'
-personalGroup.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/cat/cat-416f.jpg'
+personalGroup.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/airport/a330-200.jpg'
 personalGroup = addGroup personalGroup
 
 // ############################## //
@@ -314,8 +330,11 @@ devicesPerSite.times {
 	device = deviceBuilder.persist device
 	logger.info "[Create Device] ${device.token}"
 
+	def customer
+	customer = randomItem(customers);
+
 	// Create an assignment based on device type.
-	def assn = deviceBuilder.newAssignment device.token, aaCustomer.token, assnInfo.areaToken, assnInfo.assetToken
+	def assn = deviceBuilder.newAssignment device.token, customer.token, assnInfo.areaToken, assnInfo.assetToken
 	assn = deviceBuilder.persist assn
 	logger.info "[Create Assignment] ${assn.token}"
 	
