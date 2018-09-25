@@ -24,8 +24,12 @@ public class MicroserviceState implements IMicroserviceState {
     /** Lifecycle status */
     private LifecycleStatus lifecycleStatus;
 
+    /** Milliseconds since service was started */
+    private long uptime;
+
     /*
-     * @see com.sitewhere.spi.microservice.state.IMicroserviceState#getMicroservice()
+     * @see
+     * com.sitewhere.spi.microservice.state.IMicroserviceState#getMicroservice()
      */
     @Override
     public IMicroserviceDetails getMicroservice() {
@@ -47,5 +51,17 @@ public class MicroserviceState implements IMicroserviceState {
 
     public void setLifecycleStatus(LifecycleStatus lifecycleStatus) {
 	this.lifecycleStatus = lifecycleStatus;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.state.IMicroserviceState#getUptime()
+     */
+    @Override
+    public long getUptime() {
+	return uptime;
+    }
+
+    public void setUptime(long uptime) {
+	this.uptime = uptime;
     }
 }

@@ -37,6 +37,7 @@ import com.sitewhere.server.lifecycle.TracerUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.IMicroserviceAnalytics;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.configuration.model.IElementNode;
@@ -132,6 +133,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     /** Script template manager instance */
     private IScriptTemplateManager scriptTemplateManager;
 
+    /** Microservice runtime analytics interface */
+    private IMicroserviceAnalytics microserviceAnalytics = new MicroserviceAnalytics();
+
     /** Lifecycle operations thread pool */
     private ExecutorService microserviceOperationsService;
 
@@ -143,6 +147,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     /** Metrics reporter */
     private ScheduledReporter metricsReporter;
+
+    /** Timestamp in milliseconds when service started */
+    private long startTime;
 
     public Microservice() {
 	this.microserviceOperationsService = Executors
@@ -223,6 +230,10 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
 	// Start sending heartbeats.
 	getMicroserviceHeartbeatService().execute(new Heartbeat());
+
+	// Record start time.
+	this.startTime = System.currentTimeMillis();
+	getMicroserviceAnalytics().sendMicroserviceStarted(this);
     }
 
     /**
@@ -272,6 +283,8 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
      */
     @Override
     public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	getMicroserviceAnalytics().sendMicroserviceStopped(this);
+
 	// Stop reporting metrics.
 	if (getMetricsReporter() != null) {
 	    getMetricsReporter().stop();
@@ -374,6 +387,7 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	MicroserviceState state = new MicroserviceState();
 	state.setMicroservice(getMicroserviceDetails());
 	state.setLifecycleStatus(getLifecycleStatus());
+	state.setUptime(System.currentTimeMillis() - startTime);
 	return state;
     }
 
@@ -610,6 +624,18 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     public void setScriptTemplateManager(IScriptTemplateManager scriptTemplateManager) {
 	this.scriptTemplateManager = scriptTemplateManager;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getMicroserviceAnalytics()
+     */
+    @Override
+    public IMicroserviceAnalytics getMicroserviceAnalytics() {
+	return microserviceAnalytics;
+    }
+
+    public void setMicroserviceAnalytics(IMicroserviceAnalytics microserviceAnalytics) {
+	this.microserviceAnalytics = microserviceAnalytics;
     }
 
     /*

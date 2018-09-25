@@ -20,4 +20,11 @@ public interface IFunctionIdentifier {
      * @return
      */
     public String getPath();
+
+    /**
+     * Get the short name used in events and other references.
+     * 
+     * @return
+     */
+    public String getShortName();
 }

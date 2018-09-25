@@ -29,4 +29,11 @@ public interface IMicroserviceState {
      * @return
      */
     public LifecycleStatus getLifecycleStatus();
+
+    /**
+     * Get number of milliseconds since service was started.
+     * 
+     * @return
+     */
+    public long getUptime();
 }

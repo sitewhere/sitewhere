@@ -68,7 +68,19 @@ public enum MicroserviceIdentifier implements IFunctionIdentifier {
 	return null;
     }
 
+    /*
+     * @see com.sitewhere.spi.microservice.IFunctionIdentifier#getPath()
+     */
+    @Override
     public String getPath() {
 	return path;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IFunctionIdentifier#getShortName()
+     */
+    @Override
+    public String getShortName() {
+	return name();
     }
 }

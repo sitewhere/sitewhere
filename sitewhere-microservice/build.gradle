@@ -22,6 +22,9 @@ dependencies {
     
     // Tracing support
     compile group: 'com.uber.jaeger', name: 'jaeger-core', version:'0.21.0'
+    
+    // Google Analytics
+	compile 'com.brsanthu:google-analytics-java:2.0.0'
 }
 
 // Publish jar.
