@@ -94,6 +94,7 @@ public abstract class MongoDbClient extends TenantEngineLifecycleComponent
 	try {
 	    MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
 	    builder.maxConnectionIdleTime(60 * 60 * 1000); // 1hour
+	    builder.connectionsPerHost(10);
 
 	    getLogger().info("MongoDB Connection: hosts=" + getHostname().getValue() + " ports="
 		    + getConfiguration().getPort() + " replicaSet=" + getConfiguration().getReplicaSetName());
