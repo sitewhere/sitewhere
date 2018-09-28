@@ -13,7 +13,9 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,11 +28,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -48,6 +52,7 @@ import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreate
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceStateChangeCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceAssignmentBulkRequest;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
@@ -82,7 +87,6 @@ import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
 import com.sitewhere.web.rest.RestControllerBase;
 
@@ -113,9 +117,8 @@ public class Assignments extends RestControllerBase {
      * @param request
      * @return
      */
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping
     @ApiOperation(value = "Create a new device assignment")
-    @Secured({ SiteWhereRoles.REST })
     public DeviceAssignment createDeviceAssignment(@RequestBody DeviceAssignmentCreateRequest request,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceManagement management = getDeviceManagement();
@@ -135,9 +138,8 @@ public class Assignments extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token:.+}", method = RequestMethod.GET)
+    @GetMapping(value = "/{token:.+}")
     @ApiOperation(value = "Get device assignment by token")
-    @Secured({ SiteWhereRoles.REST })
     public DeviceAssignment getDeviceAssignment(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
@@ -157,9 +159,8 @@ public class Assignments extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token:.+}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/{token:.+}")
     @ApiOperation(value = "Delete an existing device assignment")
-    @Secured({ SiteWhereRoles.REST })
     public DeviceAssignment deleteDeviceAssignment(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token)
 	    throws SiteWhereException {
@@ -180,9 +181,8 @@ public class Assignments extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token:.+}", method = RequestMethod.PUT)
+    @PutMapping(value = "/{token:.+}")
     @ApiOperation(value = "Update an existing device assignment")
-    @Secured({ SiteWhereRoles.REST })
     public DeviceAssignment updateDeviceAssignment(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @RequestBody DeviceAssignmentCreateRequest request) throws SiteWhereException {
@@ -205,7 +205,7 @@ public class Assignments extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}/label/{generatorId}", method = RequestMethod.GET)
+    @GetMapping(value = "/{token}/label/{generatorId}")
     @ApiOperation(value = "Get label for area")
     public ResponseEntity<byte[]> getAssignmentLabel(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
@@ -235,9 +235,8 @@ public class Assignments extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     @ApiOperation(value = "List assignments matching criteria")
-    @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceAssignment> listAssignments(
 	    @ApiParam(value = "Limit by device token", required = false) @RequestParam(required = false) String deviceToken,
 	    @ApiParam(value = "Limit by customer token", required = false) @RequestParam(required = false) String customerToken,
@@ -299,22 +298,52 @@ public class Assignments extends RestControllerBase {
     }
 
     /**
-     * List all device measurements for a given assignment.
+     * List device measurement events for multiple assignments.
      * 
-     * @param assignmentToken
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param bulk
+     * @param response
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}/measurements", method = RequestMethod.GET)
+    @PostMapping(value = "/bulk/measurements")
+    @ApiOperation(value = "List measurement events for multiple assignments")
+    public ISearchResults<IDeviceMeasurement> listMeasurementsForAssignments(
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    @RequestBody DeviceAssignmentBulkRequest bulk, HttpServletResponse response) throws SiteWhereException {
+	List<UUID> ids = getDeviceAssignmentIds(bulk);
+	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
+	return new BlockingDeviceEventManagement(getDeviceEventManagement())
+		.listDeviceMeasurementsForIndex(DeviceEventIndex.Assignment, ids, criteria);
+    }
+
+    /**
+     * List device measurement events for a given assignment.
+     * 
+     * @param token
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    @GetMapping(value = "/{token}/measurements")
     @ApiOperation(value = "List measurement events for device assignment")
-    @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceMeasurement> listMeasurementsForAssignment(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
-	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
+	    HttpServletResponse response) throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	return new BlockingDeviceEventManagement(getDeviceEventManagement()).listDeviceMeasurementsForIndex(
@@ -322,15 +351,55 @@ public class Assignments extends RestControllerBase {
     }
 
     /**
-     * List device measurements for a given assignment.
+     * List measurement events for multiple assignments as chart series data.
      * 
-     * @param assignmentToken
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param measurementIds
+     * @param bulk
+     * @param response
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}/measurements/series", method = RequestMethod.GET)
+    @PostMapping(value = "/bulk/measurements/series")
+    @ApiOperation(value = "List measurements for multiple assignments as chart series")
+    public Map<String, List<IChartSeries<Double>>> listMeasurementsForAssignmentsAsChartSeries(
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    @ApiParam(value = "Measurement Ids", required = false) @RequestParam(required = false) String[] measurementIds,
+	    @RequestBody DeviceAssignmentBulkRequest bulk, HttpServletResponse response) throws SiteWhereException {
+	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
+	Map<String, List<IChartSeries<Double>>> results = new HashMap<String, List<IChartSeries<Double>>>();
+	for (String token : bulk.getDeviceAssignmentTokens()) {
+	    IDeviceAssignment assignment = assertDeviceAssignment(token);
+	    ISearchResults<IDeviceMeasurement> measurements = new BlockingDeviceEventManagement(
+		    getDeviceEventManagement()).listDeviceMeasurementsForIndex(DeviceEventIndex.Assignment,
+			    Collections.singletonList(assignment.getId()), criteria);
+	    ChartBuilder builder = new ChartBuilder();
+	    results.put(token, builder.process(measurements.getResults(), measurementIds));
+	}
+	return results;
+    }
+
+    /**
+     * List device measurement events for a given assignment in chart series format.
+     * 
+     * @param token
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param measurementIds
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    @GetMapping(value = "/{token}/measurements/series")
     @ApiOperation(value = "List assignment measurements as chart series")
-    @Secured({ SiteWhereRoles.REST })
     public List<IChartSeries<Double>> listMeasurementsForAssignmentAsChartSeries(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
@@ -338,7 +407,7 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    @ApiParam(value = "Measurement Ids", required = false) @RequestParam(required = false) String[] measurementIds,
-	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
+	    HttpServletResponse response) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	ISearchResults<IDeviceMeasurement> measurements = new BlockingDeviceEventManagement(getDeviceEventManagement())
@@ -357,9 +426,8 @@ public class Assignments extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}/measurements", method = RequestMethod.POST)
+    @PostMapping(value = "/{token}/measurements")
     @ApiOperation(value = "Create measurements event for device assignment")
-    @Secured({ SiteWhereRoles.REST })
     public IDeviceMeasurement createMeasurements(@RequestBody DeviceMeasurementCreateRequest input,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
@@ -369,22 +437,52 @@ public class Assignments extends RestControllerBase {
     }
 
     /**
-     * List device locations for a given assignment.
+     * List location events for multiple assignments.
      * 
-     * @param assignmentToken
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param bulk
+     * @param response
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}/locations", method = RequestMethod.GET)
+    @PostMapping(value = "/bulk/locations")
     @ApiOperation(value = "List location events for device assignment")
-    @Secured({ SiteWhereRoles.REST })
+    public ISearchResults<IDeviceLocation> listLocationsForAssignments(
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    @RequestBody DeviceAssignmentBulkRequest bulk, HttpServletResponse response) throws SiteWhereException {
+	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
+	List<UUID> ids = getDeviceAssignmentIds(bulk);
+	return new BlockingDeviceEventManagement(getDeviceEventManagement())
+		.listDeviceLocationsForIndex(DeviceEventIndex.Assignment, ids, criteria);
+    }
+
+    /**
+     * List device locations for a given assignment.
+     * 
+     * @param token
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    @GetMapping(value = "/{token}/locations")
+    @ApiOperation(value = "List location events for device assignment")
     public ISearchResults<IDeviceLocation> listLocationsForAssignment(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
-	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
+	    HttpServletResponse response) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	return new BlockingDeviceEventManagement(getDeviceEventManagement()).listDeviceLocationsForIndex(
@@ -400,9 +498,8 @@ public class Assignments extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}/locations", method = RequestMethod.POST)
+    @PostMapping(value = "/{token}/locations")
     @ApiOperation(value = "Create location event for device assignment")
-    @Secured({ SiteWhereRoles.REST })
     public IDeviceLocation createLocation(@RequestBody DeviceLocationCreateRequest input,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token)
 	    throws SiteWhereException {
@@ -412,22 +509,52 @@ public class Assignments extends RestControllerBase {
     }
 
     /**
-     * List device alerts for a given assignment.
+     * List alert events for multiple assignments.
      * 
-     * @param assignmentToken
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param bulk
+     * @param response
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}/alerts", method = RequestMethod.GET)
+    @PostMapping(value = "/bulk/alerts")
     @ApiOperation(value = "List alert events for device assignment")
-    @Secured({ SiteWhereRoles.REST })
+    public ISearchResults<IDeviceAlert> listAlertsForAssignments(
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    @RequestBody DeviceAssignmentBulkRequest bulk, HttpServletResponse response) throws SiteWhereException {
+	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
+	List<UUID> ids = getDeviceAssignmentIds(bulk);
+	return new BlockingDeviceEventManagement(getDeviceEventManagement())
+		.listDeviceAlertsForIndex(DeviceEventIndex.Assignment, ids, criteria);
+    }
+
+    /**
+     * List device alerts for a given assignment.
+     * 
+     * @param token
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    @GetMapping(value = "/{token}/alerts")
+    @ApiOperation(value = "List alert events for device assignment")
     public ISearchResults<IDeviceAlert> listAlertsForAssignment(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
-	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
+	    HttpServletResponse response) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	return new BlockingDeviceEventManagement(getDeviceEventManagement()).listDeviceAlertsForIndex(
@@ -443,9 +570,8 @@ public class Assignments extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}/alerts", method = RequestMethod.POST)
+    @PostMapping(value = "/{token}/alerts")
     @ApiOperation(value = "Create alert event for device assignment")
-    @Secured({ SiteWhereRoles.REST })
     public IDeviceAlert createAlert(@RequestBody DeviceAlertCreateRequest input,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
@@ -457,17 +583,16 @@ public class Assignments extends RestControllerBase {
     /**
      * Create a stream to be associated with a device assignment.
      * 
-     * @param input
+     * @param request
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}/streams", method = RequestMethod.POST)
+    @PostMapping(value = "/{token}/streams")
     @ApiOperation(value = "Create data stream for a device assignment")
-    @Secured({ SiteWhereRoles.REST })
     public DeviceStream createDeviceStream(@RequestBody DeviceStreamCreateRequest request,
-	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token)
+	    throws SiteWhereException {
 	IDeviceAssignment existing = assertDeviceAssignment(token);
 	IDeviceStream result = getDeviceManagement().createDeviceStream(existing.getId(), request);
 	return DeviceStream.copy(result);
@@ -481,21 +606,19 @@ public class Assignments extends RestControllerBase {
      * @param pageSize
      * @param startDate
      * @param endDate
-     * @param servletRequest
      * @param response
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}/streams", method = RequestMethod.GET)
+    @GetMapping(value = "/{token}/streams")
     @ApiOperation(value = "List data streams for device assignment")
-    @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceStream> listDeviceStreamsForAssignment(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
-	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
+	    HttpServletResponse response) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment existing = assertDeviceAssignment(token);
 	ISearchResults<IDeviceStream> matches = getDeviceManagement().listDeviceStreams(existing.getId(), criteria);
@@ -514,13 +637,11 @@ public class Assignments extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}/streams/{streamId:.+}", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value = "/{token}/streams/{streamId:.+}", produces = "application/json")
     @ApiOperation(value = "Get device assignment data stream by id")
-    @Secured({ SiteWhereRoles.REST })
     public DeviceStream getDeviceStream(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+	    @ApiParam(value = "Stream Id", required = true) @PathVariable String streamId) throws SiteWhereException {
 	IDeviceAssignment existing = assertDeviceAssignment(token);
 	IDeviceStream result = getDeviceManagement().getDeviceStream(existing.getId(), streamId);
 	if (result == null) {
@@ -533,17 +654,16 @@ public class Assignments extends RestControllerBase {
     /**
      * Create command invocation to be associated with a device assignment.
      * 
-     * @param input
+     * @param request
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}/invocations", method = RequestMethod.POST)
+    @PostMapping(value = "/{token}/invocations")
     @ApiOperation(value = "Create command invocation event for assignment")
-    @Secured({ SiteWhereRoles.REST })
     public IDeviceCommandInvocation createCommandInvocation(@RequestBody DeviceCommandInvocationCreateRequest request,
-	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token)
+	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	IDeviceCommandInvocation result = new BlockingDeviceEventManagement(getDeviceEventManagement())
 		.addDeviceCommandInvocations(assignment.getId(), request).get(0);
@@ -551,9 +671,17 @@ public class Assignments extends RestControllerBase {
 	return helper.convert(result);
     }
 
-    @RequestMapping(value = "/{token}/invocations/schedules/{scheduleToken}", method = RequestMethod.POST)
+    /**
+     * Schedule a command invocation.
+     * 
+     * @param request
+     * @param token
+     * @param scheduleToken
+     * @return
+     * @throws SiteWhereException
+     */
+    @PostMapping(value = "/{token}/invocations/schedules/{scheduleToken}")
     @ApiOperation(value = "Schedule command invocation")
-    @Secured({ SiteWhereRoles.REST })
     public IScheduledJob scheduleCommandInvocation(@RequestBody DeviceCommandInvocationCreateRequest request,
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Schedule token", required = true) @PathVariable String scheduleToken)
@@ -565,15 +693,55 @@ public class Assignments extends RestControllerBase {
     }
 
     /**
-     * List device command invocations for a given assignment.
+     * List command invocation events for multiple assignments.
      * 
-     * @param assignmentToken
+     * @param includeCommand
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param bulk
+     * @param response
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}/invocations", method = RequestMethod.GET)
+    @PostMapping(value = "/bulk/invocations")
     @ApiOperation(value = "List command invocation events for assignment")
-    @Secured({ SiteWhereRoles.REST })
+    public ISearchResults<IDeviceCommandInvocation> listCommandInvocationsForAssignments(
+	    @ApiParam(value = "Include command information", required = false) @RequestParam(defaultValue = "true") boolean includeCommand,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    @RequestBody DeviceAssignmentBulkRequest bulk, HttpServletResponse response) throws SiteWhereException {
+	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
+	List<UUID> ids = getDeviceAssignmentIds(bulk);
+	ISearchResults<IDeviceCommandInvocation> matches = new BlockingDeviceEventManagement(getDeviceEventManagement())
+		.listDeviceCommandInvocationsForIndex(DeviceEventIndex.Assignment, ids, criteria);
+	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(getDeviceManagement());
+	helper.setIncludeCommand(includeCommand);
+	List<IDeviceCommandInvocation> converted = new ArrayList<IDeviceCommandInvocation>();
+	for (IDeviceCommandInvocation invocation : matches.getResults()) {
+	    converted.add(helper.convert(invocation));
+	}
+	return new SearchResults<IDeviceCommandInvocation>(converted);
+    }
+
+    /**
+     * List device command invocations for a given assignment.
+     * 
+     * @param token
+     * @param includeCommand
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    @GetMapping(value = "/{token}/invocations")
+    @ApiOperation(value = "List command invocation events for assignment")
     public ISearchResults<IDeviceCommandInvocation> listCommandInvocationsForAssignment(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Include command information", required = false) @RequestParam(defaultValue = "true") boolean includeCommand,
@@ -581,7 +749,7 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
-	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
+	    HttpServletResponse response) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	ISearchResults<IDeviceCommandInvocation> matches = new BlockingDeviceEventManagement(getDeviceEventManagement())
@@ -604,34 +772,63 @@ public class Assignments extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}/statechanges", method = RequestMethod.POST)
+    @PostMapping(value = "/{token}/statechanges")
     @ApiOperation(value = "Create an state change event for a device assignment")
-    @Secured({ SiteWhereRoles.REST })
     public IDeviceStateChange createStateChange(@RequestBody DeviceStateChangeCreateRequest input,
-	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token)
+	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	return new BlockingDeviceEventManagement(getDeviceEventManagement())
 		.addDeviceStateChanges(assignment.getId(), input).get(0);
     }
 
     /**
-     * List device state changes for a given assignment.
+     * List state change events for multiple assignments.
      * 
-     * @param assignmentToken
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param bulk
+     * @param response
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}/statechanges", method = RequestMethod.GET)
+    @PostMapping(value = "/bulk/statechanges")
     @ApiOperation(value = "List state change events for a device assignment")
-    @Secured({ SiteWhereRoles.REST })
+    public ISearchResults<IDeviceStateChange> listStateChangesForAssignments(
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    @RequestBody DeviceAssignmentBulkRequest bulk, HttpServletResponse response) throws SiteWhereException {
+	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
+	List<UUID> ids = getDeviceAssignmentIds(bulk);
+	return new BlockingDeviceEventManagement(getDeviceEventManagement())
+		.listDeviceStateChangesForIndex(DeviceEventIndex.Assignment, ids, criteria);
+    }
+
+    /**
+     * List device state changes for a given assignment.
+     * 
+     * @param token
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    @GetMapping(value = "/{token}/statechanges")
+    @ApiOperation(value = "List state change events for a device assignment")
     public ISearchResults<IDeviceStateChange> listStateChangesForAssignment(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
-	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
+	    HttpServletResponse response) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	return new BlockingDeviceEventManagement(getDeviceEventManagement()).listDeviceStateChangesForIndex(
@@ -646,12 +843,11 @@ public class Assignments extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}/responses", method = RequestMethod.POST)
+    @PostMapping(value = "/{token}/responses")
     @ApiOperation(value = "Create command response event for assignment")
-    @Secured({ SiteWhereRoles.REST })
     public DeviceCommandResponse createCommandResponse(@RequestBody DeviceCommandResponseCreateRequest input,
-	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token)
+	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	IDeviceCommandResponse result = new BlockingDeviceEventManagement(getDeviceEventManagement())
 		.addDeviceCommandResponses(assignment.getId(), input).get(0);
@@ -659,58 +855,56 @@ public class Assignments extends RestControllerBase {
     }
 
     /**
-     * List device command responses for a given assignment.
+     * List device command responses for mulitple assignments.
      * 
-     * @param assignmentToken
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param bulk
+     * @param response
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}/responses", method = RequestMethod.GET)
+    @PostMapping(value = "/bulk/responses")
     @ApiOperation(value = "List command response events for assignment")
-    @Secured({ SiteWhereRoles.REST })
+    public ISearchResults<IDeviceCommandResponse> listCommandResponsesForAssignments(
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+	    @RequestBody DeviceAssignmentBulkRequest bulk, HttpServletResponse response) throws SiteWhereException {
+	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
+	List<UUID> ids = getDeviceAssignmentIds(bulk);
+	return new BlockingDeviceEventManagement(getDeviceEventManagement())
+		.listDeviceCommandResponsesForIndex(DeviceEventIndex.Assignment, ids, criteria);
+    }
+
+    /**
+     * List device command responses for a given assignment.
+     * 
+     * @param token
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    @GetMapping(value = "/{token}/responses")
+    @ApiOperation(value = "List command response events for assignment")
     public ISearchResults<IDeviceCommandResponse> listCommandResponsesForAssignment(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
-	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
+	    HttpServletResponse response) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	return new BlockingDeviceEventManagement(getDeviceEventManagement()).listDeviceCommandResponsesForIndex(
 		DeviceEventIndex.Assignment, Collections.singletonList(assignment.getId()), criteria);
-    }
-
-    /**
-     * Get the default symbol for a device assignment.
-     * 
-     * @param token
-     * @param servletRequest
-     * @param response
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/{token}/symbol", method = RequestMethod.GET)
-    @ApiOperation(value = "Get default symbol for assignment")
-    public ResponseEntity<byte[]> getDeviceAssignmentSymbol(
-	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
-	// IDeviceAssignment assignment = assureAssignmentWithoutUserValidation(token,
-	// servletRequest);
-	// IEntityUriProvider provider = DefaultEntityUriProvider.getInstance();
-	// ISymbolGeneratorManager symbols =
-	// getDeviceCommunication().getSymbolGeneratorManager();
-	// ISymbolGenerator generator = symbols.getDefaultSymbolGenerator();
-	// if (generator != null) {
-	// byte[] image = generator.getDeviceAssigmentSymbol(assignment, provider);
-	//
-	// final HttpHeaders headers = new HttpHeaders();
-	// headers.setContentType(MediaType.IMAGE_PNG);
-	// return new ResponseEntity<byte[]>(image, headers, HttpStatus.CREATED);
-	// } else {
-	// return null;
-	// }
-	return null;
     }
 
     /**
@@ -720,12 +914,11 @@ public class Assignments extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}/end", method = RequestMethod.POST)
+    @PostMapping(value = "/{token}/end")
     @ApiOperation(value = "Release an active device assignment")
-    @Secured({ SiteWhereRoles.REST })
     public DeviceAssignment endDeviceAssignment(
-	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token)
+	    throws SiteWhereException {
 	IDeviceManagement management = getDeviceManagement();
 	IDeviceAssignment existing = assertDeviceAssignment(token);
 	IDeviceAssignment updated = management.endDeviceAssignment(existing.getId());
@@ -743,12 +936,11 @@ public class Assignments extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}/missing", method = RequestMethod.POST)
+    @PostMapping(value = "/{token}/missing")
     @ApiOperation(value = "Mark device assignment as missing")
-    @Secured({ SiteWhereRoles.REST })
     public DeviceAssignment missingDeviceAssignment(
-	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token)
+	    throws SiteWhereException {
 	IDeviceManagement management = getDeviceManagement();
 	IDeviceAssignment existing = assertDeviceAssignment(token);
 
@@ -828,6 +1020,22 @@ public class Assignments extends RestControllerBase {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
 	}
 	return assignment;
+    }
+
+    /**
+     * Get list of assignment ids based on assignment tokens.
+     * 
+     * @param bulk
+     * @return
+     * @throws SiteWhereException
+     */
+    protected List<UUID> getDeviceAssignmentIds(DeviceAssignmentBulkRequest bulk) throws SiteWhereException {
+	List<UUID> results = new ArrayList<UUID>();
+	for (String token : bulk.getDeviceAssignmentTokens()) {
+	    IDeviceAssignment assignment = assertDeviceAssignment(token);
+	    results.add(assignment.getId());
+	}
+	return results;
     }
 
     /**
