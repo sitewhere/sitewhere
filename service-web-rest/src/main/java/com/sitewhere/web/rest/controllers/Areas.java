@@ -23,10 +23,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -96,9 +99,8 @@ public class Areas extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping
     @ApiOperation(value = "Create new area")
-    @Secured({ SiteWhereRoles.REST })
     public IArea createArea(@RequestBody AreaCreateRequest input) throws SiteWhereException {
 	return getDeviceManagement().createArea(input);
     }
@@ -110,9 +112,8 @@ public class Areas extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{areaToken:.+}", method = RequestMethod.GET)
+    @GetMapping(value = "/{areaToken:.+}")
     @ApiOperation(value = "Get area by token")
-    @Secured({ SiteWhereRoles.REST })
     public IArea getAreaByToken(
 	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Include area type", required = false) @RequestParam(defaultValue = "true") boolean includeAreaType,
@@ -132,9 +133,8 @@ public class Areas extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{areaToken:.+}", method = RequestMethod.PUT)
+    @PutMapping(value = "/{areaToken:.+}")
     @ApiOperation(value = "Update existing area")
-    @Secured({ SiteWhereRoles.REST })
     public IArea updateArea(
 	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @RequestBody AreaCreateRequest request) throws SiteWhereException {
@@ -152,7 +152,7 @@ public class Areas extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{areaToken}/label/{generatorId}", method = RequestMethod.GET)
+    @GetMapping(value = "/{areaToken}/label/{generatorId}")
     @ApiOperation(value = "Get label for area")
     public ResponseEntity<byte[]> getAreaLabel(
 	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
@@ -174,9 +174,8 @@ public class Areas extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     @ApiOperation(value = "List areas matching criteria")
-    @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IArea> listAreas(
 	    @ApiParam(value = "Limit to root elements", required = false) @RequestParam(required = false, defaultValue = "true") Boolean rootOnly,
 	    @ApiParam(value = "Limit by parent area token", required = false) @RequestParam(required = false) String parentAreaToken,
@@ -247,9 +246,8 @@ public class Areas extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{areaToken:.+}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/{areaToken:.+}")
     @ApiOperation(value = "Delete area by token")
-    @Secured({ SiteWhereRoles.REST })
     public IArea deleteArea(
 	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken)
 	    throws SiteWhereException {
@@ -269,9 +267,8 @@ public class Areas extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{areaToken}/measurements", method = RequestMethod.GET)
+    @GetMapping(value = "/{areaToken}/measurements")
     @ApiOperation(value = "List measurements for an area")
-    @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceMeasurement> listDeviceMeasurementsForArea(
 	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
@@ -305,9 +302,8 @@ public class Areas extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{areaToken}/locations", method = RequestMethod.GET)
+    @GetMapping(value = "/{areaToken}/locations")
     @ApiOperation(value = "List locations for an area")
-    @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceLocation> listDeviceLocationsForArea(
 	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
@@ -341,9 +337,8 @@ public class Areas extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{areaToken}/alerts", method = RequestMethod.GET)
+    @GetMapping(value = "/{areaToken}/alerts")
     @ApiOperation(value = "List alerts for an area")
-    @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceAlert> listDeviceAlertsForArea(
 	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
@@ -377,9 +372,8 @@ public class Areas extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{areaToken}/invocations", method = RequestMethod.GET)
+    @GetMapping(value = "/{areaToken}/invocations")
     @ApiOperation(value = "List command invocations for an area")
-    @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForArea(
 	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
@@ -413,9 +407,8 @@ public class Areas extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{areaToken}/responses", method = RequestMethod.GET)
+    @GetMapping(value = "/{areaToken}/responses")
     @ApiOperation(value = "List command responses for an area")
-    @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForArea(
 	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
@@ -449,9 +442,8 @@ public class Areas extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{areaToken}/statechanges", method = RequestMethod.GET)
+    @GetMapping(value = "/{areaToken}/statechanges")
     @ApiOperation(value = "List state changes associated with an area")
-    @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceStateChange> listDeviceStateChangesForArea(
 	    @ApiParam(value = "Token that identifies area", required = true) @PathVariable String areaToken,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
@@ -485,7 +477,7 @@ public class Areas extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{areaToken}/assignments", method = RequestMethod.GET)
+    @GetMapping(value = "/{areaToken}/assignments")
     @ApiOperation(value = "List device assignments for an area")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<DeviceAssignment> listAssignmentsForArea(

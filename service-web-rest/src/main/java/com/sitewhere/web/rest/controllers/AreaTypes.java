@@ -17,11 +17,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,7 +40,6 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.label.ILabel;
 import com.sitewhere.spi.label.ILabelGeneration;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
 import com.sitewhere.web.rest.RestControllerBase;
 
@@ -64,9 +65,8 @@ public class AreaTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping
     @ApiOperation(value = "Create new area type")
-    @Secured({ SiteWhereRoles.REST })
     public IAreaType createAreaType(@RequestBody AreaTypeCreateRequest input) throws SiteWhereException {
 	return getDeviceManagement().createAreaType(input);
     }
@@ -78,9 +78,8 @@ public class AreaTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{areaTypeToken:.+}", method = RequestMethod.GET)
+    @GetMapping(value = "/{areaTypeToken:.+}")
     @ApiOperation(value = "Get area type by token")
-    @Secured({ SiteWhereRoles.REST })
     public IAreaType getAreaTypeByToken(
 	    @ApiParam(value = "Token that identifies area type", required = true) @PathVariable String areaTypeToken)
 	    throws SiteWhereException {
@@ -95,9 +94,8 @@ public class AreaTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{areaTypeToken:.+}", method = RequestMethod.PUT)
+    @PutMapping(value = "/{areaTypeToken:.+}")
     @ApiOperation(value = "Update existing area type")
-    @Secured({ SiteWhereRoles.REST })
     public IAreaType updateAreaType(
 	    @ApiParam(value = "Token that identifies area type", required = true) @PathVariable String areaTypeToken,
 	    @RequestBody AreaTypeCreateRequest request) throws SiteWhereException {
@@ -115,7 +113,7 @@ public class AreaTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{areaTypeToken}/label/{generatorId}", method = RequestMethod.GET)
+    @GetMapping(value = "/{areaTypeToken}/label/{generatorId}")
     @ApiOperation(value = "Get label for area type")
     public ResponseEntity<byte[]> getAreaTypeLabel(
 	    @ApiParam(value = "Token that identifies area type", required = true) @PathVariable String areaTypeToken,
@@ -135,9 +133,8 @@ public class AreaTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     @ApiOperation(value = "List area types matching criteria")
-    @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IAreaType> listAreaTypes(
 	    @ApiParam(value = "Include contained area types", required = false) @RequestParam(defaultValue = "false") boolean includeContainedAreaTypes,
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
@@ -163,9 +160,8 @@ public class AreaTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{areaTypeToken:.+}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/{areaTypeToken:.+}")
     @ApiOperation(value = "Delete area type by token")
-    @Secured({ SiteWhereRoles.REST })
     public IAreaType deleteAreaType(
 	    @ApiParam(value = "Token that identifies area type", required = true) @PathVariable String areaTypeToken)
 	    throws SiteWhereException {

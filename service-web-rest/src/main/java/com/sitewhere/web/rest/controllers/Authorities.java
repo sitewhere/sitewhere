@@ -11,13 +11,11 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.rest.model.user.GrantedAuthority;
@@ -31,7 +29,6 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.SiteWhereAuthority;
-import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
 import com.sitewhere.web.rest.RestControllerBase;
 import com.sitewhere.web.rest.model.GrantedAuthorityHierarchyBuilder;
@@ -52,10 +49,6 @@ import io.swagger.annotations.ApiParam;
 @Api(value = "authorities")
 public class Authorities extends RestControllerBase {
 
-    /** Static logger instance */
-    @SuppressWarnings("unused")
-    private static Log LOGGER = LogFactory.getLog(Authorities.class);
-
     /**
      * Create a new authority.
      * 
@@ -63,7 +56,7 @@ public class Authorities extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping
     @ApiOperation(value = "Create a new authority")
     public GrantedAuthority createAuthority(@RequestBody GrantedAuthorityCreateRequest input)
 	    throws SiteWhereException {
@@ -79,7 +72,7 @@ public class Authorities extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{name}", method = RequestMethod.GET)
+    @GetMapping(value = "/{name}")
     @ApiOperation(value = "Get authority by id")
     public GrantedAuthority getAuthorityByName(
 	    @ApiParam(value = "Authority name", required = true) @PathVariable String name) throws SiteWhereException {
@@ -98,7 +91,7 @@ public class Authorities extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     @ApiOperation(value = "List authorities that match criteria")
     public ISearchResults<IGrantedAuthority> listAuthorities() throws SiteWhereException {
 	checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
@@ -112,9 +105,8 @@ public class Authorities extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/hierarchy", method = RequestMethod.GET)
+    @GetMapping(value = "/hierarchy")
     @ApiOperation(value = "Get authorities hierarchy")
-    @Secured({ SiteWhereRoles.REST })
     public List<GrantedAuthorityHierarchyNode> getAuthoritiesHierarchy() throws SiteWhereException {
 	checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	GrantedAuthoritySearchCriteria criteria = new GrantedAuthoritySearchCriteria(1, 0);

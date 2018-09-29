@@ -13,17 +13,17 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,7 +41,6 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.label.ILabel;
 import com.sitewhere.spi.label.ILabelGeneration;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
 import com.sitewhere.web.rest.RestControllerBase;
 
@@ -60,10 +59,6 @@ import io.swagger.annotations.ApiParam;
 @Api(value = "assettypes")
 public class AssetTypes extends RestControllerBase {
 
-    /** Static logger instance */
-    @SuppressWarnings("unused")
-    private static Log LOGGER = LogFactory.getLog(AssetTypes.class);
-
     /**
      * Create a new asset type.
      * 
@@ -71,9 +66,8 @@ public class AssetTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping
     @ApiOperation(value = "Create a new asset type")
-    @Secured({ SiteWhereRoles.REST })
     public IAssetType createAssetType(@RequestBody AssetTypeCreateRequest request) throws SiteWhereException {
 	return getAssetManagement().createAssetType(request);
     }
@@ -85,9 +79,8 @@ public class AssetTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{assetTypeToken:.+}", method = RequestMethod.GET)
+    @GetMapping(value = "/{assetTypeToken:.+}")
     @ApiOperation(value = "Get asset by token")
-    @Secured({ SiteWhereRoles.REST })
     public IAssetType getAssetTypeByToken(
 	    @ApiParam(value = "Asset type token", required = true) @PathVariable String assetTypeToken)
 	    throws SiteWhereException {
@@ -104,10 +97,9 @@ public class AssetTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{assetTypeToken:.+}", method = RequestMethod.PUT)
+    @PutMapping(value = "/{assetTypeToken:.+}")
     @ResponseBody
     @ApiOperation(value = "Update an existing hardware asset in category")
-    @Secured({ SiteWhereRoles.REST })
     public IAssetType updateAssetType(
 	    @ApiParam(value = "Asset type token", required = true) @PathVariable String assetTypeToken,
 	    @RequestBody AssetTypeCreateRequest request) throws SiteWhereException {
@@ -125,7 +117,7 @@ public class AssetTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{assetTypeToken}/label/{generatorId}", method = RequestMethod.GET)
+    @GetMapping(value = "/{assetTypeToken}/label/{generatorId}")
     @ApiOperation(value = "Get label for area")
     public ResponseEntity<byte[]> getAssignmentLabel(
 	    @ApiParam(value = "Asset type token", required = true) @PathVariable String assetTypeToken,
@@ -149,9 +141,8 @@ public class AssetTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     @ApiOperation(value = "List asset types matching criteria")
-    @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IAssetType> listAssetTypes(
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize)
@@ -177,9 +168,8 @@ public class AssetTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{assetTypeToken:.+}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/{assetTypeToken:.+}")
     @ApiOperation(value = "Delete asset type by token")
-    @Secured({ SiteWhereRoles.REST })
     public IAssetType deleteAsset(
 	    @ApiParam(value = "Asset type token", required = true) @PathVariable String assetTypeToken)
 	    throws SiteWhereException {
