@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
 	<name>sitewhere-core-lifecycle</name>
-	<comment>Project sitewhere-core-lifecycle created by Buildship.</comment>
+	<comment>SiteWhere Lifecycle Library</comment>
 	<projects>
 	</projects>
 	<buildSpec>
