@@ -7,6 +7,9 @@
  */
 package com.sitewhere.grpc.client;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import com.sitewhere.grpc.client.spi.multitenant.IMultitenantGrpcChannel;
 import com.sitewhere.grpc.service.GCheckTenantEngineAvailableRequest;
 import com.sitewhere.grpc.service.GCheckTenantEngineAvailableResponse;
@@ -29,8 +32,14 @@ import io.grpc.ManagedChannelBuilder;
  */
 public abstract class MultitenantGrpcChannel<B, A> extends GrpcChannel<B, A> implements IMultitenantGrpcChannel<B, A> {
 
+    /** Max threads used for executing GPRC requests */
+    private static final int THREAD_POOL_SIZE = 25;
+
     /** Client interceptor for adding tenant token */
     private TenantTokenClientInterceptor tenantTokenInterceptor = new TenantTokenClientInterceptor();
+
+    /** Executor service used to handle GRPC requests */
+    private ExecutorService serverExecutor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
     public MultitenantGrpcChannel(ITracerProvider tracerProvider, String hostname, int port) {
 	super(tracerProvider, hostname, port);
@@ -45,8 +54,9 @@ public abstract class MultitenantGrpcChannel<B, A> extends GrpcChannel<B, A> imp
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	ManagedChannelBuilder<?> builder = ManagedChannelBuilder.forAddress(getHostname(), getPort()).usePlaintext()
-		.intercept(getTenantTokenInterceptor()).intercept(getJwtInterceptor());
+	ManagedChannelBuilder<?> builder = ManagedChannelBuilder.forAddress(getHostname(), getPort());
+	builder.executor(getServerExecutor());
+	builder.usePlaintext().intercept(getTenantTokenInterceptor()).intercept(getJwtInterceptor());
 	if (isUseTracingInterceptor()) {
 	    builder.intercept(getTracingInterceptor());
 	}
@@ -79,5 +89,13 @@ public abstract class MultitenantGrpcChannel<B, A> extends GrpcChannel<B, A> imp
 
     protected void setTenantTokenInterceptor(TenantTokenClientInterceptor tenantTokenInterceptor) {
 	this.tenantTokenInterceptor = tenantTokenInterceptor;
+    }
+
+    public ExecutorService getServerExecutor() {
+	return serverExecutor;
+    }
+
+    public void setServerExecutor(ExecutorService serverExecutor) {
+	this.serverExecutor = serverExecutor;
     }
 }

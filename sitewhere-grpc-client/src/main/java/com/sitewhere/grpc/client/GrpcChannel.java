@@ -7,6 +7,9 @@
  */
 package com.sitewhere.grpc.client;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import com.sitewhere.grpc.client.spi.IGrpcChannel;
 import com.sitewhere.grpc.model.tracing.ClientTracingInterceptor;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -27,6 +30,9 @@ import io.opentracing.Tracer;
  * @param <A>
  */
 public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent implements IGrpcChannel<B, A> {
+
+    /** Max threads used for executing GPRC requests */
+    private static final int THREAD_POOL_SIZE = 25;
 
     /** Tracer provider */
     protected ITracerProvider tracerProvider;
@@ -55,6 +61,9 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
     /** Client interceptor for GRPC tracing */
     private ClientTracingInterceptor tracingInterceptor;
 
+    /** Executor service used to handle GRPC requests */
+    private ExecutorService serverExecutor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+
     public GrpcChannel(ITracerProvider tracerProvider, String hostname, int port) {
 	this.tracerProvider = tracerProvider;
 	this.hostname = hostname;
@@ -71,8 +80,9 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	ManagedChannelBuilder<?> builder = ManagedChannelBuilder.forAddress(getHostname(), getPort()).usePlaintext()
-		.intercept(getJwtInterceptor());
+	ManagedChannelBuilder<?> builder = ManagedChannelBuilder.forAddress(getHostname(), getPort());
+	builder.executor(getServerExecutor());
+	builder.usePlaintext().intercept(getJwtInterceptor());
 	if (isUseTracingInterceptor()) {
 	    builder.intercept(getTracingInterceptor());
 	}
@@ -195,5 +205,13 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
 
     public void setUseTracingInterceptor(boolean useTracingInterceptor) {
 	this.useTracingInterceptor = useTracingInterceptor;
+    }
+
+    public ExecutorService getServerExecutor() {
+	return serverExecutor;
+    }
+
+    public void setServerExecutor(ExecutorService serverExecutor) {
+	this.serverExecutor = serverExecutor;
     }
 }

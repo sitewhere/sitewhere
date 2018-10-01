@@ -22,10 +22,8 @@ import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
 import com.sitewhere.inbound.spi.processing.IInboundPayloadProcessingLogic;
 import com.sitewhere.inbound.spi.processing.IInboundProcessingConfiguration;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
-import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
@@ -44,13 +42,14 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
     private static String GROUP_ID_SUFFIX = "decoded-event-consumers";
 
     /** Get settings for inbound processing */
-    private IInboundProcessingConfiguration configuration;
+    private IInboundProcessingConfiguration inboundProcessingConfiguration;
 
     /** Inbound payload processing logic */
-    private IInboundPayloadProcessingLogic inboundPayloadProcessingLogic = new InboundPayloadProcessingLogic();
+    private IInboundPayloadProcessingLogic inboundPayloadProcessingLogic;
 
-    public DecodedEventsConsumer(IInboundProcessingConfiguration configuration) {
-	this.configuration = configuration;
+    public DecodedEventsConsumer(IInboundProcessingConfiguration inboundProcessingConfiguration) {
+	this.inboundProcessingConfiguration = inboundProcessingConfiguration;
+	this.inboundPayloadProcessingLogic = new InboundPayloadProcessingLogic(this);
     }
 
     /*
@@ -121,7 +120,7 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 	// Execute startup steps.
 	start.execute(monitor);
 
-	getLogger().info("Allocating " + getConfiguration().getProcessingThreadCount()
+	getLogger().info("Allocating " + getInboundProcessingConfiguration().getProcessingThreadCount()
 		+ " threads for inbound event processing.");
 	super.start(monitor);
     }
@@ -153,7 +152,18 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
      */
     @Override
     public void process(TopicPartition topicPartition, List<ConsumerRecord<String, byte[]>> records) {
-	new InboundEventPayloadProcessor(getTenantEngine(), records).run();
+	try {
+	    getInboundPayloadProcessingLogic().process(topicPartition, records);
+	    getConsumer().commitAsync(new OffsetCommitCallback() {
+		public void onComplete(Map<TopicPartition, OffsetAndMetadata> offsets, Exception e) {
+		    if (e != null) {
+			getLogger().error("Commit failed for offsets " + offsets, e);
+		    }
+		}
+	    });
+	} catch (SiteWhereException e) {
+	    getLogger().error("Inbound processing batch failed.", e);
+	}
     }
 
     /*
@@ -169,45 +179,16 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 	this.inboundPayloadProcessingLogic = inboundPayloadProcessingLogic;
     }
 
-    /**
-     * Processor that unmarshals a decoded event and forwards it for registration
-     * verification.
-     * 
-     * @author Derek
+    /*
+     * @see com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer#
+     * getInboundProcessingConfiguration()
      */
-    protected class InboundEventPayloadProcessor extends SystemUserRunnable {
-
-	/** List of records to process for partition */
-	private List<ConsumerRecord<String, byte[]>> records;
-
-	public InboundEventPayloadProcessor(IMicroserviceTenantEngine tenantEngine,
-		List<ConsumerRecord<String, byte[]>> records) {
-	    super(tenantEngine.getMicroservice(), tenantEngine.getTenant());
-	    this.records = records;
-	}
-
-	/*
-	 * @see com.sitewhere.microservice.security.SystemUserRunnable#
-	 * runAsSystemUser()
-	 */
-	@Override
-	public void runAsSystemUser() throws SiteWhereException {
-	    getInboundPayloadProcessingLogic().process(records);
-	    getConsumer().commitAsync(new OffsetCommitCallback() {
-		public void onComplete(Map<TopicPartition, OffsetAndMetadata> offsets, Exception e) {
-		    if (e != null) {
-			getLogger().error("Commit failed for offsets " + offsets, e);
-		    }
-		}
-	    });
-	}
+    @Override
+    public IInboundProcessingConfiguration getInboundProcessingConfiguration() {
+	return inboundProcessingConfiguration;
     }
 
-    public IInboundProcessingConfiguration getConfiguration() {
-	return configuration;
-    }
-
-    public void setConfiguration(IInboundProcessingConfiguration configuration) {
-	this.configuration = configuration;
+    public void setInboundProcessingConfiguration(IInboundProcessingConfiguration inboundProcessingConfiguration) {
+	this.inboundProcessingConfiguration = inboundProcessingConfiguration;
     }
 }

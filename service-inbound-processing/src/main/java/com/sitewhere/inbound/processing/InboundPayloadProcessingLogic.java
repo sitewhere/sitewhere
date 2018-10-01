@@ -8,8 +8,14 @@
 package com.sitewhere.inbound.processing;
 
 import java.util.List;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.TopicPartition;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
@@ -18,11 +24,13 @@ import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.grpc.client.event.EventModelConverter;
 import com.sitewhere.grpc.client.event.EventModelMarshaler;
 import com.sitewhere.grpc.model.DeviceEventModel.GInboundEventPayload;
+import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
 import com.sitewhere.inbound.spi.kafka.IUnregisteredEventsProducer;
 import com.sitewhere.inbound.spi.microservice.IInboundEventStorageStrategy;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.inbound.spi.processing.IInboundPayloadProcessingLogic;
+import com.sitewhere.microservice.security.SystemUserCallable;
 import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -60,8 +68,18 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
     /** Histogram for event storage time */
     private Timer eventStorageTimer;
 
+    /** Decoded events consumer */
+    private IDecodedEventsConsumer decodedEventsConsumer;
+
     /** Event storage strategy */
     private IInboundEventStorageStrategy eventStorageStrategy;
+
+    /** Executor service for inbound payload processors */
+    private ExecutorService inboundProcessorsExecutor;
+
+    public InboundPayloadProcessingLogic(IDecodedEventsConsumer decodedEventsConsumer) {
+	this.decodedEventsConsumer = decodedEventsConsumer;
+    }
 
     /*
      * @see
@@ -84,30 +102,57 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 
     /*
      * @see
-     * com.sitewhere.inbound.spi.processing.IInboundPayloadProcessingLogic#process(
-     * java.util.List)
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void process(List<ConsumerRecord<String, byte[]>> records) throws SiteWhereException {
-	processPayloads(records);
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+
+	if (getInboundProcessorsExecutor() != null) {
+	    getInboundProcessorsExecutor().shutdownNow();
+	}
+	this.inboundProcessorsExecutor = Executors.newFixedThreadPool(
+		getDecodedEventsConsumer().getInboundProcessingConfiguration().getProcessingThreadCount());
     }
 
-    /**
-     * Build requests based on batch of Kafka records.
-     * 
-     * @param records
-     * @return
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
-    protected void processPayloads(List<ConsumerRecord<String, byte[]>> records) throws SiteWhereException {
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	if (getInboundProcessorsExecutor() != null) {
+	    getInboundProcessorsExecutor().shutdownNow();
+	}
+	super.stop(monitor);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.inbound.spi.processing.IInboundPayloadProcessingLogic#process(
+     * org.apache.kafka.common.TopicPartition, java.util.List)
+     */
+    @Override
+    public void process(TopicPartition topicPartition, List<ConsumerRecord<String, byte[]>> records)
+	    throws SiteWhereException {
+	long start = System.currentTimeMillis();
+	CompletionService<ConsumerRecord<String, byte[]>> completionService = new ExecutorCompletionService<ConsumerRecord<String, byte[]>>(
+		getInboundProcessorsExecutor());
 	for (ConsumerRecord<String, byte[]> record : records) {
+	    completionService.submit(new InboundEventPayloadProcessor(record));
+	}
+	for (int i = 0; i < records.size(); i++) {
 	    try {
-		processRecord(record);
-	    } catch (SiteWhereException e) {
-		getLogger().error("Unable to process inbound record.", e);
-	    } catch (Throwable e) {
-		getLogger().error("Unhandled exception while processing inbound record.", e);
+		completionService.take().get();
+	    } catch (ExecutionException e) {
+		throw new SiteWhereException("Exception processing inbound event.", e.getCause());
+	    } catch (InterruptedException e) {
+		throw new SiteWhereException("Interrupted while waiting on inbound record to process.", e);
 	    }
 	}
+	getLogger().info("Stored " + records.size() + " records in " + (System.currentTimeMillis() - start) + "ms.");
     }
 
     /**
@@ -173,7 +218,7 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	    return null;
 	}
 
-	// Verify that device is assigned.
+	// Verify that device assignment exists.
 	final Timer.Context assignmentLookupTime = getAssignmentLookupTimer().time();
 	IDeviceAssignment assignment = null;
 	try {
@@ -218,6 +263,37 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
     }
 
     /**
+     * Processor that unmarshals a decoded event and forwards it for registration
+     * verification.
+     * 
+     * @author Derek
+     */
+    protected class InboundEventPayloadProcessor extends SystemUserCallable<ConsumerRecord<String, byte[]>> {
+
+	/** Record to be processed */
+	private ConsumerRecord<String, byte[]> record;
+
+	public InboundEventPayloadProcessor(ConsumerRecord<String, byte[]> record) {
+	    super(getTenantEngine().getMicroservice(), getTenantEngine().getTenant());
+	    this.record = record;
+	}
+
+	/*
+	 * @see com.sitewhere.microservice.security.SystemUserRunnable#
+	 * runAsSystemUser()
+	 */
+	@Override
+	public ConsumerRecord<String, byte[]> runAsSystemUser() throws SiteWhereException {
+	    processRecord(getRecord());
+	    return getRecord();
+	}
+
+	protected ConsumerRecord<String, byte[]> getRecord() {
+	    return record;
+	}
+    }
+
+    /**
      * Get Kafka producer for unregistered device events.
      * 
      * @return
@@ -244,6 +320,14 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
     protected IDeviceEventManagement getDeviceEventManagement() {
 	return new BlockingDeviceEventManagement(((IInboundProcessingMicroservice) getTenantEngine().getMicroservice())
 		.getDeviceEventManagementApiDemux().getApiChannel());
+    }
+
+    protected ExecutorService getInboundProcessorsExecutor() {
+	return inboundProcessorsExecutor;
+    }
+
+    protected IDecodedEventsConsumer getDecodedEventsConsumer() {
+	return decodedEventsConsumer;
     }
 
     protected Meter getProcessedEvents() {

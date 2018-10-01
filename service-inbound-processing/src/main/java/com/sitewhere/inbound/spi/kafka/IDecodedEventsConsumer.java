@@ -8,6 +8,7 @@
 package com.sitewhere.inbound.spi.kafka;
 
 import com.sitewhere.inbound.spi.processing.IInboundPayloadProcessingLogic;
+import com.sitewhere.inbound.spi.processing.IInboundProcessingConfiguration;
 import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer;
 
 /**
@@ -16,6 +17,13 @@ import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer;
  * @author Derek
  */
 public interface IDecodedEventsConsumer extends IMicroserviceKafkaConsumer {
+
+    /**
+     * Get configuration options for inbound processing.
+     * 
+     * @return
+     */
+    public IInboundProcessingConfiguration getInboundProcessingConfiguration();
 
     /**
      * Get processing logic component used for inbound event payloads.

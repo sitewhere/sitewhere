@@ -10,6 +10,7 @@ package com.sitewhere.inbound.spi.processing;
 import java.util.List;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.TopicPartition;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
@@ -22,10 +23,12 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 public interface IInboundPayloadProcessingLogic extends ITenantEngineLifecycleComponent {
 
     /**
-     * Process a batch of records from Kafka.
+     * Process batch of records from a Kafka topic partition.
      * 
+     * @param topicPartition
      * @param records
      * @throws SiteWhereException
      */
-    public void process(List<ConsumerRecord<String, byte[]>> records) throws SiteWhereException;
+    public void process(TopicPartition topicPartition, List<ConsumerRecord<String, byte[]>> records)
+	    throws SiteWhereException;
 }

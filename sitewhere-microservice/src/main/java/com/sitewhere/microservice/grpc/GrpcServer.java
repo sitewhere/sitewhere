@@ -8,6 +8,8 @@
 package com.sitewhere.microservice.grpc;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.sitewhere.grpc.client.spi.server.IGrpcServer;
 import com.sitewhere.grpc.model.tracing.ServerTracingInterceptor;
@@ -17,7 +19,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 import io.grpc.BindableService;
 import io.grpc.Server;
-import io.grpc.ServerBuilder;
+import io.grpc.netty.NettyServerBuilder;
 
 /**
  * Base class for GRPC servers used by microservices.
@@ -25,6 +27,9 @@ import io.grpc.ServerBuilder;
  * @author Derek
  */
 public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcServer {
+
+    /** Max threads used for executing GPRC requests */
+    private static final int THREAD_POOL_SIZE = 25;
 
     /** Port for GRPC server */
     private int port;
@@ -44,6 +49,9 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
     /** Interceptor for open tracing APIs */
     private ServerTracingInterceptor tracingInterceptor;
 
+    /** Executor service used to handle GRPC requests */
+    private ExecutorService serverExecutor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+
     public GrpcServer(BindableService serviceImplementation, int port) {
 	this.serviceImplementation = serviceImplementation;
 	this.port = port;
@@ -55,8 +63,9 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
      * @return
      */
     protected Server buildServer() {
-	ServerBuilder<?> builder = ServerBuilder.forPort(port);
+	NettyServerBuilder builder = NettyServerBuilder.forPort(port);
 	builder.addService(getServiceImplementation()).intercept(getJwtInterceptor());
+	builder.executor(getServerExecutor());
 	if (isUseTracingInterceptor()) {
 	    builder.intercept(getTracingInterceptor());
 	}
@@ -172,5 +181,13 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
 
     public void setTracingInterceptor(ServerTracingInterceptor tracingInterceptor) {
 	this.tracingInterceptor = tracingInterceptor;
+    }
+
+    public ExecutorService getServerExecutor() {
+	return serverExecutor;
+    }
+
+    public void setServerExecutor(ExecutorService serverExecutor) {
+	this.serverExecutor = serverExecutor;
     }
 }

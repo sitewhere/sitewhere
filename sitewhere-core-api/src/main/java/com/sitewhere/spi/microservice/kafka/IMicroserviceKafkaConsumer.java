@@ -10,6 +10,7 @@ package com.sitewhere.spi.microservice.kafka;
 import java.util.List;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 
 import com.sitewhere.spi.SiteWhereException;
@@ -37,6 +38,13 @@ public interface IMicroserviceKafkaConsumer extends ITenantEngineLifecycleCompon
      * @throws SiteWhereException
      */
     public String getConsumerGroupId() throws SiteWhereException;
+
+    /**
+     * Get wrapped consumer instance.
+     * 
+     * @return
+     */
+    public KafkaConsumer<String, byte[]> getConsumer();
 
     /**
      * Get name of Kafka topics which will provide the messages.

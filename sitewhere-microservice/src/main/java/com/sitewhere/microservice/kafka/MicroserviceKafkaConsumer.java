@@ -94,11 +94,16 @@ public abstract class MicroserviceKafkaConsumer extends TenantEngineLifecycleCom
 	return config;
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#getConsumer()
+     */
+    @Override
     public KafkaConsumer<String, byte[]> getConsumer() {
 	return consumer;
     }
 
-    public void setConsumer(KafkaConsumer<String, byte[]> consumer) {
+    protected void setConsumer(KafkaConsumer<String, byte[]> consumer) {
 	this.consumer = consumer;
     }
 
