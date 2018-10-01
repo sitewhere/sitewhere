@@ -28,19 +28,18 @@ public class MetadataProvider implements IMetadataProvider, Serializable {
     private static final long serialVersionUID = -7708181397230364294L;
 
     /** Map of metadata entries */
-    private Map<String, String> entries = new HashMap<String, String>();
+    private Map<String, String> metadata = new HashMap<String, String>();
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IMetadataProvider#getMetadata()
+     * @see com.sitewhere.spi.common.IMetadataProvider#getMetadata()
      */
+    @Override
     public Map<String, String> getMetadata() {
-	return entries;
+	return metadata;
     }
 
-    public void setMetadata(Map<String, String> entries) {
-	this.entries = entries;
+    public void setMetadata(Map<String, String> metadata) {
+	this.metadata = metadata;
     }
 
     /**

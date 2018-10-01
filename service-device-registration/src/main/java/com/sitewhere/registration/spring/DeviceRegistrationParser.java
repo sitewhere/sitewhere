@@ -20,7 +20,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.sitewhere.configuration.parser.IDeviceRegistrationParser.Elements;
-import com.sitewhere.registration.DefaultRegistrationManager;
+import com.sitewhere.registration.DeviceRegistrationManager;
 import com.sitewhere.spi.microservice.spring.DeviceRegistrationBeans;
 
 /**
@@ -66,7 +66,7 @@ public class DeviceRegistrationParser extends AbstractBeanDefinitionParser {
      * @param context
      */
     protected void parseDefaultRegistrationManager(Element element, ParserContext context) {
-	BeanDefinitionBuilder manager = BeanDefinitionBuilder.rootBeanDefinition(DefaultRegistrationManager.class);
+	BeanDefinitionBuilder manager = BeanDefinitionBuilder.rootBeanDefinition(DeviceRegistrationManager.class);
 
 	Attr allowNewDevices = element.getAttributeNode("allowNewDevices");
 	if (allowNewDevices != null) {

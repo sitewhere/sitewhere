@@ -132,6 +132,7 @@ public class EventModelConverter {
 	api.setDeviceTypeToken(grpc.hasDeviceTypeToken() ? grpc.getDeviceTypeToken().getValue() : null);
 	api.setCustomerToken(grpc.hasCustomerToken() ? grpc.getCustomerToken().getValue() : null);
 	api.setAreaToken(grpc.hasAreaToken() ? grpc.getAreaToken().getValue() : null);
+	api.setMetadata(grpc.getMetadataMap());
 	return api;
     }
 
@@ -153,6 +154,9 @@ public class EventModelConverter {
 	}
 	if (api.getAreaToken() != null) {
 	    grpc.setAreaToken(GOptionalString.newBuilder().setValue(api.getAreaToken()));
+	}
+	if (api.getMetadata() != null) {
+	    grpc.putAllMetadata(api.getMetadata());
 	}
 	return grpc.build();
     }

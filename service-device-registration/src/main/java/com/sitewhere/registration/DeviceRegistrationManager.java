@@ -36,7 +36,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class DefaultRegistrationManager extends TenantEngineLifecycleComponent implements IRegistrationManager {
+public class DeviceRegistrationManager extends TenantEngineLifecycleComponent implements IRegistrationManager {
 
     /** Indicates if new devices can register with the system */
     private boolean allowNewDevices = false;
@@ -68,7 +68,7 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
     /** Area used for automatic assignment */
     private IArea defaultArea;
 
-    public DefaultRegistrationManager() {
+    public DeviceRegistrationManager() {
 	super(LifecycleComponentType.RegistrationManager);
     }
 
@@ -278,21 +278,21 @@ public class DefaultRegistrationManager extends TenantEngineLifecycleComponent i
 		if (deviceType == null) {
 		    throw new SiteWhereException("Registration manager auto assignment device type is invalid.");
 		}
-		DefaultRegistrationManager.this.defaultDeviceType = deviceType;
+		DeviceRegistrationManager.this.defaultDeviceType = deviceType;
 	    }
 	    if (getDefaultCustomerToken() != null) {
 		ICustomer customer = getDeviceManagement().getCustomerByToken(getDefaultCustomerToken());
 		if (customer == null) {
 		    throw new SiteWhereException("Registration manager auto assignment customer is invalid.");
 		}
-		DefaultRegistrationManager.this.defaultCustomer = customer;
+		DeviceRegistrationManager.this.defaultCustomer = customer;
 	    }
 	    if (getDefaultAreaToken() != null) {
 		IArea area = getDeviceManagement().getAreaByToken(getDefaultAreaToken());
 		if (area == null) {
 		    throw new SiteWhereException("Registration manager auto assignment area is invalid.");
 		}
-		DefaultRegistrationManager.this.defaultArea = area;
+		DeviceRegistrationManager.this.defaultArea = area;
 	    }
 	} finally {
 	    SecurityContextHolder.getContext().setAuthentication(previous);

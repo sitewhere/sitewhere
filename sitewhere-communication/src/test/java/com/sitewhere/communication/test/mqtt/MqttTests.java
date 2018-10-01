@@ -31,6 +31,7 @@ import com.sitewhere.rest.model.device.communication.DeviceRequest.Type;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
@@ -188,6 +189,31 @@ public class MqttTests {
 		System.out.println("Payload:\n\n" + payload);
 		connection.publish("SiteWhere/default/input/json", payload.getBytes(), QoS.AT_LEAST_ONCE, false);
 		System.out.println("Message sent successfully.");
+	    } catch (JsonProcessingException e) {
+		throw new SiteWhereException(e);
+	    } catch (Exception e) {
+		throw new SiteWhereException(e);
+	    }
+	}
+
+	/**
+	 * Send a registration event request via JSON/MQTT.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	public void sendRegistrationOverMqtt() throws SiteWhereException {
+	    DeviceRequest request = new DeviceRequest();
+	    request.setDeviceToken("88236-MEGA2560-5556107");
+	    request.setType(Type.RegisterDevice);
+	    DeviceRegistrationRequest registration = new DeviceRegistrationRequest();
+	    registration.setDeviceTypeToken("mega2560");
+	    Map<String, String> metadata = new HashMap<String, String>();
+	    metadata.put("ip_address", "192.168.1.2");
+	    registration.setMetadata(metadata);
+	    request.setRequest(registration);
+	    try {
+		String payload = MAPPER.writeValueAsString(request);
+		connection.publish("SiteWhere/default/input/json", payload.getBytes(), QoS.AT_MOST_ONCE, false);
 	    } catch (JsonProcessingException e) {
 		throw new SiteWhereException(e);
 	    } catch (Exception e) {
