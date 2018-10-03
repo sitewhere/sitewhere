@@ -7,9 +7,14 @@
  */
 package com.sitewhere.influx.device;
 
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import org.influxdb.InfluxDB;
 import org.influxdb.dto.Point;
+import org.influxdb.dto.Query;
+import org.influxdb.dto.QueryResult;
 
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.spi.SiteWhereException;
@@ -17,6 +22,7 @@ import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandStatus;
 import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.DeviceEventType;
+import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 
 /**
  * Class for saving device command invocation data to InfluxDB.
@@ -45,6 +51,28 @@ public class InfluxDbDeviceCommandInvocation {
 
     /** Tag for status */
     public static final String CMD_STATUS = "status";
+
+    /**
+     * Get a device command invocation by unique id.
+     * 
+     * @param eventId
+     * @param influx
+     * @param database
+     * @return
+     * @throws SiteWhereException
+     */
+    public static IDeviceCommandInvocation getInvocationById(String eventId, InfluxDB influx, String database)
+	    throws SiteWhereException {
+	Query query = new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where eid='" + eventId
+		+ "' AND type='CommandInvocation'", database);
+	QueryResult response = influx.query(query, TimeUnit.MILLISECONDS);
+	List<IDeviceCommandInvocation> results = InfluxDbDeviceEvent.eventsOfType(response,
+		IDeviceCommandInvocation.class);
+	if (results.size() > 0) {
+	    return results.get(0);
+	}
+	return null;
+    }
 
     /**
      * Parse domain object from a value map.

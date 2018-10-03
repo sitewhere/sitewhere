@@ -223,8 +223,7 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceEvents(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceEvents(
      * java.lang .String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
@@ -321,8 +320,7 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocation(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocation(
      * java.lang .String,
      * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
      */
@@ -433,8 +431,7 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceAlerts(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceAlerts(
      * java.lang .String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
@@ -532,6 +529,15 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
     }
 
     /*
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+     * getDeviceCommandInvocationById(java.lang.String)
+     */
+    @Override
+    public IDeviceCommandInvocation getDeviceCommandInvocationById(String id) throws SiteWhereException {
+	return (IDeviceCommandInvocation) getDeviceEventById(id);
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
@@ -614,8 +620,7 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
      * addDeviceCommandResponse( java.lang.String,
-     * com.sitewhere.spi.device.event.request.
-     * IDeviceCommandResponseCreateRequest)
+     * com.sitewhere.spi.device.event.request. IDeviceCommandResponseCreateRequest)
      */
     @Override
     public IDeviceCommandResponse addDeviceCommandResponse(String assignmentToken,
@@ -734,8 +739,7 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#updateDeviceEvent(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#updateDeviceEvent(
      * java.lang.String,
      * com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest)
      */
@@ -759,8 +763,7 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceManagement
-     * ()
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceManagement ()
      */
     public IDeviceManagement getDeviceManagement() {
 	return deviceManagement;
@@ -801,8 +804,8 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
     }
 
     /**
-     * Return an {@link IDeviceAssignment} for the given token. Throws an
-     * exception if the token is not valid.
+     * Return an {@link IDeviceAssignment} for the given token. Throws an exception
+     * if the token is not valid.
      * 
      * @param token
      * @return

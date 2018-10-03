@@ -115,8 +115,8 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
     private String logLevel;
 
     /**
-     * Prefix to compare against when adding user defined tags from assignment
-     * meta data
+     * Prefix to compare against when adding user defined tags from assignment meta
+     * data
      */
     private final String ASSIGNMENT_META_DATA_TAG_PREFIX = "INFLUX_TAG_";
 
@@ -205,10 +205,10 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
     }
 
     /**
-     * Add any user defined tags from assignment metadata. A tag should be
-     * prefixed with ASSIGNMENT_META_DATA_TAG_PREFIX i.e INFLUX_TAG_displayName.
-     * The prefix will be removed and a new tag created using the remaining
-     * characters as the tag name with value metadata.key assigned to it.
+     * Add any user defined tags from assignment metadata. A tag should be prefixed
+     * with ASSIGNMENT_META_DATA_TAG_PREFIX i.e INFLUX_TAG_displayName. The prefix
+     * will be removed and a new tag created using the remaining characters as the
+     * tag name with value metadata.key assigned to it.
      *
      * @param assignment
      * @param builder
@@ -268,8 +268,7 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceEvents(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceEvents(
      * java.lang .String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
@@ -282,17 +281,18 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
     /*
      * Check if the user has specific a retention policy in the assignment meta-data
      * If so, override the default one.
-    */
+     */
     private String getAssignmentSpecificRetentionPolicy(IDeviceAssignment assignment) {
 	String policy = assignment.getMetadata(ASSIGNMENT_META_DATA_RETENTION_POLICY);
 
-	if(policy == null) {
+	if (policy == null) {
 	    return getRetention();
-	 }
+	}
 
 	return policy;
 
     }
+
     /*
      * (non-Javadoc)
      * 
@@ -348,8 +348,7 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocation(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocation(
      * java.lang .String,
      * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
      */
@@ -442,8 +441,7 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceAlerts(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceAlerts(
      * java.lang .String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
@@ -506,6 +504,15 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	List<IDeviceStreamData> results = new ArrayList<IDeviceStreamData>();
 	return new SearchResults<IDeviceStreamData>(results);
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+     * getDeviceCommandInvocationById(java.lang.String)
+     */
+    @Override
+    public IDeviceCommandInvocation getDeviceCommandInvocationById(String id) throws SiteWhereException {
+	return InfluxDbDeviceCommandInvocation.getInvocationById(id, influx, getDatabase());
     }
 
     /*
@@ -576,8 +583,7 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
      * addDeviceCommandResponse( java.lang.String,
-     * com.sitewhere.spi.device.event.request.
-     * IDeviceCommandResponseCreateRequest)
+     * com.sitewhere.spi.device.event.request. IDeviceCommandResponseCreateRequest)
      */
     @Override
     public IDeviceCommandResponse addDeviceCommandResponse(String assignmentToken,
@@ -676,8 +682,7 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#updateDeviceEvent(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#updateDeviceEvent(
      * java.lang.String,
      * com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest)
      */
@@ -690,8 +695,7 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceManagement
-     * ()
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceManagement ()
      */
     public IDeviceManagement getDeviceManagement() {
 	return deviceManagement;
