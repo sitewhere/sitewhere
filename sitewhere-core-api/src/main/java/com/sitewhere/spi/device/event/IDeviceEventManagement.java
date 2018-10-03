@@ -221,8 +221,8 @@ public interface IDeviceEventManagement extends ITenantLifecycleComponent {
 	    throws SiteWhereException;
 
     /**
-     * List all chunks of data in a device assignment that belong to a given
-     * stream and meet the criteria.
+     * List all chunks of data in a device assignment that belong to a given stream
+     * and meet the criteria.
      * 
      * @param assignmentToken
      * @param streamId
@@ -232,6 +232,15 @@ public interface IDeviceEventManagement extends ITenantLifecycleComponent {
      */
     public ISearchResults<IDeviceStreamData> listDeviceStreamData(String assignmentToken, String streamId,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException;
+
+    /**
+     * Get a device command invocation by unique id.
+     * 
+     * @param id
+     * @return
+     * @throws SiteWhereException
+     */
+    public IDeviceCommandInvocation getDeviceCommandInvocationById(String id) throws SiteWhereException;
 
     /**
      * Add a device command invocation event for the given assignment.

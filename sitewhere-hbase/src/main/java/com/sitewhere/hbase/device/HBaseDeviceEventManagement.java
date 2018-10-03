@@ -199,8 +199,7 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceEvents(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceEvents(
      * java.lang .String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
@@ -252,8 +251,7 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocation(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocation(
      * java.lang .String,
      * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
      */
@@ -321,8 +319,7 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceAlerts(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceAlerts(
      * java.lang .String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
@@ -388,6 +385,15 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
     }
 
     /*
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+     * getDeviceCommandInvocationById(java.lang.String)
+     */
+    @Override
+    public IDeviceCommandInvocation getDeviceCommandInvocationById(String id) throws SiteWhereException {
+	return (IDeviceCommandInvocation) getDeviceEventById(id);
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
@@ -446,8 +452,7 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
      * 
      * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
      * addDeviceCommandResponse( java.lang.String,
-     * com.sitewhere.spi.device.event.request.
-     * IDeviceCommandResponseCreateRequest)
+     * com.sitewhere.spi.device.event.request. IDeviceCommandResponseCreateRequest)
      */
     @Override
     public IDeviceCommandResponse addDeviceCommandResponse(String assignmentToken,
@@ -525,8 +530,7 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#updateDeviceEvent(
+     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#updateDeviceEvent(
      * java.lang.String,
      * com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest)
      */
@@ -539,8 +543,7 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceManagement
-     * ()
+     * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceManagement ()
      */
     public IDeviceManagement getDeviceManagement() {
 	return deviceManagement;

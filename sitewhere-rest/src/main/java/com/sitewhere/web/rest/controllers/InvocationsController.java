@@ -76,11 +76,8 @@ public class InvocationsController extends RestController {
 	    throws SiteWhereException {
 	Tracer.start(TracerCategory.RestApiCall, "getDeviceCommandInvocation", LOGGER);
 	try {
-	    IDeviceEvent found = SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
-		    .getDeviceEventById(id);
-	    if (!(found instanceof IDeviceCommandInvocation)) {
-		throw new SiteWhereException("Event with the corresponding id is not a command invocation.");
-	    }
+	    IDeviceCommandInvocation found = SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest))
+		    .getDeviceCommandInvocationById(id);
 	    DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(
 		    getTenant(servletRequest));
 	    return helper.convert((IDeviceCommandInvocation) found);
