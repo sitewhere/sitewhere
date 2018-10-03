@@ -15,7 +15,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.device.DeviceManagementTriggers;
-import com.sitewhere.device.cache.CacheAwareDeviceManagement;
 import com.sitewhere.device.grpc.DeviceManagementImpl;
 import com.sitewhere.device.initializer.GroovyDeviceModelInitializer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
@@ -31,7 +30,6 @@ import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.microservice.ICachingMicroservice;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
@@ -70,8 +68,7 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	// Create management interfaces.
 	IDeviceManagement implementation = (IDeviceManagement) getModuleContext()
 		.getBean(DeviceManagementBeans.BEAN_DEVICE_MANAGEMENT);
-	this.deviceManagement = new DeviceManagementTriggers(
-		new CacheAwareDeviceManagement(implementation, (ICachingMicroservice) getMicroservice()), this);
+	this.deviceManagement = new DeviceManagementTriggers(implementation, this);
 	this.deviceManagementImpl = new DeviceManagementImpl((IDeviceManagementMicroservice) getMicroservice(),
 		getDeviceManagement());
 

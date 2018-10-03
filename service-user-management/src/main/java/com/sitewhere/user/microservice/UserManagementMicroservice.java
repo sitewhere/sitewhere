@@ -13,17 +13,14 @@ import org.springframework.context.ApplicationContext;
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiDemux;
 import com.sitewhere.grpc.client.tenant.TenantManagementApiDemux;
 import com.sitewhere.microservice.GlobalMicroservice;
-import com.sitewhere.microservice.hazelcast.HazelcastManager;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
-import com.sitewhere.spi.microservice.hazelcast.IHazelcastManager;
 import com.sitewhere.spi.microservice.spring.UserManagementBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.user.IUserManagement;
-import com.sitewhere.user.cache.CacheAwareUserManagement;
 import com.sitewhere.user.configuration.UserManagementModelProvider;
 import com.sitewhere.user.grpc.UserManagementGrpcServer;
 import com.sitewhere.user.kafka.UserManagementKafkaTriggers;
@@ -47,9 +44,6 @@ public class UserManagementMicroservice extends GlobalMicroservice<MicroserviceI
 
     /** Responds to user management GRPC requests */
     private IUserManagementGrpcServer userManagementGrpcServer;
-
-    /** Hazelcast manager */
-    private IHazelcastManager hazelcastManager;
 
     /** User management persistence API */
     private UserManagementAccessor userManagementAccessor = new UserManagementAccessor();
@@ -134,9 +128,9 @@ public class UserManagementMicroservice extends GlobalMicroservice<MicroserviceI
      */
     protected IUserManagement initializeUserManagement(ApplicationContext context) throws SiteWhereException {
 	try {
-	    IUserManagement bean = (IUserManagement) context.getBean(UserManagementBeans.BEAN_USER_MANAGEMENT);
-	    IUserManagement cached = new CacheAwareUserManagement(bean, this);
-	    return new UserManagementKafkaTriggers(cached);
+	    IUserManagement implementation = (IUserManagement) context
+		    .getBean(UserManagementBeans.BEAN_USER_MANAGEMENT);
+	    return new UserManagementKafkaTriggers(implementation);
 	} catch (NoSuchBeanDefinitionException e) {
 	    throw new SiteWhereException("User management bean not found.", e);
 	}
@@ -194,17 +188,11 @@ public class UserManagementMicroservice extends GlobalMicroservice<MicroserviceI
      */
     @Override
     public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Create Hazelcast manager.
-	this.hazelcastManager = new HazelcastManager();
-
 	// Create GRPC components.
 	createGrpcComponents();
 
 	// Composite step for initializing microservice.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
-
-	// Initialize Hazelcast manager.
-	init.addInitializeStep(this, getHazelcastManager(), true);
 
 	// Initialize user management GRPC server.
 	init.addInitializeStep(this, getUserManagementGrpcServer(), true);
@@ -227,9 +215,6 @@ public class UserManagementMicroservice extends GlobalMicroservice<MicroserviceI
     public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
-
-	// Start Hazelcast manager.
-	start.addStartStep(this, getHazelcastManager(), true);
 
 	// Start GRPC server.
 	start.addStartStep(this, getUserManagementGrpcServer(), true);
@@ -258,9 +243,6 @@ public class UserManagementMicroservice extends GlobalMicroservice<MicroserviceI
 	// Stop GRPC server.
 	stop.addStopStep(this, getUserManagementGrpcServer());
 
-	// Stop Hazelcast manager.
-	stop.addStopStep(this, getHazelcastManager());
-
 	// Execute shutdown steps.
 	stop.execute(monitor);
     }
@@ -286,19 +268,6 @@ public class UserManagementMicroservice extends GlobalMicroservice<MicroserviceI
 
     public void setUserManagementGrpcServer(IUserManagementGrpcServer userManagementGrpcServer) {
 	this.userManagementGrpcServer = userManagementGrpcServer;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.microservice.ICachingMicroservice#getHazelcastManager()
-     */
-    @Override
-    public IHazelcastManager getHazelcastManager() {
-	return hazelcastManager;
-    }
-
-    public void setHazelcastManager(IHazelcastManager hazelcastManager) {
-	this.hazelcastManager = hazelcastManager;
     }
 
     /*

@@ -62,6 +62,10 @@ public class InstanceSettings implements IInstanceSettings {
     @Value("${sitewhere.log.metrics:false}")
     private boolean logMetrics;
 
+    /** Flag for whether to use near cache */
+    @Value("${sitewhere.use.near.cache:false}")
+    private boolean useNearCache;
+
     /*
      * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#getProductId()
      */
@@ -200,5 +204,18 @@ public class InstanceSettings implements IInstanceSettings {
 
     public void setLogMetrics(boolean logMetrics) {
 	this.logMetrics = logMetrics;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.instance.IInstanceSettings#isUseNearCache()
+     */
+    @Override
+    public boolean isUseNearCache() {
+	return useNearCache;
+    }
+
+    public void setUseNearCache(boolean useNearCache) {
+	this.useNearCache = useNearCache;
     }
 }

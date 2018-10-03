@@ -10,15 +10,12 @@ package com.sitewhere.grpc.client.asset;
 import java.util.UUID;
 
 import com.sitewhere.grpc.client.cache.AssetManagementCacheProviders;
-import com.sitewhere.grpc.client.cache.CacheUtils;
-import com.sitewhere.grpc.client.cache.NearCacheManager;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
 import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetType;
-import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -28,9 +25,6 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 public class CachedAssetManagementApiChannel extends AssetManagementApiChannel {
-
-    /** Manages local cache */
-    private NearCacheManager nearCacheManager;
 
     /** Asset type cache */
     private ICacheProvider<String, IAssetType> assetTypeCache;
@@ -46,50 +40,52 @@ public class CachedAssetManagementApiChannel extends AssetManagementApiChannel {
 
     public CachedAssetManagementApiChannel(IApiDemux<?> demux, String host, int port) {
 	super(demux, host, port);
-	this.nearCacheManager = new NearCacheManager(MicroserviceIdentifier.AssetManagement);
-	this.assetTypeCache = new AssetManagementCacheProviders.AssetTypeByTokenCache(nearCacheManager);
-	this.assetTypeByIdCache = new AssetManagementCacheProviders.AssetTypeByIdCache(nearCacheManager);
-	this.assetCache = new AssetManagementCacheProviders.AssetByTokenCache(nearCacheManager);
-	this.assetByIdCache = new AssetManagementCacheProviders.AssetByIdCache(nearCacheManager);
+	this.assetTypeCache = new AssetManagementCacheProviders.AssetTypeByTokenCache();
+	this.assetTypeByIdCache = new AssetManagementCacheProviders.AssetTypeByIdCache();
+	this.assetCache = new AssetManagementCacheProviders.AssetByTokenCache();
+	this.assetByIdCache = new AssetManagementCacheProviders.AssetByIdCache();
     }
 
     /*
      * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
-     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.grpc.client.ApiChannel#initialize(com.sitewhere.spi.server.
+     * lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	initializeNestedComponent(getAssetTypeCache(), monitor, true);
+	initializeNestedComponent(getAssetTypeByIdCache(), monitor, true);
+	initializeNestedComponent(getAssetCache(), monitor, true);
+	initializeNestedComponent(getAssetByIdCache(), monitor, true);
 	super.initialize(monitor);
-
-	// Initialize near cache manager.
-	initializeNestedComponent(getNearCacheManager(), monitor, true);
     }
 
     /*
      * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
-     * server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.grpc.client.ApiChannel#start(com.sitewhere.spi.server.lifecycle
+     * .ILifecycleProgressMonitor)
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	startNestedComponent(getAssetTypeCache(), monitor, true);
+	startNestedComponent(getAssetTypeByIdCache(), monitor, true);
+	startNestedComponent(getAssetCache(), monitor, true);
+	startNestedComponent(getAssetByIdCache(), monitor, true);
 	super.start(monitor);
-
-	// Start near cache manager.
-	startNestedComponent(getNearCacheManager(), monitor, true);
     }
 
     /*
      * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
-     * server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.grpc.client.ApiChannel#stop(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleProgressMonitor)
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	stopNestedComponent(getAssetTypeCache(), monitor);
+	stopNestedComponent(getAssetTypeByIdCache(), monitor);
+	stopNestedComponent(getAssetCache(), monitor);
+	stopNestedComponent(getAssetByIdCache(), monitor);
 	super.stop(monitor);
-
-	// Stop near cache manager.
-	stopNestedComponent(getNearCacheManager(), monitor);
     }
 
     /*
@@ -101,13 +97,11 @@ public class CachedAssetManagementApiChannel extends AssetManagementApiChannel {
     public IAsset getAsset(UUID assetId) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IAsset asset = getAssetByIdCache().getCacheEntry(tenant, assetId);
-	if (asset != null) {
-	    CacheUtils.logCacheHit(asset);
-	    return asset;
-	} else {
-	    getLogger().debug("No cached information for asset id '" + assetId + "'.");
+	if (asset == null) {
+	    asset = super.getAsset(assetId);
+	    getAssetByIdCache().setCacheEntry(tenant, assetId, asset);
 	}
-	return super.getAsset(assetId);
+	return asset;
     }
 
     /*
@@ -118,13 +112,11 @@ public class CachedAssetManagementApiChannel extends AssetManagementApiChannel {
     public IAsset getAssetByToken(String token) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IAsset asset = getAssetCache().getCacheEntry(tenant, token);
-	if (asset != null) {
-	    CacheUtils.logCacheHit(asset);
-	    return asset;
-	} else {
-	    getLogger().debug("No cached information for asset token '" + token + "'.");
+	if (asset == null) {
+	    asset = super.getAssetByToken(token);
+	    getAssetCache().setCacheEntry(tenant, token, asset);
 	}
-	return super.getAssetByToken(token);
+	return asset;
     }
 
     /*
@@ -136,13 +128,11 @@ public class CachedAssetManagementApiChannel extends AssetManagementApiChannel {
     public IAssetType getAssetType(UUID assetTypeId) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IAssetType assetType = getAssetTypeByIdCache().getCacheEntry(tenant, assetTypeId);
-	if (assetType != null) {
-	    CacheUtils.logCacheHit(assetType);
-	    return assetType;
-	} else {
-	    getLogger().debug("No cached information for asset type id '" + assetTypeId + "'.");
+	if (assetType == null) {
+	    assetType = super.getAssetType(assetTypeId);
+	    getAssetTypeByIdCache().setCacheEntry(tenant, assetTypeId, assetType);
 	}
-	return super.getAssetType(assetTypeId);
+	return assetType;
     }
 
     /*
@@ -154,21 +144,11 @@ public class CachedAssetManagementApiChannel extends AssetManagementApiChannel {
     public IAssetType getAssetTypeByToken(String token) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IAssetType assetType = getAssetTypeCache().getCacheEntry(tenant, token);
-	if (assetType != null) {
-	    CacheUtils.logCacheHit(assetType);
-	    return assetType;
-	} else {
-	    getLogger().debug("No cached information for asset type token '" + token + "'.");
+	if (assetType == null) {
+	    assetType = super.getAssetTypeByToken(token);
+	    getAssetTypeCache().setCacheEntry(tenant, token, assetType);
 	}
-	return super.getAssetTypeByToken(token);
-    }
-
-    public NearCacheManager getNearCacheManager() {
-	return nearCacheManager;
-    }
-
-    public void setNearCacheManager(NearCacheManager nearCacheManager) {
-	this.nearCacheManager = nearCacheManager;
+	return assetType;
     }
 
     public ICacheProvider<String, IAssetType> getAssetTypeCache() {

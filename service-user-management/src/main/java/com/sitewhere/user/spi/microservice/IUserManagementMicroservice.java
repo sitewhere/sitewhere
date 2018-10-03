@@ -8,7 +8,6 @@
 package com.sitewhere.user.spi.microservice;
 
 import com.sitewhere.grpc.client.spi.provider.ITenantManagementDemuxProvider;
-import com.sitewhere.spi.microservice.ICachingMicroservice;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
 import com.sitewhere.spi.user.IUserManagement;
@@ -20,7 +19,7 @@ import com.sitewhere.user.spi.grpc.IUserManagementGrpcServer;
  * @author Derek
  */
 public interface IUserManagementMicroservice<T extends IFunctionIdentifier>
-	extends IGlobalMicroservice<T>, ICachingMicroservice, ITenantManagementDemuxProvider<T> {
+	extends IGlobalMicroservice<T>, ITenantManagementDemuxProvider<T> {
 
     /**
      * Get GRPC server for user managment APIS.

@@ -9,11 +9,9 @@ package com.sitewhere.grpc.client.tenant;
 
 import java.util.UUID;
 
-import com.sitewhere.grpc.client.cache.NearCacheManager;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -24,9 +22,6 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class CachedTenantManagementApiChannel extends TenantManagementApiChannel {
 
-    /** Manages local cache */
-    private NearCacheManager nearCacheManager;
-
     /** Tenant cache */
     private ICacheProvider<String, ITenant> tenantByTokenCache;
 
@@ -35,49 +30,44 @@ public class CachedTenantManagementApiChannel extends TenantManagementApiChannel
 
     public CachedTenantManagementApiChannel(IApiDemux<?> demux, String host, int port) {
 	super(demux, host, port);
-	this.nearCacheManager = new NearCacheManager(MicroserviceIdentifier.TenantManagement);
-	this.tenantByTokenCache = new TenantManagementCacheProviders.TenantByTokenCache(nearCacheManager);
-	this.tenantByIdCache = new TenantManagementCacheProviders.TenantByIdCache(nearCacheManager);
-	getNearCacheManager().setCacheProviders(tenantByTokenCache, tenantByIdCache);
+	this.tenantByTokenCache = new TenantManagementCacheProviders.TenantByTokenCache();
+	this.tenantByIdCache = new TenantManagementCacheProviders.TenantByIdCache();
     }
 
     /*
      * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
-     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.grpc.client.ApiChannel#initialize(com.sitewhere.spi.server.
+     * lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	initializeNestedComponent(getTenantByTokenCache(), monitor, true);
+	initializeNestedComponent(getTenantByIdCache(), monitor, true);
 	super.initialize(monitor);
-
-	// Initialize near cache manager.
-	initializeNestedComponent(getNearCacheManager(), monitor, true);
     }
 
     /*
      * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
-     * server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.grpc.client.ApiChannel#start(com.sitewhere.spi.server.lifecycle
+     * .ILifecycleProgressMonitor)
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	startNestedComponent(getTenantByTokenCache(), monitor, true);
+	startNestedComponent(getTenantByIdCache(), monitor, true);
 	super.start(monitor);
-
-	// Start near cache manager.
-	startNestedComponent(getNearCacheManager(), monitor, true);
     }
 
     /*
      * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
-     * server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.grpc.client.ApiChannel#stop(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleProgressMonitor)
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	stopNestedComponent(getTenantByTokenCache(), monitor);
+	stopNestedComponent(getTenantByIdCache(), monitor);
 	super.stop(monitor);
-
-	// Stop near cache manager.
-	stopNestedComponent(getNearCacheManager(), monitor);
     }
 
     /*
@@ -88,13 +78,11 @@ public class CachedTenantManagementApiChannel extends TenantManagementApiChannel
     @Override
     public ITenant getTenant(UUID id) throws SiteWhereException {
 	ITenant tenant = getTenantByIdCache().getCacheEntry(null, id);
-	if (tenant != null) {
-	    getLogger().trace("Using cached information for tenant '" + id + "'.");
-	    return tenant;
-	} else {
-	    getLogger().trace("No cached information for tenant '" + id + "'.");
+	if (tenant == null) {
+	    tenant = super.getTenant(id);
+	    getTenantByIdCache().setCacheEntry(null, id, tenant);
 	}
-	return super.getTenant(id);
+	return tenant;
     }
 
     /*
@@ -105,21 +93,11 @@ public class CachedTenantManagementApiChannel extends TenantManagementApiChannel
     @Override
     public ITenant getTenantByToken(String token) throws SiteWhereException {
 	ITenant tenant = getTenantByTokenCache().getCacheEntry(null, token);
-	if (tenant != null) {
-	    getLogger().trace("Using cached information for tenant '" + token + "'.");
-	    return tenant;
-	} else {
-	    getLogger().trace("No cached information for tenant '" + token + "'.");
+	if (tenant == null) {
+	    tenant = super.getTenantByToken(token);
+	    getTenantByTokenCache().setCacheEntry(null, token, tenant);
 	}
-	return super.getTenantByToken(token);
-    }
-
-    public NearCacheManager getNearCacheManager() {
-	return nearCacheManager;
-    }
-
-    public void setNearCacheManager(NearCacheManager nearCacheManager) {
-	this.nearCacheManager = nearCacheManager;
+	return tenant;
     }
 
     public ICacheProvider<String, ITenant> getTenantByTokenCache() {

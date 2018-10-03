@@ -9,12 +9,8 @@ package com.sitewhere.grpc.client.tenant;
 
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.sitewhere.grpc.client.cache.CacheIdentifier;
 import com.sitewhere.grpc.client.cache.CacheProvider;
-import com.sitewhere.spi.microservice.hazelcast.IHazelcastProvider;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -24,12 +20,6 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class TenantManagementCacheProviders {
 
-    /** Cache id for tenant cache */
-    public static final String ID_TENANT_CACHE = "tent";
-
-    /** Cache id for tenant by id cache */
-    public static final String ID_TENANT_BY_ID_CACHE = "tent";
-
     /**
      * Cache for tenants.
      * 
@@ -37,19 +27,8 @@ public class TenantManagementCacheProviders {
      */
     public static class TenantByTokenCache extends CacheProvider<String, ITenant> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LoggerFactory.getLogger(TenantByTokenCache.class);
-
-	public TenantByTokenCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.TenantByToken, 100);
-	}
-
-	/*
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-	    return LOGGER;
+	public TenantByTokenCache() {
+	    super(CacheIdentifier.TenantByToken, String.class, ITenant.class, 100, 60);
 	}
     }
 
@@ -60,19 +39,8 @@ public class TenantManagementCacheProviders {
      */
     public static class TenantByIdCache extends CacheProvider<UUID, ITenant> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LoggerFactory.getLogger(TenantByIdCache.class);
-
-	public TenantByIdCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.TenantById, 100);
-	}
-
-	/*
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-	    return LOGGER;
+	public TenantByIdCache() {
+	    super(CacheIdentifier.TenantById, UUID.class, ITenant.class, 100, 60);
 	}
     }
 }

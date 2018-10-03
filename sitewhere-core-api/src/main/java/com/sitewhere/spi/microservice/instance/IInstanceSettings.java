@@ -90,4 +90,11 @@ public interface IInstanceSettings {
      * @return
      */
     public boolean isLogMetrics();
+
+    /**
+     * Indicates whether near cache should be used.
+     * 
+     * @return
+     */
+    public boolean isUseNearCache();
 }
