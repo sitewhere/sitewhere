@@ -13,7 +13,6 @@ import java.util.List;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.sitewhere.asset.cache.CacheAwareAssetManagement;
 import com.sitewhere.asset.grpc.AssetManagementImpl;
 import com.sitewhere.asset.initializer.GroovyAssetModelInitializer;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
@@ -26,7 +25,6 @@ import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.microservice.ICachingMicroservice;
 import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.spring.AssetManagementBeans;
@@ -83,11 +81,8 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
      * @throws SiteWhereException
      */
     protected void initializeAssetManagementApis() throws SiteWhereException {
-	// Load Spring bean implementations.
-	IAssetManagement implementation = (IAssetManagement) getModuleContext()
+	this.assetManagement = (IAssetManagement) getModuleContext()
 		.getBean(AssetManagementBeans.BEAN_ASSET_MANAGEMENT);
-
-	this.assetManagement = new CacheAwareAssetManagement(implementation, (ICachingMicroservice) getMicroservice());
 	this.assetManagementImpl = new AssetManagementImpl((IAssetManagementMicroservice) getMicroservice(),
 		getAssetManagement());
     }

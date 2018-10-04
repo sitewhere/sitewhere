@@ -9,13 +9,8 @@ package com.sitewhere.grpc.client.user;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.sitewhere.grpc.client.cache.CacheIdentifier;
 import com.sitewhere.grpc.client.cache.CacheProvider;
-import com.sitewhere.spi.microservice.hazelcast.IHazelcastProvider;
-import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 
 /**
@@ -25,12 +20,6 @@ import com.sitewhere.spi.user.IUser;
  */
 public class UserManagementCacheProviders {
 
-    /** Cache id for user cache */
-    public static final String ID_USER_CACHE = "user";
-
-    /** Cache id for granted authorities cache */
-    public static final String ID_GRANTED_AUTHORITIES_CACHE = "grau";
-
     /**
      * Cache for users.
      * 
@@ -38,19 +27,8 @@ public class UserManagementCacheProviders {
      */
     public static class UserByTokenCache extends CacheProvider<String, IUser> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LoggerFactory.getLogger(UserByTokenCache.class);
-
-	public UserByTokenCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.UserByToken, 100);
-	}
-
-	/*
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-	    return LOGGER;
+	public UserByTokenCache() {
+	    super(CacheIdentifier.UserByToken, String.class, IUser.class, 100, 60);
 	}
     }
 
@@ -59,21 +37,11 @@ public class UserManagementCacheProviders {
      * 
      * @author Derek
      */
-    public static class GrantedAuthorityByTokenCache extends CacheProvider<String, List<IGrantedAuthority>> {
+    @SuppressWarnings("rawtypes")
+    public static class GrantedAuthorityByTokenCache extends CacheProvider<String, List> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LoggerFactory.getLogger(GrantedAuthorityByTokenCache.class);
-
-	public GrantedAuthorityByTokenCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.GrantedAuthorityByToken, 100);
-	}
-
-	/*
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-	    return LOGGER;
+	public GrantedAuthorityByTokenCache() {
+	    super(CacheIdentifier.GrantedAuthorityByToken, String.class, List.class, 100, 60);
 	}
     }
 }

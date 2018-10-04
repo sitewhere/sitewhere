@@ -7,10 +7,21 @@
  */
 package com.sitewhere.grpc.client.cache;
 
-import com.hazelcast.core.IMap;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import org.ehcache.Cache;
+import org.ehcache.CacheManager;
+import org.ehcache.config.CacheConfiguration;
+import org.ehcache.config.builders.CacheConfigurationBuilder;
+import org.ehcache.config.builders.CacheManagerBuilder;
+import org.ehcache.config.builders.ResourcePoolsBuilder;
+
 import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.hazelcast.IHazelcastProvider;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -21,24 +32,61 @@ import com.sitewhere.spi.tenant.ITenant;
  * @param <K>
  * @param <V>
  */
-public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
-
-    /** Cache prefix for global caches */
-    private static final String GLOBAL_CACHE_INDICATOR = "_global_";
-
-    /** Hazelcast provider */
-    private IHazelcastProvider hazelcastProvider;
+public abstract class CacheProvider<K, V> extends LifecycleComponent implements ICacheProvider<K, V> {
 
     /** Cache identifier */
     private CacheIdentifier cacheIdentifier;
 
+    /** Cache manager */
+    private CacheManager cacheManager;
+
+    /** Key type */
+    private Class<K> keyType;
+
+    /** Value type */
+    private Class<V> valueType;
+
+    /** Cache for global objects */
+    private Cache<K, V> globalCache;
+
+    /** Map of tenant-specific caches */
+    private Map<UUID, Cache<K, V>> tenantCaches = new HashMap<>();
+
     /** Maximum cache size */
     private int maximumSize;
 
-    public CacheProvider(IHazelcastProvider hazelcastProvider, CacheIdentifier cacheIdentifier, int maximumSize) {
-	this.hazelcastProvider = hazelcastProvider;
+    /** Time to live in seconds */
+    private int ttlInSeconds;
+
+    public CacheProvider(CacheIdentifier cacheIdentifier, Class<K> keyType, Class<V> valueType, int maximumSize,
+	    int ttlInSeconds) {
+	this.cacheManager = CacheManagerBuilder.newCacheManagerBuilder().build();
 	this.cacheIdentifier = cacheIdentifier;
+	this.keyType = keyType;
+	this.valueType = valueType;
 	this.maximumSize = maximumSize;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+	getCacheManager().init();
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	getCacheManager().close();
+	super.stop(monitor);
     }
 
     /*
@@ -48,10 +96,8 @@ public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
      */
     @Override
     public void setCacheEntry(ITenant tenant, K key, V value) throws SiteWhereException {
-	if (getCache(tenant) != null) {
-	    getLogger().trace("Caching value for '" + key.toString() + "'.");
-	    getCache(tenant).put(key, value);
-	}
+	getLogger().debug("Caching value for '" + key.toString() + "'.");
+	getCache(tenant).put(key, value);
     }
 
     /*
@@ -61,16 +107,11 @@ public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
      */
     @Override
     public V getCacheEntry(ITenant tenant, K key) throws SiteWhereException {
-	if (getCache(tenant) != null) {
-	    V result = getCache(tenant).get(key);
-	    if (result != null) {
-		getLogger().trace("Found cached value for '" + key.toString() + "'.");
-		return result;
-	    }
-	} else {
-	    getLogger().debug("Accessing cache before Hazelcast has been initialized.");
+	V result = getCache(tenant).get(key);
+	if (result != null) {
+	    getLogger().debug("Found cached value for '" + key.toString() + "'.");
 	}
-	return null;
+	return result;
     }
 
     /*
@@ -80,9 +121,7 @@ public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
      */
     @Override
     public void removeCacheEntry(ITenant tenant, K key) throws SiteWhereException {
-	if (getCache(tenant) != null) {
-	    getCache(tenant).remove(key);
-	}
+	getCache(tenant).remove(key);
     }
 
     /**
@@ -91,27 +130,49 @@ public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
      * @return
      * @throws SiteWhereException
      */
-    protected IMap<K, V> getCache(ITenant tenant) throws SiteWhereException {
-	boolean hzInitialized = (getHazelcastProvider().getHazelcastInstance() != null)
-		&& (getHazelcastProvider().getHazelcastInstance().getLifecycleService().isRunning());
-	if (hzInitialized) {
-	    String cacheName = getCacheNameForTenant(tenant);
-	    return getHazelcastProvider().getHazelcastInstance().getMap(cacheName);
+    protected Cache<K, V> getCache(ITenant tenant) throws SiteWhereException {
+	if (tenant == null) {
+	    Cache<K, V> cache = getGlobalCache();
+	    if (cache == null) {
+		cache = createCache(null);
+		this.globalCache = cache;
+	    }
+	    return cache;
 	} else {
-	    getLogger().debug("Trying to access uninitialized cache.");
-	    return null;
+	    Cache<K, V> cache = getTenantCaches().get(tenant.getId());
+	    if (cache == null) {
+		cache = createCache(tenant);
+		getTenantCaches().put(tenant.getId(), cache);
+	    }
+	    return cache;
 	}
     }
 
     /**
-     * Get unique cache name for tenant.
+     * Create a new cache for the given tenant (or null for global).
      * 
      * @param tenant
      * @return
      */
-    protected String getCacheNameForTenant(ITenant tenant) {
-	String tenantId = (tenant != null) ? tenant.getId().toString() : GLOBAL_CACHE_INDICATOR;
-	return getCacheIdentifier().getCacheKey() + ":" + tenantId;
+    protected Cache<K, V> createCache(ITenant tenant) {
+	String alias = (tenant != null) ? getCacheIdentifier().getCacheKey() + "-" + tenant.getId().toString()
+		: getCacheIdentifier().getCacheKey();
+	return getCacheManager().createCache(alias, getCacheConfiguration());
+    }
+
+    /**
+     * Get cache configuration.
+     * 
+     * @return
+     */
+    protected CacheConfiguration<K, V> getCacheConfiguration() {
+	// return CacheConfigurationBuilder
+	// .newCacheConfigurationBuilder(getKeyType(), getValueType(),
+	// ResourcePoolsBuilder.heap(getMaximumSize()))
+	// .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(getTtlInSeconds()))).build();
+	return CacheConfigurationBuilder
+		.newCacheConfigurationBuilder(getKeyType(), getValueType(), ResourcePoolsBuilder.heap(getMaximumSize()))
+		.build();
     }
 
     /*
@@ -138,11 +199,35 @@ public abstract class CacheProvider<K, V> implements ICacheProvider<K, V> {
 	this.maximumSize = maximumSize;
     }
 
-    public IHazelcastProvider getHazelcastProvider() {
-	return hazelcastProvider;
+    /*
+     * @see com.sitewhere.grpc.client.spi.cache.ICacheProvider#getTtlInSeconds()
+     */
+    @Override
+    public int getTtlInSeconds() {
+	return ttlInSeconds;
     }
 
-    public void setHazelcastProvider(IHazelcastProvider hazelcastProvider) {
-	this.hazelcastProvider = hazelcastProvider;
+    public void setTtlInSeconds(int ttlInSeconds) {
+	this.ttlInSeconds = ttlInSeconds;
+    }
+
+    protected CacheManager getCacheManager() {
+	return cacheManager;
+    }
+
+    protected Class<K> getKeyType() {
+	return keyType;
+    }
+
+    protected Class<V> getValueType() {
+	return valueType;
+    }
+
+    protected Cache<K, V> getGlobalCache() {
+	return globalCache;
+    }
+
+    protected Map<UUID, Cache<K, V>> getTenantCaches() {
+	return tenantCaches;
     }
 }

@@ -9,14 +9,10 @@ package com.sitewhere.grpc.client.cache;
 
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.microservice.hazelcast.IHazelcastProvider;
 
 /**
  * Cache providers for device management entities.
@@ -32,19 +28,8 @@ public class DeviceManagementCacheProviders {
      */
     public static class AreaByTokenCache extends CacheProvider<String, IArea> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LoggerFactory.getLogger(AreaByTokenCache.class);
-
-	public AreaByTokenCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.AreaByToken, 1000);
-	}
-
-	/*
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-	    return LOGGER;
+	public AreaByTokenCache() {
+	    super(CacheIdentifier.AreaByToken, String.class, IArea.class, 1000, 60);
 	}
     }
 
@@ -55,19 +40,8 @@ public class DeviceManagementCacheProviders {
      */
     public static class AreaByIdCache extends CacheProvider<UUID, IArea> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LoggerFactory.getLogger(AreaByIdCache.class);
-
-	public AreaByIdCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.AreaById, 1000);
-	}
-
-	/*
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-	    return LOGGER;
+	public AreaByIdCache() {
+	    super(CacheIdentifier.AreaById, UUID.class, IArea.class, 1000, 60);
 	}
     }
 
@@ -78,19 +52,8 @@ public class DeviceManagementCacheProviders {
      */
     public static class DeviceTypeByTokenCache extends CacheProvider<String, IDeviceType> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LoggerFactory.getLogger(DeviceTypeByTokenCache.class);
-
-	public DeviceTypeByTokenCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.DeviceByToken, 100);
-	}
-
-	/*
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-	    return LOGGER;
+	public DeviceTypeByTokenCache() {
+	    super(CacheIdentifier.DeviceByToken, String.class, IDeviceType.class, 1000, 60);
 	}
     }
 
@@ -101,19 +64,8 @@ public class DeviceManagementCacheProviders {
      */
     public static class DeviceTypeByIdCache extends CacheProvider<UUID, IDeviceType> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LoggerFactory.getLogger(DeviceTypeByIdCache.class);
-
-	public DeviceTypeByIdCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.DeviceTypeById, 100);
-	}
-
-	/*
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-	    return LOGGER;
+	public DeviceTypeByIdCache() {
+	    super(CacheIdentifier.DeviceTypeById, UUID.class, IDeviceType.class, 1000, 60);
 	}
     }
 
@@ -124,19 +76,8 @@ public class DeviceManagementCacheProviders {
      */
     public static class DeviceByTokenCache extends CacheProvider<String, IDevice> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LoggerFactory.getLogger(DeviceByTokenCache.class);
-
-	public DeviceByTokenCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.DeviceByToken, 5000);
-	}
-
-	/*
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-	    return LOGGER;
+	public DeviceByTokenCache() {
+	    super(CacheIdentifier.DeviceByToken, String.class, IDevice.class, 10000, 30);
 	}
     }
 
@@ -147,19 +88,8 @@ public class DeviceManagementCacheProviders {
      */
     public static class DeviceByIdCache extends CacheProvider<UUID, IDevice> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LoggerFactory.getLogger(DeviceByIdCache.class);
-
-	public DeviceByIdCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.DeviceById, 5000);
-	}
-
-	/*
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-	    return LOGGER;
+	public DeviceByIdCache() {
+	    super(CacheIdentifier.DeviceById, UUID.class, IDevice.class, 10000, 30);
 	}
     }
 
@@ -170,19 +100,8 @@ public class DeviceManagementCacheProviders {
      */
     public static class DeviceAssignmentByTokenCache extends CacheProvider<String, IDeviceAssignment> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LoggerFactory.getLogger(DeviceAssignmentByTokenCache.class);
-
-	public DeviceAssignmentByTokenCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.DeviceAssignmentByToken, 5000);
-	}
-
-	/*
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-	    return LOGGER;
+	public DeviceAssignmentByTokenCache() {
+	    super(CacheIdentifier.DeviceAssignmentByToken, String.class, IDeviceAssignment.class, 10000, 30);
 	}
     }
 
@@ -193,19 +112,8 @@ public class DeviceManagementCacheProviders {
      */
     public static class DeviceAssignmentByIdCache extends CacheProvider<UUID, IDeviceAssignment> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LoggerFactory.getLogger(DeviceAssignmentByIdCache.class);
-
-	public DeviceAssignmentByIdCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.DeviceAssignmentById, 5000);
-	}
-
-	/*
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-	    return LOGGER;
+	public DeviceAssignmentByIdCache() {
+	    super(CacheIdentifier.DeviceAssignmentById, UUID.class, IDeviceAssignment.class, 10000, 30);
 	}
     }
 }

@@ -7,10 +7,9 @@
  */
 package com.sitewhere.grpc.client.spi.cache;
 
-import org.slf4j.Logger;
-
 import com.sitewhere.grpc.client.cache.CacheIdentifier;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -21,7 +20,7 @@ import com.sitewhere.spi.tenant.ITenant;
  * @param <K>
  * @param <V>
  */
-public interface ICacheProvider<K, V> {
+public interface ICacheProvider<K, V> extends ILifecycleComponent {
 
     /**
      * Get cache identifier.
@@ -36,6 +35,13 @@ public interface ICacheProvider<K, V> {
      * @return
      */
     public int getMaximumSize();
+
+    /**
+     * Get time to live in seconds.
+     * 
+     * @return
+     */
+    public int getTtlInSeconds();
 
     /**
      * Set a cache entry.
@@ -65,11 +71,4 @@ public interface ICacheProvider<K, V> {
      * @throws SiteWhereException
      */
     public void removeCacheEntry(ITenant tenant, K key) throws SiteWhereException;
-
-    /**
-     * Get logger for cache.
-     * 
-     * @return
-     */
-    public Logger getLogger();
 }

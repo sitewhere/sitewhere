@@ -8,7 +8,6 @@
 package com.sitewhere.grpc.client.spi.cache;
 
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
-import com.sitewhere.spi.microservice.hazelcast.IHazelcastProvider;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
@@ -17,7 +16,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
  * 
  * @author Derek
  */
-public interface INearCacheManager extends ILifecycleComponent, IHazelcastProvider {
+public interface INearCacheManager extends ILifecycleComponent {
 
     /**
      * Get target cache type to connect to.

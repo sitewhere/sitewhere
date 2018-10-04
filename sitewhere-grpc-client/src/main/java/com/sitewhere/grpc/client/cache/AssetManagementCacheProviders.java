@@ -9,12 +9,8 @@ package com.sitewhere.grpc.client.cache;
 
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetType;
-import com.sitewhere.spi.microservice.hazelcast.IHazelcastProvider;
 
 /**
  * Cache providers for asset management entities.
@@ -30,19 +26,8 @@ public class AssetManagementCacheProviders {
      */
     public static class AssetTypeByTokenCache extends CacheProvider<String, IAssetType> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LoggerFactory.getLogger(AssetByTokenCache.class);
-
-	public AssetTypeByTokenCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.AssetTypeByToken, 1000);
-	}
-
-	/*
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-	    return LOGGER;
+	public AssetTypeByTokenCache() {
+	    super(CacheIdentifier.AssetTypeByToken, String.class, IAssetType.class, 1000, 60);
 	}
     }
 
@@ -53,19 +38,8 @@ public class AssetManagementCacheProviders {
      */
     public static class AssetTypeByIdCache extends CacheProvider<UUID, IAssetType> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LoggerFactory.getLogger(AssetByTokenCache.class);
-
-	public AssetTypeByIdCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.AssetTypeById, 1000);
-	}
-
-	/*
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-	    return LOGGER;
+	public AssetTypeByIdCache() {
+	    super(CacheIdentifier.AssetTypeById, UUID.class, IAssetType.class, 1000, 60);
 	}
     }
 
@@ -76,19 +50,8 @@ public class AssetManagementCacheProviders {
      */
     public static class AssetByTokenCache extends CacheProvider<String, IAsset> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LoggerFactory.getLogger(AssetByTokenCache.class);
-
-	public AssetByTokenCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.AssetByToken, 5000);
-	}
-
-	/*
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-	    return LOGGER;
+	public AssetByTokenCache() {
+	    super(CacheIdentifier.AssetByToken, String.class, IAsset.class, 10000, 60);
 	}
     }
 
@@ -99,19 +62,8 @@ public class AssetManagementCacheProviders {
      */
     public static class AssetByIdCache extends CacheProvider<UUID, IAsset> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = LoggerFactory.getLogger(AssetByTokenCache.class);
-
-	public AssetByIdCache(IHazelcastProvider hazelcastProvider) {
-	    super(hazelcastProvider, CacheIdentifier.AssetById, 5000);
-	}
-
-	/*
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-	    return LOGGER;
+	public AssetByIdCache() {
+	    super(CacheIdentifier.AssetById, UUID.class, IAsset.class, 10000, 60);
 	}
     }
 }

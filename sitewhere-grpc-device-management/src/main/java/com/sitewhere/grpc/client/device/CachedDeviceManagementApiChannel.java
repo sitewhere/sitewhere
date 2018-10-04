@@ -9,9 +9,7 @@ package com.sitewhere.grpc.client.device;
 
 import java.util.UUID;
 
-import com.sitewhere.grpc.client.cache.CacheUtils;
 import com.sitewhere.grpc.client.cache.DeviceManagementCacheProviders;
-import com.sitewhere.grpc.client.cache.NearCacheManager;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
 import com.sitewhere.security.UserContextManager;
@@ -20,7 +18,6 @@ import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -30,9 +27,6 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel {
-
-    /** Manages local cache */
-    private NearCacheManager nearCacheManager;
 
     /** Area cache */
     private ICacheProvider<String, IArea> areaCache;
@@ -60,54 +54,68 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
 
     public CachedDeviceManagementApiChannel(IApiDemux<?> demux, String host, int port) {
 	super(demux, host, port);
-	this.nearCacheManager = new NearCacheManager(MicroserviceIdentifier.DeviceManagement);
-	this.areaCache = new DeviceManagementCacheProviders.AreaByTokenCache(nearCacheManager);
-	this.areaByIdCache = new DeviceManagementCacheProviders.AreaByIdCache(nearCacheManager);
-	this.deviceTypeCache = new DeviceManagementCacheProviders.DeviceTypeByTokenCache(nearCacheManager);
-	this.deviceTypeByIdCache = new DeviceManagementCacheProviders.DeviceTypeByIdCache(nearCacheManager);
-	this.deviceCache = new DeviceManagementCacheProviders.DeviceByTokenCache(nearCacheManager);
-	this.deviceByIdCache = new DeviceManagementCacheProviders.DeviceByIdCache(nearCacheManager);
-	this.deviceAssignmentCache = new DeviceManagementCacheProviders.DeviceAssignmentByTokenCache(nearCacheManager);
-	this.deviceAssignmentByIdCache = new DeviceManagementCacheProviders.DeviceAssignmentByIdCache(nearCacheManager);
+	this.areaCache = new DeviceManagementCacheProviders.AreaByTokenCache();
+	this.areaByIdCache = new DeviceManagementCacheProviders.AreaByIdCache();
+	this.deviceTypeCache = new DeviceManagementCacheProviders.DeviceTypeByTokenCache();
+	this.deviceTypeByIdCache = new DeviceManagementCacheProviders.DeviceTypeByIdCache();
+	this.deviceCache = new DeviceManagementCacheProviders.DeviceByTokenCache();
+	this.deviceByIdCache = new DeviceManagementCacheProviders.DeviceByIdCache();
+	this.deviceAssignmentCache = new DeviceManagementCacheProviders.DeviceAssignmentByTokenCache();
+	this.deviceAssignmentByIdCache = new DeviceManagementCacheProviders.DeviceAssignmentByIdCache();
     }
 
     /*
      * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
-     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.grpc.client.ApiChannel#initialize(com.sitewhere.spi.server.
+     * lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	initializeNestedComponent(getAreaCache(), monitor, true);
+	initializeNestedComponent(getAreaByIdCache(), monitor, true);
+	initializeNestedComponent(getDeviceTypeCache(), monitor, true);
+	initializeNestedComponent(getDeviceTypeByIdCache(), monitor, true);
+	initializeNestedComponent(getDeviceCache(), monitor, true);
+	initializeNestedComponent(getDeviceByIdCache(), monitor, true);
+	initializeNestedComponent(getDeviceAssignmentCache(), monitor, true);
+	initializeNestedComponent(getDeviceAssignmentByIdCache(), monitor, true);
 	super.initialize(monitor);
-
-	// Initialize near cache manager.
-	initializeNestedComponent(getNearCacheManager(), monitor, true);
     }
 
     /*
      * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
-     * server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.grpc.client.ApiChannel#start(com.sitewhere.spi.server.lifecycle
+     * .ILifecycleProgressMonitor)
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	startNestedComponent(getAreaCache(), monitor, true);
+	startNestedComponent(getAreaByIdCache(), monitor, true);
+	startNestedComponent(getDeviceTypeCache(), monitor, true);
+	startNestedComponent(getDeviceTypeByIdCache(), monitor, true);
+	startNestedComponent(getDeviceCache(), monitor, true);
+	startNestedComponent(getDeviceByIdCache(), monitor, true);
+	startNestedComponent(getDeviceAssignmentCache(), monitor, true);
+	startNestedComponent(getDeviceAssignmentByIdCache(), monitor, true);
 	super.start(monitor);
-
-	// Start near cache manager.
-	startNestedComponent(getNearCacheManager(), monitor, true);
     }
 
     /*
      * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
-     * server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.grpc.client.ApiChannel#stop(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleProgressMonitor)
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	stopNestedComponent(getAreaCache(), monitor);
+	stopNestedComponent(getAreaByIdCache(), monitor);
+	stopNestedComponent(getDeviceTypeCache(), monitor);
+	stopNestedComponent(getDeviceTypeByIdCache(), monitor);
+	stopNestedComponent(getDeviceCache(), monitor);
+	stopNestedComponent(getDeviceByIdCache(), monitor);
+	stopNestedComponent(getDeviceAssignmentCache(), monitor);
+	stopNestedComponent(getDeviceAssignmentByIdCache(), monitor);
 	super.stop(monitor);
-
-	// Stop near cache manager.
-	stopNestedComponent(getNearCacheManager(), monitor);
     }
 
     /*
@@ -118,13 +126,11 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
     public IArea getAreaByToken(String token) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IArea area = getAreaCache().getCacheEntry(tenant, token);
-	if (area != null) {
-	    CacheUtils.logCacheHit(area);
-	    return area;
-	} else {
-	    getLogger().trace("No cached information for area '" + token + "'.");
+	if (area == null) {
+	    area = super.getAreaByToken(token);
+	    getAreaCache().setCacheEntry(tenant, token, area);
 	}
-	return super.getAreaByToken(token);
+	return area;
     }
 
     /*
@@ -136,13 +142,11 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
     public IArea getArea(UUID id) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IArea area = getAreaByIdCache().getCacheEntry(tenant, id);
-	if (area != null) {
-	    CacheUtils.logCacheHit(area);
-	    return area;
-	} else {
-	    getLogger().trace("No cached information for area id '" + id + "'.");
+	if (area == null) {
+	    area = super.getArea(id);
+	    getAreaByIdCache().setCacheEntry(tenant, id, area);
 	}
-	return super.getArea(id);
+	return area;
     }
 
     /*
@@ -153,13 +157,11 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
     public IDeviceType getDeviceTypeByToken(String token) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDeviceType deviceType = getDeviceTypeCache().getCacheEntry(tenant, token);
-	if (deviceType != null) {
-	    CacheUtils.logCacheHit(deviceType);
-	    return deviceType;
-	} else {
-	    getLogger().trace("No cached information for device type '" + token + "'.");
+	if (deviceType == null) {
+	    deviceType = super.getDeviceTypeByToken(token);
+	    getDeviceTypeCache().setCacheEntry(tenant, token, deviceType);
 	}
-	return super.getDeviceTypeByToken(token);
+	return deviceType;
     }
 
     /*
@@ -171,13 +173,11 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
     public IDeviceType getDeviceType(UUID id) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDeviceType deviceType = getDeviceTypeByIdCache().getCacheEntry(tenant, id);
-	if (deviceType != null) {
-	    CacheUtils.logCacheHit(deviceType);
-	    return deviceType;
-	} else {
-	    getLogger().trace("No cached information for device type id '" + id + "'.");
+	if (deviceType == null) {
+	    deviceType = super.getDeviceType(id);
+	    getDeviceTypeByIdCache().setCacheEntry(tenant, id, deviceType);
 	}
-	return super.getDeviceType(id);
+	return deviceType;
     }
 
     /*
@@ -189,13 +189,11 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
     public IDevice getDeviceByToken(String token) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDevice device = getDeviceCache().getCacheEntry(tenant, token);
-	if (device != null) {
-	    CacheUtils.logCacheHit(device);
-	    return device;
-	} else {
-	    getLogger().trace("No cached information for device '" + token + "'.");
+	if (device == null) {
+	    device = super.getDeviceByToken(token);
+	    getDeviceCache().setCacheEntry(tenant, token, device);
 	}
-	return super.getDeviceByToken(token);
+	return device;
     }
 
     /*
@@ -207,13 +205,11 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
     public IDevice getDevice(UUID deviceId) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDevice device = getDeviceByIdCache().getCacheEntry(tenant, deviceId);
-	if (device != null) {
-	    CacheUtils.logCacheHit(device);
-	    return device;
-	} else {
-	    getLogger().trace("No cached information for device id '" + deviceId + "'.");
+	if (device == null) {
+	    device = super.getDevice(deviceId);
+	    getDeviceByIdCache().setCacheEntry(tenant, deviceId, device);
 	}
-	return super.getDevice(deviceId);
+	return device;
     }
 
     /*
@@ -224,13 +220,11 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
     public IDeviceAssignment getDeviceAssignmentByToken(String token) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDeviceAssignment assignment = getDeviceAssignmentCache().getCacheEntry(tenant, token);
-	if (assignment != null) {
-	    CacheUtils.logCacheHit(assignment);
-	    return assignment;
-	} else {
-	    getLogger().trace("No cached information for assignment '" + token + "'.");
+	if (assignment == null) {
+	    assignment = super.getDeviceAssignmentByToken(token);
+	    getDeviceAssignmentCache().setCacheEntry(tenant, token, assignment);
 	}
-	return super.getDeviceAssignmentByToken(token);
+	return assignment;
     }
 
     /*
@@ -241,21 +235,11 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
     public IDeviceAssignment getDeviceAssignment(UUID id) throws SiteWhereException {
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDeviceAssignment assignment = getDeviceAssignmentByIdCache().getCacheEntry(tenant, id);
-	if (assignment != null) {
-	    CacheUtils.logCacheHit(assignment);
-	    return assignment;
-	} else {
-	    getLogger().trace("No cached information for assignment id '" + id + "'.");
+	if (assignment == null) {
+	    assignment = super.getDeviceAssignment(id);
+	    getDeviceAssignmentByIdCache().setCacheEntry(tenant, id, assignment);
 	}
-	return super.getDeviceAssignment(id);
-    }
-
-    public NearCacheManager getNearCacheManager() {
-	return nearCacheManager;
-    }
-
-    public void setNearCacheManager(NearCacheManager nearCacheManager) {
-	this.nearCacheManager = nearCacheManager;
+	return assignment;
     }
 
     public ICacheProvider<String, IArea> getAreaCache() {

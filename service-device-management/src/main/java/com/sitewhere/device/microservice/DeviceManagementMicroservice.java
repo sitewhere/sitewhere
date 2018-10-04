@@ -16,13 +16,11 @@ import com.sitewhere.grpc.client.asset.AssetManagementApiDemux;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
-import com.sitewhere.microservice.hazelcast.HazelcastManager;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
-import com.sitewhere.spi.microservice.hazelcast.IHazelcastManager;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -47,9 +45,6 @@ public class DeviceManagementMicroservice
 
     /** Asset management API demux */
     private IAssetManagementApiDemux assetManagementApiDemux;
-
-    /** Hazelcast manager */
-    private IHazelcastManager hazelcastManager;
 
     /*
      * (non-Javadoc)
@@ -105,9 +100,6 @@ public class DeviceManagementMicroservice
      */
     @Override
     public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Create Hazelcast manager.
-	this.hazelcastManager = new HazelcastManager();
-
 	// Create device management GRPC server.
 	this.deviceManagementGrpcServer = new DeviceManagementGrpcServer(this);
 
@@ -119,9 +111,6 @@ public class DeviceManagementMicroservice
 
 	// Create step that will start components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
-
-	// Initialize Hazelcast manager.
-	init.addInitializeStep(this, getHazelcastManager(), true);
 
 	// Initialize device management GRPC server.
 	init.addInitializeStep(this, getDeviceManagementGrpcServer(), true);
@@ -147,9 +136,6 @@ public class DeviceManagementMicroservice
     public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
-
-	// Start Hazelcast manager.
-	start.addStartStep(this, getHazelcastManager(), true);
 
 	// Start device management GRPC server.
 	start.addStartStep(this, getDeviceManagementGrpcServer(), true);
@@ -184,9 +170,6 @@ public class DeviceManagementMicroservice
 
 	// Stop asset management API demux.
 	stop.addStopStep(this, getAssetManagementApiDemux());
-
-	// Stop Hazelcast manager.
-	stop.addStopStep(this, getHazelcastManager());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -229,18 +212,5 @@ public class DeviceManagementMicroservice
 
     public void setAssetManagementApiDemux(IAssetManagementApiDemux assetManagementApiDemux) {
 	this.assetManagementApiDemux = assetManagementApiDemux;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.microservice.ICachingMicroservice#getHazelcastManager()
-     */
-    @Override
-    public IHazelcastManager getHazelcastManager() {
-	return hazelcastManager;
-    }
-
-    public void setHazelcastManager(IHazelcastManager hazelcastManager) {
-	this.hazelcastManager = hazelcastManager;
     }
 }
