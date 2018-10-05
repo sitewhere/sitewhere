@@ -7,7 +7,6 @@
  */
 package com.sitewhere.grpc.client;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,6 +16,8 @@ import java.util.concurrent.Executors;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.orbitz.consul.HealthClient;
+import com.orbitz.consul.model.health.ServiceHealth;
 import com.sitewhere.grpc.client.spi.IApiChannel;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.IApiDemuxRoutingStrategy;
@@ -24,13 +25,6 @@ import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.state.IInstanceMicroservice;
-import com.sitewhere.spi.microservice.state.IInstanceTopologyEntry;
-import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
-import com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesListener;
-import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
-import com.sitewhere.spi.microservice.state.IMicroserviceState;
-import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.security.ITenantAwareAuthentication;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
@@ -43,8 +37,10 @@ import com.sitewhere.spi.tenant.ITenant;
  * @author Derek
  */
 @SuppressWarnings("rawtypes")
-public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecycleComponent
-	implements IApiDemux<T>, IInstanceTopologyUpdatesListener {
+public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecycleComponent implements IApiDemux<T> {
+
+    /** Number of seconds to wait between discovery checks */
+    protected static final long DISCOVERY_CHECK_INTERVAL = 5 * 1000;
 
     /** Min of time to wait between checks for available API channel */
     protected static final long API_CHANNEL_WAIT_INTERVAL_MS_MIN = 100;
@@ -68,8 +64,11 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
     @SuppressWarnings("unchecked")
     private IApiDemuxRoutingStrategy<T> routingStrategy = new RoundRobinDemuxRoutingStrategy();
 
-    /** Executor service */
-    private ExecutorService executor;
+    /** Channel initializer pool */
+    private ExecutorService channelInitializer;
+
+    /** Discovery monitor pool */
+    private ExecutorService discoveryMonitor;
 
     /*
      * @see
@@ -78,24 +77,11 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	executor = Executors.newSingleThreadExecutor();
-	getMicroservice().getTopologyStateAggregator().addInstanceTopologyUpdatesListener(this);
-	bootstrapFromExistingTopology();
-    }
+	channelInitializer = Executors.newSingleThreadExecutor();
 
-    /**
-     * Since the topology updates manager may have already captured information
-     * before the listener was registered, loop through existing members and
-     * register them.
-     */
-    protected void bootstrapFromExistingTopology() {
-	IInstanceTopologySnapshot topology = getMicroservice().getTopologyStateAggregator()
-		.getInstanceTopologySnapshot();
-	for (IInstanceTopologyEntry entry : topology.getTopologyEntriesByIdentifier().values()) {
-	    for (IInstanceMicroservice microservice : entry.getMicroservicesByHostname().values()) {
-		detectServiceAdded(microservice.getLatestState());
-	    }
-	}
+	// Monitor Consul to discover added/removed services.
+	discoveryMonitor = Executors.newSingleThreadExecutor();
+	discoveryMonitor.execute(new DiscoveryMonitor());
     }
 
     /*
@@ -105,11 +91,11 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	if (getMicroservice().getTopologyStateAggregator() != null) {
-	    getMicroservice().getTopologyStateAggregator().removeInstanceTopologyUpdatesListener(this);
+	if (channelInitializer != null) {
+	    channelInitializer.shutdown();
 	}
-	if (executor != null) {
-	    executor.shutdown();
+	if (discoveryMonitor != null) {
+	    discoveryMonitor.shutdown();
 	}
     }
 
@@ -225,7 +211,7 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
      */
     @Override
     public void initializeApiChannel(String host) throws SiteWhereException {
-	executor.execute(new ApiChannelInitializer(host));
+	channelInitializer.execute(new ApiChannelInitializer(host));
     }
 
     /*
@@ -252,104 +238,36 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 	return getApiChannels().get(host);
     }
 
-    /*
-     * @see com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesListener#
-     * onMicroserviceAdded(com.sitewhere.spi.microservice.state.IMicroserviceState)
-     */
-    @Override
-    public void onMicroserviceAdded(IMicroserviceState state) {
-	detectServiceAdded(state);
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesListener#
-     * onMicroserviceUpdated(com.sitewhere.spi.microservice.state.
-     * IMicroserviceState, com.sitewhere.spi.microservice.state.IMicroserviceState)
-     */
-    @Override
-    public void onMicroserviceUpdated(IMicroserviceState previous, IMicroserviceState updated) {
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesListener#
-     * onMicroserviceRemoved(com.sitewhere.spi.microservice.state.
-     * IMicroserviceState)
-     */
-    @Override
-    public void onMicroserviceRemoved(IMicroserviceState state) {
-	detectServiceRemoved(state.getMicroservice());
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesListener#
-     * onTenantEngineAdded(com.sitewhere.spi.microservice.state.IMicroserviceState,
-     * com.sitewhere.spi.microservice.state.ITenantEngineState)
-     */
-    @Override
-    public void onTenantEngineAdded(IMicroserviceState microservice, ITenantEngineState tenantEngine) {
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesListener#
-     * onTenantEngineUpdated(com.sitewhere.spi.microservice.state.
-     * IMicroserviceState, com.sitewhere.spi.microservice.state.ITenantEngineState,
-     * com.sitewhere.spi.microservice.state.ITenantEngineState)
-     */
-    @Override
-    public void onTenantEngineUpdated(IMicroserviceState microservice, ITenantEngineState previous,
-	    ITenantEngineState updated) {
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.state.IInstanceTopologyUpdatesListener#
-     * onTenantEngineRemoved(com.sitewhere.spi.microservice.state.
-     * IMicroserviceState, com.sitewhere.spi.microservice.state.ITenantEngineState)
-     */
-    @Override
-    public void onTenantEngineRemoved(IMicroserviceState microservice, ITenantEngineState tenantEngine) {
-    }
-
     /**
-     * Detect whether a service was added/scaled.
+     * Monitors Consul to check for addition/removal of services.
      * 
-     * @param snapshot
+     * @author Derek
      */
-    protected void detectServiceAdded(IMicroserviceState state) {
-	IMicroserviceDetails microservice = state.getMicroservice();
-	if (getTargetIdentifier().equals(microservice.getIdentifier())) {
-	    T existing = getApiChannelForHost(microservice.getHostname());
-	    if (existing == null) {
-		getLogger().debug(GrpcClientMessages.API_CHANNEL_INIT_AFTER_MS_ADDED, getTargetIdentifier(),
-			microservice.getHostname());
+    private class DiscoveryMonitor implements Runnable {
+
+	@Override
+	public void run() {
+	    while (true) {
 		try {
-		    initializeApiChannel(microservice.getHostname());
-		} catch (SiteWhereException e) {
-		    getLogger().error(GrpcClientMessages.API_CHANNEL_UNABLE_TO_INIT, microservice.getHostname());
-		}
-	    } else {
-		getLogger().info(GrpcClientMessages.API_CHANNEL_ALREADY_ACTIVE, microservice.getHostname());
-	    }
-	}
-    }
+		    HealthClient healthClient = getMicroservice().getConsulClient().healthClient();
+		    List<ServiceHealth> matches = healthClient
+			    .getHealthyServiceInstances(getTargetIdentifier().getShortName()).getResponse();
+		    for (ServiceHealth match : matches) {
+			String host = match.getService().getAddress();
+			if (getApiChannels().get(host) == null) {
+			    getLogger().debug(String.format("No channel found for API demux match %s at %s.",
+				    getTargetIdentifier().getShortName(), match.getService().getAddress()));
+			    channelInitializer.execute(new ApiChannelInitializer(host));
+			}
+		    }
 
-    /**
-     * Detect whether a service was removed.
-     * 
-     * @param snapshot
-     */
-    protected void detectServiceRemoved(IMicroserviceDetails microservice) {
-	List<String> missing = new ArrayList<String>();
-	for (T channel : getApiChannels().values()) {
-	    if (microservice.getHostname().equals(channel.getHostname())) {
-		missing.add(channel.getHostname());
-	    }
-	}
-	for (String hostname : missing) {
-	    getLogger().info(GrpcClientMessages.API_CHANNEL_REMOVED_AFTER_MS_REMOVED, hostname);
-	    try {
-		removeApiChannel(hostname);
-	    } catch (SiteWhereException e) {
-		getLogger().error(GrpcClientMessages.API_CHANNEL_UNABLE_TO_REMOVE, hostname);
+		    Thread.sleep(DISCOVERY_CHECK_INTERVAL);
+		} catch (InterruptedException e) {
+		    getLogger().warn("Discovery monitor interrupted.");
+		    return;
+		} catch (Throwable t) {
+		    getLogger().error("Unhandled exception in service discovery.", t);
+		}
 	    }
 	}
     }

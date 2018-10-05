@@ -28,6 +28,9 @@ dependencies {
     // Metrics support
     compile group: 'io.dropwizard.metrics', name: 'metrics-core', version:'3.1.5'
 	
+	// Consul agent support.
+	compile 'com.orbitz.consul:consul-client:1.2.3'
+	
 	// Opentracing APIs.
     compile group: 'io.opentracing', name: 'opentracing-api', version: '0.30.0'
     

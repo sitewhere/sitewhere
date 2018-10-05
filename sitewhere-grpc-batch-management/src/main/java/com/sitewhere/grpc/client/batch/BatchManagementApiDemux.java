@@ -11,6 +11,7 @@ import com.sitewhere.grpc.client.MultitenantApiDemux;
 import com.sitewhere.grpc.client.spi.client.IBatchManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IBatchManagementApiDemux;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 
 /**
@@ -27,8 +28,8 @@ public class BatchManagementApiDemux extends MultitenantApiDemux<IBatchManagemen
      * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
     @Override
-    public String getTargetIdentifier() {
-	return MicroserviceIdentifier.BatchOperations.getPath();
+    public IFunctionIdentifier getTargetIdentifier() {
+	return MicroserviceIdentifier.BatchOperations;
     }
 
     /*

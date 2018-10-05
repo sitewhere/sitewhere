@@ -11,6 +11,7 @@ import com.sitewhere.grpc.client.MultitenantApiDemux;
 import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiChannel;
 import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiDemux;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 
 /**
@@ -27,8 +28,8 @@ public class LabelGenerationApiDemux extends MultitenantApiDemux<ILabelGeneratio
      * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
     @Override
-    public String getTargetIdentifier() {
-	return MicroserviceIdentifier.LabelGeneration.getPath();
+    public IFunctionIdentifier getTargetIdentifier() {
+	return MicroserviceIdentifier.LabelGeneration;
     }
 
     /*

@@ -11,6 +11,7 @@ import com.sitewhere.grpc.client.ApiDemux;
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiDemux;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 
 /**
@@ -27,8 +28,8 @@ public class TenantManagementApiDemux extends ApiDemux<ITenantManagementApiChann
      * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
     @Override
-    public String getTargetIdentifier() {
-	return MicroserviceIdentifier.TenantManagement.getPath();
+    public IFunctionIdentifier getTargetIdentifier() {
+	return MicroserviceIdentifier.TenantManagement;
     }
 
     /*
