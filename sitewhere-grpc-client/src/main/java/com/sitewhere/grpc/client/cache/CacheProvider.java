@@ -97,7 +97,11 @@ public abstract class CacheProvider<K, V> extends LifecycleComponent implements 
     @Override
     public void setCacheEntry(ITenant tenant, K key, V value) throws SiteWhereException {
 	getLogger().debug("Caching value for '" + key.toString() + "'.");
-	getCache(tenant).put(key, value);
+	if (value != null) {
+	    getCache(tenant).put(key, value);
+	} else {
+	    getCache(tenant).remove(key);
+	}
     }
 
     /*

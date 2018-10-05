@@ -27,13 +27,13 @@ import com.sitewhere.grpc.client.spi.client.IUserManagementApiDemux;
 import com.sitewhere.grpc.client.tenant.TenantManagementApiDemux;
 import com.sitewhere.grpc.client.user.UserManagementApiDemux;
 import com.sitewhere.microservice.GlobalMicroservice;
-import com.sitewhere.microservice.management.MicroserviceManagementCoordinator;
+import com.sitewhere.microservice.state.TopologyStateAggregator;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.messages.SiteWhereMessage;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
-import com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordinator;
+import com.sitewhere.spi.microservice.state.ITopologyStateAggregator;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.web.configuration.WebRestModelProvider;
@@ -80,8 +80,8 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
     /** Device state API demux */
     private IDeviceStateApiDemux deviceStateApiDemux;
 
-    /** Microservice management coordinator */
-    private IMicroserviceManagementCoordinator microserviceManagementCoordinator;
+    /** Aggregates microservice state info into a topology */
+    private ITopologyStateAggregator topologyStateAggregator = new TopologyStateAggregator();
 
     /*
      * (non-Javadoc)
@@ -169,6 +169,9 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 	// Composite step for initializing microservice.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
+	// Initialize topology state aggregator.
+	init.addInitializeStep(this, getTopologyStateAggregator(), true);
+
 	// Initialize user management API demux.
 	init.addInitializeStep(this, getUserManagementApiDemux(), true);
 
@@ -195,9 +198,6 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 
 	// Initialize device state API demux.
 	init.addInitializeStep(this, getDeviceStateApiDemux(), true);
-
-	// Initialize microservice management coordinator.
-	init.addInitializeStep(this, getMicroserviceManagementCoordinator(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -235,9 +235,6 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 
 	// Device state.
 	this.deviceStateApiDemux = new DeviceStateApiDemux();
-
-	// Microservice management coordinator.
-	this.microserviceManagementCoordinator = new MicroserviceManagementCoordinator();
     }
 
     /*
@@ -251,6 +248,9 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
     public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
+
+	// Start topology state aggregator.
+	start.addStartStep(this, getTopologyStateAggregator(), true);
 
 	// Start user mangement API demux.
 	start.addStartStep(this, getUserManagementApiDemux(), true);
@@ -278,9 +278,6 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 
 	// Start device state API demux.
 	start.addStartStep(this, getDeviceStateApiDemux(), true);
-
-	// Start microservice management coordinator.
-	start.addStartStep(this, getMicroserviceManagementCoordinator(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -324,8 +321,8 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 	// Stop device state API demux.
 	stop.addStopStep(this, getDeviceStateApiDemux());
 
-	// Stop microservice management coordinator.
-	stop.addStopStep(this, getMicroserviceManagementCoordinator());
+	// Stop topology state aggregator.
+	stop.addStopStep(this, getTopologyStateAggregator());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -450,15 +447,14 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 
     /*
      * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
-     * getMicroserviceManagementCoordinator()
+     * getTopologyStateAggregator()
      */
     @Override
-    public IMicroserviceManagementCoordinator getMicroserviceManagementCoordinator() {
-	return microserviceManagementCoordinator;
+    public ITopologyStateAggregator getTopologyStateAggregator() {
+	return topologyStateAggregator;
     }
 
-    public void setMicroserviceManagementCoordinator(
-	    IMicroserviceManagementCoordinator microserviceManagementCoordinator) {
-	this.microserviceManagementCoordinator = microserviceManagementCoordinator;
+    public void setTopologyStateAggregator(ITopologyStateAggregator topologyStateAggregator) {
+	this.topologyStateAggregator = topologyStateAggregator;
     }
 }

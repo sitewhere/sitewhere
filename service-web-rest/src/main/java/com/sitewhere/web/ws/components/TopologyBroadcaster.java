@@ -54,8 +54,8 @@ public class TopologyBroadcaster
      */
     @Override
     public void onApplicationEvent(final BrokerAvailabilityEvent event) {
-	getLogger().info("WebSocket broker detected as available.");
-	getMicroservice().getTopologyStateAggregator().addInstanceTopologyUpdatesListener(this);
+	getLogger().debug("WebSocket broker detected as available.");
+	// getMicroservice().getTopologyStateAggregator().addInstanceTopologyUpdatesListener(this);
     }
 
     /*

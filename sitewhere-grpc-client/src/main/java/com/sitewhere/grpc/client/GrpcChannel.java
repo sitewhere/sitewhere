@@ -70,7 +70,9 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
 	this.port = port;
 
 	this.jwtInterceptor = new JwtClientInterceptor();
-	this.tracingInterceptor = new ClientTracingInterceptor(tracerProvider.getTracer());
+	if ((tracerProvider != null) && (isUseTracingInterceptor())) {
+	    this.tracingInterceptor = new ClientTracingInterceptor(tracerProvider.getTracer());
+	}
     }
 
     /*

@@ -30,6 +30,14 @@ public class InstanceSettings implements IInstanceSettings {
     @Value("${sitewhere.instance.template.id:default}")
     private String instanceTemplateId;
 
+    /** Consul hostname info for microservices */
+    @Value("${sitewhere.consul.host:consul}")
+    private String consulHost;
+
+    /** Consul port info for microservices */
+    @Value("${sitewhere.consul.port:8500}")
+    private int consulPort;
+
     /** Zookeeper hostname info for microservices */
     @Value("${sitewhere.zookeeper.host:localhost}")
     private String zookeeperHost;
@@ -102,6 +110,32 @@ public class InstanceSettings implements IInstanceSettings {
 
     public void setInstanceTemplateId(String instanceTemplateId) {
 	this.instanceTemplateId = instanceTemplateId;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.instance.IInstanceSettings#getConsulHost()
+     */
+    @Override
+    public String getConsulHost() {
+	return consulHost;
+    }
+
+    public void setConsulHost(String consulHost) {
+	this.consulHost = consulHost;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.instance.IInstanceSettings#getConsulPort()
+     */
+    @Override
+    public int getConsulPort() {
+	return consulPort;
+    }
+
+    public void setConsulPort(int consulPort) {
+	this.consulPort = consulPort;
     }
 
     /*

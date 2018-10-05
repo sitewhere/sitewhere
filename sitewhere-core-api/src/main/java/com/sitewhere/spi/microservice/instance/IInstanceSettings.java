@@ -36,6 +36,20 @@ public interface IInstanceSettings {
     public String getInstanceTemplateId();
 
     /**
+     * Get hostname used by microservices to connect to Consul.
+     * 
+     * @return
+     */
+    public String getConsulHost();
+
+    /**
+     * Get port used by microservices to connect to Consul.
+     * 
+     * @return
+     */
+    public int getConsulPort();
+
+    /**
      * Get hostname used by microservices to connect to Zookeeper.
      * 
      * @return

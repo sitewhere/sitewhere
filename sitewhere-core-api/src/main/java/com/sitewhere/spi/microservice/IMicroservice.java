@@ -9,10 +9,12 @@ package com.sitewhere.spi.microservice;
 
 import java.io.File;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.ScheduledReporter;
+import com.orbitz.consul.Consul;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
@@ -27,7 +29,6 @@ import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 import com.sitewhere.spi.microservice.state.IMicroserviceState;
 import com.sitewhere.spi.microservice.state.IMicroserviceStateUpdatesKafkaProducer;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
-import com.sitewhere.spi.microservice.state.ITopologyStateAggregator;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.tracing.ITracerProvider;
@@ -39,6 +40,13 @@ import com.sitewhere.spi.tracing.ITracerProvider;
  */
 public interface IMicroservice<T extends IFunctionIdentifier>
 	extends ILifecycleComponent, ITracerProvider, IMicroserviceClassification<T> {
+
+    /**
+     * Get unique id.
+     * 
+     * @return
+     */
+    public UUID getId();
 
     /**
      * Get name shown for microservice.
@@ -141,6 +149,13 @@ public interface IMicroservice<T extends IFunctionIdentifier>
     public ISystemUser getSystemUser();
 
     /**
+     * Get Consul HTTP client.
+     * 
+     * @return
+     */
+    public Consul getConsulClient();
+
+    /**
      * Get Kafka topic naming helper.
      * 
      * @return
@@ -161,14 +176,6 @@ public interface IMicroservice<T extends IFunctionIdentifier>
      * @return
      */
     public IMicroserviceStateUpdatesKafkaProducer getStateUpdatesKafkaProducer();
-
-    /**
-     * Get Kafka consumer that aggregates state updates for microservices/tenant
-     * engines to build an instance topology dynamically.
-     * 
-     * @return
-     */
-    public ITopologyStateAggregator getTopologyStateAggregator();
 
     /**
      * Get Kafka producer that allows log messages to be processed in a centralized

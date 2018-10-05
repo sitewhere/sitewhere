@@ -281,6 +281,7 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      */
     @Override
     public void error(String format, Object arg) {
+	getLogger().error(format, arg);
     }
 
     /*
@@ -289,6 +290,7 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      */
     @Override
     public void error(String format, Object arg1, Object arg2) {
+	getLogger().error(format, arg1, arg2);
     }
 
     /*
@@ -296,6 +298,7 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      */
     @Override
     public void error(String format, Object... arguments) {
+	getLogger().error(format, arguments);
     }
 
     /*
@@ -303,6 +306,7 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      */
     @Override
     public void error(Marker marker, String msg) {
+	getLogger().error(marker, msg);
     }
 
     /*
@@ -311,6 +315,7 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      */
     @Override
     public void error(Marker marker, String format, Object arg) {
+	getLogger().error(marker, format, arg);
     }
 
     /*
@@ -358,6 +363,7 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      */
     @Override
     public void info(String format, Object arg) {
+	getLogger().info(format, arg);
     }
 
     /*
@@ -366,6 +372,7 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      */
     @Override
     public void info(String format, Object arg1, Object arg2) {
+	getLogger().info(format, arg1, arg2);
     }
 
     /*
@@ -373,6 +380,7 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      */
     @Override
     public void info(String format, Object... arguments) {
+	getLogger().info(format, arguments);
     }
 
     /*
@@ -592,6 +600,7 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      */
     @Override
     public void warn(String format, Object arg) {
+	getLogger().warn(format, arg);
     }
 
     /*
@@ -599,6 +608,7 @@ public class LifecycleComponentLogger implements ILifecycleComponentLogger {
      */
     @Override
     public void warn(String format, Object... arguments) {
+	getLogger().warn(format, arguments);
     }
 
     /*

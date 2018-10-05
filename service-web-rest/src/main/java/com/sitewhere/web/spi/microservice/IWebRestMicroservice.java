@@ -18,7 +18,7 @@ import com.sitewhere.grpc.client.spi.provider.ITenantManagementDemuxProvider;
 import com.sitewhere.grpc.client.spi.provider.IUserManagementDemuxProvider;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
-import com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordinator;
+import com.sitewhere.spi.microservice.state.ITopologyStateAggregator;
 
 /**
  * Microservice that provides web/REST functionality.
@@ -78,9 +78,9 @@ public interface IWebRestMicroservice<T extends IFunctionIdentifier>
     public IDeviceStateApiDemux getDeviceStateApiDemux();
 
     /**
-     * Get microservice management coordinator.
+     * Get topology state aggregator.
      * 
      * @return
      */
-    public IMicroserviceManagementCoordinator getMicroserviceManagementCoordinator();
+    public ITopologyStateAggregator getTopologyStateAggregator();
 }

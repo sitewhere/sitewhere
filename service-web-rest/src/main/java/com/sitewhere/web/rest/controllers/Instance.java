@@ -24,25 +24,30 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.w3c.dom.Document;
 
+import com.orbitz.consul.HealthClient;
+import com.orbitz.consul.model.health.ServiceHealth;
 import com.sitewhere.configuration.ConfigurationContentParser;
 import com.sitewhere.configuration.content.ElementContent;
+import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
+import com.sitewhere.grpc.client.microservice.MicroserviceManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IMicroserviceManagementApiChannel;
 import com.sitewhere.microservice.scripting.ScriptCloneRequest;
 import com.sitewhere.microservice.scripting.ScriptCreateRequest;
+import com.sitewhere.server.lifecycle.LifecycleProgressContext;
+import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.microservice.IMicroserviceManagement;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
-import com.sitewhere.spi.microservice.management.IMicroserviceManagementCoordinator;
 import com.sitewhere.spi.microservice.scripting.IScriptManagement;
 import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
 import com.sitewhere.spi.microservice.scripting.IScriptTemplate;
 import com.sitewhere.spi.microservice.scripting.IScriptVersion;
 import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
-import com.sitewhere.spi.microservice.state.ITopologyStateAggregator;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.user.SiteWhereRoles;
@@ -81,7 +86,8 @@ public class Instance extends RestControllerBase {
     @ApiOperation(value = "Get current instance topology")
     @Secured({ SiteWhereRoles.REST })
     public List<InstanceTopologySummary> getInstanceTopology() throws SiteWhereException {
-	IInstanceTopologySnapshot snapshot = getTopologyStateAggregator().getInstanceTopologySnapshot();
+	IInstanceTopologySnapshot snapshot = getMicroservice().getTopologyStateAggregator()
+		.getInstanceTopologySnapshot();
 	return TopologySummaryBuilder.build(snapshot);
     }
 
@@ -95,7 +101,8 @@ public class Instance extends RestControllerBase {
     @ApiOperation(value = "Get global microservices in current instance topology")
     @Secured({ SiteWhereRoles.REST })
     public List<InstanceTopologySummary> getGlobalInstanceTopology() throws SiteWhereException {
-	IInstanceTopologySnapshot snapshot = getTopologyStateAggregator().getInstanceTopologySnapshot();
+	IInstanceTopologySnapshot snapshot = getMicroservice().getTopologyStateAggregator()
+		.getInstanceTopologySnapshot();
 	List<InstanceTopologySummary> summary = TopologySummaryBuilder.build(snapshot);
 	List<InstanceTopologySummary> filtered = new ArrayList<>();
 	for (InstanceTopologySummary current : summary) {
@@ -116,7 +123,8 @@ public class Instance extends RestControllerBase {
     @ApiOperation(value = "Get tenant microservices in current instance topology")
     @Secured({ SiteWhereRoles.REST })
     public List<InstanceTopologySummary> getTenantInstanceTopology() throws SiteWhereException {
-	IInstanceTopologySnapshot snapshot = getTopologyStateAggregator().getInstanceTopologySnapshot();
+	IInstanceTopologySnapshot snapshot = getMicroservice().getTopologyStateAggregator()
+		.getInstanceTopologySnapshot();
 	List<InstanceTopologySummary> summary = TopologySummaryBuilder.build(snapshot);
 	List<InstanceTopologySummary> filtered = new ArrayList<>();
 	for (InstanceTopologySummary current : summary) {
@@ -148,7 +156,7 @@ public class Instance extends RestControllerBase {
 	if (msid == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidMicroserviceIdentifier, ErrorLevel.ERROR);
 	}
-	return getTopologyStateAggregator().getTenantEngineState(msid.getPath(), tenant.getId());
+	return getMicroservice().getTopologyStateAggregator().getTenantEngineState(msid.getPath(), tenant.getId());
     }
 
     /**
@@ -164,9 +172,13 @@ public class Instance extends RestControllerBase {
     public IConfigurationModel getMicroserviceConfigurationModel(
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier)
 	    throws SiteWhereException {
-	IMicroserviceManagement management = getMicroserviceManagementCoordinator()
-		.getMicroserviceManagement(identifier);
-	return management.getConfigurationModel();
+	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
+	IMicroserviceManagementApiChannel<?> management = getManagementChannel(msid);
+	try {
+	    return management.getConfigurationModel();
+	} finally {
+	    releaseChannel(management);
+	}
     }
 
     /**
@@ -182,10 +194,14 @@ public class Instance extends RestControllerBase {
     public ElementContent getMicroserviceGlobalConfiguration(
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier)
 	    throws SiteWhereException {
-	IMicroserviceManagement management = getMicroserviceManagementCoordinator()
-		.getMicroserviceManagement(identifier);
-	return ConfigurationContentParser.parse(management.getGlobalConfiguration(),
-		management.getConfigurationModel());
+	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
+	IMicroserviceManagementApiChannel<?> management = getManagementChannel(msid);
+	try {
+	    return ConfigurationContentParser.parse(management.getGlobalConfiguration(),
+		    management.getConfigurationModel());
+	} finally {
+	    releaseChannel(management);
+	}
     }
 
     /**
@@ -201,11 +217,15 @@ public class Instance extends RestControllerBase {
     public void updateMicroserviceGlobalConfiguration(
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
 	    @RequestBody ElementContent content) throws SiteWhereException {
-	IMicroserviceManagement management = getMicroserviceManagementCoordinator()
-		.getMicroserviceManagement(identifier);
+	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
+	IMicroserviceManagementApiChannel<?> management = getManagementChannel(msid);
 	Document xml = ConfigurationContentParser.buildXml(content, management.getConfigurationModel());
 	String config = ConfigurationContentParser.format(xml);
-	management.updateGlobalConfiguration(config.getBytes());
+	try {
+	    management.updateGlobalConfiguration(config.getBytes());
+	} finally {
+	    releaseChannel(management);
+	}
     }
 
     /**
@@ -223,11 +243,15 @@ public class Instance extends RestControllerBase {
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
 	    @ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken)
 	    throws SiteWhereException {
-	IMicroserviceManagement management = getMicroserviceManagementCoordinator()
-		.getMicroserviceManagement(identifier);
+	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
+	IMicroserviceManagementApiChannel<?> management = getManagementChannel(msid);
 	ITenant tenant = assureTenant(tenantToken);
-	return ConfigurationContentParser.parse(management.getTenantConfiguration(tenant.getId()),
-		management.getConfigurationModel());
+	try {
+	    return ConfigurationContentParser.parse(management.getTenantConfiguration(tenant.getId()),
+		    management.getConfigurationModel());
+	} finally {
+	    releaseChannel(management);
+	}
     }
 
     /**
@@ -245,12 +269,16 @@ public class Instance extends RestControllerBase {
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
 	    @ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken,
 	    @RequestBody ElementContent content) throws SiteWhereException {
-	IMicroserviceManagement management = getMicroserviceManagementCoordinator()
-		.getMicroserviceManagement(identifier);
+	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
+	IMicroserviceManagementApiChannel<?> management = getManagementChannel(msid);
 	Document xml = ConfigurationContentParser.buildXml(content, management.getConfigurationModel());
 	String config = ConfigurationContentParser.format(xml);
 	ITenant tenant = assureTenant(tenantToken);
-	management.updateTenantConfiguration(tenant.getId(), config.getBytes());
+	try {
+	    management.updateTenantConfiguration(tenant.getId(), config.getBytes());
+	} finally {
+	    releaseChannel(management);
+	}
     }
 
     /**
@@ -266,9 +294,13 @@ public class Instance extends RestControllerBase {
     public List<IScriptTemplate> getMicroserviceScriptTemplates(
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier)
 	    throws SiteWhereException {
-	IMicroserviceManagement management = getMicroserviceManagementCoordinator()
-		.getMicroserviceManagement(identifier);
-	return management.getScriptTemplates();
+	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
+	IMicroserviceManagementApiChannel<?> management = getManagementChannel(msid);
+	try {
+	    return management.getScriptTemplates();
+	} finally {
+	    releaseChannel(management);
+	}
     }
 
     /**
@@ -286,12 +318,16 @@ public class Instance extends RestControllerBase {
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
 	    @ApiParam(value = "Template id", required = true) @PathVariable String templateId)
 	    throws SiteWhereException {
-	IMicroserviceManagement management = getMicroserviceManagementCoordinator()
-		.getMicroserviceManagement(identifier);
+	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
+	IMicroserviceManagementApiChannel<?> management = getManagementChannel(msid);
 	byte[] content = management.getScriptTemplateContent(templateId);
 	final HttpHeaders headers = new HttpHeaders();
 	headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-	return new ResponseEntity<byte[]>(content, headers, HttpStatus.OK);
+	try {
+	    return new ResponseEntity<byte[]>(content, headers, HttpStatus.OK);
+	} finally {
+	    releaseChannel(management);
+	}
     }
 
     /**
@@ -633,6 +669,48 @@ public class Instance extends RestControllerBase {
     }
 
     /**
+     * Find management channel for service that corresponds to identifier.
+     * 
+     * @param target
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IMicroserviceManagementApiChannel<?> getManagementChannel(IFunctionIdentifier target)
+	    throws SiteWhereException {
+	HealthClient healthClient = getMicroservice().getConsulClient().healthClient();
+	List<ServiceHealth> matches = healthClient.getHealthyServiceInstances(target.getShortName()).getResponse();
+	for (ServiceHealth match : matches) {
+	    String host = match.getService().getAddress();
+	    LifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
+		    new LifecycleProgressContext(1, "Start management interface."), getMicroservice());
+	    MicroserviceManagementApiChannel channel = new MicroserviceManagementApiChannel(null, host,
+		    getMicroservice().getInstanceSettings().getManagementGrpcPort());
+	    channel.setMicroservice(getMicroservice());
+	    channel.initialize(monitor);
+	    channel.start(monitor);
+	    channel.waitForChannelAvailable();
+	    return channel;
+	}
+	throw new ApiChannelNotAvailableException();
+    }
+
+    /**
+     * Release an initialized management channel.
+     * 
+     * @param channel
+     */
+    protected void releaseChannel(IMicroserviceManagementApiChannel<?> channel) {
+	try {
+	    LifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
+		    new LifecycleProgressContext(1, "Stop management interface."), getMicroservice());
+	    channel.stop(monitor);
+	    channel.terminate(monitor);
+	} catch (Throwable t) {
+	    getLogger().error("Unable to shut down management channel.", t);
+	}
+    }
+
+    /**
      * Verify that a tenant exists based on reference token.
      * 
      * @param tenantToken
@@ -645,14 +723,6 @@ public class Instance extends RestControllerBase {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantToken, ErrorLevel.ERROR);
 	}
 	return tenant;
-    }
-
-    public IMicroserviceManagementCoordinator getMicroserviceManagementCoordinator() {
-	return getMicroservice().getMicroserviceManagementCoordinator();
-    }
-
-    public ITopologyStateAggregator getTopologyStateAggregator() {
-	return getMicroservice().getTopologyStateAggregator();
     }
 
     public ITenantManagement getTenantManagement() {

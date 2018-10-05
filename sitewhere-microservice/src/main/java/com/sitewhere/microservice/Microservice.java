@@ -10,7 +10,10 @@ package com.sitewhere.microservice;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -22,12 +25,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.ScheduledReporter;
 import com.codahale.metrics.Slf4jReporter;
+import com.google.common.net.HostAndPort;
+import com.orbitz.consul.AgentClient;
+import com.orbitz.consul.Consul;
+import com.orbitz.consul.model.agent.ImmutableRegistration;
+import com.orbitz.consul.model.agent.Registration;
 import com.sitewhere.Version;
 import com.sitewhere.microservice.logging.MicroserviceLogProducer;
 import com.sitewhere.microservice.management.MicroserviceManagementGrpcServer;
 import com.sitewhere.microservice.scripting.ScriptTemplateManager;
 import com.sitewhere.microservice.state.MicroserviceStateUpdatesKafkaProducer;
-import com.sitewhere.microservice.state.TopologyStateAggregator;
 import com.sitewhere.rest.model.configuration.ConfigurationModel;
 import com.sitewhere.rest.model.microservice.state.MicroserviceDetails;
 import com.sitewhere.rest.model.microservice.state.MicroserviceState;
@@ -53,7 +60,6 @@ import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 import com.sitewhere.spi.microservice.state.IMicroserviceState;
 import com.sitewhere.spi.microservice.state.IMicroserviceStateUpdatesKafkaProducer;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
-import com.sitewhere.spi.microservice.state.ITopologyStateAggregator;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
@@ -83,7 +89,7 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     private static final int INSTANCE_BOOTSTRAP_CHECK_INTERVAL_SECS = 3;
 
     /** Heartbeat interval in seconds */
-    private static final int HEARTBEAT_INTERVAL_SECS = 20;
+    private static final int HEARTBEAT_INTERVAL_SECS = 10;
 
     /** Relative path on local filesystem to script templates folder */
     private static final String SCRIPT_TEMPLATES_FOLDER_PATH = "/script-templates";
@@ -112,6 +118,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     @Autowired
     private Tracer tracer;
 
+    /** Client for interacting with Consul */
+    private Consul consulClient;
+
     /** Version information */
     private IVersion version = new Version();
 
@@ -123,9 +132,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     /** Kafka producer for microservice state updates */
     private IMicroserviceStateUpdatesKafkaProducer stateUpdatesKafkaProducer;
-
-    /** Kafka consumer for aggregating microservice/tenant engine state updates */
-    private ITopologyStateAggregator topologyStateAggregator;
 
     /** Kafka producer for centralized log handling */
     private IMicroserviceLogProducer microserviceLogProducer;
@@ -148,6 +154,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     /** Metrics reporter */
     private ScheduledReporter metricsReporter;
 
+    /** Unique id for microservice */
+    private UUID id = UUID.randomUUID();
+
     /** Timestamp in milliseconds when service started */
     private long startTime;
 
@@ -162,6 +171,14 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
 	// Create script template manager.
 	this.scriptTemplateManager = new ScriptTemplateManager();
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getId()
+     */
+    @Override
+    public UUID getId() {
+	return id;
     }
 
     /*
@@ -213,12 +230,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	// Start microservice management GRPC server.
 	initialize.addStartStep(this, getMicroserviceManagementGrpcServer(), true);
 
-	// Initialize Kafka consumer for aggregating state.
-	initialize.addInitializeStep(this, getTopologyStateAggregator(), true);
-
-	// Start Kafka consumer for aggregating state.
-	initialize.addStartStep(this, getTopologyStateAggregator(), true);
-
 	// Initialize Kafka producer for reporting state.
 	initialize.addInitializeStep(this, getStateUpdatesKafkaProducer(), true);
 
@@ -227,6 +238,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
 	// Execute initialization steps.
 	initialize.execute(monitor);
+
+	// Initialize Consul client.
+	initializeConsulClient();
 
 	// Start sending heartbeats.
 	getMicroserviceHeartbeatService().execute(new Heartbeat());
@@ -250,6 +264,27 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     }
 
     /**
+     * Initialize Consul client based on instance settings.
+     */
+    protected void initializeConsulClient() {
+	// Create Consul client.
+	this.consulClient = Consul.builder().withHostAndPort(
+		HostAndPort.fromParts(getInstanceSettings().getConsulHost(), getInstanceSettings().getConsulPort()))
+		.build();
+
+	// Register microservice with Consul.
+	AgentClient agentClient = getConsulClient().agentClient();
+	List<String> tags = new ArrayList<>();
+	tags.add("microservice");
+	tags.add(getIdentifier().getShortName());
+	Registration service = ImmutableRegistration.builder().id(getId().toString())
+		.name(getIdentifier().getShortName()).address(getHostname()).port(getInstanceSettings().getGrpcPort())
+		.check(Registration.RegCheck.ttl(30L)).tags(tags)
+		.meta(Collections.singletonMap("version", getVersion().getVersionIdentifier())).build();
+	agentClient.register(service);
+    }
+
+    /**
      * Initialize GRPC components.
      */
     protected void initializeGrpcComponents() {
@@ -261,7 +296,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
      */
     protected void initializeStateManagement() {
 	this.stateUpdatesKafkaProducer = new MicroserviceStateUpdatesKafkaProducer();
-	this.topologyStateAggregator = new TopologyStateAggregator();
 	this.microserviceHeartbeatService = Executors.newSingleThreadExecutor(new MicroserviceHeartbeatThreadFactory());
     }
 
@@ -303,9 +337,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
 	// Stop Kafka producer for reporting state.
 	terminate.addStopStep(this, getStateUpdatesKafkaProducer());
-
-	// Stop Kafka consumer for aggregating state.
-	terminate.addStopStep(this, getTopologyStateAggregator());
 
 	// Terminate Zk manager.
 	terminate.addStopStep(this, getZookeeperManager());
@@ -421,13 +452,13 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     public void setLifecycleStatus(LifecycleStatus lifecycleStatus) {
 	super.setLifecycleStatus(lifecycleStatus);
 	getLogger().info(MicroserviceMessages.LIFECYCLE_STATUS_SENDING, getLifecycleStatus().name());
-	sendCurrentState();
+	sendChangedState();
     }
 
     /**
      * Send current state for microservice to Kafka topic.
      */
-    protected void sendCurrentState() {
+    protected void sendChangedState() {
 	if ((getStateUpdatesKafkaProducer() != null)
 		&& (getStateUpdatesKafkaProducer().getLifecycleStatus() == LifecycleStatus.Started)) {
 	    try {
@@ -550,6 +581,18 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     }
 
     /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getConsulClient()
+     */
+    @Override
+    public Consul getConsulClient() {
+	return consulClient;
+    }
+
+    public void setConsulClient(Consul consulClient) {
+	this.consulClient = consulClient;
+    }
+
+    /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getKafkaTopicNaming()
      */
     @Override
@@ -586,19 +629,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     public void setStateUpdatesKafkaProducer(IMicroserviceStateUpdatesKafkaProducer stateUpdatesKafkaProducer) {
 	this.stateUpdatesKafkaProducer = stateUpdatesKafkaProducer;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.microservice.IMicroservice#getTopologyStateAggregator()
-     */
-    @Override
-    public ITopologyStateAggregator getTopologyStateAggregator() {
-	return topologyStateAggregator;
-    }
-
-    public void setTopologyStateAggregator(ITopologyStateAggregator topologyStateAggregator) {
-	this.topologyStateAggregator = topologyStateAggregator;
     }
 
     /*
@@ -738,7 +768,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	    while (true) {
 		try {
 		    getLogger().debug("Sending heartbeat.");
-		    sendCurrentState();
+		    AgentClient agentClient = getConsulClient().agentClient();
+		    agentClient.pass(getId().toString());
+		    sendChangedState();
 		} catch (Throwable t) {
 		    getLogger().error("Unable to send state for heartbeat.", t);
 		}

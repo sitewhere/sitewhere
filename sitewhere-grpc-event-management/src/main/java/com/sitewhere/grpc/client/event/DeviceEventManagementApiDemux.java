@@ -11,6 +11,7 @@ import com.sitewhere.grpc.client.MultitenantApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 
 /**
@@ -28,8 +29,8 @@ public class DeviceEventManagementApiDemux extends MultitenantApiDemux<IDeviceEv
      * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
     @Override
-    public String getTargetIdentifier() {
-	return MicroserviceIdentifier.EventManagement.getPath();
+    public IFunctionIdentifier getTargetIdentifier() {
+	return MicroserviceIdentifier.EventManagement;
     }
 
     /*

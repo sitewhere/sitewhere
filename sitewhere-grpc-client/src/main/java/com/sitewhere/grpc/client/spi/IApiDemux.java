@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.sitewhere.grpc.client.ApiChannel;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
@@ -27,7 +28,7 @@ public interface IApiDemux<T extends IApiChannel> extends ITenantEngineLifecycle
      * 
      * @return
      */
-    public String getTargetIdentifier();
+    public IFunctionIdentifier getTargetIdentifier();
 
     /**
      * Wait for an instance of the remote microservice to become available. This

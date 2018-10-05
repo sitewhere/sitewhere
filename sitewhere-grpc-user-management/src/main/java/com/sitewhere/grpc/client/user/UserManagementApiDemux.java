@@ -11,6 +11,7 @@ import com.sitewhere.grpc.client.ApiDemux;
 import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IUserManagementApiDemux;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 
 /**
@@ -26,8 +27,8 @@ public class UserManagementApiDemux extends ApiDemux<IUserManagementApiChannel<?
      * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
     @Override
-    public String getTargetIdentifier() {
-	return MicroserviceIdentifier.UserManagement.getPath();
+    public IFunctionIdentifier getTargetIdentifier() {
+	return MicroserviceIdentifier.UserManagement;
     }
 
     /*
