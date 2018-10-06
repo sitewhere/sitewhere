@@ -20,6 +20,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.netty.NettyServerBuilder;
+import io.netty.channel.nio.NioEventLoopGroup;
 
 /**
  * Base class for GRPC servers used by microservices.
@@ -65,7 +66,9 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
     protected Server buildServer() {
 	NettyServerBuilder builder = NettyServerBuilder.forPort(port);
 	builder.addService(getServiceImplementation()).intercept(getJwtInterceptor());
-	builder.executor(getServerExecutor());
+	builder.directExecutor();
+	builder.bossEventLoopGroup(new NioEventLoopGroup(1));
+	builder.workerEventLoopGroup(new NioEventLoopGroup(100));
 	if (isUseTracingInterceptor()) {
 	    builder.intercept(getTracingInterceptor());
 	}

@@ -136,19 +136,23 @@ public abstract class CacheProvider<K, V> extends LifecycleComponent implements 
      */
     protected Cache<K, V> getCache(ITenant tenant) throws SiteWhereException {
 	if (tenant == null) {
-	    Cache<K, V> cache = getGlobalCache();
-	    if (cache == null) {
-		cache = createCache(null);
-		this.globalCache = cache;
+	    synchronized (tenantCaches) {
+		Cache<K, V> cache = globalCache;
+		if (cache == null) {
+		    cache = createCache(null);
+		    this.globalCache = cache;
+		}
+		return cache;
 	    }
-	    return cache;
 	} else {
-	    Cache<K, V> cache = getTenantCaches().get(tenant.getId());
-	    if (cache == null) {
-		cache = createCache(tenant);
-		getTenantCaches().put(tenant.getId(), cache);
+	    synchronized (tenantCaches) {
+		Cache<K, V> cache = tenantCaches.get(tenant.getId());
+		if (cache == null) {
+		    cache = createCache(tenant);
+		    tenantCaches.put(tenant.getId(), cache);
+		}
+		return cache;
 	    }
-	    return cache;
 	}
     }
 

@@ -18,7 +18,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tracing.ITracerProvider;
 
 import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
+import io.grpc.netty.NettyChannelBuilder;
 import io.opentracing.Tracer;
 
 /**
@@ -82,8 +82,8 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	ManagedChannelBuilder<?> builder = ManagedChannelBuilder.forAddress(getHostname(), getPort());
-	builder.executor(getServerExecutor());
+	NettyChannelBuilder builder = NettyChannelBuilder.forAddress(getHostname(), getPort());
+	builder.directExecutor();
 	builder.usePlaintext().intercept(getJwtInterceptor());
 	if (isUseTracingInterceptor()) {
 	    builder.intercept(getTracingInterceptor());
