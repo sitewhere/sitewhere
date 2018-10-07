@@ -10,6 +10,8 @@ package com.sitewhere.microservice.grpc;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.sitewhere.grpc.client.spi.server.IGrpcServer;
 import com.sitewhere.grpc.model.tracing.ServerTracingInterceptor;
@@ -51,7 +53,8 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
     private ServerTracingInterceptor tracingInterceptor;
 
     /** Executor service used to handle GRPC requests */
-    private ExecutorService serverExecutor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+    private ExecutorService serverExecutor = Executors.newFixedThreadPool(THREAD_POOL_SIZE,
+	    new GrpcServerThreadFactory());
 
     public GrpcServer(BindableService serviceImplementation, int port) {
 	this.serviceImplementation = serviceImplementation;
@@ -66,7 +69,7 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
     protected Server buildServer() {
 	NettyServerBuilder builder = NettyServerBuilder.forPort(port);
 	builder.addService(getServiceImplementation()).intercept(getJwtInterceptor());
-	builder.directExecutor();
+	builder.executor(getServerExecutor());
 	builder.bossEventLoopGroup(new NioEventLoopGroup(1));
 	builder.workerEventLoopGroup(new NioEventLoopGroup(100));
 	if (isUseTracingInterceptor()) {
@@ -152,6 +155,17 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
 
     public void setUseTracingInterceptor(boolean useTracingInterceptor) {
 	this.useTracingInterceptor = useTracingInterceptor;
+    }
+
+    /** Used for naming gRPC server executor threads */
+    private class GrpcServerThreadFactory implements ThreadFactory {
+
+	/** Counts threads */
+	private AtomicInteger counter = new AtomicInteger();
+
+	public Thread newThread(Runnable r) {
+	    return new Thread(r, "gRPC Server " + counter.incrementAndGet());
+	}
     }
 
     public Server getServer() {

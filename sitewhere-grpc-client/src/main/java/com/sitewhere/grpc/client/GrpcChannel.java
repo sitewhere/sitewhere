@@ -9,6 +9,8 @@ package com.sitewhere.grpc.client;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.sitewhere.grpc.client.spi.IGrpcChannel;
 import com.sitewhere.grpc.model.tracing.ClientTracingInterceptor;
@@ -62,7 +64,8 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
     private ClientTracingInterceptor tracingInterceptor;
 
     /** Executor service used to handle GRPC requests */
-    private ExecutorService serverExecutor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+    private ExecutorService serverExecutor = Executors.newFixedThreadPool(THREAD_POOL_SIZE,
+	    new GrpcClientThreadFactory());
 
     public GrpcChannel(ITracerProvider tracerProvider, String hostname, int port) {
 	this.tracerProvider = tracerProvider;
@@ -83,7 +86,7 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	NettyChannelBuilder builder = NettyChannelBuilder.forAddress(getHostname(), getPort());
-	builder.directExecutor();
+	builder.executor(getServerExecutor());
 	builder.usePlaintext().intercept(getJwtInterceptor());
 	if (isUseTracingInterceptor()) {
 	    builder.intercept(getTracingInterceptor());
@@ -159,6 +162,17 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
     @Override
     public Tracer getTracer() {
 	return getTracerProvider().getTracer();
+    }
+
+    /** Used for naming gRPC client executor threads */
+    private class GrpcClientThreadFactory implements ThreadFactory {
+
+	/** Counts threads */
+	private AtomicInteger counter = new AtomicInteger();
+
+	public Thread newThread(Runnable r) {
+	    return new Thread(r, "gRPC Client " + counter.incrementAndGet());
+	}
     }
 
     public JwtClientInterceptor getJwtInterceptor() {
