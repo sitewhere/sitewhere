@@ -8,9 +8,6 @@
 package com.sitewhere.inbound.processing;
 
 import java.util.List;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -30,7 +27,7 @@ import com.sitewhere.inbound.spi.microservice.IInboundEventStorageStrategy;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.inbound.spi.processing.IInboundPayloadProcessingLogic;
-import com.sitewhere.microservice.security.SystemUserCallable;
+import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -137,22 +134,9 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
     @Override
     public void process(TopicPartition topicPartition, List<ConsumerRecord<String, byte[]>> records)
 	    throws SiteWhereException {
-	long start = System.currentTimeMillis();
-	CompletionService<ConsumerRecord<String, byte[]>> completionService = new ExecutorCompletionService<ConsumerRecord<String, byte[]>>(
-		getInboundProcessorsExecutor());
 	for (ConsumerRecord<String, byte[]> record : records) {
-	    completionService.submit(new InboundEventPayloadProcessor(record));
+	    getInboundProcessorsExecutor().execute(new InboundEventPayloadProcessor(record));
 	}
-	for (int i = 0; i < records.size(); i++) {
-	    try {
-		completionService.take().get();
-	    } catch (ExecutionException e) {
-		throw new SiteWhereException("Exception processing inbound event.", e.getCause());
-	    } catch (InterruptedException e) {
-		throw new SiteWhereException("Interrupted while waiting on inbound record to process.", e);
-	    }
-	}
-	getLogger().info("Stored " + records.size() + " records in " + (System.currentTimeMillis() - start) + "ms.");
     }
 
     /**
@@ -268,7 +252,7 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
      * 
      * @author Derek
      */
-    protected class InboundEventPayloadProcessor extends SystemUserCallable<ConsumerRecord<String, byte[]>> {
+    protected class InboundEventPayloadProcessor extends SystemUserRunnable {
 
 	/** Record to be processed */
 	private ConsumerRecord<String, byte[]> record;
@@ -278,18 +262,9 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	    this.record = record;
 	}
 
-	/*
-	 * @see com.sitewhere.microservice.security.SystemUserRunnable#
-	 * runAsSystemUser()
-	 */
 	@Override
-	public ConsumerRecord<String, byte[]> runAsSystemUser() throws SiteWhereException {
-	    processRecord(getRecord());
-	    return getRecord();
-	}
-
-	protected ConsumerRecord<String, byte[]> getRecord() {
-	    return record;
+	public void runAsSystemUser() throws SiteWhereException {
+	    processRecord(record);
 	}
     }
 
