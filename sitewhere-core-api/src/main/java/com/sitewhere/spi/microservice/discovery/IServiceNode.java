@@ -5,18 +5,19 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.hbase;
-
-import com.sitewhere.hbase.uid.UniqueIdCounterMap;
+package com.sitewhere.spi.microservice.discovery;
 
 /**
- * Interface for schedule id management.
+ * Remote node that provides a SiteWhere service.
  * 
  * @author Derek
  */
-public interface IScheduleIdManager {
+public interface IServiceNode {
 
-    public UniqueIdCounterMap getScheduleKeys();
-
-    public UniqueIdCounterMap getScheduledJobKeys();
+    /**
+     * Get address used to access node.
+     * 
+     * @return
+     */
+    public String getAddress();
 }
