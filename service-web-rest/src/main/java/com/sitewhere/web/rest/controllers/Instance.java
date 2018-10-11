@@ -24,8 +24,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.w3c.dom.Document;
 
-import com.orbitz.consul.HealthClient;
-import com.orbitz.consul.model.health.ServiceHealth;
 import com.sitewhere.configuration.ConfigurationContentParser;
 import com.sitewhere.configuration.content.ElementContent;
 import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
@@ -42,6 +40,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
+import com.sitewhere.spi.microservice.discovery.IServiceNode;
 import com.sitewhere.spi.microservice.scripting.IScriptManagement;
 import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
 import com.sitewhere.spi.microservice.scripting.IScriptTemplate;
@@ -677,10 +676,9 @@ public class Instance extends RestControllerBase {
      */
     protected IMicroserviceManagementApiChannel<?> getManagementChannel(IFunctionIdentifier target)
 	    throws SiteWhereException {
-	HealthClient healthClient = getMicroservice().getConsulClient().healthClient();
-	List<ServiceHealth> matches = healthClient.getHealthyServiceInstances(target.getShortName()).getResponse();
-	for (ServiceHealth match : matches) {
-	    String host = match.getService().getAddress();
+	List<IServiceNode> nodes = getMicroservice().getServiceDiscoveryProvider().getNodesForFunction(target);
+	for (IServiceNode node : nodes) {
+	    String host = node.getAddress();
 	    LifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
 		    new LifecycleProgressContext(1, "Start management interface."), getMicroservice());
 	    MicroserviceManagementApiChannel channel = new MicroserviceManagementApiChannel(null, host,

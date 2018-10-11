@@ -16,8 +16,6 @@ import java.util.concurrent.Executors;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.orbitz.consul.HealthClient;
-import com.orbitz.consul.model.health.ServiceHealth;
 import com.sitewhere.grpc.client.spi.IApiChannel;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.IApiDemuxRoutingStrategy;
@@ -25,6 +23,7 @@ import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.discovery.IServiceNode;
 import com.sitewhere.spi.security.ITenantAwareAuthentication;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
@@ -249,18 +248,15 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 	public void run() {
 	    while (true) {
 		try {
-		    HealthClient healthClient = getMicroservice().getConsulClient().healthClient();
-		    List<ServiceHealth> matches = healthClient
-			    .getHealthyServiceInstances(getTargetIdentifier().getShortName()).getResponse();
-		    for (ServiceHealth match : matches) {
-			String host = match.getService().getAddress();
-			if (getApiChannels().get(host) == null) {
+		    List<IServiceNode> nodes = getMicroservice().getServiceDiscoveryProvider()
+			    .getNodesForFunction(getTargetIdentifier());
+		    for (IServiceNode node : nodes) {
+			if (getApiChannels().get(node.getAddress()) == null) {
 			    getLogger().debug(String.format("No channel found for API demux match %s at %s.",
-				    getTargetIdentifier().getShortName(), match.getService().getAddress()));
-			    channelInitializer.execute(new ApiChannelInitializer(host));
+				    getTargetIdentifier().getShortName(), node.getAddress()));
+			    channelInitializer.execute(new ApiChannelInitializer(node.getAddress()));
 			}
 		    }
-
 		    Thread.sleep(DISCOVERY_CHECK_INTERVAL);
 		} catch (InterruptedException e) {
 		    getLogger().warn("Discovery monitor interrupted.");

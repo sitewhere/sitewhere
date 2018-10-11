@@ -14,10 +14,10 @@ import java.util.concurrent.ExecutorService;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.ScheduledReporter;
-import com.orbitz.consul.Consul;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
+import com.sitewhere.spi.microservice.discovery.IServiceDiscoveryProvider;
 import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
@@ -149,11 +149,11 @@ public interface IMicroservice<T extends IFunctionIdentifier>
     public ISystemUser getSystemUser();
 
     /**
-     * Get Consul HTTP client.
+     * Get service discovery provider implementation.
      * 
      * @return
      */
-    public Consul getConsulClient();
+    public IServiceDiscoveryProvider getServiceDiscoveryProvider();
 
     /**
      * Get Kafka topic naming helper.

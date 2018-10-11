@@ -10,8 +10,6 @@ package com.sitewhere.microservice;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -25,12 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.ScheduledReporter;
 import com.codahale.metrics.Slf4jReporter;
-import com.google.common.net.HostAndPort;
-import com.orbitz.consul.AgentClient;
-import com.orbitz.consul.Consul;
-import com.orbitz.consul.model.agent.ImmutableRegistration;
-import com.orbitz.consul.model.agent.Registration;
 import com.sitewhere.Version;
+import com.sitewhere.microservice.discovery.consul.ConsulServiceDiscoveryProvider;
 import com.sitewhere.microservice.logging.MicroserviceLogProducer;
 import com.sitewhere.microservice.management.MicroserviceManagementGrpcServer;
 import com.sitewhere.microservice.scripting.ScriptTemplateManager;
@@ -49,6 +43,7 @@ import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.configuration.model.IElementNode;
 import com.sitewhere.spi.microservice.configuration.model.IElementRole;
+import com.sitewhere.spi.microservice.discovery.IServiceDiscoveryProvider;
 import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
@@ -118,14 +113,14 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     @Autowired
     private Tracer tracer;
 
-    /** Client for interacting with Consul */
-    private Consul consulClient;
-
     /** Version information */
     private IVersion version = new Version();
 
     /** Configuration model */
     private IConfigurationModel configurationModel;
+
+    /** Service discovery provider implementation */
+    private IServiceDiscoveryProvider serviceDiscoveryProvider = new ConsulServiceDiscoveryProvider();
 
     /** Microservice management GRPC server */
     private IMicroserviceManagementGrpcServer microserviceManagementGrpcServer;
@@ -209,6 +204,12 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	// Organizes steps for initializing microservice.
 	ICompositeLifecycleStep initialize = new CompositeLifecycleStep("Initialize " + getName());
 
+	// Initialize service discovery.
+	initialize.addInitializeStep(this, getServiceDiscoveryProvider(), true);
+
+	// Start service discovery.
+	initialize.addStartStep(this, getServiceDiscoveryProvider(), true);
+
 	// Initialize script template manager.
 	initialize.addInitializeStep(this, getScriptTemplateManager(), true);
 
@@ -239,15 +240,13 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	// Execute initialization steps.
 	initialize.execute(monitor);
 
-	// Initialize Consul client.
-	initializeConsulClient();
+	// Record start time.
+	this.startTime = System.currentTimeMillis();
+	getServiceDiscoveryProvider().registerService();
+	getMicroserviceAnalytics().sendMicroserviceStarted(this);
 
 	// Start sending heartbeats.
 	getMicroserviceHeartbeatService().execute(new Heartbeat());
-
-	// Record start time.
-	this.startTime = System.currentTimeMillis();
-	getMicroserviceAnalytics().sendMicroserviceStarted(this);
     }
 
     /**
@@ -261,27 +260,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	} else {
 	    getLogger().info(MicroserviceMessages.METRICS_REPORTING_DISABLED);
 	}
-    }
-
-    /**
-     * Initialize Consul client based on instance settings.
-     */
-    protected void initializeConsulClient() {
-	// Create Consul client.
-	this.consulClient = Consul.builder().withHostAndPort(
-		HostAndPort.fromParts(getInstanceSettings().getConsulHost(), getInstanceSettings().getConsulPort()))
-		.build();
-
-	// Register microservice with Consul.
-	AgentClient agentClient = getConsulClient().agentClient();
-	List<String> tags = new ArrayList<>();
-	tags.add("microservice");
-	tags.add(getIdentifier().getShortName());
-	Registration service = ImmutableRegistration.builder().id(getId().toString())
-		.name(getIdentifier().getShortName()).address(getHostname()).port(getInstanceSettings().getGrpcPort())
-		.check(Registration.RegCheck.ttl(30L)).tags(tags)
-		.meta(Collections.singletonMap("version", getVersion().getVersionIdentifier())).build();
-	agentClient.register(service);
     }
 
     /**
@@ -346,6 +324,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
 	// Terminate script template manager.
 	terminate.addStopStep(this, getScriptTemplateManager());
+
+	// Terminate service discovery.
+	terminate.addStopStep(this, getServiceDiscoveryProvider());
 
 	// Execute shutdown steps.
 	terminate.execute(monitor);
@@ -581,15 +562,16 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getConsulClient()
+     * @see
+     * com.sitewhere.spi.microservice.IMicroservice#getServiceDiscoveryProvider()
      */
     @Override
-    public Consul getConsulClient() {
-	return consulClient;
+    public IServiceDiscoveryProvider getServiceDiscoveryProvider() {
+	return serviceDiscoveryProvider;
     }
 
-    public void setConsulClient(Consul consulClient) {
-	this.consulClient = consulClient;
+    public void setServiceDiscoveryProvider(IServiceDiscoveryProvider serviceDiscoveryProvider) {
+	this.serviceDiscoveryProvider = serviceDiscoveryProvider;
     }
 
     /*
@@ -768,8 +750,7 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	    while (true) {
 		try {
 		    getLogger().debug("Sending heartbeat.");
-		    AgentClient agentClient = getConsulClient().agentClient();
-		    agentClient.pass(getId().toString());
+		    getServiceDiscoveryProvider().sendHeartbeat();
 		    sendChangedState();
 		} catch (Throwable t) {
 		    getLogger().error("Unable to send state for heartbeat.", t);

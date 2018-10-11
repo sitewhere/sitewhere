@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
  * Supports discovering information about other microservices that provide a
@@ -18,7 +19,21 @@ import com.sitewhere.spi.microservice.IFunctionIdentifier;
  * 
  * @author Derek
  */
-public interface IServiceDiscoveryProvider {
+public interface IServiceDiscoveryProvider extends ILifecycleComponent {
+
+    /**
+     * Register the given microservice.
+     * 
+     * @throws SiteWhereException
+     */
+    public void registerService() throws SiteWhereException;
+
+    /**
+     * Send a heartbeat to the service discovery provider.
+     * 
+     * @throws SiteWhereException
+     */
+    public void sendHeartbeat() throws SiteWhereException;
 
     /**
      * Get list of nodes that provide the given functionality.
@@ -27,5 +42,5 @@ public interface IServiceDiscoveryProvider {
      * @return
      * @throws SiteWhereException
      */
-    public List<IServiceNode> getNodesForService(IFunctionIdentifier identifier) throws SiteWhereException;
+    public List<IServiceNode> getNodesForFunction(IFunctionIdentifier identifier) throws SiteWhereException;
 }
