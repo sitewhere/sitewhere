@@ -7,9 +7,6 @@ dependencies {
 	
 	// gRPC model.
 	compile project(':sitewhere-grpc-tenant-management')
-	
-	// HBase not currently supported.
-	compileOnly project(':sitewhere-hbase')
 }
 
 apply plugin: 'org.springframework.boot'

@@ -9,9 +9,6 @@ dependencies {
 	// Connectivity to other microservices.
 	compile project(':sitewhere-grpc-device-management')
 	
-	// HBase not currently supported.
-	compileOnly project(':sitewhere-hbase')
-	
 	// REST template for SCIM access.
     compile group: 'org.springframework', name: 'spring-web'
     compile group: 'org.apache.httpcomponents', name: 'httpclient'
