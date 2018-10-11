@@ -8,9 +8,6 @@ dependencies {
 	// GRPC model.
 	compile project(':sitewhere-grpc-user-management')
 	
-	// HBase not currently supported.
-	compileOnly project(':sitewhere-hbase')
-	
     compile group: 'org.springframework.security', name: 'spring-security-core'
 }
 

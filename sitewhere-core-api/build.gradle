@@ -24,6 +24,9 @@ dependencies {
     
     // Groovy for dynamic processing.
     compile group: 'org.codehaus.groovy', name: 'groovy'
+    
+    // Fabric8 Kubernetes client.
+    compile group: 'io.fabric8', name: 'kubernetes-client', version: '4.0.5'
       
     // Metrics support
     compile group: 'io.dropwizard.metrics', name: 'metrics-core', version:'3.1.5'

@@ -9,9 +9,6 @@ dependencies {
 	// Connectivity to other microservices.
 	compile project(':sitewhere-grpc-asset-management')
 	compile project(':sitewhere-grpc-event-management')
-	
-	// HBase not currently supported.
-	compileOnly project(':sitewhere-hbase')
 }
 
 apply plugin: 'org.springframework.boot'

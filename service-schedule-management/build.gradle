@@ -8,9 +8,6 @@ dependencies {
 	// GRPC model.
 	compile project(':sitewhere-grpc-schedule-management')
 	
-	// HBase not currently supported.
-	compileOnly project(':sitewhere-hbase')
-	
     compile group: 'org.quartz-scheduler', name: 'quartz', version:'2.2.2'
 }
 
