@@ -74,6 +74,10 @@ public class InstanceSettings implements IInstanceSettings {
     @Value("${sitewhere.use.near.cache:false}")
     private boolean useNearCache;
 
+    /** Microservice Service Port Name */
+    @Value("${sitewhere.service.portName}")
+    private String servicePortName;
+
     /*
      * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#getProductId()
      */
@@ -251,5 +255,14 @@ public class InstanceSettings implements IInstanceSettings {
 
     public void setUseNearCache(boolean useNearCache) {
 	this.useNearCache = useNearCache;
+    }
+
+    @Override
+    public String getServicePortName() {
+	return this.servicePortName;
+    }
+    
+    public void setServicePortName(String servicePortName) {
+	this.servicePortName = servicePortName;
     }
 }

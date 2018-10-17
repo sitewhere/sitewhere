@@ -111,4 +111,10 @@ public interface IInstanceSettings {
      * @return
      */
     public boolean isUseNearCache();
+
+    /**
+     * Identifies Microservice Service Name
+     * @return
+     */
+    public String getServicePortName();
 }

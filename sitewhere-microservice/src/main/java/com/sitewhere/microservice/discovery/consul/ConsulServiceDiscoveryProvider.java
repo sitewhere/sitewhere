@@ -83,9 +83,12 @@ public class ConsulServiceDiscoveryProvider extends LifecycleComponent implement
 	List<String> tags = new ArrayList<>();
 	tags.add("microservice");
 	tags.add(getMicroservice().getIdentifier().getShortName());
-	Registration service = ImmutableRegistration.builder().id(getMicroservice().getId().toString())
-		.name(getMicroservice().getIdentifier().getShortName()).address(getMicroservice().getHostname())
-		.port(getMicroservice().getInstanceSettings().getGrpcPort()).check(Registration.RegCheck.ttl(30L))
+	Registration service = ImmutableRegistration.builder()
+		.id(getMicroservice().getId().toString())
+		.name(getMicroservice().getIdentifier().getShortName())
+		.address(getMicroservice().getInstanceSettings().getServicePortName())
+		.port(getMicroservice().getInstanceSettings().getGrpcPort())
+		.check(Registration.RegCheck.ttl(30L))
 		.tags(tags)
 		.meta(Collections.singletonMap("version", getMicroservice().getVersion().getVersionIdentifier()))
 		.build();
