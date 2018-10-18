@@ -7,6 +7,9 @@
  */
 package com.sitewhere.microservice.instance;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.springframework.beans.factory.annotation.Value;
 
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
@@ -75,7 +78,7 @@ public class InstanceSettings implements IInstanceSettings {
     private boolean useNearCache;
 
     /** Microservice Service Port Name */
-    @Value("${sitewhere.service.portName}")
+    @Value("${sitewhere.service.portName:localhost}")
     private String servicePortName;
 
     /*
@@ -259,7 +262,12 @@ public class InstanceSettings implements IInstanceSettings {
 
     @Override
     public String getServicePortName() {
-	return this.servicePortName;
+	try {
+	    InetAddress serviceName = InetAddress.getByName(this.servicePortName);
+	    return serviceName.getHostName();
+	} catch (UnknownHostException e) {
+	    throw new RuntimeException("Unable to find hostname.", e);
+	}
     }
     
     public void setServicePortName(String servicePortName) {
