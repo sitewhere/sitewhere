@@ -366,6 +366,13 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
      */
     @Override
     public String getHostname() {
+	return getCurrentHostName();
+    }
+
+    /**
+     * @return Host Name
+     */
+    public static String getCurrentHostName() {
 	try {
 	    InetAddress local = InetAddress.getLocalHost();
 	    return local.getHostName();

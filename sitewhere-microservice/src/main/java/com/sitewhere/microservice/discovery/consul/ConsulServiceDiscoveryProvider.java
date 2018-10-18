@@ -79,6 +79,15 @@ public class ConsulServiceDiscoveryProvider extends LifecycleComponent implement
      */
     @Override
     public void registerService() throws SiteWhereException {
+	getLogger().info("Registering Service: " + 
+		getMicroservice().getIdentifier().getShortName() +
+		" id: " +
+		getMicroservice().getId().toString() +
+		" address: " + 
+		getMicroservice().getInstanceSettings().getServicePortName() +
+		" port: " +
+		getMicroservice().getInstanceSettings().getGrpcPort());	
+	
 	AgentClient agentClient = getConsulClient().agentClient();
 	List<String> tags = new ArrayList<>();
 	tags.add("microservice");
