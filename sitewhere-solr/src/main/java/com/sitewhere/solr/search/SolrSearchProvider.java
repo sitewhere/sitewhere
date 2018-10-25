@@ -16,6 +16,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrRequest.METHOD;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.NoOpResponseParser;
 import org.apache.solr.client.solrj.request.QueryRequest;
@@ -142,7 +143,7 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
 	    List<IDeviceEvent> results = new ArrayList<IDeviceEvent>();
 	    SolrQuery solrQuery = new SolrQuery();
 	    solrQuery.setQuery(queryString);
-	    QueryResponse response = getSolr().getSolrClient().query(solrQuery);
+	    QueryResponse response = getSolr().getSolrClient().query(solrQuery, METHOD.POST);
 	    SolrDocumentList docs = response.getResults();
 	    for (SolrDocument doc : docs) {
 		results.add(SiteWhereSolrFactory.parseDocument(doc));
@@ -171,7 +172,7 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
 
 	    SolrQuery query = new SolrQuery();
 	    query.add(createParamsFromQueryString(queryString));
-	    QueryRequest request = new QueryRequest(query);
+	    QueryRequest request = new QueryRequest(query, METHOD.POST);
 	    request.setResponseParser(rawJsonResponseParser);
 	    NamedList<?> results = getSolr().getSolrClient().request(request);
 	    return MAPPER.readTree((String) results.get("response"));
@@ -194,7 +195,7 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
 	ModifiableSolrParams params = new ModifiableSolrParams();
 	try {
-	    QueryResponse response = getSolr().getSolrClient().query(params);
+	    QueryResponse response = getSolr().getSolrClient().query(params, METHOD.POST);
 	    SolrDocumentList docs = response.getResults();
 	    while (docs.iterator().hasNext()) {
 		SolrDocument doc = docs.iterator().next();
