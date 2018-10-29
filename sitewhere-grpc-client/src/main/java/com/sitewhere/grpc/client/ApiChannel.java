@@ -9,6 +9,9 @@ package com.sitewhere.grpc.client;
 
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.util.backoff.BackOffExecution;
+import org.springframework.util.backoff.ExponentialBackOff;
+
 import com.sitewhere.grpc.client.spi.IApiChannel;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -28,8 +31,11 @@ import io.grpc.ConnectivityState;
 public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngineLifecycleComponent
 	implements IApiChannel<T> {
 
-    /** Interval at which GRPC connection will be checked */
-    private static final long CONNECTION_CHECK_INTERVAL = 100;
+    /** Min interval at which GRPC connection will be checked */
+    private static final long CONNECTION_CHECK_INTERVAL_MIN_MS = 100;
+
+    /** Max interval at which GRPC connection will be checked */
+    private static final long CONNECTION_CHECK_INTERVAL_MAX_MS = 60 * 1000;
 
     /** Parent demux */
     private IApiDemux<?> demux;
@@ -110,21 +116,26 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
 	long start = System.currentTimeMillis();
 	long deadline = start + unit.toMillis(duration);
 	long logAfter = start + unit.toMillis(logMessageDelay);
+
+	ExponentialBackOff backOff = new ExponentialBackOff(CONNECTION_CHECK_INTERVAL_MIN_MS, 1.5);
+	backOff.setMaxInterval(CONNECTION_CHECK_INTERVAL_MAX_MS);
+	BackOffExecution backOffExec = backOff.start();
 	while ((System.currentTimeMillis() - deadline) < 0) {
+	    long waitPeriod = backOffExec.nextBackOff();
 	    try {
 		if (getGrpcChannel().getChannel() == null) {
 		    if ((System.currentTimeMillis() - logAfter) > 0) {
 			getLogger().info("Waiting for GRPC channel to be initialized.");
 		    }
-		    Thread.sleep(CONNECTION_CHECK_INTERVAL);
+		    Thread.sleep(waitPeriod);
 		} else {
 		    ConnectivityState state = getGrpcChannel().getChannel().getState(true);
 		    if (ConnectivityState.READY != state) {
 			if ((System.currentTimeMillis() - logAfter) > 0) {
-			    getLogger().info(
-				    "Waiting for GRPC service to become available. (status:" + state.name() + ")");
+			    getLogger().info("Waiting for GRPC service to become available on '" + getHostname()
+				    + "'. (status:" + state.name() + ")");
 			}
-			Thread.sleep(CONNECTION_CHECK_INTERVAL);
+			Thread.sleep(waitPeriod);
 		    } else {
 			return;
 		    }

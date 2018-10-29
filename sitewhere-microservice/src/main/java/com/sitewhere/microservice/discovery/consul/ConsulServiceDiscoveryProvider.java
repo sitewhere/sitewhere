@@ -19,6 +19,7 @@ import com.orbitz.consul.NotRegisteredException;
 import com.orbitz.consul.model.agent.ImmutableRegistration;
 import com.orbitz.consul.model.agent.Registration;
 import com.orbitz.consul.model.health.ServiceHealth;
+import com.sitewhere.core.Boilerplate;
 import com.sitewhere.microservice.discovery.ServiceNode;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -79,29 +80,28 @@ public class ConsulServiceDiscoveryProvider extends LifecycleComponent implement
      */
     @Override
     public void registerService() throws SiteWhereException {
-	getLogger().info("Registering Service: " + 
-		getMicroservice().getIdentifier().getShortName() +
-		" id: " +
-		getMicroservice().getId().toString() +
-		" address: " + 
-		getMicroservice().getInstanceSettings().getServicePortName() +
-		" port: " +
-		getMicroservice().getInstanceSettings().getGrpcPort());	
-	
+	getLogger().info("About to register service with Consul...");
+
 	AgentClient agentClient = getConsulClient().agentClient();
 	List<String> tags = new ArrayList<>();
 	tags.add("microservice");
 	tags.add(getMicroservice().getIdentifier().getShortName());
-	Registration service = ImmutableRegistration.builder()
-		.id(getMicroservice().getId().toString())
-		.name(getMicroservice().getIdentifier().getShortName())
-		.address(getMicroservice().getInstanceSettings().getServicePortName())
-		.port(getMicroservice().getInstanceSettings().getGrpcPort())
-		.check(Registration.RegCheck.ttl(30L))
+	Registration service = ImmutableRegistration.builder().id(getMicroservice().getId().toString())
+		.name(getMicroservice().getIdentifier().getShortName()).address(getMicroservice().getHostname())
+		.port(getMicroservice().getInstanceSettings().getGrpcPort()).check(Registration.RegCheck.ttl(30L))
 		.tags(tags)
 		.meta(Collections.singletonMap("version", getMicroservice().getVersion().getVersionIdentifier()))
 		.build();
 	agentClient.register(service);
+
+	// Log block to indicate registration.
+	List<String> messages = new ArrayList<String>();
+	messages.add("Registered Service with Consul");
+	messages.add("Identifier: " + getMicroservice().getIdentifier().getShortName());
+	messages.add("Registered Address: " + getMicroservice().getHostname());
+	messages.add("K8S Pod IP Address: " + getMicroservice().getInstanceSettings().getKubernetesPodAddress());
+	String message = Boilerplate.boilerplate(messages, "*");
+	getLogger().info(message);
     }
 
     /*
