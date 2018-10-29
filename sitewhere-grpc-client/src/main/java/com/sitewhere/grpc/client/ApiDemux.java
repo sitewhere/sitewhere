@@ -249,7 +249,7 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 			    .getNodesForFunction(getTargetIdentifier());
 		    for (IServiceNode node : nodes) {
 			if (getApiChannels().get(node.getAddress()) == null) {
-			    getLogger().debug(String.format("No channel found for API demux match %s at %s.",
+			    getLogger().info(String.format("Discovered new node for %s at %s.",
 				    getTargetIdentifier().getShortName(), node.getAddress()));
 			    channelInitializer.execute(new ApiChannelInitializer(node.getAddress()));
 			}
@@ -285,6 +285,7 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 	@Override
 	public void run() {
 	    try {
+		getLogger().info(String.format("Creating API channel to address %s.", getHost()));
 		T channel = (T) createApiChannel(getHost());
 		ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
 			new LifecycleProgressContext(1, "Initialize API channel."), getMicroservice());
