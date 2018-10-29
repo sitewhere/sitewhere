@@ -7,6 +7,7 @@
  */
 package com.sitewhere.grpc.client;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -62,8 +63,8 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
     @SuppressWarnings("unchecked")
     private IApiDemuxRoutingStrategy<T> routingStrategy = new RoundRobinDemuxRoutingStrategy();
 
-    /** Channel initializer pool */
-    private ExecutorService channelInitializer;
+    /** Channel operations pool */
+    private ExecutorService channelOperations;
 
     /** Discovery monitor pool */
     private ExecutorService discoveryMonitor;
@@ -75,7 +76,7 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	channelInitializer = Executors.newSingleThreadExecutor();
+	channelOperations = Executors.newSingleThreadExecutor();
 
 	// Monitor Consul to discover added/removed services.
 	discoveryMonitor = Executors.newSingleThreadExecutor();
@@ -89,8 +90,8 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	if (channelInitializer != null) {
-	    channelInitializer.shutdown();
+	if (channelOperations != null) {
+	    channelOperations.shutdown();
 	}
 	if (discoveryMonitor != null) {
 	    discoveryMonitor.shutdown();
@@ -207,7 +208,7 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
      */
     @Override
     public void initializeApiChannel(String host) throws SiteWhereException {
-	channelInitializer.execute(new ApiChannelInitializer(host));
+	channelOperations.execute(new ApiChannelInitializer(host));
     }
 
     /*
@@ -251,7 +252,16 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 			if (getApiChannels().get(node.getAddress()) == null) {
 			    getLogger().info(String.format("Discovered new node for %s at %s.",
 				    getTargetIdentifier().getShortName(), node.getAddress()));
-			    channelInitializer.execute(new ApiChannelInitializer(node.getAddress()));
+			    channelOperations.execute(new ApiChannelInitializer(node.getAddress()));
+			}
+		    }
+
+		    Map<String, IServiceNode> nodesByAddress = createServiceNodeMapByAddress(nodes);
+		    for (String channelHost : getApiChannels().keySet()) {
+			if (nodesByAddress.get(channelHost) == null) {
+			    getLogger().info(String.format("Discovered removed node for %s at %s.",
+				    getTargetIdentifier().getShortName(), channelHost));
+			    channelOperations.execute(new ApiChannelShutdown(channelHost));
 			}
 		    }
 		    Thread.sleep(DISCOVERY_CHECK_INTERVAL);
@@ -262,6 +272,20 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 		    getLogger().error("Unhandled exception in service discovery.", t);
 		}
 	    }
+	}
+
+	/**
+	 * Create a map of service nodes by address.
+	 * 
+	 * @param nodes
+	 * @return
+	 */
+	protected Map<String, IServiceNode> createServiceNodeMapByAddress(List<IServiceNode> nodes) {
+	    Map<String, IServiceNode> result = new HashMap<String, IServiceNode>();
+	    for (IServiceNode node : nodes) {
+		result.put(node.getAddress(), node);
+	    }
+	    return result;
 	}
     }
 
@@ -312,6 +336,65 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 		getLogger().error(e, GrpcClientMessages.API_CHANNEL_EXCEPTION_ON_CREATE, getHost());
 	    } catch (Throwable t) {
 		getLogger().error(t, GrpcClientMessages.API_CHANNEL_UNHANDLED_EXCEPTION_ON_CREATE, getHost());
+	    }
+	}
+
+	public String getHost() {
+	    return host;
+	}
+    }
+
+    /**
+     * Shuts down an existing API channel in a separate thread.
+     * 
+     * @author Derek
+     */
+    private class ApiChannelShutdown implements Runnable {
+
+	/** Host for channel */
+	private String host;
+
+	public ApiChannelShutdown(String host) {
+	    this.host = host;
+	}
+
+	/*
+	 * @see java.lang.Runnable#run()
+	 */
+	@Override
+	public void run() {
+	    try {
+		getLogger().info(String.format("Shutting down API channel to address %s.", getHost()));
+		T channel = getApiChannels().get(getHost());
+		if (channel == null) {
+		    return;
+		}
+		ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
+			new LifecycleProgressContext(1, "Shut down API channel."), getMicroservice());
+
+		// Shut down channel.
+		stopNestedComponent(channel, monitor);
+		if (channel.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		    getLogger().error("Unable to shut down API channel.", getHost());
+		    return;
+		}
+
+		// Start channel.
+		channel.lifecycleTerminate(monitor);
+		if (channel.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		    getLogger().error("Unable to terminate API channel.", getHost());
+		    return;
+		}
+
+		T existing = getApiChannels().remove(getHost());
+		if (existing != null) {
+		    getLogger().error(String.format("Removed API channel for address %s.", getHost()));
+		}
+	    } catch (SiteWhereException e) {
+		getLogger().error(String.format("Exception removing API channel for address %s.", getHost()), e);
+	    } catch (Throwable t) {
+		getLogger().error(String.format("Unhandled exception removing API channel for address %s.", getHost()),
+			t);
 	    }
 	}
 
