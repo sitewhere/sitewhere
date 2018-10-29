@@ -85,15 +85,19 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	NettyChannelBuilder builder = NettyChannelBuilder.forAddress(getHostname(), getPort());
-	builder.executor(getServerExecutor());
-	builder.usePlaintext().intercept(getJwtInterceptor());
-	if (isUseTracingInterceptor()) {
-	    builder.intercept(getTracingInterceptor());
+	try {
+	    NettyChannelBuilder builder = NettyChannelBuilder.forAddress(getHostname(), getPort());
+	    builder.executor(getServerExecutor());
+	    builder.usePlaintext().intercept(getJwtInterceptor());
+	    if (isUseTracingInterceptor()) {
+		builder.intercept(getTracingInterceptor());
+	    }
+	    this.channel = builder.build();
+	    this.blockingStub = createBlockingStub();
+	    this.asyncStub = createAsyncStub();
+	} catch (Throwable t) {
+	    throw new SiteWhereException("Unhandled exception starting gRPC channel.", t);
 	}
-	this.channel = builder.build();
-	this.blockingStub = createBlockingStub();
-	this.asyncStub = createAsyncStub();
     }
 
     /*

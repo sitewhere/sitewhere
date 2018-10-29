@@ -15,6 +15,8 @@ import java.util.concurrent.Executors;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.backoff.BackOffExecution;
+import org.springframework.util.backoff.ExponentialBackOff;
 
 import com.sitewhere.grpc.client.spi.IApiChannel;
 import com.sitewhere.grpc.client.spi.IApiDemux;
@@ -45,10 +47,7 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
     protected static final long API_CHANNEL_WAIT_INTERVAL_MS_MIN = 100;
 
     /** Max of time to wait between checks for available API channel */
-    protected static final long API_CHANNEL_WAIT_INTERVAL_MS_MAX = 3 * 1000;
-
-    /** Amount of time to wait before logging warnings about missing API channel */
-    protected static final int API_CHANNEL_WARN_INTERVAL_IN_SECS = 30;
+    protected static final long API_CHANNEL_WAIT_INTERVAL_MS_MAX = 60 * 1000;
 
     /** Interval at which channels are re-verified */
     protected static final long CHANNEL_VALID_CHECK_INTERVAL_IN_MS = 5 * 1000;
@@ -179,14 +178,16 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
      * @throws SiteWhereException
      */
     protected void waitForApiChannelAvailable(ITenant tenant) throws SiteWhereException {
-	long deadline = System.currentTimeMillis() + (API_CHANNEL_WARN_INTERVAL_IN_SECS * 1000);
-	long waitPeriod = API_CHANNEL_WAIT_INTERVAL_MS_MIN;
+	ExponentialBackOff backOff = new ExponentialBackOff(API_CHANNEL_WAIT_INTERVAL_MS_MIN, 1.5);
+	backOff.setMaxInterval(API_CHANNEL_WAIT_INTERVAL_MS_MAX);
+	BackOffExecution backOffExec = backOff.start();
 	while (true) {
+	    long waitPeriod = backOffExec.nextBackOff();
 	    try {
 		getApiChannelWithConstraints(tenant);
 		return;
 	    } catch (ApiChannelNotAvailableException e) {
-		if ((System.currentTimeMillis() - deadline) < 0) {
+		if (waitPeriod < API_CHANNEL_WAIT_INTERVAL_MS_MAX) {
 		    getLogger().debug(GrpcClientMessages.API_CHANNEL_WAITING_FOR_AVAILABLE, getTargetIdentifier());
 		} else {
 		    getLogger().warn(GrpcClientMessages.API_CHANNEL_WAITING_FOR_AVAILABLE, getTargetIdentifier());
@@ -196,10 +197,6 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 		Thread.sleep(waitPeriod);
 	    } catch (InterruptedException e) {
 		getLogger().warn(GrpcClientMessages.API_CHANNEL_INTERRUPTED_WAITING_FOR_MS);
-	    }
-	    waitPeriod *= 2;
-	    if (waitPeriod > API_CHANNEL_WAIT_INTERVAL_MS_MAX) {
-		waitPeriod = API_CHANNEL_WAIT_INTERVAL_MS_MAX;
 	    }
 	}
     }
@@ -290,7 +287,7 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 	    try {
 		T channel = (T) createApiChannel(getHost());
 		ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
-			new LifecycleProgressContext(1, "Initialize APi channel."), getMicroservice());
+			new LifecycleProgressContext(1, "Initialize API channel."), getMicroservice());
 
 		// Initialize channel.
 		initializeNestedComponent(channel, monitor, true);

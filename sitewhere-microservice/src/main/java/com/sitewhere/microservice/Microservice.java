@@ -158,8 +158,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     public Microservice() {
 	this.microserviceOperationsService = Executors
 		.newSingleThreadExecutor(new MicroserviceOperationsThreadFactory());
-	this.configurationModel = buildConfigurationModel();
-	((ConfigurationModel) configurationModel).setMicroserviceDetails(getMicroserviceDetails());
 
 	// Create log producer so it can buffer log output.
 	this.microserviceLogProducer = new MicroserviceLogProducer();
@@ -192,6 +190,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Initialize configuration model.
+	initializeConfigurationModel();
+
 	// Initialize metrics logging.
 	initializeMetrics();
 
@@ -247,6 +248,14 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
 	// Start sending heartbeats.
 	getMicroserviceHeartbeatService().execute(new Heartbeat());
+    }
+
+    /**
+     * Initialize configuration model.
+     */
+    protected void initializeConfigurationModel() {
+	this.configurationModel = buildConfigurationModel();
+	((ConfigurationModel) configurationModel).setMicroserviceDetails(getMicroserviceDetails());
     }
 
     /**
@@ -366,13 +375,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
      */
     @Override
     public String getHostname() {
-	return getCurrentHostName();
-    }
-
-    /**
-     * @return Host Name
-     */
-    public static String getCurrentHostName() {
+	if (getInstanceSettings().getKubernetesPodAddress() != null) {
+	    return getInstanceSettings().getKubernetesPodAddress();
+	}
 	try {
 	    InetAddress local = InetAddress.getLocalHost();
 	    return local.getHostName();

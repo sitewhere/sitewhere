@@ -113,8 +113,16 @@ public interface IInstanceSettings {
     public boolean isUseNearCache();
 
     /**
-     * Identifies Microservice Service Name
+     * Identifies public hostname used to access microservice instance.
+     * 
      * @return
      */
-    public String getServicePortName();
+    public String getPublicHostname();
+
+    /**
+     * Get IP address for Kubernetes Pod running microservice.
+     * 
+     * @return
+     */
+    public String getKubernetesPodAddress();
 }

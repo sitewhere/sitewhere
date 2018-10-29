@@ -7,12 +7,8 @@
  */
 package com.sitewhere.microservice.instance;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import org.springframework.beans.factory.annotation.Value;
 
-import com.sitewhere.microservice.Microservice;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
@@ -78,9 +74,13 @@ public class InstanceSettings implements IInstanceSettings {
     @Value("${sitewhere.use.near.cache:false}")
     private boolean useNearCache;
 
-    /** Microservice Service Port Name */
-    @Value("${sitewhere.service.portName:#{null}}")
-    private String servicePortName;
+    /** Microservice publicly resolvable hostname */
+    @Value("${sitewhere.service.public.hostname:#{null}}")
+    private String publicHostname;
+
+    /** Microservice publicly resolvable hostname */
+    @Value("${sitewhere.k8s.pod.ip:#{null}}")
+    private String kubernetesPodAddress;
 
     /*
      * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#getProductId()
@@ -261,19 +261,29 @@ public class InstanceSettings implements IInstanceSettings {
 	this.useNearCache = useNearCache;
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.instance.IInstanceSettings#getPublicHostname()
+     */
     @Override
-    public String getServicePortName() {
-	if (this.servicePortName == null)
-	    return Microservice.getCurrentHostName();
-	try {
-	    InetAddress serviceName = InetAddress.getByName(this.servicePortName);
-	    return serviceName.getHostName();
-	} catch (UnknownHostException e) {
-	    throw new RuntimeException("Unable to find hostname.", e);
-	}
+    public String getPublicHostname() {
+	return publicHostname;
     }
-    
-    public void setServicePortName(String servicePortName) {
-	this.servicePortName = servicePortName;
+
+    public void setPublicHostname(String publicHostname) {
+	this.publicHostname = publicHostname;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
+     * getKubernetesPodAddress()
+     */
+    @Override
+    public String getKubernetesPodAddress() {
+	return kubernetesPodAddress;
+    }
+
+    public void setKubernetesPodAddress(String kubernetesPodAddress) {
+	this.kubernetesPodAddress = kubernetesPodAddress;
     }
 }
