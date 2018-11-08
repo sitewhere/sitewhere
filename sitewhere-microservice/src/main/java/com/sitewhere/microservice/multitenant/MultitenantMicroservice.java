@@ -179,7 +179,11 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
 	if (tenantOperations != null) {
 	    tenantOperations.shutdown();
 	}
-	getTenantManagementApiDemux().terminate(monitor);
+
+	// Show down tenant management API demux.
+	if (getTenantManagementApiDemux() != null) {
+	    getTenantManagementApiDemux().terminate(monitor);
+	}
 
 	super.terminate(monitor);
     }
