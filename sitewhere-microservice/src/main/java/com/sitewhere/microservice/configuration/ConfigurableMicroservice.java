@@ -393,14 +393,14 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 	// Stop configuration monitor.
 	stop.addStopStep(this, getConfigurationMonitor());
 
-	// Execute shutdown steps.
-	stop.execute(monitor);
-
 	// Terminate script management.
-	getScriptManagement().lifecycleTerminate(monitor);
+	stop.addTerminateStep(this, getScriptManagement());
 
 	// Terminate configuration monitor.
-	getConfigurationMonitor().lifecycleTerminate(monitor);
+	stop.addTerminateStep(this, getConfigurationMonitor());
+
+	// Execute shutdown steps.
+	stop.execute(monitor);
     }
 
     /*
