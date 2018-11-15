@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package com.sitewhere.communication.protobuf.proto3;
+
+option java_outer_classname = "SiteWhere2";
+
+// ###########################
+// ### DEVICE REGISTRATION ###
+// ###########################
+
+// Optional string value.
+message GOptionalString {
+	string value = 1;
+}
+
+message DeviceEvent {
+	// Commands send to Device
+	enum Command {
+		Registration = 0;
+		Ackknowledgement = 1;
+	}
+
+	// Header contains the command, device token and originator.
+	message Header {
+		Command command = 1;
+		GOptionalString deviceToken = 2;
+		GOptionalString originator = 3;
+	}
+
+	// Fields for requesting a device registration.
+	message DeviceRegistrationRequest {
+		GOptionalString deviceTypeToken = 1;
+		GOptionalString customerToken = 2;
+		GOptionalString areaToken = 3;
+		map<string, string> metadata = 4;
+	}
+
+}
