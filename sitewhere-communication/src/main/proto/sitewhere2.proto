@@ -36,6 +36,7 @@ message DeviceEvent {
 		Location = 2;
 		Alert = 3;
 		Measurements = 4;
+		Stream = 5;
 	}
 	
 	// Alert Level
@@ -99,4 +100,12 @@ message DeviceEvent {
 		GOptionalBoolean updateState = 3;
 		map<string, string> metadata = 4;
 	}
+	
+	// Create a device stream.
+	message DeviceStream {
+		GOptionalString streamId = 1;
+		GOptionalString contentType = 2;
+		map<string, string> metadata = 3;
+	}
+
 }

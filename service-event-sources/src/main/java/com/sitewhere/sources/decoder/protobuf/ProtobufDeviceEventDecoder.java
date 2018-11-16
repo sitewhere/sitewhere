@@ -24,6 +24,7 @@ import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreate
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
+import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.DecodedDeviceRequest;
 import com.sitewhere.sources.spi.EventDecodeException;
@@ -36,6 +37,7 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -164,7 +166,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 	    }
 	    case Measurements: {
 		DeviceEvent.DeviceMeasurements dm = DeviceEvent.DeviceMeasurements.parseDelimitedFrom(stream);
-		getLogger().debug("Decoded measurement for: "  + header.getDeviceToken().getValue());
+		getLogger().debug("Decoded measurement for: " + header.getDeviceToken().getValue());
 		List<Measurement> measurements = dm.getMeasurementList();
 		for (Measurement current : measurements) {
 		    DeviceMeasurementCreateRequest request = new DeviceMeasurementCreateRequest();
@@ -193,6 +195,26 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		    decoded.setRequest(request);
 		    results.add(decoded);
 		}
+		return results;		
+	    }
+	    case Stream: {
+		DeviceEvent.DeviceStream devStream = DeviceEvent.DeviceStream.parseDelimitedFrom(stream);
+		getLogger().debug("Decoded stream for: " + header.getDeviceToken().getValue());
+		DeviceStreamCreateRequest request = new DeviceStreamCreateRequest();
+		request.setStreamId(devStream.getStreamId().getValue());
+		request.setContentType(devStream.getContentType().getValue());
+
+		Map<String, String> metadata = devStream.getMetadataMap();
+		request.setMetadata(metadata);
+
+		DecodedDeviceRequest<IDeviceStreamCreateRequest> decoded = 
+			new DecodedDeviceRequest<IDeviceStreamCreateRequest>();
+		if (header.hasOriginator()) {
+		    decoded.setOriginator(header.getOriginator().getValue());
+		}
+		results.add(decoded);
+		decoded.setDeviceToken(header.getDeviceToken().getValue());
+		decoded.setRequest(request);
 		return results;		
 	    }
 	    case UNRECOGNIZED:
