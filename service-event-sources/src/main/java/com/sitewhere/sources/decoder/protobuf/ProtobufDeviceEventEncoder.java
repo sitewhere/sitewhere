@@ -8,13 +8,18 @@
 package com.sitewhere.sources.decoder.protobuf;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Set;
 
-import com.sitewhere.communication.protobuf.proto.Sitewhere.Model;
-import com.sitewhere.communication.protobuf.proto.Sitewhere.SiteWhere;
+import com.sitewhere.communication.protobuf.proto.SiteWhere.DeviceEvent;
+import com.sitewhere.communication.protobuf.proto.SiteWhere.DeviceEvent.AlterLevel;
+import com.sitewhere.communication.protobuf.proto.SiteWhere.DeviceEvent.Command;
+import com.sitewhere.communication.protobuf.proto.SiteWhere.DeviceEvent.Header;
+import com.sitewhere.communication.protobuf.proto.SiteWhere.GOptionalDouble;
+import com.sitewhere.communication.protobuf.proto.SiteWhere.GOptionalFixed64;
+import com.sitewhere.communication.protobuf.proto.SiteWhere.GOptionalString;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IDeviceEventEncoder;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
@@ -61,31 +66,22 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
 	    throws SiteWhereException {
 	try {
 	    IDeviceMeasurementCreateRequest measurements = (IDeviceMeasurementCreateRequest) event.getRequest();
-	    Model.DeviceMeasurements.Builder mb = Model.DeviceMeasurements.newBuilder();
-	    mb.setHardwareId(event.getDeviceToken());
-	    mb.setEventDate(measurements.getEventDate().getTime());
-
+	    // Header
+	    DeviceEvent.Header.Builder headerBuilder = builHeader(event, Command.SEND_MEASUREMENT);
+	    // Payload
+	    DeviceEvent.DeviceMeasurements.Builder payloadBuilder = DeviceEvent.DeviceMeasurements.newBuilder();
+	    payloadBuilder.setEventDate(GOptionalFixed64.newBuilder().setValue(measurements.getEventDate().getTime()));
 	    if (measurements.getMetadata() != null) {
-		Set<String> metaKeys = measurements.getMetadata().keySet();
-		for (String key : metaKeys) {
-		    mb.addMetadata(
-			    Model.Metadata.newBuilder().setName(key).setValue(measurements.getMetadata().get(key)))
-			    .build();
-		}
+		payloadBuilder.putAllMetadata(measurements.getMetadata());
 	    }
-
-	    mb.addMeasurement(Model.Measurement.newBuilder().setMeasurementId(measurements.getName())
-		    .setMeasurementValue(measurements.getValue()).build());
-
+	    payloadBuilder.addMeasurement(DeviceEvent.Measurement.newBuilder()
+		    .setMeasurementId(GOptionalString.newBuilder().setValue(measurements.getName()))
+		    .setMeasurementValue(GOptionalDouble.newBuilder().setValue(measurements.getValue())).build());
+	    // Write to byte-stream
 	    ByteArrayOutputStream out = new ByteArrayOutputStream();
-	    SiteWhere.Header.Builder builder = SiteWhere.Header.newBuilder();
-	    builder.setCommand(SiteWhere.Command.SEND_DEVICE_MEASUREMENTS);
-	    if (event.getOriginator() != null) {
-		builder.setOriginator(event.getOriginator());
-	    }
-
-	    builder.build().writeDelimitedTo(out);
-	    mb.build().writeDelimitedTo(out);
+	    headerBuilder.build().writeDelimitedTo(out);
+	    payloadBuilder.build().writeDelimitedTo(out);
+	    out.close();
 	    return out.toByteArray();
 	} catch (Exception e) {
 	    throw new SiteWhereException(e);
@@ -104,29 +100,23 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
 	    throws SiteWhereException {
 	try {
 	    IDeviceAlertCreateRequest alert = (IDeviceAlertCreateRequest) event.getRequest();
-	    Model.DeviceAlert.Builder mb = Model.DeviceAlert.newBuilder();
-	    mb.setHardwareId(event.getDeviceToken());
-	    mb.setEventDate(alert.getEventDate().getTime());
-	    mb.setAlertType(alert.getType());
-	    mb.setAlertMessage(alert.getMessage());
-
+	    // Header
+	    DeviceEvent.Header.Builder headerBuilder = builHeader(event, Command.SEND_ALERT);
+	    // Payload
+	    DeviceEvent.DeviceAlert.Builder payloadBuilder = DeviceEvent.DeviceAlert.newBuilder();
+	    
+	    payloadBuilder.setEventDate(GOptionalFixed64.newBuilder().setValue(alert.getEventDate().getTime()));
+	    payloadBuilder.setAlertType(GOptionalString.newBuilder().setValue(alert.getType()));
+	    payloadBuilder.setAlertMessage(GOptionalString.newBuilder().setValue(alert.getMessage()));
+	    payloadBuilder.setLevel(fromModel(alert.getLevel()));
 	    if (alert.getMetadata() != null) {
-		Set<String> metaKeys = alert.getMetadata().keySet();
-		for (String key : metaKeys) {
-		    mb.addMetadata(Model.Metadata.newBuilder().setName(key).setValue(alert.getMetadata().get(key)))
-			    .build();
-		}
+		payloadBuilder.putAllMetadata(alert.getMetadata());
 	    }
-
+	    // Write to byte-stream
 	    ByteArrayOutputStream out = new ByteArrayOutputStream();
-	    SiteWhere.Header.Builder builder = SiteWhere.Header.newBuilder();
-	    builder.setCommand(SiteWhere.Command.SEND_DEVICE_ALERT);
-	    if (event.getOriginator() != null) {
-		builder.setOriginator(event.getOriginator());
-	    }
-
-	    builder.build().writeDelimitedTo(out);
-	    mb.build().writeDelimitedTo(out);
+	    headerBuilder.build().writeDelimitedTo(out);
+	    payloadBuilder.build().writeDelimitedTo(out);
+	    out.close();
 	    return out.toByteArray();
 	} catch (Exception e) {
 	    throw new SiteWhereException(e);
@@ -145,30 +135,22 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
 	    throws SiteWhereException {
 	try {
 	    IDeviceLocationCreateRequest location = (IDeviceLocationCreateRequest) event.getRequest();
-	    Model.DeviceLocation.Builder mb = Model.DeviceLocation.newBuilder();
-	    mb.setHardwareId(event.getDeviceToken());
-	    mb.setEventDate(location.getEventDate().getTime());
-	    mb.setLatitude(location.getLatitude());
-	    mb.setLongitude(location.getLongitude());
-	    mb.setElevation(location.getElevation());
-
+	    // Header
+	    DeviceEvent.Header.Builder headerBuilder = builHeader(event, Command.SEND_LOCATION);
+	    // Payload
+	    DeviceEvent.DeviceLocation.Builder payloadBuilder = DeviceEvent.DeviceLocation.newBuilder();
+	    payloadBuilder.setEventDate(GOptionalFixed64.newBuilder().setValue(location.getEventDate().getTime()));	    
+	    payloadBuilder.setLatitude(GOptionalDouble.newBuilder().setValue(location.getLatitude()));
+	    payloadBuilder.setLongitude(GOptionalDouble.newBuilder().setValue(location.getLongitude()));
+	    payloadBuilder.setElevation(GOptionalDouble.newBuilder().setValue(location.getElevation()));
 	    if (location.getMetadata() != null) {
-		Set<String> metaKeys = location.getMetadata().keySet();
-		for (String key : metaKeys) {
-		    mb.addMetadata(Model.Metadata.newBuilder().setName(key).setValue(location.getMetadata().get(key)))
-			    .build();
-		}
+		payloadBuilder.putAllMetadata(location.getMetadata());
 	    }
-
+	    // Write to byte-stream
 	    ByteArrayOutputStream out = new ByteArrayOutputStream();
-	    SiteWhere.Header.Builder builder = SiteWhere.Header.newBuilder();
-	    builder.setCommand(SiteWhere.Command.SEND_DEVICE_LOCATION);
-	    if (event.getOriginator() != null) {
-		builder.setOriginator(event.getOriginator());
-	    }
-
-	    builder.build().writeDelimitedTo(out);
-	    mb.build().writeDelimitedTo(out);
+	    headerBuilder.build().writeDelimitedTo(out);
+	    payloadBuilder.build().writeDelimitedTo(out);
+	    out.close();
 	    return out.toByteArray();
 	} catch (Exception e) {
 	    throw new SiteWhereException(e);
@@ -187,22 +169,51 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
 	    throws SiteWhereException {
 	try {
 	    IDeviceRegistrationRequest request = (IDeviceRegistrationRequest) decoded.getRequest();
-	    SiteWhere.RegisterDevice.Builder register = SiteWhere.RegisterDevice.newBuilder();
-	    register.setAreaToken(request.getAreaToken());
-	    register.setDeviceTypeToken(request.getDeviceTypeToken());
-
-	    ByteArrayOutputStream out = new ByteArrayOutputStream();
-	    SiteWhere.Header.Builder builder = SiteWhere.Header.newBuilder();
-	    builder.setCommand(SiteWhere.Command.SEND_REGISTRATION);
-	    if (decoded.getOriginator() != null) {
-		builder.setOriginator(decoded.getOriginator());
+	    // Header
+	    DeviceEvent.Header.Builder headerBuilder = builHeader(decoded, Command.SEND_REGISTRATION);
+	    // Payload
+	    DeviceEvent.DeviceRegistrationRequest.Builder payloadBuilder = DeviceEvent.DeviceRegistrationRequest.newBuilder();
+	    payloadBuilder.setAreaToken(GOptionalString.newBuilder().setValue(request.getAreaToken()));
+	    payloadBuilder.setDeviceTypeToken(GOptionalString.newBuilder().setValue(request.getDeviceTypeToken()));
+	    payloadBuilder.setCustomerToken(GOptionalString.newBuilder().setValue(request.getCustomerToken()));
+	    if (request.getMetadata() != null) {
+		payloadBuilder.putAllMetadata(request.getMetadata());
 	    }
-
-	    builder.build().writeDelimitedTo(out);
-	    register.build().writeDelimitedTo(out);
+	    // Write to byte-stream
+	    ByteArrayOutputStream out = new ByteArrayOutputStream();
+	    headerBuilder.build().writeDelimitedTo(out);
+	    payloadBuilder.build().writeDelimitedTo(out);
+	    out.close();
 	    return out.toByteArray();
 	} catch (Exception e) {
 	    throw new SiteWhereException(e);
 	}
+    }
+
+    private static AlterLevel fromModel(AlertLevel level) {
+	if (level == null)
+	    return AlterLevel.Info;
+	switch (level) {
+	case Info:
+	    return AlterLevel.Info;
+	case Warning:
+	    return AlterLevel.Warning;
+	case Error:
+	    return AlterLevel.Error;
+	case Critical:
+	    return AlterLevel.Critical;
+	default:
+	    return AlterLevel.UNRECOGNIZED;
+	}
+    }
+
+    private static Header.Builder builHeader(IDecodedDeviceRequest<?> event, DeviceEvent.Command command) {
+	DeviceEvent.Header.Builder headerBuilder = DeviceEvent.Header.newBuilder();
+	headerBuilder.setCommand(command);
+	headerBuilder.setDeviceToken(GOptionalString.newBuilder().setValue(event.getDeviceToken()));
+	if (event.getOriginator() != null) {
+	    headerBuilder.setOriginator(GOptionalString.newBuilder().setValue(event.getOriginator()));
+	}
+	return headerBuilder;
     }
 }
