@@ -11,18 +11,20 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import com.google.protobuf.ByteString;
+
 import com.sitewhere.commands.spi.ICommandExecutionEncoder;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.communication.protobuf.ProtobufMessageBuilder;
-import com.sitewhere.communication.protobuf.proto.Sitewhere.Device.Command;
-import com.sitewhere.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAck;
-import com.sitewhere.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAckState;
-import com.sitewhere.communication.protobuf.proto.Sitewhere.Device.Header;
-import com.sitewhere.communication.protobuf.proto.Sitewhere.Device.RegistrationAck;
-import com.sitewhere.communication.protobuf.proto.Sitewhere.Device.RegistrationAckError;
-import com.sitewhere.communication.protobuf.proto.Sitewhere.Device.RegistrationAckState;
-import com.sitewhere.communication.protobuf.proto.Sitewhere.Model;
-import com.sitewhere.communication.protobuf.proto.Sitewhere.Model.DeviceStreamData;
+import com.sitewhere.communication.protobuf.proto.SiteWhere.Device.Command;
+import com.sitewhere.communication.protobuf.proto.SiteWhere.Device.DeviceStreamAck;
+import com.sitewhere.communication.protobuf.proto.SiteWhere.Device.DeviceStreamAckState;
+import com.sitewhere.communication.protobuf.proto.SiteWhere.Device.Header;
+import com.sitewhere.communication.protobuf.proto.SiteWhere.Device.RegistrationAck;
+import com.sitewhere.communication.protobuf.proto.SiteWhere.Device.RegistrationAckError;
+import com.sitewhere.communication.protobuf.proto.SiteWhere.Device.RegistrationAckState;
+import com.sitewhere.communication.protobuf.proto.SiteWhere.DeviceEvent.DeviceStreamData;
+import com.sitewhere.communication.protobuf.proto.SiteWhere.GOptionalString;
+import com.sitewhere.communication.protobuf.proto.SiteWhere.GOptionalFixed64;
 import com.sitewhere.core.DataUtils;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -97,7 +99,7 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
 	    IRegistrationFailureCommand fail = (IRegistrationFailureCommand) command;
 	    RegistrationAck.Builder builder = RegistrationAck.newBuilder();
 	    builder.setState(RegistrationAckState.REGISTRATION_ERROR);
-	    builder.setErrorMessage(fail.getErrorMessage());
+	    builder.setErrorMessage(GOptionalString.newBuilder().setValue(fail.getErrorMessage()));
 	    switch (fail.getReason()) {
 	    case NewDevicesNotAllowed: {
 		builder.setErrorType(RegistrationAckError.NEW_DEVICES_NOT_ALLOWED);
@@ -117,7 +119,7 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
 	case DeviceStreamAck: {
 	    IDeviceStreamAckCommand ack = (IDeviceStreamAckCommand) command;
 	    DeviceStreamAck.Builder builder = DeviceStreamAck.newBuilder();
-	    builder.setStreamId(ack.getStreamId());
+	    builder.setStreamId(GOptionalString.newBuilder().setValue(ack.getStreamId()));
 	    switch (ack.getStatus()) {
 	    case DeviceStreamCreated: {
 		builder.setState(DeviceStreamAckState.STREAM_CREATED);
@@ -136,10 +138,10 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
 	}
 	case SendDeviceStreamData: {
 	    ISendDeviceStreamDataCommand send = (ISendDeviceStreamDataCommand) command;
-	    Model.DeviceStreamData.Builder builder = Model.DeviceStreamData.newBuilder();
-	    builder.setHardwareId(send.getHardwareId());
-	    builder.setStreamId(send.getStreamId());
-	    builder.setSequenceNumber(send.getSequenceNumber());
+	    DeviceStreamData.Builder builder = DeviceStreamData.newBuilder();
+	    builder.setHardwareId(GOptionalString.newBuilder().setValue(send.getHardwareId()));
+	    builder.setStreamId(GOptionalString.newBuilder().setValue(send.getStreamId()));
+	    builder.setSequenceNumber(GOptionalFixed64.newBuilder().setValue(send.getSequenceNumber()));
 	    builder.setData(ByteString.copyFrom(send.getData()));
 	    return encodeSendDeviceStreamData(builder.build());
 	}
@@ -163,8 +165,9 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
     protected byte[] encodeRegistrationAck(RegistrationAck ack) throws SiteWhereException {
 	try {
 	    ByteArrayOutputStream out = new ByteArrayOutputStream();
-	    Header header = Header.newBuilder().setCommand(Command.ACK_REGISTRATION).build();
-	    header.writeDelimitedTo(out);
+	    // Header header =
+	    // Header.newBuilder().setCommand(Command.ACK_REGISTRATION).build();
+	    // header.writeDelimitedTo(out);
 
 	    ((RegistrationAck) ack).writeDelimitedTo(out);
 	    out.close();
@@ -184,8 +187,9 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
     protected byte[] encodeDeviceStreamAck(DeviceStreamAck ack) throws SiteWhereException {
 	try {
 	    ByteArrayOutputStream out = new ByteArrayOutputStream();
-	    Header header = Header.newBuilder().setCommand(Command.ACK_DEVICE_STREAM).build();
-	    header.writeDelimitedTo(out);
+	    // Header header =
+	    // Header.newBuilder().setCommand(Command.ACK_DEVICE_STREAM).build();
+	    // header.writeDelimitedTo(out);
 	    ack.writeDelimitedTo(out);
 	    out.close();
 	    return out.toByteArray();
@@ -201,7 +205,7 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
      * @return
      * @throws SiteWhereException
      */
-    protected byte[] encodeSendDeviceStreamData(Model.DeviceStreamData data) throws SiteWhereException {
+    protected byte[] encodeSendDeviceStreamData(DeviceStreamData data) throws SiteWhereException {
 	try {
 	    ByteArrayOutputStream out = new ByteArrayOutputStream();
 	    Header header = Header.newBuilder().setCommand(Command.RECEIVE_DEVICE_STREAM_DATA).build();

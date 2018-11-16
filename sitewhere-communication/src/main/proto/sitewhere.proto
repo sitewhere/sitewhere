@@ -1,147 +1,171 @@
-option optimize_for = LITE_RUNTIME;
+syntax = "proto3";
 
-option java_package = "com.sitewhere.communication.protobuf.proto";
+package com.sitewhere.communication.protobuf.proto;
 
-// Model Objects
-message Model {
+option java_outer_classname = "SiteWhere";
+
+// ###########################
+// ### DEVICE REGISTRATION ###
+// ###########################
+
+// Optional string value.
+message GOptionalString {
+	string value = 1;
+}
+
+// Optional boolean value.
+message GOptionalBoolean {
+	bool value = 1;
+}
+
+// Optional double value.
+message GOptionalDouble {
+	double value = 1;
+}
+
+// Optional fixed64 value.
+message GOptionalFixed64 {
+	fixed64 value = 1;
+}
+
+message DeviceEvent {
+	// Commands send from Device to SiteWhere
+	enum Command {
+		SEND_REGISTRATION = 0;
+		SEND_ACK = 1;
+		SEND_LOCATION = 2;
+		SEND_ALERT = 3;
+		SEND_MEASUREMENT = 4;
+		Stream = 5;
+	}
 	
-	// A single piece of metadata.
-	message Metadata {
-		required string name = 1;
-		required string value = 2;
+	// Alert Level
+	enum AlterLevel {
+	    Info = 0;
+	    Warning = 1;
+		Error = 2;
+		Critical = 3;
 	}
 
-	// Report device location.
+	// Header contains the command, device token and originator.
+	message Header {
+		Command command = 1;
+		GOptionalString deviceToken = 2;
+		GOptionalString originator = 3;
+	}
+
+	// Fields for requesting a device registration.
+	message DeviceRegistrationRequest {
+		GOptionalString deviceTypeToken = 1;
+		GOptionalString customerToken = 2;
+		GOptionalString areaToken = 3;
+		map<string, string> metadata = 4;
+	}
+	
+	// Device Ack message fields
+	message DeviceAcknowledge {
+		GOptionalString message = 1;
+	}
+
+	// Device Location fields
 	message DeviceLocation {
-		required string hardwareId = 1;
-		required double latitude = 2;
-		required double longitude = 3;
-		optional double elevation = 4;
-		optional fixed64 eventDate = 5;
-		repeated Metadata metadata = 6;
-		optional bool updateState = 7;
+		GOptionalDouble latitude = 1;
+		GOptionalDouble longitude = 2;
+		GOptionalDouble elevation = 3;
+		GOptionalFixed64 eventDate = 4;
+		GOptionalBoolean updateState = 5;
+		map<string, string> metadata = 6;
 	}
-
-	// Report device alert.
+	
+	// Device Alert fields
 	message DeviceAlert {
-		required string hardwareId = 1;
-		required string alertType = 2;
-		required string alertMessage = 3;
-		optional fixed64 eventDate = 4;
-		repeated Metadata metadata = 5;
-		optional bool updateState = 6;
+		GOptionalString alertType = 1;
+		AlterLevel level = 2;
+		GOptionalString alertMessage = 3;
+		GOptionalFixed64 eventDate = 4;
+		GOptionalBoolean updateState = 5;
+		map<string, string> metadata = 6;
 	}
 	
 	// A single measurement.
 	message Measurement {
-		required string measurementId = 1;
-		required double measurementValue = 2;
+		GOptionalString measurementId = 1;
+		GOptionalDouble measurementValue = 2;
 	}
 
-	// Event message for device measurements.
+	// Device Measurement
 	message DeviceMeasurements {
-		required string hardwareId = 1;
-		repeated Measurement measurement = 2;
-		optional fixed64 eventDate = 3;
-		repeated Metadata metadata = 4;
-		optional bool updateState = 5;
+		repeated Measurement measurement = 1;
+		GOptionalFixed64 eventDate = 2;
+		GOptionalBoolean updateState = 3;
+		map<string, string> metadata = 4;
 	}
 	
 	// Create a device stream.
 	message DeviceStream {
-		required string hardwareId = 1;
-		required string streamId = 2;
-		required string contentType = 3;
-		repeated Metadata metadata = 4;
+		GOptionalString streamId = 1;
+		GOptionalString contentType = 2;
+		map<string, string> metadata = 3;
 	}
 	
 	// A chunk of streaming data.
 	message DeviceStreamData {
-		required string hardwareId = 1;
-		required string streamId = 2;
-		required fixed64 sequenceNumber = 3;
-		required bytes data = 4;
-		optional fixed64 eventDate = 5;
-		repeated Metadata metadata = 6;
-	}
-}
-
-// Commands sent from a device to SiteWhere.
-message SiteWhere {
-
-	enum Command {
-		SEND_REGISTRATION = 1; 
-		SEND_ACKNOWLEDGEMENT = 2; 
-		SEND_DEVICE_LOCATION = 3; 
-		SEND_DEVICE_ALERT = 4; 
-		SEND_DEVICE_MEASUREMENTS = 5;
-		SEND_DEVICE_STREAM = 6;
-		SEND_DEVICE_STREAM_DATA = 7;
-		REQUEST_DEVICE_STREAM_DATA = 8;
-	}
-	
-	// Header contains the command and originator.
-	message Header {
-		required Command command = 1;
-		optional string originator = 2;
-	}
-
-	// Register a device with SiteWhere.
-	message RegisterDevice {
-		required string hardwareId = 1;
-		required string deviceTypeToken = 2;
-		repeated Model.Metadata metadata = 3;
-		optional string areaToken = 4;
-	}
-
-	// Acknowledge previous command.
-	message Acknowledge {
-		required string hardwareId = 1;
-		optional string message = 2;
-	}
-	
-	// Request for a chunk of data from a device stream.
-	message DeviceStreamDataRequest {
-		required string hardwareId = 1;
-		required string streamId = 2;
-		required fixed64 sequenceNumber = 3;
+		GOptionalString hardwareId = 1;
+		GOptionalString streamId = 2;
+		GOptionalFixed64 sequenceNumber = 3;
+		bytes data = 4;
+		GOptionalFixed64 eventDate = 5;
+		map<string, string> metadata = 6;
 	}
 }
 
 // Commands sent from SiteWhere to a device.
 message Device {
-
+	// Commands sent from SiteWhere to a device.
 	enum Command {
-		ACK_REGISTRATION = 1; 
-		ACK_DEVICE_STREAM = 2;
-		RECEIVE_DEVICE_STREAM_DATA = 3;
+		REGISTRATION_ACK = 0;
+		DEVICE_STREAM_ACK = 1;
+		RECEIVE_DEVICE_STREAM_DATA = 2;
 	} 
 	
 	// Header contains the command and originator.
 	message Header {
-		required Command command = 1;
-		optional string originator = 2;
-		optional string nestedPath = 3;
-		optional string nestedSpec = 4;
+		Command command = 1;
+		GOptionalString originator = 2;
+		GOptionalString nestedPath = 3;
+		GOptionalString nestedSpec = 4;
 	}
 
 	// Enumeration of registation state responses.
-	enum RegistrationAckState {NEW_REGISTRATION = 1; ALREADY_REGISTERED = 2; REGISTRATION_ERROR = 3;} 
-	enum RegistrationAckError {INVALID_SPECIFICATION = 1; SITE_TOKEN_REQUIRED = 2; NEW_DEVICES_NOT_ALLOWED = 3;} 
+	enum RegistrationAckState {
+		NEW_REGISTRATION = 0; 
+		ALREADY_REGISTERED = 1; 
+		REGISTRATION_ERROR = 2;
+	}
+	 
+	enum RegistrationAckError {
+		INVALID_SPECIFICATION = 0; 
+		SITE_TOKEN_REQUIRED = 1; 
+		NEW_DEVICES_NOT_ALLOWED = 2;
+	} 
 
 	// Acknowledges registration.
 	message RegistrationAck {
-		required RegistrationAckState state = 1;
-		optional RegistrationAckError errorType = 2;
-		optional string errorMessage = 3;
+		RegistrationAckState state = 1;
+		RegistrationAckError errorType = 2;
+		GOptionalString errorMessage = 3;
 	}
 	
 	// Enumeration of device stream creation responses.
-	enum DeviceStreamAckState {STREAM_CREATED = 1; STREAM_EXISTS = 2; STREAM_FAILED = 3;} 
+	enum DeviceStreamAckState {
+		STREAM_CREATED = 0; 
+		STREAM_EXISTS = 1; 
+		STREAM_FAILED = 2;
+	} 
 	
 	// Acknowledges creation of device stream.
 	message DeviceStreamAck {
-		required string streamId = 1;
-		required DeviceStreamAckState state = 2;
+		GOptionalString streamId = 1;
+		DeviceStreamAckState state = 2;
 	}
 }

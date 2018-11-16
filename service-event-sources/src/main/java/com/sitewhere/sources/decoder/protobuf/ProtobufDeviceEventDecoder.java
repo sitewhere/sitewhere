@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.sitewhere.communication.protobuf.proto3.SiteWhere2;
-import com.sitewhere.communication.protobuf.proto3.SiteWhere2.DeviceEvent;
-import com.sitewhere.communication.protobuf.proto3.SiteWhere2.DeviceEvent.AlterLevel;
-import com.sitewhere.communication.protobuf.proto3.SiteWhere2.DeviceEvent.Measurement;
+import com.sitewhere.communication.protobuf.proto.SiteWhere;
+import com.sitewhere.communication.protobuf.proto.SiteWhere.DeviceEvent;
+import com.sitewhere.communication.protobuf.proto.SiteWhere.DeviceEvent.AlterLevel;
+import com.sitewhere.communication.protobuf.proto.SiteWhere.DeviceEvent.Measurement;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
@@ -64,11 +64,11 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 	try {
 	    ByteArrayInputStream stream = new ByteArrayInputStream(payload);
 	    
-	    SiteWhere2.DeviceEvent.Header header = SiteWhere2.DeviceEvent.Header.parseDelimitedFrom(stream);
+	    SiteWhere.DeviceEvent.Header header = SiteWhere.DeviceEvent.Header.parseDelimitedFrom(stream);
 	    
 	    List<IDecodedDeviceRequest<?>> results = new ArrayList<IDecodedDeviceRequest<?>>();
 	    switch (header.getCommand()) {
-	    case Registration: {
+	    case SEND_REGISTRATION: {
 		DeviceEvent.DeviceRegistrationRequest registration = DeviceEvent.DeviceRegistrationRequest.parseDelimitedFrom(stream);		
 		getLogger().debug("Decoded registration for: " + header.getDeviceToken().getValue());
 		DeviceRegistrationRequest request = new DeviceRegistrationRequest();
@@ -91,7 +91,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		decoded.setRequest(request);
 		return results;
 	    }
-	    case Acknowledgement: {
+	    case SEND_ACK: {
 		DeviceEvent.DeviceAcknowledge ack = DeviceEvent.DeviceAcknowledge.parseDelimitedFrom(stream);
 		getLogger().debug("Decoded acknowledge for: " + header.getDeviceToken().getValue());
 		DeviceCommandResponseCreateRequest request = new DeviceCommandResponseCreateRequest();
@@ -107,7 +107,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		decoded.setRequest(request);
 		return results;
 	    }
-	    case Location: {
+	    case SEND_LOCATION: {
 		DeviceEvent.DeviceLocation location = DeviceEvent.DeviceLocation.parseDelimitedFrom(stream);
 		getLogger().debug("Decoded location for: " + header.getDeviceToken().getValue());
 		DeviceLocationCreateRequest request = new DeviceLocationCreateRequest();
@@ -136,7 +136,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		decoded.setRequest(request);
 		return results;
 	    }
-	    case Alert: {
+	    case SEND_ALERT: {
 		DeviceEvent.DeviceAlert alert = DeviceEvent.DeviceAlert.parseDelimitedFrom(stream);
 		getLogger().debug("Decoded alert for: " + header.getDeviceToken().getValue());
 		DeviceAlertCreateRequest request = new DeviceAlertCreateRequest();
@@ -164,7 +164,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		decoded.setRequest(request);
 		return results;		
 	    }
-	    case Measurements: {
+	    case SEND_MEASUREMENT: {
 		DeviceEvent.DeviceMeasurements dm = DeviceEvent.DeviceMeasurements.parseDelimitedFrom(stream);
 		getLogger().debug("Decoded measurement for: " + header.getDeviceToken().getValue());
 		List<Measurement> measurements = dm.getMeasurementList();
@@ -222,29 +222,6 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		throw new SiteWhereException("Unable to decode message. Type not supported: " + header.getCommand().name());
 	    }
 	    
-//	    case SEND_DEVICE_STREAM: {
-//		DeviceStream devStream = DeviceStream.parseDelimitedFrom(stream);
-//		getLogger().debug("Decoded stream for: " + devStream.getHardwareId());
-//		DeviceStreamCreateRequest request = new DeviceStreamCreateRequest();
-//		request.setStreamId(devStream.getStreamId());
-//		request.setContentType(devStream.getContentType());
-//
-//		List<Metadata> pbmeta = devStream.getMetadataList();
-//		Map<String, String> metadata = new HashMap<String, String>();
-//		for (Metadata meta : pbmeta) {
-//		    metadata.put(meta.getName(), meta.getValue());
-//		}
-//		request.setMetadata(metadata);
-//
-//		DecodedDeviceRequest<IDeviceStreamCreateRequest> decoded = new DecodedDeviceRequest<IDeviceStreamCreateRequest>();
-//		if (header.hasOriginator()) {
-//		    decoded.setOriginator(header.getOriginator());
-//		}
-//		results.add(decoded);
-//		decoded.setDeviceToken(devStream.getHardwareId());
-//		decoded.setRequest(request);
-//		return results;
-//	    }
 //	    case SEND_DEVICE_STREAM_DATA: {
 //		DeviceStreamData streamData = DeviceStreamData.parseDelimitedFrom(stream);
 //		getLogger().debug("Decoded stream data for: " + streamData.getHardwareId());
