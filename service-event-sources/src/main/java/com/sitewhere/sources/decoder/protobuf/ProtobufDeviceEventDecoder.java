@@ -12,9 +12,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import com.sitewhere.communication.protobuf.proto3.SiteWhere2;
 import com.sitewhere.communication.protobuf.proto3.SiteWhere2.DeviceEvent;
+import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.DecodedDeviceRequest;
@@ -22,6 +24,7 @@ import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IDeviceEventDecoder;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -76,54 +79,26 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		decoded.setRequest(request);
 		return results;
 	    }
-	    case Ackknowledgement:
-		break;
+	    case Acknowledgement:
+		DeviceEvent.DeviceAcknowledge ack = DeviceEvent.DeviceAcknowledge.parseDelimitedFrom(stream);
+		getLogger().debug("Decoded acknowledge for: " + header.getDeviceToken().getValue());
+		DeviceCommandResponseCreateRequest request = new DeviceCommandResponseCreateRequest();
+		request.setOriginatingEventId(UUID.fromString(header.getOriginator().getValue()));
+		request.setResponse(ack.getMessage().getValue());
+
+		DecodedDeviceRequest<IDeviceCommandResponseCreateRequest> decoded = new DecodedDeviceRequest<IDeviceCommandResponseCreateRequest>();
+		if (header.hasOriginator()) {
+		    decoded.setOriginator(header.getOriginator().getValue());
+		}
+		results.add(decoded);
+		decoded.setDeviceToken(header.getDeviceToken().getValue());
+		decoded.setRequest(request);
+		return results;
 	    case UNRECOGNIZED:
 	    default: {
 		throw new SiteWhereException("Unable to decode message. Type not supported: " + header.getCommand().name());
 	    }
 	    
-//	    case SEND_REGISTRATION: {
-//		RegisterDevice register = RegisterDevice.parseDelimitedFrom(stream);
-//		getLogger().debug("Decoded registration for: " + register.getHardwareId());
-//		DeviceRegistrationRequest request = new DeviceRegistrationRequest();
-//		request.setDeviceTypeToken(register.getDeviceTypeToken());
-//		if (register.hasAreaToken()) {
-//		    request.setAreaToken(register.getAreaToken());
-//		}
-//
-//		List<Metadata> pbmeta = register.getMetadataList();
-//		Map<String, String> metadata = new HashMap<String, String>();
-//		for (Metadata meta : pbmeta) {
-//		    metadata.put(meta.getName(), meta.getValue());
-//		}
-//		request.setMetadata(metadata);
-//
-//		DecodedDeviceRequest<IDeviceRegistrationRequest> decoded = new DecodedDeviceRequest<IDeviceRegistrationRequest>();
-//		if (header.hasOriginator()) {
-//		    decoded.setOriginator(header.getOriginator());
-//		}
-//		results.add(decoded);
-//		decoded.setDeviceToken(register.getHardwareId());
-//		decoded.setRequest(request);
-//		return results;
-//	    }
-//	    case SEND_ACKNOWLEDGEMENT: {
-//		Acknowledge ack = Acknowledge.parseDelimitedFrom(stream);
-//		getLogger().debug("Decoded acknowledge for: " + ack.getHardwareId());
-//		DeviceCommandResponseCreateRequest request = new DeviceCommandResponseCreateRequest();
-//		request.setOriginatingEventId(UUID.fromString(header.getOriginator()));
-//		request.setResponse(ack.getMessage());
-//
-//		DecodedDeviceRequest<IDeviceCommandResponseCreateRequest> decoded = new DecodedDeviceRequest<IDeviceCommandResponseCreateRequest>();
-//		if (header.hasOriginator()) {
-//		    decoded.setOriginator(header.getOriginator());
-//		}
-//		results.add(decoded);
-//		decoded.setDeviceToken(ack.getHardwareId());
-//		decoded.setRequest(request);
-//		return results;
-//	    }
 //	    case SEND_DEVICE_MEASUREMENTS: {
 //		DeviceMeasurements dm = DeviceMeasurements.parseDelimitedFrom(stream);
 //		getLogger().debug("Decoded measurement for: " + dm.getHardwareId());
@@ -302,8 +277,6 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 //			"Unable to decode message. Type not supported: " + header.getCommand().name());
 //	    }
 	    }
-	    
-	    return results;
 	} catch (IOException e) {
 	    throw new EventDecodeException("Unable to decode protobuf message.", e);
 	}

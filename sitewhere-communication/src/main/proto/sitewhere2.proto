@@ -17,7 +17,7 @@ message DeviceEvent {
 	// Commands send to Device
 	enum Command {
 		Registration = 0;
-		Ackknowledgement = 1;
+		Acknowledgement = 1;
 	}
 
 	// Header contains the command, device token and originator.
@@ -33,6 +33,11 @@ message DeviceEvent {
 		GOptionalString customerToken = 2;
 		GOptionalString areaToken = 3;
 		map<string, string> metadata = 4;
+	}
+	
+	// Device Ack message fields
+	message DeviceAcknowledge {
+		GOptionalString message = 1;
 	}
 
 }
