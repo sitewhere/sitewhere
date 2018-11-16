@@ -85,4 +85,18 @@ message DeviceEvent {
 		GOptionalBoolean updateState = 5;
 		map<string, string> metadata = 6;
 	}
+	
+	// A single measurement.
+	message Measurement {
+		GOptionalString measurementId = 1;
+		GOptionalDouble measurementValue = 2;
+	}
+
+	// Device Measurement
+	message DeviceMeasurements {
+		repeated Measurement measurement = 1;
+		GOptionalFixed64 eventDate = 2;
+		GOptionalBoolean updateState = 3;
+		map<string, string> metadata = 4;
+	}
 }

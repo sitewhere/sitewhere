@@ -18,9 +18,11 @@ import java.util.UUID;
 import com.sitewhere.communication.protobuf.proto3.SiteWhere2;
 import com.sitewhere.communication.protobuf.proto3.SiteWhere2.DeviceEvent;
 import com.sitewhere.communication.protobuf.proto3.SiteWhere2.DeviceEvent.AlterLevel;
+import com.sitewhere.communication.protobuf.proto3.SiteWhere2.DeviceEvent.Measurement;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.DecodedDeviceRequest;
@@ -32,6 +34,7 @@ import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -159,47 +162,44 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		decoded.setRequest(request);
 		return results;		
 	    }
+	    case Measurements: {
+		DeviceEvent.DeviceMeasurements dm = DeviceEvent.DeviceMeasurements.parseDelimitedFrom(stream);
+		getLogger().debug("Decoded measurement for: "  + header.getDeviceToken().getValue());
+		List<Measurement> measurements = dm.getMeasurementList();
+		for (Measurement current : measurements) {
+		    DeviceMeasurementCreateRequest request = new DeviceMeasurementCreateRequest();
+		    request.setName(current.getMeasurementId().getValue());
+		    request.setValue(current.getMeasurementValue().getValue());
+
+		    if (dm.hasUpdateState()) {
+			request.setUpdateState(dm.getUpdateState().getValue());
+		    }
+
+		    Map<String, String> metadata = dm.getMetadataMap();
+		    request.setMetadata(metadata);
+
+		    if (dm.hasEventDate()) {
+			request.setEventDate(new Date(dm.getEventDate().getValue()));
+		    } else {
+			request.setEventDate(new Date());
+		    }
+
+		    DecodedDeviceRequest<IDeviceMeasurementCreateRequest> decoded = 
+			    new DecodedDeviceRequest<IDeviceMeasurementCreateRequest>();
+		    if (header.hasOriginator()) {
+			decoded.setOriginator(header.getOriginator().getValue());
+		    }
+		    decoded.setDeviceToken(header.getDeviceToken().getValue());
+		    decoded.setRequest(request);
+		    results.add(decoded);
+		}
+		return results;		
+	    }
 	    case UNRECOGNIZED:
 	    default: {
 		throw new SiteWhereException("Unable to decode message. Type not supported: " + header.getCommand().name());
 	    }
 	    
-//	    case SEND_DEVICE_MEASUREMENTS: {
-//		DeviceMeasurements dm = DeviceMeasurements.parseDelimitedFrom(stream);
-//		getLogger().debug("Decoded measurement for: " + dm.getHardwareId());
-//		List<Measurement> measurements = dm.getMeasurementList();
-//		for (Measurement current : measurements) {
-//		    DeviceMeasurementCreateRequest request = new DeviceMeasurementCreateRequest();
-//		    request.setName(current.getMeasurementId());
-//		    request.setValue(current.getMeasurementValue());
-//
-//		    if (dm.hasUpdateState()) {
-//			request.setUpdateState(dm.getUpdateState());
-//		    }
-//
-//		    List<Metadata> pbmeta = dm.getMetadataList();
-//		    Map<String, String> metadata = new HashMap<String, String>();
-//		    for (Metadata meta : pbmeta) {
-//			metadata.put(meta.getName(), meta.getValue());
-//		    }
-//		    request.setMetadata(metadata);
-//
-//		    if (dm.hasEventDate()) {
-//			request.setEventDate(new Date(dm.getEventDate()));
-//		    } else {
-//			request.setEventDate(new Date());
-//		    }
-//
-//		    DecodedDeviceRequest<IDeviceMeasurementCreateRequest> decoded = new DecodedDeviceRequest<IDeviceMeasurementCreateRequest>();
-//		    if (header.hasOriginator()) {
-//			decoded.setOriginator(header.getOriginator());
-//		    }
-//		    decoded.setDeviceToken(dm.getHardwareId());
-//		    decoded.setRequest(request);
-//		    results.add(decoded);
-//		}
-//		return results;
-//	    }
 //	    case SEND_DEVICE_STREAM: {
 //		DeviceStream devStream = DeviceStream.parseDelimitedFrom(stream);
 //		getLogger().debug("Decoded stream for: " + devStream.getHardwareId());
