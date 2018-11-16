@@ -35,6 +35,15 @@ message DeviceEvent {
 		Acknowledgement = 1;
 		Location = 2;
 		Alert = 3;
+		Measurements = 4;
+	}
+	
+	// Alert Level
+	enum AlterLevel {
+	    Info = 0;
+	    Warning = 1;
+		Error = 2;
+		Critical = 3;
 	}
 
 	// Header contains the command, device token and originator.
@@ -62,6 +71,16 @@ message DeviceEvent {
 		GOptionalDouble latitude = 1;
 		GOptionalDouble longitude = 2;
 		GOptionalDouble elevation = 3;
+		GOptionalFixed64 eventDate = 4;
+		GOptionalBoolean updateState = 5;
+		map<string, string> metadata = 6;
+	}
+	
+	// Device Alert fields
+	message DeviceAlert {
+		GOptionalString alertType = 1;
+		AlterLevel level = 2;
+		GOptionalString alertMessage = 3;
 		GOptionalFixed64 eventDate = 4;
 		GOptionalBoolean updateState = 5;
 		map<string, string> metadata = 6;

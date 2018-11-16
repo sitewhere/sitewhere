@@ -17,6 +17,8 @@ import java.util.UUID;
 
 import com.sitewhere.communication.protobuf.proto3.SiteWhere2;
 import com.sitewhere.communication.protobuf.proto3.SiteWhere2.DeviceEvent;
+import com.sitewhere.communication.protobuf.proto3.SiteWhere2.DeviceEvent.AlterLevel;
+import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
@@ -26,6 +28,8 @@ import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IDeviceEventDecoder;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.event.AlertLevel;
+import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
@@ -126,7 +130,35 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		decoded.setDeviceToken(header.getDeviceToken().getValue());
 		decoded.setRequest(request);
 		return results;
-	    }		
+	    }
+	    case Alert: {
+		DeviceEvent.DeviceAlert alert = DeviceEvent.DeviceAlert.parseDelimitedFrom(stream);
+		getLogger().debug("Decoded alert for: " + header.getDeviceToken().getValue());
+		DeviceAlertCreateRequest request = new DeviceAlertCreateRequest();
+		request.setType(alert.getAlertType().getValue());
+		request.setMessage(alert.getAlertMessage().getValue());
+		request.setLevel(fromProtocolBuffer(alert.getLevel()));
+
+		if (alert.hasUpdateState()) {
+		    request.setUpdateState(alert.getUpdateState().getValue());
+		}
+		Map<String, String> metadata = alert.getMetadataMap();
+		request.setMetadata(metadata);
+
+		if (alert.hasEventDate()) {
+		    request.setEventDate(new Date(alert.getEventDate().getValue()));
+		} else {
+		    request.setEventDate(new Date());
+		}
+		DecodedDeviceRequest<IDeviceAlertCreateRequest> decoded = new DecodedDeviceRequest<IDeviceAlertCreateRequest>();
+		if (header.hasOriginator()) {
+		    decoded.setOriginator(header.getOriginator().getValue());
+		}
+		results.add(decoded);
+		decoded.setDeviceToken(header.getDeviceToken().getValue());
+		decoded.setRequest(request);
+		return results;		
+	    }
 	    case UNRECOGNIZED:
 	    default: {
 		throw new SiteWhereException("Unable to decode message. Type not supported: " + header.getCommand().name());
@@ -166,74 +198,6 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 //		    decoded.setRequest(request);
 //		    results.add(decoded);
 //		}
-//		return results;
-//	    }
-//	    case SEND_DEVICE_LOCATION: {
-//		DeviceLocation location = DeviceLocation.parseDelimitedFrom(stream);
-//		getLogger().debug("Decoded location for: " + location.getHardwareId());
-//		DeviceLocationCreateRequest request = new DeviceLocationCreateRequest();
-//		request.setLatitude(location.getLatitude());
-//		request.setLongitude(location.getLongitude());
-//		request.setElevation(location.getElevation());
-//
-//		if (location.hasUpdateState()) {
-//		    request.setUpdateState(location.getUpdateState());
-//		}
-//
-//		List<Metadata> pbmeta = location.getMetadataList();
-//		Map<String, String> metadata = new HashMap<String, String>();
-//		for (Metadata meta : pbmeta) {
-//		    metadata.put(meta.getName(), meta.getValue());
-//		}
-//		request.setMetadata(metadata);
-//
-//		if (location.hasEventDate()) {
-//		    request.setEventDate(new Date(location.getEventDate()));
-//		} else {
-//		    request.setEventDate(new Date());
-//		}
-//
-//		DecodedDeviceRequest<IDeviceLocationCreateRequest> decoded = new DecodedDeviceRequest<IDeviceLocationCreateRequest>();
-//		if (header.hasOriginator()) {
-//		    decoded.setOriginator(header.getOriginator());
-//		}
-//		results.add(decoded);
-//		decoded.setDeviceToken(location.getHardwareId());
-//		decoded.setRequest(request);
-//		return results;
-//	    }
-//	    case SEND_DEVICE_ALERT: {
-//		DeviceAlert alert = DeviceAlert.parseDelimitedFrom(stream);
-//		getLogger().debug("Decoded alert for: " + alert.getHardwareId());
-//		DeviceAlertCreateRequest request = new DeviceAlertCreateRequest();
-//		request.setType(alert.getAlertType());
-//		request.setMessage(alert.getAlertMessage());
-//		request.setLevel(AlertLevel.Info);
-//
-//		if (alert.hasUpdateState()) {
-//		    request.setUpdateState(alert.getUpdateState());
-//		}
-//
-//		List<Metadata> pbmeta = alert.getMetadataList();
-//		Map<String, String> metadata = new HashMap<String, String>();
-//		for (Metadata meta : pbmeta) {
-//		    metadata.put(meta.getName(), meta.getValue());
-//		}
-//		request.setMetadata(metadata);
-//
-//		if (alert.hasEventDate()) {
-//		    request.setEventDate(new Date(alert.getEventDate()));
-//		} else {
-//		    request.setEventDate(new Date());
-//		}
-//
-//		DecodedDeviceRequest<IDeviceAlertCreateRequest> decoded = new DecodedDeviceRequest<IDeviceAlertCreateRequest>();
-//		if (header.hasOriginator()) {
-//		    decoded.setOriginator(header.getOriginator());
-//		}
-//		results.add(decoded);
-//		decoded.setDeviceToken(alert.getHardwareId());
-//		decoded.setRequest(request);
 //		return results;
 //	    }
 //	    case SEND_DEVICE_STREAM: {
@@ -312,6 +276,17 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 	    }
 	} catch (IOException e) {
 	    throw new EventDecodeException("Unable to decode protobuf message.", e);
+	}
+    }
+
+    private static AlertLevel fromProtocolBuffer(AlterLevel level) {
+	switch (level) {
+	case Info: return AlertLevel.Info;
+	case Warning: return AlertLevel.Warning;
+	case Error: return AlertLevel.Error;
+	case Critical: return AlertLevel.Critical;
+	case UNRECOGNIZED:
+	default: return AlertLevel.Info;
 	}
     }
 }
