@@ -13,11 +13,28 @@ message GOptionalString {
 	string value = 1;
 }
 
+// Optional boolean value.
+message GOptionalBoolean {
+	bool value = 1;
+}
+
+// Optional double value.
+message GOptionalDouble {
+	double value = 1;
+}
+
+// Optional fixed64 value.
+message GOptionalFixed64 {
+	fixed64 value = 1;
+}
+
 message DeviceEvent {
 	// Commands send to Device
 	enum Command {
 		Registration = 0;
 		Acknowledgement = 1;
+		Location = 2;
+		Alert = 3;
 	}
 
 	// Header contains the command, device token and originator.
@@ -40,4 +57,13 @@ message DeviceEvent {
 		GOptionalString message = 1;
 	}
 
+	// Device Location fields
+	message DeviceLocation {
+		GOptionalDouble latitude = 1;
+		GOptionalDouble longitude = 2;
+		GOptionalDouble elevation = 3;
+		GOptionalFixed64 eventDate = 4;
+		GOptionalBoolean updateState = 5;
+		map<string, string> metadata = 6;
+	}
 }

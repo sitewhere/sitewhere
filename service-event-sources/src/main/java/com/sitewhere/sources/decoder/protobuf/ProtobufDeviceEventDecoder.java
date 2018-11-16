@@ -10,6 +10,7 @@ package com.sitewhere.sources.decoder.protobuf;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -17,6 +18,7 @@ import java.util.UUID;
 import com.sitewhere.communication.protobuf.proto3.SiteWhere2;
 import com.sitewhere.communication.protobuf.proto3.SiteWhere2.DeviceEvent;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.DecodedDeviceRequest;
@@ -25,6 +27,7 @@ import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IDeviceEventDecoder;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -79,7 +82,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		decoded.setRequest(request);
 		return results;
 	    }
-	    case Acknowledgement:
+	    case Acknowledgement: {
 		DeviceEvent.DeviceAcknowledge ack = DeviceEvent.DeviceAcknowledge.parseDelimitedFrom(stream);
 		getLogger().debug("Decoded acknowledge for: " + header.getDeviceToken().getValue());
 		DeviceCommandResponseCreateRequest request = new DeviceCommandResponseCreateRequest();
@@ -94,6 +97,36 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		decoded.setDeviceToken(header.getDeviceToken().getValue());
 		decoded.setRequest(request);
 		return results;
+	    }
+	    case Location: {
+		DeviceEvent.DeviceLocation location = DeviceEvent.DeviceLocation.parseDelimitedFrom(stream);
+		getLogger().debug("Decoded location for: " + header.getDeviceToken().getValue());
+		DeviceLocationCreateRequest request = new DeviceLocationCreateRequest();
+		request.setLatitude(location.getLatitude().getValue());
+		request.setLongitude(location.getLongitude().getValue());
+		request.setElevation(location.getElevation().getValue());
+
+		if (location.hasUpdateState()) {
+		    request.setUpdateState(location.getUpdateState().getValue());
+		}
+		Map<String, String> metadata = location.getMetadataMap();
+		request.setMetadata(metadata);
+
+		if (location.hasEventDate()) {
+		    request.setEventDate(new Date(location.getEventDate().getValue()));
+		} else {
+		    request.setEventDate(new Date());
+		}
+
+		DecodedDeviceRequest<IDeviceLocationCreateRequest> decoded = new DecodedDeviceRequest<IDeviceLocationCreateRequest>();
+		if (header.hasOriginator()) {
+		    decoded.setOriginator(header.getOriginator().getValue());
+		}
+		results.add(decoded);
+		decoded.setDeviceToken(header.getDeviceToken().getValue());
+		decoded.setRequest(request);
+		return results;
+	    }		
 	    case UNRECOGNIZED:
 	    default: {
 		throw new SiteWhereException("Unable to decode message. Type not supported: " + header.getCommand().name());
