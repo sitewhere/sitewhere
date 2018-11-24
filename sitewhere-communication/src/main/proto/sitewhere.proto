@@ -31,16 +31,16 @@ message GOptionalFixed64 {
 message DeviceEvent {
 	// Commands send from Device to SiteWhere
 	enum Command {
-		SEND_REGISTRATION = 0;
-		SEND_ACK = 1;
-		SEND_LOCATION = 2;
-		SEND_ALERT = 3;
-		SEND_MEASUREMENT = 4;
-		Stream = 5;
+		SendRegistration = 0;
+		SendAcknowledgement = 1;
+		SendLocation = 2;
+		SendAlert = 3;
+		SendMeasurement = 4;
+		CreateStream = 5;
 	}
 	
 	// Alert Level
-	enum AlterLevel {
+	enum AlertLevel {
 	    Info = 0;
 	    Warning = 1;
 		Error = 2;
@@ -80,7 +80,7 @@ message DeviceEvent {
 	// Device Alert fields
 	message DeviceAlert {
 		GOptionalString alertType = 1;
-		AlterLevel level = 2;
+		AlertLevel level = 2;
 		GOptionalString alertMessage = 3;
 		GOptionalFixed64 eventDate = 4;
 		GOptionalBoolean updateState = 5;

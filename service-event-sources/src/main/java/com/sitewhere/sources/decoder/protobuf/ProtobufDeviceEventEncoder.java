@@ -9,8 +9,8 @@ package com.sitewhere.sources.decoder.protobuf;
 
 import java.io.ByteArrayOutputStream;
 
+import com.sitewhere.communication.protobuf.proto.SiteWhere;
 import com.sitewhere.communication.protobuf.proto.SiteWhere.DeviceEvent;
-import com.sitewhere.communication.protobuf.proto.SiteWhere.DeviceEvent.AlterLevel;
 import com.sitewhere.communication.protobuf.proto.SiteWhere.DeviceEvent.Command;
 import com.sitewhere.communication.protobuf.proto.SiteWhere.DeviceEvent.Header;
 import com.sitewhere.communication.protobuf.proto.SiteWhere.GOptionalDouble;
@@ -67,7 +67,7 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
 	try {
 	    IDeviceMeasurementCreateRequest measurements = (IDeviceMeasurementCreateRequest) event.getRequest();
 	    // Header
-	    DeviceEvent.Header.Builder headerBuilder = builHeader(event, Command.SEND_MEASUREMENT);
+	    DeviceEvent.Header.Builder headerBuilder = builHeader(event, Command.SendMeasurement);
 	    // Payload
 	    DeviceEvent.DeviceMeasurements.Builder payloadBuilder = DeviceEvent.DeviceMeasurements.newBuilder();
 	    payloadBuilder.setEventDate(GOptionalFixed64.newBuilder().setValue(measurements.getEventDate().getTime()));
@@ -101,10 +101,10 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
 	try {
 	    IDeviceAlertCreateRequest alert = (IDeviceAlertCreateRequest) event.getRequest();
 	    // Header
-	    DeviceEvent.Header.Builder headerBuilder = builHeader(event, Command.SEND_ALERT);
+	    DeviceEvent.Header.Builder headerBuilder = builHeader(event, Command.SendAlert);
 	    // Payload
 	    DeviceEvent.DeviceAlert.Builder payloadBuilder = DeviceEvent.DeviceAlert.newBuilder();
-	    
+
 	    payloadBuilder.setEventDate(GOptionalFixed64.newBuilder().setValue(alert.getEventDate().getTime()));
 	    payloadBuilder.setAlertType(GOptionalString.newBuilder().setValue(alert.getType()));
 	    payloadBuilder.setAlertMessage(GOptionalString.newBuilder().setValue(alert.getMessage()));
@@ -136,10 +136,10 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
 	try {
 	    IDeviceLocationCreateRequest location = (IDeviceLocationCreateRequest) event.getRequest();
 	    // Header
-	    DeviceEvent.Header.Builder headerBuilder = builHeader(event, Command.SEND_LOCATION);
+	    DeviceEvent.Header.Builder headerBuilder = builHeader(event, Command.SendLocation);
 	    // Payload
 	    DeviceEvent.DeviceLocation.Builder payloadBuilder = DeviceEvent.DeviceLocation.newBuilder();
-	    payloadBuilder.setEventDate(GOptionalFixed64.newBuilder().setValue(location.getEventDate().getTime()));	    
+	    payloadBuilder.setEventDate(GOptionalFixed64.newBuilder().setValue(location.getEventDate().getTime()));
 	    payloadBuilder.setLatitude(GOptionalDouble.newBuilder().setValue(location.getLatitude()));
 	    payloadBuilder.setLongitude(GOptionalDouble.newBuilder().setValue(location.getLongitude()));
 	    payloadBuilder.setElevation(GOptionalDouble.newBuilder().setValue(location.getElevation()));
@@ -170,9 +170,10 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
 	try {
 	    IDeviceRegistrationRequest request = (IDeviceRegistrationRequest) decoded.getRequest();
 	    // Header
-	    DeviceEvent.Header.Builder headerBuilder = builHeader(decoded, Command.SEND_REGISTRATION);
+	    DeviceEvent.Header.Builder headerBuilder = builHeader(decoded, Command.SendRegistration);
 	    // Payload
-	    DeviceEvent.DeviceRegistrationRequest.Builder payloadBuilder = DeviceEvent.DeviceRegistrationRequest.newBuilder();
+	    DeviceEvent.DeviceRegistrationRequest.Builder payloadBuilder = DeviceEvent.DeviceRegistrationRequest
+		    .newBuilder();
 	    payloadBuilder.setAreaToken(GOptionalString.newBuilder().setValue(request.getAreaToken()));
 	    payloadBuilder.setDeviceTypeToken(GOptionalString.newBuilder().setValue(request.getDeviceTypeToken()));
 	    payloadBuilder.setCustomerToken(GOptionalString.newBuilder().setValue(request.getCustomerToken()));
@@ -190,20 +191,20 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
 	}
     }
 
-    private static AlterLevel fromModel(AlertLevel level) {
+    private static SiteWhere.DeviceEvent.AlertLevel fromModel(AlertLevel level) {
 	if (level == null)
-	    return AlterLevel.Info;
+	    return SiteWhere.DeviceEvent.AlertLevel.Info;
 	switch (level) {
 	case Info:
-	    return AlterLevel.Info;
+	    return SiteWhere.DeviceEvent.AlertLevel.Info;
 	case Warning:
-	    return AlterLevel.Warning;
+	    return SiteWhere.DeviceEvent.AlertLevel.Warning;
 	case Error:
-	    return AlterLevel.Error;
+	    return SiteWhere.DeviceEvent.AlertLevel.Error;
 	case Critical:
-	    return AlterLevel.Critical;
+	    return SiteWhere.DeviceEvent.AlertLevel.Critical;
 	default:
-	    return AlterLevel.UNRECOGNIZED;
+	    return SiteWhere.DeviceEvent.AlertLevel.UNRECOGNIZED;
 	}
     }
 
