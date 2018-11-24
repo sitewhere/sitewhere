@@ -20,9 +20,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
 
+import com.sitewhere.grpc.client.common.converter.KafkaModelConverter;
+import com.sitewhere.grpc.client.common.marshaler.KafkaModelMarshaler;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GStateUpdate;
-import com.sitewhere.grpc.model.converter.KafkaModelConverter;
-import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
 import com.sitewhere.microservice.kafka.DirectKafkaConsumer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.state.IMicroserviceStateUpdatesKafkaConsumer;

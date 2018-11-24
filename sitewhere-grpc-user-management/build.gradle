@@ -3,7 +3,7 @@ description = 'SiteWhere User Management GRPC Model'
 apply plugin: 'com.google.protobuf'
 
 dependencies {
-    compile project(':sitewhere-grpc-client')
+    compile project(':sitewhere-grpc-common')
 }
 
 protobuf {

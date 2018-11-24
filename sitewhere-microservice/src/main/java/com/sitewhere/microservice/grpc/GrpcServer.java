@@ -13,8 +13,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.sitewhere.grpc.client.common.tracing.ServerTracingInterceptor;
 import com.sitewhere.grpc.client.spi.server.IGrpcServer;
-import com.sitewhere.grpc.model.tracing.ServerTracingInterceptor;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;

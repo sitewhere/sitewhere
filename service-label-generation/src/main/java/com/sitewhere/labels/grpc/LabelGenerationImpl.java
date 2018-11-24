@@ -8,9 +8,9 @@
 package com.sitewhere.labels.grpc;
 
 import com.sitewhere.grpc.client.GrpcUtils;
+import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
+import com.sitewhere.grpc.client.label.LabelGenerationModelConverter;
 import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
-import com.sitewhere.grpc.model.converter.CommonModelConverter;
-import com.sitewhere.grpc.model.label.LabelGenerationModelConverter;
 import com.sitewhere.grpc.service.GGetAreaLabelRequest;
 import com.sitewhere.grpc.service.GGetAreaLabelResponse;
 import com.sitewhere.grpc.service.GGetAreaTypeLabelRequest;

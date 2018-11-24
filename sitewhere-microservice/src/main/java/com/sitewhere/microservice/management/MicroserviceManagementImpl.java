@@ -11,10 +11,10 @@ import java.util.List;
 
 import com.google.protobuf.ByteString;
 import com.sitewhere.grpc.client.GrpcUtils;
+import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
+import com.sitewhere.grpc.client.common.converter.MicroserviceModelConverter;
 import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
 import com.sitewhere.grpc.model.MicroserviceModel.GBinaryContent;
-import com.sitewhere.grpc.model.converter.CommonModelConverter;
-import com.sitewhere.grpc.model.converter.MicroserviceModelConverter;
 import com.sitewhere.grpc.service.GGetConfigurationModelRequest;
 import com.sitewhere.grpc.service.GGetConfigurationModelResponse;
 import com.sitewhere.grpc.service.GGetGlobalConfigurationRequest;

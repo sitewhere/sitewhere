@@ -1,0 +1,58 @@
+description = 'SiteWhere GRPC Model'
+
+apply plugin: 'com.google.protobuf'
+
+dependencies {
+	compile group: 'com.google.protobuf', name: 'protobuf-java', version: "${rootProject.ext['protobuf.version']}"
+	compile group: 'io.grpc', name: 'grpc-stub', version: "${rootProject.ext['grpc.version']}"
+	compile group: 'io.grpc', name: 'grpc-protobuf', version: "${rootProject.ext['grpc.version']}"
+	compile group: 'io.grpc', name: 'grpc-netty', version: "${rootProject.ext['grpc.version']}"
+}
+
+protobuf {
+
+	// Configure the protoc executable
+	protoc {
+	
+		// Download from repositories.
+		artifact = "com.google.protobuf:protoc:3.3.0"
+	}
+  
+  	// Add GRPC plugin.
+	plugins {
+		grpc {
+			artifact = "io.grpc:protoc-gen-grpc-java:${rootProject.ext['grpc.version']}"
+		}
+	}
+  
+	// Choose which tasks are executed.
+	generateProtoTasks {
+		all().each { task ->
+      		task.plugins {
+        		grpc {}
+      		}
+      	}
+	}
+	
+	generatedFilesBaseDir = "$projectDir/src/generated"
+}
+
+apply plugin: 'eclipse'
+eclipse.classpath.file.whenMerged {
+	def grpc = new org.gradle.plugins.ide.eclipse.model.SourceFolder('src/generated/main/grpc', null)
+	grpc.getEntryAttributes().put("ignore_optional_problems", "true")
+	entries += grpc
+	def gjava = new org.gradle.plugins.ide.eclipse.model.SourceFolder('src/generated/main/java', null)
+	gjava.getEntryAttributes().put("ignore_optional_problems", "true")
+	entries += gjava
+}
+
+// Publish jar.
+apply plugin: 'maven-publish'
+publishing {
+	publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+	}
+}

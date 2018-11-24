@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package com.sitewhere.grpc.service;
+
+option java_multiple_files = true;
+option java_package = "com.sitewhere.grpc.service";
+option java_outer_classname = "MultitenantServices";
+
+// Multitenant Services APIs.
+service MultitenantManagement {
+
+	// #####################
+	// ### CONFIGURATION ###
+	// #####################
+
+	// Check if tenant engine is available.
+	rpc CheckTenantEngineAvailable (GCheckTenantEngineAvailableRequest) returns (GCheckTenantEngineAvailableResponse) {}
+}
+
+// #####################
+// ### CONFIGURATION ###
+// #####################
+
+// Request for checking if the tenant engine is available.
+message GCheckTenantEngineAvailableRequest {
+}
+	
+// Response for checking if the tenant engine is available.
+message GCheckTenantEngineAvailableResponse {
+	bool available = 1;
+}

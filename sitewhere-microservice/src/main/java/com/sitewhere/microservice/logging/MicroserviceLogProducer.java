@@ -14,9 +14,9 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.sitewhere.grpc.client.common.converter.KafkaModelConverter;
+import com.sitewhere.grpc.client.common.marshaler.KafkaModelMarshaler;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GMicroserviceLogMessage;
-import com.sitewhere.grpc.model.converter.KafkaModelConverter;
-import com.sitewhere.grpc.model.marshaler.KafkaModelMarshaler;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.logging.IMicroserviceLogMessage;

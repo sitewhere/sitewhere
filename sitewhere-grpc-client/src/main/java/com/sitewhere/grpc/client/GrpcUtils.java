@@ -19,11 +19,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.common.MarshalUtils;
+import com.sitewhere.grpc.client.common.security.NotAuthorizedException;
+import com.sitewhere.grpc.client.common.security.UnauthenticatedException;
+import com.sitewhere.grpc.client.common.tracing.DebugParameter;
 import com.sitewhere.grpc.client.spi.IApiChannel;
 import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
-import com.sitewhere.grpc.model.security.NotAuthorizedException;
-import com.sitewhere.grpc.model.security.UnauthenticatedException;
-import com.sitewhere.grpc.model.tracing.DebugParameter;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.security.SitewhereUserDetails;

@@ -22,8 +22,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
-import com.sitewhere.grpc.model.security.NotAuthorizedException;
-import com.sitewhere.grpc.model.security.UnauthenticatedException;
+import com.sitewhere.grpc.client.common.security.NotAuthorizedException;
+import com.sitewhere.grpc.client.common.security.UnauthenticatedException;
 import com.sitewhere.microservice.security.JwtExpiredException;
 import com.sitewhere.rest.ISiteWhereWebConstants;
 import com.sitewhere.spi.SiteWhereSystemException;
