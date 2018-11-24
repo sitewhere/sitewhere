@@ -3,10 +3,7 @@ description = 'SiteWhere Command Delivery Microservice'
 dependencies {
 	compile project(':sitewhere-communication')
 	compile project(':sitewhere-microservice')
-	
-	// Connectivity to other microservices.
-	compile project(':sitewhere-grpc-device-management')
-	compile project(':sitewhere-grpc-event-management')
+	compile project(':sitewhere-grpc-client')
 	
 	// Twilio dependencies.
     compile group: 'com.twilio.sdk', name: 'twilio-java-sdk', version:'3.4.5'

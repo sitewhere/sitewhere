@@ -2,10 +2,7 @@ description = 'SiteWhere Rule Processing Microservice'
 
 dependencies {
 	compile project(':sitewhere-microservice')
-	
-	// Connectivity to other microservices.
-	compile project(':sitewhere-grpc-device-management')
-	compile project(':sitewhere-grpc-event-management')
+	compile project(':sitewhere-grpc-client')
 }
 
 apply plugin: 'org.springframework.boot'

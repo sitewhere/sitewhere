@@ -27,16 +27,6 @@ include ':sitewhere-core'
 include ':sitewhere-core-api'
 include ':sitewhere-core-lifecycle'
 include ':sitewhere-grpc-client'
-include ':sitewhere-grpc-asset-management'
-include ':sitewhere-grpc-batch-management'
-include ':sitewhere-grpc-device-management'
-include ':sitewhere-grpc-device-state'
-include ':sitewhere-grpc-event-management'
-include ':sitewhere-grpc-label-generation'
-include ':sitewhere-grpc-common'
-include ':sitewhere-grpc-schedule-management'
-include ':sitewhere-grpc-tenant-management'
-include ':sitewhere-grpc-user-management'
 include ':sitewhere-influxdb'
 include ':sitewhere-microservice'
 include ':sitewhere-mongodb'
@@ -71,16 +61,6 @@ project(':sitewhere-core').projectDir = "$rootDir/sitewhere-core" as File
 project(':sitewhere-core-api').projectDir = "$rootDir/sitewhere-core-api" as File
 project(':sitewhere-core-lifecycle').projectDir = "$rootDir/sitewhere-core-lifecycle" as File
 project(':sitewhere-grpc-client').projectDir = "$rootDir/sitewhere-grpc-client" as File
-project(':sitewhere-grpc-asset-management').projectDir = "$rootDir/sitewhere-grpc-asset-management" as File
-project(':sitewhere-grpc-batch-management').projectDir = "$rootDir/sitewhere-grpc-batch-management" as File
-project(':sitewhere-grpc-device-management').projectDir = "$rootDir/sitewhere-grpc-device-management" as File
-project(':sitewhere-grpc-device-state').projectDir = "$rootDir/sitewhere-grpc-device-state" as File
-project(':sitewhere-grpc-event-management').projectDir = "$rootDir/sitewhere-grpc-event-management" as File
-project(':sitewhere-grpc-label-generation').projectDir = "$rootDir/sitewhere-grpc-label-generation" as File
-project(':sitewhere-grpc-common').projectDir = "$rootDir/sitewhere-grpc-common" as File
-project(':sitewhere-grpc-schedule-management').projectDir = "$rootDir/sitewhere-grpc-schedule-management" as File
-project(':sitewhere-grpc-tenant-management').projectDir = "$rootDir/sitewhere-grpc-tenant-management" as File
-project(':sitewhere-grpc-user-management').projectDir = "$rootDir/sitewhere-grpc-user-management" as File
 project(':sitewhere-influxdb').projectDir = "$rootDir/sitewhere-influxdb" as File
 project(':sitewhere-microservice').projectDir = "$rootDir/sitewhere-microservice" as File
 project(':sitewhere-mongodb').projectDir = "$rootDir/sitewhere-mongodb" as File

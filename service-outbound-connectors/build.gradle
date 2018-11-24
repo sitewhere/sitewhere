@@ -6,10 +6,7 @@ dependencies {
     compile project(':sitewhere-microservice')
     compile project(':sitewhere-communication')
     compile project(':sitewhere-solr')
-
-    // Connectivity to other microservices.
-    compile project(':sitewhere-grpc-device-management')
-    compile project(':sitewhere-grpc-event-management')
+	compile project(':sitewhere-grpc-client')
 
     // Spring Web support.
     compile group: 'org.springframework', name: 'spring-web'

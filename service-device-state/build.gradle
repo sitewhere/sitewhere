@@ -2,14 +2,10 @@ description = 'SiteWhere Device State Microservice'
 
 dependencies {
 	compile project(':sitewhere-microservice')
-	compile project(':sitewhere-grpc-device-state')
+	compile project(':sitewhere-grpc-client')
 	
 	// Supported databases.
 	compile project(':sitewhere-mongodb')
-	
-	// Connectivity to other microservices.
-	compile project(':sitewhere-grpc-device-management')
-	compile project(':sitewhere-grpc-event-management')
 }
 
 apply plugin: 'org.springframework.boot'

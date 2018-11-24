@@ -13,9 +13,8 @@ dependencies {
 	compile project(':sitewhere-core')
 	compile project(':sitewhere-configuration')
 	
-	// GRPC model dependencies.
+	// GRPC dependencies.
 	compile project(':sitewhere-grpc-client')
-	compile project(':sitewhere-grpc-tenant-management')
 	
 	// GRPC server components.
 	compile group: 'io.grpc', name: 'grpc-netty', version: "${rootProject.ext['grpc.version']}"
