@@ -2,21 +2,22 @@ description = 'SiteWhere GRPC Client Support'
 
 dependencies {
     compile project(':sitewhere-core')
-    compile project(':sitewhere-grpc-asset-management')
-    compile project(':sitewhere-grpc-batch-management')
-    compile project(':sitewhere-grpc-device-management')
-    compile project(':sitewhere-grpc-device-state')
-    compile project(':sitewhere-grpc-event-management')
-    compile project(':sitewhere-grpc-label-generation')
-    compile project(':sitewhere-grpc-schedule-management')
-    compile project(':sitewhere-grpc-tenant-management')
-    compile project(':sitewhere-grpc-user-management')
+    
+    compile group: 'com.sitewhere', name: 'sitewhere-grpc-asset-management', version: project.version
+    compile group: 'com.sitewhere', name: 'sitewhere-grpc-batch-management', version: project.version
+    compile group: 'com.sitewhere', name: 'sitewhere-grpc-device-management', version: project.version
+    compile group: 'com.sitewhere', name: 'sitewhere-grpc-device-state', version: project.version
+    compile group: 'com.sitewhere', name: 'sitewhere-grpc-event-management', version: project.version
+    compile group: 'com.sitewhere', name: 'sitewhere-grpc-label-generation', version: project.version
+    compile group: 'com.sitewhere', name: 'sitewhere-grpc-schedule-management', version: project.version
+    compile group: 'com.sitewhere', name: 'sitewhere-grpc-tenant-management', version: project.version
+    compile group: 'com.sitewhere', name: 'sitewhere-grpc-user-management', version: project.version
 	
     compile group: 'org.ehcache', name: 'ehcache', version: '3.6.1'
 }
 
 license {
-	exclude "**/grpc/model/tracing/**"
+	exclude "**/common/tracing/**"
 }
 
 // Publish jar.

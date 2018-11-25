@@ -2,6 +2,7 @@ description = 'SiteWhere Device Event Management Microservice'
 
 dependencies {
 	compile project(':sitewhere-core')
+	compile project(':sitewhere-grpc-client')
 	
 	// Supported databases.
 	compile project(':sitewhere-cassandra')
@@ -9,10 +10,6 @@ dependencies {
 	compile project(':sitewhere-influxdb')
 	
 	compile project(':sitewhere-microservice')
-	compile project(':sitewhere-grpc-event-management')
-	
-	// Connectivity to other microservices.
-	compile project(':sitewhere-grpc-device-management')
 }
 
 apply plugin: 'org.springframework.boot'
