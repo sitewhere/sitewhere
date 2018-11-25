@@ -3,6 +3,9 @@ description = 'SiteWhere Common Communication Components'
 dependencies {
 	compile project(':sitewhere-core')
     
+     // Protobuf device API.
+    compile group: 'com.sitewhere', name: 'sitewhere-device-protobuf', version:'2.0.0-SNAPSHOT'
+    
      // CoAP dependencies.
     compile group: 'org.eclipse.californium', name: 'californium-core', version:'1.0.4'
     
@@ -18,26 +21,6 @@ test {
 }
 
 apply plugin: 'java'
-apply plugin: 'com.google.protobuf'
-protobuf {
-
-	// Configure the protoc executable
-	protoc {
-	
-		// Download from repositories.
-		artifact = "com.google.protobuf:protoc:3.3.0"
-	}
-	
-	generatedFilesBaseDir = "$projectDir/src/generated"
-}
-
-apply plugin: 'eclipse'
-eclipse.classpath.file.whenMerged {
-	entries += new org.gradle.plugins.ide.eclipse.model.SourceFolder('src/main/resources', null)    
- 	def generated = new org.gradle.plugins.ide.eclipse.model.SourceFolder('src/generated/main/java', null)
-	generated.getEntryAttributes().put("ignore_optional_problems", "true")
-	entries += generated
-}
 
 // Publish jar.
 apply plugin: 'maven-publish'
