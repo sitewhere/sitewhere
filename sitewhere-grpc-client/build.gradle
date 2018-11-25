@@ -17,7 +17,7 @@ dependencies {
 }
 
 license {
-	exclude "**/grpc/model/tracing/**"
+	exclude "**/common/tracing/**"
 }
 
 // Publish jar.
