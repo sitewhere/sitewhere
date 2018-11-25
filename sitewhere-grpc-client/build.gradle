@@ -3,15 +3,15 @@ description = 'SiteWhere GRPC Client Support'
 dependencies {
     compile project(':sitewhere-core')
     
-    compile group: 'com.sitewhere', name: 'sitewhere-grpc-asset-management', version: project.version
-    compile group: 'com.sitewhere', name: 'sitewhere-grpc-batch-management', version: project.version
-    compile group: 'com.sitewhere', name: 'sitewhere-grpc-device-management', version: project.version
-    compile group: 'com.sitewhere', name: 'sitewhere-grpc-device-state', version: project.version
-    compile group: 'com.sitewhere', name: 'sitewhere-grpc-event-management', version: project.version
-    compile group: 'com.sitewhere', name: 'sitewhere-grpc-label-generation', version: project.version
-    compile group: 'com.sitewhere', name: 'sitewhere-grpc-schedule-management', version: project.version
-    compile group: 'com.sitewhere', name: 'sitewhere-grpc-tenant-management', version: project.version
-    compile group: 'com.sitewhere', name: 'sitewhere-grpc-user-management', version: project.version
+    compile group: 'com.sitewhere', name: 'sitewhere-grpc-asset-management', version: "${rootProject.ext['sitewhere.grpc.api.version']}"
+    compile group: 'com.sitewhere', name: 'sitewhere-grpc-batch-management', version: "${rootProject.ext['sitewhere.grpc.api.version']}"
+    compile group: 'com.sitewhere', name: 'sitewhere-grpc-device-management', version: "${rootProject.ext['sitewhere.grpc.api.version']}"
+    compile group: 'com.sitewhere', name: 'sitewhere-grpc-device-state', version: "${rootProject.ext['sitewhere.grpc.api.version']}"
+    compile group: 'com.sitewhere', name: 'sitewhere-grpc-event-management', version: "${rootProject.ext['sitewhere.grpc.api.version']}"
+    compile group: 'com.sitewhere', name: 'sitewhere-grpc-label-generation', version: "${rootProject.ext['sitewhere.grpc.api.version']}"
+    compile group: 'com.sitewhere', name: 'sitewhere-grpc-schedule-management', version: "${rootProject.ext['sitewhere.grpc.api.version']}"
+    compile group: 'com.sitewhere', name: 'sitewhere-grpc-tenant-management', version: "${rootProject.ext['sitewhere.grpc.api.version']}"
+    compile group: 'com.sitewhere', name: 'sitewhere-grpc-user-management', version: "${rootProject.ext['sitewhere.grpc.api.version']}"
 	
     compile group: 'org.ehcache', name: 'ehcache', version: '3.6.1'
 }
