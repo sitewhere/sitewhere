@@ -165,36 +165,34 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		return results;
 	    }
 	    case SendMeasurement: {
-		SiteWhere.DeviceEvent.DeviceMeasurements dm = SiteWhere.DeviceEvent.DeviceMeasurements
+		SiteWhere.DeviceEvent.DeviceMeasurement dm = SiteWhere.DeviceEvent.DeviceMeasurement
 			.parseDelimitedFrom(stream);
 		getLogger().debug("Decoded measurement for: " + header.getDeviceToken().getValue());
-		List<SiteWhere.DeviceEvent.Measurement> measurements = dm.getMeasurementList();
-		for (SiteWhere.DeviceEvent.Measurement current : measurements) {
-		    DeviceMeasurementCreateRequest request = new DeviceMeasurementCreateRequest();
-		    request.setName(current.getMeasurementId().getValue());
-		    request.setValue(current.getMeasurementValue().getValue());
 
-		    if (dm.hasUpdateState()) {
-			request.setUpdateState(dm.getUpdateState().getValue());
-		    }
+		DeviceMeasurementCreateRequest request = new DeviceMeasurementCreateRequest();
 
-		    Map<String, String> metadata = dm.getMetadataMap();
-		    request.setMetadata(metadata);
+		request.setName(dm.getMeasurementName().getValue());
+		request.setValue(dm.getMeasurementValue().getValue());
 
-		    if (dm.hasEventDate()) {
-			request.setEventDate(new Date(dm.getEventDate().getValue()));
-		    } else {
-			request.setEventDate(new Date());
-		    }
-
-		    DecodedDeviceRequest<IDeviceMeasurementCreateRequest> decoded = new DecodedDeviceRequest<IDeviceMeasurementCreateRequest>();
-		    if (header.hasOriginator()) {
-			decoded.setOriginator(header.getOriginator().getValue());
-		    }
-		    decoded.setDeviceToken(header.getDeviceToken().getValue());
-		    decoded.setRequest(request);
-		    results.add(decoded);
+		if (dm.hasUpdateState()) {
+		    request.setUpdateState(dm.getUpdateState().getValue());
 		}
+
+		Map<String, String> metadata = dm.getMetadataMap();
+		request.setMetadata(metadata);
+
+		if (dm.hasEventDate()) {
+		    request.setEventDate(new Date(dm.getEventDate().getValue()));
+		} else {
+		    request.setEventDate(new Date());
+		}
+		DecodedDeviceRequest<IDeviceMeasurementCreateRequest> decoded = new DecodedDeviceRequest<IDeviceMeasurementCreateRequest>();
+		if (header.hasOriginator()) {
+		    decoded.setOriginator(header.getOriginator().getValue());
+		}
+		decoded.setDeviceToken(header.getDeviceToken().getValue());
+		decoded.setRequest(request);
+		results.add(decoded);
 		return results;
 	    }
 	    case CreateStream: {

@@ -139,7 +139,7 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
 	case SendDeviceStreamData: {
 	    ISendDeviceStreamDataCommand send = (ISendDeviceStreamDataCommand) command;
 	    DeviceStreamData.Builder builder = DeviceStreamData.newBuilder();
-	    builder.setHardwareId(GOptionalString.newBuilder().setValue(send.getHardwareId()));
+	    builder.setDeviceToken(GOptionalString.newBuilder().setValue(send.getHardwareId()));
 	    builder.setStreamId(GOptionalString.newBuilder().setValue(send.getStreamId()));
 	    builder.setSequenceNumber(GOptionalFixed64.newBuilder().setValue(send.getSequenceNumber()));
 	    builder.setData(ByteString.copyFrom(send.getData()));
