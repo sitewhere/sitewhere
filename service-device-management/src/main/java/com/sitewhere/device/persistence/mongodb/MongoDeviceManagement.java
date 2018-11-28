@@ -40,7 +40,6 @@ import com.sitewhere.rest.model.device.DeviceType;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
-import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.DeviceCommandSearchCriteria;
@@ -69,7 +68,6 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.IDeviceCommand;
-import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IDeviceAlarmCreateRequest;
@@ -80,7 +78,6 @@ import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
-import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.error.ResourceExistsException;
@@ -1212,52 +1209,6 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createDeviceStream(java.util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest)
-     */
-    @Override
-    public IDeviceStream createDeviceStream(UUID assignmentId, IDeviceStreamCreateRequest request)
-	    throws SiteWhereException {
-	// Use common logic so all backend implementations work the same.
-	IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentId);
-	DeviceStream stream = DeviceManagementPersistence.deviceStreamCreateLogic(assignment, request);
-
-	MongoCollection<Document> streams = getMongoClient().getStreamsCollection();
-	Document created = MongoDeviceStream.toDocument(stream);
-	MongoPersistence.insert(streams, created, ErrorCode.DuplicateStreamId);
-	return MongoDeviceStream.fromDocument(created);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStream(java.util.UUID,
-     * java.lang.String)
-     */
-    @Override
-    public IDeviceStream getDeviceStream(UUID assignmentId, String streamId) throws SiteWhereException {
-	Document dbStream = getDeviceStreamDocument(assignmentId, streamId);
-	if (dbStream == null) {
-	    return null;
-	}
-	return MongoDeviceStream.fromDocument(dbStream);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listDeviceStreams(java.util.UUID,
-     * com.sitewhere.spi.search.ISearchCriteria)
-     */
-    @Override
-    public ISearchResults<IDeviceStream> listDeviceStreams(UUID assignmentId, ISearchCriteria criteria)
-	    throws SiteWhereException {
-	MongoCollection<Document> streams = getMongoClient().getStreamsCollection();
-	Document query = new Document(MongoDeviceStream.PROP_ASSIGNMENT_ID, assignmentId);
-	Document sort = new Document(MongoPersistentEntity.PROP_CREATED_DATE, -1);
-	return MongoPersistence.search(IDeviceStream.class, streams, query, sort, criteria, LOOKUP);
-    }
-
-    /*
-     * @see
      * com.sitewhere.spi.device.IDeviceManagement#createCustomerType(com.sitewhere.
      * spi.customer.request.ICustomerTypeCreateRequest)
      */
@@ -2374,26 +2325,6 @@ public class MongoDeviceManagement extends TenantEngineLifecycleComponent implem
 	    throw new SiteWhereSystemException(ErrorCode.InvalidZoneToken, ErrorLevel.ERROR);
 	}
 	return match;
-    }
-
-    /**
-     * Get the {@link Document} for an {@link IDeviceStream} based on assignment
-     * token and stream id.
-     * 
-     * @param assignmentToken
-     * @param streamId
-     * @return
-     * @throws SiteWhereException
-     */
-    protected Document getDeviceStreamDocument(UUID assignmentId, String streamId) throws SiteWhereException {
-	try {
-	    MongoCollection<Document> streams = getMongoClient().getStreamsCollection();
-	    Document query = new Document(MongoDeviceStream.PROP_ASSIGNMENT_ID, assignmentId)
-		    .append(MongoDeviceStream.PROP_STREAM_ID, streamId);
-	    return streams.find(query).first();
-	} catch (MongoClientException e) {
-	    throw MongoPersistence.handleClientException(e);
-	}
     }
 
     /**

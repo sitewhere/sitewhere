@@ -12,21 +12,21 @@ import java.util.UUID;
 import com.sitewhere.influxdb.InfluxDbClient;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.device.streaming.IDeviceStreamData;
-import com.sitewhere.spi.device.streaming.IDeviceStreamManagement;
+import com.sitewhere.spi.device.streaming.IDeviceStreamDataManagement;
 import com.sitewhere.spi.device.streaming.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
- * Implementation of {@link IDeviceStreamManagement} that stores data in
+ * Implementation of {@link IDeviceStreamDataManagement} that stores data in
  * InfluxDB.
  * 
  * @author Derek
  */
-public class InfluxDbDeviceStreamManagement extends TenantEngineLifecycleComponent implements IDeviceStreamManagement {
+public class InfluxDbDeviceStreamManagement extends TenantEngineLifecycleComponent
+	implements IDeviceStreamDataManagement {
 
     /** Client */
     private InfluxDbClient client;
@@ -36,36 +36,34 @@ public class InfluxDbDeviceStreamManagement extends TenantEngineLifecycleCompone
     }
 
     /*
-     * @see com.sitewhere.spi.device.streaming.IDeviceStreamManagement#
+     * @see com.sitewhere.spi.device.streaming.IDeviceStreamDataManagement#
      * addDeviceStreamData(java.util.UUID,
-     * com.sitewhere.spi.device.streaming.IDeviceStream,
-     * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest)
+     * com.sitewhere.spi.device.streaming.request.IDeviceStreamDataCreateRequest)
      */
     @Override
-    public IDeviceStreamData addDeviceStreamData(UUID deviceAssignmentId, IDeviceStream stream,
-	    IDeviceStreamDataCreateRequest request) throws SiteWhereException {
-	throw new SiteWhereException("Streaming data not supported by InfluxDB.");
-    }
-
-    /*
-     * @see com.sitewhere.spi.device.streaming.IDeviceStreamManagement#
-     * getDeviceStreamData(java.util.UUID, java.lang.String, long)
-     */
-    @Override
-    public IDeviceStreamData getDeviceStreamData(UUID deviceAssignmentId, String streamId, long sequenceNumber)
+    public IDeviceStreamData addDeviceStreamData(UUID streamId, IDeviceStreamDataCreateRequest request)
 	    throws SiteWhereException {
-	throw new SiteWhereException("Streaming data not supported by InfluxDB.");
+	throw new SiteWhereException("Not implemented.");
     }
 
     /*
-     * @see com.sitewhere.spi.device.streaming.IDeviceStreamManagement#
-     * listDeviceStreamDataForAssignment(java.util.UUID, java.lang.String,
+     * @see com.sitewhere.spi.device.streaming.IDeviceStreamDataManagement#
+     * getDeviceStreamData(java.util.UUID, long)
+     */
+    @Override
+    public IDeviceStreamData getDeviceStreamData(UUID streamId, long sequenceNumber) throws SiteWhereException {
+	throw new SiteWhereException("Not implemented.");
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.streaming.IDeviceStreamDataManagement#
+     * listDeviceStreamDataForAssignment(java.util.UUID,
      * com.sitewhere.spi.search.IDateRangeSearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceStreamData> listDeviceStreamDataForAssignment(UUID assignmentId, String streamId,
+    public ISearchResults<IDeviceStreamData> listDeviceStreamDataForAssignment(UUID streamId,
 	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	throw new SiteWhereException("Streaming data not supported by InfluxDB.");
+	throw new SiteWhereException("Not implemented.");
     }
 
     public InfluxDbClient getClient() {

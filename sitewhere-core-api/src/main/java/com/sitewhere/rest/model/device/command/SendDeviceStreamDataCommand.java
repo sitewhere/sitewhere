@@ -7,6 +7,8 @@
  */
 package com.sitewhere.rest.model.device.command;
 
+import java.util.UUID;
+
 import com.sitewhere.spi.device.command.ISendDeviceStreamDataCommand;
 import com.sitewhere.spi.device.command.SystemCommandType;
 
@@ -20,11 +22,11 @@ public class SendDeviceStreamDataCommand extends SystemCommand implements ISendD
     /** Serial version UID */
     private static final long serialVersionUID = -5372263771806975660L;
 
-    /** Hardware id */
-    private String hardwareId;
+    /** Device token */
+    private String deviceToken;
 
     /** Stream id */
-    private String streamId;
+    private UUID streamId;
 
     /** Sequence number */
     private long sequenceNumber;
@@ -37,40 +39,37 @@ public class SendDeviceStreamDataCommand extends SystemCommand implements ISendD
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.command.ISendDeviceStreamDataCommand#
-     * getHardwareId()
+     * @see
+     * com.sitewhere.spi.device.command.ISendDeviceStreamDataCommand#getDeviceToken(
+     * )
      */
-    public String getHardwareId() {
-	return hardwareId;
+    @Override
+    public String getDeviceToken() {
+	return deviceToken;
     }
 
-    public void setHardwareId(String hardwareId) {
-	this.hardwareId = hardwareId;
+    public void setDeviceToken(String deviceToken) {
+	this.deviceToken = deviceToken;
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.device.command.ISendDeviceStreamDataCommand#getStreamId
-     * ()
+     * com.sitewhere.spi.device.command.ISendDeviceStreamDataCommand#getStreamId()
      */
-    public String getStreamId() {
+    @Override
+    public UUID getStreamId() {
 	return streamId;
     }
 
-    public void setStreamId(String streamId) {
+    public void setStreamId(UUID streamId) {
 	this.streamId = streamId;
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.command.ISendDeviceStreamDataCommand#
      * getSequenceNumber()
      */
+    @Override
     public long getSequenceNumber() {
 	return sequenceNumber;
     }
@@ -80,11 +79,9 @@ public class SendDeviceStreamDataCommand extends SystemCommand implements ISendD
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.device.command.ISendDeviceStreamDataCommand#getData()
+     * @see com.sitewhere.spi.device.command.ISendDeviceStreamDataCommand#getData()
      */
+    @Override
     public byte[] getData() {
 	return data;
     }

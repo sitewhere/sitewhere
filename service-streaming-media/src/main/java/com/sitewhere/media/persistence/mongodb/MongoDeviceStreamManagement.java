@@ -11,23 +11,33 @@ import java.util.UUID;
 
 import org.bson.Document;
 
+import com.mongodb.MongoClientException;
+import com.mongodb.client.MongoCollection;
+import com.sitewhere.media.persistence.DeviceStreamPersistence;
+import com.sitewhere.mongodb.IMongoConverterLookup;
+import com.sitewhere.mongodb.MongoPersistence;
+import com.sitewhere.mongodb.common.MongoPersistentEntity;
+import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
-import com.sitewhere.spi.device.streaming.IDeviceStreamData;
 import com.sitewhere.spi.device.streaming.IDeviceStreamManagement;
-import com.sitewhere.spi.device.streaming.request.IDeviceStreamDataCreateRequest;
-import com.sitewhere.spi.search.IDateRangeSearchCriteria;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
- * Implementation of {@link IDeviceStreamManagement} that stores data in
- * MongoDB.
  * 
  * @author Derek
+ *
  */
 public class MongoDeviceStreamManagement extends TenantEngineLifecycleComponent implements IDeviceStreamManagement {
+
+    /** Converter lookup */
+    private static IMongoConverterLookup LOOKUP = new MongoConverters();
 
     /** Injected with Mongo client */
     private IDeviceStreamManagementMongoClient mongoClient;
@@ -38,93 +48,69 @@ public class MongoDeviceStreamManagement extends TenantEngineLifecycleComponent 
 
     /*
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceStreamData(
-     * java.util.UUID, com.sitewhere.spi.device.streaming.IDeviceStream,
-     * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest)
+     * com.sitewhere.spi.device.streaming.IDeviceStreamManagement#createDeviceStream
+     * (java.util.UUID,
+     * com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest)
      */
     @Override
-    public IDeviceStreamData addDeviceStreamData(UUID deviceAssignmentId, IDeviceStream stream,
-	    IDeviceStreamDataCreateRequest request) throws SiteWhereException {
-	// IDeviceAssignment assignment =
-	// assertDeviceAssignmentById(deviceAssignmentId);
-	// // Use common logic so all backend implementations work the same.
-	// DeviceStreamData streamData =
-	// DeviceEventManagementPersistence.deviceStreamDataCreateLogic(assignment,
-	// request);
-	//
-	// MongoCollection<Document> streamdata =
-	// getMongoClient().getStreamDataCollection();
-	// Document streamDataObject = MongoDeviceStreamData.toDocument(streamData,
-	// false);
-	// MongoDeviceEventManagementPersistence.insertEvent(events, streamDataObject,
-	// isUseBulkEventInserts(),
-	// getEventBuffer());
-	//
-	// return MongoDeviceStreamData.fromDocument(streamDataObject, false);
-	throw new SiteWhereException("Streaming data not supported by MongoDB.");
+    public IDeviceStream createDeviceStream(UUID assignmentId, IDeviceStreamCreateRequest request)
+	    throws SiteWhereException {
+	// Use common logic so all backend implementations work the same.
+	IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentId);
+	DeviceStream stream = DeviceStreamPersistence.deviceStreamCreateLogic(assignment, request);
+
+	MongoCollection<Document> streams = getMongoClient().getDeviceStreamsCollection();
+	Document created = MongoDeviceStream.toDocument(stream);
+	MongoPersistence.insert(streams, created, ErrorCode.DuplicateStreamId);
+	return MongoDeviceStream.fromDocument(created);
     }
 
     /*
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#getDeviceStreamData(
-     * java.util.UUID, java.lang.String, long)
+     * com.sitewhere.spi.device.streaming.IDeviceStreamManagement#getDeviceStream(
+     * java.util.UUID)
      */
     @Override
-    public IDeviceStreamData getDeviceStreamData(UUID deviceAssignmentId, String streamId, long sequenceNumber)
-	    throws SiteWhereException {
-	// Document dbData = getDeviceStreamDataDocument(deviceAssignmentId, streamId,
-	// sequenceNumber);
-	// if (dbData == null) {
-	// return null;
-	// }
-	// return MongoDeviceStreamData.fromDocument(dbData, false);
-	throw new SiteWhereException("Streaming data not supported by MongoDB.");
+    public IDeviceStream getDeviceStream(UUID streamId) throws SiteWhereException {
+	Document dbStream = getDeviceStreamDocument(streamId);
+	if (dbStream == null) {
+	    return null;
+	}
+	return MongoDeviceStream.fromDocument(dbStream);
     }
 
     /*
-     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * listDeviceStreamDataForAssignment(java.util.UUID, java.lang.String,
-     * com.sitewhere.spi.search.IDateRangeSearchCriteria)
+     * @see
+     * com.sitewhere.spi.device.streaming.IDeviceStreamManagement#listDeviceStreams(
+     * java.util.UUID, com.sitewhere.spi.search.ISearchCriteria)
      */
     @Override
-    public ISearchResults<IDeviceStreamData> listDeviceStreamDataForAssignment(UUID assignmentId, String streamId,
-	    IDateRangeSearchCriteria criteria) throws SiteWhereException {
-	// MongoCollection<Document> streamdata =
-	// getMongoClient().getStreamDataCollection();
-	// Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_ID,
-	// assignmentId)
-	// .append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.StreamData.name())
-	// .append(MongoDeviceStreamData.PROP_STREAM_ID, streamId);
-	// MongoPersistence.addDateSearchCriteria(query,
-	// MongoDeviceEvent.PROP_EVENT_DATE, criteria);
-	// Document sort = new Document(MongoDeviceStreamData.PROP_SEQUENCE_NUMBER, 1);
-	// return MongoPersistence.search(IDeviceStreamData.class, events, query, sort,
-	// criteria, LOOKUP);
-	throw new SiteWhereException("Streaming data not supported by MongoDB.");
+    public ISearchResults<IDeviceStream> listDeviceStreams(UUID assignmentId, ISearchCriteria criteria)
+	    throws SiteWhereException {
+	MongoCollection<Document> streams = getMongoClient().getDeviceStreamsCollection();
+	Document query = new Document(MongoDeviceStream.PROP_ASSIGNMENT_ID, assignmentId);
+	Document sort = new Document(MongoPersistentEntity.PROP_CREATED_DATE, -1);
+	return MongoPersistence.search(IDeviceStream.class, streams, query, sort, criteria, LOOKUP);
     }
 
     /**
-     * Get the {@link Document} for an {@link IDeviceStreamData} chunk based on
-     * assignment token, stream id, and sequence number.
+     * Get the {@link Document} for an {@link IDeviceStream} based on stream id.
      * 
-     * @param assignmentId
      * @param streamId
-     * @param sequenceNumber
      * @return
      * @throws SiteWhereException
      */
-    protected Document getDeviceStreamDataDocument(UUID assignmentId, String streamId, long sequenceNumber)
-	    throws SiteWhereException {
-	// try {
-	// MongoCollection<Document> events = getMongoClient().getEventsCollection();
-	// Document query = new Document(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_ID,
-	// assignmentId)
-	// .append(MongoDeviceStreamData.PROP_STREAM_ID, streamId)
-	// .append(MongoDeviceStreamData.PROP_SEQUENCE_NUMBER, sequenceNumber);
-	// return events.find(query).first();
-	// } catch (MongoTimeoutException e) {
-	// throw new SiteWhereException("Connection to MongoDB lost.", e);
-	// }
+    protected Document getDeviceStreamDocument(UUID streamId) throws SiteWhereException {
+	try {
+	    MongoCollection<Document> streams = getMongoClient().getDeviceStreamsCollection();
+	    Document query = new Document(MongoPersistentEntity.PROP_ID, streamId);
+	    return streams.find(query).first();
+	} catch (MongoClientException e) {
+	    throw MongoPersistence.handleClientException(e);
+	}
+    }
+
+    protected IDeviceAssignment assertApiDeviceAssignment(UUID assignmentId) {
 	return null;
     }
 

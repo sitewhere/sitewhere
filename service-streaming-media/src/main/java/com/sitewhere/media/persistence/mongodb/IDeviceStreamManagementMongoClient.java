@@ -19,11 +19,22 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public interface IDeviceStreamManagementMongoClient {
 
-    /** Default collection name for SiteWhere events */
+    /** Default collection name for SiteWhere device streams */
+    public static final String DEFAULT_DEVICE_STREAM_COLLECTION_NAME = "streams";
+
+    /** Default collection name for SiteWhere device stream data */
     public static final String DEFAULT_STREAM_DATA_COLLECTION_NAME = "streamdata";
 
     /**
-     * Collection for stream data.
+     * Collection for device streams.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public MongoCollection<Document> getDeviceStreamsCollection() throws SiteWhereException;
+
+    /**
+     * Collection for device stream data.
      * 
      * @return
      * @throws SiteWhereException

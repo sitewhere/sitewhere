@@ -11,7 +11,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import com.google.protobuf.ByteString;
-
 import com.sitewhere.commands.spi.ICommandExecutionEncoder;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.communication.protobuf.ProtobufMessageBuilder;
@@ -23,8 +22,8 @@ import com.sitewhere.communication.protobuf.proto.SiteWhere.Device.RegistrationA
 import com.sitewhere.communication.protobuf.proto.SiteWhere.Device.RegistrationAckError;
 import com.sitewhere.communication.protobuf.proto.SiteWhere.Device.RegistrationAckState;
 import com.sitewhere.communication.protobuf.proto.SiteWhere.DeviceEvent.DeviceStreamData;
-import com.sitewhere.communication.protobuf.proto.SiteWhere.GOptionalString;
 import com.sitewhere.communication.protobuf.proto.SiteWhere.GOptionalFixed64;
+import com.sitewhere.communication.protobuf.proto.SiteWhere.GOptionalString;
 import com.sitewhere.core.DataUtils;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -119,7 +118,6 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
 	case DeviceStreamAck: {
 	    IDeviceStreamAckCommand ack = (IDeviceStreamAckCommand) command;
 	    DeviceStreamAck.Builder builder = DeviceStreamAck.newBuilder();
-	    builder.setStreamId(GOptionalString.newBuilder().setValue(ack.getStreamId()));
 	    switch (ack.getStatus()) {
 	    case DeviceStreamCreated: {
 		builder.setState(DeviceStreamAckState.STREAM_CREATED);
@@ -139,8 +137,7 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
 	case SendDeviceStreamData: {
 	    ISendDeviceStreamDataCommand send = (ISendDeviceStreamDataCommand) command;
 	    DeviceStreamData.Builder builder = DeviceStreamData.newBuilder();
-	    builder.setDeviceToken(GOptionalString.newBuilder().setValue(send.getHardwareId()));
-	    builder.setStreamId(GOptionalString.newBuilder().setValue(send.getStreamId()));
+	    builder.setDeviceToken(GOptionalString.newBuilder().setValue(send.getDeviceToken()));
 	    builder.setSequenceNumber(GOptionalFixed64.newBuilder().setValue(send.getSequenceNumber()));
 	    builder.setData(ByteString.copyFrom(send.getData()));
 	    return encodeSendDeviceStreamData(builder.build());

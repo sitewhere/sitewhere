@@ -30,7 +30,6 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.IDeviceCommand;
-import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IDeviceAlarmCreateRequest;
@@ -41,7 +40,6 @@ import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
-import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
@@ -444,38 +442,6 @@ public class DeviceManagementDecorator extends TenantEngineLifecycleComponentDec
     @Override
     public IDeviceAlarm deleteDeviceAlarm(UUID id) throws SiteWhereException {
 	return getDelegate().deleteDeviceAlarm(id);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#createDeviceStream(java.util.UUID,
-     * com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest)
-     */
-    @Override
-    public IDeviceStream createDeviceStream(UUID assignmentId, IDeviceStreamCreateRequest request)
-	    throws SiteWhereException {
-	return getDelegate().createDeviceStream(assignmentId, request);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStream(java.util.UUID,
-     * java.lang.String)
-     */
-    @Override
-    public IDeviceStream getDeviceStream(UUID assignmentId, String streamId) throws SiteWhereException {
-	return getDelegate().getDeviceStream(assignmentId, streamId);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.device.IDeviceManagement#listDeviceStreams(java.util.UUID,
-     * com.sitewhere.spi.search.ISearchCriteria)
-     */
-    @Override
-    public ISearchResults<IDeviceStream> listDeviceStreams(UUID assignmentId, ISearchCriteria criteria)
-	    throws SiteWhereException {
-	return getDelegate().listDeviceStreams(assignmentId, criteria);
     }
 
     /*

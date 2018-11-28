@@ -19,8 +19,8 @@ import com.sitewhere.spi.device.command.DeviceStreamStatus;
 import com.sitewhere.spi.device.communication.IDeviceStreamManager;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
-import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.device.streaming.IDeviceStreamData;
+import com.sitewhere.spi.device.streaming.IDeviceStreamDataManagement;
 import com.sitewhere.spi.device.streaming.IDeviceStreamManagement;
 import com.sitewhere.spi.device.streaming.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
@@ -52,19 +52,12 @@ public class DeviceStreamManager extends TenantEngineLifecycleComponent implemen
 	IDeviceAssignment assignment = getCurrentAssignment(deviceToken);
 
 	DeviceStreamAckCommand ack = new DeviceStreamAckCommand();
-	ack.setStreamId(request.getStreamId());
-	IDeviceStream existing = getDeviceManagement(getTenantEngine().getTenant()).getDeviceStream(assignment.getId(),
-		request.getStreamId());
-	if (existing != null) {
-	    ack.setStatus(DeviceStreamStatus.DeviceStreamExists);
-	} else {
-	    try {
-		getDeviceManagement(getTenantEngine().getTenant()).createDeviceStream(assignment.getId(), request);
-		ack.setStatus(DeviceStreamStatus.DeviceStreamCreated);
-	    } catch (SiteWhereException e) {
-		getLogger().error("Unable to create device stream.", e);
-		ack.setStatus(DeviceStreamStatus.DeviceStreamFailed);
-	    }
+	try {
+	    getDeviceStreamManagement().createDeviceStream(assignment.getId(), request);
+	    ack.setStatus(DeviceStreamStatus.DeviceStreamCreated);
+	} catch (SiteWhereException e) {
+	    getLogger().error("Unable to create device stream.", e);
+	    ack.setStatus(DeviceStreamStatus.DeviceStreamFailed);
 	}
 	// getDeviceCommunication(getTenantEngine().getTenant()).deliverSystemCommand(hardwareId,
 	// ack);
@@ -81,7 +74,7 @@ public class DeviceStreamManager extends TenantEngineLifecycleComponent implemen
     public void handleDeviceStreamDataRequest(String deviceToken, IDeviceStreamDataCreateRequest request)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = getCurrentAssignment(deviceToken);
-	getDeviceStreamManagement().addDeviceStreamData(assignment.getId(), null, request);
+	getDeviceStreamDataManagement().addDeviceStreamData(assignment.getId(), request);
     }
 
     /*
@@ -94,13 +87,12 @@ public class DeviceStreamManager extends TenantEngineLifecycleComponent implemen
     @Override
     public void handleSendDeviceStreamDataRequest(String deviceToken, ISendDeviceStreamDataRequest request)
 	    throws SiteWhereException {
-	IDeviceAssignment assignment = getCurrentAssignment(deviceToken);
-	IDeviceStreamData data = getDeviceStreamManagement().getDeviceStreamData(assignment.getId(),
-		request.getStreamId(), request.getSequenceNumber());
+	IDeviceStreamData data = getDeviceStreamDataManagement().getDeviceStreamData(request.getStreamId(),
+		request.getSequenceNumber());
 	SendDeviceStreamDataCommand command = new SendDeviceStreamDataCommand();
+	command.setDeviceToken(deviceToken);
 	command.setStreamId(request.getStreamId());
 	command.setSequenceNumber(request.getSequenceNumber());
-	command.setHardwareId(deviceToken);
 	if (data != null) {
 	    command.setData(data.getData());
 	} else {
@@ -133,6 +125,10 @@ public class DeviceStreamManager extends TenantEngineLifecycleComponent implemen
     }
 
     private IDeviceStreamManagement getDeviceStreamManagement() {
+	return null;
+    }
+
+    private IDeviceStreamDataManagement getDeviceStreamDataManagement() {
 	return null;
     }
 }

@@ -8,6 +8,7 @@
 package com.sitewhere.spi.device.command;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * Sends a chunk of device stream data to a device.
@@ -17,18 +18,18 @@ import java.io.Serializable;
 public interface ISendDeviceStreamDataCommand extends ISystemCommand, Serializable {
 
     /**
-     * Hardware id of device to receive data.
+     * Token of device to receive data.
      * 
      * @return
      */
-    public String getHardwareId();
+    public String getDeviceToken();
 
     /**
      * Get id of stream data belongs to.
      * 
      * @return
      */
-    public String getStreamId();
+    public UUID getStreamId();
 
     /**
      * Get sequence number of data chunk.

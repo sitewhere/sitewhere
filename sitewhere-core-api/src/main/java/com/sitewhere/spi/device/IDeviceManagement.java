@@ -22,7 +22,6 @@ import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.customer.request.ICustomerCreateRequest;
 import com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest;
 import com.sitewhere.spi.device.command.IDeviceCommand;
-import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IDeviceAlarmCreateRequest;
@@ -33,7 +32,6 @@ import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
-import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
@@ -57,7 +55,7 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
      * Create a new device type.
      * 
      * @param request
-     *            information about new type
+     *                    information about new type
      * @return device type that was created
      * @throws SiteWhereException
      */
@@ -76,10 +74,10 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
      * Get a device type by unique token.
      * 
      * @param token
-     *            unique device type token
+     *                  unique device type token
      * @return corresponding device type or null if not found
      * @throws SiteWhereException
-     *             if implementation encountered an error
+     *                                if implementation encountered an error
      */
     public IDeviceType getDeviceTypeByToken(String token) throws SiteWhereException;
 
@@ -87,12 +85,12 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
      * Update an existing device type.
      * 
      * @param token
-     *            unique device type id
+     *                    unique device type id
      * @param request
-     *            updated information
+     *                    updated information
      * @return updated device type
      * @throws SiteWhereException
-     *             if implementation encountered an error
+     *                                if implementation encountered an error
      */
     public IDeviceType updateDeviceType(UUID id, IDeviceTypeCreateRequest request) throws SiteWhereException;
 
@@ -422,39 +420,6 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
      * @throws SiteWhereException
      */
     public IDeviceAlarm deleteDeviceAlarm(UUID id) throws SiteWhereException;
-
-    /**
-     * Create a new {@link IDeviceStream} associated with an assignment.
-     * 
-     * @param assignmentId
-     * @param request
-     * @return
-     * @throws SiteWhereException
-     */
-    public IDeviceStream createDeviceStream(UUID assignmentId, IDeviceStreamCreateRequest request)
-	    throws SiteWhereException;
-
-    /**
-     * Get an exisiting {@link IDeviceStream} for an assignment based on unique
-     * stream id. Returns null if not found.
-     * 
-     * @param assignmentId
-     * @param streamId
-     * @return
-     * @throws SiteWhereException
-     */
-    public IDeviceStream getDeviceStream(UUID assignmentId, String streamId) throws SiteWhereException;
-
-    /**
-     * List device streams for the assignment that meet the given criteria.
-     * 
-     * @param assignmentId
-     * @param criteria
-     * @return
-     * @throws SiteWhereException
-     */
-    public ISearchResults<IDeviceStream> listDeviceStreams(UUID assignmentId, ISearchCriteria criteria)
-	    throws SiteWhereException;
 
     /**
      * Create a customer type based on the given input.

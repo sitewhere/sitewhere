@@ -25,7 +25,6 @@ import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
-import com.sitewhere.spi.device.streaming.IDeviceStream;
 
 /**
  * Manages classes used to convert between Mongo and SPI objects.
@@ -51,7 +50,6 @@ public class MongoConverters implements IMongoConverterLookup {
 	CONVERTERS.put(IDevice.class, new MongoDevice());
 	CONVERTERS.put(IDeviceAssignment.class, new MongoDeviceAssignment());
 	CONVERTERS.put(IDeviceAlarm.class, new MongoDeviceAlarm());
-	CONVERTERS.put(IDeviceStream.class, new MongoDeviceStream());
 	CONVERTERS.put(IDeviceGroup.class, new MongoDeviceGroup());
 	CONVERTERS.put(IDeviceGroupElement.class, new MongoDeviceGroupElement());
     }

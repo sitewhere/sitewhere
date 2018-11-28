@@ -25,7 +25,6 @@ import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupElementsSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceStatusSearchResults;
-import com.sitewhere.grpc.model.DeviceModel.GDeviceStreamSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceTypeSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GZoneSearchResults;
 import com.sitewhere.grpc.service.*;
@@ -47,7 +46,6 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.IDeviceCommand;
-import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IDeviceAlarmCreateRequest;
@@ -58,7 +56,6 @@ import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
-import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IDeviceCommandSearchCriteria;
@@ -2269,97 +2266,6 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 		    responseObserver);
 	} finally {
 	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getDeleteDeviceAlarmMethod());
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * createDeviceStream(com.sitewhere.grpc.service.GCreateDeviceStreamRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void createDeviceStream(GCreateDeviceStreamRequest request,
-	    StreamObserver<GCreateDeviceStreamResponse> responseObserver) {
-	try {
-	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getCreateDeviceStreamMethod());
-	    IDeviceStreamCreateRequest apiRequest = DeviceModelConverter
-		    .asApiDeviceStreamCreateRequest(request.getRequest());
-	    IDeviceStream apiResult = getDeviceManagement()
-		    .createDeviceStream(CommonModelConverter.asApiUuid(request.getAssignmentId()), apiRequest);
-	    GCreateDeviceStreamResponse.Builder response = GCreateDeviceStreamResponse.newBuilder();
-	    response.setDeviceStream(DeviceModelConverter.asGrpcDeviceStream(apiResult));
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getCreateDeviceStreamMethod(), e,
-		    responseObserver);
-	} finally {
-	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getCreateDeviceStreamMethod());
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getDeviceStreamByStreamId(com.sitewhere.grpc.service.
-     * GGetDeviceStreamByStreamIdRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getDeviceStreamByStreamId(GGetDeviceStreamByStreamIdRequest request,
-	    StreamObserver<GGetDeviceStreamByStreamIdResponse> responseObserver) {
-	try {
-	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetDeviceStreamByStreamIdMethod());
-	    IDeviceStream apiResult = getDeviceManagement()
-		    .getDeviceStream(CommonModelConverter.asApiUuid(request.getAssignmentId()), request.getStreamId());
-	    GGetDeviceStreamByStreamIdResponse.Builder response = GGetDeviceStreamByStreamIdResponse.newBuilder();
-	    if (apiResult != null) {
-		response.setDeviceStream(DeviceModelConverter.asGrpcDeviceStream(apiResult));
-	    }
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetDeviceStreamByStreamIdMethod(), e,
-		    responseObserver);
-	} finally {
-	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetDeviceStreamByStreamIdMethod());
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * listDeviceStreams(com.sitewhere.grpc.service.GListDeviceStreamsRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void listDeviceStreams(GListDeviceStreamsRequest request,
-	    StreamObserver<GListDeviceStreamsResponse> responseObserver) {
-	try {
-	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDeviceStreamsMethod());
-	    ISearchResults<IDeviceStream> apiResult = getDeviceManagement().listDeviceStreams(
-		    CommonModelConverter.asApiUuid(request.getAssignmentId()),
-		    CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
-	    GListDeviceStreamsResponse.Builder response = GListDeviceStreamsResponse.newBuilder();
-	    GDeviceStreamSearchResults.Builder results = GDeviceStreamSearchResults.newBuilder();
-	    for (IDeviceStream api : apiResult.getResults()) {
-		results.addStreams(DeviceModelConverter.asGrpcDeviceStream(api));
-	    }
-	    results.setCount(apiResult.getNumResults());
-	    response.setResults(results.build());
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getListDeviceStreamsMethod(), e,
-		    responseObserver);
-	} finally {
-	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getListDeviceStreamsMethod());
 	}
     }
 

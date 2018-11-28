@@ -7,6 +7,8 @@
  */
 package com.sitewhere.rest.model.device.command;
 
+import java.util.UUID;
+
 import com.sitewhere.spi.device.command.DeviceStreamStatus;
 import com.sitewhere.spi.device.command.IDeviceStreamAckCommand;
 import com.sitewhere.spi.device.command.SystemCommandType;
@@ -22,7 +24,7 @@ public class DeviceStreamAckCommand extends SystemCommand implements IDeviceStre
     private static final long serialVersionUID = -6363023316760034867L;
 
     /** Id of stream being created */
-    private String streamId;
+    private UUID streamId;
 
     /** Status of creating device stream */
     private DeviceStreamStatus status;
@@ -32,24 +34,21 @@ public class DeviceStreamAckCommand extends SystemCommand implements IDeviceStre
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.device.command.IDeviceStreamAckCommand#getStreamId()
+     * @see com.sitewhere.spi.device.command.IDeviceStreamAckCommand#getStreamId()
      */
-    public String getStreamId() {
+    @Override
+    public UUID getStreamId() {
 	return streamId;
     }
 
-    public void setStreamId(String streamId) {
+    public void setStreamId(UUID streamId) {
 	this.streamId = streamId;
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.command.IDeviceStreamAckCommand#getStatus()
      */
+    @Override
     public DeviceStreamStatus getStatus() {
 	return status;
     }

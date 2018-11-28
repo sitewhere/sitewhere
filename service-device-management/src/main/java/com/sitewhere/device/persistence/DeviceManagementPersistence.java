@@ -34,7 +34,6 @@ import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
-import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
@@ -62,7 +61,6 @@ import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
-import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.request.IDeviceAlarmCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
@@ -890,35 +888,6 @@ public class DeviceManagementPersistence extends Persistence {
      * @throws SiteWhereException
      */
     public static void deviceAlarmDeleteLogic(IDeviceAlarm alarm) throws SiteWhereException {
-    }
-
-    /**
-     * Common logic for creating {@link DeviceStream} from
-     * {@link IDeviceStreamCreateRequest}.
-     * 
-     * @param assignment
-     * @param request
-     * @return
-     * @throws SiteWhereException
-     */
-    public static DeviceStream deviceStreamCreateLogic(IDeviceAssignment assignment, IDeviceStreamCreateRequest request)
-	    throws SiteWhereException {
-	DeviceStream stream = new DeviceStream();
-	stream.setId(UUID.randomUUID());
-	stream.setAssignmentId(assignment.getId());
-
-	// Verify the stream id is specified and contains only valid characters.
-	require("Stream Id", request.getStreamId());
-	if (!request.getStreamId().matches("^[a-zA-Z0-9_\\-]+$")) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidCharsInStreamId, ErrorLevel.ERROR);
-	}
-	stream.setStreamId(request.getStreamId());
-
-	// Content type is required.
-	require("Content Type", request.getContentType());
-	stream.setContentType(request.getContentType());
-
-	return stream;
     }
 
     /**

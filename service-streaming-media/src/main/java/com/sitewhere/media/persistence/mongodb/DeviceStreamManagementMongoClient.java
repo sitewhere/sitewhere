@@ -22,10 +22,23 @@ import com.sitewhere.spi.SiteWhereException;
 public class DeviceStreamManagementMongoClient extends MongoDbClient implements IDeviceStreamManagementMongoClient {
 
     /** Injected name used for stream data collection */
+    private String deviceStreamsCollectionName = IDeviceStreamManagementMongoClient.DEFAULT_DEVICE_STREAM_COLLECTION_NAME;
+
+    /** Injected name used for stream data collection */
     private String streamDataCollectionName = IDeviceStreamManagementMongoClient.DEFAULT_STREAM_DATA_COLLECTION_NAME;
 
     public DeviceStreamManagementMongoClient(MongoConfiguration configuration) {
 	super(configuration);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.media.persistence.mongodb.IDeviceStreamManagementMongoClient#
+     * getDeviceStreamsCollection()
+     */
+    @Override
+    public MongoCollection<Document> getDeviceStreamsCollection() throws SiteWhereException {
+	return getDatabase().getCollection(getDeviceStreamsCollectionName());
     }
 
     /*
@@ -36,6 +49,14 @@ public class DeviceStreamManagementMongoClient extends MongoDbClient implements 
     @Override
     public MongoCollection<Document> getStreamDataCollection() throws SiteWhereException {
 	return getDatabase().getCollection(getStreamDataCollectionName());
+    }
+
+    public String getDeviceStreamsCollectionName() {
+	return deviceStreamsCollectionName;
+    }
+
+    public void setDeviceStreamsCollectionName(String deviceStreamsCollectionName) {
+	this.deviceStreamsCollectionName = deviceStreamsCollectionName;
     }
 
     public String getStreamDataCollectionName() {
