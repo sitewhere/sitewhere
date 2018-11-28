@@ -7,6 +7,8 @@
  */
 package com.sitewhere.rest.model.device.event.request;
 
+import java.util.UUID;
+
 import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
 
 /**
@@ -17,19 +19,29 @@ import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
 public class SendDeviceStreamDataRequest implements ISendDeviceStreamDataRequest {
 
     /** Stream id */
-    private String streamId;
+    private UUID streamId;
 
     /** Sequence number */
     private long sequenceNumber;
 
-    public String getStreamId() {
+    /*
+     * @see com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest#
+     * getStreamId()
+     */
+    @Override
+    public UUID getStreamId() {
 	return streamId;
     }
 
-    public void setStreamId(String streamId) {
+    public void setStreamId(UUID streamId) {
 	this.streamId = streamId;
     }
 
+    /*
+     * @see com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest#
+     * getSequenceNumber()
+     */
+    @Override
     public long getSequenceNumber() {
 	return sequenceNumber;
     }

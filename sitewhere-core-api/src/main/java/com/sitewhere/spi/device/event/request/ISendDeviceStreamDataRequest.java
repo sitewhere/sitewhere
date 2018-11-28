@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.device.event.request;
 
+import java.util.UUID;
+
 /**
  * Request from a device to send a chunk of device stream data.
  * 
@@ -19,7 +21,7 @@ public interface ISendDeviceStreamDataRequest {
      * 
      * @return
      */
-    public String getStreamId();
+    public UUID getStreamId();
 
     /**
      * Get sequence number of chunk to send.

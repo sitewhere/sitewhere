@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.device.persistence.mongodb;
+package com.sitewhere.media.persistence.mongodb;
 
 import java.util.UUID;
 
@@ -25,9 +25,6 @@ public class MongoDeviceStream implements MongoConverter<IDeviceStream> {
 
     /** Property for parent assignment id */
     public static final String PROP_ASSIGNMENT_ID = "asid";
-
-    /** Property for stream id */
-    public static final String PROP_STREAM_ID = "stid";
 
     /** Property for content type */
     public static final String PROP_CONTENT_TYPE = "ctyp";
@@ -60,7 +57,6 @@ public class MongoDeviceStream implements MongoConverter<IDeviceStream> {
      */
     public static void toDocument(IDeviceStream source, Document target) {
 	target.append(PROP_ASSIGNMENT_ID, source.getAssignmentId());
-	target.append(PROP_STREAM_ID, source.getStreamId());
 	target.append(PROP_CONTENT_TYPE, source.getContentType());
 
 	MongoPersistentEntity.toDocument(source, target);
@@ -74,11 +70,9 @@ public class MongoDeviceStream implements MongoConverter<IDeviceStream> {
      */
     public static void fromDocument(Document source, DeviceStream target) {
 	UUID assignmentId = (UUID) source.get(PROP_ASSIGNMENT_ID);
-	String streamId = (String) source.get(PROP_STREAM_ID);
 	String contentType = (String) source.get(PROP_CONTENT_TYPE);
 
 	target.setAssignmentId(assignmentId);
-	target.setStreamId(streamId);
 	target.setContentType(contentType);
 
 	MongoPersistentEntity.fromDocument(source, target);

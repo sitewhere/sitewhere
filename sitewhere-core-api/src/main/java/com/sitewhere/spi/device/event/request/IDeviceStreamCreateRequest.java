@@ -7,8 +7,7 @@
  */
 package com.sitewhere.spi.device.event.request;
 
-import java.util.Map;
-
+import com.sitewhere.spi.common.request.IPersistentEntityCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 
 /**
@@ -16,14 +15,7 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
  * 
  * @author Derek
  */
-public interface IDeviceStreamCreateRequest {
-
-    /**
-     * Get unique identifier for stream within assignment.
-     * 
-     * @return
-     */
-    public String getStreamId();
+public interface IDeviceStreamCreateRequest extends IPersistentEntityCreateRequest {
 
     /**
      * Get content type of stream data.
@@ -31,11 +23,4 @@ public interface IDeviceStreamCreateRequest {
      * @return
      */
     public String getContentType();
-
-    /**
-     * Get metadata associated with stream.
-     * 
-     * @return
-     */
-    public Map<String, String> getMetadata();
 }

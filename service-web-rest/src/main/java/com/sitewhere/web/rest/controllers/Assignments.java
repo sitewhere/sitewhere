@@ -54,8 +54,6 @@ import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequ
 import com.sitewhere.rest.model.device.event.request.DeviceStateChangeCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentBulkRequest;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
-import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
-import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
@@ -77,7 +75,6 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
-import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.label.ILabel;
@@ -588,15 +585,15 @@ public class Assignments extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @PostMapping(value = "/{token}/streams")
-    @ApiOperation(value = "Create data stream for a device assignment")
-    public DeviceStream createDeviceStream(@RequestBody DeviceStreamCreateRequest request,
-	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token)
-	    throws SiteWhereException {
-	IDeviceAssignment existing = assertDeviceAssignment(token);
-	IDeviceStream result = getDeviceManagement().createDeviceStream(existing.getId(), request);
-	return DeviceStream.copy(result);
-    }
+//    @PostMapping(value = "/{token}/streams")
+//    @ApiOperation(value = "Create data stream for a device assignment")
+//    public DeviceStream createDeviceStream(@RequestBody DeviceStreamCreateRequest request,
+//	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token)
+//	    throws SiteWhereException {
+//	IDeviceAssignment existing = assertDeviceAssignment(token);
+//	IDeviceStream result = getDeviceManagement().createDeviceStream(existing.getId(), request);
+//	return DeviceStream.copy(result);
+//    }
 
     /**
      * List device streams associated with an assignment.
@@ -610,24 +607,24 @@ public class Assignments extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @GetMapping(value = "/{token}/streams")
-    @ApiOperation(value = "List data streams for device assignment")
-    public ISearchResults<IDeviceStream> listDeviceStreamsForAssignment(
-	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
-	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
-	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
-	    HttpServletResponse response) throws SiteWhereException {
-	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
-	IDeviceAssignment existing = assertDeviceAssignment(token);
-	ISearchResults<IDeviceStream> matches = getDeviceManagement().listDeviceStreams(existing.getId(), criteria);
-	List<IDeviceStream> converted = new ArrayList<IDeviceStream>();
-	for (IDeviceStream stream : matches.getResults()) {
-	    converted.add(DeviceStream.copy(stream));
-	}
-	return new SearchResults<IDeviceStream>(converted);
-    }
+//    @GetMapping(value = "/{token}/streams")
+//    @ApiOperation(value = "List data streams for device assignment")
+//    public ISearchResults<IDeviceStream> listDeviceStreamsForAssignment(
+//	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+//	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+//	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+//	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
+//	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
+//	    HttpServletResponse response) throws SiteWhereException {
+//	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate, response);
+//	IDeviceAssignment existing = assertDeviceAssignment(token);
+//	ISearchResults<IDeviceStream> matches = getDeviceManagement().listDeviceStreams(existing.getId(), criteria);
+//	List<IDeviceStream> converted = new ArrayList<IDeviceStream>();
+//	for (IDeviceStream stream : matches.getResults()) {
+//	    converted.add(DeviceStream.copy(stream));
+//	}
+//	return new SearchResults<IDeviceStream>(converted);
+//    }
 
     /**
      * Get an existing device stream associated with an assignment.
@@ -637,19 +634,19 @@ public class Assignments extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @GetMapping(value = "/{token}/streams/{streamId:.+}", produces = "application/json")
-    @ApiOperation(value = "Get device assignment data stream by id")
-    public DeviceStream getDeviceStream(
-	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-	    @ApiParam(value = "Stream Id", required = true) @PathVariable String streamId) throws SiteWhereException {
-	IDeviceAssignment existing = assertDeviceAssignment(token);
-	IDeviceStream result = getDeviceManagement().getDeviceStream(existing.getId(), streamId);
-	if (result == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidStreamId, ErrorLevel.ERROR,
-		    HttpServletResponse.SC_NOT_FOUND);
-	}
-	return DeviceStream.copy(result);
-    }
+//    @GetMapping(value = "/{token}/streams/{streamId:.+}", produces = "application/json")
+//    @ApiOperation(value = "Get device assignment data stream by id")
+//    public DeviceStream getDeviceStream(
+//	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+//	    @ApiParam(value = "Stream Id", required = true) @PathVariable String streamId) throws SiteWhereException {
+//	IDeviceAssignment existing = assertDeviceAssignment(token);
+//	IDeviceStream result = getDeviceManagement().getDeviceStream(existing.getId(), streamId);
+//	if (result == null) {
+//	    throw new SiteWhereSystemException(ErrorCode.InvalidStreamId, ErrorLevel.ERROR,
+//		    HttpServletResponse.SC_NOT_FOUND);
+//	}
+//	return DeviceStream.copy(result);
+//    }
 
     /**
      * Create command invocation to be associated with a device assignment.
@@ -1046,13 +1043,13 @@ public class Assignments extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    protected IDeviceStream assertDeviceStream(UUID assignmentId, String id) throws SiteWhereException {
-	IDeviceStream stream = getDeviceManagement().getDeviceStream(assignmentId, id);
-	if (stream == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidStreamId, ErrorLevel.ERROR);
-	}
-	return stream;
-    }
+//    protected IDeviceStream assertDeviceStream(UUID assignmentId, String id) throws SiteWhereException {
+//	IDeviceStream stream = getDeviceManagement().getDeviceStream(assignmentId, id);
+//	if (stream == null) {
+//	    throw new SiteWhereSystemException(ErrorCode.InvalidStreamId, ErrorLevel.ERROR);
+//	}
+//	return stream;
+//    }
 
     protected static IDateRangeSearchCriteria createDateRangeSearchCriteria(int page, int pageSize, String startDate,
 	    String endDate, HttpServletResponse response) {

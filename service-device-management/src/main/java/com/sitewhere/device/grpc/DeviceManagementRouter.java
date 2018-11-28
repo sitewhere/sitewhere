@@ -1255,51 +1255,6 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
 	}
     }
 
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * createDeviceStream(com.sitewhere.grpc.service.GCreateDeviceStreamRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void createDeviceStream(GCreateDeviceStreamRequest request,
-	    StreamObserver<GCreateDeviceStreamResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.createDeviceStream(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getDeviceStreamByStreamId(com.sitewhere.grpc.service.
-     * GGetDeviceStreamByStreamIdRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getDeviceStreamByStreamId(GGetDeviceStreamByStreamIdRequest request,
-	    StreamObserver<GGetDeviceStreamByStreamIdResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getDeviceStreamByStreamId(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * listDeviceStreams(com.sitewhere.grpc.service.GListDeviceStreamsRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void listDeviceStreams(GListDeviceStreamsRequest request,
-	    StreamObserver<GListDeviceStreamsResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listDeviceStreams(request, responseObserver);
-	}
-    }
-
     public IDeviceManagementMicroservice getMicroservice() {
 	return microservice;
     }

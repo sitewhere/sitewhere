@@ -8,6 +8,7 @@
 package com.sitewhere.spi.device.command;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * Acknowledges device stream create request.
@@ -21,7 +22,7 @@ public interface IDeviceStreamAckCommand extends ISystemCommand, Serializable {
      * 
      * @return
      */
-    public String getStreamId();
+    public UUID getStreamId();
 
     /**
      * Get status of stream creation.
