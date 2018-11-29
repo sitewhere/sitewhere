@@ -13,7 +13,7 @@ import com.sitewhere.persistence.Persistence;
 import com.sitewhere.rest.model.tenant.Tenant;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.error.ErrorCode;
-import com.sitewhere.spi.search.user.ITenantSearchCriteria;
+import com.sitewhere.spi.search.tenant.ITenantSearchCriteria;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
 

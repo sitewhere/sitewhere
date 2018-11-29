@@ -10,11 +10,11 @@ package com.sitewhere.grpc.client.tenant;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
 import com.sitewhere.grpc.model.CommonModel.GOptionalString;
 import com.sitewhere.grpc.model.CommonModel.GPaging;
 import com.sitewhere.grpc.model.CommonModel.GSearchText;
 import com.sitewhere.grpc.model.CommonModel.GUserReference;
-import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
 import com.sitewhere.grpc.model.TenantModel;
 import com.sitewhere.grpc.model.TenantModel.GDatasetTemplate;
 import com.sitewhere.grpc.model.TenantModel.GTenant;
@@ -32,7 +32,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.search.user.ITenantSearchCriteria;
+import com.sitewhere.spi.search.tenant.ITenantSearchCriteria;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
 

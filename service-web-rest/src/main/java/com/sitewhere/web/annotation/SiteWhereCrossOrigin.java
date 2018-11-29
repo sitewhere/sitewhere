@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import com.sitewhere.rest.ISiteWhereWebConstants;
+import com.sitewhere.spi.web.ISiteWhereWebConstants;
 
 /**
  * Adds SiteWhere headers to the standard list.

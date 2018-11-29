@@ -12,7 +12,7 @@ import java.util.UUID;
 import com.sitewhere.server.lifecycle.LifecycleComponentDecorator;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.search.user.ITenantSearchCriteria;
+import com.sitewhere.spi.search.tenant.ITenantSearchCriteria;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;

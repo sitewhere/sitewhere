@@ -29,7 +29,7 @@ import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.search.user.ITenantSearchCriteria;
+import com.sitewhere.spi.search.tenant.ITenantSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.tenant.ITenant;

@@ -20,7 +20,6 @@ include ':service-user-management'
 include ':service-web-rest'
 
 include ':sitewhere-cassandra'
-include ':sitewhere-client'
 include ':sitewhere-communication'
 include ':sitewhere-configuration'
 include ':sitewhere-core'
@@ -54,7 +53,6 @@ project(':service-user-management').projectDir = "$rootDir/service-user-manageme
 project(':service-web-rest').projectDir = "$rootDir/service-web-rest" as File
 
 project(':sitewhere-cassandra').projectDir = "$rootDir/sitewhere-cassandra" as File
-project(':sitewhere-client').projectDir = "$rootDir/sitewhere-client" as File
 project(':sitewhere-communication').projectDir = "$rootDir/sitewhere-communication" as File
 project(':sitewhere-configuration').projectDir = "$rootDir/sitewhere-configuration" as File
 project(':sitewhere-core').projectDir = "$rootDir/sitewhere-core" as File

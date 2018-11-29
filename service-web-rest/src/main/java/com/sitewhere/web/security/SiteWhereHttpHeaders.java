@@ -9,7 +9,7 @@ package com.sitewhere.web.security;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.sitewhere.rest.ISiteWhereWebConstants;
+import com.sitewhere.spi.web.ISiteWhereWebConstants;
 
 /**
  * HTTP header utility methods.
