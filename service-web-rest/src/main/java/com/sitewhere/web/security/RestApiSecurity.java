@@ -10,6 +10,7 @@ package com.sitewhere.web.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -19,9 +20,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import com.sitewhere.web.security.basic.LimitedBasicAuthFilter;
+import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.security.jwt.TokenAuthenticationFilter;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
@@ -30,9 +31,10 @@ import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
  * 
  * @author Derek
  */
+@Order(2)
 @Configuration
 @EnableWebSecurity
-public class RestSecurity extends WebSecurityConfigurerAdapter {
+public class RestApiSecurity extends WebSecurityConfigurerAdapter {
 
     @Autowired
     protected IWebRestMicroservice<?> webRestMicroservice;
@@ -71,19 +73,8 @@ public class RestSecurity extends WebSecurityConfigurerAdapter {
      * 
      * @return
      */
-    @Bean
     protected TokenAuthenticationFilter tokenAuthenticationFilter() throws Exception {
 	return new TokenAuthenticationFilter(getWebRestMicroservice(), authenticationManagerBean());
-    }
-
-    /**
-     * Basic authentication filter that only applies to the authentication URL.
-     * 
-     * @return
-     */
-    @Bean
-    protected LimitedBasicAuthFilter limitedBasicAuthFilter() throws Exception {
-	return new LimitedBasicAuthFilter(authenticationManagerBean());
     }
 
     /*
@@ -99,17 +90,8 @@ public class RestSecurity extends WebSecurityConfigurerAdapter {
 
 	http.antMatcher("/api/**").authorizeRequests().antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
 		.antMatchers(HttpMethod.GET, "/api/**/symbol").permitAll().antMatchers(HttpMethod.GET, "/api/v2/**")
-		.permitAll().antMatchers(HttpMethod.GET, "/api/**").authenticated();
-
-	http.antMatcher("/authapi/**").authorizeRequests().antMatchers(HttpMethod.OPTIONS, "/authapi/**").permitAll()
-		.antMatchers(HttpMethod.GET, "/authapi/v2/**").permitAll().antMatchers(HttpMethod.GET, "/authapi/**")
-		.authenticated();
-
-	http.antMatcher("/ws/**").authorizeRequests().antMatchers(HttpMethod.OPTIONS, "/ws/**").permitAll()
-		.antMatchers(HttpMethod.GET, "/ws/**").permitAll();
-
-	http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-	http.addFilterBefore(limitedBasicAuthFilter(), UsernamePasswordAuthenticationFilter.class);
+		.permitAll().antMatchers("/api/**").hasRole(SiteWhereRoles.AUTH_REST).and()
+		.addFilterBefore(tokenAuthenticationFilter(), BasicAuthenticationFilter.class);
     }
 
     public IWebRestMicroservice<?> getWebRestMicroservice() {

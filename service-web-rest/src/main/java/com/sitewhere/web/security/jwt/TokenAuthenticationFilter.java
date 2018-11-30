@@ -26,6 +26,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.sitewhere.grpc.client.spi.provider.ITenantManagementDemuxProvider;
+import com.sitewhere.microservice.security.InvalidJwtException;
+import com.sitewhere.microservice.security.JwtExpiredException;
 import com.sitewhere.security.SitewhereGrantedAuthority;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
@@ -76,30 +78,37 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	if (jwt != null) {
 	    // Get username from token and load user.
 	    ITokenManagement tokenManagement = getTenantManagementDemuxProvider().getTokenManagement();
-	    Claims claims = tokenManagement.getClaimsForToken(jwt);
-	    String username = tokenManagement.getUsernameFromClaims(claims);
-	    LOGGER.debug("JWT decoded for username: " + username);
-	    List<IGrantedAuthority> auths = tokenManagement.getGrantedAuthoritiesFromClaims(claims);
-	    List<GrantedAuthority> springAuths = new ArrayList<GrantedAuthority>();
-	    for (IGrantedAuthority auth : auths) {
-		springAuths.add(new SitewhereGrantedAuthority(auth));
+	    try {
+		Claims claims = tokenManagement.getClaimsForToken(jwt);
+		String username = tokenManagement.getUsernameFromClaims(claims);
+		LOGGER.debug("JWT decoded for username: " + username);
+		List<IGrantedAuthority> auths = tokenManagement.getGrantedAuthoritiesFromClaims(claims);
+		List<GrantedAuthority> springAuths = new ArrayList<GrantedAuthority>();
+		for (IGrantedAuthority auth : auths) {
+		    springAuths.add(new SitewhereGrantedAuthority(auth));
+		}
+
+		// Create authentication object based on JWT and tenant token.
+		JwtAuthenticationToken token = new JwtAuthenticationToken(username, springAuths, jwt);
+		Authentication authenticated = getAuthenticationManager().authenticate(token);
+		if ((!StringUtils.isEmpty(tenantId)) && (StringUtils.isEmpty(tenantAuth))) {
+		    throw new SiteWhereException("Tenant id passed without corresponding tenant auth token.");
+		}
+
+		// Add tenant authentication data if provided.
+		addTenantAuthenticationData(authenticated, tenantId, tenantAuth);
+
+		SecurityContextHolder.getContext().setAuthentication(authenticated);
+		LOGGER.debug("Added authentication to context.");
+		chain.doFilter(request, response);
+	    } catch (JwtExpiredException e) {
+		response.sendError(HttpServletResponse.SC_FORBIDDEN, "JWT has expired.");
+	    } catch (InvalidJwtException e) {
+		response.sendError(HttpServletResponse.SC_FORBIDDEN, "JWT is invalid.");
+	    } catch (Throwable e) {
+		response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing JWT.");
 	    }
-
-	    // Create authentication object based on JWT and tenant token.
-	    JwtAuthenticationToken token = new JwtAuthenticationToken(username, springAuths, jwt);
-	    Authentication authenticated = getAuthenticationManager().authenticate(token);
-	    if ((!StringUtils.isEmpty(tenantId)) && (StringUtils.isEmpty(tenantAuth))) {
-		throw new SiteWhereException("Tenant id passed without corresponding tenant auth token.");
-	    }
-
-	    // Add tenant authentication data if provided.
-	    addTenantAuthenticationData(authenticated, tenantId, tenantAuth);
-
-	    SecurityContextHolder.getContext().setAuthentication(authenticated);
-	    LOGGER.debug("Added authentication to context.");
-	    chain.doFilter(request, response);
 	} else {
-	    LOGGER.debug("No JWT found in header.");
 	    chain.doFilter(request, response);
 	}
     }

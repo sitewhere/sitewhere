@@ -34,9 +34,10 @@ import com.sitewhere.web.filters.NoCacheFilter;
 import com.sitewhere.web.filters.ResponseTimerFilter;
 import com.sitewhere.web.rest.RestApiConfiguration;
 import com.sitewhere.web.rest.RestApiSwaggerConfiguration;
-import com.sitewhere.web.security.RestSecurity;
+import com.sitewhere.web.security.AuthApiSecurity;
+import com.sitewhere.web.security.RestApiSecurity;
+import com.sitewhere.web.security.WsApiSecurity;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
-import com.sitewhere.web.vue.VueConfiguration;
 import com.sitewhere.web.ws.WebSocketApiConfiguration;
 
 import io.opentracing.contrib.web.servlet.filter.TracingFilter;
@@ -47,7 +48,7 @@ import io.opentracing.contrib.web.servlet.filter.TracingFilter;
  * @author Derek
  */
 @Configuration
-@Import(RestSecurity.class)
+@Import({ AuthApiSecurity.class, RestApiSecurity.class, WsApiSecurity.class })
 public class WebRestConfiguration {
 
     @Autowired
@@ -147,19 +148,6 @@ public class WebRestConfiguration {
 		WebSocketApiConfiguration.WEB_SOCKET_MATCHER);
 	registration.setName("sitewhereWebSocketInterface");
 	registration.setLoadOnStartup(1);
-	return registration;
-    }
-
-    @Bean
-    public ServletRegistrationBean<DispatcherServlet> sitewhereVueAdminInterface() {
-	DispatcherServlet dispatcherServlet = new DispatcherServlet();
-	AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
-	applicationContext.register(VueConfiguration.class);
-	dispatcherServlet.setApplicationContext(applicationContext);
-	ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<>(dispatcherServlet,
-		VueConfiguration.VUE_ADMIN_MATCHER);
-	registration.setName("vueAdminInterface");
-	registration.setLoadOnStartup(2);
 	return registration;
     }
 
