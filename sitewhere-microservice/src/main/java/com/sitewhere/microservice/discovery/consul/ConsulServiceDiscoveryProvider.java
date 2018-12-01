@@ -132,7 +132,7 @@ public class ConsulServiceDiscoveryProvider extends LifecycleComponent implement
 		    return;
 		} catch (Throwable t) {
 		    getLogger().warn(String.format("Consul registration attempt failed. Will retry in %d seconds.",
-			    REGISTRATION_RETRY_INTERVAL_IN_SECS));
+			    REGISTRATION_RETRY_INTERVAL_IN_SECS), t);
 		}
 		try {
 		    Thread.sleep(REGISTRATION_RETRY_INTERVAL_IN_SECS * 1000);
