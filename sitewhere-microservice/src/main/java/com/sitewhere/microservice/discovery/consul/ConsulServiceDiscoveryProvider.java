@@ -50,19 +50,6 @@ public class ConsulServiceDiscoveryProvider extends LifecycleComponent implement
 
     /*
      * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
-     * spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Create Consul client.
-	IInstanceSettings settings = getMicroservice().getInstanceSettings();
-	this.consulClient = Consul.builder()
-		.withHostAndPort(HostAndPort.fromParts(settings.getConsulHost(), settings.getConsulPort())).build();
-    }
-
-    /*
-     * @see
      * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
      * server.lifecycle.ILifecycleProgressMonitor)
      */
@@ -107,6 +94,12 @@ public class ConsulServiceDiscoveryProvider extends LifecycleComponent implement
 	    getLogger().info("Attempting to register service with Consul...");
 	    while (true) {
 		try {
+		    // Create Consul client.
+		    IInstanceSettings settings = getMicroservice().getInstanceSettings();
+		    setConsulClient(Consul.builder()
+			    .withHostAndPort(HostAndPort.fromParts(settings.getConsulHost(), settings.getConsulPort()))
+			    .build());
+
 		    AgentClient agentClient = getConsulClient().agentClient();
 		    List<String> tags = new ArrayList<>();
 		    tags.add("microservice");
@@ -150,14 +143,18 @@ public class ConsulServiceDiscoveryProvider extends LifecycleComponent implement
      */
     @Override
     public void sendHeartbeat() throws SiteWhereException {
-	AgentClient agentClient = getConsulClient().agentClient();
-	try {
-	    String serviceId = getMicroservice().getId().toString();
-	    if (agentClient.isRegistered(serviceId)) {
-		agentClient.pass(serviceId);
+	if (getConsulClient() != null) {
+	    AgentClient agentClient = getConsulClient().agentClient();
+	    try {
+		String serviceId = getMicroservice().getId().toString();
+		if (agentClient.isRegistered(serviceId)) {
+		    agentClient.pass(serviceId);
+		}
+	    } catch (NotRegisteredException e) {
+		throw new SiteWhereException("Unable to send heartbeat.", e);
 	    }
-	} catch (NotRegisteredException e) {
-	    throw new SiteWhereException("Unable to send heartbeat.", e);
+	} else {
+	    getLogger().info("Skipping heartbeat. Consul client not connected.");
 	}
     }
 
@@ -181,6 +178,10 @@ public class ConsulServiceDiscoveryProvider extends LifecycleComponent implement
 
     protected Consul getConsulClient() {
 	return consulClient;
+    }
+
+    protected void setConsulClient(Consul consulClient) {
+	this.consulClient = consulClient;
     }
 
     protected ExecutorService getRegistrationExecutor() {
