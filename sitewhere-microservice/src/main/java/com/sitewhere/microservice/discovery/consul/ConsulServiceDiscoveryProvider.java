@@ -164,16 +164,22 @@ public class ConsulServiceDiscoveryProvider extends LifecycleComponent implement
      */
     @Override
     public List<IServiceNode> getNodesForFunction(IFunctionIdentifier identifier) throws SiteWhereException {
-	HealthClient healthClient = getConsulClient().healthClient();
-	List<ServiceHealth> matches = healthClient.getHealthyServiceInstances(identifier.getShortName()).getResponse();
-	List<IServiceNode> nodes = new ArrayList<>();
-	for (ServiceHealth match : matches) {
-	    String host = match.getService().getAddress();
-	    ServiceNode node = new ServiceNode();
-	    node.setAddress(host);
-	    nodes.add(node);
+	if (getConsulClient() != null) {
+	    HealthClient healthClient = getConsulClient().healthClient();
+	    List<ServiceHealth> matches = healthClient.getHealthyServiceInstances(identifier.getShortName())
+		    .getResponse();
+	    List<IServiceNode> nodes = new ArrayList<>();
+	    for (ServiceHealth match : matches) {
+		String host = match.getService().getAddress();
+		ServiceNode node = new ServiceNode();
+		node.setAddress(host);
+		nodes.add(node);
+	    }
+	    return nodes;
+	} else {
+	    List<IServiceNode> nodes = new ArrayList<>();
+	    return nodes;
 	}
-	return nodes;
     }
 
     protected Consul getConsulClient() {
