@@ -35,29 +35,31 @@ public class ProtobufSpecificationBuilder {
      * 
      * @param deviceType
      * @param tenant
+     * @param deviceManagement
      * @return
      * @throws SiteWhereException
      */
-    public static DescriptorProtos.FileDescriptorProto createFileDescriptor(IDeviceType deviceType, ITenant tenant)
-	    throws SiteWhereException {
+    public static DescriptorProtos.FileDescriptorProto createFileDescriptor(IDeviceType deviceType, ITenant tenant,
+	    IDeviceManagement deviceManagement) throws SiteWhereException {
 	DescriptorProtos.FileDescriptorProto.Builder builder = DescriptorProtos.FileDescriptorProto.newBuilder();
-	builder.addMessageType(createDeviceTypeMessage(deviceType, tenant));
+	builder.addMessageType(createDeviceTypeMessage(deviceType, tenant, deviceManagement));
 	return builder.build();
     }
 
     /**
      * Create the message for a device type.
      * 
-     * @param specification
+     * @param deviceType
      * @param tenant
+     * @param deviceManagement
      * @return
      * @throws SiteWhereException
      */
-    public static DescriptorProtos.DescriptorProto createDeviceTypeMessage(IDeviceType deviceType, ITenant tenant)
-	    throws SiteWhereException {
+    public static DescriptorProtos.DescriptorProto createDeviceTypeMessage(IDeviceType deviceType, ITenant tenant,
+	    IDeviceManagement deviceManagement) throws SiteWhereException {
 	DeviceCommandSearchCriteria criteria = new DeviceCommandSearchCriteria(1, 0);
 	criteria.setDeviceTypeId(deviceType.getId());
-	ISearchResults<IDeviceCommand> commands = getDeviceManagement().listDeviceCommands(criteria);
+	ISearchResults<IDeviceCommand> commands = deviceManagement.listDeviceCommands(criteria);
 
 	DescriptorProtos.DescriptorProto.Builder builder = DescriptorProtos.DescriptorProto.newBuilder();
 	builder.setName(ProtobufNaming.getDeviceTypeIdentifier(deviceType));
@@ -215,9 +217,5 @@ public class ProtobufSpecificationBuilder {
 	default:
 	    throw new SiteWhereException("Unknown parameter type: " + param.name());
 	}
-    }
-
-    private static IDeviceManagement getDeviceManagement() {
-	return null;
     }
 }

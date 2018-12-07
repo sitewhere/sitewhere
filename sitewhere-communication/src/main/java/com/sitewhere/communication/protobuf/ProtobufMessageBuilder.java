@@ -36,20 +36,21 @@ public class ProtobufMessageBuilder {
     private static Logger LOGGER = LoggerFactory.getLogger(ProtobufMessageBuilder.class);
 
     /**
-     * Create a protobuf message for an {@link IDeviceCommandExecution} targeted at
-     * the
+     * Create a protobuf message for an {@link IDeviceCommandExecution}.
      * 
      * @param execution
      * @param nested
      * @param assignment
      * @param tenant
+     * @param deviceManagement
      * @return
      * @throws SiteWhereException
      */
     public static byte[] createMessage(IDeviceCommandExecution execution, IDeviceNestingContext nested,
-	    IDeviceAssignment assignment, ITenant tenant) throws SiteWhereException {
-	IDeviceType deviceType = getDeviceManagement(tenant).getDeviceType(execution.getCommand().getDeviceTypeId());
-	DescriptorProtos.FileDescriptorProto fdproto = getFileDescriptor(deviceType, tenant);
+	    IDeviceAssignment assignment, ITenant tenant, IDeviceManagement deviceManagement)
+	    throws SiteWhereException {
+	IDeviceType deviceType = deviceManagement.getDeviceType(execution.getCommand().getDeviceTypeId());
+	DescriptorProtos.FileDescriptorProto fdproto = getFileDescriptor(deviceType, tenant, deviceManagement);
 	LOGGER.debug("Using the following device type proto:\n" + fdproto.toString());
 	Descriptors.FileDescriptor[] fdescs = new Descriptors.FileDescriptor[0];
 	ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -71,11 +72,10 @@ public class ProtobufMessageBuilder {
 	    }
 	    headBuilder.setField(header.findFieldByName(ProtobufNaming.HEADER_COMMAND_FIELD_NAME), enumValue);
 	    headBuilder.setField(header.findFieldByName(ProtobufNaming.HEADER_ORIGINATOR_FIELD_NAME),
-		    execution.getInvocation().getId());
+		    execution.getInvocation().getId().toString());
 
 	    if (nested.getNested() != null) {
-		IDeviceType nestedType = getDeviceManagement(tenant)
-			.getDeviceType(nested.getNested().getDeviceTypeId());
+		IDeviceType nestedType = deviceManagement.getDeviceType(nested.getNested().getDeviceTypeId());
 		LOGGER.debug(
 			"Targeting nested device with type: " + nestedType.getName() + " at path " + nested.getPath());
 		headBuilder.setField(header.findFieldByName(ProtobufNaming.HEADER_NESTED_PATH_FIELD_NAME),
@@ -124,15 +124,12 @@ public class ProtobufMessageBuilder {
      * 
      * @param deviceType
      * @param tenant
+     * @param deviceManagement
      * @return
      * @throws SiteWhereException
      */
-    protected static DescriptorProtos.FileDescriptorProto getFileDescriptor(IDeviceType deviceType, ITenant tenant)
-	    throws SiteWhereException {
-	return ProtobufSpecificationBuilder.createFileDescriptor(deviceType, tenant);
-    }
-
-    private static IDeviceManagement getDeviceManagement(ITenant tenant) {
-	return null;
+    protected static DescriptorProtos.FileDescriptorProto getFileDescriptor(IDeviceType deviceType, ITenant tenant,
+	    IDeviceManagement deviceManagement) throws SiteWhereException {
+	return ProtobufSpecificationBuilder.createFileDescriptor(deviceType, tenant, deviceManagement);
     }
 }

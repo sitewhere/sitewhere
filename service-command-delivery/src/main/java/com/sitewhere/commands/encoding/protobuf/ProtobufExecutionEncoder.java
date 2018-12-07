@@ -12,6 +12,7 @@ import java.io.IOException;
 
 import com.google.protobuf.ByteString;
 import com.sitewhere.commands.spi.ICommandExecutionEncoder;
+import com.sitewhere.commands.spi.microservice.ICommandDeliveryMicroservice;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.communication.protobuf.ProtobufMessageBuilder;
 import com.sitewhere.communication.protobuf.proto.SiteWhere.Device.Command;
@@ -28,6 +29,7 @@ import com.sitewhere.core.DataUtils;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.command.IDeviceStreamAckCommand;
@@ -62,7 +64,7 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
     public byte[] encode(IDeviceCommandExecution execution, IDeviceNestingContext nested, IDeviceAssignment assignment)
 	    throws SiteWhereException {
 	byte[] encoded = ProtobufMessageBuilder.createMessage(execution, nested, assignment,
-		getTenantEngine().getTenant());
+		getTenantEngine().getTenant(), getDeviceManagement());
 	getLogger().debug("Protobuf message: 0x" + DataUtils.bytesToHex(encoded));
 	return encoded;
     }
@@ -213,5 +215,9 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to marshal device stream data chunk to protobuf.", e);
 	}
+    }
+
+    private IDeviceManagement getDeviceManagement() {
+	return ((ICommandDeliveryMicroservice) getMicroservice()).getDeviceManagementApiDemux().getApiChannel();
     }
 }
