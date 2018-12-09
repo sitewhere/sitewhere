@@ -21,6 +21,6 @@ public class MqttCommandDestination extends CommandDestination<byte[], MqttParam
 
     public MqttCommandDestination() {
 	setCommandExecutionEncoder(new JsonCommandExecutionEncoder());
-	setCommandDeliveryParameterExtractor(new HardwareIdMqttParameterExtractor());
+	setCommandDeliveryParameterExtractor(new DefaultMqttParameterExtractor());
     }
 }

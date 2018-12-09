@@ -25,7 +25,7 @@ import com.sitewhere.commands.destination.coap.CoapCommandDeliveryProvider;
 import com.sitewhere.commands.destination.coap.CoapCommandDestination;
 import com.sitewhere.commands.destination.coap.CoapParameters;
 import com.sitewhere.commands.destination.coap.MetadataCoapParameterExtractor;
-import com.sitewhere.commands.destination.mqtt.HardwareIdMqttParameterExtractor;
+import com.sitewhere.commands.destination.mqtt.DefaultMqttParameterExtractor;
 import com.sitewhere.commands.destination.mqtt.MqttCommandDeliveryProvider;
 import com.sitewhere.commands.destination.mqtt.MqttCommandDestination;
 import com.sitewhere.commands.destination.mqtt.MqttParameters;
@@ -570,7 +570,7 @@ public class CommandDeliveryParser extends AbstractBeanDefinitionParser {
      */
     protected AbstractBeanDefinition createHardwareIdMqttParameterExtractor(Element element) {
 	BeanDefinitionBuilder extractor = BeanDefinitionBuilder
-		.rootBeanDefinition(HardwareIdMqttParameterExtractor.class);
+		.rootBeanDefinition(DefaultMqttParameterExtractor.class);
 
 	Attr commandTopicExpr = element.getAttributeNode("commandTopicExpr");
 	if (commandTopicExpr != null) {
