@@ -87,9 +87,9 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
     public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment, IDeviceCommandExecution execution,
 	    byte[] encoded, MqttParameters params) throws SiteWhereException {
 	try {
-	    getLogger().debug("About to publish command message to topic: " + params.getCommandTopic());
+	    getLogger().info("About to publish command message to topic: " + params.getCommandTopic());
 	    connection.publish(params.getCommandTopic(), encoded, QoS.AT_LEAST_ONCE, false);
-	    getLogger().debug("Command published.");
+	    getLogger().info("Command published.");
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to publish command to MQTT topic.", e);
 	}
@@ -107,9 +107,9 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
     public void deliverSystemCommand(IDeviceNestingContext nested, IDeviceAssignment assignment, byte[] encoded,
 	    MqttParameters params) throws SiteWhereException {
 	try {
-	    getLogger().debug("About to publish system message to topic: " + params.getSystemTopic());
+	    getLogger().info("About to publish system message to topic: " + params.getSystemTopic());
 	    connection.publish(params.getSystemTopic(), encoded, QoS.AT_LEAST_ONCE, false);
-	    getLogger().debug("Command published.");
+	    getLogger().info("Command published.");
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to publish command to MQTT topic.", e);
 	}

@@ -73,13 +73,17 @@ public abstract class MicroserviceKafkaProducer extends TenantEngineLifecycleCom
     @Override
     public void send(String key, byte[] message) throws SiteWhereException {
 	ProducerRecord<String, byte[]> record = new ProducerRecord<String, byte[]>(getTargetTopicName(), key, message);
-	getProducer().send(record, new Callback() {
-	    public void onCompletion(RecordMetadata metadata, Exception e) {
-		if (e != null) {
-		    getLogger().error("Unable to complete delivery of Kafka message.", e);
+	try {
+	    getProducer().send(record, new Callback() {
+		public void onCompletion(RecordMetadata metadata, Exception e) {
+		    if (e != null) {
+			getLogger().error("Unable to complete delivery of Kafka message.", e);
+		    }
 		}
-	    }
-	});
+	    });
+	} catch (IllegalStateException e) {
+	    getLogger().debug(String.format("Message for key '%s' skipped. Producer is closed.", key), e);
+	}
     }
 
     /**
