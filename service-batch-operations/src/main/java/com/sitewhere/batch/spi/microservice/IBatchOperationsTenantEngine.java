@@ -7,6 +7,7 @@
  */
 package com.sitewhere.batch.spi.microservice;
 
+import com.sitewhere.batch.spi.IBatchOperationManager;
 import com.sitewhere.grpc.service.BatchManagementGrpc;
 import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
@@ -32,4 +33,11 @@ public interface IBatchOperationsTenantEngine extends IMicroserviceTenantEngine 
      * @return
      */
     public BatchManagementGrpc.BatchManagementImplBase getBatchManagementImpl();
+
+    /**
+     * Get batch operation manager.
+     * 
+     * @return
+     */
+    public IBatchOperationManager getBatchOperationManager();
 }

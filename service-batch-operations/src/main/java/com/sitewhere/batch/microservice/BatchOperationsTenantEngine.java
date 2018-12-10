@@ -7,7 +7,9 @@
  */
 package com.sitewhere.batch.microservice;
 
+import com.sitewhere.batch.BatchManagementTriggers;
 import com.sitewhere.batch.grpc.BatchManagementImpl;
+import com.sitewhere.batch.spi.IBatchOperationManager;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
 import com.sitewhere.grpc.service.BatchManagementGrpc;
@@ -36,6 +38,9 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
     /** Responds to batch management GRPC requests */
     private BatchManagementGrpc.BatchManagementImplBase batchManagementImpl;
 
+    /** Batch operation manager */
+    private IBatchOperationManager batchOperationManager;
+
     public BatchOperationsTenantEngine(ITenant tenant) {
 	super(tenant);
     }
@@ -48,10 +53,15 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create management interfaces.
-	this.batchManagement = (IBatchManagement) getModuleContext()
+	IBatchManagement implementation = (IBatchManagement) getModuleContext()
 		.getBean(BatchManagementBeans.BEAN_BATCH_MANAGEMENT);
+	this.batchManagement = new BatchManagementTriggers(implementation);
 	this.batchManagementImpl = new BatchManagementImpl((IBatchOperationsMicroservice) getMicroservice(),
 		getBatchManagement());
+
+	// Load configured batch operation manager.
+	this.batchOperationManager = (IBatchOperationManager) getModuleContext()
+		.getBean(BatchManagementBeans.BEAN_BATCH_OPERATION_MANAGER);
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
@@ -61,6 +71,9 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
 
 	// Initialize batch management persistence.
 	init.addInitializeStep(this, getBatchManagement(), true);
+
+	// Initialize batch operation manager.
+	init.addInitializeStep(this, getBatchOperationManager(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -80,6 +93,9 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
 
 	// Start batch management persistence.
 	start.addStartStep(this, getBatchManagement(), true);
+
+	// Start batch operation manager.
+	start.addStartStep(this, getBatchOperationManager(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -103,6 +119,9 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
+
+	// Stop batch operation manager.
+	stop.addStopStep(this, getBatchOperationManager());
 
 	// Stop batch management persistence.
 	stop.addStopStep(this, getBatchManagement());
@@ -138,5 +157,18 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
 
     public void setBatchManagementImpl(BatchManagementGrpc.BatchManagementImplBase batchManagementImpl) {
 	this.batchManagementImpl = batchManagementImpl;
+    }
+
+    /*
+     * @see com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine#
+     * getBatchOperationManager()
+     */
+    @Override
+    public IBatchOperationManager getBatchOperationManager() {
+	return batchOperationManager;
+    }
+
+    public void setBatchOperationManager(IBatchOperationManager batchOperationManager) {
+	this.batchOperationManager = batchOperationManager;
     }
 }
