@@ -15,7 +15,7 @@ import com.sitewhere.spi.batch.IBatchElement;
 import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.batch.IBatchOperation;
 import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
-import com.sitewhere.spi.batch.request.IBatchElementUpdateRequest;
+import com.sitewhere.spi.batch.request.IBatchElementCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.search.ISearchResults;
@@ -97,6 +97,17 @@ public class BatchManagementDecorator extends TenantEngineLifecycleComponentDeco
 
     /*
      * @see
+     * com.sitewhere.spi.batch.IBatchManagement#createBatchElement(java.util.UUID,
+     * com.sitewhere.spi.batch.request.IBatchElementCreateRequest)
+     */
+    @Override
+    public IBatchElement createBatchElement(UUID batchOperationId, IBatchElementCreateRequest request)
+	    throws SiteWhereException {
+	return getDelegate().createBatchElement(batchOperationId, request);
+    }
+
+    /*
+     * @see
      * com.sitewhere.spi.batch.IBatchManagement#listBatchElements(java.util.UUID,
      * com.sitewhere.spi.search.device.IBatchElementSearchCriteria)
      */
@@ -109,10 +120,10 @@ public class BatchManagementDecorator extends TenantEngineLifecycleComponentDeco
     /*
      * @see
      * com.sitewhere.spi.batch.IBatchManagement#updateBatchElement(java.util.UUID,
-     * com.sitewhere.spi.batch.request.IBatchElementUpdateRequest)
+     * com.sitewhere.spi.batch.request.IBatchElementCreateRequest)
      */
     @Override
-    public IBatchElement updateBatchElement(UUID elementId, IBatchElementUpdateRequest request)
+    public IBatchElement updateBatchElement(UUID elementId, IBatchElementCreateRequest request)
 	    throws SiteWhereException {
 	return getDelegate().updateBatchElement(elementId, request);
     }

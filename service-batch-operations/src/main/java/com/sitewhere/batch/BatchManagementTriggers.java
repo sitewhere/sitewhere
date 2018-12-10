@@ -8,12 +8,18 @@
 package com.sitewhere.batch;
 
 import com.sitewhere.batch.spi.IBatchOperationManager;
+import com.sitewhere.batch.spi.kafka.IUnprocessedBatchOperationsProducer;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
+import com.sitewhere.grpc.client.batch.BatchModelConverter;
+import com.sitewhere.grpc.client.batch.BatchModelMarshaler;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.batch.IBatchOperation;
 import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
 
+/**
+ * Attaches logic to batch management API invocations.
+ */
 public class BatchManagementTriggers extends BatchManagementDecorator {
 
     public BatchManagementTriggers(IBatchManagement delegate) {
@@ -29,11 +35,16 @@ public class BatchManagementTriggers extends BatchManagementDecorator {
     public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request)
 	    throws SiteWhereException {
 	IBatchOperation result = super.createBatchCommandInvocation(request);
-	getBatchOperationManager().process(result);
+	getUnprocessedBatchOperationsProducer().send(request.getToken(), BatchModelMarshaler
+		.buildBatchOperationPayloadMessage(BatchModelConverter.asGrpcBatchOperation(result)));
 	return result;
     }
 
     protected IBatchOperationManager getBatchOperationManager() {
 	return ((IBatchOperationsTenantEngine) getTenantEngine()).getBatchOperationManager();
+    }
+
+    protected IUnprocessedBatchOperationsProducer getUnprocessedBatchOperationsProducer() {
+	return ((IBatchOperationsTenantEngine) getTenantEngine()).getUnprocessedBatchOperationsProducer();
     }
 }

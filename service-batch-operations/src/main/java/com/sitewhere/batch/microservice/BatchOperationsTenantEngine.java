@@ -10,6 +10,7 @@ package com.sitewhere.batch.microservice;
 import com.sitewhere.batch.BatchManagementTriggers;
 import com.sitewhere.batch.grpc.BatchManagementImpl;
 import com.sitewhere.batch.spi.IBatchOperationManager;
+import com.sitewhere.batch.spi.kafka.IUnprocessedBatchOperationsProducer;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
 import com.sitewhere.grpc.service.BatchManagementGrpc;
@@ -40,6 +41,9 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
 
     /** Batch operation manager */
     private IBatchOperationManager batchOperationManager;
+
+    /** Unprocessed batch operations producer */
+    private IUnprocessedBatchOperationsProducer unprocessedBatchOperationsProducer;
 
     public BatchOperationsTenantEngine(ITenant tenant) {
 	super(tenant);
@@ -75,6 +79,9 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
 	// Initialize batch operation manager.
 	init.addInitializeStep(this, getBatchOperationManager(), true);
 
+	// Initialize unprocessed batch operations producer.
+	init.addInitializeStep(this, getUnprocessedBatchOperationsProducer(), true);
+
 	// Execute initialization steps.
 	init.execute(monitor);
     }
@@ -96,6 +103,9 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
 
 	// Start batch operation manager.
 	start.addStartStep(this, getBatchOperationManager(), true);
+
+	// Start unprocessed batch operations producer.
+	start.addStartStep(this, getUnprocessedBatchOperationsProducer(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -119,6 +129,9 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
+
+	// Stop unprocessed batch operations producer.
+	stop.addStopStep(this, getUnprocessedBatchOperationsProducer());
 
 	// Stop batch operation manager.
 	stop.addStopStep(this, getBatchOperationManager());
@@ -170,5 +183,19 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
 
     public void setBatchOperationManager(IBatchOperationManager batchOperationManager) {
 	this.batchOperationManager = batchOperationManager;
+    }
+
+    /*
+     * @see com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine#
+     * getUnprocessedBatchOperationsProducer()
+     */
+    @Override
+    public IUnprocessedBatchOperationsProducer getUnprocessedBatchOperationsProducer() {
+	return unprocessedBatchOperationsProducer;
+    }
+
+    public void setUnprocessedBatchOperationsProducer(
+	    IUnprocessedBatchOperationsProducer unprocessedBatchOperationsProducer) {
+	this.unprocessedBatchOperationsProducer = unprocessedBatchOperationsProducer;
     }
 }

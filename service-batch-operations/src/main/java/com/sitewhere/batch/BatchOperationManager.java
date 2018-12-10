@@ -21,7 +21,7 @@ import com.sitewhere.batch.handler.BatchCommandInvocationHandler;
 import com.sitewhere.batch.spi.IBatchOperationHandler;
 import com.sitewhere.batch.spi.IBatchOperationManager;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
-import com.sitewhere.rest.model.batch.request.BatchElementUpdateRequest;
+import com.sitewhere.rest.model.batch.request.BatchElementCreateRequest;
 import com.sitewhere.rest.model.batch.request.BatchOperationUpdateRequest;
 import com.sitewhere.rest.model.search.device.BatchElementSearchCriteria;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -219,11 +219,11 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 		}
 
 		// Indicate element is being processed.
-		BatchElementUpdateRequest request = new BatchElementUpdateRequest();
+		BatchElementCreateRequest request = new BatchElementCreateRequest();
 		request.setProcessingStatus(ElementProcessingStatus.Processing);
 		getBatchManagement().updateBatchElement(element.getBatchOperationId(), request);
 
-		request = new BatchElementUpdateRequest();
+		request = new BatchElementCreateRequest();
 		ElementProcessingStatus status = ElementProcessingStatus.Succeeded;
 		try {
 		    IBatchOperationHandler handler = getHandlersByOperationType().get(operation.getOperationType());

@@ -11,7 +11,7 @@ import java.util.UUID;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
-import com.sitewhere.spi.batch.request.IBatchElementUpdateRequest;
+import com.sitewhere.spi.batch.request.IBatchElementCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.search.ISearchResults;
@@ -85,6 +85,17 @@ public interface IBatchManagement extends ITenantEngineLifecycleComponent {
     public IBatchOperation deleteBatchOperation(UUID batchOperationId) throws SiteWhereException;
 
     /**
+     * Create a batch element associated with a batch operation.
+     * 
+     * @param batchOperationId
+     * @param request
+     * @return
+     * @throws SiteWhereException
+     */
+    public IBatchElement createBatchElement(UUID batchOperationId, IBatchElementCreateRequest request)
+	    throws SiteWhereException;
+
+    /**
      * Lists elements for an {@link IBatchOperation} that meet the given criteria.
      * 
      * @param batchOperationId
@@ -103,7 +114,7 @@ public interface IBatchManagement extends ITenantEngineLifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public IBatchElement updateBatchElement(UUID elementId, IBatchElementUpdateRequest request)
+    public IBatchElement updateBatchElement(UUID elementId, IBatchElementCreateRequest request)
 	    throws SiteWhereException;
 
     /**

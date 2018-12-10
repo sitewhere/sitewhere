@@ -11,7 +11,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.ElementProcessingStatus;
 import com.sitewhere.spi.batch.IBatchElement;
 import com.sitewhere.spi.batch.IBatchOperation;
-import com.sitewhere.spi.batch.request.IBatchElementUpdateRequest;
+import com.sitewhere.spi.batch.request.IBatchElementCreateRequest;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
@@ -38,5 +38,5 @@ public interface IBatchOperationHandler extends ITenantEngineLifecycleComponent 
      * @throws SiteWhereException
      */
     public ElementProcessingStatus process(IBatchOperation operation, IBatchElement element,
-	    IBatchElementUpdateRequest request) throws SiteWhereException;
+	    IBatchElementCreateRequest request) throws SiteWhereException;
 }

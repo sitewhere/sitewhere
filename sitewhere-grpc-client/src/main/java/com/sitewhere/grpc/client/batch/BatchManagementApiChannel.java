@@ -17,6 +17,8 @@ import com.sitewhere.grpc.client.spi.client.IBatchManagementApiChannel;
 import com.sitewhere.grpc.service.BatchManagementGrpc;
 import com.sitewhere.grpc.service.GCreateBatchCommandInvocationRequest;
 import com.sitewhere.grpc.service.GCreateBatchCommandInvocationResponse;
+import com.sitewhere.grpc.service.GCreateBatchElementRequest;
+import com.sitewhere.grpc.service.GCreateBatchElementResponse;
 import com.sitewhere.grpc.service.GCreateBatchOperationRequest;
 import com.sitewhere.grpc.service.GCreateBatchOperationResponse;
 import com.sitewhere.grpc.service.GDeleteBatchOperationRequest;
@@ -25,19 +27,19 @@ import com.sitewhere.grpc.service.GGetBatchOperationByTokenRequest;
 import com.sitewhere.grpc.service.GGetBatchOperationByTokenResponse;
 import com.sitewhere.grpc.service.GGetBatchOperationRequest;
 import com.sitewhere.grpc.service.GGetBatchOperationResponse;
-import com.sitewhere.grpc.service.GListBatchOperationElementsRequest;
-import com.sitewhere.grpc.service.GListBatchOperationElementsResponse;
+import com.sitewhere.grpc.service.GListBatchElementsRequest;
+import com.sitewhere.grpc.service.GListBatchElementsResponse;
 import com.sitewhere.grpc.service.GListBatchOperationsRequest;
 import com.sitewhere.grpc.service.GListBatchOperationsResponse;
-import com.sitewhere.grpc.service.GUpdateBatchOperationElementRequest;
-import com.sitewhere.grpc.service.GUpdateBatchOperationElementResponse;
+import com.sitewhere.grpc.service.GUpdateBatchElementRequest;
+import com.sitewhere.grpc.service.GUpdateBatchElementResponse;
 import com.sitewhere.grpc.service.GUpdateBatchOperationRequest;
 import com.sitewhere.grpc.service.GUpdateBatchOperationResponse;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.IBatchElement;
 import com.sitewhere.spi.batch.IBatchOperation;
 import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
-import com.sitewhere.spi.batch.request.IBatchElementUpdateRequest;
+import com.sitewhere.spi.batch.request.IBatchElementCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.search.ISearchResults;
@@ -232,6 +234,31 @@ public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManage
 
     /*
      * @see
+     * com.sitewhere.spi.batch.IBatchManagement#createBatchElement(java.util.UUID,
+     * com.sitewhere.spi.batch.request.IBatchElementCreateRequest)
+     */
+    @Override
+    public IBatchElement createBatchElement(UUID batchOperationId, IBatchElementCreateRequest request)
+	    throws SiteWhereException {
+	try {
+	    GrpcUtils.handleClientMethodEntry(this, BatchManagementGrpc.getCreateBatchElementMethod());
+	    GCreateBatchElementRequest.Builder grequest = GCreateBatchElementRequest.newBuilder();
+	    grequest.setBatchOperationId(CommonModelConverter.asGrpcUuid(batchOperationId));
+	    grequest.setRequest(BatchModelConverter.asGrpcBatchElementUpdateRequest(request));
+	    GCreateBatchElementResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .createBatchElement(grequest.build());
+	    IBatchElement response = (gresponse.hasElement())
+		    ? BatchModelConverter.asApiBatchElement(gresponse.getElement())
+		    : null;
+	    GrpcUtils.logClientMethodResponse(BatchManagementGrpc.getCreateBatchElementMethod(), response);
+	    return response;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(BatchManagementGrpc.getCreateBatchElementMethod(), t);
+	}
+    }
+
+    /*
+     * @see
      * com.sitewhere.spi.batch.IBatchManagement#listBatchElements(java.util.UUID,
      * com.sitewhere.spi.search.device.IBatchElementSearchCriteria)
      */
@@ -239,43 +266,43 @@ public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManage
     public ISearchResults<IBatchElement> listBatchElements(UUID batchOperationId, IBatchElementSearchCriteria criteria)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.handleClientMethodEntry(this, BatchManagementGrpc.getListBatchOperationElementsMethod());
-	    GListBatchOperationElementsRequest.Builder grequest = GListBatchOperationElementsRequest.newBuilder();
+	    GrpcUtils.handleClientMethodEntry(this, BatchManagementGrpc.getListBatchElementsMethod());
+	    GListBatchElementsRequest.Builder grequest = GListBatchElementsRequest.newBuilder();
 	    grequest.setBatchOperationId(CommonModelConverter.asGrpcUuid(batchOperationId));
 	    grequest.setCriteria(BatchModelConverter.asGrpcBatchElementSearchCriteria(criteria));
-	    GListBatchOperationElementsResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .listBatchOperationElements(grequest.build());
+	    GListBatchElementsResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .listBatchElements(grequest.build());
 	    ISearchResults<IBatchElement> results = BatchModelConverter
 		    .asApiBatchElementSearchResults(gresponse.getResults());
-	    GrpcUtils.logClientMethodResponse(BatchManagementGrpc.getListBatchOperationElementsMethod(), results);
+	    GrpcUtils.logClientMethodResponse(BatchManagementGrpc.getListBatchElementsMethod(), results);
 	    return results;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(BatchManagementGrpc.getListBatchOperationElementsMethod(), t);
+	    throw GrpcUtils.handleClientMethodException(BatchManagementGrpc.getListBatchElementsMethod(), t);
 	}
     }
 
     /*
      * @see
      * com.sitewhere.spi.batch.IBatchManagement#updateBatchElement(java.util.UUID,
-     * com.sitewhere.spi.batch.request.IBatchElementUpdateRequest)
+     * com.sitewhere.spi.batch.request.IBatchElementCreateRequest)
      */
     @Override
-    public IBatchElement updateBatchElement(UUID elementId, IBatchElementUpdateRequest request)
+    public IBatchElement updateBatchElement(UUID elementId, IBatchElementCreateRequest request)
 	    throws SiteWhereException {
 	try {
-	    GrpcUtils.handleClientMethodEntry(this, BatchManagementGrpc.getUpdateBatchOperationElementMethod());
-	    GUpdateBatchOperationElementRequest.Builder grequest = GUpdateBatchOperationElementRequest.newBuilder();
+	    GrpcUtils.handleClientMethodEntry(this, BatchManagementGrpc.getUpdateBatchElementMethod());
+	    GUpdateBatchElementRequest.Builder grequest = GUpdateBatchElementRequest.newBuilder();
 	    grequest.setElementId(CommonModelConverter.asGrpcUuid(elementId));
 	    grequest.setRequest(BatchModelConverter.asGrpcBatchElementUpdateRequest(request));
-	    GUpdateBatchOperationElementResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .updateBatchOperationElement(grequest.build());
+	    GUpdateBatchElementResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .updateBatchElement(grequest.build());
 	    IBatchElement response = (gresponse.hasElement())
 		    ? BatchModelConverter.asApiBatchElement(gresponse.getElement())
 		    : null;
-	    GrpcUtils.logClientMethodResponse(BatchManagementGrpc.getUpdateBatchOperationElementMethod(), response);
+	    GrpcUtils.logClientMethodResponse(BatchManagementGrpc.getUpdateBatchElementMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(BatchManagementGrpc.getUpdateBatchOperationElementMethod(), t);
+	    throw GrpcUtils.handleClientMethodException(BatchManagementGrpc.getUpdateBatchElementMethod(), t);
 	}
     }
 }

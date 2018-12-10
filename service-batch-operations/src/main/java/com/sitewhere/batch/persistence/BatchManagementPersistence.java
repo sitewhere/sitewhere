@@ -21,7 +21,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.ElementProcessingStatus;
 import com.sitewhere.spi.batch.IBatchOperation;
 import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
-import com.sitewhere.spi.batch.request.IBatchElementUpdateRequest;
+import com.sitewhere.spi.batch.request.IBatchElementCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.device.IDevice;
@@ -100,7 +100,7 @@ public class BatchManagementPersistence extends Persistence {
      * @param element
      * @throws SiteWhereException
      */
-    public static void batchElementUpdateLogic(IBatchElementUpdateRequest request, BatchElement element)
+    public static void batchElementUpdateLogic(IBatchElementCreateRequest request, BatchElement element)
 	    throws SiteWhereException {
 	if (request.getProcessingStatus() != null) {
 	    element.setProcessingStatus(request.getProcessingStatus());

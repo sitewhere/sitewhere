@@ -144,4 +144,20 @@ public interface IKafkaTopicNaming {
      * @return
      */
     public String getUndeliveredCommandInvocationsTopic(ITenant tenant);
+
+    /**
+     * Get topic for unprocessed batch operations.
+     * 
+     * @param tenant
+     * @return
+     */
+    public String getUnprocessedBatchOperationsTopic(ITenant tenant);
+
+    /**
+     * Get topic for intitialized batch operations.
+     * 
+     * @param tenant
+     * @return
+     */
+    public String getInitializedBatchOperationsTopic(ITenant tenant);
 }

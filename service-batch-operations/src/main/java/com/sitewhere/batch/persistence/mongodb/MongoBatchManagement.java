@@ -29,7 +29,7 @@ import com.sitewhere.spi.batch.IBatchElement;
 import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.batch.IBatchOperation;
 import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
-import com.sitewhere.spi.batch.request.IBatchElementUpdateRequest;
+import com.sitewhere.spi.batch.request.IBatchElementCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.device.IDevice;
@@ -196,11 +196,23 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
 
     /*
      * @see
-     * com.sitewhere.spi.batch.IBatchManagement#updateBatchElement(java.util.UUID,
-     * com.sitewhere.spi.batch.request.IBatchElementUpdateRequest)
+     * com.sitewhere.spi.batch.IBatchManagement#createBatchElement(java.util.UUID,
+     * com.sitewhere.spi.batch.request.IBatchElementCreateRequest)
      */
     @Override
-    public IBatchElement updateBatchElement(UUID elementId, IBatchElementUpdateRequest request)
+    public IBatchElement createBatchElement(UUID batchOperationId, IBatchElementCreateRequest request)
+	    throws SiteWhereException {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.batch.IBatchManagement#updateBatchElement(java.util.UUID,
+     * com.sitewhere.spi.batch.request.IBatchElementCreateRequest)
+     */
+    @Override
+    public IBatchElement updateBatchElement(UUID elementId, IBatchElementCreateRequest request)
 	    throws SiteWhereException {
 	MongoCollection<Document> elements = getMongoClient().getBatchOperationElementsCollection();
 	Document dbElement = assertBatchElement(elementId);

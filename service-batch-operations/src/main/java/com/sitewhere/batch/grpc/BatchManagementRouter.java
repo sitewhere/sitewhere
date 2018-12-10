@@ -20,18 +20,22 @@ import com.sitewhere.grpc.client.spi.server.IGrpcRouter;
 import com.sitewhere.grpc.service.BatchManagementGrpc;
 import com.sitewhere.grpc.service.GCreateBatchCommandInvocationRequest;
 import com.sitewhere.grpc.service.GCreateBatchCommandInvocationResponse;
+import com.sitewhere.grpc.service.GCreateBatchElementRequest;
+import com.sitewhere.grpc.service.GCreateBatchElementResponse;
 import com.sitewhere.grpc.service.GCreateBatchOperationRequest;
 import com.sitewhere.grpc.service.GCreateBatchOperationResponse;
 import com.sitewhere.grpc.service.GDeleteBatchOperationRequest;
 import com.sitewhere.grpc.service.GDeleteBatchOperationResponse;
 import com.sitewhere.grpc.service.GGetBatchOperationByTokenRequest;
 import com.sitewhere.grpc.service.GGetBatchOperationByTokenResponse;
-import com.sitewhere.grpc.service.GListBatchOperationElementsRequest;
-import com.sitewhere.grpc.service.GListBatchOperationElementsResponse;
+import com.sitewhere.grpc.service.GGetBatchOperationRequest;
+import com.sitewhere.grpc.service.GGetBatchOperationResponse;
+import com.sitewhere.grpc.service.GListBatchElementsRequest;
+import com.sitewhere.grpc.service.GListBatchElementsResponse;
 import com.sitewhere.grpc.service.GListBatchOperationsRequest;
 import com.sitewhere.grpc.service.GListBatchOperationsResponse;
-import com.sitewhere.grpc.service.GUpdateBatchOperationElementRequest;
-import com.sitewhere.grpc.service.GUpdateBatchOperationElementResponse;
+import com.sitewhere.grpc.service.GUpdateBatchElementRequest;
+import com.sitewhere.grpc.service.GUpdateBatchElementResponse;
 import com.sitewhere.grpc.service.GUpdateBatchOperationRequest;
 import com.sitewhere.grpc.service.GUpdateBatchOperationResponse;
 import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
@@ -120,6 +124,20 @@ public class BatchManagementRouter extends BatchManagementGrpc.BatchManagementIm
 
     /*
      * @see com.sitewhere.grpc.service.BatchManagementGrpc.BatchManagementImplBase#
+     * getBatchOperation(com.sitewhere.grpc.service.GGetBatchOperationRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getBatchOperation(GGetBatchOperationRequest request,
+	    StreamObserver<GGetBatchOperationResponse> responseObserver) {
+	BatchManagementGrpc.BatchManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getBatchOperation(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.BatchManagementGrpc.BatchManagementImplBase#
      * getBatchOperationByToken(com.sitewhere.grpc.service.
      * GGetBatchOperationByTokenRequest, io.grpc.stub.StreamObserver)
      */
@@ -162,29 +180,43 @@ public class BatchManagementRouter extends BatchManagementGrpc.BatchManagementIm
 
     /*
      * @see com.sitewhere.grpc.service.BatchManagementGrpc.BatchManagementImplBase#
-     * listBatchOperationElements(com.sitewhere.grpc.service.
-     * GListBatchOperationElementsRequest, io.grpc.stub.StreamObserver)
+     * createBatchElement(com.sitewhere.grpc.service.GCreateBatchElementRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void listBatchOperationElements(GListBatchOperationElementsRequest request,
-	    StreamObserver<GListBatchOperationElementsResponse> responseObserver) {
+    public void createBatchElement(GCreateBatchElementRequest request,
+	    StreamObserver<GCreateBatchElementResponse> responseObserver) {
 	BatchManagementGrpc.BatchManagementImplBase engine = getTenantImplementation(responseObserver);
 	if (engine != null) {
-	    engine.listBatchOperationElements(request, responseObserver);
+	    engine.createBatchElement(request, responseObserver);
 	}
     }
 
     /*
      * @see com.sitewhere.grpc.service.BatchManagementGrpc.BatchManagementImplBase#
-     * updateBatchOperationElement(com.sitewhere.grpc.service.
-     * GUpdateBatchOperationElementRequest, io.grpc.stub.StreamObserver)
+     * listBatchElements(com.sitewhere.grpc.service.GListBatchElementsRequest,
+     * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void updateBatchOperationElement(GUpdateBatchOperationElementRequest request,
-	    StreamObserver<GUpdateBatchOperationElementResponse> responseObserver) {
+    public void listBatchElements(GListBatchElementsRequest request,
+	    StreamObserver<GListBatchElementsResponse> responseObserver) {
 	BatchManagementGrpc.BatchManagementImplBase engine = getTenantImplementation(responseObserver);
 	if (engine != null) {
-	    engine.updateBatchOperationElement(request, responseObserver);
+	    engine.listBatchElements(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.BatchManagementGrpc.BatchManagementImplBase#
+     * updateBatchElement(com.sitewhere.grpc.service.GUpdateBatchElementRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void updateBatchElement(GUpdateBatchElementRequest request,
+	    StreamObserver<GUpdateBatchElementResponse> responseObserver) {
+	BatchManagementGrpc.BatchManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.updateBatchElement(request, responseObserver);
 	}
     }
 

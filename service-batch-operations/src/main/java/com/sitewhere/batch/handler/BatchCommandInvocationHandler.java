@@ -22,7 +22,7 @@ import com.sitewhere.spi.batch.ElementProcessingStatus;
 import com.sitewhere.spi.batch.IBatchElement;
 import com.sitewhere.spi.batch.IBatchOperation;
 import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
-import com.sitewhere.spi.batch.request.IBatchElementUpdateRequest;
+import com.sitewhere.spi.batch.request.IBatchElementCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -55,7 +55,7 @@ public class BatchCommandInvocationHandler extends TenantEngineLifecycleComponen
      */
     @Override
     public ElementProcessingStatus process(IBatchOperation operation, IBatchElement element,
-	    IBatchElementUpdateRequest updated) throws SiteWhereException {
+	    IBatchElementCreateRequest updated) throws SiteWhereException {
 	getLogger().info("Processing command invocation: " + element.getDeviceId());
 
 	// Find information about the command to be executed.

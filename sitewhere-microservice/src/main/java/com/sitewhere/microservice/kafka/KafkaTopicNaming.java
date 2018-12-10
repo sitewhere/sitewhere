@@ -68,6 +68,12 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     /** Topic suffix for undelivered command invocations */
     protected static final String TENANT_TOPIC_UNDELIVERED_COMMAND_INVOCATIONS = "undelivered-command-invocations";
 
+    /** Topic suffix for unprocessed batch operations */
+    protected static final String TENANT_TOPIC_UNPROCESSED_BATCH_OPERATIONS = "unprocessed-batch-operations";
+
+    /** Topic suffix for initialized batch operations */
+    protected static final String TENANT_TOPIC_INITIALIZED_BATCH_OPERATIONS = "initialized-batch-operations";
+
     @Autowired
     private IInstanceSettings instanceSettings;
 
@@ -216,6 +222,24 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     @Override
     public String getUndeliveredCommandInvocationsTopic(ITenant tenant) {
 	return getTenantPrefix(tenant) + TENANT_TOPIC_UNDELIVERED_COMMAND_INVOCATIONS;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#
+     * getUnprocessedBatchOperationsTopic(com.sitewhere.spi.tenant.ITenant)
+     */
+    @Override
+    public String getUnprocessedBatchOperationsTopic(ITenant tenant) {
+	return getTenantPrefix(tenant) + TENANT_TOPIC_UNPROCESSED_BATCH_OPERATIONS;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#
+     * getInitializedBatchOperationsTopic(com.sitewhere.spi.tenant.ITenant)
+     */
+    @Override
+    public String getInitializedBatchOperationsTopic(ITenant tenant) {
+	return getTenantPrefix(tenant) + TENANT_TOPIC_INITIALIZED_BATCH_OPERATIONS;
     }
 
     protected IInstanceSettings getInstanceSettings() {

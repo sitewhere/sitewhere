@@ -12,12 +12,12 @@ import java.util.List;
 
 import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
 import com.sitewhere.grpc.model.BatchModel.GBatchCommandInvocationCreateRequest;
+import com.sitewhere.grpc.model.BatchModel.GBatchElement;
+import com.sitewhere.grpc.model.BatchModel.GBatchElementCreateRequest;
+import com.sitewhere.grpc.model.BatchModel.GBatchElementSearchCriteria;
+import com.sitewhere.grpc.model.BatchModel.GBatchElementSearchResults;
 import com.sitewhere.grpc.model.BatchModel.GBatchOperation;
 import com.sitewhere.grpc.model.BatchModel.GBatchOperationCreateRequest;
-import com.sitewhere.grpc.model.BatchModel.GBatchOperationElement;
-import com.sitewhere.grpc.model.BatchModel.GBatchOperationElementSearchCriteria;
-import com.sitewhere.grpc.model.BatchModel.GBatchOperationElementSearchResults;
-import com.sitewhere.grpc.model.BatchModel.GBatchOperationElementUpdateRequest;
 import com.sitewhere.grpc.model.BatchModel.GBatchOperationSearchCriteria;
 import com.sitewhere.grpc.model.BatchModel.GBatchOperationSearchResults;
 import com.sitewhere.grpc.model.BatchModel.GBatchOperationStatus;
@@ -27,7 +27,7 @@ import com.sitewhere.grpc.model.CommonModel.GOptionalString;
 import com.sitewhere.rest.model.batch.BatchElement;
 import com.sitewhere.rest.model.batch.BatchOperation;
 import com.sitewhere.rest.model.batch.request.BatchCommandInvocationRequest;
-import com.sitewhere.rest.model.batch.request.BatchElementUpdateRequest;
+import com.sitewhere.rest.model.batch.request.BatchElementCreateRequest;
 import com.sitewhere.rest.model.batch.request.BatchOperationCreateRequest;
 import com.sitewhere.rest.model.batch.request.BatchOperationUpdateRequest;
 import com.sitewhere.rest.model.search.SearchResults;
@@ -39,7 +39,7 @@ import com.sitewhere.spi.batch.ElementProcessingStatus;
 import com.sitewhere.spi.batch.IBatchElement;
 import com.sitewhere.spi.batch.IBatchOperation;
 import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
-import com.sitewhere.spi.batch.request.IBatchElementUpdateRequest;
+import com.sitewhere.spi.batch.request.IBatchElementCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.search.ISearchResults;
@@ -64,6 +64,10 @@ public class BatchModelConverter {
 	switch (grpc) {
 	case BATCH_OPERATION_STATUS_UNPROCESSED:
 	    return BatchOperationStatus.Unprocessed;
+	case BATCH_OPERATION_STATUS_INITIALIZING:
+	    return BatchOperationStatus.Initializing;
+	case BATCH_OPERATION_STATUS_INITIALIZED:
+	    return BatchOperationStatus.Initialized;
 	case BATCH_OPERATION_STATUS_PROCESSING:
 	    return BatchOperationStatus.Processing;
 	case BATCH_OPERATION_STATUS_FINISHED_WITH_ERRORS:
@@ -87,6 +91,10 @@ public class BatchModelConverter {
 	switch (api) {
 	case Unprocessed:
 	    return GBatchOperationStatus.BATCH_OPERATION_STATUS_UNPROCESSED;
+	case Initializing:
+	    return GBatchOperationStatus.BATCH_OPERATION_STATUS_INITIALIZING;
+	case Initialized:
+	    return GBatchOperationStatus.BATCH_OPERATION_STATUS_INITIALIZED;
 	case Processing:
 	    return GBatchOperationStatus.BATCH_OPERATION_STATUS_PROCESSING;
 	case FinishedWithErrors:
@@ -344,15 +352,15 @@ public class BatchModelConverter {
     }
 
     /**
-     * Convert batch element update request from GRPC to API.
+     * Convert batch element create request from GRPC to API.
      * 
      * @param grpc
      * @return
      * @throws SiteWhereException
      */
-    public static BatchElementUpdateRequest asApiBatchElementUpdateRequest(GBatchOperationElementUpdateRequest grpc)
+    public static BatchElementCreateRequest asApiBatchElementUpdateRequest(GBatchElementCreateRequest grpc)
 	    throws SiteWhereException {
-	BatchElementUpdateRequest api = new BatchElementUpdateRequest();
+	BatchElementCreateRequest api = new BatchElementCreateRequest();
 	api.setProcessingStatus(BatchModelConverter.asApiElementProcessingStatus(grpc.getProcessingStatus()));
 	api.setProcessedDate(CommonModelConverter.asApiDate(grpc.getProcessedDate()));
 	api.setMetadata(grpc.getMetadataMap());
@@ -360,15 +368,15 @@ public class BatchModelConverter {
     }
 
     /**
-     * Convert batch element update request from API to GRPC.
+     * Convert batch element create request from API to GRPC.
      * 
      * @param api
      * @return
      * @throws SiteWhereException
      */
-    public static GBatchOperationElementUpdateRequest asGrpcBatchElementUpdateRequest(IBatchElementUpdateRequest api)
+    public static GBatchElementCreateRequest asGrpcBatchElementUpdateRequest(IBatchElementCreateRequest api)
 	    throws SiteWhereException {
-	GBatchOperationElementUpdateRequest.Builder grpc = GBatchOperationElementUpdateRequest.newBuilder();
+	GBatchElementCreateRequest.Builder grpc = GBatchElementCreateRequest.newBuilder();
 	grpc.setProcessingStatus(BatchModelConverter.asGrpcElementProcessingStatus(api.getProcessingStatus()));
 	grpc.setProcessedDate(CommonModelConverter.asGrpcDate(api.getProcessedDate()));
 	grpc.putAllMetadata(api.getMetadata());
@@ -382,7 +390,7 @@ public class BatchModelConverter {
      * @return
      * @throws SiteWhereException
      */
-    public static BatchElementSearchCriteria asApiBatchElementSearchCriteria(GBatchOperationElementSearchCriteria grpc)
+    public static BatchElementSearchCriteria asApiBatchElementSearchCriteria(GBatchElementSearchCriteria grpc)
 	    throws SiteWhereException {
 	BatchElementSearchCriteria api = new BatchElementSearchCriteria(grpc.getPaging().getPageNumber(),
 		grpc.getPaging().getPageSize());
@@ -397,9 +405,9 @@ public class BatchModelConverter {
      * @return
      * @throws SiteWhereException
      */
-    public static GBatchOperationElementSearchCriteria asGrpcBatchElementSearchCriteria(IBatchElementSearchCriteria api)
+    public static GBatchElementSearchCriteria asGrpcBatchElementSearchCriteria(IBatchElementSearchCriteria api)
 	    throws SiteWhereException {
-	GBatchOperationElementSearchCriteria.Builder grpc = GBatchOperationElementSearchCriteria.newBuilder();
+	GBatchElementSearchCriteria.Builder grpc = GBatchElementSearchCriteria.newBuilder();
 	grpc.setPaging(CommonModelConverter.asGrpcPaging(api));
 	if (api.getProcessingStatus() != null) {
 	    grpc.setProcessingStatus(BatchModelConverter.asGrpcElementProcessingStatus(api.getProcessingStatus()));
@@ -414,10 +422,10 @@ public class BatchModelConverter {
      * @return
      * @throws SiteWhereException
      */
-    public static ISearchResults<IBatchElement> asApiBatchElementSearchResults(
-	    GBatchOperationElementSearchResults response) throws SiteWhereException {
+    public static ISearchResults<IBatchElement> asApiBatchElementSearchResults(GBatchElementSearchResults response)
+	    throws SiteWhereException {
 	List<IBatchElement> results = new ArrayList<IBatchElement>();
-	for (GBatchOperationElement grpc : response.getBatchOperationElementsList()) {
+	for (GBatchElement grpc : response.getBatchElementsList()) {
 	    results.add(BatchModelConverter.asApiBatchElement(grpc));
 	}
 	return new SearchResults<IBatchElement>(results, response.getCount());
@@ -430,7 +438,7 @@ public class BatchModelConverter {
      * @return
      * @throws SiteWhereException
      */
-    public static BatchElement asApiBatchElement(GBatchOperationElement grpc) throws SiteWhereException {
+    public static BatchElement asApiBatchElement(GBatchElement grpc) throws SiteWhereException {
 	BatchElement api = new BatchElement();
 	api.setId(CommonModelConverter.asApiUuid(grpc.getId()));
 	api.setBatchOperationId(CommonModelConverter.asApiUuid(grpc.getBatchOperationId()));
@@ -447,8 +455,8 @@ public class BatchModelConverter {
      * @return
      * @throws SiteWhereException
      */
-    public static GBatchOperationElement asGrpcBatchElement(IBatchElement api) throws SiteWhereException {
-	GBatchOperationElement.Builder grpc = GBatchOperationElement.newBuilder();
+    public static GBatchElement asGrpcBatchElement(IBatchElement api) throws SiteWhereException {
+	GBatchElement.Builder grpc = GBatchElement.newBuilder();
 	grpc.setId(CommonModelConverter.asGrpcUuid(api.getId()));
 	grpc.setBatchOperationId(CommonModelConverter.asGrpcUuid(api.getBatchOperationId()));
 	grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
