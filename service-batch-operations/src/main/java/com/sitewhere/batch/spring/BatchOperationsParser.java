@@ -9,15 +9,15 @@ package com.sitewhere.batch.spring;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import com.sitewhere.batch.BatchOperationManager;
 import com.sitewhere.batch.persistence.mongodb.BatchManagementMongoClient;
 import com.sitewhere.batch.persistence.mongodb.MongoBatchManagement;
 import com.sitewhere.configuration.datastore.DatastoreConfigurationChoice;
@@ -31,10 +31,6 @@ import com.sitewhere.spi.microservice.spring.BatchManagementBeans;
  * @author Derek
  */
 public class BatchOperationsParser extends AbstractBeanDefinitionParser {
-
-    /** Static logger instance */
-    @SuppressWarnings("unused")
-    private static Log LOGGER = LogFactory.getLog(BatchOperationsParser.class);
 
     /*
      * (non-Javadoc)
@@ -53,10 +49,11 @@ public class BatchOperationsParser extends AbstractBeanDefinitionParser {
 	    }
 	    switch (type) {
 	    case DeviceManagementDatastore: {
-		parseDeviceManagementDatastore(child, context);
+		parseBatchManagementDatastore(child, context);
 		break;
 	    }
 	    case BatchOperationManager: {
+		parseBatchOperationManager(child, context);
 		break;
 	    }
 	    }
@@ -70,7 +67,7 @@ public class BatchOperationsParser extends AbstractBeanDefinitionParser {
      * @param element
      * @param context
      */
-    protected void parseDeviceManagementDatastore(Element element, ParserContext context) {
+    protected void parseBatchManagementDatastore(Element element, ParserContext context) {
 	DatastoreConfigurationChoice config = DatastoreConfigurationParser.parseDeviceManagementDatastoreChoice(element,
 		context);
 	switch (config.getType()) {
@@ -99,5 +96,24 @@ public class BatchOperationsParser extends AbstractBeanDefinitionParser {
 
 	context.getRegistry().registerBeanDefinition(BatchManagementBeans.BEAN_BATCH_MANAGEMENT,
 		management.getBeanDefinition());
+    }
+
+    /**
+     * Parse batch operation manager.
+     * 
+     * @param element
+     * @param context
+     */
+    protected void parseBatchOperationManager(Element element, ParserContext context) {
+	// Build batch management implementation.
+	BeanDefinitionBuilder manager = BeanDefinitionBuilder.rootBeanDefinition(BatchOperationManager.class);
+
+	Attr throttleDelayMs = element.getAttributeNode("throttleDelayMs");
+	if (throttleDelayMs != null) {
+	    manager.addPropertyValue("throttleDelayMs", throttleDelayMs.getValue());
+	}
+
+	context.getRegistry().registerBeanDefinition(BatchManagementBeans.BEAN_BATCH_OPERATION_MANAGER,
+		manager.getBeanDefinition());
     }
 }

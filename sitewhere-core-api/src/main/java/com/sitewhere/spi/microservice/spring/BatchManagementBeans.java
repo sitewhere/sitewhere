@@ -19,4 +19,7 @@ public class BatchManagementBeans {
 
     /** Bean id for batch management in server configuration */
     public static final String BEAN_BATCH_MANAGEMENT = "batchManagement";
+
+    /** Bean id for batch operation manager */
+    public static final String BEAN_BATCH_OPERATION_MANAGER = "batchOperationManager";
 }

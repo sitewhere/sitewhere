@@ -100,7 +100,9 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	processorPool.shutdownNow();
+	if (getProcessorPool() != null) {
+	    getProcessorPool().shutdownNow();
+	}
 
 	// Stop handlers.
 	for (String key : getHandlersByOperationType().keySet()) {
@@ -117,7 +119,7 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
      */
     @Override
     public void process(IBatchOperation operation) throws SiteWhereException {
-	processorPool.execute(new BatchOperationProcessor(operation));
+	getProcessorPool().execute(new BatchOperationProcessor(operation));
     }
 
     public long getThrottleDelayMs() {
@@ -254,6 +256,10 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 
     public void setHandlersByOperationType(Map<String, IBatchOperationHandler> handlersByOperationType) {
 	this.handlersByOperationType = handlersByOperationType;
+    }
+
+    protected ExecutorService getProcessorPool() {
+	return processorPool;
     }
 
     /**
