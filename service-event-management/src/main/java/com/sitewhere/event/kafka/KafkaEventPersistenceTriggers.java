@@ -19,7 +19,7 @@ import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
 import com.sitewhere.grpc.client.event.EventModelConverter;
 import com.sitewhere.grpc.client.event.EventModelMarshaler;
 import com.sitewhere.grpc.model.DeviceEventModel.GPersistedEventPayload;
-import com.sitewhere.rest.model.microservice.kafka.payload.PersistedEventPayload;
+import com.sitewhere.rest.model.device.event.kafka.PersistedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceAssignment;

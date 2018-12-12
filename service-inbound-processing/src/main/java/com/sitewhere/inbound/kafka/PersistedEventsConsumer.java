@@ -27,7 +27,7 @@ import com.sitewhere.inbound.spi.kafka.IPersistedEventsConsumer;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.microservice.kafka.DirectKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
-import com.sitewhere.rest.model.microservice.kafka.payload.PersistedEventPayload;
+import com.sitewhere.rest.model.device.event.kafka.PersistedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;

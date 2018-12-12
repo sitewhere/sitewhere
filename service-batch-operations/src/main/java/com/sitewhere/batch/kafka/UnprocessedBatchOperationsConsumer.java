@@ -22,7 +22,7 @@ import com.sitewhere.grpc.client.batch.BatchModelConverter;
 import com.sitewhere.grpc.client.batch.BatchModelMarshaler;
 import com.sitewhere.grpc.model.BatchModel.GUnprocessedBatchOperation;
 import com.sitewhere.microservice.kafka.DirectKafkaConsumer;
-import com.sitewhere.rest.model.microservice.kafka.payload.UnprocessedBatchOperation;
+import com.sitewhere.rest.model.batch.kafka.UnprocessedBatchOperation;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 

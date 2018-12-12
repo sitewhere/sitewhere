@@ -25,9 +25,9 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.RegistrationFailureReason;
 import com.sitewhere.spi.device.command.RegistrationSuccessReason;
+import com.sitewhere.spi.device.event.kafka.IDeviceRegistrationPayload;
+import com.sitewhere.spi.device.event.kafka.IInboundEventPayload;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
-import com.sitewhere.spi.microservice.kafka.payload.IDeviceRegistrationPayload;
-import com.sitewhere.spi.microservice.kafka.payload.IInboundEventPayload;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 

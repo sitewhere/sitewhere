@@ -15,7 +15,7 @@ import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
-import com.sitewhere.spi.microservice.kafka.payload.IEnrichedEventPayload;
+import com.sitewhere.spi.device.event.kafka.IEnrichedEventPayload;
 
 /**
  * Outbound connector that processes each batch event individually.

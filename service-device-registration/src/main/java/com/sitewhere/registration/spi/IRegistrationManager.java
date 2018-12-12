@@ -8,8 +8,8 @@
 package com.sitewhere.registration.spi;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.kafka.payload.IDeviceRegistrationPayload;
-import com.sitewhere.spi.microservice.kafka.payload.IInboundEventPayload;
+import com.sitewhere.spi.device.event.kafka.IDeviceRegistrationPayload;
+import com.sitewhere.spi.device.event.kafka.IInboundEventPayload;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**

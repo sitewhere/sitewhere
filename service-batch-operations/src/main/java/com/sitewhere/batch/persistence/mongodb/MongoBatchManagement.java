@@ -82,18 +82,6 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
 	Document created = MongoBatchOperation.toDocument(batch);
 	MongoPersistence.insert(batches, created, ErrorCode.DuplicateBatchOperationToken);
 
-	MongoCollection<Document> elements = getMongoClient().getBatchOperationElementsCollection();
-	for (String deviceToken : request.getDeviceTokens()) {
-	    IDevice device = getDeviceManagement().getDeviceByToken(deviceToken);
-	    if (device != null) {
-		BatchElement element = BatchManagementPersistence.batchElementCreateLogic(batch, device);
-		Document dbElement = MongoBatchElement.toDocument(element);
-		MongoPersistence.insert(elements, dbElement, ErrorCode.DuplicateBatchElement);
-	    } else {
-		getLogger().warn("Invalid device reference in batch operation create: " + deviceToken);
-	    }
-	}
-
 	return MongoBatchOperation.fromDocument(created);
     }
 

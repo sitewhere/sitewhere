@@ -26,9 +26,10 @@ import com.sitewhere.batch.spi.kafka.IUnprocessedBatchOperationsProducer;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
 import com.sitewhere.grpc.client.batch.BatchModelConverter;
 import com.sitewhere.grpc.client.batch.BatchModelMarshaler;
+import com.sitewhere.microservice.security.SystemUserRunnable;
+import com.sitewhere.rest.model.batch.kafka.UnprocessedBatchOperation;
 import com.sitewhere.rest.model.batch.request.BatchElementCreateRequest;
 import com.sitewhere.rest.model.batch.request.BatchOperationUpdateRequest;
-import com.sitewhere.rest.model.microservice.kafka.payload.UnprocessedBatchOperation;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -38,7 +39,7 @@ import com.sitewhere.spi.batch.ElementProcessingStatus;
 import com.sitewhere.spi.batch.IBatchElement;
 import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.batch.IBatchOperation;
-import com.sitewhere.spi.microservice.kafka.payload.IUnprocessedBatchOperation;
+import com.sitewhere.spi.batch.kafka.IUnprocessedBatchOperation;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
@@ -278,21 +279,21 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
      * 
      * @author Derek
      */
-    private class BatchOperationInitializer implements Runnable {
+    private class BatchOperationInitializer extends SystemUserRunnable {
 
 	/** Operation being processed */
 	private IUnprocessedBatchOperation unprocessed;
 
 	public BatchOperationInitializer(IUnprocessedBatchOperation unprocessed) {
+	    super(BatchOperationManager.this.getMicroservice(),
+		    BatchOperationManager.this.getTenantEngine().getTenant());
 	    this.unprocessed = unprocessed;
 	}
 
-	/*
-	 * @see java.lang.Runnable#run()
-	 */
 	@Override
-	public void run() {
-	    getLogger().debug("Processing batch operation: " + getUnprocessed().getBatchOperation().getId().toString());
+	public void runAsSystemUser() throws SiteWhereException {
+	    getLogger()
+		    .info("Initializing batch operation: " + getUnprocessed().getBatchOperation().getId().toString());
 	    try {
 		BatchOperationUpdateRequest request = new BatchOperationUpdateRequest();
 		request.setProcessingStatus(BatchOperationStatus.Initializing);
@@ -310,6 +311,7 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 				.createBatchElement(getUnprocessed().getBatchOperation().getId(), element);
 			sendUnprocessedBatchElement(created);
 		    } catch (SiteWhereException e) {
+			getLogger().error("Unable to create batch element.", e);
 			errorCount++;
 		    }
 
@@ -319,10 +321,10 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 
 		// Update operation to reflect processing results.
 		request = new BatchOperationUpdateRequest();
-		request.setProcessingStatus(BatchOperationStatus.FinishedSuccessfully);
+		request.setProcessingStatus(BatchOperationStatus.InitializedSuccessfully);
 		request.setProcessingEndedDate(new Date());
 		if (errorCount > 0) {
-		    request.setProcessingStatus(BatchOperationStatus.FinishedWithErrors);
+		    request.setProcessingStatus(BatchOperationStatus.InitializedWithErrors);
 		}
 		getBatchManagement().updateBatchOperation(getUnprocessed().getBatchOperation().getId(), request);
 	    } catch (SiteWhereException e) {
@@ -331,25 +333,6 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 	}
 
 	protected void sendUnprocessedBatchElement(IBatchElement element) throws SiteWhereException {
-	}
-
-	/**
-	 * Handle case where batch operation manager has been paused.
-	 */
-	protected void handlePauseAndThrottle() {
-	    while (getLifecycleStatus() == LifecycleStatus.Paused) {
-		try {
-		    Thread.sleep(1000);
-		} catch (InterruptedException e) {
-		}
-	    }
-	    if (getThrottleDelayMs() > 0) {
-		try {
-		    Thread.sleep(getThrottleDelayMs());
-		} catch (InterruptedException e) {
-		    getLogger().warn("Throttle timer interrupted.");
-		}
-	    }
 	}
 
 	protected IUnprocessedBatchOperation getUnprocessed() {
@@ -406,6 +389,25 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 		}
 	    }
 	    return results;
+	}
+    }
+
+    /**
+     * Handle case where batch operation manager has been paused.
+     */
+    protected void handlePauseAndThrottle() {
+	while (getLifecycleStatus() == LifecycleStatus.Paused) {
+	    try {
+		Thread.sleep(1000);
+	    } catch (InterruptedException e) {
+	    }
+	}
+	if (getThrottleDelayMs() > 0) {
+	    try {
+		Thread.sleep(getThrottleDelayMs());
+	    } catch (InterruptedException e) {
+		getLogger().warn("Throttle timer interrupted.");
+	    }
 	}
     }
 

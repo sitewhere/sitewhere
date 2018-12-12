@@ -10,7 +10,7 @@ package com.sitewhere.connectors.spi;
 import java.util.List;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.kafka.payload.IEnrichedEventPayload;
+import com.sitewhere.spi.device.event.kafka.IEnrichedEventPayload;
 
 /**
  * Adds concept of filtering to outbound connectors.

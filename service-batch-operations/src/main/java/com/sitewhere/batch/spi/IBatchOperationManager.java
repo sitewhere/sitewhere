@@ -12,7 +12,7 @@ import java.util.List;
 import com.sitewhere.batch.spi.kafka.IUnprocessedBatchOperationsConsumer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.IBatchOperation;
-import com.sitewhere.spi.microservice.kafka.payload.IUnprocessedBatchOperation;
+import com.sitewhere.spi.batch.kafka.IUnprocessedBatchOperation;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**

@@ -20,9 +20,9 @@ import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
 import com.sitewhere.grpc.model.DeviceEventModel.GInboundEventPayload;
 import com.sitewhere.grpc.model.DeviceEventModel.GPersistedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.kafka.payload.IDeviceRegistrationPayload;
-import com.sitewhere.spi.microservice.kafka.payload.IEnrichedEventPayload;
-import com.sitewhere.spi.microservice.kafka.payload.IInboundEventPayload;
+import com.sitewhere.spi.device.event.kafka.IDeviceRegistrationPayload;
+import com.sitewhere.spi.device.event.kafka.IEnrichedEventPayload;
+import com.sitewhere.spi.device.event.kafka.IInboundEventPayload;
 
 /**
  * Methods that support marshaling/unmarshaling event model payloads.

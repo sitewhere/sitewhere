@@ -27,11 +27,11 @@ import com.sitewhere.grpc.model.BatchModel.GUnprocessedBatchOperation;
 import com.sitewhere.grpc.model.CommonModel.GOptionalString;
 import com.sitewhere.rest.model.batch.BatchElement;
 import com.sitewhere.rest.model.batch.BatchOperation;
+import com.sitewhere.rest.model.batch.kafka.UnprocessedBatchOperation;
 import com.sitewhere.rest.model.batch.request.BatchCommandInvocationRequest;
 import com.sitewhere.rest.model.batch.request.BatchElementCreateRequest;
 import com.sitewhere.rest.model.batch.request.BatchOperationCreateRequest;
 import com.sitewhere.rest.model.batch.request.BatchOperationUpdateRequest;
-import com.sitewhere.rest.model.microservice.kafka.payload.UnprocessedBatchOperation;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.batch.BatchOperationSearchCriteria;
 import com.sitewhere.rest.model.search.device.BatchElementSearchCriteria;
@@ -40,11 +40,11 @@ import com.sitewhere.spi.batch.BatchOperationStatus;
 import com.sitewhere.spi.batch.ElementProcessingStatus;
 import com.sitewhere.spi.batch.IBatchElement;
 import com.sitewhere.spi.batch.IBatchOperation;
+import com.sitewhere.spi.batch.kafka.IUnprocessedBatchOperation;
 import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.batch.request.IBatchElementCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
-import com.sitewhere.spi.microservice.kafka.payload.IUnprocessedBatchOperation;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.batch.IBatchOperationSearchCriteria;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
@@ -69,10 +69,10 @@ public class BatchModelConverter {
 	    return BatchOperationStatus.Unprocessed;
 	case BATCH_OPERATION_STATUS_INITIALIZING:
 	    return BatchOperationStatus.Initializing;
-	case BATCH_OPERATION_STATUS_INITIALIZED:
-	    return BatchOperationStatus.Initialized;
-	case BATCH_OPERATION_STATUS_PROCESSING:
-	    return BatchOperationStatus.Processing;
+	case BATCH_OPERATION_STATUS_INITIALIZED_SUCCESSFULLY:
+	    return BatchOperationStatus.InitializedSuccessfully;
+	case BATCH_OPERATION_STATUS_INITIALIZED_WITH_ERRORS:
+	    return BatchOperationStatus.InitializedWithErrors;
 	case BATCH_OPERATION_STATUS_FINISHED_WITH_ERRORS:
 	    return BatchOperationStatus.FinishedWithErrors;
 	case BATCH_OPERATION_STATUS_FINISHED_SUCCESSFULLY:
@@ -96,10 +96,10 @@ public class BatchModelConverter {
 	    return GBatchOperationStatus.BATCH_OPERATION_STATUS_UNPROCESSED;
 	case Initializing:
 	    return GBatchOperationStatus.BATCH_OPERATION_STATUS_INITIALIZING;
-	case Initialized:
-	    return GBatchOperationStatus.BATCH_OPERATION_STATUS_INITIALIZED;
-	case Processing:
-	    return GBatchOperationStatus.BATCH_OPERATION_STATUS_PROCESSING;
+	case InitializedSuccessfully:
+	    return GBatchOperationStatus.BATCH_OPERATION_STATUS_INITIALIZED_SUCCESSFULLY;
+	case InitializedWithErrors:
+	    return GBatchOperationStatus.BATCH_OPERATION_STATUS_INITIALIZED_WITH_ERRORS;
 	case FinishedWithErrors:
 	    return GBatchOperationStatus.BATCH_OPERATION_STATUS_FINISHED_WITH_ERRORS;
 	case FinishedSuccessfully:

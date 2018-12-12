@@ -28,7 +28,7 @@ import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.inbound.spi.processing.IInboundPayloadProcessingLogic;
 import com.sitewhere.microservice.security.SystemUserRunnable;
-import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
+import com.sitewhere.rest.model.device.event.kafka.InboundEventPayload;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;

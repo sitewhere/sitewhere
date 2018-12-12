@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitewhere.grpc.client.event.EventModelMarshaler;
-import com.sitewhere.rest.model.microservice.kafka.payload.DeviceRegistrationPayload;
-import com.sitewhere.rest.model.microservice.kafka.payload.InboundEventPayload;
+import com.sitewhere.rest.model.device.event.kafka.DeviceRegistrationPayload;
+import com.sitewhere.rest.model.device.event.kafka.InboundEventPayload;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.kafka.DecodedEventsProducer;

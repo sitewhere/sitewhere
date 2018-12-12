@@ -30,9 +30,9 @@ import com.sitewhere.grpc.client.event.EventModelMarshaler;
 import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
-import com.sitewhere.rest.model.microservice.kafka.payload.EnrichedEventPayload;
+import com.sitewhere.rest.model.device.event.kafka.EnrichedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.kafka.payload.IEnrichedEventPayload;
+import com.sitewhere.spi.device.event.kafka.IEnrichedEventPayload;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**

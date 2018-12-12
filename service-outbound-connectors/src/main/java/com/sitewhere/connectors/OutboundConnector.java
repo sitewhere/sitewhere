@@ -16,7 +16,7 @@ import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
-import com.sitewhere.spi.microservice.kafka.payload.IEnrichedEventPayload;
+import com.sitewhere.spi.device.event.kafka.IEnrichedEventPayload;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**

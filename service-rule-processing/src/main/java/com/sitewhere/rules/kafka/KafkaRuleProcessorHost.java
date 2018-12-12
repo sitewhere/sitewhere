@@ -25,7 +25,7 @@ import com.sitewhere.grpc.client.event.EventModelMarshaler;
 import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
 import com.sitewhere.microservice.kafka.DirectKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
-import com.sitewhere.rest.model.microservice.kafka.payload.EnrichedEventPayload;
+import com.sitewhere.rest.model.device.event.kafka.EnrichedEventPayload;
 import com.sitewhere.rules.spi.IRuleProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
