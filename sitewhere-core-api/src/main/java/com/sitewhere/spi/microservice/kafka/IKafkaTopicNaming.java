@@ -154,10 +154,18 @@ public interface IKafkaTopicNaming {
     public String getUnprocessedBatchOperationsTopic(ITenant tenant);
 
     /**
-     * Get topic for intitialized batch operations.
+     * Get topic for unprocessed batch elements.
      * 
      * @param tenant
      * @return
      */
-    public String getInitializedBatchOperationsTopic(ITenant tenant);
+    public String getUnprocessedBatchElementsTopic(ITenant tenant);
+
+    /**
+     * Get topic for failed batch elements.
+     * 
+     * @param tenant
+     * @return
+     */
+    public String getFailedBatchElementsTopic(ITenant tenant);
 }

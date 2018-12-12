@@ -71,8 +71,11 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     /** Topic suffix for unprocessed batch operations */
     protected static final String TENANT_TOPIC_UNPROCESSED_BATCH_OPERATIONS = "unprocessed-batch-operations";
 
-    /** Topic suffix for initialized batch operations */
-    protected static final String TENANT_TOPIC_INITIALIZED_BATCH_OPERATIONS = "initialized-batch-operations";
+    /** Topic suffix for unprocessed batch elements */
+    protected static final String TENANT_TOPIC_UNPROCESSED_BATCH_ELEMENTS = "unprocessed-batch-elements";
+
+    /** Topic suffix for failed batch elements */
+    protected static final String TENANT_TOPIC_FAILED_BATCH_ELEMENTS = "failed-batch-elements";
 
     @Autowired
     private IInstanceSettings instanceSettings;
@@ -235,11 +238,20 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#
-     * getInitializedBatchOperationsTopic(com.sitewhere.spi.tenant.ITenant)
+     * getUnprocessedBatchElementsTopic(com.sitewhere.spi.tenant.ITenant)
      */
     @Override
-    public String getInitializedBatchOperationsTopic(ITenant tenant) {
-	return getTenantPrefix(tenant) + TENANT_TOPIC_INITIALIZED_BATCH_OPERATIONS;
+    public String getUnprocessedBatchElementsTopic(ITenant tenant) {
+	return getTenantPrefix(tenant) + TENANT_TOPIC_UNPROCESSED_BATCH_ELEMENTS;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#
+     * getFailedBatchElementsTopic(com.sitewhere.spi.tenant.ITenant)
+     */
+    @Override
+    public String getFailedBatchElementsTopic(ITenant tenant) {
+	return getTenantPrefix(tenant) + TENANT_TOPIC_FAILED_BATCH_ELEMENTS;
     }
 
     protected IInstanceSettings getInstanceSettings() {

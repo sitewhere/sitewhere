@@ -8,6 +8,8 @@
 package com.sitewhere.batch.spi.microservice;
 
 import com.sitewhere.batch.spi.IBatchOperationManager;
+import com.sitewhere.batch.spi.kafka.IFailedBatchElementsProducer;
+import com.sitewhere.batch.spi.kafka.IUnprocessedBatchElementsProducer;
 import com.sitewhere.batch.spi.kafka.IUnprocessedBatchOperationsProducer;
 import com.sitewhere.grpc.service.BatchManagementGrpc;
 import com.sitewhere.spi.batch.IBatchManagement;
@@ -48,4 +50,18 @@ public interface IBatchOperationsTenantEngine extends IMicroserviceTenantEngine 
      * @return
      */
     public IUnprocessedBatchOperationsProducer getUnprocessedBatchOperationsProducer();
+
+    /**
+     * Get Kafka producer for unprocessed batch elements.
+     * 
+     * @return
+     */
+    public IUnprocessedBatchElementsProducer getUnprocessedBatchElementsProducer();
+
+    /**
+     * Get Kafka producer for failed batch elements.
+     * 
+     * @return
+     */
+    public IFailedBatchElementsProducer getFailedBatchElementsProducer();
 }

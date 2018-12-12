@@ -7,8 +7,12 @@
  */
 package com.sitewhere.batch.spi;
 
+import java.util.List;
+
+import com.sitewhere.batch.spi.kafka.IUnprocessedBatchOperationsConsumer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.IBatchOperation;
+import com.sitewhere.spi.microservice.kafka.payload.IUnprocessedBatchOperation;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
@@ -19,11 +23,27 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 public interface IBatchOperationManager extends ITenantEngineLifecycleComponent {
 
     /**
-     * Processes an {@link IBatchOperation}. The batch operation is processed in
-     * the calling thread.
+     * Add an unprocessed batch operation to the processing pipeline.
+     * 
+     * @param operation
+     * @param deviceTokens
+     * @throws SiteWhereException
+     */
+    public void addUnprocessedBatchOperation(IBatchOperation operation, List<String> deviceTokens)
+	    throws SiteWhereException;
+
+    /**
+     * Initialize an unprocessed batch operation.
      * 
      * @param operation
      * @throws SiteWhereException
      */
-    public void process(IBatchOperation operation) throws SiteWhereException;
+    public void initializeBatchOperation(IUnprocessedBatchOperation operation) throws SiteWhereException;
+
+    /**
+     * Get consumer for unprocessed batch operations.
+     * 
+     * @return
+     */
+    public IUnprocessedBatchOperationsConsumer getUnprocessedBatchOperationsConsumer();
 }

@@ -9,7 +9,12 @@ package com.sitewhere.batch.microservice;
 
 import com.sitewhere.batch.BatchManagementTriggers;
 import com.sitewhere.batch.grpc.BatchManagementImpl;
+import com.sitewhere.batch.kafka.FailedBatchElementsProducer;
+import com.sitewhere.batch.kafka.UnprocessedBatchElementsProducer;
+import com.sitewhere.batch.kafka.UnprocessedBatchOperationsProducer;
 import com.sitewhere.batch.spi.IBatchOperationManager;
+import com.sitewhere.batch.spi.kafka.IFailedBatchElementsProducer;
+import com.sitewhere.batch.spi.kafka.IUnprocessedBatchElementsProducer;
 import com.sitewhere.batch.spi.kafka.IUnprocessedBatchOperationsProducer;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
@@ -45,6 +50,12 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
     /** Unprocessed batch operations producer */
     private IUnprocessedBatchOperationsProducer unprocessedBatchOperationsProducer;
 
+    /** Unprocessed batch elements producer */
+    private IUnprocessedBatchElementsProducer unprocessedBatchElementsProducer;
+
+    /** Failed batch elements producer */
+    private IFailedBatchElementsProducer failedBatchElementsProducer;
+
     public BatchOperationsTenantEngine(ITenant tenant) {
 	super(tenant);
     }
@@ -67,6 +78,11 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
 	this.batchOperationManager = (IBatchOperationManager) getModuleContext()
 		.getBean(BatchManagementBeans.BEAN_BATCH_OPERATION_MANAGER);
 
+	// Create Kafka components.
+	this.unprocessedBatchOperationsProducer = new UnprocessedBatchOperationsProducer();
+	this.unprocessedBatchElementsProducer = new UnprocessedBatchElementsProducer();
+	this.failedBatchElementsProducer = new FailedBatchElementsProducer();
+
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
 
@@ -81,6 +97,12 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
 
 	// Initialize unprocessed batch operations producer.
 	init.addInitializeStep(this, getUnprocessedBatchOperationsProducer(), true);
+
+	// Initialize unprocessed batch elements producer.
+	init.addInitializeStep(this, getUnprocessedBatchElementsProducer(), true);
+
+	// Initialize failed batch elements producer.
+	init.addInitializeStep(this, getFailedBatchElementsProducer(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -107,6 +129,12 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
 	// Start unprocessed batch operations producer.
 	start.addStartStep(this, getUnprocessedBatchOperationsProducer(), true);
 
+	// Start unprocessed batch elements producer.
+	start.addStartStep(this, getUnprocessedBatchElementsProducer(), true);
+
+	// Start failed batch elements producer.
+	start.addStartStep(this, getFailedBatchElementsProducer(), true);
+
 	// Execute startup steps.
 	start.execute(monitor);
     }
@@ -129,6 +157,12 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
+
+	// Stop failed batch elements producer.
+	stop.addStopStep(this, getFailedBatchElementsProducer());
+
+	// Stop unprocessed batch elements producer.
+	stop.addStopStep(this, getUnprocessedBatchElementsProducer());
 
 	// Stop unprocessed batch operations producer.
 	stop.addStopStep(this, getUnprocessedBatchOperationsProducer());
@@ -197,5 +231,32 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
     public void setUnprocessedBatchOperationsProducer(
 	    IUnprocessedBatchOperationsProducer unprocessedBatchOperationsProducer) {
 	this.unprocessedBatchOperationsProducer = unprocessedBatchOperationsProducer;
+    }
+
+    /*
+     * @see com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine#
+     * getUnprocessedBatchElementsProducer()
+     */
+    @Override
+    public IUnprocessedBatchElementsProducer getUnprocessedBatchElementsProducer() {
+	return unprocessedBatchElementsProducer;
+    }
+
+    public void setUnprocessedBatchElementsProducer(
+	    IUnprocessedBatchElementsProducer unprocessedBatchElementsProducer) {
+	this.unprocessedBatchElementsProducer = unprocessedBatchElementsProducer;
+    }
+
+    /*
+     * @see com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine#
+     * getFailedBatchElementsProducer()
+     */
+    @Override
+    public IFailedBatchElementsProducer getFailedBatchElementsProducer() {
+	return failedBatchElementsProducer;
+    }
+
+    public void setFailedBatchElementsProducer(IFailedBatchElementsProducer failedBatchElementsProducer) {
+	this.failedBatchElementsProducer = failedBatchElementsProducer;
     }
 }

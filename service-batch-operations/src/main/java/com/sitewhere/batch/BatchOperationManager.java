@@ -18,12 +18,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.sitewhere.batch.handler.BatchCommandInvocationHandler;
+import com.sitewhere.batch.kafka.UnprocessedBatchOperationsConsumer;
 import com.sitewhere.batch.spi.IBatchOperationHandler;
 import com.sitewhere.batch.spi.IBatchOperationManager;
+import com.sitewhere.batch.spi.kafka.IUnprocessedBatchOperationsConsumer;
+import com.sitewhere.batch.spi.kafka.IUnprocessedBatchOperationsProducer;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
+import com.sitewhere.grpc.client.batch.BatchModelConverter;
+import com.sitewhere.grpc.client.batch.BatchModelMarshaler;
 import com.sitewhere.rest.model.batch.request.BatchElementCreateRequest;
 import com.sitewhere.rest.model.batch.request.BatchOperationUpdateRequest;
-import com.sitewhere.rest.model.search.device.BatchElementSearchCriteria;
+import com.sitewhere.rest.model.microservice.kafka.payload.UnprocessedBatchOperation;
+import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.BatchOperationStatus;
@@ -31,8 +38,8 @@ import com.sitewhere.spi.batch.ElementProcessingStatus;
 import com.sitewhere.spi.batch.IBatchElement;
 import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.batch.IBatchOperation;
-import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
+import com.sitewhere.spi.microservice.kafka.payload.IUnprocessedBatchOperation;
+import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
@@ -57,12 +64,46 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
     /** Map of handlers by operation type */
     private Map<String, IBatchOperationHandler> handlersByOperationType = new HashMap<String, IBatchOperationHandler>();
 
+    /** Kafka consumer for unprocessed batch operations */
+    private IUnprocessedBatchOperationsConsumer unprocessedBatchOperationsConsumer;
+
     public BatchOperationManager() {
 	super(LifecycleComponentType.BatchOperationManager);
 
 	// TODO: Move this into a configuration element.
 	getHandlersByOperationType().put(BatchOperationTypes.OPERATION_BATCH_COMMAND_INVOCATION,
 		new BatchCommandInvocationHandler());
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	this.unprocessedBatchOperationsConsumer = new UnprocessedBatchOperationsConsumer();
+
+	// Create step that will initialize components.
+	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
+
+	// Initialize unprocessed batch operations consumer.
+	init.addInitializeStep(this, getUnprocessedBatchOperationsConsumer(), true);
+
+	// Initialize handlers.
+	init.addStep(new SimpleLifecycleStep("Initialize Handlers") {
+
+	    @Override
+	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		for (String key : getHandlersByOperationType().keySet()) {
+		    IBatchOperationHandler handler = getHandlersByOperationType().get(key);
+		    initializeNestedComponent(handler, monitor, true);
+		}
+	    }
+	});
+
+	// Execute initialization steps.
+	init.execute(monitor);
     }
 
     /*
@@ -73,13 +114,31 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	if (getProcessorPool() != null) {
+	    getProcessorPool().shutdownNow();
+	}
 	processorPool = Executors.newFixedThreadPool(BATCH_PROCESSOR_THREAD_COUNT, new ProcessorsThreadFactory());
 
+	// Create step that will start components.
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
+
+	// Start unprocessed batch operations consumer.
+	start.addStartStep(this, getUnprocessedBatchOperationsConsumer(), true);
+
 	// Start handlers.
-	for (String key : getHandlersByOperationType().keySet()) {
-	    IBatchOperationHandler handler = getHandlersByOperationType().get(key);
-	    startNestedComponent(handler, monitor, true);
-	}
+	start.addStep(new SimpleLifecycleStep("Start Handlers") {
+
+	    @Override
+	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		for (String key : getHandlersByOperationType().keySet()) {
+		    IBatchOperationHandler handler = getHandlersByOperationType().get(key);
+		    startNestedComponent(handler, monitor, true);
+		}
+	    }
+	});
+
+	// Execute startup steps.
+	start.execute(monitor);
     }
 
     /*
@@ -104,6 +163,15 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 	    getProcessorPool().shutdownNow();
 	}
 
+	// Create step that will stop components.
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
+
+	// Stop unprocessed batch operations consumer.
+	stop.addStopStep(this, getUnprocessedBatchOperationsConsumer());
+
+	// Execute shutdown steps.
+	stop.execute(monitor);
+
 	// Stop handlers.
 	for (String key : getHandlersByOperationType().keySet()) {
 	    IBatchOperationHandler handler = getHandlersByOperationType().get(key);
@@ -112,14 +180,33 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.batch.IBatchOperationManager#process(com.
-     * sitewhere.spi .device.batch.IBatchOperation)
+     * @see
+     * com.sitewhere.batch.spi.IBatchOperationManager#addUnprocessedBatchOperation(
+     * com.sitewhere.spi.batch.IBatchOperation, java.util.List)
      */
     @Override
-    public void process(IBatchOperation operation) throws SiteWhereException {
-	getProcessorPool().execute(new BatchOperationProcessor(operation));
+    public void addUnprocessedBatchOperation(IBatchOperation operation, List<String> deviceTokens)
+	    throws SiteWhereException {
+	getProcessorPool().execute(new BatchOperationCreator(operation, deviceTokens));
+    }
+
+    /*
+     * @see
+     * com.sitewhere.batch.spi.IBatchOperationManager#initializeBatchOperation(com.
+     * sitewhere.spi.microservice.kafka.payload.IUnprocessedBatchOperation)
+     */
+    @Override
+    public void initializeBatchOperation(IUnprocessedBatchOperation operation) throws SiteWhereException {
+	getProcessorPool().execute(new BatchOperationInitializer(operation));
+    }
+
+    /*
+     * @see com.sitewhere.batch.spi.IBatchOperationManager#
+     * getUnprocessedBatchOperationsConsumer()
+     */
+    @Override
+    public IUnprocessedBatchOperationsConsumer getUnprocessedBatchOperationsConsumer() {
+	return unprocessedBatchOperationsConsumer;
     }
 
     public long getThrottleDelayMs() {
@@ -130,22 +217,30 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 	this.throttleDelayMs = throttleDelayMs;
     }
 
-    public IBatchManagement getBatchManagement() {
+    protected IUnprocessedBatchOperationsProducer getUnprocessedBatchOperationsProducer() {
+	return ((IBatchOperationsTenantEngine) getTenantEngine()).getUnprocessedBatchOperationsProducer();
+    }
+
+    protected IBatchManagement getBatchManagement() {
 	return ((IBatchOperationsTenantEngine) getTenantEngine()).getBatchManagement();
     }
 
     /**
-     * Processes a batch in a separate thread.
+     * Creates an unprocessed batch operation in a separate thread.
      * 
      * @author Derek
      */
-    private class BatchOperationProcessor implements Runnable {
+    private class BatchOperationCreator implements Runnable {
 
-	/** Operation being processed */
-	private IBatchOperation operation;
+	/** Batch operation */
+	private IBatchOperation batchOperation;
 
-	public BatchOperationProcessor(IBatchOperation operation) {
-	    this.operation = operation;
+	/** List of device tokens for operation */
+	private List<String> deviceTokens;
+
+	public BatchOperationCreator(IBatchOperation batchOperation, List<String> deviceTokens) {
+	    this.batchOperation = batchOperation;
+	    this.deviceTokens = deviceTokens;
 	}
 
 	/*
@@ -153,30 +248,89 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 	 */
 	@Override
 	public void run() {
-	    getLogger().debug("Processing batch operation: " + operation.getToken());
+	    getLogger().debug("Received new batch operation: " + getBatchOperation().getToken());
+	    // Create payload to carry unprocessed batch operation information.
+	    UnprocessedBatchOperation unprocessed = new UnprocessedBatchOperation();
+	    unprocessed.setBatchOperation(getBatchOperation());
+	    unprocessed.setDeviceTokens(getDeviceTokens());
+
+	    getLogger().info("Submitting batch operation for processing. " + getBatchOperation().getId().toString());
+	    try {
+		getUnprocessedBatchOperationsProducer().send(getBatchOperation().getToken(),
+			BatchModelMarshaler.buildUnprocessedBatchOperationPayloadMessage(
+				BatchModelConverter.asGrpcUnprocessedBatchOperation(unprocessed)));
+	    } catch (SiteWhereException e) {
+		getLogger().error("Unable to send unprocessed batch operation.", e);
+	    }
+	}
+
+	protected IBatchOperation getBatchOperation() {
+	    return batchOperation;
+	}
+
+	protected List<String> getDeviceTokens() {
+	    return deviceTokens;
+	}
+    }
+
+    /**
+     * Initializes a batch operation in a separate thread.
+     * 
+     * @author Derek
+     */
+    private class BatchOperationInitializer implements Runnable {
+
+	/** Operation being processed */
+	private IUnprocessedBatchOperation unprocessed;
+
+	public BatchOperationInitializer(IUnprocessedBatchOperation unprocessed) {
+	    this.unprocessed = unprocessed;
+	}
+
+	/*
+	 * @see java.lang.Runnable#run()
+	 */
+	@Override
+	public void run() {
+	    getLogger().debug("Processing batch operation: " + getUnprocessed().getBatchOperation().getId().toString());
 	    try {
 		BatchOperationUpdateRequest request = new BatchOperationUpdateRequest();
-		request.setProcessingStatus(BatchOperationStatus.Processing);
+		request.setProcessingStatus(BatchOperationStatus.Initializing);
 		request.setProcessingStartedDate(new Date());
-		getBatchManagement().updateBatchOperation(operation.getId(), request);
+		getBatchManagement().updateBatchOperation(getUnprocessed().getBatchOperation().getId(), request);
 
-		// Process all batch elements.
-		IBatchElementSearchCriteria criteria = new BatchElementSearchCriteria(1, 0);
-		ISearchResults<IBatchElement> matches = getBatchManagement().listBatchElements(operation.getId(),
-			criteria);
-		BatchProcessingResults result = processBatchElements(operation, matches.getResults());
+		int errorCount = 0;
+		for (String deviceToken : getUnprocessed().getDeviceTokens()) {
+		    try {
+			BatchElementCreateRequest element = new BatchElementCreateRequest();
+			element.setDeviceToken(deviceToken);
+			element.setProcessingStatus(ElementProcessingStatus.Unprocessed);
+			element.setProcessedDate(null);
+			IBatchElement created = getBatchManagement()
+				.createBatchElement(getUnprocessed().getBatchOperation().getId(), element);
+			sendUnprocessedBatchElement(created);
+		    } catch (SiteWhereException e) {
+			errorCount++;
+		    }
+
+		    // Potentially pause or throttle batch element processing.
+		    handlePauseAndThrottle();
+		}
 
 		// Update operation to reflect processing results.
 		request = new BatchOperationUpdateRequest();
 		request.setProcessingStatus(BatchOperationStatus.FinishedSuccessfully);
 		request.setProcessingEndedDate(new Date());
-		if (result.getErrorCount() > 0) {
+		if (errorCount > 0) {
 		    request.setProcessingStatus(BatchOperationStatus.FinishedWithErrors);
 		}
-		getBatchManagement().updateBatchOperation(operation.getId(), request);
+		getBatchManagement().updateBatchOperation(getUnprocessed().getBatchOperation().getId(), request);
 	    } catch (SiteWhereException e) {
 		getLogger().error("Error processing batch operation.", e);
 	    }
+	}
+
+	protected void sendUnprocessedBatchElement(IBatchElement element) throws SiteWhereException {
 	}
 
 	/**
@@ -198,6 +352,10 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 	    }
 	}
 
+	protected IUnprocessedBatchOperation getUnprocessed() {
+	    return unprocessed;
+	}
+
 	/**
 	 * Processes a page of batch elements.
 	 * 
@@ -206,6 +364,7 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 	 * @return
 	 * @throws SiteWhereException
 	 */
+	@SuppressWarnings("unused")
 	protected BatchProcessingResults processBatchElements(IBatchOperation operation, List<IBatchElement> elements)
 		throws SiteWhereException {
 	    BatchProcessingResults results = new BatchProcessingResults();
@@ -293,6 +452,7 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 	    }
 	}
 
+	@SuppressWarnings("unused")
 	public long getErrorCount() {
 	    return failed.get();
 	}

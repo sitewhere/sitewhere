@@ -202,8 +202,16 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
     @Override
     public IBatchElement createBatchElement(UUID batchOperationId, IBatchElementCreateRequest request)
 	    throws SiteWhereException {
-	// TODO Auto-generated method stub
-	return null;
+	MongoCollection<Document> elements = getMongoClient().getBatchOperationElementsCollection();
+
+	IBatchOperation operation = getBatchOperation(batchOperationId);
+	IDevice device = getDeviceManagement().getDeviceByToken(request.getDeviceToken());
+
+	BatchElement element = BatchManagementPersistence.batchElementCreateLogic(operation, device);
+	Document created = MongoBatchElement.toDocument(element);
+	MongoPersistence.insert(elements, created, ErrorCode.DuplicateBatchElement);
+
+	return element;
     }
 
     /*

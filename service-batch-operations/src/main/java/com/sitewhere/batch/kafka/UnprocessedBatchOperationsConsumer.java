@@ -10,24 +10,20 @@ package com.sitewhere.batch.kafka;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
 
+import com.sitewhere.batch.spi.IBatchOperationManager;
 import com.sitewhere.batch.spi.kafka.IUnprocessedBatchOperationsConsumer;
+import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.client.batch.BatchModelConverter;
 import com.sitewhere.grpc.client.batch.BatchModelMarshaler;
-import com.sitewhere.grpc.model.BatchModel.GBatchOperation;
+import com.sitewhere.grpc.model.BatchModel.GUnprocessedBatchOperation;
 import com.sitewhere.microservice.kafka.DirectKafkaConsumer;
-import com.sitewhere.microservice.security.SystemUserRunnable;
-import com.sitewhere.rest.model.batch.BatchOperation;
+import com.sitewhere.rest.model.microservice.kafka.payload.UnprocessedBatchOperation;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
@@ -41,12 +37,6 @@ public class UnprocessedBatchOperationsConsumer extends DirectKafkaConsumer
 
     /** Suffix for group id */
     private static String GROUP_ID_SUFFIX = "unprocessed-batch-operation-consumers";
-
-    /** Number of threads initializing batch operations */
-    private static final int CONCURRENT_BATCH_OPERATION_INIT_THREADS = 10;
-
-    /** Executor */
-    private ExecutorService executor;
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#
@@ -89,33 +79,6 @@ public class UnprocessedBatchOperationsConsumer extends DirectKafkaConsumer
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer#start(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	super.start(monitor);
-	executor = Executors.newFixedThreadPool(CONCURRENT_BATCH_OPERATION_INIT_THREADS,
-		new BatchOperationInitializerThreadFactory());
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer#stop(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	super.stop(monitor);
-	if (executor != null) {
-	    executor.shutdown();
-	}
-    }
-
-    /*
      * @see
      * com.sitewhere.microservice.kafka.DirectKafkaConsumer#attemptToProcess(org.
      * apache.kafka.common.TopicPartition, java.util.List)
@@ -129,50 +92,20 @@ public class UnprocessedBatchOperationsConsumer extends DirectKafkaConsumer
     }
 
     public void received(String key, byte[] message) throws SiteWhereException {
-	executor.execute(new BatchOperationInitializationProcessor(getTenantEngine(), message));
-    }
-
-    /**
-     * Processor that initializes a batch operation by creating the batch elements
-     * which will be used to track operation progress.
-     */
-    protected class BatchOperationInitializationProcessor extends SystemUserRunnable {
-
-	/** Encoded payload */
-	private byte[] encoded;
-
-	public BatchOperationInitializationProcessor(IMicroserviceTenantEngine tenantEngine, byte[] encoded) {
-	    super(tenantEngine.getMicroservice(), tenantEngine.getTenant());
-	    this.encoded = encoded;
-	}
-
-	/*
-	 * @see com.sitewhere.microservice.security.SystemUserRunnable#
-	 * runAsSystemUser()
-	 */
-	@Override
-	public void runAsSystemUser() throws SiteWhereException {
-	    try {
-		GBatchOperation grpc = BatchModelMarshaler.parseBatchOperationPayloadMessage(encoded);
-		if (getLogger().isDebugEnabled()) {
-		    BatchOperation payload = BatchModelConverter.asApiBatchOperation(grpc);
-		    getLogger().debug(
-			    "Received batch operation payload:\n\n" + MarshalUtils.marshalJsonAsPrettyString(payload));
-		}
-	    } catch (SiteWhereException e) {
-		getLogger().error("Unable to parse batch operation payload.", e);
+	try {
+	    GUnprocessedBatchOperation grpc = BatchModelMarshaler.parseUnprocessedBatchOperationPayloadMessage(message);
+	    UnprocessedBatchOperation unprocessed = BatchModelConverter.asApiUnprocessedBatchOperation(grpc);
+	    if (getLogger().isDebugEnabled()) {
+		getLogger().debug("Received unprocessed batch operation payload:\n\n"
+			+ MarshalUtils.marshalJsonAsPrettyString(unprocessed));
 	    }
+	    getBatchOperationManager().initializeBatchOperation(unprocessed);
+	} catch (SiteWhereException e) {
+	    getLogger().error("Unable to parse batch operation payload.", e);
 	}
     }
 
-    /** Used for naming batch operations initializer threads */
-    private class BatchOperationInitializerThreadFactory implements ThreadFactory {
-
-	/** Counts threads */
-	private AtomicInteger counter = new AtomicInteger();
-
-	public Thread newThread(Runnable r) {
-	    return new Thread(r, "Batch Operation Init " + counter.incrementAndGet());
-	}
+    public IBatchOperationManager getBatchOperationManager() {
+	return ((IBatchOperationsTenantEngine) getTenantEngine()).getBatchOperationManager();
     }
 }
