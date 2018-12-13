@@ -15,27 +15,26 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
 
 import com.sitewhere.batch.spi.IBatchOperationManager;
-import com.sitewhere.batch.spi.kafka.IUnprocessedBatchOperationsConsumer;
+import com.sitewhere.batch.spi.kafka.IUnprocessedBatchElementsConsumer;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.client.batch.BatchModelConverter;
 import com.sitewhere.grpc.client.batch.BatchModelMarshaler;
-import com.sitewhere.grpc.model.BatchModel.GUnprocessedBatchOperation;
+import com.sitewhere.grpc.model.BatchModel.GUnprocessedBatchElement;
 import com.sitewhere.microservice.kafka.DirectKafkaConsumer;
-import com.sitewhere.rest.model.batch.kafka.UnprocessedBatchOperation;
+import com.sitewhere.rest.model.batch.kafka.UnprocessedBatchElement;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
- * Listens on Kafka topic for unprocessed batch operations.
+ * Listens on Kafka topic for unprocessed batch elements.
  */
-public class UnprocessedBatchOperationsConsumer extends DirectKafkaConsumer
-	implements IUnprocessedBatchOperationsConsumer {
+public class UnprocessedBatchElementsConsumer extends DirectKafkaConsumer implements IUnprocessedBatchElementsConsumer {
 
     /** Consumer id */
     private static String CONSUMER_ID = UUID.randomUUID().toString();
 
     /** Suffix for group id */
-    private static String GROUP_ID_SUFFIX = "unprocessed-batch-operation-consumers";
+    private static String GROUP_ID_SUFFIX = "unprocessed-batch-element-consumers";
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#
@@ -63,7 +62,7 @@ public class UnprocessedBatchOperationsConsumer extends DirectKafkaConsumer
     public List<String> getSourceTopicNames() throws SiteWhereException {
 	List<String> topics = new ArrayList<String>();
 	topics.add(getMicroservice().getKafkaTopicNaming()
-		.getUnprocessedBatchOperationsTopic(getTenantEngine().getTenant()));
+		.getUnprocessedBatchElementsTopic(getTenantEngine().getTenant()));
 	return topics;
     }
 
@@ -89,13 +88,13 @@ public class UnprocessedBatchOperationsConsumer extends DirectKafkaConsumer
      */
     public void received(String key, byte[] message) throws SiteWhereException {
 	try {
-	    GUnprocessedBatchOperation grpc = BatchModelMarshaler.parseUnprocessedBatchOperationPayloadMessage(message);
-	    UnprocessedBatchOperation unprocessed = BatchModelConverter.asApiUnprocessedBatchOperation(grpc);
+	    GUnprocessedBatchElement grpc = BatchModelMarshaler.parseUnprocessedBatchElementPayloadMessage(message);
+	    UnprocessedBatchElement unprocessed = BatchModelConverter.asApiUnprocessedBatchElement(grpc);
 	    if (getLogger().isDebugEnabled()) {
-		getLogger().debug("Received unprocessed batch operation payload:\n\n"
+		getLogger().debug("Received unprocessed batch element payload:\n\n"
 			+ MarshalUtils.marshalJsonAsPrettyString(unprocessed));
 	    }
-	    getBatchOperationManager().initializeBatchOperation(unprocessed);
+	    getBatchOperationManager().processBatchElement(unprocessed);
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to parse batch operation payload.", e);
 	}

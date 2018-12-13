@@ -23,10 +23,12 @@ import com.sitewhere.grpc.model.BatchModel.GBatchOperationSearchResults;
 import com.sitewhere.grpc.model.BatchModel.GBatchOperationStatus;
 import com.sitewhere.grpc.model.BatchModel.GBatchOperationUpdateRequest;
 import com.sitewhere.grpc.model.BatchModel.GElementProcessingStatus;
+import com.sitewhere.grpc.model.BatchModel.GUnprocessedBatchElement;
 import com.sitewhere.grpc.model.BatchModel.GUnprocessedBatchOperation;
 import com.sitewhere.grpc.model.CommonModel.GOptionalString;
 import com.sitewhere.rest.model.batch.BatchElement;
 import com.sitewhere.rest.model.batch.BatchOperation;
+import com.sitewhere.rest.model.batch.kafka.UnprocessedBatchElement;
 import com.sitewhere.rest.model.batch.kafka.UnprocessedBatchOperation;
 import com.sitewhere.rest.model.batch.request.BatchCommandInvocationRequest;
 import com.sitewhere.rest.model.batch.request.BatchElementCreateRequest;
@@ -40,6 +42,7 @@ import com.sitewhere.spi.batch.BatchOperationStatus;
 import com.sitewhere.spi.batch.ElementProcessingStatus;
 import com.sitewhere.spi.batch.IBatchElement;
 import com.sitewhere.spi.batch.IBatchOperation;
+import com.sitewhere.spi.batch.kafka.IUnprocessedBatchElement;
 import com.sitewhere.spi.batch.kafka.IUnprocessedBatchOperation;
 import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.batch.request.IBatchElementCreateRequest;
@@ -497,6 +500,34 @@ public class BatchModelConverter {
 	GUnprocessedBatchOperation.Builder grpc = GUnprocessedBatchOperation.newBuilder();
 	grpc.setBatchOperation(BatchModelConverter.asGrpcBatchOperation(api.getBatchOperation()));
 	grpc.addAllDeviceTokens(api.getDeviceTokens());
+	return grpc.build();
+    }
+
+    /**
+     * Convert unprocessed batch element from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static UnprocessedBatchElement asApiUnprocessedBatchElement(GUnprocessedBatchElement grpc)
+	    throws SiteWhereException {
+	UnprocessedBatchElement api = new UnprocessedBatchElement();
+	api.setBatchElement(BatchModelConverter.asApiBatchElement(grpc.getBatchElement()));
+	return api;
+    }
+
+    /**
+     * Convert unprocessed batch element from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GUnprocessedBatchElement asGrpcUnprocessedBatchElement(IUnprocessedBatchElement api)
+	    throws SiteWhereException {
+	GUnprocessedBatchElement.Builder grpc = GUnprocessedBatchElement.newBuilder();
+	grpc.setBatchElement(BatchModelConverter.asGrpcBatchElement(api.getBatchElement()));
 	return grpc.build();
     }
 }

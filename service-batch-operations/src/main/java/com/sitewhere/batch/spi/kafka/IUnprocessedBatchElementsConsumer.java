@@ -10,9 +10,9 @@ package com.sitewhere.batch.spi.kafka;
 import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer;
 
 /**
- * Consumer for batch operations that have not been processed.
+ * Consumer for batch elements that have not been processed.
  * 
  * @author Derek
  */
-public interface IUnprocessedBatchOperationsConsumer extends IMicroserviceKafkaConsumer {
+public interface IUnprocessedBatchElementsConsumer extends IMicroserviceKafkaConsumer {
 }
