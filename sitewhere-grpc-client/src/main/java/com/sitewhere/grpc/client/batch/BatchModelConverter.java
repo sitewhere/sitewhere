@@ -23,6 +23,7 @@ import com.sitewhere.grpc.model.BatchModel.GBatchOperationSearchResults;
 import com.sitewhere.grpc.model.BatchModel.GBatchOperationStatus;
 import com.sitewhere.grpc.model.BatchModel.GBatchOperationUpdateRequest;
 import com.sitewhere.grpc.model.BatchModel.GElementProcessingStatus;
+import com.sitewhere.grpc.model.BatchModel.GElementProcessingStatusFilter;
 import com.sitewhere.grpc.model.BatchModel.GUnprocessedBatchElement;
 import com.sitewhere.grpc.model.BatchModel.GUnprocessedBatchOperation;
 import com.sitewhere.grpc.model.CommonModel.GOptionalString;
@@ -400,7 +401,10 @@ public class BatchModelConverter {
 	    throws SiteWhereException {
 	BatchElementSearchCriteria api = new BatchElementSearchCriteria(grpc.getPaging().getPageNumber(),
 		grpc.getPaging().getPageSize());
-	api.setProcessingStatus(BatchModelConverter.asApiElementProcessingStatus(grpc.getProcessingStatus()));
+	if (grpc.hasProcessingStatusFilter()) {
+	    api.setProcessingStatus(BatchModelConverter
+		    .asApiElementProcessingStatus(grpc.getProcessingStatusFilter().getProcessingStatus()));
+	}
 	return api;
     }
 
@@ -416,7 +420,9 @@ public class BatchModelConverter {
 	GBatchElementSearchCriteria.Builder grpc = GBatchElementSearchCriteria.newBuilder();
 	grpc.setPaging(CommonModelConverter.asGrpcPaging(api));
 	if (api.getProcessingStatus() != null) {
-	    grpc.setProcessingStatus(BatchModelConverter.asGrpcElementProcessingStatus(api.getProcessingStatus()));
+	    GElementProcessingStatusFilter.Builder filter = GElementProcessingStatusFilter.newBuilder();
+	    filter.setProcessingStatus(BatchModelConverter.asGrpcElementProcessingStatus(api.getProcessingStatus()));
+	    grpc.setProcessingStatusFilter(filter);
 	}
 	return grpc.build();
     }

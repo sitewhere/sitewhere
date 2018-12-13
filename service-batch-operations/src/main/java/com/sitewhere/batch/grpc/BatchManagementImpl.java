@@ -8,6 +8,7 @@
 package com.sitewhere.batch.grpc;
 
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
+import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.batch.BatchModelConverter;
 import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
@@ -44,6 +45,7 @@ import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 
 import io.grpc.stub.StreamObserver;
 
@@ -266,9 +268,12 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 	    StreamObserver<GListBatchElementsResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, BatchManagementGrpc.getListBatchElementsMethod());
-	    ISearchResults<IBatchElement> apiResult = getBatchManagement().listBatchElements(
-		    CommonModelConverter.asApiUuid(request.getBatchOperationId()),
-		    BatchModelConverter.asApiBatchElementSearchCriteria(request.getCriteria()));
+	    IBatchElementSearchCriteria criteria = BatchModelConverter
+		    .asApiBatchElementSearchCriteria(request.getCriteria());
+	    getMicroservice().getLogger()
+		    .info("Batch element search criteria:\n" + MarshalUtils.marshalJsonAsPrettyString(criteria));
+	    ISearchResults<IBatchElement> apiResult = getBatchManagement()
+		    .listBatchElements(CommonModelConverter.asApiUuid(request.getBatchOperationId()), criteria);
 	    GListBatchElementsResponse.Builder response = GListBatchElementsResponse.newBuilder();
 	    GBatchElementSearchResults.Builder results = GBatchElementSearchResults.newBuilder();
 	    for (IBatchElement api : apiResult.getResults()) {
