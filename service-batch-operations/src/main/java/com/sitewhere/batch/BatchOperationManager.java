@@ -15,7 +15,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 import com.sitewhere.batch.handler.BatchCommandInvocationHandler;
 import com.sitewhere.batch.kafka.UnprocessedBatchElementsConsumer;
@@ -391,58 +390,6 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 	protected IUnprocessedBatchOperation getUnprocessed() {
 	    return unprocessed;
 	}
-
-	/**
-	 * Processes a page of batch elements.
-	 * 
-	 * @param operation
-	 * @param elements
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@SuppressWarnings("unused")
-	protected BatchProcessingResults processBatchElements(IBatchOperation operation, List<IBatchElement> elements)
-		throws SiteWhereException {
-	    BatchProcessingResults results = new BatchProcessingResults();
-	    for (IBatchElement element : elements) {
-		// Check whether manager has been paused.
-		handlePauseAndThrottle();
-
-		// Only process unprocessed elements.
-		if (element.getProcessingStatus() != ElementProcessingStatus.Unprocessed) {
-		    continue;
-		}
-
-		// Indicate element is being processed.
-		BatchElementCreateRequest request = new BatchElementCreateRequest();
-		request.setProcessingStatus(ElementProcessingStatus.Processing);
-		getBatchManagement().updateBatchElement(element.getBatchOperationId(), request);
-
-		request = new BatchElementCreateRequest();
-		ElementProcessingStatus status = ElementProcessingStatus.Succeeded;
-		try {
-		    IBatchOperationHandler handler = getHandlersByOperationType().get(operation.getOperationType());
-		    if (handler != null) {
-			status = handler.process(operation, element, request);
-		    } else {
-			status = ElementProcessingStatus.Failed;
-		    }
-
-		    // Indicate element succeeded in processing.
-		    request.setProcessingStatus(status);
-		    request.setProcessedDate(new Date());
-		} catch (SiteWhereException t) {
-		    // Indicate element failed in processing.
-		    getLogger().error("Error processing batch invocation element.", t);
-		    request.setProcessingStatus(ElementProcessingStatus.Failed);
-		} finally {
-		    IBatchElement updated = getBatchManagement().updateBatchElement(element.getBatchOperationId(),
-			    request);
-		    results.process(updated);
-		}
-	    }
-	    return results;
-	}
     }
 
     /**
@@ -467,6 +414,43 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 	@Override
 	public void runAsSystemUser() throws SiteWhereException {
 	    getLogger().info("Processing batch element: " + getUnprocessed().getBatchElement().getId().toString());
+
+	    // Check whether manager has been paused.
+	    handlePauseAndThrottle();
+
+	    // Only process unprocessed elements.
+	    IBatchElement element = getUnprocessed().getBatchElement();
+	    IBatchOperation operation = getBatchManagement().getBatchOperation(element.getBatchOperationId());
+	    if (element.getProcessingStatus() != ElementProcessingStatus.Unprocessed) {
+		return;
+	    }
+
+	    // Indicate element is being processed.
+	    BatchElementCreateRequest request = new BatchElementCreateRequest();
+	    request.setProcessingStatus(ElementProcessingStatus.Processing);
+	    getBatchManagement().updateBatchElement(element.getId(), request);
+
+	    request = new BatchElementCreateRequest();
+	    request.setMetadata(new HashMap<String, String>());
+	    ElementProcessingStatus status = ElementProcessingStatus.Succeeded;
+	    try {
+		IBatchOperationHandler handler = getHandlersByOperationType().get(operation.getOperationType());
+		if (handler != null) {
+		    status = handler.process(operation, element, request);
+		} else {
+		    status = ElementProcessingStatus.Failed;
+		}
+
+		// Indicate element succeeded in processing.
+		request.setProcessingStatus(status);
+		request.setProcessedDate(new Date());
+	    } catch (SiteWhereException t) {
+		// Indicate element failed in processing.
+		getLogger().error("Error processing batch invocation element.", t);
+		request.setProcessingStatus(ElementProcessingStatus.Failed);
+	    } finally {
+		getBatchManagement().updateBatchElement(element.getId(), request);
+	    }
 	}
 
 	protected IUnprocessedBatchElement getUnprocessed() {
@@ -505,54 +489,6 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 	return processorPool;
     }
 
-    /**
-     * Used to track status of processed elements.
-     * 
-     * @author Derek
-     */
-    private class BatchProcessingResults {
-
-	// Count of successfully processed elements.
-	private AtomicLong success = new AtomicLong();
-
-	// Count of elements that failed to process.
-	private AtomicLong failed = new AtomicLong();
-
-	public void process(IBatchElement element) {
-	    switch (element.getProcessingStatus()) {
-	    case Succeeded: {
-		success.incrementAndGet();
-		break;
-	    }
-	    case Failed: {
-		failed.incrementAndGet();
-		break;
-	    }
-	    case Processing:
-	    case Unprocessed: {
-		getLogger().warn("Batch element was not in an expected state: " + element.getProcessingStatus());
-		break;
-	    }
-	    }
-	}
-
-	@SuppressWarnings("unused")
-	public long getErrorCount() {
-	    return failed.get();
-	}
-    }
-
-    /** Used for naming batch operation processor threads */
-    private class ProcessorsThreadFactory implements ThreadFactory {
-
-	/** Counts threads */
-	private AtomicInteger counter = new AtomicInteger();
-
-	public Thread newThread(Runnable r) {
-	    return new Thread(r, "Batch Operation Processor " + counter.incrementAndGet());
-	}
-    }
-
     protected IUnprocessedBatchElementsProducer getUnprocessedBatchElementsProducer() {
 	return ((IBatchOperationsTenantEngine) getTenantEngine()).getUnprocessedBatchElementsProducer();
     }
@@ -567,5 +503,16 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 
     protected IBatchManagement getBatchManagement() {
 	return ((IBatchOperationsTenantEngine) getTenantEngine()).getBatchManagement();
+    }
+
+    /** Used for naming batch operation processor threads */
+    private class ProcessorsThreadFactory implements ThreadFactory {
+
+	/** Counts threads */
+	private AtomicInteger counter = new AtomicInteger();
+
+	public Thread newThread(Runnable r) {
+	    return new Thread(r, "Batch Operation Processor " + counter.incrementAndGet());
+	}
     }
 }

@@ -85,7 +85,7 @@ public class BatchCommandInvocationHandler extends TenantEngineLifecycleComponen
 	DeviceCommandInvocationCreateRequest request = new DeviceCommandInvocationCreateRequest();
 	request.setCommandToken(command.getToken());
 	request.setInitiator(CommandInitiator.BatchOperation);
-	request.setInitiatorId(null);
+	request.setInitiatorId(operation.getId().toString());
 	request.setTarget(CommandTarget.Assignment);
 	request.setTargetId(assignment.getToken());
 	request.setParameterValues(operation.getMetadata());
@@ -103,12 +103,11 @@ public class BatchCommandInvocationHandler extends TenantEngineLifecycleComponen
     }
 
     public IDeviceManagementApiChannel<?> getDeviceManagement() {
-	return ((IBatchOperationsMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiDemux()
-		.getApiChannel();
+	return ((IBatchOperationsMicroservice) getMicroservice()).getDeviceManagementApiDemux().getApiChannel();
     }
 
     public IDeviceEventManagement getDeviceEventManagement() {
-	return new BlockingDeviceEventManagement(((IBatchOperationsMicroservice) getTenantEngine().getMicroservice())
-		.getDeviceEventManagementApiDemux().getApiChannel());
+	return new BlockingDeviceEventManagement(
+		((IBatchOperationsMicroservice) getMicroservice()).getDeviceEventManagementApiDemux().getApiChannel());
     }
 }
