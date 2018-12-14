@@ -4,7 +4,7 @@ dependencies {
 	compile project(':sitewhere-core')
     
      // Protobuf device API.
-    compile group: 'com.sitewhere', name: 'sitewhere-device-protobuf', version:'2.0.0-SNAPSHOT'
+    compile group: 'com.sitewhere', name: 'sitewhere-device-protobuf', version:'2.0.1'
     
      // CoAP dependencies.
     compile group: 'org.eclipse.californium', name: 'californium-core', version:'1.0.4'
