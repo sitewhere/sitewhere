@@ -506,9 +506,15 @@ public class InfluxDbDeviceEvent {
 	builder.tag(EVENT_TYPE, event.getEventType().name());
 	builder.tag(EVENT_DEVICE, event.getDeviceId().toString());
 	builder.tag(EVENT_ASSIGNMENT, event.getDeviceAssignmentId().toString());
-	builder.tag(EVENT_CUSTOMER, event.getCustomerId().toString());
-	builder.tag(EVENT_AREA, event.getAreaId().toString());
-	builder.tag(EVENT_ASSET, event.getAssetId().toString());
+	if (event.getCustomerId() != null) {
+	    builder.tag(EVENT_CUSTOMER, event.getCustomerId().toString());
+	}
+	if (event.getAreaId() != null) {
+	    builder.tag(EVENT_AREA, event.getAreaId().toString());
+	}
+	if (event.getAssetId() != null) {
+	    builder.tag(EVENT_ASSET, event.getAssetId().toString());
+	}
 	builder.addField(RECEIVED_DATE, ISODateTimeFormat.dateTime().print(event.getReceivedDate().getTime()));
 
 	// Add field for each metadata value.
