@@ -8,11 +8,7 @@ SiteWhere is an industrial-strength open source IoT Application Enablement Platf
 that facilitates the ingestion, storage, processing, and integration of device data 
 at massive scale. The platform is based on a modern microservices architecture and has 
 been designed from the ground up for reliable, high throughput, low latency processing
-and dynamic scalability. SiteWhere takes advantage of proven technologies such as
-Apache Kafka and Docker in order to scale efficiently to the loads expected in large IoT
-projects. Rather than using a monolithic architecture, SiteWhere embraces a completely 
-distributed approach using microservices to allow scaling at the component level so 
-that the system may be tailored to the customer use case.
+and dynamic scalability. 
 
 ![SiteWhere Electron App](https://s3.amazonaws.com/sitewhere-web/github-readme/vue-user-interface.png "SiteWhere Electron Application")
 
