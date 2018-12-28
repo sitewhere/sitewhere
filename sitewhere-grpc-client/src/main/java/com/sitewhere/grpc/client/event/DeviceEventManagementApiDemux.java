@@ -25,6 +25,10 @@ import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 public class DeviceEventManagementApiDemux extends MultitenantApiDemux<IDeviceEventManagementApiChannel<?>>
 	implements IDeviceEventManagementApiDemux {
 
+    public DeviceEventManagementApiDemux(boolean cacheEnabled) {
+	super(cacheEnabled);
+    }
+
     /*
      * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
@@ -35,10 +39,12 @@ public class DeviceEventManagementApiDemux extends MultitenantApiDemux<IDeviceEv
 
     /*
      * @see
-     * com.sitewhere.grpc.model.spi.IApiDemux#createApiChannel(java.lang.String)
+     * com.sitewhere.grpc.client.spi.IApiDemux#createApiChannel(java.lang.String,
+     * boolean)
      */
     @Override
-    public IDeviceEventManagementApiChannel<?> createApiChannel(String host) throws SiteWhereException {
+    public IDeviceEventManagementApiChannel<?> createApiChannel(String host, boolean enableCaching)
+	    throws SiteWhereException {
 	return new DeviceEventManagementApiChannel(this, host, getMicroservice().getInstanceSettings().getGrpcPort());
     }
 }

@@ -31,6 +31,13 @@ public interface IApiDemux<T extends IApiChannel> extends ITenantEngineLifecycle
     public IFunctionIdentifier getTargetIdentifier();
 
     /**
+     * Indicates if channel-level caching is enabled.
+     * 
+     * @return
+     */
+    public boolean isCacheEnabled();
+
+    /**
      * Wait for an instance of the remote microservice to become available. This
      * does not guarantee that tenant engines are available.
      */
@@ -55,10 +62,11 @@ public interface IApiDemux<T extends IApiChannel> extends ITenantEngineLifecycle
      * Create an API channel to the given host.
      * 
      * @param host
+     * @param cacheEnabled
      * @return
      * @throws SiteWhereException
      */
-    public T createApiChannel(String host) throws SiteWhereException;
+    public T createApiChannel(String host, boolean cacheEnabled) throws SiteWhereException;
 
     /**
      * Initialize a new API channel for the given host.

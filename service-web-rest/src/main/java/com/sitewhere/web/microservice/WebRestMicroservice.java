@@ -210,31 +210,31 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
      */
     protected void createGrpcComponents() throws SiteWhereException {
 	// User management.
-	this.userManagementApiDemux = new UserManagementApiDemux();
+	this.userManagementApiDemux = new UserManagementApiDemux(false);
 
 	// Tenant management.
-	this.tenantManagementApiDemux = new TenantManagementApiDemux();
+	this.tenantManagementApiDemux = new TenantManagementApiDemux(false);
 
 	// Device management.
-	this.deviceManagementApiDemux = new DeviceManagementApiDemux();
+	this.deviceManagementApiDemux = new DeviceManagementApiDemux(false);
 
 	// Device event management.
-	this.deviceEventManagementApiDemux = new DeviceEventManagementApiDemux();
+	this.deviceEventManagementApiDemux = new DeviceEventManagementApiDemux(false);
 
 	// Asset management.
-	this.assetManagementApiDemux = new AssetManagementApiDemux();
+	this.assetManagementApiDemux = new AssetManagementApiDemux(false);
 
 	// Batch management.
-	this.batchManagementApiDemux = new BatchManagementApiDemux();
+	this.batchManagementApiDemux = new BatchManagementApiDemux(false);
 
 	// Schedule management.
-	this.scheduleManagementApiDemux = new ScheduleManagementApiDemux();
+	this.scheduleManagementApiDemux = new ScheduleManagementApiDemux(false);
 
 	// Label generation.
-	this.labelGenerationApiDemux = new LabelGenerationApiDemux();
+	this.labelGenerationApiDemux = new LabelGenerationApiDemux(false);
 
 	// Device state.
-	this.deviceStateApiDemux = new DeviceStateApiDemux();
+	this.deviceStateApiDemux = new DeviceStateApiDemux(false);
     }
 
     /*

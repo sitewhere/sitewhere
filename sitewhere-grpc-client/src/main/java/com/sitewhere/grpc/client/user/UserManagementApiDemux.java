@@ -23,6 +23,10 @@ import com.sitewhere.spi.microservice.MicroserviceIdentifier;
  */
 public class UserManagementApiDemux extends ApiDemux<IUserManagementApiChannel<?>> implements IUserManagementApiDemux {
 
+    public UserManagementApiDemux(boolean cacheEnabled) {
+	super(cacheEnabled);
+    }
+
     /*
      * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
@@ -33,10 +37,16 @@ public class UserManagementApiDemux extends ApiDemux<IUserManagementApiChannel<?
 
     /*
      * @see
-     * com.sitewhere.grpc.model.spi.IApiDemux#createApiChannel(java.lang.String)
+     * com.sitewhere.grpc.client.spi.IApiDemux#createApiChannel(java.lang.String,
+     * boolean)
      */
     @Override
-    public IUserManagementApiChannel<?> createApiChannel(String host) throws SiteWhereException {
-	return new CachedUserManagementApiChannel(this, host, getMicroservice().getInstanceSettings().getGrpcPort());
+    public IUserManagementApiChannel<?> createApiChannel(String host, boolean cacheEnabled) throws SiteWhereException {
+	CachedUserManagementApiChannel.CacheSettings settings = new CachedUserManagementApiChannel.CacheSettings();
+	if (!cacheEnabled) {
+	    settings.getUserConfiguration().setEnabled(false);
+	}
+	return new CachedUserManagementApiChannel(this, host, getMicroservice().getInstanceSettings().getGrpcPort(),
+		settings);
     }
 }

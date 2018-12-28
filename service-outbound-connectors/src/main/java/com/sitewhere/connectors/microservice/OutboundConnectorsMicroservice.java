@@ -180,10 +180,10 @@ public class OutboundConnectorsMicroservice
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiDemux = new DeviceManagementApiDemux();
+	this.deviceManagementApiDemux = new DeviceManagementApiDemux(true);
 
 	// Device event management.
-	this.deviceEventManagementApiDemux = new DeviceEventManagementApiDemux();
+	this.deviceEventManagementApiDemux = new DeviceEventManagementApiDemux(true);
     }
 
     /*

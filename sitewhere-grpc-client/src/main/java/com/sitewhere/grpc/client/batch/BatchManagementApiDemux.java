@@ -24,6 +24,10 @@ import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 public class BatchManagementApiDemux extends MultitenantApiDemux<IBatchManagementApiChannel<?>>
 	implements IBatchManagementApiDemux {
 
+    public BatchManagementApiDemux(boolean cacheEnabled) {
+	super(cacheEnabled);
+    }
+
     /*
      * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
@@ -34,10 +38,12 @@ public class BatchManagementApiDemux extends MultitenantApiDemux<IBatchManagemen
 
     /*
      * @see
-     * com.sitewhere.grpc.model.spi.IApiDemux#createApiChannel(java.lang.String)
+     * com.sitewhere.grpc.client.spi.IApiDemux#createApiChannel(java.lang.String,
+     * boolean)
      */
     @Override
-    public IBatchManagementApiChannel<?> createApiChannel(String host) throws SiteWhereException {
+    public IBatchManagementApiChannel<?> createApiChannel(String host, boolean enableCaching)
+	    throws SiteWhereException {
 	return new BatchManagementApiChannel(this, host, getMicroservice().getInstanceSettings().getGrpcPort());
     }
 }

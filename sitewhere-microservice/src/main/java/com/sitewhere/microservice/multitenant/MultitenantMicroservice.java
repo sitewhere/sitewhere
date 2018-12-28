@@ -113,7 +113,7 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
      * Create components that interact via GRPC.
      */
     private void createGrpcComponents() {
-	this.tenantManagementApiDemux = new TenantManagementApiDemux();
+	this.tenantManagementApiDemux = new TenantManagementApiDemux(true);
     }
 
     /*

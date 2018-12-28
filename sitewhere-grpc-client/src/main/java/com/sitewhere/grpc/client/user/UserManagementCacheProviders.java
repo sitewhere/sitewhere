@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.sitewhere.grpc.client.cache.CacheIdentifier;
 import com.sitewhere.grpc.client.cache.CacheProvider;
+import com.sitewhere.grpc.client.spi.cache.ICacheConfiguration;
 import com.sitewhere.spi.user.IUser;
 
 /**
@@ -27,8 +28,8 @@ public class UserManagementCacheProviders {
      */
     public static class UserByTokenCache extends CacheProvider<String, IUser> {
 
-	public UserByTokenCache() {
-	    super(CacheIdentifier.UserByToken, String.class, IUser.class, 100, 60);
+	public UserByTokenCache(ICacheConfiguration configuration) {
+	    super(CacheIdentifier.UserByToken, String.class, IUser.class, configuration);
 	}
     }
 
@@ -40,8 +41,8 @@ public class UserManagementCacheProviders {
     @SuppressWarnings("rawtypes")
     public static class GrantedAuthorityByTokenCache extends CacheProvider<String, List> {
 
-	public GrantedAuthorityByTokenCache() {
-	    super(CacheIdentifier.GrantedAuthorityByToken, String.class, List.class, 100, 60);
+	public GrantedAuthorityByTokenCache(ICacheConfiguration configuration) {
+	    super(CacheIdentifier.GrantedAuthorityByToken, String.class, List.class, configuration);
 	}
     }
 }
