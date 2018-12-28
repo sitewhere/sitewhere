@@ -7,6 +7,7 @@
  */
 package com.sitewhere.grpc.client.cache;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -16,6 +17,7 @@ import org.ehcache.CacheManager;
 import org.ehcache.config.CacheConfiguration;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.CacheManagerBuilder;
+import org.ehcache.config.builders.ExpiryPolicyBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
 
 import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
@@ -65,6 +67,7 @@ public abstract class CacheProvider<K, V> extends LifecycleComponent implements 
 	this.keyType = keyType;
 	this.valueType = valueType;
 	this.maximumSize = maximumSize;
+	this.ttlInSeconds = ttlInSeconds;
     }
 
     /*
@@ -174,13 +177,9 @@ public abstract class CacheProvider<K, V> extends LifecycleComponent implements 
      * @return
      */
     protected CacheConfiguration<K, V> getCacheConfiguration() {
-	// return CacheConfigurationBuilder
-	// .newCacheConfigurationBuilder(getKeyType(), getValueType(),
-	// ResourcePoolsBuilder.heap(getMaximumSize()))
-	// .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(getTtlInSeconds()))).build();
 	return CacheConfigurationBuilder
 		.newCacheConfigurationBuilder(getKeyType(), getValueType(), ResourcePoolsBuilder.heap(getMaximumSize()))
-		.build();
+		.withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(getTtlInSeconds()))).build();
     }
 
     /*
