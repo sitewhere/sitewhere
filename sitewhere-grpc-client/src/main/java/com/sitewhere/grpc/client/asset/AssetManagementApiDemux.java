@@ -24,6 +24,10 @@ import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 public class AssetManagementApiDemux extends MultitenantApiDemux<IAssetManagementApiChannel<?>>
 	implements IAssetManagementApiDemux {
 
+    public AssetManagementApiDemux(boolean cacheEnabled) {
+	super(cacheEnabled);
+    }
+
     /*
      * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
@@ -34,10 +38,17 @@ public class AssetManagementApiDemux extends MultitenantApiDemux<IAssetManagemen
 
     /*
      * @see
-     * com.sitewhere.grpc.model.spi.IApiDemux#createApiChannel(java.lang.String)
+     * com.sitewhere.grpc.client.spi.IApiDemux#createApiChannel(java.lang.String,
+     * boolean)
      */
     @Override
-    public IAssetManagementApiChannel<?> createApiChannel(String host) throws SiteWhereException {
-	return new CachedAssetManagementApiChannel(this, host, getMicroservice().getInstanceSettings().getGrpcPort());
+    public IAssetManagementApiChannel<?> createApiChannel(String host, boolean cacheEnabled) throws SiteWhereException {
+	CachedAssetManagementApiChannel.CacheSettings settings = new CachedAssetManagementApiChannel.CacheSettings();
+	if (!cacheEnabled) {
+	    settings.getAssetTypeConfiguration().setEnabled(false);
+	    settings.getAssetConfiguration().setEnabled(false);
+	}
+	return new CachedAssetManagementApiChannel(this, host, getMicroservice().getInstanceSettings().getGrpcPort(),
+		settings);
     }
 }

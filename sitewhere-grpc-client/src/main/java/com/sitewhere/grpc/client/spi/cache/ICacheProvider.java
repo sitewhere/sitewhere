@@ -30,18 +30,11 @@ public interface ICacheProvider<K, V> extends ILifecycleComponent {
     public CacheIdentifier getCacheIdentifier();
 
     /**
-     * Get maximum size for cache.
+     * Get cache configuration settings.
      * 
      * @return
      */
-    public int getMaximumSize();
-
-    /**
-     * Get time to live in seconds.
-     * 
-     * @return
-     */
-    public int getTtlInSeconds();
+    public ICacheConfiguration getCacheConfiguration();
 
     /**
      * Set a cache entry.

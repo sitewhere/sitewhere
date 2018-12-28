@@ -252,7 +252,7 @@ public class UserManagementMicroservice extends GlobalMicroservice<MicroserviceI
      */
     protected void createGrpcComponents() {
 	this.userManagementGrpcServer = new UserManagementGrpcServer(this, getUserManagementAccessor());
-	this.tenantManagementApiDemux = new TenantManagementApiDemux();
+	this.tenantManagementApiDemux = new TenantManagementApiDemux(true);
     }
 
     /*

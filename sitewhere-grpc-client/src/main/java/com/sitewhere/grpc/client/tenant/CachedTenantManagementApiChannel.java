@@ -9,7 +9,9 @@ package com.sitewhere.grpc.client.tenant;
 
 import java.util.UUID;
 
+import com.sitewhere.grpc.client.cache.CacheConfiguration;
 import com.sitewhere.grpc.client.spi.IApiDemux;
+import com.sitewhere.grpc.client.spi.cache.ICacheConfiguration;
 import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -28,10 +30,11 @@ public class CachedTenantManagementApiChannel extends TenantManagementApiChannel
     /** Tenant by id cache */
     private ICacheProvider<UUID, ITenant> tenantByIdCache;
 
-    public CachedTenantManagementApiChannel(IApiDemux<?> demux, String host, int port) {
+    public CachedTenantManagementApiChannel(IApiDemux<?> demux, String host, int port, CacheSettings settings) {
 	super(demux, host, port);
-	this.tenantByTokenCache = new TenantManagementCacheProviders.TenantByTokenCache();
-	this.tenantByIdCache = new TenantManagementCacheProviders.TenantByIdCache();
+	this.tenantByTokenCache = new TenantManagementCacheProviders.TenantByTokenCache(
+		settings.getTenantConfiguration());
+	this.tenantByIdCache = new TenantManagementCacheProviders.TenantByIdCache(settings.getTenantConfiguration());
     }
 
     /*
@@ -98,6 +101,23 @@ public class CachedTenantManagementApiChannel extends TenantManagementApiChannel
 	    getTenantByTokenCache().setCacheEntry(null, token, tenant);
 	}
 	return tenant;
+    }
+
+    /**
+     * Contains default cache settings for tenant management entities.
+     */
+    public static class CacheSettings {
+
+	/** Cache configuraton for tenants */
+	private ICacheConfiguration tenantConfiguration = new CacheConfiguration(1000, 60);
+
+	public ICacheConfiguration getTenantConfiguration() {
+	    return tenantConfiguration;
+	}
+
+	public void setTenantConfiguration(ICacheConfiguration tenantConfiguration) {
+	    this.tenantConfiguration = tenantConfiguration;
+	}
     }
 
     public ICacheProvider<String, ITenant> getTenantByTokenCache() {

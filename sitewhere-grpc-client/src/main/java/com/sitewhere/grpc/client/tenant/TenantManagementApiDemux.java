@@ -24,6 +24,10 @@ import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 public class TenantManagementApiDemux extends ApiDemux<ITenantManagementApiChannel<?>>
 	implements ITenantManagementApiDemux {
 
+    public TenantManagementApiDemux(boolean cacheEnabled) {
+	super(cacheEnabled);
+    }
+
     /*
      * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
@@ -34,10 +38,17 @@ public class TenantManagementApiDemux extends ApiDemux<ITenantManagementApiChann
 
     /*
      * @see
-     * com.sitewhere.grpc.model.spi.IApiDemux#createApiChannel(java.lang.String)
+     * com.sitewhere.grpc.client.spi.IApiDemux#createApiChannel(java.lang.String,
+     * boolean)
      */
     @Override
-    public ITenantManagementApiChannel<?> createApiChannel(String host) throws SiteWhereException {
-	return new CachedTenantManagementApiChannel(this, host, getMicroservice().getInstanceSettings().getGrpcPort());
+    public ITenantManagementApiChannel<?> createApiChannel(String host, boolean cacheEnabled)
+	    throws SiteWhereException {
+	CachedTenantManagementApiChannel.CacheSettings settings = new CachedTenantManagementApiChannel.CacheSettings();
+	if (!cacheEnabled) {
+	    settings.getTenantConfiguration().setEnabled(false);
+	}
+	return new CachedTenantManagementApiChannel(this, host, getMicroservice().getInstanceSettings().getGrpcPort(),
+		settings);
     }
 }

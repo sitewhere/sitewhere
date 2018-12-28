@@ -191,7 +191,7 @@ public class EventManagementMicroservice
 	this.eventManagementGrpcServer = new EventManagementGrpcServer(this);
 
 	// Device management.
-	this.deviceManagementApiDemux = new DeviceManagementApiDemux();
+	this.deviceManagementApiDemux = new DeviceManagementApiDemux(true);
     }
 
     /*

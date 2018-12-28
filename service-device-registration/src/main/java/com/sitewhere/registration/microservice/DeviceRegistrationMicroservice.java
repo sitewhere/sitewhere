@@ -163,7 +163,7 @@ public class DeviceRegistrationMicroservice
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiDemux = new DeviceManagementApiDemux();
+	this.deviceManagementApiDemux = new DeviceManagementApiDemux(true);
     }
 
     /*

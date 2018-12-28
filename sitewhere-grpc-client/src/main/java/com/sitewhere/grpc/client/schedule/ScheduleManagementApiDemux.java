@@ -24,6 +24,10 @@ import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 public class ScheduleManagementApiDemux extends MultitenantApiDemux<IScheduleManagementApiChannel<?>>
 	implements IScheduleManagementApiDemux {
 
+    public ScheduleManagementApiDemux(boolean cacheEnabled) {
+	super(cacheEnabled);
+    }
+
     /*
      * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
@@ -34,10 +38,12 @@ public class ScheduleManagementApiDemux extends MultitenantApiDemux<IScheduleMan
 
     /*
      * @see
-     * com.sitewhere.grpc.model.spi.IApiDemux#createApiChannel(java.lang.String)
+     * com.sitewhere.grpc.client.spi.IApiDemux#createApiChannel(java.lang.String,
+     * boolean)
      */
     @Override
-    public IScheduleManagementApiChannel<?> createApiChannel(String host) throws SiteWhereException {
+    public IScheduleManagementApiChannel<?> createApiChannel(String host, boolean enableCaching)
+	    throws SiteWhereException {
 	return new ScheduleManagementApiChannel(this, host, getMicroservice().getInstanceSettings().getGrpcPort());
     }
 }

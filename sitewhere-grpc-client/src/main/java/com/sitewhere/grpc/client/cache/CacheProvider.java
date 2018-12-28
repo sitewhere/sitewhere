@@ -20,6 +20,7 @@ import org.ehcache.config.builders.CacheManagerBuilder;
 import org.ehcache.config.builders.ExpiryPolicyBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
 
+import com.sitewhere.grpc.client.spi.cache.ICacheConfiguration;
 import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -48,26 +49,22 @@ public abstract class CacheProvider<K, V> extends LifecycleComponent implements 
     /** Value type */
     private Class<V> valueType;
 
+    /** Cache configuration */
+    private ICacheConfiguration cacheConfiguration;
+
     /** Cache for global objects */
     private Cache<K, V> globalCache;
 
     /** Map of tenant-specific caches */
     private Map<UUID, Cache<K, V>> tenantCaches = new HashMap<>();
 
-    /** Maximum cache size */
-    private int maximumSize;
-
-    /** Time to live in seconds */
-    private int ttlInSeconds;
-
-    public CacheProvider(CacheIdentifier cacheIdentifier, Class<K> keyType, Class<V> valueType, int maximumSize,
-	    int ttlInSeconds) {
+    public CacheProvider(CacheIdentifier cacheIdentifier, Class<K> keyType, Class<V> valueType,
+	    ICacheConfiguration cacheConfiguration) {
 	this.cacheManager = CacheManagerBuilder.newCacheManagerBuilder().build();
 	this.cacheIdentifier = cacheIdentifier;
 	this.keyType = keyType;
 	this.valueType = valueType;
-	this.maximumSize = maximumSize;
-	this.ttlInSeconds = ttlInSeconds;
+	this.cacheConfiguration = cacheConfiguration;
     }
 
     /*
@@ -100,7 +97,7 @@ public abstract class CacheProvider<K, V> extends LifecycleComponent implements 
     @Override
     public void setCacheEntry(ITenant tenant, K key, V value) throws SiteWhereException {
 	getLogger().debug("Caching value for '" + key.toString() + "'.");
-	if (value != null) {
+	if ((value != null) && (getCacheConfiguration().isEnabled())) {
 	    getCache(tenant).put(key, value);
 	} else {
 	    getCache(tenant).remove(key);
@@ -168,7 +165,7 @@ public abstract class CacheProvider<K, V> extends LifecycleComponent implements 
     protected Cache<K, V> createCache(ITenant tenant) {
 	String alias = (tenant != null) ? getCacheIdentifier().getCacheKey() + "-" + tenant.getId().toString()
 		: getCacheIdentifier().getCacheKey();
-	return getCacheManager().createCache(alias, getCacheConfiguration());
+	return getCacheManager().createCache(alias, buildCacheConfiguration());
     }
 
     /**
@@ -176,10 +173,13 @@ public abstract class CacheProvider<K, V> extends LifecycleComponent implements 
      * 
      * @return
      */
-    protected CacheConfiguration<K, V> getCacheConfiguration() {
+    protected CacheConfiguration<K, V> buildCacheConfiguration() {
 	return CacheConfigurationBuilder
-		.newCacheConfigurationBuilder(getKeyType(), getValueType(), ResourcePoolsBuilder.heap(getMaximumSize()))
-		.withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(getTtlInSeconds()))).build();
+		.newCacheConfigurationBuilder(getKeyType(), getValueType(),
+			ResourcePoolsBuilder.heap(getCacheConfiguration().getMaximumSize()))
+		.withExpiry(ExpiryPolicyBuilder
+			.timeToLiveExpiration(Duration.ofSeconds(getCacheConfiguration().getTtlInSeconds())))
+		.build();
     }
 
     /*
@@ -195,27 +195,16 @@ public abstract class CacheProvider<K, V> extends LifecycleComponent implements 
     }
 
     /*
-     * @see com.sitewhere.grpc.client.spi.cache.ICacheProvider#getMaximumSize()
+     * @see
+     * com.sitewhere.grpc.client.spi.cache.ICacheProvider#getCacheConfiguration()
      */
     @Override
-    public int getMaximumSize() {
-	return maximumSize;
+    public ICacheConfiguration getCacheConfiguration() {
+	return cacheConfiguration;
     }
 
-    public void setMaximumSize(int maximumSize) {
-	this.maximumSize = maximumSize;
-    }
-
-    /*
-     * @see com.sitewhere.grpc.client.spi.cache.ICacheProvider#getTtlInSeconds()
-     */
-    @Override
-    public int getTtlInSeconds() {
-	return ttlInSeconds;
-    }
-
-    public void setTtlInSeconds(int ttlInSeconds) {
-	this.ttlInSeconds = ttlInSeconds;
+    public void setCacheConfiguration(ICacheConfiguration cacheConfiguration) {
+	this.cacheConfiguration = cacheConfiguration;
     }
 
     protected CacheManager getCacheManager() {

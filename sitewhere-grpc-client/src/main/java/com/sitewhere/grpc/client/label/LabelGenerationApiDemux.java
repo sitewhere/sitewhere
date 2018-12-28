@@ -24,6 +24,10 @@ import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 public class LabelGenerationApiDemux extends MultitenantApiDemux<ILabelGenerationApiChannel<?>>
 	implements ILabelGenerationApiDemux {
 
+    public LabelGenerationApiDemux(boolean cacheEnabled) {
+	super(cacheEnabled);
+    }
+
     /*
      * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
@@ -34,10 +38,12 @@ public class LabelGenerationApiDemux extends MultitenantApiDemux<ILabelGeneratio
 
     /*
      * @see
-     * com.sitewhere.grpc.model.spi.IApiDemux#createApiChannel(java.lang.String)
+     * com.sitewhere.grpc.client.spi.IApiDemux#createApiChannel(java.lang.String,
+     * boolean)
      */
     @Override
-    public ILabelGenerationApiChannel<?> createApiChannel(String host) throws SiteWhereException {
+    public ILabelGenerationApiChannel<?> createApiChannel(String host, boolean enableCaching)
+	    throws SiteWhereException {
 	return new LabelGenerationApiChannel(this, host, getMicroservice().getInstanceSettings().getGrpcPort());
     }
 }

@@ -10,7 +10,9 @@ package com.sitewhere.grpc.client.asset;
 import java.util.UUID;
 
 import com.sitewhere.grpc.client.cache.AssetManagementCacheProviders;
+import com.sitewhere.grpc.client.cache.CacheConfiguration;
 import com.sitewhere.grpc.client.spi.IApiDemux;
+import com.sitewhere.grpc.client.spi.cache.ICacheConfiguration;
 import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
 import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
@@ -38,12 +40,14 @@ public class CachedAssetManagementApiChannel extends AssetManagementApiChannel {
     /** Asset by id cache */
     private ICacheProvider<UUID, IAsset> assetByIdCache;
 
-    public CachedAssetManagementApiChannel(IApiDemux<?> demux, String host, int port) {
+    public CachedAssetManagementApiChannel(IApiDemux<?> demux, String host, int port, CacheSettings settings) {
 	super(demux, host, port);
-	this.assetTypeCache = new AssetManagementCacheProviders.AssetTypeByTokenCache();
-	this.assetTypeByIdCache = new AssetManagementCacheProviders.AssetTypeByIdCache();
-	this.assetCache = new AssetManagementCacheProviders.AssetByTokenCache();
-	this.assetByIdCache = new AssetManagementCacheProviders.AssetByIdCache();
+	this.assetTypeCache = new AssetManagementCacheProviders.AssetTypeByTokenCache(
+		settings.getAssetTypeConfiguration());
+	this.assetTypeByIdCache = new AssetManagementCacheProviders.AssetTypeByIdCache(
+		settings.getAssetTypeConfiguration());
+	this.assetCache = new AssetManagementCacheProviders.AssetByTokenCache(settings.getAssetConfiguration());
+	this.assetByIdCache = new AssetManagementCacheProviders.AssetByIdCache(settings.getAssetConfiguration());
     }
 
     /*
@@ -149,6 +153,34 @@ public class CachedAssetManagementApiChannel extends AssetManagementApiChannel {
 	    getAssetTypeCache().setCacheEntry(tenant, token, assetType);
 	}
 	return assetType;
+    }
+
+    /**
+     * Contains default cache settings for asset management entities.
+     */
+    public static class CacheSettings {
+
+	/** Cache configuraton for asset types */
+	private ICacheConfiguration assetTypeConfiguration = new CacheConfiguration(1000, 60);
+
+	/** Cache configuraton for assets */
+	private ICacheConfiguration assetConfiguration = new CacheConfiguration(10000, 60);
+
+	public ICacheConfiguration getAssetTypeConfiguration() {
+	    return assetTypeConfiguration;
+	}
+
+	public void setAssetTypeConfiguration(ICacheConfiguration assetTypeConfiguration) {
+	    this.assetTypeConfiguration = assetTypeConfiguration;
+	}
+
+	public ICacheConfiguration getAssetConfiguration() {
+	    return assetConfiguration;
+	}
+
+	public void setAssetConfiguration(ICacheConfiguration assetConfiguration) {
+	    this.assetConfiguration = assetConfiguration;
+	}
     }
 
     public ICacheProvider<String, IAssetType> getAssetTypeCache() {

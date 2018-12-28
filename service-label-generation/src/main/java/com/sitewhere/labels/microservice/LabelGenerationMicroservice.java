@@ -195,10 +195,10 @@ public class LabelGenerationMicroservice
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiDemux = new DeviceManagementApiDemux();
+	this.deviceManagementApiDemux = new DeviceManagementApiDemux(true);
 
 	// Asset management.
-	this.assetManagementApiDemux = new AssetManagementApiDemux();
+	this.assetManagementApiDemux = new AssetManagementApiDemux(true);
     }
 
     /*

@@ -24,6 +24,10 @@ import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 public class DeviceManagementApiDemux extends MultitenantApiDemux<IDeviceManagementApiChannel<?>>
 	implements IDeviceManagementApiDemux {
 
+    public DeviceManagementApiDemux(boolean cacheEnabled) {
+	super(cacheEnabled);
+    }
+
     /*
      * @see com.sitewhere.grpc.client.spi.IApiDemux#getTargetIdentifier()
      */
@@ -34,10 +38,20 @@ public class DeviceManagementApiDemux extends MultitenantApiDemux<IDeviceManagem
 
     /*
      * @see
-     * com.sitewhere.grpc.model.spi.IApiDemux#createApiChannel(java.lang.String)
+     * com.sitewhere.grpc.client.spi.IApiDemux#createApiChannel(java.lang.String,
+     * boolean)
      */
     @Override
-    public IDeviceManagementApiChannel<?> createApiChannel(String host) throws SiteWhereException {
-	return new CachedDeviceManagementApiChannel(this, host, getMicroservice().getInstanceSettings().getGrpcPort());
+    public IDeviceManagementApiChannel<?> createApiChannel(String host, boolean cacheEnabled)
+	    throws SiteWhereException {
+	CachedDeviceManagementApiChannel.CacheSettings settings = new CachedDeviceManagementApiChannel.CacheSettings();
+	if (!cacheEnabled) {
+	    settings.getAreaConfiguration().setEnabled(false);
+	    settings.getDeviceTypeConfiguration().setEnabled(false);
+	    settings.getDeviceConfiguration().setEnabled(false);
+	    settings.getDeviceAssignmentConfiguration().setEnabled(false);
+	}
+	return new CachedDeviceManagementApiChannel(this, host, getMicroservice().getInstanceSettings().getGrpcPort(),
+		settings);
     }
 }

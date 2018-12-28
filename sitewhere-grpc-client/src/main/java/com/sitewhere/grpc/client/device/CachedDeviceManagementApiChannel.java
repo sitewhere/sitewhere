@@ -9,8 +9,10 @@ package com.sitewhere.grpc.client.device;
 
 import java.util.UUID;
 
+import com.sitewhere.grpc.client.cache.CacheConfiguration;
 import com.sitewhere.grpc.client.cache.DeviceManagementCacheProviders;
 import com.sitewhere.grpc.client.spi.IApiDemux;
+import com.sitewhere.grpc.client.spi.cache.ICacheConfiguration;
 import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
 import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
@@ -52,16 +54,20 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
     /** Device assignment by id cache */
     private ICacheProvider<UUID, IDeviceAssignment> deviceAssignmentByIdCache;
 
-    public CachedDeviceManagementApiChannel(IApiDemux<?> demux, String host, int port) {
+    public CachedDeviceManagementApiChannel(IApiDemux<?> demux, String host, int port, CacheSettings settings) {
 	super(demux, host, port);
-	this.areaCache = new DeviceManagementCacheProviders.AreaByTokenCache();
-	this.areaByIdCache = new DeviceManagementCacheProviders.AreaByIdCache();
-	this.deviceTypeCache = new DeviceManagementCacheProviders.DeviceTypeByTokenCache();
-	this.deviceTypeByIdCache = new DeviceManagementCacheProviders.DeviceTypeByIdCache();
-	this.deviceCache = new DeviceManagementCacheProviders.DeviceByTokenCache();
-	this.deviceByIdCache = new DeviceManagementCacheProviders.DeviceByIdCache();
-	this.deviceAssignmentCache = new DeviceManagementCacheProviders.DeviceAssignmentByTokenCache();
-	this.deviceAssignmentByIdCache = new DeviceManagementCacheProviders.DeviceAssignmentByIdCache();
+	this.areaCache = new DeviceManagementCacheProviders.AreaByTokenCache(settings.getAreaConfiguration());
+	this.areaByIdCache = new DeviceManagementCacheProviders.AreaByIdCache(settings.getAreaConfiguration());
+	this.deviceTypeCache = new DeviceManagementCacheProviders.DeviceTypeByTokenCache(
+		settings.getDeviceTypeConfiguration());
+	this.deviceTypeByIdCache = new DeviceManagementCacheProviders.DeviceTypeByIdCache(
+		settings.getDeviceTypeConfiguration());
+	this.deviceCache = new DeviceManagementCacheProviders.DeviceByTokenCache(settings.getDeviceConfiguration());
+	this.deviceByIdCache = new DeviceManagementCacheProviders.DeviceByIdCache(settings.getDeviceConfiguration());
+	this.deviceAssignmentCache = new DeviceManagementCacheProviders.DeviceAssignmentByTokenCache(
+		settings.getDeviceAssignmentConfiguration());
+	this.deviceAssignmentByIdCache = new DeviceManagementCacheProviders.DeviceAssignmentByIdCache(
+		settings.getDeviceAssignmentConfiguration());
     }
 
     /*
@@ -240,6 +246,56 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
 	    getDeviceAssignmentByIdCache().setCacheEntry(tenant, id, assignment);
 	}
 	return assignment;
+    }
+
+    /**
+     * Contains default cache settings for device management entities.
+     */
+    public static class CacheSettings {
+
+	/** Cache configuraton for areas */
+	private ICacheConfiguration areaConfiguration = new CacheConfiguration(1000, 60);
+
+	/** Cache configuration for device types */
+	private ICacheConfiguration deviceTypeConfiguration = new CacheConfiguration(1000, 30);
+
+	/** Cache configuration for devices */
+	private ICacheConfiguration deviceConfiguration = new CacheConfiguration(10000, 30);
+
+	/** Cache configuration for device assignments */
+	private ICacheConfiguration deviceAssignmentConfiguration = new CacheConfiguration(10000, 30);
+
+	public ICacheConfiguration getAreaConfiguration() {
+	    return areaConfiguration;
+	}
+
+	public void setAreaConfiguration(ICacheConfiguration areaConfiguration) {
+	    this.areaConfiguration = areaConfiguration;
+	}
+
+	public ICacheConfiguration getDeviceTypeConfiguration() {
+	    return deviceTypeConfiguration;
+	}
+
+	public void setDeviceTypeConfiguration(ICacheConfiguration deviceTypeConfiguration) {
+	    this.deviceTypeConfiguration = deviceTypeConfiguration;
+	}
+
+	public ICacheConfiguration getDeviceConfiguration() {
+	    return deviceConfiguration;
+	}
+
+	public void setDeviceConfiguration(ICacheConfiguration deviceConfiguration) {
+	    this.deviceConfiguration = deviceConfiguration;
+	}
+
+	public ICacheConfiguration getDeviceAssignmentConfiguration() {
+	    return deviceAssignmentConfiguration;
+	}
+
+	public void setDeviceAssignmentConfiguration(ICacheConfiguration deviceAssignmentConfiguration) {
+	    this.deviceAssignmentConfiguration = deviceAssignmentConfiguration;
+	}
     }
 
     public ICacheProvider<String, IArea> getAreaCache() {

@@ -37,6 +37,10 @@ public abstract class MultitenantApiDemux<T extends IMultitenantApiChannel<?>> e
     /** Keeps track of last time tenant engine was known to be available */
     private Map<String, Map<UUID, Long>> tenantAccessByChannel = new ConcurrentHashMap<>();
 
+    public MultitenantApiDemux(boolean cacheEnabled) {
+	super(cacheEnabled);
+    }
+
     /*
      * @see
      * com.sitewhere.grpc.client.ApiDemux#isApiChannelMatch(com.sitewhere.spi.tenant

@@ -28,6 +28,7 @@ public class MicroserviceManagementApiDemux extends ApiDemux<IMicroserviceManage
     private IFunctionIdentifier targetIdentifier;
 
     public MicroserviceManagementApiDemux(IFunctionIdentifier targetIdentifier) {
+	super(false);
 	this.targetIdentifier = targetIdentifier;
     }
 
@@ -41,10 +42,12 @@ public class MicroserviceManagementApiDemux extends ApiDemux<IMicroserviceManage
 
     /*
      * @see
-     * com.sitewhere.grpc.model.spi.IApiDemux#createApiChannel(java.lang.String)
+     * com.sitewhere.grpc.client.spi.IApiDemux#createApiChannel(java.lang.String,
+     * boolean)
      */
     @Override
-    public IMicroserviceManagementApiChannel<?> createApiChannel(String host) throws SiteWhereException {
+    public IMicroserviceManagementApiChannel<?> createApiChannel(String host, boolean enableCaching)
+	    throws SiteWhereException {
 	return new MicroserviceManagementApiChannel(this, host,
 		getMicroservice().getInstanceSettings().getManagementGrpcPort());
     }

@@ -39,10 +39,10 @@ import com.sitewhere.spi.device.event.AlertSource;
 public class MqttTests {
 
     /** Nunber of threads for multithreaded tests */
-    private static final int NUM_THREADS = 20;
+    private static final int NUM_THREADS = 10;
 
     /** Nunber of calls performed per thread */
-    private static final int NUM_CALLS_PER_THREAD = 10000;
+    private static final int NUM_CALLS_PER_THREAD = 100;
 
     @Test
     public void runMqttTest() throws Exception {
@@ -79,7 +79,7 @@ public class MqttTests {
 	public Void call() throws Exception {
 	    try {
 		this.mqtt = new MQTT();
-		mqtt.setHost("192.168.171.129", 1883);
+		mqtt.setHost("localhost", 1883);
 		this.connection = mqtt.blockingConnection();
 		connection.connect();
 		System.out.println("Connected to: " + mqtt.getHost());
@@ -107,7 +107,7 @@ public class MqttTests {
 	 */
 	public void sendLocationOverMqtt() throws SiteWhereException {
 	    DeviceRequest request = new DeviceRequest();
-	    request.setDeviceToken("99797-RASPBERRYPI-5545473");
+	    request.setDeviceToken("4296-UNO-9749036");
 	    request.setType(Type.DeviceLocation);
 	    DeviceLocationCreateRequest location = new DeviceLocationCreateRequest();
 	    location.setEventDate(new Date());

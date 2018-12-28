@@ -191,7 +191,7 @@ public class AssetManagementMicroservice
 	this.assetManagementGrpcServer = new AssetManagementGrpcServer(this);
 
 	// Device management.
-	this.deviceManagementApiDemux = new DeviceManagementApiDemux();
+	this.deviceManagementApiDemux = new DeviceManagementApiDemux(true);
     }
 
     /*

@@ -69,6 +69,13 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
     /** Discovery monitor pool */
     private ExecutorService discoveryMonitor;
 
+    /** Indicates if channel-level caching is enabled */
+    private boolean cacheEnabled = true;
+
+    public ApiDemux(boolean cacheEnabled) {
+	this.cacheEnabled = cacheEnabled;
+    }
+
     /*
      * @see
      * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
@@ -310,7 +317,7 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 	public void run() {
 	    try {
 		getLogger().info(String.format("Creating API channel to address %s.", getHost()));
-		T channel = (T) createApiChannel(getHost());
+		T channel = (T) createApiChannel(getHost(), isCacheEnabled());
 		ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
 			new LifecycleProgressContext(1, "Initialize API channel."), getMicroservice());
 
@@ -401,6 +408,18 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 	public String getHost() {
 	    return host;
 	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.client.spi.IApiDemux#isCacheEnabled()
+     */
+    @Override
+    public boolean isCacheEnabled() {
+	return cacheEnabled;
+    }
+
+    public void setCacheEnabled(boolean cacheEnabled) {
+	this.cacheEnabled = cacheEnabled;
     }
 
     /*

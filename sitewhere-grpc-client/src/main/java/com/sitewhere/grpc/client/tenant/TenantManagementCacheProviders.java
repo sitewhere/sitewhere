@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import com.sitewhere.grpc.client.cache.CacheIdentifier;
 import com.sitewhere.grpc.client.cache.CacheProvider;
+import com.sitewhere.grpc.client.spi.cache.ICacheConfiguration;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -27,8 +28,8 @@ public class TenantManagementCacheProviders {
      */
     public static class TenantByTokenCache extends CacheProvider<String, ITenant> {
 
-	public TenantByTokenCache() {
-	    super(CacheIdentifier.TenantByToken, String.class, ITenant.class, 100, 60);
+	public TenantByTokenCache(ICacheConfiguration configuration) {
+	    super(CacheIdentifier.TenantByToken, String.class, ITenant.class, configuration);
 	}
     }
 
@@ -39,8 +40,8 @@ public class TenantManagementCacheProviders {
      */
     public static class TenantByIdCache extends CacheProvider<UUID, ITenant> {
 
-	public TenantByIdCache() {
-	    super(CacheIdentifier.TenantById, UUID.class, ITenant.class, 100, 60);
+	public TenantByIdCache(ICacheConfiguration configuration) {
+	    super(CacheIdentifier.TenantById, UUID.class, ITenant.class, configuration);
 	}
     }
 }
