@@ -68,6 +68,13 @@ subprojects {
 
 	// Use Docker plugin to allow for creating/pushing an image.
 	apply plugin: 'com.bmuschko.docker-remote-api'
+	
+	// Allow Docker settings to be overridden by build environment.
+	if (System.getenv("DOCKER_REGISTRY_URL") != null) registryUrl = System.getenv("DOCKER_REGISTRY_URL")
+	if (System.getenv("DOCKER_REGISTRY_USERNAME") != null) registryUsername = System.getenv("DOCKER_REGISTRY_USERNAME")
+	if (System.getenv("DOCKER_REGISTRY_PASSWORD") != null) registryPassword = System.getenv("DOCKER_REGISTRY_PASSWORD")
+	if (System.getenv("DOCKER_REGISTRY_EMAIL") != null) registryEmail = System.getenv("DOCKER_REGISTRY_EMAIL")
+	
 	docker {
 	    url = dockerProtocol + '://' + dockerHostname + ':' + dockerPort
 	    registryCredentials {
