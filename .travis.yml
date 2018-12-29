@@ -8,9 +8,12 @@ env:
   - secure: R9gFRS5HQrfzwkqCOef/9lFN5PsqOS1wE9WC4M02wvxISRz75AHXN3DRCKpSodMsP8gfpoEAk02CVr7d8ZTyjJ1LhFPlgm1COAZu0HZvkWPk11L8PGo1nMY2Nui/htTnESohDje1hFvD5vhO2OphpsgRbMmsmEzpAbBMR7cx6A1TBUqhBnsG4+5N5ziHW+LfkLkG53MPjdGRU5cBJacgz97ATD29efjW3+qITk6YormOeHQTUJzzypPQRc4E+ljKetSMKeGqfleuntaqOjxqKIOvo7SOg03CBvTJNmP1EoESZHXkbCKWY0dYGWqmdyHza0iswbKH7Xzy9W/86E3YAimVpCBzISvwsiCMd2ay5Z4ymQ9FF8aMFLYo8Z8mIPEghmOKJ6snAN/d0FwNA9l7SybQ41WdoMa6RUzHvfGHZoPk0QPQwEk5B3MkPCF2eyHMb7/9+4tBIO/E0SaunxASaZ5A6L4EtkOVlQNd3rztvlbKemSggO/HuPbVP0UP2U1QPq7nSWYuSsyt0O47BMB2zO75XfM593b4nBH2MoR31C4wDm6/3kIY9ggHoaSDNAC11PpoFg0uidtLjUYY5Dz5/Xa27i2iq27/uvwL3eJ9mwJZ6pJMlOOe8Rx6kTmMIiTZ3+Qy3T2fV5WY2A36BJ93UqjMyfXhNaFonpVnbUX5g1Q=
 services:
 - docker
+before_install:
+- docker pull openjdk:8-jre-alpine
 script:
 - |
   if [[ -n "$TRAVIS_TAG" ]]; then
+    echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin
     ./gradlew dockerPush
   else
     ./gradlew check
