@@ -76,10 +76,8 @@ subprojects {
 	if (System.getenv("DOCKER_REGISTRY_EMAIL") != null) registryEmail = System.getenv("DOCKER_REGISTRY_EMAIL")
 	if (System.getenv("DOCKER_HOST") != null) dockerHostname = System.getenv("DOCKER_HOST")
 	
-	println("Docker host is " + dockerHostname);
-	
 	docker {
-	    url = dockerProtocol + '://' + dockerHostname + ':' + dockerPort
+	    url = (System.getenv("DOCKER_HOST") != null) ? System.getenv("DOCKER_HOST") : dockerProtocol + '://' + dockerHostname + ':' + dockerPort
 	    registryCredentials {
 	        url = registryUrl
 	        username = registryUsername
