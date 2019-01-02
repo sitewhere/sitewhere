@@ -29,7 +29,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public class ZookeeperManager extends LifecycleComponent implements IZookeeperManager {
 
     /** Max time in seconds to wait for Zookeeper connection */
-    private static final int MAX_ZK_WAIT_SECS = 30;
+    private static final int ZK_CHECK_INTERVAL_SECS = 60;
 
     /** Curator client */
     private CuratorFramework curator;
@@ -67,16 +67,20 @@ public class ZookeeperManager extends LifecycleComponent implements IZookeeperMa
      */
     protected void connect() throws SiteWhereException {
 	String zk = getInstanceSettings().getZookeeperHost() + ":" + getInstanceSettings().getZookeeperPort();
-	RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
+	RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 10);
 	this.curator = CuratorFrameworkFactory.builder().namespace(getInstanceSettings().getProductId())
 		.connectString(zk).retryPolicy(retryPolicy).build();
 	getCurator().start();
-	try {
-	    if (!getCurator().blockUntilConnected(MAX_ZK_WAIT_SECS, TimeUnit.SECONDS)) {
-		throw new SiteWhereException("Unable to connect to Zookeeper.");
+	while (true) {
+	    try {
+		getLogger().info("Waiting for Zookeeper to become available...");
+		boolean connected = getCurator().blockUntilConnected(ZK_CHECK_INTERVAL_SECS, TimeUnit.SECONDS);
+		if (connected) {
+		    return;
+		}
+	    } catch (InterruptedException e) {
+		throw new SiteWhereException("Interrupted while connecting to Zookeeper.", e);
 	    }
-	} catch (InterruptedException e) {
-	    throw new SiteWhereException("Interrupted while connecting to Zookeeper.", e);
 	}
     }
 

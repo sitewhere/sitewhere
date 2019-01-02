@@ -19,67 +19,63 @@ import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 public class InstanceSettings implements IInstanceSettings {
 
     /** Product id */
-    @Value("${sitewhere.product.id:sitewhere}")
+    @Value("#{systemEnvironment['sitewhere.product.id'] ?: 'sitewhere'}")
     private String productId;
 
     /** Instance id service belongs to */
-    @Value("${sitewhere.instance.id:sitewhere1}")
+    @Value("#{systemEnvironment['sitewhere.instance.id'] ?: 'sitewhere1'}")
     private String instanceId;
 
     /** Id of instance template to use */
-    @Value("${sitewhere.instance.template.id:default}")
+    @Value("#{systemEnvironment['sitewhere.instance.template.id'] ?: 'default'}")
     private String instanceTemplateId;
 
     /** Consul hostname info for microservices */
-    @Value("${sitewhere.consul.host:consul}")
+    @Value("#{systemEnvironment['sitewhere.consul.host'] ?: 'consul'}")
     private String consulHost;
 
     /** Consul port info for microservices */
-    @Value("${sitewhere.consul.port:8500}")
+    @Value("#{systemEnvironment['sitewhere.consul.port'] ?: '8500'}")
     private int consulPort;
 
     /** Zookeeper hostname info for microservices */
-    @Value("${sitewhere.zookeeper.host:localhost}")
+    @Value("#{systemEnvironment['sitewhere.zookeeper.host'] ?: 'localhost'}")
     private String zookeeperHost;
 
     /** Zookeeper port info for microservices */
-    @Value("${sitewhere.zookeeper.port:2181}")
+    @Value("#{systemEnvironment['sitewhere.zookeeper.port'] ?: '2181'}")
     private int zookeeperPort;
 
     /** Kafka bootstrap services configuration for microservices */
-    @Value("${sitewhere.kafka.bootstrap.servers:kafka:9092}")
+    @Value("#{systemEnvironment['sitewhere.kafka.bootstrap.servers'] ?: 'kafka:9092'}")
     private String kafkaBootstrapServers;
 
     /** File system root for storing SiteWhere data for microservices */
-    @Value("${sitewhere.filesystem.storage.root:/var/sitewhere}")
+    @Value("#{systemEnvironment['sitewhere.filesystem.storage.root'] ?: '/var/sitewhere'}")
     private String fileSystemStorageRoot;
 
     /** GRPC port for serving APIs */
-    @Value("${sitewhere.grpc.port:9000}")
+    @Value("#{systemEnvironment['sitewhere.grpc.port'] ?: '9000'}")
     private int grpcPort;
 
     /** GRPC port info for microservice management */
-    @Value("${sitewhere.management.grpc.port:9001}")
+    @Value("#{systemEnvironment['sitewhere.management.grpc.port'] ?: '9001'}")
     private int managementGrpcPort;
 
     /** Tracer server information */
-    @Value("${sitewhere.tracer.server:jaeger}")
+    @Value("#{systemEnvironment['sitewhere.tracer.server'] ?: 'jaeger'}")
     private String tracerServer;
 
     /** Flag for whether to log metrics */
-    @Value("${sitewhere.log.metrics:false}")
+    @Value("#{systemEnvironment['sitewhere.log.metrics'] ?: 'false'}")
     private boolean logMetrics;
 
-    /** Flag for whether to use near cache */
-    @Value("${sitewhere.use.near.cache:false}")
-    private boolean useNearCache;
-
     /** Microservice publicly resolvable hostname */
-    @Value("${sitewhere.service.public.hostname:#{null}}")
+    @Value("#{systemEnvironment['sitewhere.service.public.hostname'] ?: '#{null}'}")
     private String publicHostname;
 
     /** Microservice publicly resolvable hostname */
-    @Value("${sitewhere.k8s.pod.ip:#{null}}")
+    @Value("#{systemEnvironment['sitewhere.k8s.pod.ip'] ?: '#{null}'}")
     private String kubernetesPodAddress;
 
     /*
@@ -246,19 +242,6 @@ public class InstanceSettings implements IInstanceSettings {
 
     public void setLogMetrics(boolean logMetrics) {
 	this.logMetrics = logMetrics;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.microservice.instance.IInstanceSettings#isUseNearCache()
-     */
-    @Override
-    public boolean isUseNearCache() {
-	return useNearCache;
-    }
-
-    public void setUseNearCache(boolean useNearCache) {
-	this.useNearCache = useNearCache;
     }
 
     /*

@@ -106,13 +106,6 @@ public interface IInstanceSettings {
     public boolean isLogMetrics();
 
     /**
-     * Indicates whether near cache should be used.
-     * 
-     * @return
-     */
-    public boolean isUseNearCache();
-
-    /**
      * Identifies public hostname used to access microservice instance.
      * 
      * @return
