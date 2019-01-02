@@ -91,59 +91,60 @@ public abstract class MongoDbClient extends TenantEngineLifecycleComponent
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	try {
-	    MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
-	    builder.maxConnectionIdleTime(60 * 60 * 1000); // 1hour
-	    builder.connectionsPerHost(10);
+	while (true) {
+	    try {
+		MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
+		builder.maxConnectionIdleTime(60 * 60 * 1000); // 1hour
+		builder.connectionsPerHost(10);
 
-	    getLogger().info("MongoDB Connection: hosts=" + getHostname().getValue() + " ports="
-		    + getConfiguration().getPort() + " replicaSet=" + getConfiguration().getReplicaSetName());
+		getLogger().info("MongoDB Connection: hosts=" + getHostname().getValue() + " ports="
+			+ getConfiguration().getPort() + " replicaSet=" + getConfiguration().getReplicaSetName());
 
-	    // Parse hostname(s) and port(s) into address list.
-	    List<ServerAddress> addresses = parseServerAddresses();
+		// Parse hostname(s) and port(s) into address list.
+		List<ServerAddress> addresses = parseServerAddresses();
 
-	    // Indicator for whether a replica set is being used.
-	    boolean isUsingReplicaSet = ((addresses.size() > 1)
-		    && (!StringUtils.isEmpty(getConfiguration().getReplicaSetName())));
+		// Indicator for whether a replica set is being used.
+		boolean isUsingReplicaSet = ((addresses.size() > 1)
+			&& (!StringUtils.isEmpty(getConfiguration().getReplicaSetName())));
 
-	    if (isUsingReplicaSet) {
-		getLogger().info("MongoDB using replicated mode.");
-	    } else {
-		getLogger().info("MongoDB using standalone mode.");
-	    }
-
-	    // Handle authenticated access.
-	    if ((getConfiguration().getUsername() != null) && (getConfiguration().getPassword() != null)) {
-		MongoCredential credential = MongoCredential.createCredential(getConfiguration().getUsername(),
-			getConfiguration().getAuthDatabaseName(), getConfiguration().getPassword().toCharArray());
 		if (isUsingReplicaSet) {
-		    this.client = new MongoClient(addresses, Arrays.asList(credential), builder.build());
+		    getLogger().info("MongoDB using replicated mode.");
 		} else {
-		    this.client = new MongoClient(addresses.get(0), Arrays.asList(credential), builder.build());
+		    getLogger().info("MongoDB using standalone mode.");
 		}
-	    }
 
-	    // Handle unauthenticated access.
-	    else {
-		if (isUsingReplicaSet) {
-		    this.client = new MongoClient(addresses, builder.build());
-		} else {
-		    this.client = new MongoClient(addresses.get(0), builder.build());
+		// Handle authenticated access.
+		if ((getConfiguration().getUsername() != null) && (getConfiguration().getPassword() != null)) {
+		    MongoCredential credential = MongoCredential.createCredential(getConfiguration().getUsername(),
+			    getConfiguration().getAuthDatabaseName(), getConfiguration().getPassword().toCharArray());
+		    if (isUsingReplicaSet) {
+			this.client = new MongoClient(addresses, Arrays.asList(credential), builder.build());
+		    } else {
+			this.client = new MongoClient(addresses.get(0), Arrays.asList(credential), builder.build());
+		    }
 		}
-	    }
 
-	    // Handle automatic configuration of replication.
-	    if ((isUsingReplicaSet) && (getConfiguration().isAutoConfigureReplication())) {
-		doAutoConfigureReplication(addresses);
-	    }
+		// Handle unauthenticated access.
+		else {
+		    if (isUsingReplicaSet) {
+			this.client = new MongoClient(addresses, builder.build());
+		    } else {
+			this.client = new MongoClient(addresses.get(0), builder.build());
+		    }
+		}
 
-	    // Force interaction to test connectivity.
-	    getDatabase().listCollectionNames();
-	} catch (MongoTimeoutException e) {
-	    throw new SiteWhereException(
-		    "Timed out connecting to MongoDB instance. " + "Verify that MongoDB is running on "
-			    + getHostname().getValue() + ":" + getConfiguration().getPort() + " and restart server.",
-		    e);
+		// Handle automatic configuration of replication.
+		if ((isUsingReplicaSet) && (getConfiguration().isAutoConfigureReplication())) {
+		    doAutoConfigureReplication(addresses);
+		}
+
+		// Force interaction to test connectivity.
+		getDatabase().listCollectionNames();
+		return;
+	    } catch (MongoTimeoutException e) {
+		getLogger().warn("Timed out connecting to MongoDB. Will attempt to reconnect to "
+			+ getHostname().getValue() + ":" + getConfiguration().getPort() + ".", e);
+	    }
 	}
     }
 
