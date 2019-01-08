@@ -9,6 +9,8 @@ package com.sitewhere.microservice.kafka;
 
 import java.util.Properties;
 
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -31,8 +33,14 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public abstract class MicroserviceKafkaProducer extends TenantEngineLifecycleComponent
 	implements IMicroserviceKafkaProducer {
 
+    /** Kafka availability check interval */
+    private static final int KAFKA_RETRY_INTERVAL_MS = 10 * 1000;
+
     /** Producer */
     private KafkaProducer<String, byte[]> producer;
+
+    /** Kafka admin client */
+    private AdminClient kafkaAdmin;
 
     /*
      * (non-Javadoc)
@@ -43,10 +51,34 @@ public abstract class MicroserviceKafkaProducer extends TenantEngineLifecycleCom
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	getLogger().debug(
+	getLogger().info(
 		"Producer connecting to Kafka: " + getMicroservice().getInstanceSettings().getKafkaBootstrapServers());
-	getLogger().debug("Will be producing messages for: " + getTargetTopicName());
+	getLogger().info("Will be producing messages for: " + getTargetTopicName());
 	this.producer = new KafkaProducer<String, byte[]>(buildConfiguration());
+	this.kafkaAdmin = AdminClient.create(buildAdminConfiguration());
+	waitForKafkaAvailable();
+    }
+
+    /**
+     * Block startup until Kafka is considered available.
+     */
+    protected void waitForKafkaAvailable() {
+	getLogger().info("Attempting to connect to Kafka...");
+	while (true) {
+	    try {
+		getKafkaAdmin().listTopics().names().get();
+		getLogger().info("Kafka detected as available.");
+		return;
+	    } catch (Throwable t) {
+		getLogger().info("Kafka not detected. Will continue attempting to connect. (" + t.getMessage() + ")");
+	    }
+	    try {
+		Thread.sleep(KAFKA_RETRY_INTERVAL_MS);
+	    } catch (InterruptedException e) {
+		getLogger().warn("Interrupted while waiting for Kafka to become available.");
+		return;
+	    }
+	}
     }
 
     /*
@@ -101,11 +133,32 @@ public abstract class MicroserviceKafkaProducer extends TenantEngineLifecycleCom
 	return config;
     }
 
-    public KafkaProducer<String, byte[]> getProducer() {
+    /**
+     * Build configuration settings used by admin client.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    protected Properties buildAdminConfiguration() throws SiteWhereException {
+	Properties config = new Properties();
+	config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,
+		getMicroservice().getInstanceSettings().getKafkaBootstrapServers());
+	return config;
+    }
+
+    protected KafkaProducer<String, byte[]> getProducer() {
 	return producer;
     }
 
-    public void setProducer(KafkaProducer<String, byte[]> producer) {
+    protected void setProducer(KafkaProducer<String, byte[]> producer) {
 	this.producer = producer;
+    }
+
+    protected AdminClient getKafkaAdmin() {
+	return kafkaAdmin;
+    }
+
+    protected void setKafkaAdmin(AdminClient kafkaAdmin) {
+	this.kafkaAdmin = kafkaAdmin;
     }
 }

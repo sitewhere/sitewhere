@@ -7,6 +7,7 @@
  */
 package com.sitewhere.microservice.kafka;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -119,7 +120,7 @@ public abstract class MicroserviceKafkaConsumer extends TenantEngineLifecycleCom
 	    try {
 		getConsumer().subscribe(getSourceTopicNames());
 		while (true) {
-		    ConsumerRecords<String, byte[]> records = getConsumer().poll(Long.MAX_VALUE);
+		    ConsumerRecords<String, byte[]> records = getConsumer().poll(Duration.ofMillis(Long.MAX_VALUE));
 
 		    for (TopicPartition topicPartition : records.partitions()) {
 			List<ConsumerRecord<String, byte[]>> topicRecords = records.records(topicPartition);
