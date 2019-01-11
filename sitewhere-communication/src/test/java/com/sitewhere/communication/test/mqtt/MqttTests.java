@@ -26,8 +26,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.rest.model.device.communication.DeviceRequest;
 import com.sitewhere.rest.model.device.communication.DeviceRequest.Type;
+import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
@@ -39,10 +41,10 @@ import com.sitewhere.spi.device.event.AlertSource;
 public class MqttTests {
 
     /** Nunber of threads for multithreaded tests */
-    private static final int NUM_THREADS = 10;
+    private static final int NUM_THREADS = 1;
 
     /** Nunber of calls performed per thread */
-    private static final int NUM_CALLS_PER_THREAD = 100;
+    private static final int NUM_CALLS_PER_THREAD = 1;
 
     @Test
     public void runMqttTest() throws Exception {
@@ -67,9 +69,6 @@ public class MqttTests {
 
 	/** MQTT connection */
 	private BlockingConnection connection;
-
-	/** Global object mapper instance */
-	private ObjectMapper MAPPER = new ObjectMapper();
 
 	public MqttTester(int messageCount) {
 	    this.messageCount = messageCount;
@@ -120,7 +119,7 @@ public class MqttTests {
 	    location.setUpdateState(true);
 	    request.setRequest(location);
 	    try {
-		String payload = MAPPER.writeValueAsString(request);
+		String payload = MarshalUtils.PRETTY_MAPPER.writeValueAsString(request);
 		connection.publish("SiteWhere/default/input/json", payload.getBytes(), QoS.AT_MOST_ONCE, false);
 	    } catch (JsonProcessingException e) {
 		throw new SiteWhereException(e);
@@ -151,7 +150,7 @@ public class MqttTests {
 	    alert.setUpdateState(true);
 	    request.setRequest(alert);
 	    try {
-		String payload = MAPPER.writeValueAsString(request);
+		String payload = MarshalUtils.PRETTY_MAPPER.writeValueAsString(request);
 		// System.out.println(payload);
 		connection.publish("SiteWhere/default/input/json", payload.getBytes(), QoS.AT_MOST_ONCE, false);
 	    } catch (JsonProcessingException e) {
@@ -197,6 +196,53 @@ public class MqttTests {
 	}
 
 	/**
+	 * Send a device batch request via JSON/MQTT.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	public void sendDeviceBatchOverMqtt() throws SiteWhereException {
+	    DeviceEventBatch request = new DeviceEventBatch();
+	    request.setHardwareId("84945-IPAD-7009133");
+
+	    DeviceLocationCreateRequest location = new DeviceLocationCreateRequest();
+	    location.setEventDate(new Date());
+	    location.setLatitude(34.10469794977326);
+	    location.setLongitude(-84.23966646194458);
+	    location.setElevation(0.0);
+	    Map<String, String> metadata = new HashMap<String, String>();
+	    metadata.put("metadata", "value");
+	    location.setMetadata(metadata);
+	    location.setUpdateState(true);
+	    request.getLocations().add(location);
+
+	    DeviceMeasurementCreateRequest mx = new DeviceMeasurementCreateRequest();
+	    mx.setName("fuel.level");
+	    mx.setValue(123.45);
+	    location.setMetadata(metadata);
+	    location.setUpdateState(true);
+	    request.getMeasurements().add(mx);
+
+	    DeviceAlertCreateRequest alert = new DeviceAlertCreateRequest();
+	    alert.setType("engine.overheat");
+	    alert.setMessage("Engine overheating.");
+	    alert.setSource(AlertSource.Device);
+	    alert.setLevel(AlertLevel.Error);
+	    location.setMetadata(metadata);
+	    location.setUpdateState(true);
+	    request.getAlerts().add(alert);
+
+	    try {
+		String payload = MarshalUtils.PRETTY_MAPPER.writeValueAsString(request);
+		System.out.println("Payload is\n\n" + payload);
+		connection.publish("SiteWhere/default/input/json", payload.getBytes(), QoS.AT_MOST_ONCE, false);
+	    } catch (JsonProcessingException e) {
+		throw new SiteWhereException(e);
+	    } catch (Exception e) {
+		throw new SiteWhereException(e);
+	    }
+	}
+
+	/**
 	 * Send a registration event request via JSON/MQTT.
 	 * 
 	 * @throws SiteWhereException
@@ -212,7 +258,7 @@ public class MqttTests {
 	    registration.setMetadata(metadata);
 	    request.setRequest(registration);
 	    try {
-		String payload = MAPPER.writeValueAsString(request);
+		String payload = MarshalUtils.PRETTY_MAPPER.writeValueAsString(request);
 		connection.publish("SiteWhere/default/input/json", payload.getBytes(), QoS.AT_MOST_ONCE, false);
 	    } catch (JsonProcessingException e) {
 		throw new SiteWhereException(e);
