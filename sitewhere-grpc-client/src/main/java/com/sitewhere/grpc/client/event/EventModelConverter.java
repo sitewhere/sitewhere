@@ -1523,7 +1523,7 @@ public class EventModelConverter {
     public static DeviceEventBatch asApiDeviceEventBatch(GDeviceEventBatchCreateRequest grpc)
 	    throws SiteWhereException {
 	DeviceEventBatch api = new DeviceEventBatch();
-	api.setHardwareId(grpc.getHardwareId());
+	api.setDeviceToken(grpc.getHardwareId());
 	api.setMeasurements(EventModelConverter.asApiDeviceMeasurementCreateRequests(grpc.getMeasurementsList()));
 	api.setAlerts(EventModelConverter.asApiDeviceAlertCreateRequests(grpc.getAlertsList()));
 	api.setLocations(EventModelConverter.asApiDeviceLocationCreateRequests(grpc.getLocationsList()));
@@ -1540,7 +1540,7 @@ public class EventModelConverter {
     public static GDeviceEventBatchCreateRequest asGrpcDeviceEventBatch(IDeviceEventBatch api)
 	    throws SiteWhereException {
 	GDeviceEventBatchCreateRequest.Builder grpc = GDeviceEventBatchCreateRequest.newBuilder();
-	grpc.setHardwareId(api.getHardwareId());
+	grpc.setHardwareId(api.getDeviceToken());
 	grpc.addAllMeasurements(EventModelConverter.asGrpcDeviceMeasurementsCreateRequests(api.getMeasurements()));
 	grpc.addAllAlerts(EventModelConverter.asGrpcDeviceAlertCreateRequests(api.getAlerts()));
 	grpc.addAllLocations(EventModelConverter.asGrpcDeviceLocationCreateRequests(api.getLocations()));

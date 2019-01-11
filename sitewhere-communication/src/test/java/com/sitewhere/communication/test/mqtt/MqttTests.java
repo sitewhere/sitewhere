@@ -202,7 +202,7 @@ public class MqttTests {
 	 */
 	public void sendDeviceBatchOverMqtt() throws SiteWhereException {
 	    DeviceEventBatch request = new DeviceEventBatch();
-	    request.setHardwareId("84945-IPAD-7009133");
+	    request.setDeviceToken("84945-IPAD-7009133");
 
 	    DeviceLocationCreateRequest location = new DeviceLocationCreateRequest();
 	    location.setEventDate(new Date());

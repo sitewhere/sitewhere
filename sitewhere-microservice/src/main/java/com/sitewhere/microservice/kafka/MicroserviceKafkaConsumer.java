@@ -52,9 +52,9 @@ public abstract class MicroserviceKafkaConsumer extends TenantEngineLifecycleCom
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	getLogger().debug(
+	getLogger().info(
 		"Consumer connecting to Kafka: " + getMicroservice().getInstanceSettings().getKafkaBootstrapServers());
-	getLogger().debug("Will be consuming messages from: " + getSourceTopicNames());
+	getLogger().info("Will be consuming messages from: " + getSourceTopicNames());
 	this.consumer = new KafkaConsumer<>(buildConfiguration());
 	this.executor = Executors.newSingleThreadExecutor(new MicroserviceConsumerThreadFactory());
 	executor.execute(new MessageConsumer());
