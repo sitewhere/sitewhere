@@ -69,15 +69,57 @@ task copyArtifactsToDocker(type: Copy, dependsOn: dockerFile) {
 // Build an image from the Dockerfile.
 task dockerImage(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildImage, dependsOn: copyArtifactsToDocker) {
     inputDir = project.file('build/docker')
- 	if(!project.hasProperty("debug")) {
+	if(!project.hasProperty("debug")) {
 	    tags = ["${dockerRepository}/sitewhere/${project.name}:${version}"]
 	} else {
 	    tags = ["${dockerRepository}/sitewhere/${project.name}:debug-${version}"]		
 	}
 }
 
+// Build an image from the Dockerfile with tag latest.
+task dockerImageLatest(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildImage, dependsOn: copyArtifactsToDocker) {
+    inputDir = project.file('build/docker')
+	
+	def primaryTag = ""
+	def secondaryTag = ""
+
+	if(!project.hasProperty("debug")) {
+		primaryTag = "${dockerRepository}/sitewhere/${project.name}:${version}"
+	} else {
+		primaryTag = "${dockerRepository}/sitewhere/${project.name}:debug-${version}"
+	}
+	secondaryTag = "${dockerRepository}/sitewhere/${project.name}:latest"
+	tags = [primaryTag, secondaryTag]
+}
+
+// Build an image from the Dockerfile with tag edge.
+task dockerImageEdge(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildImage, dependsOn: copyArtifactsToDocker) {
+    inputDir = project.file('build/docker')
+	
+	def primaryTag = ""
+	def secondaryTag = ""
+
+	if(!project.hasProperty("debug")) {
+		primaryTag = "${dockerRepository}/sitewhere/${project.name}:${version}"
+	} else {
+		primaryTag = "${dockerRepository}/sitewhere/${project.name}:debug-${version}"
+	}
+	secondaryTag = "${dockerRepository}/sitewhere/${project.name}:edge"
+	tags = [primaryTag, secondaryTag]
+}
+
 // Push image to remote repository.
 task dockerPush(type: com.bmuschko.gradle.docker.tasks.image.DockerPushImage, dependsOn: dockerImage) {
     imageName = "${dockerRepository}/sitewhere/${project.name}".toString()
     tag = "${version}".toString()
+}
+
+// Push image to remote repository.
+task dockerPushLatest(type: com.bmuschko.gradle.docker.tasks.image.DockerPushImage, dependsOn: dockerImageLatest) {
+    imageName = "${dockerRepository}/jorgevillaverde/${project.name}".toString()
+}
+
+// Push image to remote repository.
+task dockerPushEdge(type: com.bmuschko.gradle.docker.tasks.image.DockerPushImage, dependsOn: dockerImageEdge) {
+    imageName = "${dockerRepository}/jorgevillaverde/${project.name}".toString()
 }

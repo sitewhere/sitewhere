@@ -1,22 +1,17 @@
 language: java
 jdk:
 - oraclejdk8
-env:
-  global:
-  - secure: "qNXOWvdPBSgPdw8VmbqBGRxhirnNTKBjT8h5QQvb33KO6gpHxyDlWy88b7TMiKreC9ExaXBt0pdIAal967ixMgpv+wfJfBFO484tVF1Bf+hNcGNWxDaGQqfjUXmBZ9oFvN6gWK5WgqFqoZnWJ/Ctdt9wk3oH61o6QUyksN63Gzz/ubVH1Ua+hUvXwJ0ZqcQXalzMC07enfuyy+kteN42GMo3cdCKvF2h/u4NEazyQsqktv3DP8Tm7P8wU9M+lXflRUjjzX0TFtDhkEvdIdvWiMvR7rsurOVtcmQwnnACDlRjNb3gR7vFZ1qt+MgejkS4ne78B15VdUBBtVKtXAQiVM9gPMo9BLzWsEFJ+N7l15Mfz17BzXFCFyXUcKK4JIhSK0YJhYqqNY7YfHA14l9oL/aU6ydqvQcP7bJleBIebg4nOmSLxoAP9Cf/f+K63lOviOm/9+v/gArQv5AuxFM56ZbxDoC81GZdf+P0M+7WwDHuzsC7aPt4alxNXxkVE6IOoAvGdNw+MKBMj6AUDmXaLJJF3k/NEvvTlkAmzQ3LtLb6RrQ/+QiM9OBT3U5S1HyjsdeUFcssTAcfTp4So+MIzqCUqQAH1JaLPINefgrxpmwx9K93zxXghc3LCqTw2A3RJ8jTUsXyoliTB003dYXSr3DJ9J6dYRaI3R9KB/UpwQM="
-  - secure: "nvUw/MhtiJ/L46uv9QDIztd16MOmi/dxDwY3YN+Ovn51EI7JfJ6fNeMjkIsQmdVvQrXCNDjXIB5i67fTEPLSLXd6QeVcCEr379tv1DzHzEWXazqzSIBfZJn5wXtdnuPcQ11i6Ozh4PQjwj7wN2cdb+CmQ+jMPa1rvTvUkCqWsk3LmZkcnzSoE05DVmKKFI1ViArSFkLK6pwvz4XBTmcRk/kf3bVso7ZJ9j4sHiH98YiuT5rCF++bAFgnacR8cddjDI9jpGZ8YzEtxvxyuyED/g9uDyFgnVCvcnd45nq/5q/tPoN+kK+mPJGrJuqYOAQN5wXu4b69NXL3u9ShIa7MrL3x8uh8vNlsz9h+fOVx5/GBJmHP9H3HAqmW1jWK7vAPGngnvrQqfU7yZpWAB8KefzUPqNJOeprSGOLgGR+X2tQBgsirIh00Upmq2O5vFW+5AW/2D+hEBKW2U62QFmVAAkrUjXdddFVUr+4xHz6fmMvL1Z8N6lTcoHIYMu946aKMSXEsN1a2zdRZAr7G3vFiXCyz9f0i2iI/dE7397MINcULkhW7hKRgNnrzJX8tkAaCsVt//xYG22VZ8XQnLm2ly3R7o1WzYdjtIZaX0P5/ZlURZ02pr1aGX5MWmdw1/QZDTMTeEuMFnOL6KhsiWc7drilOpY0Wj/v0GV8ZAELAA80="
-  - secure: "h4KdgAmW5ylNI4lUR3/OxXKVNw/6VU9WDZr8I0M7DH8aIZf6tZKCl5fZH5UeDEw2sXnSWqsWF52VQLqRonrNK1JTs8wxAy/Bl4DZJmyViWeIW9Djh7/p0MNMjMdI6Jk+sI0PV3gQO3vuLljjlvloKI0uPZ6Ewezkzm5JrArE0pbWdX8j8yDITmWjJd7J+D8suo7SdAxFaeXYDWd5JwnibQSqLlzvDTSJ89kcfF11wOb6PO95OzQQo1D0BD0T2hSXyS2LKxABpdNrodvBomiKJSn/zKFHRHLHhDvbrj8K5hGBHdZF9X1pLd6T1+8NXzR/2Fxd4Im46tDc6/ekFUXH+G+HAW2iwG9pcKQ1dQ+H0QZRL1RP2r3+4RH+upG+Xyx7eGTWoog+vbw8U+yc2reahcygYVrvzMQbS3fwxD+VugoyXmtt/FU7qs6LO/l0GVuR9KwTi8jMHoiBNQgeGK4PGmi7ueCdD2eqyBB1cKWFuHwXwSiouZV882yO3HQzb0iEX+JRKs2T84t+WGFsP+VUlFyFudwCzjJ0egdTNC+k4vD/CvqhF8LR4ZSTxYXCJpfPbLGpp6qqRYtq4l5baIeEyuLMGR4bioGDUpqpL1RuQaKMLKHZBlI5L029eKzbm9wKOQjdbIk6RNesscYh0+M4UsyJOjqtxxAUee/2BNdTQ2Y="
 services:
 - docker
 before_install:
 - docker pull openjdk:8-jre-alpine
 script:
 - |
-  if [[ -n "$TRAVIS_TAG" ]]; then
-    echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin
-    ./gradlew dockerPush
+  echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin
+  if [[ "$TRAVIS_BRANCH" == "master" ]]; then
+    ./gradlew dockerPushLatest  
   else
-    ./gradlew check
+    ./gradlew dockerPushEdge
   fi
 after_success:
 - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
