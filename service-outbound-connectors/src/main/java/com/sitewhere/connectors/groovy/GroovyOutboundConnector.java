@@ -8,8 +8,9 @@
 package com.sitewhere.connectors.groovy;
 
 import com.sitewhere.connectors.SerialOutboundConnector;
+import com.sitewhere.groovy.IGroovyVariables;
+import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventRequestBuilder;
-import com.sitewhere.rest.model.device.event.scripting.DeviceEventSupport;
 import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequestBuilder;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
@@ -33,11 +34,40 @@ import groovy.lang.Binding;
  */
 public class GroovyOutboundConnector extends SerialOutboundConnector {
 
+    /** Unique script id to execute */
+    private String scriptId;
+
+    /** Number of threads used for processing */
+    private int numThreads = 1;
+
     /** Supports building device management entities */
     private DeviceManagementRequestBuilder deviceBuilder;
 
     /** Supports building various types of device events */
     private DeviceEventRequestBuilder eventsBuilder;
+
+    /** Wrapped Groovy component */
+    private GroovyComponent groovyComponent;
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+
+	// Add wrappers for APIs.
+	this.deviceBuilder = new DeviceManagementRequestBuilder(getDeviceManagement());
+	this.eventsBuilder = new DeviceEventRequestBuilder(getDeviceManagement(), getDeviceEventManagement());
+
+	// Create nested Groovy component and pass configuration.
+	this.groovyComponent = new GroovyComponent();
+	getGroovyComponent().setScriptId(getScriptId());
+	getGroovyComponent().setNumThreads(getNumThreads());
+	initializeNestedComponent(getGroovyComponent(), monitor, true);
+    }
 
     /*
      * (non-Javadoc)
@@ -51,8 +81,22 @@ public class GroovyOutboundConnector extends SerialOutboundConnector {
 	// Required for filters.
 	super.start(monitor);
 
-	this.deviceBuilder = new DeviceManagementRequestBuilder(getDeviceManagement());
-	this.eventsBuilder = new DeviceEventRequestBuilder(getDeviceManagement(), getDeviceEventManagement());
+	// Start nested Groovy component.
+	startNestedComponent(getGroovyComponent(), monitor, true);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.connectors.FilteredOutboundConnector#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Required for filters.
+	super.stop(monitor);
+
+	// Stop nested Groovy component.
+	stopNestedComponent(getGroovyComponent(), monitor);
     }
 
     /*
@@ -63,7 +107,7 @@ public class GroovyOutboundConnector extends SerialOutboundConnector {
      */
     @Override
     public void onMeasurement(IDeviceEventContext context, IDeviceMeasurement mx) throws SiteWhereException {
-	processEvent(mx);
+	processEvent(context, mx);
     }
 
     /*
@@ -74,7 +118,7 @@ public class GroovyOutboundConnector extends SerialOutboundConnector {
      */
     @Override
     public void onLocation(IDeviceEventContext context, IDeviceLocation location) throws SiteWhereException {
-	processEvent(location);
+	processEvent(context, location);
     }
 
     /*
@@ -85,7 +129,7 @@ public class GroovyOutboundConnector extends SerialOutboundConnector {
      */
     @Override
     public void onAlert(IDeviceEventContext context, IDeviceAlert alert) throws SiteWhereException {
-	processEvent(alert);
+	processEvent(context, alert);
     }
 
     /*
@@ -96,7 +140,7 @@ public class GroovyOutboundConnector extends SerialOutboundConnector {
      */
     @Override
     public void onStateChange(IDeviceEventContext context, IDeviceStateChange state) throws SiteWhereException {
-	processEvent(state);
+	processEvent(context, state);
     }
 
     /*
@@ -108,7 +152,7 @@ public class GroovyOutboundConnector extends SerialOutboundConnector {
     @Override
     public void onCommandInvocation(IDeviceEventContext context, IDeviceCommandInvocation invocation)
 	    throws SiteWhereException {
-	processEvent(invocation);
+	processEvent(context, invocation);
     }
 
     /*
@@ -119,27 +163,51 @@ public class GroovyOutboundConnector extends SerialOutboundConnector {
     @Override
     public void onCommandResponse(IDeviceEventContext context, IDeviceCommandResponse response)
 	    throws SiteWhereException {
-	processEvent(response);
+	processEvent(context, response);
     }
 
     /**
      * Perform custom event processing in a Groovy script.
      * 
+     * @param context
      * @param event
      * @throws SiteWhereException
      */
-    protected void processEvent(IDeviceEvent event) throws SiteWhereException {
+    protected void processEvent(IDeviceEventContext context, IDeviceEvent event) throws SiteWhereException {
 	// These should be cached, so no performance hit.
 	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignment(event.getDeviceAssignmentId());
 	IDevice device = getDeviceManagement().getDevice(assignment.getDeviceId());
 
 	// Create Groovy binding with handles to everything.
 	Binding binding = new Binding();
-	binding.setVariable("logger", getLogger());
-	binding.setVariable("event", new DeviceEventSupport(assignment, event));
-	binding.setVariable("assignment", assignment);
-	binding.setVariable("device", device);
-	binding.setVariable("deviceBuilder", deviceBuilder);
-	binding.setVariable("eventBuilder", eventsBuilder);
+	binding.setVariable(IGroovyVariables.VAR_EVENT_CONTEXT, context);
+	binding.setVariable(IGroovyVariables.VAR_EVENT, event);
+	binding.setVariable(IGroovyVariables.VAR_ASSIGNMENT, assignment);
+	binding.setVariable(IGroovyVariables.VAR_DEVICE, device);
+	binding.setVariable(IGroovyVariables.VAR_DEVICE_MANAGEMENT_BUILDER, deviceBuilder);
+	binding.setVariable(IGroovyVariables.VAR_EVENT_MANAGEMENT_BUILDER, eventsBuilder);
+	binding.setVariable(IGroovyVariables.VAR_LOGGER, getLogger());
+
+	getGroovyComponent().run(binding);
+    }
+
+    protected GroovyComponent getGroovyComponent() {
+	return groovyComponent;
+    }
+
+    public String getScriptId() {
+	return scriptId;
+    }
+
+    public void setScriptId(String scriptId) {
+	this.scriptId = scriptId;
+    }
+
+    public int getNumThreads() {
+	return numThreads;
+    }
+
+    public void setNumThreads(int numThreads) {
+	this.numThreads = numThreads;
     }
 }

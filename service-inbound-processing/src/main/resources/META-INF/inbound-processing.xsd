@@ -6,10 +6,12 @@
 	targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/inbound-processing"
 	elementFormDefault="qualified" attributeFormDefault="unqualified">
 
-	<xsd:import namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
-		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
+	<xsd:import
+		namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
+		schemaLocation="https://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
 
-	<xsd:element name="inbound-processing" type="inboundProcessingType">
+	<xsd:element name="inbound-processing"
+		type="inboundProcessingType">
 		<xsd:annotation>
 			<xsd:documentation>
 				Provides configuration information for the
@@ -22,8 +24,8 @@
 	<xsd:complexType name="inboundProcessingType">
 		<xsd:sequence>
 		</xsd:sequence>
-		<xsd:attribute name="processingThreadCount" type="sw:substitutableInt"
-			use="required">
+		<xsd:attribute name="processingThreadCount"
+			type="sw:substitutableInt" use="required">
 			<xsd:annotation>
 				<xsd:documentation>
 					Number of threads dedicated to parallel

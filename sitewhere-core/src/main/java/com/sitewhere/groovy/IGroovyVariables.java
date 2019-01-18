@@ -17,6 +17,18 @@ public interface IGroovyVariables {
     /** Groovy variable used for device management implementaton */
     public static final String VAR_DEVICE_MANAGEMENT = "deviceManagement";
 
+    /** Groovy variable used for device information */
+    public static final String VAR_DEVICE = "device";
+
+    /** Groovy variable used for event information */
+    public static final String VAR_EVENT = "event";
+
+    /** Groovy variable used for event context information */
+    public static final String VAR_EVENT_CONTEXT = "context";
+
+    /** Groovy variable used for passing assignment */
+    public static final String VAR_ASSIGNMENT = "assignment";
+
     /** Groovy variable used for device management builder */
     public static final String VAR_DEVICE_MANAGEMENT_BUILDER = "deviceBuilder";
 
@@ -58,7 +70,4 @@ public interface IGroovyVariables {
 
     /** Groovy variable used for passing command (or command execution) */
     public static final String VAR_NESTING_CONTEXT = "nesting";
-
-    /** Groovy variable used for passing assignment */
-    public static final String VAR_ASSIGNMENT = "assignment";
 }

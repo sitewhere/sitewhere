@@ -9,11 +9,11 @@
 
 	<xsd:import
 		namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
-		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
+		schemaLocation="https://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
 
 	<xsd:import
 		namespace="http://sitewhere.io/schema/sitewhere/microservice/common/connector"
-		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/connector-common.xsd" />
+		schemaLocation="https://sitewhere.io/schema/sitewhere/microservice/common/current/connector-common.xsd" />
 
 	<xsd:element name="event-search" type="eventSearchType">
 		<xsd:annotation>

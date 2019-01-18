@@ -8,9 +8,10 @@
 
 	<xsd:import
 		namespace="http://sitewhere.io/schema/sitewhere/microservice/common/datastore"
-		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/datastore-common.xsd" />
+		schemaLocation="https://sitewhere.io/schema/sitewhere/microservice/common/current/datastore-common.xsd" />
 
-	<xsd:element name="batch-operations" type="batchOperationsType">
+	<xsd:element name="batch-operations"
+		type="batchOperationsType">
 		<xsd:annotation>
 			<xsd:documentation>
 				Provides configuration information for the
@@ -23,7 +24,8 @@
 	<xsd:complexType name="batchOperationsType">
 		<xsd:all>
 			<xsd:element ref="ds:device-management-datastore" />
-			<xsd:element name="batch-operation-manager" type="batchOperationManagerType">
+			<xsd:element name="batch-operation-manager"
+				type="batchOperationManagerType">
 				<xsd:annotation>
 					<xsd:documentation>
 						Configures the batch operation manager

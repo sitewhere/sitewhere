@@ -9,11 +9,11 @@
 
 	<xsd:import
 		namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
-		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
+		schemaLocation="https://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
 
 	<xsd:import
 		namespace="http://sitewhere.io/schema/sitewhere/microservice/common/datastore"
-		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/datastore-common.xsd" />
+		schemaLocation="https://sitewhere.io/schema/sitewhere/microservice/common/current/datastore-common.xsd" />
 
 	<xsd:element name="device-state" type="deviceStateType">
 		<xsd:annotation>

@@ -29,16 +29,13 @@ import groovy.lang.Binding;
  * 
  * @author Derek
  */
-public abstract class GroovyComponent extends TenantEngineLifecycleComponent implements IGroovyComponent {
-
-    /** Default number of threads for script processing */
-    private static final int DEFAULT_NUM_THREADS = 3;
+public class GroovyComponent extends TenantEngineLifecycleComponent implements IGroovyComponent {
 
     /** Unique script id to execute */
     private String scriptId;
 
     /** Number of threads used for processing */
-    private int numThreads = DEFAULT_NUM_THREADS;
+    private int numThreads = 1;
 
     /** Script metadata */
     private IScriptMetadata scriptMetadata;

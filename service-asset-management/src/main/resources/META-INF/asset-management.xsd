@@ -8,9 +8,10 @@
 
 	<xsd:import
 		namespace="http://sitewhere.io/schema/sitewhere/microservice/common/datastore"
-		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/datastore-common.xsd" />
+		schemaLocation="https://sitewhere.io/schema/sitewhere/microservice/common/current/datastore-common.xsd" />
 
-	<xsd:element name="asset-management" type="assetManagementType">
+	<xsd:element name="asset-management"
+		type="assetManagementType">
 		<xsd:annotation>
 			<xsd:documentation>
 				Provides configuration information for the

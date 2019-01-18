@@ -1,1 +1,2 @@
-http\://sitewhere.io/schema/sitewhere/microservice/outbound-connectors/current/outbound-processing.xsd=META-INF/outbound-connectors.xsd
+http\://sitewhere.io/schema/sitewhere/microservice/outbound-connectors/current/outbound-connectors.xsd=META-INF/outbound-connectors.xsd
+https\://sitewhere.io/schema/sitewhere/microservice/outbound-connectors/current/outbound-connectors.xsd=META-INF/outbound-connectors.xsd

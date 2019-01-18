@@ -6,10 +6,12 @@
 	targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/rule-processing"
 	elementFormDefault="qualified" attributeFormDefault="unqualified">
 
-	<xsd:import namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
-		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
+	<xsd:import
+		namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
+		schemaLocation="https://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
 
-	<xsd:element name="rule-processing" type="ruleProcessingType">
+	<xsd:element name="rule-processing"
+		type="ruleProcessingType">
 		<xsd:annotation>
 			<xsd:documentation>
 				Provides configuration information for the
@@ -43,14 +45,16 @@
 
 	<!-- Attributes common to all rule processors -->
 	<xsd:attributeGroup name="rule-processor-attributes">
-		<xsd:attribute name="processorId" type="xsd:token" use="required">
+		<xsd:attribute name="processorId" type="xsd:token"
+			use="required">
 			<xsd:annotation>
 				<xsd:documentation>
 					Unique identifier for rule processor.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="numProcessingThreads" type="xsd:int">
+		<xsd:attribute name="numProcessingThreads"
+			type="xsd:int">
 			<xsd:annotation>
 				<xsd:documentation>
 					Number of processing threads used to pull events
@@ -61,7 +65,8 @@
 	</xsd:attributeGroup>
 
 	<!-- Zone test processor -->
-	<xsd:element name="zone-test-processor" type="zoneTestProcessorType"
+	<xsd:element name="zone-test-processor"
+		type="zoneTestProcessorType"
 		substitutionGroup="abstract-rule-processor">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -111,10 +116,12 @@
 
 	<!-- Information used to test zone containment -->
 	<xsd:complexType name="zoneTestType">
-		<xsd:attribute name="zoneToken" type="xsd:string" use="required"></xsd:attribute>
-		<xsd:attribute name="condition" type="zoneContainmentType"
-			use="required" />
-		<xsd:attribute name="alertType" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="zoneToken" type="xsd:string"
+			use="required"></xsd:attribute>
+		<xsd:attribute name="condition"
+			type="zoneContainmentType" use="required" />
+		<xsd:attribute name="alertType" type="xsd:string"
+			use="required"></xsd:attribute>
 		<xsd:attribute name="alertLevel" type="alertLevelType"
 			use="optional" />
 		<xsd:attribute name="alertMessage" type="xsd:string"

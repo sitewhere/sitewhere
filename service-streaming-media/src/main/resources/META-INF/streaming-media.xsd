@@ -6,10 +6,12 @@
 	targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/streaming-media"
 	elementFormDefault="qualified" attributeFormDefault="unqualified">
 
-	<xsd:import namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
-		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
+	<xsd:import
+		namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
+		schemaLocation="https://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
 
-	<xsd:element name="streaming-media" type="streamingMediaType">
+	<xsd:element name="streaming-media"
+		type="streamingMediaType">
 		<xsd:annotation>
 			<xsd:documentation>
 				Provides configuration information for the
