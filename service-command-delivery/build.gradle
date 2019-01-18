@@ -38,7 +38,7 @@ publishing {
 task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, dependsOn: bootJar) {
     destFile = project.file('build/docker/Dockerfile')
     from "${rootProject.ext['docker.base.image']}"
-    maintainer "${rootProject.ext['docker.maintainer']}"
+	instruction "LABEL maintainer=${rootProject.ext['docker.maintainer']}"
 	
 	// Copy Spring Boot jar.
 	copyFile("${project.name}-${project.version}-boot.jar", "/")
@@ -77,14 +77,14 @@ task copyArtifactToDocker(type: Copy, dependsOn: dockerFile) {
 task dockerImage(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildImage, dependsOn: copyArtifactToDocker) {
     inputDir = project.file('build/docker')
  	if(!project.hasProperty("debug")) {
-	    tag = "${dockerRepository}/sitewhere/${project.name}:${version}"
+	    tags = ["${dockerRepository}/sitewhere/${project.name}:${version}"]
 	} else {
-	    tag = "${dockerRepository}/sitewhere/${project.name}:debug-${version}"		
+	    tags = ["${dockerRepository}/sitewhere/${project.name}:debug-${version}"]		
 	}
 }
 
 // Push image to remote repository.
 task dockerPush(type: com.bmuschko.gradle.docker.tasks.image.DockerPushImage, dependsOn: dockerImage) {
-    imageName = "${dockerRepository}/sitewhere/${project.name}"
-    tag = "${version}"
+    imageName = "${dockerRepository}/sitewhere/${project.name}".toString()
+    tag = "${version}".toString()
 }
