@@ -113,10 +113,10 @@ task dockerPush(type: com.bmuschko.gradle.docker.tasks.image.DockerPushImage, de
 
 // Push image to remote repository.
 task dockerPushLatest(type: com.bmuschko.gradle.docker.tasks.image.DockerPushImage, dependsOn: dockerImageLatest) {
-    imageName = "${dockerRepository}/jorgevillaverde/${project.name}".toString()
+    imageName = "${dockerRepository}/sitewhere/${project.name}".toString()
 }
 
 // Push image to remote repository.
 task dockerPushEdge(type: com.bmuschko.gradle.docker.tasks.image.DockerPushImage, dependsOn: dockerImageEdge) {
-    imageName = "${dockerRepository}/jorgevillaverde/${project.name}".toString()
+    imageName = "${dockerRepository}/sitewhere/${project.name}".toString()
 }
