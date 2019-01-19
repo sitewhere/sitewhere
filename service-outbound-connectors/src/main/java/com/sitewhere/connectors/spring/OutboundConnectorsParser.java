@@ -246,8 +246,7 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
      * @return
      */
     protected AbstractBeanDefinition parseRabbitMqConnector(Element element, ParserContext context) {
-	BeanDefinitionBuilder processor = BeanDefinitionBuilder
-		.rootBeanDefinition(RabbitMqOutboundConnector.class);
+	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(RabbitMqOutboundConnector.class);
 
 	// Parse common outbound connector attributes.
 	parseCommonOutboundConnectorAttributes(element, processor);
@@ -328,8 +327,7 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
      * @return
      */
     protected AbstractBeanDefinition parseAzureEventHubConnector(Element element, ParserContext context) {
-	BeanDefinitionBuilder processor = BeanDefinitionBuilder
-		.rootBeanDefinition(EventHubOutboundConnector.class);
+	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(EventHubOutboundConnector.class);
 
 	// Parse common outbound connector attributes.
 	parseCommonOutboundConnectorAttributes(element, processor);
@@ -458,9 +456,9 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
 	// Parse common outbound connector attributes.
 	parseCommonOutboundConnectorAttributes(element, processor);
 
-	Attr scriptPath = element.getAttributeNode("scriptPath");
-	if (scriptPath != null) {
-	    processor.addPropertyValue("scriptPath", scriptPath.getValue());
+	Attr scriptId = element.getAttributeNode("scriptId");
+	if (scriptId != null) {
+	    processor.addPropertyValue("scriptId", scriptId.getValue());
 	}
 
 	return processor.getBeanDefinition();

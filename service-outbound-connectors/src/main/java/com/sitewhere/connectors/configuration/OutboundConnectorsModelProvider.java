@@ -276,9 +276,10 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
 
 	addCommonConnectorAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_GENERAL);
-	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String,
+	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script,
 		ConfigurationModelProvider.ATTR_GROUP_GENERAL)
-			.description("Script path relative to Groovy script root.").makeRequired().build()));
+			.description("Script which provides connector functionality.").makeRequired().build()));
+
 	return builder.build();
     }
 

@@ -1,0 +1,6 @@
+{
+	"id": "outbound-connector",
+	"name": "Outbound Connector",
+	"description": "Implements a custom outbound connector.",
+	"type": "groovy"
+}

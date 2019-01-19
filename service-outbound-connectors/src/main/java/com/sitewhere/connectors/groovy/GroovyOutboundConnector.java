@@ -37,9 +37,6 @@ public class GroovyOutboundConnector extends SerialOutboundConnector {
     /** Unique script id to execute */
     private String scriptId;
 
-    /** Number of threads used for processing */
-    private int numThreads = 1;
-
     /** Supports building device management entities */
     private DeviceManagementRequestBuilder deviceBuilder;
 
@@ -65,7 +62,7 @@ public class GroovyOutboundConnector extends SerialOutboundConnector {
 	// Create nested Groovy component and pass configuration.
 	this.groovyComponent = new GroovyComponent();
 	getGroovyComponent().setScriptId(getScriptId());
-	getGroovyComponent().setNumThreads(getNumThreads());
+	getGroovyComponent().setNumThreads(1);
 	initializeNestedComponent(getGroovyComponent(), monitor, true);
     }
 
@@ -201,13 +198,5 @@ public class GroovyOutboundConnector extends SerialOutboundConnector {
 
     public void setScriptId(String scriptId) {
 	this.scriptId = scriptId;
-    }
-
-    public int getNumThreads() {
-	return numThreads;
-    }
-
-    public void setNumThreads(int numThreads) {
-	this.numThreads = numThreads;
     }
 }

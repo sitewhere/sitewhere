@@ -71,6 +71,7 @@ task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, depends
 // Copy artifacts to Docker input folder.
 task copyArtifactsToDocker(type: Copy, dependsOn: dockerFile) {
     from "${buildDir}/libs/${project.name}-${project.version}-boot.jar"
+	from "${projectDir}/dockerimage" 
     into 'build/docker'
 }
 
