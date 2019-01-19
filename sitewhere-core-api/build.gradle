@@ -2,7 +2,7 @@ description = 'SiteWhere Core API'
 
 dependencies {
 	// SiteWhere model/API.
-    compile group: 'com.sitewhere', name: 'sitewhere-java-model', version: '2.0.1'
+    compile group: 'com.sitewhere', name: 'sitewhere-java-model', version: '2.0.2'
 	
 	// Spring security components.
     compile group: 'org.springframework.security', name: 'spring-security-core'

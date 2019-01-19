@@ -103,6 +103,17 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
 	    try {
 		span = service.getTracer().buildSpan("Start microservice").startActive();
 
+		// Display banner indicating service information.
+		List<String> messages = new ArrayList<String>();
+		messages.add(service.getName() + " Microservice");
+		messages.add("Version: " + service.getVersion().getVersionIdentifier() + "."
+			+ service.getVersion().getGitRevisionAbbrev());
+		messages.add("Git Revision: " + service.getVersion().getGitRevision());
+		messages.add("Build Date: " + service.getVersion().getBuildTimestamp());
+		messages.add("Hostname: " + service.getHostname());
+		String message = Boilerplate.boilerplate(messages, "*");
+		service.getLogger().info("\n" + message + "\n");
+
 		// Initialize microservice.
 		LifecycleProgressMonitor initMonitor = new LifecycleProgressMonitor(
 			new LifecycleProgressContext(1, "Initialize " + service.getName()), service);
@@ -122,11 +133,10 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
 		}
 
 		long total = System.currentTimeMillis() - start;
-		List<String> messages = new ArrayList<String>();
+		messages.clear();
 		messages.add(service.getName() + " Microservice");
-		messages.add("Hostname: " + service.getHostname());
 		messages.add("Startup time: " + total + "ms");
-		String message = Boilerplate.boilerplate(messages, "*");
+		message = Boilerplate.boilerplate(messages, "*");
 		service.getLogger().info("\n" + message + "\n");
 
 		// Execute any post-startup code.

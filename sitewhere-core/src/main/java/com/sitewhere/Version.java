@@ -71,4 +71,20 @@ public class Version implements IVersion {
     public String getBuildTimestamp() {
 	return properties.getProperty("build.timestamp");
     }
+
+    /*
+     * @see com.sitewhere.spi.system.IVersion#getGitRevision()
+     */
+    @Override
+    public String getGitRevision() {
+	return properties.getProperty("git.revision");
+    }
+
+    /*
+     * @see com.sitewhere.spi.system.IVersion#getGitRevisionAbbrev()
+     */
+    @Override
+    public String getGitRevisionAbbrev() {
+	return properties.getProperty("git.revision.abbrev");
+    }
 }

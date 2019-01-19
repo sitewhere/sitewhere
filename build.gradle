@@ -14,6 +14,13 @@ buildscript {
 	}
 }
 
+ext {
+    git = org.ajoberstar.grgit.Grgit.open(currentDir: file('.'))
+}
+
+ext['git.revision'] = ext.git.head().id
+ext['git.revision.abbrev'] = ext.git.head().abbreviatedId
+
 ext['docker.base.image'] = 'openjdk:8-jre-alpine'
 ext['docker.maintainer'] = 'admin@sitewhere.com'
 

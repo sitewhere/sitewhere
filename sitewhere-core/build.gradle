@@ -29,7 +29,9 @@ processResources {
         include '**/*.properties'
         filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [
             'build.timestamp': new java.text.SimpleDateFormat('yyyyMMddHHmmss').format(new Date()),
-            'version.identifier'    : project.version
+            'version.identifier' : project.version,
+            'git.revision': rootProject.ext['git.revision'],
+            'git.revision.abbrev': rootProject.ext['git.revision.abbrev']
         ])
     }
 }
