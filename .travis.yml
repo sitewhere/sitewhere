@@ -9,9 +9,11 @@ script:
 - |
   echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin
   if [[ "$TRAVIS_BRANCH" == "master" ]]; then
-    ./gradlew dockerPushLatest  
-  else
+    ./gradlew dockerPushLatest
+  elif [ "$TRAVIS_BRANCH" == "sitewhere-*" ]; then
     ./gradlew dockerPushEdge
+  else
+    ./gradlew check
   fi
 after_success:
 - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
