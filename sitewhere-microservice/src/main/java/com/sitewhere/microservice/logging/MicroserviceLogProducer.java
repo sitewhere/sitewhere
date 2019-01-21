@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.sitewhere.grpc.client.common.converter.KafkaModelConverter;
 import com.sitewhere.grpc.client.common.marshaler.KafkaModelMarshaler;
 import com.sitewhere.grpc.kafka.model.KafkaModel.GMicroserviceLogMessage;
+import com.sitewhere.microservice.kafka.AckPolicy;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.logging.IMicroserviceLogMessage;
@@ -37,6 +38,10 @@ public class MicroserviceLogProducer extends MicroserviceKafkaProducer implement
 
     /** Provides thread pool */
     private ExecutorService executor;
+
+    public MicroserviceLogProducer() {
+	super(AckPolicy.FireAndForget);
+    }
 
     /*
      * @see

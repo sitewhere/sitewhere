@@ -439,11 +439,11 @@
 	<xsd:complexType name="groovyConnectorType">
 		<xsd:complexContent>
 			<xsd:extension base="filteredOutboundConnectorType">
-				<xsd:attribute name="scriptPath" type="xsd:string"
+				<xsd:attribute name="scriptId" type="xsd:string"
 					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							Path to script used for processing each event.
+							Unique script id for outbound connector logic.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>

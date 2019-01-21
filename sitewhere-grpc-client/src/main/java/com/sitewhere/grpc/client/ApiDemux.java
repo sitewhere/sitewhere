@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.backoff.BackOffExecution;
 import org.springframework.util.backoff.ExponentialBackOff;
 
+import com.orbitz.consul.ConsulException;
 import com.sitewhere.grpc.client.spi.IApiChannel;
 import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.IApiDemuxRoutingStrategy;
@@ -272,6 +273,13 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 			}
 		    }
 		    Thread.sleep(DISCOVERY_CHECK_INTERVAL);
+		} catch (ConsulException e) {
+		    getLogger().warn(String.format("Consul reported exception: %s", e.getMessage()));
+		    try {
+			Thread.sleep(DISCOVERY_CHECK_INTERVAL);
+		    } catch (InterruptedException e1) {
+			return;
+		    }
 		} catch (InterruptedException e) {
 		    getLogger().warn("Discovery monitor interrupted.");
 		    return;

@@ -8,6 +8,7 @@
 package com.sitewhere.inbound.kafka;
 
 import com.sitewhere.inbound.spi.kafka.IUnregisteredEventsProducer;
+import com.sitewhere.microservice.kafka.AckPolicy;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 
@@ -18,6 +19,10 @@ import com.sitewhere.spi.SiteWhereException;
  * @author Derek
  */
 public class UnregisteredEventsProducer extends MicroserviceKafkaProducer implements IUnregisteredEventsProducer {
+
+    public UnregisteredEventsProducer() {
+	super(AckPolicy.FireAndForget);
+    }
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer#

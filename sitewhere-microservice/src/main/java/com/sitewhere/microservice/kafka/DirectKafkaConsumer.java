@@ -36,7 +36,9 @@ public abstract class DirectKafkaConsumer extends MicroserviceKafkaConsumer {
 		}
 	    });
 	} catch (SiteWhereException e) {
-	    getLogger().error("Processing for batch failed.", e);
+	    getLogger().error("Exception in consumer processing.", e);
+	} catch (Throwable e) {
+	    getLogger().error("Unhandled exception in consumer processing.", e);
 	}
     }
 

@@ -7,8 +7,14 @@
  */
 package com.sitewhere.tenant.kafka;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+import org.apache.kafka.clients.producer.RecordMetadata;
+
 import com.sitewhere.grpc.client.tenant.TenantModelMarshaler;
 import com.sitewhere.grpc.model.TenantModel.GTenantModelUpdateType;
+import com.sitewhere.microservice.kafka.AckPolicy;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
@@ -22,6 +28,10 @@ import com.sitewhere.tenant.spi.kafka.ITenantModelProducer;
  */
 public class TenantModelProducer extends MicroserviceKafkaProducer implements ITenantModelProducer {
 
+    public TenantModelProducer() {
+	super(AckPolicy.Leader);
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -32,8 +42,7 @@ public class TenantModelProducer extends MicroserviceKafkaProducer implements IT
     public void onTenantAdded(ITenant tenant) throws SiteWhereException {
 	byte[] message = TenantModelMarshaler
 		.buildTenantModelUpdateMessage(GTenantModelUpdateType.TENANTMODEL_TENANT_ADDED, tenant);
-	send(tenant.getToken(), message);
-	getLogger().info("Sent Kafka tenant model update for added tenant.");
+	deliver(tenant.getToken(), message);
     }
 
     /*
@@ -46,8 +55,7 @@ public class TenantModelProducer extends MicroserviceKafkaProducer implements IT
     public void onTenantUpdated(ITenant tenant) throws SiteWhereException {
 	byte[] message = TenantModelMarshaler
 		.buildTenantModelUpdateMessage(GTenantModelUpdateType.TENANTMODEL_TENANT_UPDATED, tenant);
-	send(tenant.getToken(), message);
-	getLogger().info("Sent Kafka tenant model update for updated tenant.");
+	deliver(tenant.getToken(), message);
     }
 
     /*
@@ -60,8 +68,7 @@ public class TenantModelProducer extends MicroserviceKafkaProducer implements IT
     public void onTenantDeleted(ITenant tenant) throws SiteWhereException {
 	byte[] message = TenantModelMarshaler
 		.buildTenantModelUpdateMessage(GTenantModelUpdateType.TENANTMODEL_TENANT_DELETED, tenant);
-	send(tenant.getToken(), message);
-	getLogger().info("Sent Kafka tenant model update for deleted tenant.");
+	deliver(tenant.getToken(), message);
     }
 
     /*
@@ -72,5 +79,22 @@ public class TenantModelProducer extends MicroserviceKafkaProducer implements IT
     @Override
     public String getTargetTopicName() throws SiteWhereException {
 	return getMicroservice().getKafkaTopicNaming().getTenantUpdatesTopic();
+    }
+
+    /**
+     * Deliver a tenant update record to Kafka.
+     * 
+     * @param key
+     * @param message
+     * @throws SiteWhereException
+     */
+    protected void deliver(String key, byte[] message) throws SiteWhereException {
+	Future<RecordMetadata> result = send(key, message);
+	try {
+	    RecordMetadata metadata = result.get();
+	    getLogger().info(String.format("Metadata for delivered tenant record: %s", metadata.toString()));
+	} catch (InterruptedException | ExecutionException e) {
+	    throw new SiteWhereException(e);
+	}
     }
 }

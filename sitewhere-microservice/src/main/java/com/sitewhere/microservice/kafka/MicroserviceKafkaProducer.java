@@ -8,10 +8,10 @@
 package com.sitewhere.microservice.kafka;
 
 import java.util.Properties;
+import java.util.concurrent.Future;
 
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
-import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -41,6 +41,13 @@ public abstract class MicroserviceKafkaProducer extends TenantEngineLifecycleCom
 
     /** Kafka admin client */
     private AdminClient kafkaAdmin;
+
+    /** Kafka acknowledgement policy */
+    private AckPolicy ackPolicy;
+
+    public MicroserviceKafkaProducer(AckPolicy ackPolicy) {
+	this.ackPolicy = ackPolicy;
+    }
 
     /*
      * (non-Javadoc)
@@ -96,25 +103,19 @@ public abstract class MicroserviceKafkaProducer extends TenantEngineLifecycleCom
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.microservice.spi.kafka.IMicroserviceProducer#send(java.lang
-     * .String, byte[])
+     * com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer#send(java.
+     * lang.String, byte[])
      */
     @Override
-    public void send(String key, byte[] message) throws SiteWhereException {
+    public Future<RecordMetadata> send(String key, byte[] message) throws SiteWhereException {
 	ProducerRecord<String, byte[]> record = new ProducerRecord<String, byte[]>(getTargetTopicName(), key, message);
 	try {
-	    getProducer().send(record, new Callback() {
-		public void onCompletion(RecordMetadata metadata, Exception e) {
-		    if (e != null) {
-			getLogger().error("Unable to complete delivery of Kafka message.", e);
-		    }
-		}
-	    });
+	    return getProducer().send(record);
 	} catch (IllegalStateException e) {
-	    getLogger().debug(String.format("Message for key '%s' skipped. Producer is closed.", key), e);
+	    throw new SiteWhereException("Producer unable to send record.", e);
+	} catch (Throwable e) {
+	    throw new SiteWhereException("Unhandled exception in producer while sending record.", e);
 	}
     }
 
@@ -128,6 +129,7 @@ public abstract class MicroserviceKafkaProducer extends TenantEngineLifecycleCom
 	Properties config = new Properties();
 	config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
 		getMicroservice().getInstanceSettings().getKafkaBootstrapServers());
+	config.put(ProducerConfig.ACKS_CONFIG, getAckPolicy().getConfig());
 	config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 	config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName());
 	return config;
@@ -160,5 +162,13 @@ public abstract class MicroserviceKafkaProducer extends TenantEngineLifecycleCom
 
     protected void setKafkaAdmin(AdminClient kafkaAdmin) {
 	this.kafkaAdmin = kafkaAdmin;
+    }
+
+    protected AckPolicy getAckPolicy() {
+	return ackPolicy;
+    }
+
+    protected void setAckPolicy(AckPolicy ackPolicy) {
+	this.ackPolicy = ackPolicy;
     }
 }

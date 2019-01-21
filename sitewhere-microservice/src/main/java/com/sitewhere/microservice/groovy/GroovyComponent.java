@@ -68,6 +68,9 @@ public class GroovyComponent extends TenantEngineLifecycleComponent implements I
 	if (getScriptMetadata() == null) {
 	    throw new SiteWhereException("Script '" + getScriptId() + "' was not found.");
 	}
+
+	getLogger().info(String.format("Groovy component will use version %s of script '%s'",
+		getScriptMetadata().getActiveVersion(), getScriptMetadata().getName()));
     }
 
     /*

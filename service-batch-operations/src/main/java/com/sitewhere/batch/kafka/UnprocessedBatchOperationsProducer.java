@@ -8,6 +8,7 @@
 package com.sitewhere.batch.kafka;
 
 import com.sitewhere.batch.spi.kafka.IUnprocessedBatchOperationsProducer;
+import com.sitewhere.microservice.kafka.AckPolicy;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 
@@ -17,6 +18,10 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public class UnprocessedBatchOperationsProducer extends MicroserviceKafkaProducer
 	implements IUnprocessedBatchOperationsProducer {
+
+    public UnprocessedBatchOperationsProducer() {
+	super(AckPolicy.FireAndForget);
+    }
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer#

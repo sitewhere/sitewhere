@@ -8,6 +8,7 @@
 package com.sitewhere.batch.kafka;
 
 import com.sitewhere.batch.spi.kafka.IFailedBatchElementsProducer;
+import com.sitewhere.microservice.kafka.AckPolicy;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 
@@ -16,6 +17,10 @@ import com.sitewhere.spi.SiteWhereException;
  * further processing.
  */
 public class FailedBatchElementsProducer extends MicroserviceKafkaProducer implements IFailedBatchElementsProducer {
+
+    public FailedBatchElementsProducer() {
+	super(AckPolicy.FireAndForget);
+    }
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer#

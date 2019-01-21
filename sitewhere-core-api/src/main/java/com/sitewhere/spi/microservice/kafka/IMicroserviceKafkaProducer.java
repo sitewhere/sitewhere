@@ -7,6 +7,10 @@
  */
 package com.sitewhere.spi.microservice.kafka;
 
+import java.util.concurrent.Future;
+
+import org.apache.kafka.clients.producer.RecordMetadata;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
@@ -30,7 +34,8 @@ public interface IMicroserviceKafkaProducer extends ILifecycleComponent {
      * 
      * @param key
      * @param message
+     * @return
      * @throws SiteWhereException
      */
-    public void send(String key, byte[] message) throws SiteWhereException;
+    public Future<RecordMetadata> send(String key, byte[] message) throws SiteWhereException;
 }

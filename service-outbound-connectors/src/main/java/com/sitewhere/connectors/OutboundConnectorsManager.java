@@ -39,6 +39,7 @@ public class OutboundConnectorsManager extends TenantEngineLifecycleComponent im
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getConnectorHosts().clear();
+	getLogger().info(String.format("Initializing %d outbound connectors...", getOutboundConnectors().size()));
 	for (IOutboundConnector processor : getOutboundConnectors()) {
 	    try {
 		// Create host for managing outbound connector.
@@ -58,6 +59,7 @@ public class OutboundConnectorsManager extends TenantEngineLifecycleComponent im
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	getLogger().info(String.format("Starting %d outbound connectors...", getConnectorHosts().size()));
 	for (KafkaOutboundConnectorHost host : getConnectorHosts()) {
 	    try {
 		startNestedComponent(host, monitor, true);
@@ -74,6 +76,7 @@ public class OutboundConnectorsManager extends TenantEngineLifecycleComponent im
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	getLogger().info(String.format("Stopping %d outbound connectors...", getConnectorHosts().size()));
 	for (KafkaOutboundConnectorHost host : getConnectorHosts()) {
 	    try {
 		stopNestedComponent(host, monitor);

@@ -8,6 +8,7 @@
 package com.sitewhere.commands.kafka;
 
 import com.sitewhere.commands.spi.kafka.IUndeliveredCommandInvocationsProducer;
+import com.sitewhere.microservice.kafka.AckPolicy;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 
@@ -19,6 +20,10 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public class UndeliveredCommandInvocationsProducer extends MicroserviceKafkaProducer
 	implements IUndeliveredCommandInvocationsProducer {
+
+    public UndeliveredCommandInvocationsProducer() {
+	super(AckPolicy.FireAndForget);
+    }
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer#

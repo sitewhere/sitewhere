@@ -117,21 +117,37 @@ public abstract class MicroserviceKafkaConsumer extends TenantEngineLifecycleCom
 
 	@Override
 	public void run() {
+	    // Attempt to subscribe
+	    while (true) {
+		try {
+		    getConsumer().subscribe(getSourceTopicNames());
+		    break;
+		} catch (SiteWhereException e) {
+		    getLogger().error("Unable to subscribe to topics.", e);
+		} catch (Throwable e) {
+		    getLogger().error("Unhandled exception while subscribing to topics.", e);
+		}
+		try {
+		    Thread.sleep(1000);
+		} catch (InterruptedException e) {
+		    return;
+		}
+	    }
 	    try {
-		getConsumer().subscribe(getSourceTopicNames());
 		while (true) {
 		    ConsumerRecords<String, byte[]> records = getConsumer().poll(Duration.ofMillis(Long.MAX_VALUE));
-
 		    for (TopicPartition topicPartition : records.partitions()) {
-			List<ConsumerRecord<String, byte[]>> topicRecords = records.records(topicPartition);
-			process(topicPartition, topicRecords);
+			try {
+			    List<ConsumerRecord<String, byte[]>> topicRecords = records.records(topicPartition);
+			    process(topicPartition, topicRecords);
+			} catch (Throwable e) {
+			    getLogger().error("Unhandled exception in consumer processing.", e);
+			}
 		    }
 		}
 	    } catch (WakeupException e) {
 		getLogger().info("Consumer thread received shutdown request.");
 		getConsumer().unsubscribe();
-	    } catch (Exception e) {
-		getLogger().error("Error in consumer processing.", e);
 	    } finally {
 		getConsumer().close();
 	    }

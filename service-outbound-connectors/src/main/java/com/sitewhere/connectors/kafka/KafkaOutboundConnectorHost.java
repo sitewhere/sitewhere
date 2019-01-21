@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -48,9 +47,6 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
 
     /** Get wrapped outbound connector implementation */
     private IOutboundConnector outboundConnector;
-
-    /** Last partition offsets */
-    private ConcurrentHashMap<TopicPartition, Long> partitionOffsets = new ConcurrentHashMap<>();
 
     /** Batch processors executor */
     private ExecutorService batchProcessors;
@@ -98,6 +94,8 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.initialize(monitor);
+
+	// Initialize the wrapped connector component.
 	initializeNestedComponent(getOutboundConnector(), monitor, true);
     }
 
@@ -110,8 +108,14 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.start(monitor);
+
+	// Start the wrapped connector component.
 	startNestedComponent(getOutboundConnector(), monitor, true);
-	batchProcessors = Executors.newFixedThreadPool(getOutboundConnector().getNumProcessingThreads(),
+
+	int numThreads = getOutboundConnector().getNumProcessingThreads();
+	getLogger().info(String.format("Connector host starting connector with pool of %d %s.", numThreads,
+		numThreads == 1 ? "thread" : "threads"));
+	this.batchProcessors = Executors.newFixedThreadPool(getOutboundConnector().getNumProcessingThreads(),
 		new EventPayloadProcessorThreadFactory());
     }
 
@@ -124,14 +128,16 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.stop(monitor);
-	if (batchProcessors != null) {
-	    batchProcessors.shutdown();
+	if (getBatchProcessors() != null) {
+	    getBatchProcessors().shutdown();
 	    try {
-		batchProcessors.awaitTermination(10, TimeUnit.SECONDS);
+		getBatchProcessors().awaitTermination(10, TimeUnit.SECONDS);
 	    } catch (InterruptedException e) {
 		getLogger().error("Batch processors for connector did not terminate within timout period.");
 	    }
 	}
+
+	// Stop the wrapped connector component.
 	stopNestedComponent(getOutboundConnector(), monitor);
     }
 
@@ -143,7 +149,7 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
     @Override
     public void process(TopicPartition topicPartition, List<ConsumerRecord<String, byte[]>> records) {
 	if (records.size() > 0) {
-	    batchProcessors.execute(new TopicBatchProcessor(topicPartition, records));
+	    getBatchProcessors().execute(new TopicBatchProcessor(topicPartition, records));
 
 	    // Send new offset information.
 	    getConsumer().commitAsync(new OffsetCommitCallback() {
@@ -160,8 +166,8 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
 	return outboundConnector;
     }
 
-    protected ConcurrentHashMap<TopicPartition, Long> getPartitionOffsets() {
-	return partitionOffsets;
+    protected ExecutorService getBatchProcessors() {
+	return batchProcessors;
     }
 
     /**

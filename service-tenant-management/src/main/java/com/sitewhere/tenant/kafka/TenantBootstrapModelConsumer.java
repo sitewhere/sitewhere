@@ -126,9 +126,13 @@ public class TenantBootstrapModelConsumer extends DirectKafkaConsumer implements
 	GTenantModelUpdate update = TenantModelMarshaler.parseTenantModelUpdateMessage(message);
 
 	// If a tenant was added, bootstrap it.
+	getLogger().info("Received tenant model update message.");
 	if (update.getType() == GTenantModelUpdateType.TENANTMODEL_TENANT_ADDED) {
 	    ITenant tenant = TenantModelConverter.asApiTenant(update.getTenant());
 	    executor.execute(new TenantBootstrapper(tenant));
+	} else {
+	    getLogger()
+		    .info(String.format("Unknown tenant model update message type %s.", update.getType().toString()));
 	}
     }
 

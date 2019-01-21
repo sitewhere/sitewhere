@@ -8,6 +8,7 @@
 package com.sitewhere.event.kafka;
 
 import com.sitewhere.event.spi.kafka.IInboundPersistedEventsProducer;
+import com.sitewhere.microservice.kafka.AckPolicy;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 
@@ -19,6 +20,10 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public class InboundPersistedEventsProducer extends MicroserviceKafkaProducer
 	implements IInboundPersistedEventsProducer {
+
+    public InboundPersistedEventsProducer() {
+	super(AckPolicy.FireAndForget);
+    }
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer#
