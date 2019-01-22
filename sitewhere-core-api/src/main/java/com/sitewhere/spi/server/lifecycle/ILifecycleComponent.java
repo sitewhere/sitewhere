@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.slf4j.cal10n.LocLogger;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.state.ILifecycleComponentState;
@@ -272,7 +274,7 @@ public interface ILifecycleComponent {
      * 
      * @return
      */
-    public ILifecycleComponentLogger getLogger();
+    public LocLogger getLogger();
 
     /**
      * Captures the state of this component and nested components recursively.

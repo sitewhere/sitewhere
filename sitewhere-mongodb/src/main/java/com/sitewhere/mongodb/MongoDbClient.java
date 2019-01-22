@@ -11,13 +11,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.bson.Document;
 import org.springframework.util.StringUtils;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
-import com.mongodb.MongoCommandException;
 import com.mongodb.MongoCredential;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.ServerAddress;
@@ -133,11 +130,6 @@ public abstract class MongoDbClient extends TenantEngineLifecycleComponent
 		    }
 		}
 
-		// Handle automatic configuration of replication.
-		if ((isUsingReplicaSet) && (getConfiguration().isAutoConfigureReplication())) {
-		    doAutoConfigureReplication(addresses);
-		}
-
 		// Force interaction to test connectivity.
 		getDatabase().listCollectionNames();
 		return;
@@ -145,78 +137,6 @@ public abstract class MongoDbClient extends TenantEngineLifecycleComponent
 		getLogger().warn("Timed out connecting to MongoDB. Will attempt to reconnect to "
 			+ getHostname().getValue() + ":" + getConfiguration().getPort() + ".", e);
 	    }
-	}
-    }
-
-    /**
-     * Create a connection to the primary in a replica set.
-     * 
-     * @param addresses
-     * @return
-     */
-    protected MongoClient getPrimaryConnection(List<ServerAddress> addresses) {
-	MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
-	if ((getConfiguration().getUsername() != null) && (getConfiguration().getPassword() != null)) {
-	    MongoCredential credential = MongoCredential.createCredential(getConfiguration().getUsername(),
-		    getConfiguration().getAuthDatabaseName(), getConfiguration().getPassword().toCharArray());
-	    return new MongoClient(addresses.get(0), Arrays.asList(credential), builder.build());
-	} else {
-	    return new MongoClient(addresses.get(0), builder.build());
-	}
-    }
-
-    /**
-     * Detects whether a replica set is configured and creates one if not.
-     * 
-     * @param addresses
-     */
-    protected void doAutoConfigureReplication(List<ServerAddress> addresses) throws SiteWhereException {
-	// Only connect to primary for sending commands.
-	MongoClient primary = getPrimaryConnection(addresses);
-
-	// Check for existing replica set configuration.
-	getLogger().info("Checking for existing replica set...");
-	try {
-	    Document result = primary.getDatabase("admin").runCommand(new BasicDBObject("replSetGetStatus", 1));
-	    if (result.getDouble("ok") == 1) {
-		getLogger().warn("Replica set already configured. Skipping auto-configuration.");
-		return;
-	    }
-	} catch (MongoCommandException e) {
-	    getLogger().info("Replica set was not configured.");
-	}
-
-	// Create configuration for new replica set.
-	try {
-	    getLogger().info("Configuring new replica set '" + getConfiguration().getReplicaSetName() + "'.");
-	    BasicDBObject config = new BasicDBObject("_id", getConfiguration().getReplicaSetName());
-	    List<BasicDBObject> servers = new ArrayList<BasicDBObject>();
-
-	    // Create list of members in replica set.
-	    int index = 0;
-	    for (final ServerAddress address : addresses) {
-		BasicDBObject server = new BasicDBObject("_id", index);
-		server.put("host", (address.getHost() + ":" + address.getPort()));
-
-		// First server in list is preferred primary.
-		if (index == 0) {
-		    server.put("priority", 10);
-		}
-
-		servers.add(server);
-		index++;
-	    }
-	    config.put("members", servers);
-
-	    // Send command.
-	    Document result = primary.getDatabase("admin").runCommand(new BasicDBObject("replSetInitiate", config));
-	    if (result.getDouble("ok") != 1) {
-		throw new SiteWhereException("Unable to auto-configure replica set.\n" + result.toJson());
-	    }
-	    getLogger()
-		    .info("Replica set '" + getConfiguration().getReplicaSetName() + "' creation command successful.");
-	} finally {
-	    primary.close();
 	}
     }
 

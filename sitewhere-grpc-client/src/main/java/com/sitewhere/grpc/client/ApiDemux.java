@@ -348,9 +348,11 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 		    getLogger().error("Creating API channel for hostname when one already existed.");
 		}
 	    } catch (SiteWhereException e) {
-		getLogger().error(e, GrpcClientMessages.API_CHANNEL_EXCEPTION_ON_CREATE, getHost());
+		getLogger().error(GrpcClientMessages.API_CHANNEL_EXCEPTION_ON_CREATE, getHost());
+		getLogger().error("Exception creating API channel.", e);
 	    } catch (Throwable t) {
-		getLogger().error(t, GrpcClientMessages.API_CHANNEL_UNHANDLED_EXCEPTION_ON_CREATE, getHost());
+		getLogger().error(GrpcClientMessages.API_CHANNEL_UNHANDLED_EXCEPTION_ON_CREATE, getHost());
+		getLogger().error("Unhandled exception creating API channel.", t);
 	    }
 	}
 

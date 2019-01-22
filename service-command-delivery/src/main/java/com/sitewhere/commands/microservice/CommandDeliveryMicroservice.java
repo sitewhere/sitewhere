@@ -90,7 +90,8 @@ public class CommandDeliveryMicroservice
 	    waitForDependenciesAvailable();
 	    getLogger().debug("All required microservices detected as available.");
 	} catch (ApiChannelNotAvailableException e) {
-	    getLogger().error(e, SiteWhereMessage.MICROSERVICE_NOT_AVAILABLE);
+	    getLogger().error(SiteWhereMessage.MICROSERVICE_NOT_AVAILABLE);
+	    getLogger().error("Microservice not available.", e);
 	}
     }
 

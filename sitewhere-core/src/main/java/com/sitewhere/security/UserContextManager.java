@@ -14,7 +14,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponentLogger;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.IUser;
 
@@ -71,9 +70,8 @@ public class UserContextManager {
      * Set tenant for current context.
      * 
      * @param tenant
-     * @param logger
      */
-    public static void setCurrentTenant(ITenant tenant, ILifecycleComponentLogger logger) {
+    public static void setCurrentTenant(ITenant tenant) {
 	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 	if ((auth != null) && (auth instanceof SitewhereAuthentication)) {
 	    ((SitewhereAuthentication) auth).setTenant(tenant);

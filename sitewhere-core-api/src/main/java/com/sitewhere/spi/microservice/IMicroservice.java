@@ -21,7 +21,6 @@ import com.sitewhere.spi.microservice.discovery.IServiceDiscoveryProvider;
 import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
-import com.sitewhere.spi.microservice.logging.IMicroserviceLogProducer;
 import com.sitewhere.spi.microservice.scripting.IScriptTemplateManager;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
@@ -176,14 +175,6 @@ public interface IMicroservice<T extends IFunctionIdentifier>
      * @return
      */
     public IMicroserviceStateUpdatesKafkaProducer getStateUpdatesKafkaProducer();
-
-    /**
-     * Get Kafka producer that allows log messages to be processed in a centralized
-     * fashion.
-     * 
-     * @return
-     */
-    public IMicroserviceLogProducer getMicroserviceLogProducer();
 
     /**
      * Get manager for script templates which provide examples of

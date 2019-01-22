@@ -25,7 +25,6 @@ import com.codahale.metrics.ScheduledReporter;
 import com.codahale.metrics.Slf4jReporter;
 import com.sitewhere.Version;
 import com.sitewhere.microservice.discovery.consul.ConsulServiceDiscoveryProvider;
-import com.sitewhere.microservice.logging.MicroserviceLogProducer;
 import com.sitewhere.microservice.management.MicroserviceManagementGrpcServer;
 import com.sitewhere.microservice.scripting.ScriptTemplateManager;
 import com.sitewhere.microservice.state.MicroserviceStateUpdatesKafkaProducer;
@@ -47,7 +46,6 @@ import com.sitewhere.spi.microservice.discovery.IServiceDiscoveryProvider;
 import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
-import com.sitewhere.spi.microservice.logging.IMicroserviceLogProducer;
 import com.sitewhere.spi.microservice.scripting.IScriptTemplateManager;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
@@ -128,9 +126,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     /** Kafka producer for microservice state updates */
     private IMicroserviceStateUpdatesKafkaProducer stateUpdatesKafkaProducer;
 
-    /** Kafka producer for centralized log handling */
-    private IMicroserviceLogProducer microserviceLogProducer;
-
     /** Script template manager instance */
     private IScriptTemplateManager scriptTemplateManager;
 
@@ -158,9 +153,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     public Microservice() {
 	this.microserviceOperationsService = Executors
 		.newSingleThreadExecutor(new MicroserviceOperationsThreadFactory());
-
-	// Create log producer so it can buffer log output.
-	this.microserviceLogProducer = new MicroserviceLogProducer();
 
 	// Create script template manager.
 	this.scriptTemplateManager = new ScriptTemplateManager();
@@ -216,12 +208,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
 	// Start script template manager.
 	initialize.addStartStep(this, getScriptTemplateManager(), true);
-
-	// Initialize Kafka producer for centralized logging.
-	initialize.addInitializeStep(this, getMicroserviceLogProducer(), true);
-
-	// Start Kafka producer for centralized logging.
-	initialize.addStartStep(this, getMicroserviceLogProducer(), true);
 
 	// Initialize Zookeeper configuration management.
 	initialize.addInitializeStep(this, getZookeeperManager(), true);
@@ -327,9 +313,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
 	// Terminate Zk manager.
 	terminate.addStopStep(this, getZookeeperManager());
-
-	// Terminate log producer.
-	terminate.addStopStep(this, getMicroserviceLogProducer());
 
 	// Terminate script template manager.
 	terminate.addStopStep(this, getScriptTemplateManager());
@@ -458,7 +441,8 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 		IMicroserviceState state = getCurrentState();
 		getStateUpdatesKafkaProducer().send(state);
 	    } catch (SiteWhereException e) {
-		getLogger().error(e, MicroserviceMessages.LIFECYCLE_STATUS_SEND_EXCEPTION);
+		getLogger().error(MicroserviceMessages.LIFECYCLE_STATUS_SEND_EXCEPTION);
+		getLogger().error("Unable to send lifecycle status.", e);
 	    }
 	} else {
 	    getLogger().warn(MicroserviceMessages.LIFECYCLE_STATUS_FAILED_NO_KAFKA);
@@ -623,19 +607,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     public void setStateUpdatesKafkaProducer(IMicroserviceStateUpdatesKafkaProducer stateUpdatesKafkaProducer) {
 	this.stateUpdatesKafkaProducer = stateUpdatesKafkaProducer;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.microservice.IMicroservice#getMicroserviceLogProducer()
-     */
-    @Override
-    public IMicroserviceLogProducer getMicroserviceLogProducer() {
-	return microserviceLogProducer;
-    }
-
-    public void setMicroserviceLogProducer(IMicroserviceLogProducer microserviceLogProducer) {
-	this.microserviceLogProducer = microserviceLogProducer;
     }
 
     /*

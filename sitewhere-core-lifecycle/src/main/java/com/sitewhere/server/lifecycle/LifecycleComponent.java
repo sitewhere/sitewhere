@@ -13,8 +13,12 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+
+import org.slf4j.cal10n.LocLogger;
+import org.slf4j.cal10n.LocLoggerFactory;
 
 import com.sitewhere.rest.model.microservice.state.LifecycleComponentState;
 import com.sitewhere.spi.ServerStartupException;
@@ -22,7 +26,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.state.ILifecycleComponentState;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponentLogger;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponentParameter;
 import com.sitewhere.spi.server.lifecycle.ILifecycleConstraints;
 import com.sitewhere.spi.server.lifecycle.ILifecycleHierarchyRoot;
@@ -30,6 +33,8 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 import io.opentracing.ActiveSpan;
 
 /**
@@ -39,6 +44,15 @@ import io.opentracing.ActiveSpan;
  */
 public class LifecycleComponent implements ILifecycleComponent {
 
+    /** Provides localized messages for locale */
+    private IMessageConveyor messageConveyor = new MessageConveyor(Locale.getDefault());
+
+    /** Factory for localized logger */
+    private LocLoggerFactory locLoggerFactory = new LocLoggerFactory(messageConveyor);
+
+    /** Logger instance */
+    private LocLogger logger = locLoggerFactory.getLocLogger(getClass());
+
     /** Unique component id */
     private UUID componentId = UUID.randomUUID();
 
@@ -47,9 +61,6 @@ public class LifecycleComponent implements ILifecycleComponent {
 
     /** Owning microservice */
     private IMicroservice<?> microservice;
-
-    /** Component logger */
-    private LifecycleComponentLogger logger;
 
     /** Date/time component was created */
     private Date createdDate = new Date();
@@ -72,7 +83,6 @@ public class LifecycleComponent implements ILifecycleComponent {
 
     public LifecycleComponent(LifecycleComponentType type) {
 	this.componentType = type;
-	this.logger = new LifecycleComponentLogger(this);
     }
 
     /*
@@ -118,7 +128,7 @@ public class LifecycleComponent implements ILifecycleComponent {
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public ILifecycleComponentLogger getLogger() {
+    public LocLogger getLogger() {
 	return logger;
     }
 

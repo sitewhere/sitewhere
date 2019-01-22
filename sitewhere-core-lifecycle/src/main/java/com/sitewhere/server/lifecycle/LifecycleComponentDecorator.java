@@ -12,11 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.slf4j.cal10n.LocLogger;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.state.ILifecycleComponentState;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponentLogger;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponentParameter;
 import com.sitewhere.spi.server.lifecycle.ILifecycleConstraints;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -390,7 +391,7 @@ public class LifecycleComponentDecorator<T extends ILifecycleComponent> implemen
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
      */
     @Override
-    public ILifecycleComponentLogger getLogger() {
+    public LocLogger getLogger() {
 	return getDelegate().getLogger();
     }
 
