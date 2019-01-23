@@ -54,7 +54,7 @@ public class MongoPersistence {
 	try {
 	    long start = System.currentTimeMillis();
 	    collection.insertOne(object);
-	    LOGGER.debug("Insert took " + (System.currentTimeMillis() - start) + " ms.");
+	    LOGGER.trace("Insert took " + (System.currentTimeMillis() - start) + " ms.");
 	} catch (MongoWriteException e) {
 	    ErrorCategory category = e.getError().getCategory();
 	    if (ErrorCategory.DUPLICATE_KEY == category) {
@@ -79,7 +79,7 @@ public class MongoPersistence {
 	try {
 	    long start = System.currentTimeMillis();
 	    collection.updateOne(query, new Document("$set", object));
-	    LOGGER.debug("Update took " + (System.currentTimeMillis() - start) + " ms.");
+	    LOGGER.trace("Update took " + (System.currentTimeMillis() - start) + " ms.");
 	} catch (MongoCommandException e) {
 	    throw new SiteWhereException("Error during MongoDB update.", e);
 	}
@@ -98,7 +98,7 @@ public class MongoPersistence {
 	try {
 	    long start = System.currentTimeMillis();
 	    DeleteResult result = collection.deleteOne(object);
-	    LOGGER.debug("Delete took " + (System.currentTimeMillis() - start) + " ms.");
+	    LOGGER.trace("Delete took " + (System.currentTimeMillis() - start) + " ms.");
 	    return result;
 	} catch (MongoCommandException e) {
 	    throw new SiteWhereException("Error during MongoDB delete.", e);
@@ -121,7 +121,7 @@ public class MongoPersistence {
 	    Document searchById = new Document("_id", new ObjectId(id));
 	    long start = System.currentTimeMillis();
 	    FindIterable<Document> found = collection.find(searchById);
-	    LOGGER.debug("Get took " + (System.currentTimeMillis() - start) + " ms.");
+	    LOGGER.trace("Get took " + (System.currentTimeMillis() - start) + " ms.");
 	    if (found != null) {
 		MongoConverter<T> converter = lookup.getConverterFor(api);
 		return converter.convert(found.first());
@@ -157,9 +157,11 @@ public class MongoPersistence {
 		found = collection.find(query).skip(offset).limit(criteria.getPageSize()).sort(sort);
 	    }
 	    MongoCursor<Document> cursor = found.iterator();
-	    LOGGER.debug("Executing search query " + query.toJson() + " with sort " + sort.toJson() + " on collection "
-		    + collection.getNamespace());
-	    LOGGER.debug("Search took " + (System.currentTimeMillis() - start) + " ms.");
+	    if (LOGGER.isTraceEnabled()) {
+		LOGGER.trace("Executing search query " + query.toJson() + " with sort " + sort.toJson()
+			+ " on collection " + collection.getNamespace());
+		LOGGER.trace("Search took " + (System.currentTimeMillis() - start) + " ms.");
+	    }
 
 	    List<T> matches = new ArrayList<T>();
 	    SearchResults<T> results = new SearchResults<T>(matches);
@@ -196,7 +198,7 @@ public class MongoPersistence {
 	    long start = System.currentTimeMillis();
 	    FindIterable<Document> found = collection.find(query).sort(sort);
 	    MongoCursor<Document> cursor = found.iterator();
-	    LOGGER.debug("Search took " + (System.currentTimeMillis() - start) + " ms.");
+	    LOGGER.trace("Search took " + (System.currentTimeMillis() - start) + " ms.");
 
 	    List<T> matches = new ArrayList<T>();
 	    SearchResults<T> results = new SearchResults<T>(matches);
@@ -233,7 +235,7 @@ public class MongoPersistence {
 	    long start = System.currentTimeMillis();
 	    FindIterable<Document> found = collection.find(query);
 	    MongoCursor<Document> cursor = found.iterator();
-	    LOGGER.debug("List took " + (System.currentTimeMillis() - start) + " ms.");
+	    LOGGER.trace("List took " + (System.currentTimeMillis() - start) + " ms.");
 
 	    List<T> matches = new ArrayList<T>();
 	    MongoConverter<T> converter = lookup.getConverterFor(api);

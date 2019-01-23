@@ -119,8 +119,8 @@ public abstract class ConfigurationModelProvider implements IConfigurationModelP
 	    List<IElementNode> elements = usedElements.get(roleId);
 	    model.getElementsByRole().put(roleId, elements);
 	}
-	if (LOGGER.isDebugEnabled()) {
-	    LOGGER.debug("Built model:\n\n" + MarshalUtils.marshalJsonAsPrettyString(model));
+	if (LOGGER.isTraceEnabled()) {
+	    LOGGER.trace("Built model:\n\n" + MarshalUtils.marshalJsonAsPrettyString(model));
 	}
 	return model;
     }

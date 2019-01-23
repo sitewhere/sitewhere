@@ -732,7 +732,7 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	public void run() {
 	    while (true) {
 		try {
-		    getLogger().debug("Sending heartbeat.");
+		    getLogger().trace("Sending heartbeat.");
 		    getServiceDiscoveryProvider().sendHeartbeat();
 		    sendChangedState();
 		} catch (Throwable t) {
