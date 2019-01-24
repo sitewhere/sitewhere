@@ -1,0 +1,6 @@
+{
+	"id": "uri-builder",
+	"name": "URI Builder",
+	"description": "Implements a URI builder.",
+	"type": "groovy"
+}

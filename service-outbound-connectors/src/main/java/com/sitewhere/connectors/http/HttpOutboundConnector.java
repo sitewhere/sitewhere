@@ -7,6 +7,7 @@
  */
 package com.sitewhere.connectors.http;
 
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.sitewhere.connectors.SerialOutboundConnector;
@@ -62,7 +63,7 @@ public class HttpOutboundConnector extends SerialOutboundConnector {
 	if (getPayloadBuilder() == null) {
 	    getLogger().warn("No payload builder specified for HTTP outbound connector.");
 	} else {
-	    initializeNestedComponent(getUriBuilder(), monitor, true);
+	    initializeNestedComponent(getPayloadBuilder(), monitor, true);
 	}
     }
 
@@ -85,7 +86,7 @@ public class HttpOutboundConnector extends SerialOutboundConnector {
 
 	// Start payload builder.
 	if (getPayloadBuilder() != null) {
-	    startNestedComponent(getUriBuilder(), monitor, true);
+	    startNestedComponent(getPayloadBuilder(), monitor, true);
 	}
 
 	this.client = new RestTemplate();
@@ -166,16 +167,23 @@ public class HttpOutboundConnector extends SerialOutboundConnector {
      * @throws SiteWhereException
      */
     protected void processDeviceEvent(IDeviceEventContext context, IDeviceEvent event) throws SiteWhereException {
-	if ((getUriBuilder() != null) && (getPayloadBuilder() != null)) {
-	    String uri = getUriBuilder().buildUri(this, context, event);
-	    byte[] payload = getPayloadBuilder().buildPayload(this, context, event);
-	    if ("post".equalsIgnoreCase(method)) {
-		getClient().postForLocation(uri, payload);
-	    } else if ("put".equalsIgnoreCase(method)) {
-		getClient().put(uri, payload);
+	try {
+	    if ((getUriBuilder() != null) && (getPayloadBuilder() != null)) {
+		String uri = getUriBuilder().buildUri(this, context, event);
+		byte[] payload = getPayloadBuilder().buildPayload(this, context, event);
+		if ("post".equalsIgnoreCase(method)) {
+		    getClient().postForLocation(uri, payload);
+		} else if ("put".equalsIgnoreCase(method)) {
+		    getClient().put(uri, payload);
+		}
+	    } else {
+		getLogger().warn("Skipping HTTP outbound event due to missing configuration.");
 	    }
-	} else {
-	    getLogger().warn("Skipping HTTP outbound event due to missing configuration.");
+	} catch (RestClientException e) {
+	    getLogger().error(String.format("Unable to send HTTP payload: %s", e.getMessage()));
+	    if (getLogger().isDebugEnabled()) {
+		getLogger().error("Error sending payload via REST client.", e);
+	    }
 	}
     }
 

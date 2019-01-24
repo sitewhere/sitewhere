@@ -241,7 +241,6 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 	builder.description("Uses a Groovy script to build URI.");
 	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
 
-	addCommonConnectorAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_GENERAL);
 	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script,
 		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Script which builds URI.").makeRequired()
 			.build()));
@@ -261,7 +260,6 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 	builder.description("Uses a Groovy script to build payload.");
 	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
 
-	addCommonConnectorAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_GENERAL);
 	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script,
 		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Script which builds payload.")
 			.makeRequired().build()));

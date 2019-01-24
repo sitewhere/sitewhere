@@ -106,7 +106,7 @@ public class MqttTests {
 	 */
 	public void sendLocationOverMqtt() throws SiteWhereException {
 	    DeviceRequest request = new DeviceRequest();
-	    request.setDeviceToken("32267-IPHONE6S-6651567");
+	    request.setDeviceToken("39430-GALAXYTAB3-7481908");
 	    request.setType(Type.DeviceLocation);
 	    DeviceLocationCreateRequest location = new DeviceLocationCreateRequest();
 	    location.setEventDate(new Date());

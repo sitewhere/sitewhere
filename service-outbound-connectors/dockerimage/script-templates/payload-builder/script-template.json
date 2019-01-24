@@ -1,0 +1,6 @@
+{
+	"id": "payload-builder",
+	"name": "Payload Builder",
+	"description": "Implements a payload builder.",
+	"type": "groovy"
+}

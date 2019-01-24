@@ -84,7 +84,8 @@ public interface ISerialOutboundConnector extends IOutboundConnector {
      * Handle a single failed record.
      * 
      * @param payload
+     * @param t
      * @throws SiteWhereException
      */
-    public void handleFailedRecord(IEnrichedEventPayload payload) throws SiteWhereException;
+    public void handleFailedRecord(IEnrichedEventPayload payload, Throwable t) throws SiteWhereException;
 }

@@ -69,7 +69,7 @@ public class SerialOutboundConnector extends FilteredOutboundConnector implement
 		}
 		}
 	    } catch (Throwable e) {
-		handleFailedRecord(payload);
+		handleFailedRecord(payload, e);
 	    }
 	}
     }
@@ -77,11 +77,11 @@ public class SerialOutboundConnector extends FilteredOutboundConnector implement
     /*
      * @see
      * com.sitewhere.connectors.spi.ISerialOutboundConnector#handleFailedRecord(com.
-     * sitewhere.spi.microservice.kafka.payload.IEnrichedEventPayload)
+     * sitewhere.spi.device.event.kafka.IEnrichedEventPayload, java.lang.Throwable)
      */
     @Override
-    public void handleFailedRecord(IEnrichedEventPayload payload) throws SiteWhereException {
-	getLogger().warn("Failed to process outbound connector record: " + payload.getEventContext().getDeviceId());
+    public void handleFailedRecord(IEnrichedEventPayload payload, Throwable t) throws SiteWhereException {
+	getLogger().warn("Failed to process outbound connector record.", t);
     }
 
     /*
