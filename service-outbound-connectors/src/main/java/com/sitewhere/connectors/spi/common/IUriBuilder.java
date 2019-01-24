@@ -7,6 +7,7 @@
  */
 package com.sitewhere.connectors.spi.common;
 
+import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
@@ -20,10 +21,12 @@ public interface IUriBuilder extends ITenantEngineLifecycleComponent {
     /**
      * Build a URI based on device event information.
      * 
+     * @param connector
      * @param context
      * @param event
      * @return
      * @throws SiteWhereException
      */
-    public String buildUri(IDeviceEventContext context, IDeviceEvent event) throws SiteWhereException;
+    public String buildUri(IOutboundConnector connector, IDeviceEventContext context, IDeviceEvent event)
+	    throws SiteWhereException;
 }

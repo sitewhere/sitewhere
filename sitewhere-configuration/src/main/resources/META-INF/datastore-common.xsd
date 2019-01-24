@@ -5,8 +5,9 @@
 	targetNamespace="http://sitewhere.io/schema/sitewhere/microservice/common/datastore"
 	elementFormDefault="qualified" attributeFormDefault="unqualified">
 
-	<xsd:import namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
-		schemaLocation="http://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
+	<xsd:import
+		namespace="http://sitewhere.io/schema/sitewhere/microservice/common"
+		schemaLocation="https://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd" />
 
 	<!-- Used as a placeholder for datastores to allow substitutionGroups -->
 	<xsd:element name="abstract-datastore" abstract="true"
@@ -56,7 +57,8 @@
 	</xsd:element>
 
 	<!-- Cassandra datastore reference -->
-	<xsd:element name="cassandra-datastore-reference" type="cassandraDatastoreReferenceType"
+	<xsd:element name="cassandra-datastore-reference"
+		type="cassandraDatastoreReferenceType"
 		substitutionGroup="abstract-datastore">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -68,7 +70,8 @@
 	<xsd:complexType name="cassandraDatastoreReferenceType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractDatastoreType">
-				<xsd:attribute name="id" type="xsd:string" use="required">
+				<xsd:attribute name="id" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Unique id for global datastore configuration.
@@ -80,8 +83,8 @@
 	</xsd:complexType>
 
 	<!-- Custom Apache Cassandra datastore definition -->
-	<xsd:element name="cassandra-datastore" type="cassandraDatastoreType"
-		substitutionGroup="abstract-datastore">
+	<xsd:element name="cassandra-datastore"
+		type="cassandraDatastoreType" substitutionGroup="abstract-datastore">
 		<xsd:annotation>
 			<xsd:documentation>
 				Creates a custom Apache Cassandra datastore that
@@ -114,7 +117,8 @@
 	</xsd:attributeGroup>
 
 	<!-- MongoDB datastore reference -->
-	<xsd:element name="mongodb-datastore-reference" type="mongoDatastoreReferenceType"
+	<xsd:element name="mongodb-datastore-reference"
+		type="mongoDatastoreReferenceType"
 		substitutionGroup="abstract-datastore">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -126,7 +130,8 @@
 	<xsd:complexType name="mongoDatastoreReferenceType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractDatastoreType">
-				<xsd:attribute name="id" type="xsd:string" use="required">
+				<xsd:attribute name="id" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Unique id for global datastore configuration.
@@ -138,8 +143,8 @@
 	</xsd:complexType>
 
 	<!-- Custom MongoDB datastore definition -->
-	<xsd:element name="mongodb-datastore" type="mongoDatastoreType"
-		substitutionGroup="abstract-datastore">
+	<xsd:element name="mongodb-datastore"
+		type="mongoDatastoreType" substitutionGroup="abstract-datastore">
 		<xsd:annotation>
 			<xsd:documentation>
 				Creates a custom MongoDB datastore that does not
@@ -198,7 +203,8 @@
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="autoConfigureReplication" type="xsd:boolean">
+		<xsd:attribute name="autoConfigureReplication"
+			type="xsd:boolean">
 			<xsd:annotation>
 				<xsd:documentation>Indicates whether replication should be
 					configured automatically when multiple hosts/ports are specified.
@@ -208,7 +214,8 @@
 	</xsd:attributeGroup>
 
 	<!-- Alternate InfluxDB datastore reference -->
-	<xsd:element name="influxdb-datastore-reference" type="influxDatastoreReferenceType"
+	<xsd:element name="influxdb-datastore-reference"
+		type="influxDatastoreReferenceType"
 		substitutionGroup="abstract-datastore">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -220,7 +227,8 @@
 	<xsd:complexType name="influxDatastoreReferenceType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractDatastoreType">
-				<xsd:attribute name="id" type="xsd:string" use="required">
+				<xsd:attribute name="id" type="xsd:string"
+					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Unique id for global datastore configuration.
@@ -232,8 +240,8 @@
 	</xsd:complexType>
 
 	<!-- Custom InfluxDB datastore definition -->
-	<xsd:element name="influxdb-datastore" type="influxDatastoreType"
-		substitutionGroup="abstract-datastore">
+	<xsd:element name="influxdb-datastore"
+		type="influxDatastoreType" substitutionGroup="abstract-datastore">
 		<xsd:annotation>
 			<xsd:documentation>
 				Creates a custom InfluxDB datastore that does not
@@ -340,15 +348,15 @@
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="zookeeperZnodeParent" type="xsd:string"
-			use="optional">
+		<xsd:attribute name="zookeeperZnodeParent"
+			type="xsd:string" use="optional">
 			<xsd:annotation>
 				<xsd:documentation>ZooKeeper znode parent. Defaults to '/hbase'.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="zookeeperZnodeRootServer" type="xsd:string"
-			use="optional">
+		<xsd:attribute name="zookeeperZnodeRootServer"
+			type="xsd:string" use="optional">
 			<xsd:annotation>
 				<xsd:documentation>ZooKeeper znode root server. Defaults to
 					'root-region-server'.

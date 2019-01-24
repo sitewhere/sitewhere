@@ -42,6 +42,9 @@ public interface IOutboundConnectorsParser {
 	/** Sends outbound events to an Amazon SQS queue */
 	AmazonSqsConnector("amazon-sqs-connector"),
 
+	/** Sends HTTP requests for outbound events */
+	HttpConnector("http-connector"),
+
 	/** Sends outbound events to InitialState.com */
 	InitialStateConnector("initial-state-connector"),
 
@@ -86,8 +89,8 @@ public interface IOutboundConnectorsParser {
 	/** Include or exclude events for an area */
 	AreaFilter("area-filter"),
 
-	/** Include or exclude events for a specification */
-	SpecificationFilter("specification-filter"),
+	/** Include or exclude events for a device type */
+	DeviceTypeFilter("device-type-filter"),
 
 	/** Include or exclude events based on running a script */
 	GroovyFilter("groovy-filter");
@@ -171,6 +174,74 @@ public interface IOutboundConnectorsParser {
 
 	public static RouteBuilders getByLocalName(String localName) {
 	    for (RouteBuilders value : RouteBuilders.values()) {
+		if (value.getLocalName().equals(localName)) {
+		    return value;
+		}
+	    }
+	    return null;
+	}
+
+	public String getLocalName() {
+	    return localName;
+	}
+
+	public void setLocalName(String localName) {
+	    this.localName = localName;
+	}
+    }
+
+    /**
+     * Expected URI builder elements.
+     * 
+     * @author Derek
+     */
+    public static enum UriBuilders {
+
+	/** Uses Groovy script to build URI */
+	GroovyUriBuilder("groovy-uri-builder");
+
+	/** Event code */
+	private String localName;
+
+	private UriBuilders(String localName) {
+	    this.localName = localName;
+	}
+
+	public static UriBuilders getByLocalName(String localName) {
+	    for (UriBuilders value : UriBuilders.values()) {
+		if (value.getLocalName().equals(localName)) {
+		    return value;
+		}
+	    }
+	    return null;
+	}
+
+	public String getLocalName() {
+	    return localName;
+	}
+
+	public void setLocalName(String localName) {
+	    this.localName = localName;
+	}
+    }
+
+    /**
+     * Expected payload builder elements.
+     */
+    public static enum PayloadBuilders {
+
+	/** Uses Groovy script to build payload */
+	GroovyPayloadBuilder("groovy-payload-builder");
+
+	/** Event code */
+	private String localName;
+
+	private PayloadBuilders(String localName) {
+	    this.localName = localName;
+	}
+
+	public static PayloadBuilders getByLocalName(String localName) {
+	    for (PayloadBuilders value : PayloadBuilders.values()) {
 		if (value.getLocalName().equals(localName)) {
 		    return value;
 		}

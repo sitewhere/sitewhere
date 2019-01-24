@@ -27,7 +27,9 @@ import com.sitewhere.configuration.parser.IConnectorCommonParser.Solr;
 import com.sitewhere.configuration.parser.IOutboundConnectorsParser.Elements;
 import com.sitewhere.configuration.parser.IOutboundConnectorsParser.Filters;
 import com.sitewhere.configuration.parser.IOutboundConnectorsParser.Multicasters;
+import com.sitewhere.configuration.parser.IOutboundConnectorsParser.PayloadBuilders;
 import com.sitewhere.configuration.parser.IOutboundConnectorsParser.RouteBuilders;
+import com.sitewhere.configuration.parser.IOutboundConnectorsParser.UriBuilders;
 import com.sitewhere.connectors.OutboundConnectorsManager;
 import com.sitewhere.connectors.aws.sqs.SqsOutboundConnector;
 import com.sitewhere.connectors.azure.EventHubOutboundConnector;
@@ -36,9 +38,12 @@ import com.sitewhere.connectors.filter.AreaFilter;
 import com.sitewhere.connectors.filter.DeviceTypeFilter;
 import com.sitewhere.connectors.filter.FilterOperation;
 import com.sitewhere.connectors.groovy.GroovyOutboundConnector;
+import com.sitewhere.connectors.groovy.common.GroovyPayloadBuilder;
+import com.sitewhere.connectors.groovy.common.GroovyUriBuilder;
 import com.sitewhere.connectors.groovy.filter.GroovyFilter;
 import com.sitewhere.connectors.groovy.multicast.AllWithSpecificationStringMulticaster;
 import com.sitewhere.connectors.groovy.routing.GroovyRouteBuilder;
+import com.sitewhere.connectors.http.HttpOutboundConnector;
 import com.sitewhere.connectors.initialstate.InitialStateOutboundConnector;
 import com.sitewhere.connectors.mqtt.MqttOutboundConnector;
 import com.sitewhere.connectors.rabbitmq.RabbitMqOutboundConnector;
@@ -95,6 +100,10 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
 	    }
 	    case AmazonSqsConnector: {
 		connectors.add(parseAmazonSqsConnector(child, context));
+		break;
+	    }
+	    case HttpConnector: {
+		connectors.add(parseHttpConnector(child, context));
 		break;
 	    }
 	    case InitialStateConnector: {
@@ -327,39 +336,39 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
      * @return
      */
     protected AbstractBeanDefinition parseAzureEventHubConnector(Element element, ParserContext context) {
-	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(EventHubOutboundConnector.class);
+	BeanDefinitionBuilder connector = BeanDefinitionBuilder.rootBeanDefinition(EventHubOutboundConnector.class);
 
 	// Parse common outbound connector attributes.
-	parseCommonOutboundConnectorAttributes(element, processor);
+	parseCommonOutboundConnectorAttributes(element, connector);
 
 	Attr sasKey = element.getAttributeNode("sasKey");
 	if (sasKey == null) {
 	    throw new RuntimeException("SAS key required for Azure EventHub connector.");
 	}
-	processor.addPropertyValue("sasKey", sasKey.getValue());
+	connector.addPropertyValue("sasKey", sasKey.getValue());
 
 	Attr sasName = element.getAttributeNode("sasName");
 	if (sasName == null) {
 	    throw new RuntimeException("SAS name required for Azure EventHub connector.");
 	}
-	processor.addPropertyValue("sasName", sasName.getValue());
+	connector.addPropertyValue("sasName", sasName.getValue());
 
 	Attr serviceBusName = element.getAttributeNode("serviceBusName");
 	if (serviceBusName == null) {
 	    throw new RuntimeException("Service bus name required for Azure EventHub connector.");
 	}
-	processor.addPropertyValue("serviceBusName", serviceBusName.getValue());
+	connector.addPropertyValue("serviceBusName", serviceBusName.getValue());
 
 	Attr eventHubName = element.getAttributeNode("eventHubName");
 	if (eventHubName == null) {
 	    throw new RuntimeException("EventHub name required for Azure EventHub connector.");
 	}
-	processor.addPropertyValue("eventHubName", eventHubName.getValue());
+	connector.addPropertyValue("eventHubName", eventHubName.getValue());
 
 	// Parse nested filters.
-	processor.addPropertyValue("filters", parseFilters(element, context));
+	connector.addPropertyValue("filters", parseFilters(element, context));
 
-	return processor.getBeanDefinition();
+	return connector.getBeanDefinition();
     }
 
     /**
@@ -370,33 +379,63 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
      * @return
      */
     protected AbstractBeanDefinition parseAmazonSqsConnector(Element element, ParserContext context) {
-	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(SqsOutboundConnector.class);
+	BeanDefinitionBuilder connector = BeanDefinitionBuilder.rootBeanDefinition(SqsOutboundConnector.class);
 
 	// Parse common outbound connector attributes.
-	parseCommonOutboundConnectorAttributes(element, processor);
+	parseCommonOutboundConnectorAttributes(element, connector);
 
 	Attr accessKey = element.getAttributeNode("accessKey");
 	if (accessKey == null) {
 	    throw new RuntimeException("Amazon access key required for SQS event processor.");
 	}
-	processor.addPropertyValue("accessKey", accessKey.getValue());
+	connector.addPropertyValue("accessKey", accessKey.getValue());
 
 	Attr secretKey = element.getAttributeNode("secretKey");
 	if (secretKey == null) {
 	    throw new RuntimeException("Amazon secret key required for SQS event processor.");
 	}
-	processor.addPropertyValue("secretKey", secretKey.getValue());
+	connector.addPropertyValue("secretKey", secretKey.getValue());
 
 	Attr queueUrl = element.getAttributeNode("queueUrl");
 	if (queueUrl == null) {
 	    throw new RuntimeException("Queue URL required for Amazon SQS event processor.");
 	}
-	processor.addPropertyValue("queueUrl", queueUrl.getValue());
+	connector.addPropertyValue("queueUrl", queueUrl.getValue());
 
 	// Parse nested filters.
-	processor.addPropertyValue("filters", parseFilters(element, context));
+	connector.addPropertyValue("filters", parseFilters(element, context));
 
-	return processor.getBeanDefinition();
+	return connector.getBeanDefinition();
+    }
+
+    /**
+     * Parse configuration for connector that delivers HTTP payloads for events.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected AbstractBeanDefinition parseHttpConnector(Element element, ParserContext context) {
+	BeanDefinitionBuilder connector = BeanDefinitionBuilder.rootBeanDefinition(HttpOutboundConnector.class);
+
+	// Parse common outbound connector attributes.
+	parseCommonOutboundConnectorAttributes(element, connector);
+
+	Attr method = element.getAttributeNode("method");
+	if (method != null) {
+	    connector.addPropertyValue("method", method.getValue());
+	}
+
+	// Parse URI builder.
+	connector.addPropertyValue("uriBuilder", parseUriBuilder(element, context));
+
+	// Parse payload builder.
+	connector.addPropertyValue("payloadBuilder", parsePayloadBuilder(element, context));
+
+	// Parse nested filters.
+	connector.addPropertyValue("filters", parseFilters(element, context));
+
+	return connector.getBeanDefinition();
     }
 
     /**
@@ -407,21 +446,21 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
      * @return
      */
     protected AbstractBeanDefinition parseInitialStateConnector(Element element, ParserContext context) {
-	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(InitialStateOutboundConnector.class);
+	BeanDefinitionBuilder connector = BeanDefinitionBuilder.rootBeanDefinition(InitialStateOutboundConnector.class);
 
 	// Parse common outbound connector attributes.
-	parseCommonOutboundConnectorAttributes(element, processor);
+	parseCommonOutboundConnectorAttributes(element, connector);
 
 	Attr streamingAccessKey = element.getAttributeNode("streamingAccessKey");
 	if (streamingAccessKey == null) {
 	    throw new RuntimeException("Streaming access key is required for InitialState.com connectivity.");
 	}
-	processor.addPropertyValue("streamingAccessKey", streamingAccessKey.getValue());
+	connector.addPropertyValue("streamingAccessKey", streamingAccessKey.getValue());
 
 	// Parse nested filters.
-	processor.addPropertyValue("filters", parseFilters(element, context));
+	connector.addPropertyValue("filters", parseFilters(element, context));
 
-	return processor.getBeanDefinition();
+	return connector.getBeanDefinition();
     }
 
     /**
@@ -432,15 +471,15 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
      * @return
      */
     protected AbstractBeanDefinition parseDweetIoConnector(Element element, ParserContext context) {
-	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(DweetIoOutboundConnector.class);
+	BeanDefinitionBuilder connector = BeanDefinitionBuilder.rootBeanDefinition(DweetIoOutboundConnector.class);
 
 	// Parse common outbound connector attributes.
-	parseCommonOutboundConnectorAttributes(element, processor);
+	parseCommonOutboundConnectorAttributes(element, connector);
 
 	// Parse nested filters.
-	processor.addPropertyValue("filters", parseFilters(element, context));
+	connector.addPropertyValue("filters", parseFilters(element, context));
 
-	return processor.getBeanDefinition();
+	return connector.getBeanDefinition();
     }
 
     /**
@@ -451,17 +490,17 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
      * @return
      */
     protected AbstractBeanDefinition parseGroovyConnector(Element element, ParserContext context) {
-	BeanDefinitionBuilder processor = BeanDefinitionBuilder.rootBeanDefinition(GroovyOutboundConnector.class);
+	BeanDefinitionBuilder connector = BeanDefinitionBuilder.rootBeanDefinition(GroovyOutboundConnector.class);
 
 	// Parse common outbound connector attributes.
-	parseCommonOutboundConnectorAttributes(element, processor);
+	parseCommonOutboundConnectorAttributes(element, connector);
 
 	Attr scriptId = element.getAttributeNode("scriptId");
 	if (scriptId != null) {
-	    processor.addPropertyValue("scriptId", scriptId.getValue());
+	    connector.addPropertyValue("scriptId", scriptId.getValue());
 	}
 
-	return processor.getBeanDefinition();
+	return connector.getBeanDefinition();
     }
 
     /**
@@ -489,8 +528,8 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
 		    result.add(parseAreaFilter(child, context));
 		    break;
 		}
-		case SpecificationFilter: {
-		    result.add(parseSpecificationFilter(child, context));
+		case DeviceTypeFilter: {
+		    result.add(parseDeviceTypeFilter(child, context));
 		    break;
 		}
 		case GroovyFilter: {
@@ -514,11 +553,11 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
     protected AbstractBeanDefinition parseAreaFilter(Element element, ParserContext context) {
 	BeanDefinitionBuilder filter = BeanDefinitionBuilder.rootBeanDefinition(AreaFilter.class);
 
-	Attr area = element.getAttributeNode("area");
-	if (area == null) {
-	    throw new RuntimeException("Attribute 'area' is required for area-filter.");
+	Attr areaToken = element.getAttributeNode("areaToken");
+	if (areaToken == null) {
+	    throw new RuntimeException("Area token is required.");
 	}
-	filter.addPropertyValue("areaToken", area.getValue());
+	filter.addPropertyValue("areaToken", areaToken.getValue());
 
 	Attr operation = element.getAttributeNode("operation");
 	if (operation != null) {
@@ -537,14 +576,14 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
      * @param context
      * @return
      */
-    protected AbstractBeanDefinition parseSpecificationFilter(Element element, ParserContext context) {
+    protected AbstractBeanDefinition parseDeviceTypeFilter(Element element, ParserContext context) {
 	BeanDefinitionBuilder filter = BeanDefinitionBuilder.rootBeanDefinition(DeviceTypeFilter.class);
 
-	Attr specification = element.getAttributeNode("specification");
-	if (specification == null) {
-	    throw new RuntimeException("Attribute 'specification' is required for specification-filter.");
+	Attr deviceTypeToken = element.getAttributeNode("deviceTypeToken");
+	if (deviceTypeToken == null) {
+	    throw new RuntimeException("Device type token is required.");
 	}
-	filter.addPropertyValue("specificationToken", specification.getValue());
+	filter.addPropertyValue("deviceTypeToken", deviceTypeToken.getValue());
 
 	Attr operation = element.getAttributeNode("operation");
 	if (operation != null) {
@@ -573,6 +612,88 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
 	filter.addPropertyValue("scriptPath", scriptPath.getValue());
 
 	return filter.getBeanDefinition();
+    }
+
+    /**
+     * Parse a URI builder.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected AbstractBeanDefinition parseUriBuilder(Element element, ParserContext context) {
+	List<Element> children = DomUtils.getChildElements(element);
+	for (Element child : children) {
+	    UriBuilders type = UriBuilders.getByLocalName(child.getLocalName());
+	    if (type != null) {
+		switch (type) {
+		case GroovyUriBuilder: {
+		    return parseGroovyUriBuilder(child, context);
+		}
+		}
+	    }
+	}
+
+	return null;
+    }
+
+    /**
+     * Parse the Groovy URI builder.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected AbstractBeanDefinition parseGroovyUriBuilder(Element element, ParserContext context) {
+	BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(GroovyUriBuilder.class);
+
+	Attr scriptId = element.getAttributeNode("scriptId");
+	if (scriptId != null) {
+	    builder.addPropertyValue("scriptId", scriptId.getValue());
+	}
+
+	return builder.getBeanDefinition();
+    }
+
+    /**
+     * Parse a payload builder.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected AbstractBeanDefinition parsePayloadBuilder(Element element, ParserContext context) {
+	List<Element> children = DomUtils.getChildElements(element);
+	for (Element child : children) {
+	    PayloadBuilders type = PayloadBuilders.getByLocalName(child.getLocalName());
+	    if (type != null) {
+		switch (type) {
+		case GroovyPayloadBuilder: {
+		    return parseGroovyPayloadBuilder(child, context);
+		}
+		}
+	    }
+	}
+
+	return null;
+    }
+
+    /**
+     * Parse the Groovy payload builder.
+     * 
+     * @param element
+     * @param context
+     * @return
+     */
+    protected AbstractBeanDefinition parseGroovyPayloadBuilder(Element element, ParserContext context) {
+	BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(GroovyPayloadBuilder.class);
+
+	Attr scriptId = element.getAttributeNode("scriptId");
+	if (scriptId != null) {
+	    builder.addPropertyValue("scriptId", scriptId.getValue());
+	}
+
+	return builder.getBeanDefinition();
     }
 
     /**

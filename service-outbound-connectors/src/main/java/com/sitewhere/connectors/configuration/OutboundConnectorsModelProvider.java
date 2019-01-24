@@ -63,6 +63,11 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 	addElement(createMqttConnectorElement());
 	addElement(createRabbitMqConnectorElement());
 
+	// HTTP connector elements.
+	addElement(createGroovyUriBuilderElement());
+	addElement(createGroovyPayloadBuilderElement());
+	addElement(createHttpConnectorElement());
+
 	// Outbound connector filters.
 	addElement(createFilterCriteriaElement());
 	addElement(createAreaFilterElement());
@@ -225,6 +230,67 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
     }
 
     /**
+     * Create a Groovy URI builder.
+     * 
+     * @return
+     */
+    protected ElementNode createGroovyUriBuilderElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Groovy URI Builder",
+		IOutboundConnectorsParser.UriBuilders.GroovyUriBuilder.getLocalName(), "cogs",
+		OutboundConnectorsRoleKeys.UriBuilder, this);
+	builder.description("Uses a Groovy script to build URI.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+
+	addCommonConnectorAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Script which builds URI.").makeRequired()
+			.build()));
+
+	return builder.build();
+    }
+
+    /**
+     * Create a Groovy payload builder.
+     * 
+     * @return
+     */
+    protected ElementNode createGroovyPayloadBuilderElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("Groovy Payload Builder",
+		IOutboundConnectorsParser.PayloadBuilders.GroovyPayloadBuilder.getLocalName(), "cogs",
+		OutboundConnectorsRoleKeys.PayloadBuilder, this);
+	builder.description("Uses a Groovy script to build payload.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+
+	addCommonConnectorAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Script which builds payload.")
+			.makeRequired().build()));
+
+	return builder.build();
+    }
+
+    /**
+     * Create an HTTP connector.
+     * 
+     * @return
+     */
+    protected ElementNode createHttpConnectorElement() {
+	ElementNode.Builder builder = new ElementNode.Builder("HTTP Connector",
+		IOutboundConnectorsParser.Elements.HttpConnector.getLocalName(), "sign-out-alt",
+		OutboundConnectorsRoleKeys.HttpConnector, this);
+	builder.description("Allows HTTP requests to be issued as the result of event processing. "
+		+ "Both URI and payload may be customized by delgating to various builders.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+
+	addCommonConnectorAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_GENERAL);
+	builder.attribute((new AttributeNode.Builder("HTTP method", "method", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_GENERAL)
+			.description("HTTP method used for delivery of payload to URI.").choice("POST", "post")
+			.choice("PUT", "put").defaultValue("post").build()));
+	return builder.build();
+    }
+
+    /**
      * Create a InitialState connector.
      * 
      * @return
@@ -354,17 +420,16 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
     }
 
     /**
-     * Create connector specification filter.
+     * Create connector device type filter.
      * 
      * @return
      */
-    // TODO: Update to device type.
     protected ElementNode createSpecificationFilterElement() {
-	ElementNode.Builder builder = new ElementNode.Builder("Specification Filter",
-		IOutboundConnectorsParser.Filters.SpecificationFilter.getLocalName(), "filter",
+	ElementNode.Builder builder = new ElementNode.Builder("Device Type Filter",
+		IOutboundConnectorsParser.Filters.DeviceTypeFilter.getLocalName(), "filter",
 		OutboundConnectorsRoleKeys.OutboundFilter, this);
 	builder.description(
-		"Allows events for devices of a given type to be included or excluded for an outbound processor.");
+		"Allows events for devices of a given type to be included or excluded for an outbound connector.");
 	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
 
 	builder.attribute((new AttributeNode.Builder("Device type", "deviceTypeId", AttributeType.DeviceTypeReference,

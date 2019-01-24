@@ -32,6 +32,15 @@ public enum OutboundConnectorsRoleKeys implements IRoleKey {
     /** RabbitMQ connector */
     RabbitMqConnector("rbtmq_conn"),
 
+    /** HTTP connector */
+    HttpConnector("http_conn"),
+
+    /** URI builder */
+    UriBuilder("uri_builder"),
+
+    /** Payload builder */
+    PayloadBuilder("payload_builder"),
+
     /** Filtered connector */
     FilteredConnector("filter_conn"),
 

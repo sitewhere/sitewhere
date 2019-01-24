@@ -29,7 +29,8 @@ public enum OutboundConnectorsRoles implements IConfigurationRoleProvider {
     OutboundConnector(ConfigurationRole.build(OutboundConnectorsRoleKeys.OutboundConnector, "Outbound Connector", true,
 	    true, true, new IRoleKey[0],
 	    new IRoleKey[] { OutboundConnectorsRoleKeys.FilteredConnector, OutboundConnectorsRoleKeys.MqttConnector,
-		    OutboundConnectorsRoleKeys.SolrConnector, OutboundConnectorsRoleKeys.RabbitMqConnector })),
+		    OutboundConnectorsRoleKeys.SolrConnector, OutboundConnectorsRoleKeys.RabbitMqConnector,
+		    OutboundConnectorsRoleKeys.HttpConnector })),
 
     /** Filtered connector. */
     FilteredConnector(ConfigurationRole.build(OutboundConnectorsRoleKeys.FilteredConnector, "Filtered Connector", true,
@@ -57,7 +58,19 @@ public enum OutboundConnectorsRoles implements IConfigurationRoleProvider {
     /** RabbitMQ outbound connector. */
     RabbitMqConnector(ConfigurationRole.build(OutboundConnectorsRoleKeys.RabbitMqConnector, "RabbitMQ Connector", true,
 	    true, true,
-	    new IRoleKey[] { OutboundConnectorsRoleKeys.Filters, OutboundConnectorsRoleKeys.RouteBuilder }));
+	    new IRoleKey[] { OutboundConnectorsRoleKeys.Filters, OutboundConnectorsRoleKeys.RouteBuilder })),
+
+    /** HTTP outbound connector. */
+    HttpConnector(ConfigurationRole.build(OutboundConnectorsRoleKeys.HttpConnector, "HTTP Connector", true, true, true,
+	    new IRoleKey[] { OutboundConnectorsRoleKeys.Filters, OutboundConnectorsRoleKeys.UriBuilder,
+		    OutboundConnectorsRoleKeys.PayloadBuilder })),
+
+    /** URI builder. */
+    UriBuilder(ConfigurationRole.build(OutboundConnectorsRoleKeys.UriBuilder, "URI Builder", false, false, false)),
+
+    /** Payload builder. */
+    PayloadBuilder(
+	    ConfigurationRole.build(OutboundConnectorsRoleKeys.PayloadBuilder, "Payload Builder", false, false, false));
 
     private ConfigurationRole role;
 

@@ -7,6 +7,7 @@
  */
 package com.sitewhere.connectors.spi.common;
 
+import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
@@ -20,10 +21,12 @@ public interface IPayloadBuilder extends ITenantEngineLifecycleComponent {
     /**
      * Build a custom payload based on an event.
      * 
+     * @param connector
      * @param context
      * @param event
      * @return
      * @throws SiteWhereException
      */
-    public byte[] buildPayload(IDeviceEventContext context, IDeviceEvent event) throws SiteWhereException;
+    public byte[] buildPayload(IOutboundConnector connector, IDeviceEventContext context, IDeviceEvent event)
+	    throws SiteWhereException;
 }

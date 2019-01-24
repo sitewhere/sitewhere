@@ -52,8 +52,8 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 
-	<!-- Filters outbound events associated with a site -->
-	<xsd:element name="site-filter" type="siteFilterType"
+	<!-- Filters outbound events associated with an area -->
+	<xsd:element name="area-filter" type="areaFilterType"
 		substitutionGroup="abstract-outbound-connector-filter">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -63,15 +63,15 @@
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:complexType name="siteFilterType">
+	<xsd:complexType name="areaFilterType">
 		<xsd:complexContent>
 			<xsd:extension
 				base="abstractOutboundConnectorFilterType">
-				<xsd:attribute name="site" type="xsd:string"
+				<xsd:attribute name="areaToken" type="xsd:string"
 					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							Unique token for the site to be filtered.
+							Unique token for the area to be filtered.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -80,8 +80,7 @@
 					<xsd:annotation>
 						<xsd:documentation>
 							Indicates whether matches should be included or
-							excluded from the
-							result set.
+							excluded from the result set.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -89,27 +88,26 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
-	<!-- Filters outbound events associated with a device specification -->
-	<xsd:element name="specification-filter"
-		type="specificationFilterType"
+	<!-- Filters outbound events associated with a device type -->
+	<xsd:element name="device-type-filter"
+		type="deviceTypeFilterType"
 		substitutionGroup="abstract-outbound-connector-filter">
 		<xsd:annotation>
 			<xsd:documentation>
 				Includes or excludes device events depending on
-				whether the device
-				is based on a given specififation.
+				whether the device is based on a given device type.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:complexType name="specificationFilterType">
+	<xsd:complexType name="deviceTypeFilterType">
 		<xsd:complexContent>
 			<xsd:extension
 				base="abstractOutboundConnectorFilterType">
-				<xsd:attribute name="specification" type="xsd:string"
-					use="required">
+				<xsd:attribute name="deviceTypeToken"
+					type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							Unique token for the specification to be
+							Unique token for the device type to be
 							filtered.
 						</xsd:documentation>
 					</xsd:annotation>
@@ -119,8 +117,7 @@
 					<xsd:annotation>
 						<xsd:documentation>
 							Indicates whether matches should be included or
-							excluded from the
-							result set.
+							excluded from the result set.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -134,10 +131,8 @@
 		<xsd:annotation>
 			<xsd:documentation>
 				Executes a Groovy script which should return a
-				boolean result. True
-				indicates the event is to be included in the
-				result set, false indicates it should be
-				filtered.
+				boolean result. True indicates the event is to be included in the
+				result set, false indicates it should be filtered.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -145,15 +140,11 @@
 		<xsd:complexContent>
 			<xsd:extension
 				base="abstractOutboundConnectorFilterType">
-				<xsd:attribute name="scriptPath" type="xsd:string"
+				<xsd:attribute name="scriptId" type="xsd:string"
 					use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							Script that determines whether events are
-							included or filtered.
-							The script should return true if the event
-							is to be included or false if the event
-							is to be filtered.
+							Unique script id for filter logic.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -514,6 +505,119 @@
 					<xsd:annotation>
 						<xsd:documentation>
 							Name of EventHub to connect to.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for URI builder elements to allow substitutionGroups -->
+	<xsd:element name="abstract-uri-builder" abstract="true"
+		type="abstractUriBuilderType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for URI builder elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Common URI builder element information -->
+	<xsd:complexType name="abstractUriBuilderType" />
+
+	<!-- URI builder which uses a Groovy script to build URI -->
+	<xsd:element name="groovy-uri-builder"
+		type="groovyUriBuilderType" substitutionGroup="abstract-uri-builder">
+		<xsd:annotation>
+			<xsd:documentation>
+				Uses Groovy script to build a URI.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="groovyUriBuilderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractUriBuilderType">
+				<xsd:attribute name="scriptId" type="xsd:string"
+					use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Unique script id for URI builder logic.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for payload builder elements to allow substitutionGroups -->
+	<xsd:element name="abstract-payload-builder"
+		abstract="true" type="abstractPayloadBuilderType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for payload builder elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<!-- Common payload builder element information -->
+	<xsd:complexType name="abstractPayloadBuilderType" />
+
+	<!-- Payload builder which uses a Groovy script to build payload -->
+	<xsd:element name="groovy-payload-builder"
+		type="groovyPayloadBuilderType"
+		substitutionGroup="abstract-payload-builder">
+		<xsd:annotation>
+			<xsd:documentation>
+				Uses Groovy script to build a payload.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="groovyPayloadBuilderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractPayloadBuilderType">
+				<xsd:attribute name="scriptId" type="xsd:string"
+					use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Unique script id for payload builder logic.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- HTTP connector method types -->
+	<xsd:simpleType name="httpMethodTypes">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="post" />
+			<xsd:enumeration value="put" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<!-- HTTP outbound connector -->
+	<xsd:element name="http-connector" type="httpConnectorType"
+		substitutionGroup="abstract-outbound-connector">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sends an HTTP request for each non-filtered event.
+				Destination URI and payload are provided by nested components.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="httpConnectorType">
+		<xsd:complexContent>
+			<xsd:extension base="filteredOutboundConnectorType">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" ref="abstract-uri-builder" />
+					<xsd:element minOccurs="0"
+						ref="abstract-payload-builder" />
+				</xsd:sequence>
+				<xsd:attribute name="method" type="httpMethodTypes"
+					use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							HTTP method used to deliver payload.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>

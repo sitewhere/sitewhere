@@ -33,11 +33,38 @@ public class HttpOutboundConnector extends SerialOutboundConnector {
     /** Use Spring RestTemplate to send requests */
     private RestTemplate client;
 
+    /** HTTP method to be invoked */
+    private String method = "post";
+
     /** Component for building URI */
     private IUriBuilder uriBuilder;
 
     /** Component for building payload */
     private IPayloadBuilder payloadBuilder;
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+
+	// Verify URI builder is set.
+	if (getUriBuilder() == null) {
+	    getLogger().warn("No URI builder specified for HTTP outbound connector.");
+	} else {
+	    initializeNestedComponent(getUriBuilder(), monitor, true);
+	}
+
+	// Verify payload builder is set.
+	if (getPayloadBuilder() == null) {
+	    getLogger().warn("No payload builder specified for HTTP outbound connector.");
+	} else {
+	    initializeNestedComponent(getUriBuilder(), monitor, true);
+	}
+    }
 
     /*
      * (non-Javadoc)
@@ -50,6 +77,16 @@ public class HttpOutboundConnector extends SerialOutboundConnector {
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Required for filters.
 	super.start(monitor);
+
+	// Start URI builder.
+	if (getUriBuilder() != null) {
+	    startNestedComponent(getUriBuilder(), monitor, true);
+	}
+
+	// Start payload builder.
+	if (getPayloadBuilder() != null) {
+	    startNestedComponent(getUriBuilder(), monitor, true);
+	}
 
 	this.client = new RestTemplate();
     }
@@ -129,9 +166,17 @@ public class HttpOutboundConnector extends SerialOutboundConnector {
      * @throws SiteWhereException
      */
     protected void processDeviceEvent(IDeviceEventContext context, IDeviceEvent event) throws SiteWhereException {
-	String uri = getUriBuilder().buildUri(context, event);
-	byte[] payload = getPayloadBuilder().buildPayload(context, event);
-	getClient().postForLocation(uri, payload);
+	if ((getUriBuilder() != null) && (getPayloadBuilder() != null)) {
+	    String uri = getUriBuilder().buildUri(this, context, event);
+	    byte[] payload = getPayloadBuilder().buildPayload(this, context, event);
+	    if ("post".equalsIgnoreCase(method)) {
+		getClient().postForLocation(uri, payload);
+	    } else if ("put".equalsIgnoreCase(method)) {
+		getClient().put(uri, payload);
+	    }
+	} else {
+	    getLogger().warn("Skipping HTTP outbound event due to missing configuration.");
+	}
     }
 
     protected RestTemplate getClient() {
@@ -152,5 +197,13 @@ public class HttpOutboundConnector extends SerialOutboundConnector {
 
     public void setPayloadBuilder(IPayloadBuilder payloadBuilder) {
 	this.payloadBuilder = payloadBuilder;
+    }
+
+    public String getMethod() {
+	return method;
+    }
+
+    public void setMethod(String method) {
+	this.method = method;
     }
 }
