@@ -20,9 +20,9 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
 
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.grpc.client.event.EventModelConverter;
-import com.sitewhere.grpc.client.event.EventModelMarshaler;
-import com.sitewhere.grpc.model.DeviceEventModel.GDeviceRegistationPayload;
+import com.sitewhere.grpc.client.device.DeviceModelConverter;
+import com.sitewhere.grpc.client.device.DeviceModelMarshaler;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceRegistationPayload;
 import com.sitewhere.microservice.kafka.DirectKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.registration.spi.kafka.IDeviceRegistrationEventsConsumer;
@@ -154,8 +154,8 @@ public class DeviceRegistrationEventsConsumer extends DirectKafkaConsumer implem
 	@Override
 	public void runAsSystemUser() throws SiteWhereException {
 	    try {
-		GDeviceRegistationPayload grpc = EventModelMarshaler.parseDeviceRegistrationPayloadMessage(encoded);
-		DeviceRegistrationPayload payload = EventModelConverter.asApiDeviceRegistrationPayload(grpc);
+		GDeviceRegistationPayload grpc = DeviceModelMarshaler.parseDeviceRegistrationPayloadMessage(encoded);
+		DeviceRegistrationPayload payload = DeviceModelConverter.asApiDeviceRegistrationPayload(grpc);
 		if (getLogger().isDebugEnabled()) {
 		    getLogger().debug(
 			    "Received registration for device:\n\n" + MarshalUtils.marshalJsonAsPrettyString(payload));

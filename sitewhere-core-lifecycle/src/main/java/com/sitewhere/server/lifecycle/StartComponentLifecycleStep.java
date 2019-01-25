@@ -28,19 +28,17 @@ public class StartComponentLifecycleStep extends ComponentOperationLifecycleStep
     }
 
     /*
-     * @see
-     * com.sitewhere.server.lifecycle.ComponentOperationLifecycleStep#getName()
+     * @see com.sitewhere.server.lifecycle.ComponentOperationLifecycleStep#getName()
      */
     @Override
     public String getName() {
-	return "Start " + getComponent().getComponentName();
+	return (getComponent() != null) ? "Start " + getComponent().getComponentName() : "Start";
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleStep#execute(com.sitewhere.
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleStep#execute(com.sitewhere.
      * spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override

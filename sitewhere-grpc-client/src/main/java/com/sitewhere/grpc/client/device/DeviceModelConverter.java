@@ -61,6 +61,8 @@ import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupElementsSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupSearchCriteria;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupsWithRoleSearchCriteria;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceRegistationPayload;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceRegistrationRequest;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceSearchCriteria;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceSlot;
@@ -99,6 +101,8 @@ import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.rest.model.device.element.DeviceSlot;
 import com.sitewhere.rest.model.device.element.DeviceUnit;
+import com.sitewhere.rest.model.device.event.kafka.DeviceRegistrationPayload;
+import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.device.request.DeviceAlarmCreateRequest;
@@ -143,6 +147,8 @@ import com.sitewhere.spi.device.command.ParameterType;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 import com.sitewhere.spi.device.element.IDeviceSlot;
 import com.sitewhere.spi.device.element.IDeviceUnit;
+import com.sitewhere.spi.device.event.kafka.IDeviceRegistrationPayload;
+import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IDeviceAlarmCreateRequest;
@@ -994,6 +1000,68 @@ public class DeviceModelConverter {
 	    results.add(DeviceModelConverter.asApiDevice(grpc));
 	}
 	return new SearchResults<IDevice>(results, response.getCount());
+    }
+
+    /**
+     * Convert device registration request from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceRegistrationRequest asApiDeviceRegistrationRequest(GDeviceRegistrationRequest grpc)
+	    throws SiteWhereException {
+	DeviceRegistrationRequest api = new DeviceRegistrationRequest();
+	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
+	api.setParentDeviceToken(grpc.hasParentDeviceToken() ? grpc.getParentDeviceToken().getValue() : null);
+	api.setDeviceTypeToken(grpc.hasDeviceTypeToken() ? grpc.getDeviceTypeToken().getValue() : null);
+	api.setStatus(grpc.hasStatus() ? grpc.getStatus().getValue() : null);
+	api.setComments(grpc.hasComments() ? grpc.getComments().getValue() : null);
+	api.setDeviceElementMappings(
+		DeviceModelConverter.asApiDeviceElementMappings(grpc.getDeviceElementMappingsList()));
+	api.setMetadata(grpc.getMetadataMap());
+	api.setCustomerToken(grpc.hasCustomerToken() ? grpc.getCustomerToken().getValue() : null);
+	api.setAreaToken(grpc.hasAreaToken() ? grpc.getAreaToken().getValue() : null);
+	return api;
+    }
+
+    /**
+     * Convert device registration request from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceRegistrationRequest asGrpcDeviceRegistrationRequest(IDeviceRegistrationRequest api)
+	    throws SiteWhereException {
+	GDeviceRegistrationRequest.Builder grpc = GDeviceRegistrationRequest.newBuilder();
+	if (api.getToken() != null) {
+	    grpc.setToken(GOptionalString.newBuilder().setValue(api.getToken()));
+	}
+	if (api.getParentDeviceToken() != null) {
+	    grpc.setParentDeviceToken(GOptionalString.newBuilder().setValue(api.getParentDeviceToken()));
+	}
+	if (api.getDeviceTypeToken() != null) {
+	    grpc.setDeviceTypeToken(GOptionalString.newBuilder().setValue(api.getDeviceTypeToken()));
+	}
+	if (api.getStatus() != null) {
+	    grpc.setStatus(GOptionalString.newBuilder().setValue(api.getStatus()));
+	}
+	if (api.getComments() != null) {
+	    grpc.setComments(GOptionalString.newBuilder().setValue(api.getComments()));
+	}
+	grpc.addAllDeviceElementMappings(
+		DeviceModelConverter.asGrpcDeviceElementMappings(api.getDeviceElementMappings()));
+	if (api.getMetadata() != null) {
+	    grpc.putAllMetadata(api.getMetadata());
+	}
+	if (api.getCustomerToken() != null) {
+	    grpc.setCustomerToken(GOptionalString.newBuilder().setValue(api.getCustomerToken()));
+	}
+	if (api.getAreaToken() != null) {
+	    grpc.setAreaToken(GOptionalString.newBuilder().setValue(api.getAreaToken()));
+	}
+	return grpc.build();
     }
 
     /**
@@ -2545,6 +2613,42 @@ public class DeviceModelConverter {
 	grpc.setBorderColor(api.getBorderColor());
 	grpc.setOpacity(api.getOpacity());
 	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
+	return grpc.build();
+    }
+
+    /**
+     * Convert device registration payload from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static DeviceRegistrationPayload asApiDeviceRegistrationPayload(GDeviceRegistationPayload grpc)
+	    throws SiteWhereException {
+	DeviceRegistrationPayload api = new DeviceRegistrationPayload();
+	api.setSourceId(grpc.getSourceId());
+	api.setDeviceToken(grpc.getDeviceToken());
+	api.setOriginator(grpc.hasOriginator() ? grpc.getOriginator().getValue() : null);
+	api.setDeviceRegistrationRequest(DeviceModelConverter.asApiDeviceRegistrationRequest(grpc.getRegistration()));
+	return api;
+    }
+
+    /**
+     * Convert device registration payload from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GDeviceRegistationPayload asGrpcDeviceRegistrationPayload(IDeviceRegistrationPayload api)
+	    throws SiteWhereException {
+	GDeviceRegistationPayload.Builder grpc = GDeviceRegistationPayload.newBuilder();
+	grpc.setSourceId(api.getSourceId());
+	grpc.setDeviceToken(api.getDeviceToken());
+	if (api.getOriginator() != null) {
+	    grpc.setOriginator(GOptionalString.newBuilder().setValue(api.getOriginator()));
+	}
+	grpc.setRegistration(DeviceModelConverter.asGrpcDeviceRegistrationRequest(api.getDeviceRegistrationRequest()));
 	return grpc.build();
     }
 }

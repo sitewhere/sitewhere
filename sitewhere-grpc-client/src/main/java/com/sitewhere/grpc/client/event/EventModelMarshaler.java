@@ -15,12 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.sitewhere.grpc.model.DeviceEventModel.GDeviceRegistationPayload;
 import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
 import com.sitewhere.grpc.model.DeviceEventModel.GInboundEventPayload;
 import com.sitewhere.grpc.model.DeviceEventModel.GPersistedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.event.kafka.IDeviceRegistrationPayload;
 import com.sitewhere.spi.device.event.kafka.IEnrichedEventPayload;
 import com.sitewhere.spi.device.event.kafka.IInboundEventPayload;
 
@@ -33,55 +31,6 @@ public class EventModelMarshaler {
 
     /** Static logger instance */
     private static Logger LOGGER = LoggerFactory.getLogger(EventModelMarshaler.class);
-
-    /**
-     * Build binary message for API device registration payload.
-     * 
-     * @param api
-     * @return
-     * @throws SiteWhereException
-     */
-    public static byte[] buildDeviceRegistrationPayloadMessage(IDeviceRegistrationPayload api)
-	    throws SiteWhereException {
-	GDeviceRegistationPayload grpc = EventModelConverter.asGrpcDeviceRegistrationPayload(api);
-	return buildDeviceRegistrationPayloadMessage(grpc);
-    }
-
-    /**
-     * Build binary message for GRPC device registration payload.
-     * 
-     * @param grpc
-     * @return
-     * @throws SiteWhereException
-     */
-    public static byte[] buildDeviceRegistrationPayloadMessage(GDeviceRegistationPayload grpc)
-	    throws SiteWhereException {
-	ByteArrayOutputStream output = new ByteArrayOutputStream();
-	try {
-	    grpc.writeTo(output);
-	    return output.toByteArray();
-	} catch (IOException e) {
-	    throw new SiteWhereException("Unable to build device registration payload message.", e);
-	} finally {
-	    closeQuietly(output);
-	}
-    }
-
-    /**
-     * Parse message that contains an device registration payload.
-     * 
-     * @param payload
-     * @return
-     * @throws SiteWhereException
-     */
-    public static GDeviceRegistationPayload parseDeviceRegistrationPayloadMessage(byte[] payload)
-	    throws SiteWhereException {
-	try {
-	    return GDeviceRegistationPayload.parseFrom(payload);
-	} catch (InvalidProtocolBufferException e) {
-	    throw new SiteWhereException("Unable to parse device registration payload message.", e);
-	}
-    }
 
     /**
      * Build binary message for API inbound event payload.

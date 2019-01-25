@@ -73,6 +73,7 @@ public class DeviceMarshalHelper {
 	result.setDeviceTypeId(source.getDeviceTypeId());
 	result.setDeviceAssignmentId(source.getDeviceAssignmentId());
 	result.setParentDeviceId(source.getParentDeviceId());
+	result.setStatus(source.getStatus());
 	result.setComments(source.getComments());
 	PersistentEntity.copy(source, result);
 

@@ -32,7 +32,7 @@ public class InitializeComponentLifecycleStep extends ComponentOperationLifecycl
      */
     @Override
     public String getName() {
-	return "Initialize " + getComponent().getComponentName();
+	return (getComponent() != null) ? "Initialize " + getComponent().getComponentName() : "Initialize";
     }
 
     /*

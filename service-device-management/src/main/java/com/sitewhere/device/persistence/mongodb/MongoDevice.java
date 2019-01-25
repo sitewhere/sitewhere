@@ -35,6 +35,9 @@ public class MongoDevice implements MongoConverter<IDevice> {
     /** Property for device element mappings */
     public static final String PROP_DEVICE_ELEMENT_MAPPINGS = "elmp";
 
+    /** Property for status */
+    public static final String PROP_STATUS = "stat";
+
     /** Property for comments */
     public static final String PROP_COMMENTS = "comm";
 
@@ -68,6 +71,7 @@ public class MongoDevice implements MongoConverter<IDevice> {
     public static void toDocument(IDevice source, Document target) {
 	target.append(PROP_DEVICE_TYPE_ID, source.getDeviceTypeId());
 	target.append(PROP_PARENT_DEVICE_ID, source.getParentDeviceId());
+	target.append(PROP_STATUS, source.getStatus());
 	target.append(PROP_COMMENTS, source.getComments());
 	target.append(PROP_ASSIGNMENT_ID, source.getDeviceAssignmentId());
 
@@ -91,11 +95,13 @@ public class MongoDevice implements MongoConverter<IDevice> {
     public static void fromDocument(Document source, Device target) {
 	UUID typeId = (UUID) source.get(PROP_DEVICE_TYPE_ID);
 	UUID parentDeviceId = (UUID) source.get(PROP_PARENT_DEVICE_ID);
+	String status = (String) source.get(PROP_STATUS);
 	String comments = (String) source.get(PROP_COMMENTS);
 	UUID assignmentId = (UUID) source.get(PROP_ASSIGNMENT_ID);
 
 	target.setDeviceTypeId(typeId);
 	target.setParentDeviceId(parentDeviceId);
+	target.setStatus(status);
 	target.setComments(comments);
 	target.setDeviceAssignmentId(assignmentId);
 

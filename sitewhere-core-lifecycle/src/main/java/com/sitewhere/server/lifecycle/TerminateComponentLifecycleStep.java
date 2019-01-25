@@ -28,7 +28,7 @@ public class TerminateComponentLifecycleStep extends ComponentOperationLifecycle
      */
     @Override
     public String getName() {
-	return "Terminate " + getComponent().getComponentName();
+	return (getComponent() != null) ? "Terminate " + getComponent().getComponentName() : "Terminate";
     }
 
     /*

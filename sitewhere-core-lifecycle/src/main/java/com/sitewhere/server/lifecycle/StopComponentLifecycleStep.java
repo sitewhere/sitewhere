@@ -24,19 +24,17 @@ public class StopComponentLifecycleStep extends ComponentOperationLifecycleStep 
     }
 
     /*
-     * @see
-     * com.sitewhere.server.lifecycle.ComponentOperationLifecycleStep#getName()
+     * @see com.sitewhere.server.lifecycle.ComponentOperationLifecycleStep#getName()
      */
     @Override
     public String getName() {
-	return "Stop " + getComponent().getComponentName();
+	return (getComponent() != null) ? "Stop " + getComponent().getComponentName() : "Stop";
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleStep#execute(com.sitewhere.
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleStep#execute(com.sitewhere.
      * spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
