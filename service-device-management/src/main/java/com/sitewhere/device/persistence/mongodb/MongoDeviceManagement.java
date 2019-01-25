@@ -665,6 +665,9 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
      */
     @Override
     public IDevice updateDevice(UUID id, IDeviceCreateRequest request) throws SiteWhereException {
+
+	getLogger().info("Request:\n\n" + MarshalUtils.marshalJsonAsPrettyString(request));
+
 	Document existing = assertDevice(id);
 	Device updatedDevice = MongoDevice.fromDocument(existing);
 
@@ -685,6 +688,7 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	}
 
 	DeviceManagementPersistence.deviceUpdateLogic(request, deviceType, parent, updatedDevice);
+	getLogger().info("Updated:\n\n" + MarshalUtils.marshalJsonAsPrettyString(updatedDevice));
 	Document updated = MongoDevice.toDocument(updatedDevice);
 
 	MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
