@@ -105,11 +105,11 @@ public class MqttOutboundConnector extends SerialOutboundConnector
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if ((getTopic() == null) && (getMulticaster() == null) && (getRouteBuilder() == null)) {
-	    this.topic = String.format("SiteWhere/%1/outbound/%2", getTenantEngine().getTenant().getToken(),
+	    this.topic = String.format("SiteWhere/%1$s/outbound/%2$s", getTenantEngine().getTenant().getToken(),
 		    getConnectorId());
 	    getLogger().warn(String.format(
-		    "No topic specified and no multicaster or route builder configured. Defaultin to topic '%s'"),
-		    getTopic());
+		    "No topic specified and no multicaster or route builder configured. Defaulting to topic '%s'",
+		    getTopic()));
 	}
 
 	// Required for filters.
@@ -129,7 +129,7 @@ public class MqttOutboundConnector extends SerialOutboundConnector
 	this.queue = Dispatch.createQueue(getComponentId().toString());
 	this.mqtt = MqttLifecycleComponent.configure(this, queue);
 
-	getLogger().info("Connecting to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
+	getLogger().info(String.format("Connecting to MQTT broker at %s:%s ...", getHostname(), getPort()));
 	connection = mqtt.futureConnection();
 	try {
 	    Future<Void> future = connection.connect();
