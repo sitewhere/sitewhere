@@ -184,16 +184,14 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
 	}
 
 	Attr hostname = element.getAttributeNode("hostname");
-	if (hostname == null) {
-	    throw new RuntimeException("MQTT hostname attribute not provided.");
+	if (hostname != null) {
+	    processor.addPropertyValue("hostname", hostname.getValue());
 	}
-	processor.addPropertyValue("hostname", hostname.getValue());
 
 	Attr port = element.getAttributeNode("port");
-	if (port == null) {
-	    throw new RuntimeException("MQTT port attribute not provided.");
+	if (port != null) {
+	    processor.addPropertyValue("port", port.getValue());
 	}
-	processor.addPropertyValue("port", port.getValue());
 
 	Attr username = element.getAttributeNode("username");
 	if (username != null) {
