@@ -603,11 +603,10 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
     protected AbstractBeanDefinition parseGroovyFilter(Element element, ParserContext context) {
 	BeanDefinitionBuilder filter = BeanDefinitionBuilder.rootBeanDefinition(GroovyFilter.class);
 
-	Attr scriptPath = element.getAttributeNode("scriptPath");
-	if (scriptPath == null) {
-	    throw new RuntimeException("Attribute 'scriptPath' is required for groovy-filter.");
+	Attr scriptId = element.getAttributeNode("scriptId");
+	if (scriptId != null) {
+	    filter.addPropertyValue("scriptId", scriptId.getValue());
 	}
-	filter.addPropertyValue("scriptPath", scriptPath.getValue());
 
 	return filter.getBeanDefinition();
     }
