@@ -8,9 +8,10 @@
 package com.sitewhere.connectors.filter;
 
 import com.sitewhere.connectors.spi.IDeviceEventFilter;
+import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsMicroservice;
+import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
-import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -24,24 +25,21 @@ public abstract class DeviceEventFilter extends TenantEngineLifecycleComponent i
 	super(LifecycleComponentType.OutboundEventProcessorFilter);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Allow access to the device management API channels.
      * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * @return
      */
-    @Override
-    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    protected IDeviceManagementApiDemux getDeviceManagementApiDemux() {
+	return ((IOutboundConnectorsMicroservice) getMicroservice()).getDeviceManagementApiDemux();
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Allow access to the device event management API channels.
      * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
-     * .spi.server.lifecycle.ILifecycleProgressMonitor)
+     * @return
      */
-    @Override
-    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    protected IDeviceEventManagementApiDemux getDeviceEventManagementApiDemux() {
+	return ((IOutboundConnectorsMicroservice) getMicroservice()).getDeviceEventManagementApiDemux();
     }
 }

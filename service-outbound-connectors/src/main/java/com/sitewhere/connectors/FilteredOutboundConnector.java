@@ -27,31 +27,40 @@ public abstract class FilteredOutboundConnector extends OutboundConnector implem
     private List<IDeviceEventFilter> filters = new ArrayList<IDeviceEventFilter>();
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+	for (IDeviceEventFilter filter : getFilters()) {
+	    initializeNestedComponent(filter, monitor, true);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.start(monitor);
-	getLifecycleComponents().clear();
-	for (IDeviceEventFilter filter : filters) {
+	for (IDeviceEventFilter filter : getFilters()) {
 	    startNestedComponent(filter, monitor, true);
 	}
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
-     * .spi.server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	for (IDeviceEventFilter filter : filters) {
-	    filter.stop(monitor);
+	for (IDeviceEventFilter filter : getFilters()) {
+	    stopNestedComponent(filter, monitor);
 	}
 	super.stop(monitor);
     }
@@ -80,8 +89,10 @@ public abstract class FilteredOutboundConnector extends OutboundConnector implem
      * @throws SiteWhereException
      */
     protected boolean isFiltered(IEnrichedEventPayload payload) throws SiteWhereException {
-	for (IDeviceEventFilter filter : filters) {
+	for (IDeviceEventFilter filter : getFilters()) {
 	    if (filter.isFiltered(payload.getEventContext(), payload.getEvent())) {
+		getLogger().info(String.format("Event payload filtered for %s based on %s.",
+			payload.getEvent().getDeviceId().toString(), filter.getClass().getSimpleName()));
 		return true;
 	    }
 	}

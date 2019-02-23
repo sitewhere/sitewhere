@@ -7,9 +7,8 @@
  */
 package com.sitewhere.connectors.filter;
 
-import java.util.UUID;
-
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 
@@ -20,8 +19,8 @@ import com.sitewhere.spi.device.event.IDeviceEventContext;
  */
 public class AreaFilter extends DeviceEventFilter {
 
-    /** Area id to allow */
-    private UUID areaId;
+    /** Area token to check */
+    private String areaToken;
 
     /** Operation filter performs */
     private FilterOperation operation = FilterOperation.Include;
@@ -34,18 +33,25 @@ public class AreaFilter extends DeviceEventFilter {
      */
     @Override
     public boolean isFiltered(IDeviceEventContext context, IDeviceEvent event) throws SiteWhereException {
-	if (getAreaId().equals(event.getAreaId())) {
-	    return (getOperation() != FilterOperation.Include);
+	if (event.getAreaId() != null) {
+	    IArea area = getDeviceManagementApiDemux().getApiChannel().getArea(event.getAreaId());
+	    if (area == null) {
+		throw new SiteWhereException("Unable to process event filter for non-existent area.");
+	    }
+	    if (getAreaToken().equals(area.getToken())) {
+		return (getOperation() != FilterOperation.Include);
+	    }
+	    return (getOperation() == FilterOperation.Include);
 	}
 	return (getOperation() == FilterOperation.Include);
     }
 
-    public UUID getAreaId() {
-	return areaId;
+    public String getAreaToken() {
+	return areaToken;
     }
 
-    public void setAreaId(UUID areaId) {
-	this.areaId = areaId;
+    public void setAreaToken(String areaToken) {
+	this.areaToken = areaToken;
     }
 
     public FilterOperation getOperation() {
