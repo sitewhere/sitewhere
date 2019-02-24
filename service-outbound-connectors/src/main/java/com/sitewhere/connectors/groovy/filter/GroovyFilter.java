@@ -9,7 +9,7 @@ package com.sitewhere.connectors.groovy.filter;
 
 import com.sitewhere.connectors.filter.DeviceEventFilter;
 import com.sitewhere.connectors.spi.IDeviceEventFilter;
-import com.sitewhere.microservice.groovy.GroovyConfiguration;
+import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
@@ -20,18 +20,34 @@ import groovy.lang.Binding;
 /**
  * Implementatoin of {@link IDeviceEventFilter} that uses a Groovy script to
  * determine whether events should be included or filtered. If the script
- * returns true, the event is included. If the script return false, the event is
- * filtered.
+ * returns true, the event is excluded. If the script return false, the event is
+ * included.
  * 
  * @author Derek
  */
 public class GroovyFilter extends DeviceEventFilter {
 
-    /** Groovy configuration */
-    private GroovyConfiguration groovyConfiguration;
+    /** Unique script id to execute */
+    private String scriptId;
 
-    /** Relative path to Groovy script */
-    private String scriptPath;
+    /** Wrapped Groovy component */
+    private GroovyComponent groovyComponent;
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+
+	// Create nested Groovy component and pass configuration.
+	this.groovyComponent = new GroovyComponent();
+	getGroovyComponent().setScriptId(getScriptId());
+	getGroovyComponent().setNumThreads(1);
+	initializeNestedComponent(getGroovyComponent(), monitor, true);
+    }
 
     /*
      * (non-Javadoc)
@@ -43,9 +59,21 @@ public class GroovyFilter extends DeviceEventFilter {
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.start(monitor);
 
-	if (getScriptPath() == null) {
-	    throw new SiteWhereException("Script path not configured for Groovy filter.");
-	}
+	// Start nested Groovy component.
+	startNestedComponent(getGroovyComponent(), monitor, true);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.connectors.FilteredOutboundConnector#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.stop(monitor);
+
+	// Stop nested Groovy component.
+	stopNestedComponent(getGroovyComponent(), monitor);
     }
 
     /*
@@ -60,22 +88,22 @@ public class GroovyFilter extends DeviceEventFilter {
 	binding.setVariable("logger", getLogger());
 	binding.setVariable("context", context);
 	binding.setVariable("event", event);
-	return true;
+	return (boolean) getGroovyComponent().run(binding);
     }
 
-    public GroovyConfiguration getGroovyConfiguration() {
-	return groovyConfiguration;
+    public String getScriptId() {
+	return scriptId;
     }
 
-    public void setGroovyConfiguration(GroovyConfiguration groovyConfiguration) {
-	this.groovyConfiguration = groovyConfiguration;
+    public void setScriptId(String scriptId) {
+	this.scriptId = scriptId;
     }
 
-    public String getScriptPath() {
-	return scriptPath;
+    public GroovyComponent getGroovyComponent() {
+	return groovyComponent;
     }
 
-    public void setScriptPath(String scriptPath) {
-	this.scriptPath = scriptPath;
+    public void setGroovyComponent(GroovyComponent groovyComponent) {
+	this.groovyComponent = groovyComponent;
     }
 }

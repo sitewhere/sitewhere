@@ -184,16 +184,14 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
 	}
 
 	Attr hostname = element.getAttributeNode("hostname");
-	if (hostname == null) {
-	    throw new RuntimeException("MQTT hostname attribute not provided.");
+	if (hostname != null) {
+	    processor.addPropertyValue("hostname", hostname.getValue());
 	}
-	processor.addPropertyValue("hostname", hostname.getValue());
 
 	Attr port = element.getAttributeNode("port");
-	if (port == null) {
-	    throw new RuntimeException("MQTT port attribute not provided.");
+	if (port != null) {
+	    processor.addPropertyValue("port", port.getValue());
 	}
-	processor.addPropertyValue("port", port.getValue());
 
 	Attr username = element.getAttributeNode("username");
 	if (username != null) {
@@ -605,11 +603,10 @@ public class OutboundConnectorsParser extends AbstractBeanDefinitionParser {
     protected AbstractBeanDefinition parseGroovyFilter(Element element, ParserContext context) {
 	BeanDefinitionBuilder filter = BeanDefinitionBuilder.rootBeanDefinition(GroovyFilter.class);
 
-	Attr scriptPath = element.getAttributeNode("scriptPath");
-	if (scriptPath == null) {
-	    throw new RuntimeException("Attribute 'scriptPath' is required for groovy-filter.");
+	Attr scriptId = element.getAttributeNode("scriptId");
+	if (scriptId != null) {
+	    filter.addPropertyValue("scriptId", scriptId.getValue());
 	}
-	filter.addPropertyValue("scriptPath", scriptPath.getValue());
 
 	return filter.getBeanDefinition();
     }

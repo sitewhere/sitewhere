@@ -71,7 +71,7 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 	// Outbound connector filters.
 	addElement(createFilterCriteriaElement());
 	addElement(createAreaFilterElement());
-	addElement(createSpecificationFilterElement());
+	addElement(createDeviceTypeFilterElement());
 	addElement(createGroovyFilterElement());
     }
 
@@ -407,7 +407,7 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 	builder.description("Allows events from a given area to be included or excluded for an outbound processor.");
 	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
 
-	builder.attribute((new AttributeNode.Builder("Area", "area", AttributeType.AreaReference,
+	builder.attribute((new AttributeNode.Builder("Area", "areaToken", AttributeType.AreaReference,
 		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Area filter applies to.").makeIndex()
 			.build()));
 	builder.attribute((new AttributeNode.Builder("Include/Exclude", "operation", AttributeType.String,
@@ -422,7 +422,7 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
      * 
      * @return
      */
-    protected ElementNode createSpecificationFilterElement() {
+    protected ElementNode createDeviceTypeFilterElement() {
 	ElementNode.Builder builder = new ElementNode.Builder("Device Type Filter",
 		IOutboundConnectorsParser.Filters.DeviceTypeFilter.getLocalName(), "filter",
 		OutboundConnectorsRoleKeys.OutboundFilter, this);
@@ -430,9 +430,9 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 		"Allows events for devices of a given type to be included or excluded for an outbound connector.");
 	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
 
-	builder.attribute((new AttributeNode.Builder("Device type", "deviceTypeId", AttributeType.DeviceTypeReference,
-		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description("Device type filter applies to.").makeIndex()
-			.makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Device type", "deviceTypeToken",
+		AttributeType.DeviceTypeReference, ConfigurationModelProvider.ATTR_GROUP_GENERAL)
+			.description("Device type filter applies to.").makeIndex().makeRequired().build()));
 	builder.attribute((new AttributeNode.Builder("Include/Exclude", "operation", AttributeType.String,
 		ConfigurationModelProvider.ATTR_GROUP_GENERAL).description(
 			"Indicates whether events from the specification should be included or excluded from processing.")
@@ -450,13 +450,13 @@ public class OutboundConnectorsModelProvider extends ConfigurationModelProvider 
 		IOutboundConnectorsParser.Filters.GroovyFilter.getLocalName(), "filter",
 		OutboundConnectorsRoleKeys.OutboundFilter, this);
 	builder.description("Allows events to be filtered based on the return value of a Groovy script. "
-		+ "If the script returns false, the event is filtered. See the SiteWhere documentation for "
+		+ "If the script returns true, the event is filtered. See the SiteWhere documentation for "
 		+ "a description of the variable bindings provided by the system.");
 	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_GENERAL);
 
-	builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String,
+	builder.attribute((new AttributeNode.Builder("Script Id", "scriptId", AttributeType.Script,
 		ConfigurationModelProvider.ATTR_GROUP_GENERAL)
-			.description("Script path relative to Groovy script root.").makeRequired().build()));
+			.description("Script which provides filter functionality.").makeRequired().build()));
 	return builder.build();
     }
 }

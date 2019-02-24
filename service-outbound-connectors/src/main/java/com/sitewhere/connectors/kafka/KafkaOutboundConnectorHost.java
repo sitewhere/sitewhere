@@ -33,6 +33,7 @@ import com.sitewhere.rest.model.device.event.kafka.EnrichedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.kafka.IEnrichedEventPayload;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
  * Kafka host container that reads from the enriched events topic and forwards
@@ -107,10 +108,11 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	super.start(monitor);
-
 	// Start the wrapped connector component.
 	startNestedComponent(getOutboundConnector(), monitor, true);
+
+	// Only start the consumer if outbound connector started successfully.
+	super.start(monitor);
 
 	int numThreads = getOutboundConnector().getNumProcessingThreads();
 	getLogger().info(String.format("Connector host starting connector with pool of %d %s.", numThreads,
@@ -148,17 +150,21 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
      */
     @Override
     public void process(TopicPartition topicPartition, List<ConsumerRecord<String, byte[]>> records) {
-	if (records.size() > 0) {
-	    getBatchProcessors().execute(new TopicBatchProcessor(topicPartition, records));
+	if (getOutboundConnector().getLifecycleStatus() == LifecycleStatus.Started) {
+	    if (records.size() > 0) {
+		getBatchProcessors().execute(new TopicBatchProcessor(topicPartition, records));
 
-	    // Send new offset information.
-	    getConsumer().commitAsync(new OffsetCommitCallback() {
-		public void onComplete(Map<TopicPartition, OffsetAndMetadata> offsets, Exception e) {
-		    if (e != null) {
-			getLogger().error("Commit failed for offsets " + offsets, e);
+		// Send new offset information.
+		getConsumer().commitAsync(new OffsetCommitCallback() {
+		    public void onComplete(Map<TopicPartition, OffsetAndMetadata> offsets, Exception e) {
+			if (e != null) {
+			    getLogger().error("Commit failed for offsets " + offsets, e);
+			}
 		    }
-		}
-	    });
+		});
+	    }
+	} else {
+	    getLogger().warn("Skipping record batch due to outbound connector not in started state.");
 	}
     }
 

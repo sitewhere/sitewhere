@@ -1,0 +1,6 @@
+{
+	"id": "filter",
+	"name": "Filter",
+	"description": "Implements an outbound connector event filter.",
+	"type": "groovy"
+}
