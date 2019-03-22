@@ -43,7 +43,7 @@ import com.sitewhere.spi.tenant.ITenant;
 public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecycleComponent implements IApiDemux<T> {
 
     /** Number of seconds to wait between discovery checks */
-    protected static final long DISCOVERY_CHECK_INTERVAL = 5 * 1000;
+    protected static final long DISCOVERY_CHECK_INTERVAL = 15 * 1000;
 
     /** Min of time to wait between checks for available API channel */
     protected static final long API_CHANNEL_WAIT_INTERVAL_MS_MIN = 100;

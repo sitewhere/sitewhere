@@ -20,6 +20,7 @@ import com.orbitz.consul.HealthClient;
 import com.orbitz.consul.NotRegisteredException;
 import com.orbitz.consul.model.agent.ImmutableRegistration;
 import com.orbitz.consul.model.agent.Registration;
+import com.orbitz.consul.model.health.HealthCheck;
 import com.orbitz.consul.model.health.ServiceHealth;
 import com.sitewhere.core.Boilerplate;
 import com.sitewhere.microservice.discovery.ServiceNode;
@@ -40,7 +41,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public class ConsulServiceDiscoveryProvider extends LifecycleComponent implements IServiceDiscoveryProvider {
 
     /** Number of seconds to wait between registration retries */
-    private static final int REGISTRATION_RETRY_INTERVAL_IN_SECS = 5;
+    private static final int REGISTRATION_RETRY_INTERVAL_IN_SECS = 15;
 
     /** Consul client */
     private Consul consulClient;
@@ -166,10 +167,16 @@ public class ConsulServiceDiscoveryProvider extends LifecycleComponent implement
     public List<IServiceNode> getNodesForFunction(IFunctionIdentifier identifier) throws SiteWhereException {
 	if (getConsulClient() != null) {
 	    HealthClient healthClient = getConsulClient().healthClient();
-	    List<ServiceHealth> matches = healthClient.getHealthyServiceInstances(identifier.getShortName())
-		    .getResponse();
+	    List<ServiceHealth> matches = healthClient.getAllServiceInstances(identifier.getShortName()).getResponse();
 	    List<IServiceNode> nodes = new ArrayList<>();
 	    for (ServiceHealth match : matches) {
+		List<HealthCheck> checks = match.getChecks();
+		for (HealthCheck check : checks) {
+		    if (!"passing".equals(check.getStatus())) {
+			getLogger().warn(String.format("Connected service for '%s' at %s is reporting a '%s' status!",
+				identifier.getShortName(), match.getService().getAddress(), check.getStatus()));
+		    }
+		}
 		String host = match.getService().getAddress();
 		ServiceNode node = new ServiceNode();
 		node.setAddress(host);
