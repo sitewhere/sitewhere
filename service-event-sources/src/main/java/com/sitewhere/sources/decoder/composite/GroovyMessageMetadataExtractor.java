@@ -44,12 +44,11 @@ public class GroovyMessageMetadataExtractor extends GroovyComponent implements I
     public IMessageMetadata<byte[]> extractMetadata(byte[] payload, Map<String, Object> eventSourceMetadata)
 	    throws EventDecodeException {
 	try {
-	    Binding binding = new Binding();
+	    Binding binding = createBindingFor(this);
 	    binding.setVariable(IGroovyVariables.VAR_DEVICE_MANAGEMENT,
 		    getDeviceManagement(getTenantEngine().getTenant()));
 	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD, payload);
 	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD_METADATA, eventSourceMetadata);
-	    binding.setVariable(IGroovyVariables.VAR_LOGGER, getLogger());
 	    getLogger().debug("About to execute '" + getScriptId() + "' with payload: " + payload);
 	    return (IMessageMetadata<byte[]>) run(binding);
 	} catch (SiteWhereException e) {

@@ -13,13 +13,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.security.SystemUserCallable;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.microservice.groovy.IGroovyComponent;
 import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 import groovy.lang.Binding;
@@ -84,6 +87,22 @@ public class GroovyComponent extends TenantEngineLifecycleComponent implements I
 
 	// Create thread pool for processing requests.
 	this.executor = Executors.newFixedThreadPool(getNumThreads());
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.groovy.IGroovyComponent#createBindingFor(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleComponent)
+     */
+    @Override
+    public Binding createBindingFor(ILifecycleComponent component) throws SiteWhereException {
+	Binding binding = new Binding();
+	if (component instanceof ITenantEngineLifecycleComponent) {
+	    binding.setVariable(IGroovyVariables.VAR_TENANT,
+		    ((ITenantEngineLifecycleComponent) component).getTenantEngine().getTenant());
+	}
+	binding.setVariable(IGroovyVariables.VAR_LOGGER, getLogger());
+	return binding;
     }
 
     /*

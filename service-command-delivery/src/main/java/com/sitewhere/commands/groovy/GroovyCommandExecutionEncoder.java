@@ -44,11 +44,10 @@ public class GroovyCommandExecutionEncoder extends GroovyComponent implements IC
     public byte[] encode(IDeviceCommandExecution command, IDeviceNestingContext nested, IDeviceAssignment assignment)
 	    throws SiteWhereException {
 	try {
-	    Binding binding = new Binding();
+	    Binding binding = createBindingFor(this);
 	    binding.setVariable(IGroovyVariables.VAR_COMMAND_EXECUTION, command);
 	    binding.setVariable(IGroovyVariables.VAR_NESTING_CONTEXT, nested);
 	    binding.setVariable(IGroovyVariables.VAR_ASSIGNMENT, assignment);
-	    binding.setVariable(IGroovyVariables.VAR_LOGGER, getLogger());
 	    return (byte[]) run(binding);
 	} catch (SiteWhereException e) {
 	    throw new CommandEncodeException("Unable to run encoder script.", e);
@@ -67,11 +66,10 @@ public class GroovyCommandExecutionEncoder extends GroovyComponent implements IC
     public byte[] encodeSystemCommand(ISystemCommand command, IDeviceNestingContext nested,
 	    IDeviceAssignment assignment) throws SiteWhereException {
 	try {
-	    Binding binding = new Binding();
+	    Binding binding = createBindingFor(this);
 	    binding.setVariable(IGroovyVariables.VAR_SYSTEM_COMMAND, command);
 	    binding.setVariable(IGroovyVariables.VAR_NESTING_CONTEXT, nested);
 	    binding.setVariable(IGroovyVariables.VAR_ASSIGNMENT, assignment);
-	    binding.setVariable(IGroovyVariables.VAR_LOGGER, getLogger());
 	    return (byte[]) run(binding);
 	} catch (SiteWhereException e) {
 	    throw new CommandEncodeException("Unable to run encoder script.", e);
