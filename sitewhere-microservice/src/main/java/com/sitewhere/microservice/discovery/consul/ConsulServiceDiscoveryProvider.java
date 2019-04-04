@@ -16,6 +16,7 @@ import java.util.concurrent.Executors;
 import com.google.common.net.HostAndPort;
 import com.orbitz.consul.AgentClient;
 import com.orbitz.consul.Consul;
+import com.orbitz.consul.ConsulException;
 import com.orbitz.consul.HealthClient;
 import com.orbitz.consul.NotRegisteredException;
 import com.orbitz.consul.model.agent.ImmutableRegistration;
@@ -81,49 +82,64 @@ public class ConsulServiceDiscoveryProvider extends LifecycleComponent implement
      */
     @Override
     public void registerService() throws SiteWhereException {
-	getRegistrationExecutor().execute(new BackgroundExecutor());
+	getRegistrationExecutor().execute(new RetryUntilRegistered());
     }
 
     /**
-     * Background thread which attempts to register microservice with Consul.
+     * Get Consul client. Create if it does not already exist.
+     * 
+     * @return
+     */
+    protected Consul getConsulClient() {
+	IInstanceSettings settings = getMicroservice().getInstanceSettings();
+	if (this.consulClient == null) {
+	    this.consulClient = Consul.builder()
+		    .withHostAndPort(HostAndPort.fromParts(settings.getConsulHost(), settings.getConsulPort())).build();
+	}
+	return this.consulClient;
+    }
+
+    /**
+     * Attempt to register with Consul.
+     * 
+     * @throws ConsulException
+     */
+    protected void register() throws ConsulException {
+	getLogger().info("Attempting to register service with Consul...");
+	AgentClient agentClient = getConsulClient().agentClient();
+	List<String> tags = new ArrayList<>();
+	tags.add("microservice");
+	tags.add(getMicroservice().getIdentifier().getShortName());
+	Registration service = ImmutableRegistration.builder().id(getMicroservice().getId().toString())
+		.name(getMicroservice().getIdentifier().getShortName()).address(getMicroservice().getHostname())
+		.port(getMicroservice().getInstanceSettings().getGrpcPort()).check(Registration.RegCheck.ttl(30L))
+		.tags(tags)
+		.meta(Collections.singletonMap("version", getMicroservice().getVersion().getVersionIdentifier()))
+		.build();
+	agentClient.register(service);
+
+	// Log block to indicate registration.
+	List<String> messages = new ArrayList<String>();
+	messages.add("Registered Service with Consul");
+	messages.add("Identifier: " + getMicroservice().getIdentifier().getShortName());
+	messages.add("Registered Address: " + getMicroservice().getHostname());
+	String message = Boilerplate.boilerplate(messages, "*");
+	getLogger().info(message);
+    }
+
+    /**
+     * Background thread which repeatedly attempts to register microservice with
+     * Consul.
      * 
      * @author Derek
      */
-    private class BackgroundExecutor implements Runnable {
+    private class RetryUntilRegistered implements Runnable {
 
 	@Override
 	public void run() {
-	    getLogger().info("Attempting to register service with Consul...");
 	    while (true) {
 		try {
-		    // Create Consul client.
-		    IInstanceSettings settings = getMicroservice().getInstanceSettings();
-		    setConsulClient(Consul.builder()
-			    .withHostAndPort(HostAndPort.fromParts(settings.getConsulHost(), settings.getConsulPort()))
-			    .build());
-
-		    AgentClient agentClient = getConsulClient().agentClient();
-		    List<String> tags = new ArrayList<>();
-		    tags.add("microservice");
-		    tags.add(getMicroservice().getIdentifier().getShortName());
-		    Registration service = ImmutableRegistration.builder().id(getMicroservice().getId().toString())
-			    .name(getMicroservice().getIdentifier().getShortName())
-			    .address(getMicroservice().getHostname())
-			    .port(getMicroservice().getInstanceSettings().getGrpcPort())
-			    .check(Registration.RegCheck.ttl(30L)).tags(tags).meta(Collections.singletonMap("version",
-				    getMicroservice().getVersion().getVersionIdentifier()))
-			    .build();
-		    agentClient.register(service);
-
-		    // Log block to indicate registration.
-		    List<String> messages = new ArrayList<String>();
-		    messages.add("Registered Service with Consul");
-		    messages.add("Identifier: " + getMicroservice().getIdentifier().getShortName());
-		    messages.add("Registered Address: " + getMicroservice().getHostname());
-		    messages.add(
-			    "K8S Pod IP Address: " + getMicroservice().getInstanceSettings().getKubernetesPodAddress());
-		    String message = Boilerplate.boilerplate(messages, "*");
-		    getLogger().info(message);
+		    register();
 		    return;
 		} catch (Throwable t) {
 		    getLogger().warn(String.format("Consul registration attempt failed. Will retry in %d seconds.",
@@ -153,7 +169,12 @@ public class ConsulServiceDiscoveryProvider extends LifecycleComponent implement
 		    agentClient.pass(serviceId);
 		}
 	    } catch (NotRegisteredException e) {
-		throw new SiteWhereException("Unable to send heartbeat.", e);
+		try {
+		    register();
+		} catch (ConsulException c) {
+		    throw new SiteWhereException(
+			    "Heartbeat for non-registered service and unable to re-register with Consul.", c);
+		}
 	    }
 	} else {
 	    getLogger().info("Skipping heartbeat. Consul client not connected.");
@@ -191,14 +212,6 @@ public class ConsulServiceDiscoveryProvider extends LifecycleComponent implement
 	    List<IServiceNode> nodes = new ArrayList<>();
 	    return nodes;
 	}
-    }
-
-    protected Consul getConsulClient() {
-	return consulClient;
-    }
-
-    protected void setConsulClient(Consul consulClient) {
-	this.consulClient = consulClient;
     }
 
     protected ExecutorService getRegistrationExecutor() {
