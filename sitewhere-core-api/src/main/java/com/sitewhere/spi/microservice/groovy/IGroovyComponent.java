@@ -34,6 +34,15 @@ public interface IGroovyComponent extends ILifecycleComponent {
     public int getNumThreads();
 
     /**
+     * Create base binding for a given lifecycle component.
+     * 
+     * @param component
+     * @return
+     * @throws SiteWhereException
+     */
+    public Binding createBindingFor(ILifecycleComponent component) throws SiteWhereException;
+
+    /**
      * Run script with the given binding and potentially return a result.
      * 
      * @param binding

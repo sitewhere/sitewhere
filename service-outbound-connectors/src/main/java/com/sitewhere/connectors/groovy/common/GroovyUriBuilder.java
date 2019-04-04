@@ -45,12 +45,11 @@ public class GroovyUriBuilder extends GroovyComponent implements IUriBuilder {
 	IDevice device = connector.getDeviceManagement().getDevice(assignment.getDeviceId());
 
 	// Create Groovy binding with handles to everything.
-	Binding binding = new Binding();
+	Binding binding = createBindingFor(this);
 	binding.setVariable(IGroovyVariables.VAR_EVENT_CONTEXT, context);
 	binding.setVariable(IGroovyVariables.VAR_EVENT, event);
 	binding.setVariable(IGroovyVariables.VAR_ASSIGNMENT, assignment);
 	binding.setVariable(IGroovyVariables.VAR_DEVICE, device);
-	binding.setVariable(IGroovyVariables.VAR_LOGGER, getLogger());
 	return (String) run(binding);
     }
 }

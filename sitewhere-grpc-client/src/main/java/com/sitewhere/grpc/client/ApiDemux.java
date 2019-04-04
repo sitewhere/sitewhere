@@ -28,6 +28,7 @@ import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.discovery.IServiceNode;
+import com.sitewhere.spi.microservice.discovery.ServiceNodeStatus;
 import com.sitewhere.spi.security.ITenantAwareAuthentication;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
@@ -43,7 +44,7 @@ import com.sitewhere.spi.tenant.ITenant;
 public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecycleComponent implements IApiDemux<T> {
 
     /** Number of seconds to wait between discovery checks */
-    protected static final long DISCOVERY_CHECK_INTERVAL = 5 * 1000;
+    protected static final long DISCOVERY_CHECK_INTERVAL = 15 * 1000;
 
     /** Min of time to wait between checks for available API channel */
     protected static final long API_CHANNEL_WAIT_INTERVAL_MS_MIN = 100;
@@ -257,10 +258,15 @@ public abstract class ApiDemux<T extends IApiChannel> extends TenantEngineLifecy
 		    List<IServiceNode> nodes = getMicroservice().getServiceDiscoveryProvider()
 			    .getNodesForFunction(getTargetIdentifier());
 		    for (IServiceNode node : nodes) {
-			if (getApiChannels().get(node.getAddress()) == null) {
-			    getLogger().info(String.format("Discovered new node for %s at %s.",
+			if (node.getStatus() == ServiceNodeStatus.Online) {
+			    if (getApiChannels().get(node.getAddress()) == null) {
+				getLogger().info(String.format("Discovered new node for %s at %s.",
+					getTargetIdentifier().getShortName(), node.getAddress()));
+				channelOperations.execute(new ApiChannelInitializer(node.getAddress()));
+			    }
+			} else {
+			    getLogger().info(String.format("Ignoring new node for '%s' on %s because it is offline.",
 				    getTargetIdentifier().getShortName(), node.getAddress()));
-			    channelOperations.execute(new ApiChannelInitializer(node.getAddress()));
 			}
 		    }
 

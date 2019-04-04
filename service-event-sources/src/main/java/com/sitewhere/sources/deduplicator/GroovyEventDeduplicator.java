@@ -45,13 +45,12 @@ public class GroovyEventDeduplicator extends GroovyComponent implements IDeviceE
     @Override
     public boolean isDuplicate(IDecodedDeviceRequest<?> request) throws SiteWhereException {
 	try {
-	    Binding binding = new Binding();
+	    Binding binding = createBindingFor(this);
 	    binding.setVariable(IGroovyVariables.VAR_DEVICE_MANAGEMENT_BUILDER,
 		    new DeviceManagementRequestBuilder(getDeviceManagement()));
 	    binding.setVariable(IGroovyVariables.VAR_EVENT_MANAGEMENT_BUILDER,
 		    new DeviceEventRequestBuilder(getDeviceManagement(), getDeviceEventManagement()));
 	    binding.setVariable(IGroovyVariables.VAR_DECODED_DEVICE_REQUEST, request);
-	    binding.setVariable(IGroovyVariables.VAR_LOGGER, getLogger());
 	    getLogger().debug("About to execute '" + getScriptId() + "' for event request: " + request);
 	    Boolean isDuplicate = (Boolean) run(binding);
 	    return isDuplicate;

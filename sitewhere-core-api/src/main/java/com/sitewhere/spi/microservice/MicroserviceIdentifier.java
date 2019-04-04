@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.microservice;
 
+import com.sitewhere.spi.SiteWhereException;
+
 /**
  * Provides a list of known identifiers for microservices.
  * 
@@ -59,13 +61,20 @@ public enum MicroserviceIdentifier implements IFunctionIdentifier {
 	this.path = path;
     }
 
-    public static MicroserviceIdentifier getByPath(String path) {
+    /**
+     * Get microservice identifier by path.
+     * 
+     * @param path
+     * @return
+     * @throws SiteWhereException
+     */
+    public static MicroserviceIdentifier getByPath(String path) throws SiteWhereException {
 	for (MicroserviceIdentifier value : MicroserviceIdentifier.values()) {
 	    if (value.getPath().equals(path)) {
 		return value;
 	    }
 	}
-	return null;
+	throw new SiteWhereException("Unknown microservice identifier: " + path);
     }
 
     /*

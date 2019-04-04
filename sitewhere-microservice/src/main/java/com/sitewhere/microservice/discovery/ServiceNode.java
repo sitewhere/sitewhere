@@ -8,6 +8,7 @@
 package com.sitewhere.microservice.discovery;
 
 import com.sitewhere.spi.microservice.discovery.IServiceNode;
+import com.sitewhere.spi.microservice.discovery.ServiceNodeStatus;
 
 /**
  * Contains node information for service discovery.
@@ -19,11 +20,22 @@ public class ServiceNode implements IServiceNode {
     /** Node address */
     private String address;
 
+    /** Service node status */
+    private ServiceNodeStatus status;
+
     public String getAddress() {
 	return address;
     }
 
     public void setAddress(String address) {
 	this.address = address;
+    }
+
+    public ServiceNodeStatus getStatus() {
+	return status;
+    }
+
+    public void setStatus(ServiceNodeStatus status) {
+	this.status = status;
     }
 }
