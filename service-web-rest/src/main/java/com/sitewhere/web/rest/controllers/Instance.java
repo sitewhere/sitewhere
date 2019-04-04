@@ -41,6 +41,7 @@ import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.discovery.IServiceNode;
+import com.sitewhere.spi.microservice.discovery.ServiceNodeStatus;
 import com.sitewhere.spi.microservice.scripting.IScriptManagement;
 import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
 import com.sitewhere.spi.microservice.scripting.IScriptTemplate;
@@ -678,16 +679,21 @@ public class Instance extends RestControllerBase {
 	    throws SiteWhereException {
 	List<IServiceNode> nodes = getMicroservice().getServiceDiscoveryProvider().getNodesForFunction(target);
 	for (IServiceNode node : nodes) {
-	    String host = node.getAddress();
-	    LifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
-		    new LifecycleProgressContext(1, "Start management interface."), getMicroservice());
-	    MicroserviceManagementApiChannel channel = new MicroserviceManagementApiChannel(null, host,
-		    getMicroservice().getInstanceSettings().getManagementGrpcPort());
-	    channel.setMicroservice(getMicroservice());
-	    channel.initialize(monitor);
-	    channel.start(monitor);
-	    channel.waitForChannelAvailable();
-	    return channel;
+	    if (node.getStatus() == ServiceNodeStatus.Online) {
+		String host = node.getAddress();
+		LifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
+			new LifecycleProgressContext(1, "Start management interface."), getMicroservice());
+		MicroserviceManagementApiChannel channel = new MicroserviceManagementApiChannel(null, host,
+			getMicroservice().getInstanceSettings().getManagementGrpcPort());
+		channel.setMicroservice(getMicroservice());
+		channel.initialize(monitor);
+		channel.start(monitor);
+		channel.waitForChannelAvailable();
+		return channel;
+	    } else {
+		getLogger().info(String.format("Ignoring service node for '%s' on %s because it is offline.",
+			target.getShortName(), node.getAddress()));
+	    }
 	}
 	throw new ApiChannelNotAvailableException();
     }

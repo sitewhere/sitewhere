@@ -29,6 +29,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.discovery.IServiceDiscoveryProvider;
 import com.sitewhere.spi.microservice.discovery.IServiceNode;
+import com.sitewhere.spi.microservice.discovery.ServiceNodeStatus;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
@@ -170,17 +171,20 @@ public class ConsulServiceDiscoveryProvider extends LifecycleComponent implement
 	    List<ServiceHealth> matches = healthClient.getAllServiceInstances(identifier.getShortName()).getResponse();
 	    List<IServiceNode> nodes = new ArrayList<>();
 	    for (ServiceHealth match : matches) {
-		List<HealthCheck> checks = match.getChecks();
-		for (HealthCheck check : checks) {
-		    if (!"passing".equals(check.getStatus())) {
-			getLogger().warn(String.format("Connected service for '%s' at %s is reporting a '%s' status!",
-				identifier.getShortName(), match.getService().getAddress(), check.getStatus()));
-		    }
-		}
 		String host = match.getService().getAddress();
 		ServiceNode node = new ServiceNode();
 		node.setAddress(host);
+		node.setStatus(ServiceNodeStatus.Online);
 		nodes.add(node);
+
+		List<HealthCheck> checks = match.getChecks();
+		for (HealthCheck check : checks) {
+		    if (!"passing".equals(check.getStatus())) {
+			node.setStatus(ServiceNodeStatus.Offline);
+			getLogger().debug(String.format("Service for '%s' at %s is reporting a '%s' status!",
+				identifier.getShortName(), match.getService().getAddress(), check.getStatus()));
+		    }
+		}
 	    }
 	    return nodes;
 	} else {

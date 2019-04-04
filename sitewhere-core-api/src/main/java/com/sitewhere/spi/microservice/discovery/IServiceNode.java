@@ -20,4 +20,11 @@ public interface IServiceNode {
      * @return
      */
     public String getAddress();
+
+    /**
+     * Get service node status.
+     * 
+     * @return
+     */
+    public ServiceNodeStatus getStatus();
 }
