@@ -45,11 +45,10 @@ public class GroovyStringEventDecoder extends GroovyComponent implements IDevice
     public List<IDecodedDeviceRequest<?>> decode(String payload, Map<String, Object> metadata)
 	    throws EventDecodeException {
 	try {
-	    Binding binding = new Binding();
+	    Binding binding = createBindingFor(this);
 	    List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();
 	    binding.setVariable(IGroovyVariables.VAR_DECODED_EVENTS, events);
 	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD, payload);
-	    binding.setVariable(IGroovyVariables.VAR_LOGGER, getLogger());
 	    getLogger().debug("About to execute '" + getScriptId() + "' with payload: " + payload);
 	    run(binding);
 	    return (List<IDecodedDeviceRequest<?>>) binding.getVariable(IGroovyVariables.VAR_DECODED_EVENTS);
