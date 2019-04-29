@@ -1,9 +1,0 @@
-apply plugin: 'nebula.provided-base'
-
-description = 'SiteWhere Apache Spark Integration'
-dependencies {
-    compile project(':sitewhere-core-api')
-    compile group: 'com.hazelcast', name: 'hazelcast-client', version:'3.5.5'
-    
-    provided group: 'org.apache.spark', name: 'spark-streaming_2.10', version:'1.5.2'
-}
