@@ -45,7 +45,6 @@ allprojects {
 	version = '2.0.7'
 	
     repositories {
-    	mavenLocal()
         maven { url "http://repo.maven.apache.org/maven2" }
         maven { url 'http://maven.restlet.org' }
         maven { url "https://jitpack.io" }
