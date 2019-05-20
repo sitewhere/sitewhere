@@ -10,8 +10,8 @@ package com.sitewhere.user.microservice;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 
-import com.sitewhere.grpc.client.spi.client.ITenantManagementApiDemux;
-import com.sitewhere.grpc.client.tenant.TenantManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
+import com.sitewhere.grpc.client.tenant.TenantManagementApiChannel;
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
@@ -51,8 +51,8 @@ public class UserManagementMicroservice extends GlobalMicroservice<MicroserviceI
     /** User management implementation */
     private IUserManagement userManagement;
 
-    /** Tenant management API demux */
-    private ITenantManagementApiDemux tenantManagementApiDemux;
+    /** Tenant management API channel */
+    private ITenantManagementApiChannel<?> tenantManagementApiChannel;
 
     /*
      * (non-Javadoc)
@@ -197,8 +197,8 @@ public class UserManagementMicroservice extends GlobalMicroservice<MicroserviceI
 	// Initialize user management GRPC server.
 	init.addInitializeStep(this, getUserManagementGrpcServer(), true);
 
-	// Initialize tenant management API demux.
-	init.addInitializeStep(this, getTenantManagementApiDemux(), true);
+	// Initialize tenant management API channel.
+	init.addInitializeStep(this, getTenantManagementApiChannel(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -219,8 +219,8 @@ public class UserManagementMicroservice extends GlobalMicroservice<MicroserviceI
 	// Start GRPC server.
 	start.addStartStep(this, getUserManagementGrpcServer(), true);
 
-	// Start tenant management API demux.
-	start.addStartStep(this, getTenantManagementApiDemux(), true);
+	// Start tenant management API channel.
+	start.addStartStep(this, getTenantManagementApiChannel(), true);
 
 	// Execute initialization steps.
 	start.execute(monitor);
@@ -237,8 +237,8 @@ public class UserManagementMicroservice extends GlobalMicroservice<MicroserviceI
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
-	// Stop tenant management API demux.
-	stop.addStopStep(this, getTenantManagementApiDemux());
+	// Stop tenant management API channel.
+	stop.addStopStep(this, getTenantManagementApiChannel());
 
 	// Stop GRPC server.
 	stop.addStopStep(this, getUserManagementGrpcServer());
@@ -252,7 +252,7 @@ public class UserManagementMicroservice extends GlobalMicroservice<MicroserviceI
      */
     protected void createGrpcComponents() {
 	this.userManagementGrpcServer = new UserManagementGrpcServer(this, getUserManagementAccessor());
-	this.tenantManagementApiDemux = new TenantManagementApiDemux(true);
+	this.tenantManagementApiChannel = new TenantManagementApiChannel(getInstanceSettings());
     }
 
     /*
@@ -284,16 +284,16 @@ public class UserManagementMicroservice extends GlobalMicroservice<MicroserviceI
     }
 
     /*
-     * @see com.sitewhere.grpc.client.spi.provider.ITenantManagementDemuxProvider#
-     * getTenantManagementApiDemux()
+     * @see com.sitewhere.user.spi.microservice.IUserManagementMicroservice#
+     * getTenantManagementApiChannel()
      */
     @Override
-    public ITenantManagementApiDemux getTenantManagementApiDemux() {
-	return tenantManagementApiDemux;
+    public ITenantManagementApiChannel<?> getTenantManagementApiChannel() {
+	return tenantManagementApiChannel;
     }
 
-    public void setTenantManagementApiDemux(ITenantManagementApiDemux tenantManagementApiDemux) {
-	this.tenantManagementApiDemux = tenantManagementApiDemux;
+    public void setTenantManagementApiChannel(ITenantManagementApiChannel<?> tenantManagementApiChannel) {
+	this.tenantManagementApiChannel = tenantManagementApiChannel;
     }
 
     public UserManagementAccessor getUserManagementAccessor() {

@@ -16,7 +16,6 @@ import com.sitewhere.grpc.client.ApiChannel;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
 import com.sitewhere.grpc.client.common.converter.MicroserviceModelConverter;
-import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IMicroserviceManagementApiChannel;
 import com.sitewhere.grpc.model.MicroserviceModel.GBinaryContent;
 import com.sitewhere.grpc.model.MicroserviceModel.GScriptTemplate;
@@ -36,7 +35,6 @@ import com.sitewhere.grpc.service.MicroserviceManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.scripting.IScriptTemplate;
-import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Supports SiteWhere microservice management APIs on top of a
@@ -47,18 +45,18 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceManagementGrpcChannel>
 	implements IMicroserviceManagementApiChannel<MicroserviceManagementGrpcChannel> {
 
-    public MicroserviceManagementApiChannel(IApiDemux<?> demux, String host, int port) {
-	super(demux, host, port);
+    public MicroserviceManagementApiChannel(String host, int port) {
+	super(host, port);
     }
 
     /*
      * @see
-     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
-     * .tracing.ITracerProvider, java.lang.String, int)
+     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(java.lang.String,
+     * int)
      */
     @Override
-    public MicroserviceManagementGrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	return new MicroserviceManagementGrpcChannel(tracerProvider, host, port);
+    public MicroserviceManagementGrpcChannel createGrpcChannel(String host, int port) {
+	return new MicroserviceManagementGrpcChannel(host, port);
     }
 
     /*

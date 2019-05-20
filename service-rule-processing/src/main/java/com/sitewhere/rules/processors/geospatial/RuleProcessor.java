@@ -128,8 +128,7 @@ public class RuleProcessor extends TenantEngineLifecycleComponent implements IRu
      */
     @Override
     public IDeviceManagement getDeviceManagement() {
-	return ((IRuleProcessingMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiDemux()
-		.getApiChannel();
+	return ((IRuleProcessingMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
     }
 
     /*
@@ -138,6 +137,6 @@ public class RuleProcessor extends TenantEngineLifecycleComponent implements IRu
     @Override
     public IDeviceEventManagement getDeviceEventManagement() {
 	return new BlockingDeviceEventManagement(((IRuleProcessingMicroservice) getTenantEngine().getMicroservice())
-		.getDeviceEventManagementApiDemux().getApiChannel());
+		.getDeviceEventManagementApiChannel());
     }
 }

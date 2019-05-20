@@ -11,7 +11,6 @@ import java.util.UUID;
 
 import com.sitewhere.grpc.client.cache.CacheConfiguration;
 import com.sitewhere.grpc.client.cache.DeviceManagementCacheProviders;
-import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.cache.ICacheConfiguration;
 import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
 import com.sitewhere.security.UserContextManager;
@@ -54,8 +53,8 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
     /** Device assignment by id cache */
     private ICacheProvider<UUID, IDeviceAssignment> deviceAssignmentByIdCache;
 
-    public CachedDeviceManagementApiChannel(IApiDemux<?> demux, String host, int port, CacheSettings settings) {
-	super(demux, host, port);
+    public CachedDeviceManagementApiChannel(String host, int port, CacheSettings settings) {
+	super(host, port);
 	this.areaCache = new DeviceManagementCacheProviders.AreaByTokenCache(settings.getAreaConfiguration());
 	this.areaByIdCache = new DeviceManagementCacheProviders.AreaByIdCache(settings.getAreaConfiguration());
 	this.deviceTypeCache = new DeviceManagementCacheProviders.DeviceTypeByTokenCache(

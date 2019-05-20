@@ -10,7 +10,6 @@ package com.sitewhere.grpc.client;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.multitenant.IMultitenantApiChannel;
 
 /**
@@ -24,8 +23,8 @@ import com.sitewhere.grpc.client.spi.multitenant.IMultitenantApiChannel;
 public abstract class MultitenantApiChannel<T extends MultitenantGrpcChannel<?, ?>> extends ApiChannel<T>
 	implements IMultitenantApiChannel<T> {
 
-    public MultitenantApiChannel(IApiDemux<?> demux, String hostname, int port) {
-	super(demux, hostname, port);
+    public MultitenantApiChannel(String hostname, int port) {
+	super(hostname, port);
     }
 
     /*

@@ -23,13 +23,10 @@ import org.springframework.context.annotation.ComponentScan;
 import com.sitewhere.core.Boilerplate;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
-import com.sitewhere.server.lifecycle.TracerUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.IMicroserviceApplication;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
-
-import io.opentracing.ActiveSpan;
 
 /**
  * Base application for SiteWhere microservices.
@@ -99,51 +96,42 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
 	    T service = getMicroservice();
 	    long start = System.currentTimeMillis();
 
-	    ActiveSpan span = null;
-	    try {
-		span = service.getTracer().buildSpan("Start microservice").startActive();
+	    // Display banner indicating service information.
+	    List<String> messages = new ArrayList<String>();
+	    messages.add(service.getName() + " Microservice");
+	    messages.add("Version: " + service.getVersion().getVersionIdentifier() + "."
+		    + service.getVersion().getGitRevisionAbbrev());
+	    messages.add("Git Revision: " + service.getVersion().getGitRevision());
+	    messages.add("Build Date: " + service.getVersion().getBuildTimestamp());
+	    messages.add("Hostname: " + service.getHostname());
+	    String message = Boilerplate.boilerplate(messages, "*");
+	    service.getLogger().info("\n" + message + "\n");
 
-		// Display banner indicating service information.
-		List<String> messages = new ArrayList<String>();
-		messages.add(service.getName() + " Microservice");
-		messages.add("Version: " + service.getVersion().getVersionIdentifier() + "."
-			+ service.getVersion().getGitRevisionAbbrev());
-		messages.add("Git Revision: " + service.getVersion().getGitRevision());
-		messages.add("Build Date: " + service.getVersion().getBuildTimestamp());
-		messages.add("Hostname: " + service.getHostname());
-		String message = Boilerplate.boilerplate(messages, "*");
-		service.getLogger().info("\n" + message + "\n");
-
-		// Initialize microservice.
-		LifecycleProgressMonitor initMonitor = new LifecycleProgressMonitor(
-			new LifecycleProgressContext(1, "Initialize " + service.getName()), service);
-		service.lifecycleInitialize(initMonitor);
-		if (service.getLifecycleStatus() == LifecycleStatus.InitializationError) {
-		    TracerUtils.handleErrorInTracerSpan(span, service.getLifecycleError());
-		    throw service.getLifecycleError();
-		}
-
-		// Start microservice.
-		LifecycleProgressMonitor startMonitor = new LifecycleProgressMonitor(
-			new LifecycleProgressContext(1, "Start " + service.getName()), service);
-		service.lifecycleStart(startMonitor);
-		if (service.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
-		    TracerUtils.handleErrorInTracerSpan(span, service.getLifecycleError());
-		    throw service.getLifecycleError();
-		}
-
-		long total = System.currentTimeMillis() - start;
-		messages.clear();
-		messages.add(service.getName() + " Microservice");
-		messages.add("Startup time: " + total + "ms");
-		message = Boilerplate.boilerplate(messages, "*");
-		service.getLogger().info("\n" + message + "\n");
-
-		// Execute any post-startup code.
-		service.afterMicroserviceStarted();
-	    } finally {
-		TracerUtils.finishTracerSpan(span);
+	    // Initialize microservice.
+	    LifecycleProgressMonitor initMonitor = new LifecycleProgressMonitor(
+		    new LifecycleProgressContext(1, "Initialize " + service.getName()), service);
+	    service.lifecycleInitialize(initMonitor);
+	    if (service.getLifecycleStatus() == LifecycleStatus.InitializationError) {
+		throw service.getLifecycleError();
 	    }
+
+	    // Start microservice.
+	    LifecycleProgressMonitor startMonitor = new LifecycleProgressMonitor(
+		    new LifecycleProgressContext(1, "Start " + service.getName()), service);
+	    service.lifecycleStart(startMonitor);
+	    if (service.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		throw service.getLifecycleError();
+	    }
+
+	    long total = System.currentTimeMillis() - start;
+	    messages.clear();
+	    messages.add(service.getName() + " Microservice");
+	    messages.add("Startup time: " + total + "ms");
+	    message = Boilerplate.boilerplate(messages, "*");
+	    service.getLogger().info("\n" + message + "\n");
+
+	    // Execute any post-startup code.
+	    service.afterMicroserviceStarted();
 	}
 
 	/**

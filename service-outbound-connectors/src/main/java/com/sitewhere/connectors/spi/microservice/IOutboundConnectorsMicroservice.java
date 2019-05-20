@@ -7,8 +7,8 @@
  */
 package com.sitewhere.connectors.spi.microservice;
 
-import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
@@ -25,12 +25,12 @@ public interface IOutboundConnectorsMicroservice
      * 
      * @return
      */
-    public IDeviceManagementApiDemux getDeviceManagementApiDemux();
+    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel();
 
     /**
      * Get event management API demux.
      * 
      * @return
      */
-    public IDeviceEventManagementApiDemux getDeviceEventManagementApiDemux();
+    public IDeviceEventManagementApiChannel<?> getDeviceEventManagementApiChannel();
 }

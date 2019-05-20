@@ -11,7 +11,6 @@ import com.sitewhere.grpc.client.GrpcChannel;
 import com.sitewhere.grpc.service.TenantManagementGrpc;
 import com.sitewhere.grpc.service.TenantManagementGrpc.TenantManagementBlockingStub;
 import com.sitewhere.grpc.service.TenantManagementGrpc.TenantManagementStub;
-import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Channel that allows for communication with a remote tenant management GRPC
@@ -21,8 +20,8 @@ import com.sitewhere.spi.tracing.ITracerProvider;
  */
 public class TenantManagementGrpcChannel extends GrpcChannel<TenantManagementBlockingStub, TenantManagementStub> {
 
-    public TenantManagementGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	super(tracerProvider, host, port);
+    public TenantManagementGrpcChannel(String host, int port) {
+	super(host, port);
     }
 
     /*

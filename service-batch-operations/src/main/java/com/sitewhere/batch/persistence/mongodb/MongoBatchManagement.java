@@ -342,8 +342,7 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
     }
 
     public IDeviceManagement getDeviceManagement() {
-	return ((IBatchOperationsMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiDemux()
-		.getApiChannel();
+	return ((IBatchOperationsMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
     }
 
     public IBatchManagementMongoClient getMongoClient() {

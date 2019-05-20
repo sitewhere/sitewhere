@@ -283,8 +283,7 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
      * @return
      */
     protected IDeviceManagement getDeviceManagement() {
-	return ((IInboundProcessingMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiDemux()
-		.getApiChannel();
+	return ((IInboundProcessingMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
     }
 
     /**
@@ -294,7 +293,7 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
      */
     protected IDeviceEventManagement getDeviceEventManagement() {
 	return new BlockingDeviceEventManagement(((IInboundProcessingMicroservice) getTenantEngine().getMicroservice())
-		.getDeviceEventManagementApiDemux().getApiChannel());
+		.getDeviceEventManagementApiChannel());
     }
 
     protected ExecutorService getInboundProcessorsExecutor() {

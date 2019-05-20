@@ -11,7 +11,6 @@ import com.sitewhere.grpc.client.MultitenantGrpcChannel;
 import com.sitewhere.grpc.service.DeviceStateGrpc;
 import com.sitewhere.grpc.service.DeviceStateGrpc.DeviceStateBlockingStub;
 import com.sitewhere.grpc.service.DeviceStateGrpc.DeviceStateStub;
-import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Channel that allows for communication with a remote device state GRPC server.
@@ -20,8 +19,8 @@ import com.sitewhere.spi.tracing.ITracerProvider;
  */
 public class DeviceStateGrpcChannel extends MultitenantGrpcChannel<DeviceStateBlockingStub, DeviceStateStub> {
 
-    public DeviceStateGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	super(tracerProvider, host, port);
+    public DeviceStateGrpcChannel(String host, int port) {
+	super(host, port);
     }
 
     /*

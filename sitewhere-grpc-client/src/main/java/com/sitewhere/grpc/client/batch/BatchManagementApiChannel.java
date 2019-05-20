@@ -12,7 +12,6 @@ import java.util.UUID;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.MultitenantApiChannel;
 import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
-import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IBatchManagementApiChannel;
 import com.sitewhere.grpc.service.BatchManagementGrpc;
 import com.sitewhere.grpc.service.GCreateBatchCommandInvocationRequest;
@@ -42,10 +41,11 @@ import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.batch.request.IBatchElementCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.batch.IBatchOperationSearchCriteria;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
-import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Supports SiteWhere batch management APIs on top of a
@@ -56,18 +56,22 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManagementGrpcChannel>
 	implements IBatchManagementApiChannel<BatchManagementGrpcChannel> {
 
-    public BatchManagementApiChannel(IApiDemux<?> demux, String host, int port) {
-	super(demux, host, port);
+    public BatchManagementApiChannel(IInstanceSettings settings) {
+	super(MicroserviceIdentifier.BatchOperations.getPath(), settings.getGrpcPort());
+    }
+
+    public BatchManagementApiChannel(String host, int port) {
+	super(host, port);
     }
 
     /*
      * @see
-     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
-     * .tracing.ITracerProvider, java.lang.String, int)
+     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(java.lang.String,
+     * int)
      */
     @Override
-    public BatchManagementGrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	return new BatchManagementGrpcChannel(tracerProvider, host, port);
+    public BatchManagementGrpcChannel createGrpcChannel(String host, int port) {
+	return new BatchManagementGrpcChannel(host, port);
     }
 
     /*

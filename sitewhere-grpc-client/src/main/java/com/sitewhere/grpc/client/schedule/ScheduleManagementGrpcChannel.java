@@ -11,7 +11,6 @@ import com.sitewhere.grpc.client.MultitenantGrpcChannel;
 import com.sitewhere.grpc.service.ScheduleManagementGrpc;
 import com.sitewhere.grpc.service.ScheduleManagementGrpc.ScheduleManagementBlockingStub;
 import com.sitewhere.grpc.service.ScheduleManagementGrpc.ScheduleManagementStub;
-import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Channel that allows for communication with a remote schedule management GRPC
@@ -22,8 +21,8 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public class ScheduleManagementGrpcChannel
 	extends MultitenantGrpcChannel<ScheduleManagementBlockingStub, ScheduleManagementStub> {
 
-    public ScheduleManagementGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	super(tracerProvider, host, port);
+    public ScheduleManagementGrpcChannel(String host, int port) {
+	super(host, port);
     }
 
     /*

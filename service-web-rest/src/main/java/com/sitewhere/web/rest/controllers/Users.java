@@ -201,6 +201,6 @@ public class Users extends RestControllerBase {
      * @throws SiteWhereException
      */
     protected IUserManagement getUserManagement() throws SiteWhereException {
-	return webRestMicroservice.getUserManagementApiDemux().getApiChannel();
+	return webRestMicroservice.getUserManagementApiChannel();
     }
 }

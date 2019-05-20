@@ -19,9 +19,6 @@ dependencies {
 	// GRPC server components.
 	compile group: 'io.grpc', name: 'grpc-netty', version: "${rootProject.ext['grpc.version']}"
     
-    // Tracing support
-    compile group: 'com.uber.jaeger', name: 'jaeger-core', version:'0.21.0'
-    
     // Google Analytics
 	compile 'com.brsanthu:google-analytics-java:2.0.0'
 }

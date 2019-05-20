@@ -108,7 +108,7 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
     protected IDeviceEventManagement getDeviceEventManagement() throws SiteWhereException {
 	return new BlockingDeviceEventManagement(
 		((IDeviceManagementMicroservice) getDeviceManagementTenantEngine().getMicroservice())
-			.getEventManagementApiDemux().getApiChannel());
+			.getEventManagementApiChannel());
     }
 
     protected IDeviceManagementTenantEngine getDeviceManagementTenantEngine() {

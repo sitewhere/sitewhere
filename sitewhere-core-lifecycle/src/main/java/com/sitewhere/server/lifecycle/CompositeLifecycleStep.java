@@ -19,8 +19,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 
-import io.opentracing.ActiveSpan;
-
 /**
  * Implementation of {@link ILifecycleStep} that is composed of multiple
  * lifecycle steps that are executed in order.
@@ -74,19 +72,13 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
 	try {
 	    for (ILifecycleStep step : steps) {
 		LOGGER.debug("Starting " + step.getName());
-		ActiveSpan span = monitor.getMicroservice().getTracer().activeSpan();
 		try {
-		    TracerUtils.logToSpan(span, "Starting step '" + step.getName() + "'.");
 		    monitor.startProgress(step.getName());
 		    step.execute(monitor);
 		    monitor.finishProgress();
-		} catch (SiteWhereException e) {
-		    TracerUtils.handleErrorInTracerSpan(span, e);
-		    throw e;
 		} catch (Throwable t) {
 		    SiteWhereException e = new SiteWhereException("Unhandled exception in composite lifecycle step.",
 			    t);
-		    TracerUtils.handleErrorInTracerSpan(span, e);
 		    throw e;
 		}
 	    }

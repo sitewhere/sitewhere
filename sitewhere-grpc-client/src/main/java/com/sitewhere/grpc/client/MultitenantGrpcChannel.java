@@ -17,7 +17,6 @@ import com.sitewhere.grpc.service.MultitenantManagementGrpc;
 import com.sitewhere.grpc.service.MultitenantManagementGrpc.MultitenantManagementBlockingStub;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tracing.ITracerProvider;
 
 import io.grpc.ManagedChannelBuilder;
 
@@ -41,8 +40,8 @@ public abstract class MultitenantGrpcChannel<B, A> extends GrpcChannel<B, A> imp
     /** Executor service used to handle GRPC requests */
     private ExecutorService serverExecutor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
-    public MultitenantGrpcChannel(ITracerProvider tracerProvider, String hostname, int port) {
-	super(tracerProvider, hostname, port);
+    public MultitenantGrpcChannel(String hostname, int port) {
+	super(hostname, port);
     }
 
     /*
@@ -57,9 +56,6 @@ public abstract class MultitenantGrpcChannel<B, A> extends GrpcChannel<B, A> imp
 	ManagedChannelBuilder<?> builder = ManagedChannelBuilder.forAddress(getHostname(), getPort());
 	builder.executor(getServerExecutor());
 	builder.usePlaintext().intercept(getTenantTokenInterceptor()).intercept(getJwtInterceptor());
-	if (isUseTracingInterceptor()) {
-	    builder.intercept(getTracingInterceptor());
-	}
 	this.channel = builder.build();
 	this.blockingStub = createBlockingStub();
 	this.asyncStub = createAsyncStub();

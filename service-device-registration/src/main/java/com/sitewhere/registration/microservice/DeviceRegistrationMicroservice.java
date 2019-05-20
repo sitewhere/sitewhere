@@ -8,8 +8,8 @@
 package com.sitewhere.registration.microservice;
 
 import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
-import com.sitewhere.grpc.client.device.DeviceManagementApiDemux;
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
+import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.registration.configuration.DeviceRegistrationModelProvider;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice;
@@ -36,7 +36,7 @@ public class DeviceRegistrationMicroservice
     private static final String NAME = "Device Registration";
 
     /** Device management API channel */
-    private IDeviceManagementApiDemux deviceManagementApiDemux;
+    private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
@@ -101,7 +101,7 @@ public class DeviceRegistrationMicroservice
      * @throws ApiNotAvailableException
      */
     protected void waitForDependenciesAvailable() throws ApiChannelNotAvailableException {
-	getDeviceManagementApiDemux().waitForMicroserviceAvailable();
+	getDeviceManagementApiChannel().waitForChannelAvailable();
 	getLogger().debug("Device management microservice detected as available.");
     }
 
@@ -118,8 +118,8 @@ public class DeviceRegistrationMicroservice
 	// Composite step for initializing microservice.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
-	// Initialize device management API demux.
-	init.addInitializeStep(this, getDeviceManagementApiDemux(), true);
+	// Initialize device management API channel.
+	init.addInitializeStep(this, getDeviceManagementApiChannel(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -135,8 +135,8 @@ public class DeviceRegistrationMicroservice
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
-	// Start device mangement API demux.
-	start.addStartStep(this, getDeviceManagementApiDemux(), true);
+	// Start device mangement API channel.
+	start.addStartStep(this, getDeviceManagementApiChannel(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -152,8 +152,8 @@ public class DeviceRegistrationMicroservice
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
-	// Stop device mangement API demux.
-	stop.addStopStep(this, getDeviceManagementApiDemux());
+	// Stop device mangement API channel.
+	stop.addStopStep(this, getDeviceManagementApiChannel());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -164,20 +164,20 @@ public class DeviceRegistrationMicroservice
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiDemux = new DeviceManagementApiDemux(true);
+	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
     }
 
     /*
      * @see
      * com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice#
-     * getDeviceManagementApiDemux()
+     * getDeviceManagementApiChannel()
      */
     @Override
-    public IDeviceManagementApiDemux getDeviceManagementApiDemux() {
-	return deviceManagementApiDemux;
+    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
+	return deviceManagementApiChannel;
     }
 
-    public void setDeviceManagementApiDemux(IDeviceManagementApiDemux deviceManagementApiDemux) {
-	this.deviceManagementApiDemux = deviceManagementApiDemux;
+    public void setDeviceManagementApiChannel(IDeviceManagementApiChannel<?> deviceManagementApiChannel) {
+	this.deviceManagementApiChannel = deviceManagementApiChannel;
     }
 }

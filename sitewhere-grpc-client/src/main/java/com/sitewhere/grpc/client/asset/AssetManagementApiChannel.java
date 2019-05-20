@@ -12,7 +12,6 @@ import java.util.UUID;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.MultitenantApiChannel;
 import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
-import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
 import com.sitewhere.grpc.service.GCreateAssetRequest;
@@ -44,10 +43,11 @@ import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.asset.request.IAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IAssetTypeCreateRequest;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.asset.IAssetSearchCriteria;
 import com.sitewhere.spi.search.asset.IAssetTypeSearchCritiera;
-import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Supports SiteWhere asset management APIs on top of a
@@ -58,18 +58,22 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public class AssetManagementApiChannel extends MultitenantApiChannel<AssetManagementGrpcChannel>
 	implements IAssetManagementApiChannel<AssetManagementGrpcChannel> {
 
-    public AssetManagementApiChannel(IApiDemux<?> demux, String host, int port) {
-	super(demux, host, port);
+    public AssetManagementApiChannel(IInstanceSettings settings) {
+	super(MicroserviceIdentifier.AssetManagement.getPath(), settings.getGrpcPort());
+    }
+
+    public AssetManagementApiChannel(String host, int port) {
+	super(host, port);
     }
 
     /*
      * @see
-     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
-     * .tracing.ITracerProvider, java.lang.String, int)
+     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(java.lang.String,
+     * int)
      */
     @Override
-    public AssetManagementGrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	return new AssetManagementGrpcChannel(tracerProvider, host, port);
+    public AssetManagementGrpcChannel createGrpcChannel(String host, int port) {
+	return new AssetManagementGrpcChannel(host, port);
     }
 
     /*

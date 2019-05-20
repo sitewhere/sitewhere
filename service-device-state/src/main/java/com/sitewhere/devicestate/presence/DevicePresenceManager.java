@@ -238,6 +238,6 @@ public class DevicePresenceManager extends TenantEngineLifecycleComponent implem
     }
 
     private IDeviceEventManagementApiChannel<?> getDeviceEventManagementApiChannel() {
-	return ((IDeviceStateMicroservice) getMicroservice()).getDeviceEventManagementApiDemux().getApiChannel();
+	return ((IDeviceStateMicroservice) getMicroservice()).getDeviceEventManagementApiChannel();
     }
 }

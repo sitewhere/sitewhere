@@ -10,7 +10,6 @@ package com.sitewhere.grpc.client.user;
 import java.util.List;
 
 import com.sitewhere.grpc.client.cache.CacheConfiguration;
-import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.cache.ICacheConfiguration;
 import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
 import com.sitewhere.spi.SiteWhereException;
@@ -32,8 +31,8 @@ public class CachedUserManagementApiChannel extends UserManagementApiChannel {
     /** Granted authority cache */
     private ICacheProvider<String, List> grantedAuthorityCache;
 
-    public CachedUserManagementApiChannel(IApiDemux<?> demux, String host, int port, CacheSettings settings) {
-	super(demux, host, port);
+    public CachedUserManagementApiChannel(String host, int port, CacheSettings settings) {
+	super(host, port);
 	this.userCache = new UserManagementCacheProviders.UserByTokenCache(settings.getUserConfiguration());
 	this.grantedAuthorityCache = new UserManagementCacheProviders.GrantedAuthorityByTokenCache(
 		settings.getUserConfiguration());

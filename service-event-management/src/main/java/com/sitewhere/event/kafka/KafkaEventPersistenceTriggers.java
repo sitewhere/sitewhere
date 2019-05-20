@@ -171,8 +171,7 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
     }
 
     protected IDeviceManagement getDeviceManagement() {
-	return ((IEventManagementMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiDemux()
-		.getApiChannel();
+	return ((IEventManagementMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
     }
 
     public IEventManagementTenantEngine getTenantEngine() {

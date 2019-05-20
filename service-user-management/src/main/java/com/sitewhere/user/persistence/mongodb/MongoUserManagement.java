@@ -404,6 +404,6 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
     }
 
     protected ITenantManagementApiChannel<?> getTenantManagementApiDemux() {
-	return ((IUserManagementMicroservice<?>) getMicroservice()).getTenantManagementApiDemux().getApiChannel();
+	return ((IUserManagementMicroservice<?>) getMicroservice()).getTenantManagementApiChannel();
     }
 }

@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
 import com.sitewhere.grpc.client.GrpcChannel;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
-import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Common interface for GRPC channels that handle API calls.
@@ -38,12 +37,11 @@ public interface IApiChannel<T extends GrpcChannel<?, ?>> extends ITenantEngineL
     /**
      * Create underlying GRPC channel.
      * 
-     * @param tracerProvider
      * @param host
      * @param port
      * @return
      */
-    public T createGrpcChannel(ITracerProvider tracerProvider, String host, int port);
+    public T createGrpcChannel(String host, int port);
 
     /**
      * Get underlying GRPC channel.
@@ -70,11 +68,4 @@ public interface IApiChannel<T extends GrpcChannel<?, ?>> extends ITenantEngineL
      */
     public void waitForChannelAvailable(long duration, TimeUnit unit, long logMessageDelay)
 	    throws ApiChannelNotAvailableException;
-
-    /**
-     * Get parent demulitplexer.
-     * 
-     * @return
-     */
-    public IApiDemux<?> getDemux();
 }

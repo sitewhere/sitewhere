@@ -48,6 +48,6 @@ public class DefaultCommandTargetResolver extends TenantEngineLifecycleComponent
     }
 
     private IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
-	return ((ICommandDeliveryMicroservice) getMicroservice()).getDeviceManagementApiDemux().getApiChannel();
+	return ((ICommandDeliveryMicroservice) getMicroservice()).getDeviceManagementApiChannel();
     }
 }

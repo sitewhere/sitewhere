@@ -12,16 +12,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.sitewhere.grpc.client.common.tracing.ClientTracingInterceptor;
 import com.sitewhere.grpc.client.spi.IGrpcChannel;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tracing.ITracerProvider;
 
 import io.grpc.ManagedChannel;
 import io.grpc.netty.NettyChannelBuilder;
-import io.opentracing.Tracer;
 
 /**
  * Management wrapper for a GRPC channel.
@@ -36,17 +33,11 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
     /** Max threads used for executing GPRC requests */
     private static final int THREAD_POOL_SIZE = 25;
 
-    /** Tracer provider */
-    protected ITracerProvider tracerProvider;
-
     /** Remote host */
     protected String hostname;
 
     /** Remote port */
     protected int port;
-
-    /** Indicates whether to use the tracing interceptor */
-    protected boolean useTracingInterceptor = false;
 
     /** GRPC managed channe */
     protected ManagedChannel channel;
@@ -60,22 +51,15 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
     /** Client interceptor for adding JWT from Spring Security context */
     private JwtClientInterceptor jwtInterceptor;
 
-    /** Client interceptor for GRPC tracing */
-    private ClientTracingInterceptor tracingInterceptor;
-
     /** Executor service used to handle GRPC requests */
     private ExecutorService serverExecutor = Executors.newFixedThreadPool(THREAD_POOL_SIZE,
 	    new GrpcClientThreadFactory());
 
-    public GrpcChannel(ITracerProvider tracerProvider, String hostname, int port) {
-	this.tracerProvider = tracerProvider;
+    public GrpcChannel(String hostname, int port) {
 	this.hostname = hostname;
 	this.port = port;
 
 	this.jwtInterceptor = new JwtClientInterceptor();
-	if ((tracerProvider != null) && (isUseTracingInterceptor())) {
-	    this.tracingInterceptor = new ClientTracingInterceptor(tracerProvider.getTracer());
-	}
     }
 
     /*
@@ -89,9 +73,6 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
 	    NettyChannelBuilder builder = NettyChannelBuilder.forAddress(getHostname(), getPort());
 	    builder.executor(getServerExecutor());
 	    builder.usePlaintext().intercept(getJwtInterceptor());
-	    if (isUseTracingInterceptor()) {
-		builder.intercept(getTracingInterceptor());
-	    }
 	    this.channel = builder.build();
 	    this.blockingStub = createBlockingStub();
 	    this.asyncStub = createAsyncStub();
@@ -160,14 +141,6 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
     @Override
     public abstract A createAsyncStub();
 
-    /*
-     * @see com.sitewhere.spi.tracing.ITracerProvider#getTracer()
-     */
-    @Override
-    public Tracer getTracer() {
-	return getTracerProvider().getTracer();
-    }
-
     /** Used for naming gRPC client executor threads */
     private class GrpcClientThreadFactory implements ThreadFactory {
 
@@ -187,22 +160,6 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
 	this.jwtInterceptor = jwtInterceptor;
     }
 
-    public ClientTracingInterceptor getTracingInterceptor() {
-	return tracingInterceptor;
-    }
-
-    public void setTracingInterceptor(ClientTracingInterceptor tracingInterceptor) {
-	this.tracingInterceptor = tracingInterceptor;
-    }
-
-    public ITracerProvider getTracerProvider() {
-	return tracerProvider;
-    }
-
-    public void setTracerProvider(ITracerProvider tracerProvider) {
-	this.tracerProvider = tracerProvider;
-    }
-
     public String getHostname() {
 	return hostname;
     }
@@ -217,14 +174,6 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
 
     public void setPort(int port) {
 	this.port = port;
-    }
-
-    public boolean isUseTracingInterceptor() {
-	return useTracingInterceptor;
-    }
-
-    public void setUseTracingInterceptor(boolean useTracingInterceptor) {
-	this.useTracingInterceptor = useTracingInterceptor;
     }
 
     public ExecutorService getServerExecutor() {

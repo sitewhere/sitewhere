@@ -9,7 +9,6 @@ package com.sitewhere.grpc.client.schedule;
 
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.MultitenantApiChannel;
-import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
 import com.sitewhere.grpc.service.GCreateScheduleRequest;
 import com.sitewhere.grpc.service.GCreateScheduleResponse;
@@ -33,13 +32,14 @@ import com.sitewhere.grpc.service.GUpdateScheduledJobRequest;
 import com.sitewhere.grpc.service.GUpdateScheduledJobResponse;
 import com.sitewhere.grpc.service.ScheduleManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Supports SiteWhere schedule management APIs on top of a
@@ -50,18 +50,22 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public class ScheduleManagementApiChannel extends MultitenantApiChannel<ScheduleManagementGrpcChannel>
 	implements IScheduleManagementApiChannel<ScheduleManagementGrpcChannel> {
 
-    public ScheduleManagementApiChannel(IApiDemux<?> demux, String host, int port) {
-	super(demux, host, port);
+    public ScheduleManagementApiChannel(IInstanceSettings settings) {
+	super(MicroserviceIdentifier.ScheduleManagement.getPath(), settings.getGrpcPort());
+    }
+
+    public ScheduleManagementApiChannel(String host, int port) {
+	super(host, port);
     }
 
     /*
      * @see
-     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
-     * .tracing.ITracerProvider, java.lang.String, int)
+     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(java.lang.String,
+     * int)
      */
     @Override
-    public ScheduleManagementGrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	return new ScheduleManagementGrpcChannel(tracerProvider, host, port);
+    public ScheduleManagementGrpcChannel createGrpcChannel(String host, int port) {
+	return new ScheduleManagementGrpcChannel(host, port);
     }
 
     /*

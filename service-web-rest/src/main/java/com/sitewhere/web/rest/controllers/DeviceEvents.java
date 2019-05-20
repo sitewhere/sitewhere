@@ -79,6 +79,6 @@ public class DeviceEvents extends RestControllerBase {
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {
-	return new BlockingDeviceEventManagement(getMicroservice().getDeviceEventManagementApiDemux().getApiChannel());
+	return new BlockingDeviceEventManagement(getMicroservice().getDeviceEventManagementApiChannel());
     }
 }

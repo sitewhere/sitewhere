@@ -11,7 +11,6 @@ import java.util.UUID;
 
 import com.sitewhere.grpc.client.cache.AssetManagementCacheProviders;
 import com.sitewhere.grpc.client.cache.CacheConfiguration;
-import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.cache.ICacheConfiguration;
 import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
 import com.sitewhere.security.UserContextManager;
@@ -40,8 +39,8 @@ public class CachedAssetManagementApiChannel extends AssetManagementApiChannel {
     /** Asset by id cache */
     private ICacheProvider<UUID, IAsset> assetByIdCache;
 
-    public CachedAssetManagementApiChannel(IApiDemux<?> demux, String host, int port, CacheSettings settings) {
-	super(demux, host, port);
+    public CachedAssetManagementApiChannel(String host, int port, CacheSettings settings) {
+	super(host, port);
 	this.assetTypeCache = new AssetManagementCacheProviders.AssetTypeByTokenCache(
 		settings.getAssetTypeConfiguration());
 	this.assetTypeByIdCache = new AssetManagementCacheProviders.AssetTypeByIdCache(

@@ -11,7 +11,6 @@ import com.sitewhere.grpc.client.MultitenantGrpcChannel;
 import com.sitewhere.grpc.service.LabelGenerationGrpc;
 import com.sitewhere.grpc.service.LabelGenerationGrpc.LabelGenerationBlockingStub;
 import com.sitewhere.grpc.service.LabelGenerationGrpc.LabelGenerationStub;
-import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Channel that allows for communication with a remote label generation GRPC
@@ -22,8 +21,8 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public class LabelGenerationGrpcChannel
 	extends MultitenantGrpcChannel<LabelGenerationBlockingStub, LabelGenerationStub> {
 
-    public LabelGenerationGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	super(tracerProvider, host, port);
+    public LabelGenerationGrpcChannel(String host, int port) {
+	super(host, port);
     }
 
     /*

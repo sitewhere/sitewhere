@@ -13,7 +13,6 @@ import java.util.UUID;
 import com.sitewhere.grpc.client.ApiChannel;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
-import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.service.GCreateTenantRequest;
 import com.sitewhere.grpc.service.GCreateTenantResponse;
@@ -33,13 +32,14 @@ import com.sitewhere.grpc.service.GUpdateTenantRequest;
 import com.sitewhere.grpc.service.GUpdateTenantResponse;
 import com.sitewhere.grpc.service.TenantManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.tenant.ITenantSearchCriteria;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
-import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Supports SiteWhere tenant management APIs on top of a
@@ -50,18 +50,22 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcChannel>
 	implements ITenantManagementApiChannel<TenantManagementGrpcChannel> {
 
-    public TenantManagementApiChannel(IApiDemux<?> demux, String host, int port) {
-	super(demux, host, port);
+    public TenantManagementApiChannel(IInstanceSettings settings) {
+	super(MicroserviceIdentifier.TenantManagement.getPath(), settings.getGrpcPort());
+    }
+
+    public TenantManagementApiChannel(String host, int port) {
+	super(host, port);
     }
 
     /*
      * @see
-     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
-     * .tracing.ITracerProvider, java.lang.String, int)
+     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(java.lang.String,
+     * int)
      */
     @Override
-    public TenantManagementGrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	return new TenantManagementGrpcChannel(tracerProvider, host, port);
+    public TenantManagementGrpcChannel createGrpcChannel(String host, int port) {
+	return new TenantManagementGrpcChannel(host, port);
     }
 
     /*

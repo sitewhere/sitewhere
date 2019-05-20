@@ -13,7 +13,6 @@ import org.springframework.util.backoff.BackOffExecution;
 import org.springframework.util.backoff.ExponentialBackOff;
 
 import com.sitewhere.grpc.client.spi.IApiChannel;
-import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -37,9 +36,6 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
     /** Max interval at which GRPC connection will be checked */
     private static final long CONNECTION_CHECK_INTERVAL_MAX_MS = 60 * 1000;
 
-    /** Parent demux */
-    private IApiDemux<?> demux;
-
     /** Hostname */
     private String hostname;
 
@@ -49,8 +45,7 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
     /** Underlying GRPC channel */
     private T grpcChannel;
 
-    public ApiChannel(IApiDemux<?> demux, String hostname, int port) {
-	this.demux = demux;
+    public ApiChannel(String hostname, int port) {
 	this.hostname = hostname;
 	this.port = port;
     }
@@ -70,7 +65,7 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.grpcChannel = (T) createGrpcChannel(getMicroservice(), getHostname(), getPort());
+	this.grpcChannel = (T) createGrpcChannel(getHostname(), getPort());
 	initializeNestedComponent(getGrpcChannel(), monitor, true);
     }
 
@@ -172,17 +167,5 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
 
     public void setPort(int port) {
 	this.port = port;
-    }
-
-    /*
-     * @see com.sitewhere.grpc.client.spi.IApiChannel#getDemux()
-     */
-    @Override
-    public IApiDemux<?> getDemux() {
-	return demux;
-    }
-
-    public void setDemux(IApiDemux<?> demux) {
-	this.demux = demux;
     }
 }

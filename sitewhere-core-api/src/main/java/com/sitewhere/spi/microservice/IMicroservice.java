@@ -17,7 +17,6 @@ import com.codahale.metrics.ScheduledReporter;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
-import com.sitewhere.spi.microservice.discovery.IServiceDiscoveryProvider;
 import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
@@ -30,7 +29,6 @@ import com.sitewhere.spi.microservice.state.IMicroserviceStateUpdatesKafkaProduc
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.system.IVersion;
-import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Functionality common to all SiteWhere microservices.
@@ -38,7 +36,7 @@ import com.sitewhere.spi.tracing.ITracerProvider;
  * @author Derek
  */
 public interface IMicroservice<T extends IFunctionIdentifier>
-	extends ILifecycleComponent, ITracerProvider, IMicroserviceClassification<T> {
+	extends ILifecycleComponent, IMicroserviceClassification<T> {
 
     /**
      * Get unique id.
@@ -146,13 +144,6 @@ public interface IMicroservice<T extends IFunctionIdentifier>
      * @return
      */
     public ISystemUser getSystemUser();
-
-    /**
-     * Get service discovery provider implementation.
-     * 
-     * @return
-     */
-    public IServiceDiscoveryProvider getServiceDiscoveryProvider();
 
     /**
      * Get Kafka topic naming helper.

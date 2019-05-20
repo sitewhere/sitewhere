@@ -19,10 +19,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.sitewhere.grpc.client.spi.provider.IUserManagementDemuxProvider;
+import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
 import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.security.SitewhereUserDetails;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
@@ -38,11 +39,16 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(SiteWhereAuthenticationProvider.class);
 
-    /** Web rest microservice */
-    private IUserManagementDemuxProvider<?> userManagementDemuxProvider;
+    /** Microservice */
+    private IMicroservice<?> microservice;
 
-    public SiteWhereAuthenticationProvider(IUserManagementDemuxProvider<?> userManagementDemuxProvider) {
-	this.userManagementDemuxProvider = userManagementDemuxProvider;
+    /** Web rest microservice */
+    private IUserManagementApiChannel<?> userManagementApiChannel;
+
+    public SiteWhereAuthenticationProvider(IMicroservice<?> microservice,
+	    IUserManagementApiChannel<?> userManagementApiChannel) {
+	this.microservice = microservice;
+	this.userManagementApiChannel = userManagementApiChannel;
     }
 
     /*
@@ -80,8 +86,7 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
 	// Swap thread to superuser to authenticate login.
 	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
 	try {
-	    SecurityContextHolder.getContext()
-		    .setAuthentication(getUserManagementDemuxProvider().getSystemUser().getAuthentication());
+	    SecurityContextHolder.getContext().setAuthentication(getMicroservice().getSystemUser().getAuthentication());
 	    IUser user = validateUserManagement().authenticate(username, password, false);
 	    IUserManagement userManagement = validateUserManagement();
 	    List<IGrantedAuthority> auths = userManagement.getGrantedAuthorities(user.getUsername());
@@ -110,8 +115,7 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
 	// Swap thread to superuser to authenticate login.
 	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
 	try {
-	    SecurityContextHolder.getContext()
-		    .setAuthentication(getUserManagementDemuxProvider().getSystemUser().getAuthentication());
+	    SecurityContextHolder.getContext().setAuthentication(getMicroservice().getSystemUser().getAuthentication());
 	    IUserManagement userManagement = validateUserManagement();
 	    IUser user = userManagement.getUserByUsername(username);
 	    List<IGrantedAuthority> auths = userManagement.getGrantedAuthorities(username);
@@ -142,18 +146,26 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
      * @throws AuthenticationServiceException
      */
     protected IUserManagement validateUserManagement() throws AuthenticationServiceException {
-	if (getUserManagementDemuxProvider().getUserManagementApiDemux().getApiChannel() == null) {
+	if (getUserManagementApiChannel() == null) {
 	    throw new AuthenticationServiceException(
 		    "User management API channel not initialized. Check logs for details.");
 	}
-	return getUserManagementDemuxProvider().getUserManagementApiDemux().getApiChannel();
+	return getUserManagementApiChannel();
     }
 
-    public IUserManagementDemuxProvider<?> getUserManagementDemuxProvider() {
-	return userManagementDemuxProvider;
+    protected IMicroservice<?> getMicroservice() {
+	return microservice;
     }
 
-    public void setUserManagementDemuxProvider(IUserManagementDemuxProvider<?> userManagementDemuxProvider) {
-	this.userManagementDemuxProvider = userManagementDemuxProvider;
+    protected void setMicroservice(IMicroservice<?> microservice) {
+	this.microservice = microservice;
+    }
+
+    protected IUserManagementApiChannel<?> getUserManagementApiChannel() {
+	return userManagementApiChannel;
+    }
+
+    protected void setUserManagementApiChannel(IUserManagementApiChannel<?> userManagementApiChannel) {
+	this.userManagementApiChannel = userManagementApiChannel;
     }
 }

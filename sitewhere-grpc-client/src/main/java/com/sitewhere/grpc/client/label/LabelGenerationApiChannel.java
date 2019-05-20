@@ -12,7 +12,6 @@ import java.util.UUID;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.MultitenantApiChannel;
 import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
-import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiChannel;
 import com.sitewhere.grpc.service.GGetAreaLabelRequest;
 import com.sitewhere.grpc.service.GGetAreaLabelResponse;
@@ -37,7 +36,8 @@ import com.sitewhere.grpc.service.GGetDeviceTypeLabelResponse;
 import com.sitewhere.grpc.service.LabelGenerationGrpc;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.label.ILabel;
-import com.sitewhere.spi.tracing.ITracerProvider;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Supports SiteWhere label generation APIs on top of a
@@ -48,18 +48,22 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public class LabelGenerationApiChannel extends MultitenantApiChannel<LabelGenerationGrpcChannel>
 	implements ILabelGenerationApiChannel<LabelGenerationGrpcChannel> {
 
-    public LabelGenerationApiChannel(IApiDemux<?> demux, String host, int port) {
-	super(demux, host, port);
+    public LabelGenerationApiChannel(IInstanceSettings settings) {
+	super(MicroserviceIdentifier.LabelGeneration.getPath(), settings.getGrpcPort());
+    }
+
+    public LabelGenerationApiChannel(String host, int port) {
+	super(host, port);
     }
 
     /*
      * @see
-     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
-     * .tracing.ITracerProvider, java.lang.String, int)
+     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(java.lang.String,
+     * int)
      */
     @Override
-    public LabelGenerationGrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	return new LabelGenerationGrpcChannel(tracerProvider, host, port);
+    public LabelGenerationGrpcChannel createGrpcChannel(String host, int port) {
+	return new LabelGenerationGrpcChannel(host, port);
     }
 
     /*

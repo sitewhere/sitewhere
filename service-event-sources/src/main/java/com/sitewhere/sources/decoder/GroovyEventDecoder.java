@@ -69,12 +69,11 @@ public class GroovyEventDecoder extends GroovyComponent implements IDeviceEventD
     }
 
     private IDeviceManagement getDeviceManagement() {
-	return ((IEventSourcesMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiDemux()
-		.getApiChannel();
+	return ((IEventSourcesMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {
-	return new BlockingDeviceEventManagement(((IEventSourcesMicroservice) getTenantEngine().getMicroservice())
-		.getDeviceEventManagementApiDemux().getApiChannel());
+	return new BlockingDeviceEventManagement(
+		((IEventSourcesMicroservice) getTenantEngine().getMicroservice()).getDeviceEventManagementApiChannel());
     }
 }

@@ -11,7 +11,6 @@ import com.sitewhere.grpc.client.GrpcChannel;
 import com.sitewhere.grpc.service.MicroserviceManagementGrpc;
 import com.sitewhere.grpc.service.MicroserviceManagementGrpc.MicroserviceManagementBlockingStub;
 import com.sitewhere.grpc.service.MicroserviceManagementGrpc.MicroserviceManagementStub;
-import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Channel that allows for communication with a remote microservice mangement
@@ -22,8 +21,8 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public class MicroserviceManagementGrpcChannel
 	extends GrpcChannel<MicroserviceManagementBlockingStub, MicroserviceManagementStub> {
 
-    public MicroserviceManagementGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	super(tracerProvider, host, port);
+    public MicroserviceManagementGrpcChannel(String host, int port) {
+	super(host, port);
     }
 
     /*

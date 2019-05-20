@@ -25,11 +25,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.sitewhere.grpc.client.spi.provider.ITenantManagementDemuxProvider;
+import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.microservice.security.InvalidJwtException;
 import com.sitewhere.microservice.security.JwtExpiredException;
 import com.sitewhere.security.SitewhereGrantedAuthority;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.security.ITenantAwareAuthentication;
 import com.sitewhere.spi.tenant.ITenant;
@@ -49,15 +50,19 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(TokenAuthenticationFilter.class);
 
+    /** Microservice */
+    private IMicroservice<?> microservice;
+
     /** Tenant management demux provider */
-    private ITenantManagementDemuxProvider<?> tenantManagementDemuxProvider;
+    private ITenantManagementApiChannel<?> tenantManagementApiChannel;
 
     /** Authentication manager */
     private AuthenticationManager authenticationManager;
 
-    public TokenAuthenticationFilter(ITenantManagementDemuxProvider<?> tenantManagementDemuxProvider,
-	    AuthenticationManager authenticationManager) {
-	this.tenantManagementDemuxProvider = tenantManagementDemuxProvider;
+    public TokenAuthenticationFilter(IMicroservice<?> microservice,
+	    ITenantManagementApiChannel<?> tenantManagementApiChannel, AuthenticationManager authenticationManager) {
+	this.microservice = microservice;
+	this.tenantManagementApiChannel = tenantManagementApiChannel;
 	this.authenticationManager = authenticationManager;
     }
 
@@ -77,7 +82,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	String tenantAuth = SiteWhereHttpHeaders.getTenantAuthFromHeader(request);
 	if (jwt != null) {
 	    // Get username from token and load user.
-	    ITokenManagement tokenManagement = getTenantManagementDemuxProvider().getTokenManagement();
+	    ITokenManagement tokenManagement = getMicroservice().getTokenManagement();
 	    try {
 		Claims claims = tokenManagement.getClaimsForToken(jwt);
 		String username = tokenManagement.getUsernameFromClaims(claims);
@@ -130,9 +135,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	    Authentication previous = SecurityContextHolder.getContext().getAuthentication();
 	    try {
 		SecurityContextHolder.getContext()
-			.setAuthentication(getTenantManagementDemuxProvider().getSystemUser().getAuthentication());
-		ITenant tenant = getTenantManagementDemuxProvider().getTenantManagementApiDemux().getApiChannel()
-			.getTenantByToken(tenantToken);
+			.setAuthentication(getMicroservice().getSystemUser().getAuthentication());
+		ITenant tenant = getTenantManagementApiChannel().getTenantByToken(tenantToken);
 		if ((tenant == null) || (!tenant.getAuthenticationToken().equals(tenantAuth))) {
 		    throw new SiteWhereException("Auth token passed for tenant id is not correct.");
 		}
@@ -144,19 +148,27 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	}
     }
 
-    public ITenantManagementDemuxProvider<?> getTenantManagementDemuxProvider() {
-	return tenantManagementDemuxProvider;
+    protected IMicroservice<?> getMicroservice() {
+	return microservice;
     }
 
-    public void setTenantManagementDemuxProvider(ITenantManagementDemuxProvider<?> tenantManagementDemuxProvider) {
-	this.tenantManagementDemuxProvider = tenantManagementDemuxProvider;
+    protected void setMicroservice(IMicroservice<?> microservice) {
+	this.microservice = microservice;
     }
 
-    public AuthenticationManager getAuthenticationManager() {
+    protected ITenantManagementApiChannel<?> getTenantManagementApiChannel() {
+	return tenantManagementApiChannel;
+    }
+
+    protected void setTenantManagementApiChannel(ITenantManagementApiChannel<?> tenantManagementApiChannel) {
+	this.tenantManagementApiChannel = tenantManagementApiChannel;
+    }
+
+    protected AuthenticationManager getAuthenticationManager() {
 	return authenticationManager;
     }
 
-    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+    protected void setAuthenticationManager(AuthenticationManager authenticationManager) {
 	this.authenticationManager = authenticationManager;
     }
 }

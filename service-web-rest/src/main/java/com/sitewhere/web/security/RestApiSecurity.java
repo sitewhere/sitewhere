@@ -64,7 +64,8 @@ public class RestApiSecurity extends WebSecurityConfigurerAdapter {
      */
     @Bean
     protected SiteWhereAuthenticationProvider sitewhereAuthenticationProvider() {
-	return new SiteWhereAuthenticationProvider(getWebRestMicroservice());
+	return new SiteWhereAuthenticationProvider(getWebRestMicroservice(),
+		getWebRestMicroservice().getUserManagementApiChannel());
     }
 
     /**
@@ -74,7 +75,8 @@ public class RestApiSecurity extends WebSecurityConfigurerAdapter {
      * @return
      */
     protected TokenAuthenticationFilter tokenAuthenticationFilter() throws Exception {
-	return new TokenAuthenticationFilter(getWebRestMicroservice(), authenticationManagerBean());
+	return new TokenAuthenticationFilter(getWebRestMicroservice(),
+		getWebRestMicroservice().getTenantManagementApiChannel(), authenticationManagerBean());
     }
 
     /*

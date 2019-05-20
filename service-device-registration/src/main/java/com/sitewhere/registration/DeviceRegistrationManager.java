@@ -414,7 +414,6 @@ public class DeviceRegistrationManager extends TenantEngineLifecycleComponent im
     }
 
     private IDeviceManagement getDeviceManagement() {
-	return ((IDeviceRegistrationMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiDemux()
-		.getApiChannel();
+	return ((IDeviceRegistrationMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
     }
 }
