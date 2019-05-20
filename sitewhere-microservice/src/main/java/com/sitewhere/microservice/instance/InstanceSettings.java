@@ -118,32 +118,6 @@ public class InstanceSettings implements IInstanceSettings {
 
     /*
      * @see
-     * com.sitewhere.spi.microservice.instance.IInstanceSettings#getConsulHost()
-     */
-    @Override
-    public String getConsulHost() {
-	return consulHost;
-    }
-
-    public void setConsulHost(String consulHost) {
-	this.consulHost = consulHost;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.microservice.instance.IInstanceSettings#getConsulPort()
-     */
-    @Override
-    public int getConsulPort() {
-	return consulPort;
-    }
-
-    public void setConsulPort(int consulPort) {
-	this.consulPort = consulPort;
-    }
-
-    /*
-     * @see
      * com.sitewhere.spi.microservice.instance.IInstanceSettings#getZookeeperHost()
      */
     @Override
