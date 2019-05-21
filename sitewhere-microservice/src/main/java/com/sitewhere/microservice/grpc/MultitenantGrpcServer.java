@@ -24,8 +24,8 @@ public class MultitenantGrpcServer extends GrpcServer {
     /** Interceptor for tenant token */
     private TenantTokenServerInterceptor tenantTokenInterceptor;
 
-    public MultitenantGrpcServer(BindableService serviceImplementation, int port) {
-	super(serviceImplementation, port);
+    public MultitenantGrpcServer(BindableService serviceImplementation, int apiPort, int healthPort) {
+	super(serviceImplementation, apiPort, healthPort);
     }
 
     /**
@@ -35,7 +35,7 @@ public class MultitenantGrpcServer extends GrpcServer {
      */
     protected Server buildServer() {
 	this.tenantTokenInterceptor = new TenantTokenServerInterceptor(getMicroservice());
-	NettyServerBuilder builder = NettyServerBuilder.forPort(getPort());
+	NettyServerBuilder builder = NettyServerBuilder.forPort(getApiPort());
 	builder.addService(getServiceImplementation()).intercept(getTenantTokenInterceptor())
 		.intercept(getJwtInterceptor());
 	builder.addService(new MultitenantManagementImpl((IMultitenantMicroservice<?, ?>) getMicroservice()));

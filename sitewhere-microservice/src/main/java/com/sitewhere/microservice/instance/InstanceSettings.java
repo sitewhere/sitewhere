@@ -30,14 +30,6 @@ public class InstanceSettings implements IInstanceSettings {
     @Value("#{systemEnvironment['sitewhere.instance.template.id'] ?: 'default'}")
     private String instanceTemplateId;
 
-    /** Consul hostname info for microservices */
-    @Value("#{systemEnvironment['sitewhere.consul.host'] ?: 'consul'}")
-    private String consulHost;
-
-    /** Consul port info for microservices */
-    @Value("#{systemEnvironment['sitewhere.consul.port'] ?: '8500'}")
-    private int consulPort;
-
     /** Zookeeper hostname info for microservices */
     @Value("#{systemEnvironment['sitewhere.zookeeper.host'] ?: 'localhost'}")
     private String zookeeperHost;
@@ -53,14 +45,6 @@ public class InstanceSettings implements IInstanceSettings {
     /** File system root for storing SiteWhere data for microservices */
     @Value("#{systemEnvironment['sitewhere.filesystem.storage.root'] ?: '/var/sitewhere'}")
     private String fileSystemStorageRoot;
-
-    /** GRPC port for serving APIs */
-    @Value("#{systemEnvironment['sitewhere.grpc.port'] ?: '9000'}")
-    private int grpcPort;
-
-    /** GRPC port info for microservice management */
-    @Value("#{systemEnvironment['sitewhere.management.grpc.port'] ?: '9001'}")
-    private int managementGrpcPort;
 
     /** Tracer server information */
     @Value("#{systemEnvironment['sitewhere.tracer.server'] ?: 'jaeger'}")
@@ -166,44 +150,6 @@ public class InstanceSettings implements IInstanceSettings {
 
     public void setFileSystemStorageRoot(String fileSystemStorageRoot) {
 	this.fileSystemStorageRoot = fileSystemStorageRoot;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#getGrpcPort()
-     */
-    @Override
-    public int getGrpcPort() {
-	return grpcPort;
-    }
-
-    public void setGrpcPort(int grpcPort) {
-	this.grpcPort = grpcPort;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
-     * getManagementGrpcPort()
-     */
-    @Override
-    public int getManagementGrpcPort() {
-	return managementGrpcPort;
-    }
-
-    public void setManagementGrpcPort(int managementGrpcPort) {
-	this.managementGrpcPort = managementGrpcPort;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.microservice.instance.IInstanceSettings#getTracerServer()
-     */
-    @Override
-    public String getTracerServer() {
-	return tracerServer;
-    }
-
-    public void setTracerServer(String tracerServer) {
-	this.tracerServer = tracerServer;
     }
 
     /*

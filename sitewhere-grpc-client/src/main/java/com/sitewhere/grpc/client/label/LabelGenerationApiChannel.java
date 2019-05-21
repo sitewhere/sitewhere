@@ -37,7 +37,7 @@ import com.sitewhere.grpc.service.LabelGenerationGrpc;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.label.ILabel;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
+import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 
 /**
  * Supports SiteWhere label generation APIs on top of a
@@ -48,8 +48,8 @@ import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 public class LabelGenerationApiChannel extends MultitenantApiChannel<LabelGenerationGrpcChannel>
 	implements ILabelGenerationApiChannel<LabelGenerationGrpcChannel> {
 
-    public LabelGenerationApiChannel(IInstanceSettings settings) {
-	super(MicroserviceIdentifier.LabelGeneration.getPath(), settings.getGrpcPort());
+    public LabelGenerationApiChannel() {
+	super(MicroserviceIdentifier.LabelGeneration.getPath(), IGrpcSettings.DEFAULT_API_PORT);
     }
 
     public LabelGenerationApiChannel(String host, int port) {

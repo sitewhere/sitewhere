@@ -210,31 +210,31 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
      */
     protected void createGrpcComponents() throws SiteWhereException {
 	// User management.
-	this.userManagementApiChannel = new UserManagementApiChannel(getInstanceSettings());
+	this.userManagementApiChannel = new UserManagementApiChannel();
 
 	// Tenant management.
-	this.tenantManagementApiChannel = new TenantManagementApiChannel(getInstanceSettings());
+	this.tenantManagementApiChannel = new TenantManagementApiChannel();
 
 	// Device management.
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
+	this.deviceManagementApiChannel = new DeviceManagementApiChannel();
 
 	// Device event management.
-	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(getInstanceSettings());
+	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel();
 
 	// Asset management.
-	this.assetManagementApiChannel = new AssetManagementApiChannel(getInstanceSettings());
+	this.assetManagementApiChannel = new AssetManagementApiChannel();
 
 	// Batch management.
-	this.batchManagementApiChannel = new BatchManagementApiChannel(getInstanceSettings());
+	this.batchManagementApiChannel = new BatchManagementApiChannel();
 
 	// Schedule management.
-	this.scheduleManagementApiChannel = new ScheduleManagementApiChannel(getInstanceSettings());
+	this.scheduleManagementApiChannel = new ScheduleManagementApiChannel();
 
 	// Label generation.
-	this.labelGenerationApiChannel = new LabelGenerationApiChannel(getInstanceSettings());
+	this.labelGenerationApiChannel = new LabelGenerationApiChannel();
 
 	// Device state.
-	this.deviceStateApiChannel = new DeviceStateApiChannel(getInstanceSettings());
+	this.deviceStateApiChannel = new DeviceStateApiChannel();
     }
 
     /*

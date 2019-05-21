@@ -9,6 +9,7 @@ package com.sitewhere.microservice.management;
 
 import com.sitewhere.microservice.grpc.GrpcServer;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
 
 /**
@@ -19,6 +20,7 @@ import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
 public class MicroserviceManagementGrpcServer extends GrpcServer implements IMicroserviceManagementGrpcServer {
 
     public MicroserviceManagementGrpcServer(IMicroservice<?> microservice) {
-	super(new MicroserviceManagementImpl(microservice), microservice.getInstanceSettings().getManagementGrpcPort());
+	super(new MicroserviceManagementImpl(microservice), IGrpcSettings.DEFAULT_MANAGEMENT_PORT,
+		IGrpcSettings.DEFAULT_MANAGEMENT_HEALTH_PORT);
     }
 }

@@ -44,7 +44,7 @@ import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.asset.request.IAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IAssetTypeCreateRequest;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
+import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.asset.IAssetSearchCriteria;
 import com.sitewhere.spi.search.asset.IAssetTypeSearchCritiera;
@@ -58,8 +58,8 @@ import com.sitewhere.spi.search.asset.IAssetTypeSearchCritiera;
 public class AssetManagementApiChannel extends MultitenantApiChannel<AssetManagementGrpcChannel>
 	implements IAssetManagementApiChannel<AssetManagementGrpcChannel> {
 
-    public AssetManagementApiChannel(IInstanceSettings settings) {
-	super(MicroserviceIdentifier.AssetManagement.getPath(), settings.getGrpcPort());
+    public AssetManagementApiChannel() {
+	super(MicroserviceIdentifier.AssetManagement.getPath(), IGrpcSettings.DEFAULT_API_PORT);
     }
 
     public AssetManagementApiChannel(String host, int port) {

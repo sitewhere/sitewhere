@@ -164,7 +164,7 @@ public class DeviceRegistrationMicroservice
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
+	this.deviceManagementApiChannel = new DeviceManagementApiChannel();
     }
 
     /*

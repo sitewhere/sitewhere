@@ -108,6 +108,9 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
 	    throw new ApiChannelNotAvailableException("GRPC channel not found. Unable to access API.");
 	}
 
+	getLogger().info("Waiting a maximum of " + unit.toSeconds(duration) + " seconds for connection to '"
+		+ getHostname() + ":" + getPort() + "'...");
+
 	long start = System.currentTimeMillis();
 	long deadline = start + unit.toMillis(duration);
 	long logAfter = start + unit.toMillis(logMessageDelay);

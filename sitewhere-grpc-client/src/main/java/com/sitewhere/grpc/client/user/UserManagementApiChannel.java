@@ -44,7 +44,7 @@ import com.sitewhere.grpc.service.GUpdateUserResponse;
 import com.sitewhere.grpc.service.UserManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
+import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria;
@@ -62,8 +62,8 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
 public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChannel>
 	implements IUserManagementApiChannel<UserManagementGrpcChannel> {
 
-    public UserManagementApiChannel(IInstanceSettings settings) {
-	super(MicroserviceIdentifier.UserManagement.getPath(), settings.getGrpcPort());
+    public UserManagementApiChannel() {
+	super(MicroserviceIdentifier.UserManagement.getPath(), IGrpcSettings.DEFAULT_API_PORT);
     }
 
     public UserManagementApiChannel(String host, int port) {

@@ -180,10 +180,10 @@ public class RuleProcessingMicroservice
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
+	this.deviceManagementApiChannel = new DeviceManagementApiChannel();
 
 	// Device event management.
-	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(getInstanceSettings());
+	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel();
     }
 
     /*

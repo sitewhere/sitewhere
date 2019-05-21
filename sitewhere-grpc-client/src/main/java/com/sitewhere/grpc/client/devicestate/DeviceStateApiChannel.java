@@ -30,7 +30,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.state.IDeviceState;
 import com.sitewhere.spi.device.state.request.IDeviceStateCreateRequest;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
+import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IDeviceStateSearchCriteria;
 
@@ -43,8 +43,8 @@ import com.sitewhere.spi.search.device.IDeviceStateSearchCriteria;
 public class DeviceStateApiChannel extends MultitenantApiChannel<DeviceStateGrpcChannel>
 	implements IDeviceStateApiChannel<DeviceStateGrpcChannel> {
 
-    public DeviceStateApiChannel(IInstanceSettings settings) {
-	super(MicroserviceIdentifier.DeviceState.getPath(), settings.getGrpcPort());
+    public DeviceStateApiChannel() {
+	super(MicroserviceIdentifier.DeviceState.getPath(), IGrpcSettings.DEFAULT_API_PORT);
     }
 
     public DeviceStateApiChannel(String host, int port) {

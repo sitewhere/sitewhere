@@ -191,7 +191,7 @@ public class EventManagementMicroservice
 	this.eventManagementGrpcServer = new EventManagementGrpcServer(this);
 
 	// Device management.
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
+	this.deviceManagementApiChannel = new DeviceManagementApiChannel();
     }
 
     /*

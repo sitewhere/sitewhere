@@ -165,8 +165,8 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
      * Create components that interact via GRPC.
      */
     protected void createGrpcComponents() {
-	this.userManagementApiChannel = new UserManagementApiChannel(getInstanceSettings());
-	this.tenantManagementApiChannel = new TenantManagementApiChannel(getInstanceSettings());
+	this.userManagementApiChannel = new UserManagementApiChannel();
+	this.tenantManagementApiChannel = new TenantManagementApiChannel();
     }
 
     /*

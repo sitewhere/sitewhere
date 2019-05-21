@@ -104,10 +104,10 @@ public class DeviceManagementMicroservice
 	this.deviceManagementGrpcServer = new DeviceManagementGrpcServer(this);
 
 	// Event management microservice connectivity.
-	this.eventManagementApiChannel = new DeviceEventManagementApiChannel(getInstanceSettings());
+	this.eventManagementApiChannel = new DeviceEventManagementApiChannel();
 
 	// Asset management microservice connectivity.
-	this.assetManagementApiChannel = new AssetManagementApiChannel(getInstanceSettings());
+	this.assetManagementApiChannel = new AssetManagementApiChannel();
 
 	// Create step that will start components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());

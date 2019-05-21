@@ -42,7 +42,7 @@ import com.sitewhere.spi.batch.request.IBatchElementCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
+import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.batch.IBatchOperationSearchCriteria;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
@@ -56,8 +56,8 @@ import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManagementGrpcChannel>
 	implements IBatchManagementApiChannel<BatchManagementGrpcChannel> {
 
-    public BatchManagementApiChannel(IInstanceSettings settings) {
-	super(MicroserviceIdentifier.BatchOperations.getPath(), settings.getGrpcPort());
+    public BatchManagementApiChannel() {
+	super(MicroserviceIdentifier.BatchOperations.getPath(), IGrpcSettings.DEFAULT_API_PORT);
     }
 
     public BatchManagementApiChannel(String host, int port) {

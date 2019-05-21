@@ -10,6 +10,7 @@ package com.sitewhere.devicestate.grpc;
 import com.sitewhere.devicestate.spi.grpc.IDeviceStateGrpcServer;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.microservice.grpc.MultitenantGrpcServer;
+import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 
 /**
  * Hosts a GRPC server that handles device state requests.
@@ -19,6 +20,7 @@ import com.sitewhere.microservice.grpc.MultitenantGrpcServer;
 public class DeviceStateGrpcServer extends MultitenantGrpcServer implements IDeviceStateGrpcServer {
 
     public DeviceStateGrpcServer(IDeviceStateMicroservice microservice) {
-	super(new DeviceStateRouter(microservice), microservice.getInstanceSettings().getGrpcPort());
+	super(new DeviceStateRouter(microservice), IGrpcSettings.DEFAULT_API_PORT,
+		IGrpcSettings.DEFAULT_API_HEALTH_PORT);
     }
 }

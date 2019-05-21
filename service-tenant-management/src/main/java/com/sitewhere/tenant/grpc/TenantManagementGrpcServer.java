@@ -8,6 +8,7 @@
 package com.sitewhere.tenant.grpc;
 
 import com.sitewhere.microservice.grpc.GrpcServer;
+import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.tenant.ITenantAdministration;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.tenant.spi.grpc.ITenantManagementGrpcServer;
@@ -23,6 +24,6 @@ public class TenantManagementGrpcServer extends GrpcServer implements ITenantMan
     public TenantManagementGrpcServer(ITenantManagementMicroservice<?> microservice, ITenantManagement tenantManagement,
 	    ITenantAdministration tenantAdministration) {
 	super(new TenantManagementImpl(microservice, tenantManagement, tenantAdministration),
-		microservice.getInstanceSettings().getGrpcPort());
+		IGrpcSettings.DEFAULT_API_PORT, IGrpcSettings.DEFAULT_API_HEALTH_PORT);
     }
 }

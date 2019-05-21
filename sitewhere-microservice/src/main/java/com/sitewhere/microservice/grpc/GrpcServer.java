@@ -34,14 +34,11 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
     /** Max threads used for executing GPRC requests */
     private static final int THREAD_POOL_SIZE = 25;
 
-    /** Default gPRC Health Protocol Port */
-    private static final int DEFAULT_HEALTH_PORT = 9002;
+    /** Port for gRPC server */
+    private int apiPort;
 
-    /** Port for GRPC server */
-    private int port;
-
-    /** Port for gPRG Health Protocol. */
-    private int healthPort = DEFAULT_HEALTH_PORT;
+    /** Port for gRPC Health Protocol. */
+    private int healthPort;
 
     /** Wrapped GRPC server */
     private Server server;
@@ -62,9 +59,10 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
     private ExecutorService serverExecutor = Executors.newFixedThreadPool(THREAD_POOL_SIZE,
 	    new GrpcServerThreadFactory());
 
-    public GrpcServer(BindableService serviceImplementation, int port) {
+    public GrpcServer(BindableService serviceImplementation, int apiPort, int healthPort) {
 	this.serviceImplementation = serviceImplementation;
-	this.port = port;
+	this.apiPort = apiPort;
+	this.healthPort = healthPort;
     }
 
     /**
@@ -73,7 +71,7 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
      * @return
      */
     protected Server buildServer() {
-	NettyServerBuilder builder = NettyServerBuilder.forPort(port);
+	NettyServerBuilder builder = NettyServerBuilder.forPort(getApiPort());
 	builder.addService(getServiceImplementation()).intercept(getJwtInterceptor());
 	builder.executor(getServerExecutor());
 	builder.bossEventLoopGroup(new NioEventLoopGroup(1));
@@ -106,8 +104,9 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
 	try {
 	    this.jwtInterceptor = new JwtServerInterceptor(getMicroservice(), getServiceImplementation().getClass());
 	    this.server = buildServer();
-	    getLogger().debug("Initialized gRPC server on port " + port + ".");
+	    getLogger().debug("Initialized gRPC API server on port " + getApiPort() + ".");
 	    this.healthServer = buildHealthServer();
+	    getLogger().debug("Initialized gRPC Health Probe server on port " + getApiPort() + ".");
 	} catch (Throwable e) {
 	    throw new SiteWhereException("Unable to initialize gRPC server.", e);
 	}
@@ -123,11 +122,13 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	try {
+	    getLogger().debug("Starting gRPC API server on port " + getApiPort() + "...");
 	    getServer().start();
-	    getLogger().debug("Started gRPC server on port " + getPort() + ".");
+	    getLogger().debug("Started gRPC API server on port " + getApiPort() + ".");
 
+	    getLogger().debug("Starting gRPC Health Probe server on port " + getHealthPort() + "...");
 	    getHealthServer().start();
-	    getLogger().debug("Started Health gRPC server on port " + getHealthPort() + ".");
+	    getLogger().debug("Started gRPC Health Probe server on port " + getHealthPort() + ".");
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to start gRPC server.", e);
 	}
@@ -142,15 +143,17 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	getServer().shutdown();
-	try {
-	    getServer().awaitTermination();
-	    getLogger().debug("gRPC server terminated successfully.");
+	if (getServer() != null) {
+	    try {
+		getServer().shutdown();
+		getServer().awaitTermination();
+		getLogger().debug("gRPC server terminated successfully.");
 
-	    getHealthServer().awaitTermination();
-	    getLogger().debug("gRPC Health server terminated successfully.");
-	} catch (InterruptedException e) {
-	    getLogger().error("Interrupted while waiting for gRPC server to terminate.", e);
+		getHealthServer().awaitTermination();
+		getLogger().debug("gRPC Health server terminated successfully.");
+	    } catch (InterruptedException e) {
+		getLogger().error("Interrupted while waiting for gRPC server to terminate.", e);
+	    }
 	}
     }
 
@@ -194,12 +197,12 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
 	this.healthServer = healthServer;
     }
 
-    public int getPort() {
-	return port;
+    public int getApiPort() {
+	return apiPort;
     }
 
-    public void setPort(int port) {
-	this.port = port;
+    public void setApiPort(int apiPort) {
+	this.apiPort = apiPort;
     }
 
     public int getHealthPort() {

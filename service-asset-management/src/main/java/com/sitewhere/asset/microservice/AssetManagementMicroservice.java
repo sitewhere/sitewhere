@@ -192,7 +192,7 @@ public class AssetManagementMicroservice
 	this.assetManagementGrpcServer = new AssetManagementGrpcServer(this);
 
 	// Device management.
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
+	this.deviceManagementApiChannel = new DeviceManagementApiChannel();
     }
 
     /*

@@ -197,10 +197,10 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
 	this.deviceStateGrpcServer = new DeviceStateGrpcServer(this);
 
 	// Device management.
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
+	this.deviceManagementApiChannel = new DeviceManagementApiChannel();
 
 	// Device event management.
-	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(getInstanceSettings());
+	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel();
     }
 
     /*
