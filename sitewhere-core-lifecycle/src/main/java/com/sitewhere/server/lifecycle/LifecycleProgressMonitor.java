@@ -55,7 +55,7 @@ public class LifecycleProgressMonitor implements ILifecycleProgressMonitor {
      */
     @Override
     public void reportProgress(IProgressMessage message) throws SiteWhereException {
-	LOGGER.info(
+	LOGGER.debug(
 		"[" + message.getTaskName() + "]: (" + message.getProgressPercentage() + "%) " + message.getMessage());
     }
 

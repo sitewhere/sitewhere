@@ -44,7 +44,7 @@ public class MicroserviceStateUpdatesKafkaProducer extends MicroserviceKafkaProd
 	    getLogger().trace("Sending microservice state update.");
 	    send(state.getMicroservice().getIdentifier(), payload);
 	} else {
-	    getLogger().warn("Skipping microservice state update. Kafka producer not started.");
+	    getLogger().debug("Skipping microservice state update. Kafka producer not started.");
 	}
     }
 
@@ -61,7 +61,7 @@ public class MicroserviceStateUpdatesKafkaProducer extends MicroserviceKafkaProd
 	    getLogger().trace("Sending tenant engine state update.");
 	    send(state.getMicroservice().getIdentifier(), payload);
 	} else {
-	    getLogger().warn("Skipping tenant engine state update. Kafka producer not started.");
+	    getLogger().debug("Skipping tenant engine state update. Kafka producer not started.");
 	}
     }
 

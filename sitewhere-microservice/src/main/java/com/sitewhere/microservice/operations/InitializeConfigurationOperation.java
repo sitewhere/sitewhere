@@ -10,8 +10,6 @@ package com.sitewhere.microservice.operations;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.configuration.ConfigurationUtils;
@@ -34,9 +32,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 public class InitializeConfigurationOperation<T extends IConfigurableMicroservice<?>>
 	extends CompletableConfigurationOperation<T> {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(InitializeConfigurationOperation.class);
-
     /** Tenant engine being started */
     private T microservice;
 
@@ -52,6 +47,8 @@ public class InitializeConfigurationOperation<T extends IConfigurableMicroservic
      */
     @Override
     public T call() throws Exception {
+	getMicroservice().getLogger()
+		.info("Microservice configuration '" + getMicroservice().getName() + "' initializing.");
 	try {
 	    // Load microservice configuration.
 	    getMicroservice().setConfigurationState(ConfigurationState.Loading);
@@ -88,13 +85,14 @@ public class InitializeConfigurationOperation<T extends IConfigurableMicroservic
 	    if (getMicroservice().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
 		throw getMicroservice().getLifecycleError();
 	    }
-	    LOGGER.debug("Microservice configuration '" + getMicroservice().getName() + "' initialized in "
-		    + (System.currentTimeMillis() - start) + "ms.");
+	    getMicroservice().getLogger().info("Microservice configuration '" + getMicroservice().getName()
+		    + "' initialized in " + (System.currentTimeMillis() - start) + "ms.");
 	    getMicroservice().setConfigurationState(ConfigurationState.Initialized);
 	    getCompletableFuture().complete(getMicroservice());
 	    return getMicroservice();
 	} catch (Throwable t) {
-	    LOGGER.error("Unable to initialize microservice configuration '" + getMicroservice().getName() + "'.", t);
+	    getMicroservice().getLogger()
+		    .error("Unable to initialize microservice configuration '" + getMicroservice().getName() + "'.", t);
 	    getMicroservice().setConfigurationState(ConfigurationState.Failed);
 	    getCompletableFuture().completeExceptionally(t);
 	    throw t;

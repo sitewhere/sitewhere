@@ -45,6 +45,7 @@ import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
@@ -65,12 +66,8 @@ import com.sitewhere.spi.search.device.IZoneSearchCriteria;
 public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceManagementGrpcChannel>
 	implements IDeviceManagementApiChannel<DeviceManagementGrpcChannel> {
 
-    public DeviceManagementApiChannel() {
-	super(MicroserviceIdentifier.DeviceManagement.getPath(), IGrpcSettings.DEFAULT_API_PORT);
-    }
-
-    public DeviceManagementApiChannel(String host, int port) {
-	super(host, port);
+    public DeviceManagementApiChannel(IInstanceSettings settings) {
+	super(settings, MicroserviceIdentifier.DeviceManagement, IGrpcSettings.DEFAULT_API_PORT);
     }
 
     /*

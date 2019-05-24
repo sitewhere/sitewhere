@@ -195,10 +195,10 @@ public class LabelGenerationMicroservice
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel();
+	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
 
 	// Asset management.
-	this.assetManagementApiChannel = new AssetManagementApiChannel();
+	this.assetManagementApiChannel = new AssetManagementApiChannel(getInstanceSettings());
     }
 
     /*

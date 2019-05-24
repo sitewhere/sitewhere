@@ -135,7 +135,7 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
 	if (component != null) {
 	    addStep(new StopComponentLifecycleStep(owner, component));
 	} else {
-	    owner.getLogger().warn("Skipping 'stop' step for null component.");
+	    owner.getLogger().debug("Skipping 'stop' step for null component.");
 	}
     }
 

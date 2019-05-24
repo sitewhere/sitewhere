@@ -11,6 +11,8 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import com.sitewhere.grpc.client.spi.multitenant.IMultitenantApiChannel;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Extends {@link ApiChannel} with methods for dealing with multitenant
@@ -23,8 +25,8 @@ import com.sitewhere.grpc.client.spi.multitenant.IMultitenantApiChannel;
 public abstract class MultitenantApiChannel<T extends MultitenantGrpcChannel<?, ?>> extends ApiChannel<T>
 	implements IMultitenantApiChannel<T> {
 
-    public MultitenantApiChannel(String hostname, int port) {
-	super(hostname, port);
+    public MultitenantApiChannel(IInstanceSettings settings, IFunctionIdentifier identifier, int port) {
+	super(settings, identifier, port);
     }
 
     /*

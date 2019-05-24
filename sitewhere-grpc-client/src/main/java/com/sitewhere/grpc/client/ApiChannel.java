@@ -15,6 +15,8 @@ import org.springframework.util.backoff.ExponentialBackOff;
 import com.sitewhere.grpc.client.spi.IApiChannel;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 import io.grpc.ConnectivityState;
@@ -45,8 +47,11 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
     /** Underlying GRPC channel */
     private T grpcChannel;
 
-    public ApiChannel(String hostname, int port) {
-	this.hostname = hostname;
+    public ApiChannel(IInstanceSettings settings, IFunctionIdentifier identifier, int port) {
+	String instanceId = "sitewhere".equals(settings.getInstanceId()) ? "sitewhere-"
+		: settings.getInstanceId() + "-sitewhere-";
+	String namespace = "default";
+	this.hostname = instanceId + identifier.getPath() + "-svc." + namespace + ".svc.cluster.local";
 	this.port = port;
     }
 
@@ -65,6 +70,7 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	getLogger().info(String.format("Initializing API channel to '%s:%d'", getHostname(), getPort()));
 	this.grpcChannel = (T) createGrpcChannel(getHostname(), getPort());
 	initializeNestedComponent(getGrpcChannel(), monitor, true);
     }
@@ -76,6 +82,7 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	getLogger().info(String.format("Starting API channel to '%s:%d'", getHostname(), getPort()));
 	startNestedComponent(getGrpcChannel(), monitor, true);
     }
 
@@ -86,6 +93,7 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	getLogger().info(String.format("Stopping API channel to '%s:%d'", getHostname(), getPort()));
 	stopNestedComponent(getGrpcChannel(), monitor);
     }
 

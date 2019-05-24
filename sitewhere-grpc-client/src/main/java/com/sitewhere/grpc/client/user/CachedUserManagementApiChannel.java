@@ -13,6 +13,7 @@ import com.sitewhere.grpc.client.cache.CacheConfiguration;
 import com.sitewhere.grpc.client.spi.cache.ICacheConfiguration;
 import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
@@ -31,11 +32,11 @@ public class CachedUserManagementApiChannel extends UserManagementApiChannel {
     /** Granted authority cache */
     private ICacheProvider<String, List> grantedAuthorityCache;
 
-    public CachedUserManagementApiChannel(String host, int port, CacheSettings settings) {
-	super(host, port);
-	this.userCache = new UserManagementCacheProviders.UserByTokenCache(settings.getUserConfiguration());
+    public CachedUserManagementApiChannel(IInstanceSettings settings, CacheSettings cache) {
+	super(settings);
+	this.userCache = new UserManagementCacheProviders.UserByTokenCache(cache.getUserConfiguration());
 	this.grantedAuthorityCache = new UserManagementCacheProviders.GrantedAuthorityByTokenCache(
-		settings.getUserConfiguration());
+		cache.getUserConfiguration());
     }
 
     /*

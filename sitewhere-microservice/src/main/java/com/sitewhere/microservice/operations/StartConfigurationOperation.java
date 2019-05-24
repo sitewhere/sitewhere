@@ -10,9 +10,6 @@ package com.sitewhere.microservice.operations;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.configuration.ConfigurationState;
@@ -31,9 +28,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 public class StartConfigurationOperation<T extends IConfigurableMicroservice<?>>
 	extends CompletableConfigurationOperation<T> {
 
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(StartConfigurationOperation.class);
-
     /** Tenant engine being started */
     private T microservice;
 
@@ -49,6 +43,8 @@ public class StartConfigurationOperation<T extends IConfigurableMicroservice<?>>
      */
     @Override
     public T call() throws Exception {
+	getMicroservice().getLogger()
+		.info("Microservice configuration '" + getMicroservice().getName() + "' starting.");
 	try {
 	    // Start microservice.
 	    ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
@@ -59,13 +55,14 @@ public class StartConfigurationOperation<T extends IConfigurableMicroservice<?>>
 	    if (getMicroservice().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
 		throw getMicroservice().getLifecycleError();
 	    }
-	    LOGGER.debug("Microservice configuration '" + getMicroservice().getName() + "' started in "
-		    + (System.currentTimeMillis() - start) + "ms.");
+	    getMicroservice().getLogger().info("Microservice configuration '" + getMicroservice().getName()
+		    + "' started in " + (System.currentTimeMillis() - start) + "ms.");
 	    getMicroservice().setConfigurationState(ConfigurationState.Started);
 	    getCompletableFuture().complete(getMicroservice());
 	    return getMicroservice();
 	} catch (Throwable t) {
-	    LOGGER.error("Unable to start microservice configuration '" + getMicroservice().getName() + "'.", t);
+	    getMicroservice().getLogger()
+		    .error("Unable to start microservice configuration '" + getMicroservice().getName() + "'.", t);
 	    getMicroservice().setConfigurationState(ConfigurationState.Failed);
 	    getCompletableFuture().completeExceptionally(t);
 	    throw t;

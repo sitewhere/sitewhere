@@ -34,6 +34,7 @@ import com.sitewhere.grpc.service.TenantManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.search.ISearchResults;
@@ -50,12 +51,8 @@ import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
 public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcChannel>
 	implements ITenantManagementApiChannel<TenantManagementGrpcChannel> {
 
-    public TenantManagementApiChannel() {
-	super(MicroserviceIdentifier.TenantManagement.getPath(), IGrpcSettings.DEFAULT_API_PORT);
-    }
-
-    public TenantManagementApiChannel(String host, int port) {
-	super(host, port);
+    public TenantManagementApiChannel(IInstanceSettings settings) {
+	super(settings, MicroserviceIdentifier.TenantManagement, IGrpcSettings.DEFAULT_API_PORT);
     }
 
     /*

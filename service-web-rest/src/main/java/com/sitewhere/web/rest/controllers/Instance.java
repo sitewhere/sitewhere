@@ -677,8 +677,8 @@ public class Instance extends RestControllerBase {
 	    throws SiteWhereException {
 	LifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
 		new LifecycleProgressContext(1, "Start management interface."), getMicroservice());
-	MicroserviceManagementApiChannel channel = new MicroserviceManagementApiChannel(target.getPath(),
-		IGrpcSettings.DEFAULT_MANAGEMENT_PORT);
+	MicroserviceManagementApiChannel channel = new MicroserviceManagementApiChannel(
+		getMicroservice().getInstanceSettings(), target, IGrpcSettings.DEFAULT_MANAGEMENT_PORT);
 	channel.setMicroservice(getMicroservice());
 	channel.initialize(monitor);
 	channel.start(monitor);

@@ -197,10 +197,10 @@ public class BatchOperationsMicroservice
 	this.batchManagementGrpcServer = new BatchManagementGrpcServer(this);
 
 	// Device management.
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel();
+	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
 
 	// Device event management.
-	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel();
+	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(getInstanceSettings());
     }
 
     /*

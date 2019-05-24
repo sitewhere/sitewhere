@@ -33,7 +33,9 @@ import com.sitewhere.grpc.service.GUpdateGlobalConfigurationRequest;
 import com.sitewhere.grpc.service.GUpdateTenantConfigurationRequest;
 import com.sitewhere.grpc.service.MicroserviceManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.scripting.IScriptTemplate;
 
 /**
@@ -45,8 +47,8 @@ import com.sitewhere.spi.microservice.scripting.IScriptTemplate;
 public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceManagementGrpcChannel>
 	implements IMicroserviceManagementApiChannel<MicroserviceManagementGrpcChannel> {
 
-    public MicroserviceManagementApiChannel(String host, int port) {
-	super(host, port);
+    public MicroserviceManagementApiChannel(IInstanceSettings settings, IFunctionIdentifier identifier, int port) {
+	super(settings, identifier, port);
     }
 
     /*

@@ -164,7 +164,7 @@ public class CommandDeliveryMicroservice
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel();
+	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
     }
 
     /*

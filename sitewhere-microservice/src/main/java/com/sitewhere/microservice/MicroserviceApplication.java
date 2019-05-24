@@ -16,8 +16,6 @@ import java.util.concurrent.ThreadFactory;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.ComponentScan;
 
 import com.sitewhere.core.Boilerplate;
@@ -35,9 +33,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  */
 @ComponentScan
 public abstract class MicroserviceApplication<T extends IMicroservice<?>> implements IMicroserviceApplication<T> {
-
-    /** Static logger instance */
-    private static Log LOGGER = LogFactory.getLog(MicroserviceApplication.class);
 
     /** Executor for background thread */
     private ExecutorService executor;
@@ -68,20 +63,20 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
 	    try {
 		startMicroservice();
 	    } catch (SiteWhereException e) {
-		LOGGER.error("Exception on microservice startup.", e);
+		getMicroservice().getLogger().error("Exception on microservice startup.", e);
 		StringBuilder builder = new StringBuilder();
 		builder.append("\n!!!! Microservice failed to start !!!!\n");
 		builder.append("\n");
 		builder.append("Error: " + e.getMessage() + "\n");
-		LOGGER.info("\n" + builder.toString() + "\n");
+		getMicroservice().getLogger().info("\n" + builder.toString() + "\n");
 		System.exit(2);
 	    } catch (Throwable e) {
-		LOGGER.error("Unhandled exception in microservice startup.", e);
+		getMicroservice().getLogger().error("Unhandled exception in microservice startup.", e);
 		StringBuilder builder = new StringBuilder();
 		builder.append("\n!!!! Unhandled Exception !!!!\n");
 		builder.append("\n");
 		builder.append("Error: " + e.getMessage() + "\n");
-		LOGGER.info("\n" + builder.toString() + "\n");
+		getMicroservice().getLogger().info("\n" + builder.toString() + "\n");
 		System.exit(3);
 	    }
 	    waitForTermination();
@@ -93,63 +88,60 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
 	 * @throws SiteWhereException
 	 */
 	protected void startMicroservice() throws SiteWhereException {
-	    T service = getMicroservice();
 	    long start = System.currentTimeMillis();
 
 	    // Display banner indicating service information.
 	    List<String> messages = new ArrayList<String>();
-	    messages.add(service.getName() + " Microservice");
-	    messages.add("Version: " + service.getVersion().getVersionIdentifier() + "."
-		    + service.getVersion().getGitRevisionAbbrev());
-	    messages.add("Git Revision: " + service.getVersion().getGitRevision());
-	    messages.add("Build Date: " + service.getVersion().getBuildTimestamp());
-	    messages.add("Hostname: " + service.getHostname());
+	    messages.add(getMicroservice().getName() + " Microservice");
+	    messages.add("Version: " + getMicroservice().getVersion().getVersionIdentifier() + "."
+		    + getMicroservice().getVersion().getGitRevisionAbbrev());
+	    messages.add("Git Revision: " + getMicroservice().getVersion().getGitRevision());
+	    messages.add("Build Date: " + getMicroservice().getVersion().getBuildTimestamp());
+	    messages.add("Hostname: " + getMicroservice().getHostname());
 	    String message = Boilerplate.boilerplate(messages, "*");
-	    service.getLogger().info("\n" + message + "\n");
+	    getMicroservice().getLogger().info("\n" + message + "\n");
 
 	    // Initialize microservice.
 	    LifecycleProgressMonitor initMonitor = new LifecycleProgressMonitor(
-		    new LifecycleProgressContext(1, "Initialize " + service.getName()), service);
-	    service.lifecycleInitialize(initMonitor);
-	    if (service.getLifecycleStatus() == LifecycleStatus.InitializationError) {
-		throw service.getLifecycleError();
+		    new LifecycleProgressContext(1, "Initialize " + getMicroservice().getName()), getMicroservice());
+	    getMicroservice().lifecycleInitialize(initMonitor);
+	    if (getMicroservice().getLifecycleStatus() == LifecycleStatus.InitializationError) {
+		throw getMicroservice().getLifecycleError();
 	    }
 
 	    // Start microservice.
 	    LifecycleProgressMonitor startMonitor = new LifecycleProgressMonitor(
-		    new LifecycleProgressContext(1, "Start " + service.getName()), service);
-	    service.lifecycleStart(startMonitor);
-	    if (service.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
-		throw service.getLifecycleError();
+		    new LifecycleProgressContext(1, "Start " + getMicroservice().getName()), getMicroservice());
+	    getMicroservice().lifecycleStart(startMonitor);
+	    if (getMicroservice().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		throw getMicroservice().getLifecycleError();
 	    }
 
 	    long total = System.currentTimeMillis() - start;
 	    messages.clear();
-	    messages.add(service.getName() + " Microservice");
+	    messages.add(getMicroservice().getName() + " Microservice");
 	    messages.add("Startup time: " + total + "ms");
 	    message = Boilerplate.boilerplate(messages, "*");
-	    service.getLogger().info("\n" + message + "\n");
+	    getMicroservice().getLogger().info("\n" + message + "\n");
 
 	    // Execute any post-startup code.
-	    service.afterMicroserviceStarted();
+	    getMicroservice().afterMicroserviceStarted();
 	}
 
 	/**
 	 * Wait for application to terminate.
 	 */
 	protected void waitForTermination() {
-	    T service = getMicroservice();
-
 	    // Wait for microservice to terminate.
 	    while (true) {
-		if (service.getLifecycleStatus() == LifecycleStatus.Terminated) {
-		    LOGGER.info("Terminated " + service.getName());
+		if (getMicroservice().getLifecycleStatus() == LifecycleStatus.Terminated) {
+		    getMicroservice().getLogger().info("Terminated " + getMicroservice().getName());
 		    break;
 		}
 		try {
 		    Thread.sleep(1000);
 		} catch (InterruptedException e) {
-		    LOGGER.warn("Microservice shutting down.");
+		    getMicroservice().getLogger().warn("Microservice shutting down.");
 		    return;
 		}
 	    }
@@ -165,38 +157,40 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
 
 	@Override
 	public void run() {
-	    IMicroservice<?> service = getMicroservice();
 	    try {
 		// Stop microservice.
 		LifecycleProgressMonitor stopMonitor = new LifecycleProgressMonitor(
-			new LifecycleProgressContext(1, "Stop " + service.getName()), service);
-		service.lifecycleStop(stopMonitor);
-		if (service.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
-		    throw service.getLifecycleError();
+			new LifecycleProgressContext(1, "Stop " + getMicroservice().getName()), getMicroservice());
+		getMicroservice().lifecycleStop(stopMonitor);
+		if (getMicroservice().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		    throw getMicroservice().getLifecycleError();
 		}
 
 		// Terminate microservice.
 		LifecycleProgressMonitor termMonitor = new LifecycleProgressMonitor(
-			new LifecycleProgressContext(1, "Terminate " + service.getName()), service);
-		service.lifecycleTerminate(termMonitor);
-		if (service.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
-		    throw service.getLifecycleError();
+			new LifecycleProgressContext(1, "Terminate " + getMicroservice().getName()), getMicroservice());
+		getMicroservice().lifecycleTerminate(termMonitor);
+		if (getMicroservice().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		    throw getMicroservice().getLifecycleError();
 		}
 	    } catch (SiteWhereException e) {
-		LOGGER.error("Exception on microservice shutdown.", e);
+		getMicroservice().getLogger().error("Exception on microservice shutdown.", e);
 		StringBuilder builder = new StringBuilder();
-		builder.append("\n!!!! Microservice '" + service.getComponentName() + "' failed to shutdown !!!!\n");
+		builder.append(
+			"\n!!!! Microservice '" + getMicroservice().getComponentName() + "' failed to shutdown !!!!\n");
 		builder.append("\n");
 		builder.append("Error: " + e.getMessage() + "\n");
-		LOGGER.info("\n" + builder.toString() + "\n");
+		getMicroservice().getLogger().info("\n" + builder.toString() + "\n");
 		System.exit(2);
 	    } catch (Throwable e) {
-		LOGGER.error("Unhandled exception in '" + service.getComponentName() + "' microservice shutdown.", e);
+		getMicroservice().getLogger().error(
+			"Unhandled exception in '" + getMicroservice().getComponentName() + "' microservice shutdown.",
+			e);
 		StringBuilder builder = new StringBuilder();
 		builder.append("\n!!!! Unhandled Exception !!!!\n");
 		builder.append("\n");
 		builder.append("Error: " + e.getMessage() + "\n");
-		LOGGER.info("\n" + builder.toString() + "\n");
+		getMicroservice().getLogger().info("\n" + builder.toString() + "\n");
 		System.exit(3);
 	    }
 	}

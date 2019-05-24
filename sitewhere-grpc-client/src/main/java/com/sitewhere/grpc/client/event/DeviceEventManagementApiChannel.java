@@ -73,6 +73,7 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 
@@ -87,12 +88,8 @@ import io.grpc.stub.StreamObserver;
 public class DeviceEventManagementApiChannel extends MultitenantApiChannel<DeviceEventManagementGrpcChannel>
 	implements IDeviceEventManagementApiChannel<DeviceEventManagementGrpcChannel> {
 
-    public DeviceEventManagementApiChannel() {
-	super(MicroserviceIdentifier.EventManagement.getPath(), IGrpcSettings.DEFAULT_API_PORT);
-    }
-
-    public DeviceEventManagementApiChannel(String host, int port) {
-	super(host, port);
+    public DeviceEventManagementApiChannel(IInstanceSettings settings) {
+	super(settings, MicroserviceIdentifier.EventManagement, IGrpcSettings.DEFAULT_API_PORT);
     }
 
     /*

@@ -19,6 +19,7 @@ import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -53,20 +54,20 @@ public class CachedDeviceManagementApiChannel extends DeviceManagementApiChannel
     /** Device assignment by id cache */
     private ICacheProvider<UUID, IDeviceAssignment> deviceAssignmentByIdCache;
 
-    public CachedDeviceManagementApiChannel(String host, int port, CacheSettings settings) {
-	super(host, port);
-	this.areaCache = new DeviceManagementCacheProviders.AreaByTokenCache(settings.getAreaConfiguration());
-	this.areaByIdCache = new DeviceManagementCacheProviders.AreaByIdCache(settings.getAreaConfiguration());
+    public CachedDeviceManagementApiChannel(IInstanceSettings settings, CacheSettings cache) {
+	super(settings);
+	this.areaCache = new DeviceManagementCacheProviders.AreaByTokenCache(cache.getAreaConfiguration());
+	this.areaByIdCache = new DeviceManagementCacheProviders.AreaByIdCache(cache.getAreaConfiguration());
 	this.deviceTypeCache = new DeviceManagementCacheProviders.DeviceTypeByTokenCache(
-		settings.getDeviceTypeConfiguration());
+		cache.getDeviceTypeConfiguration());
 	this.deviceTypeByIdCache = new DeviceManagementCacheProviders.DeviceTypeByIdCache(
-		settings.getDeviceTypeConfiguration());
-	this.deviceCache = new DeviceManagementCacheProviders.DeviceByTokenCache(settings.getDeviceConfiguration());
-	this.deviceByIdCache = new DeviceManagementCacheProviders.DeviceByIdCache(settings.getDeviceConfiguration());
+		cache.getDeviceTypeConfiguration());
+	this.deviceCache = new DeviceManagementCacheProviders.DeviceByTokenCache(cache.getDeviceConfiguration());
+	this.deviceByIdCache = new DeviceManagementCacheProviders.DeviceByIdCache(cache.getDeviceConfiguration());
 	this.deviceAssignmentCache = new DeviceManagementCacheProviders.DeviceAssignmentByTokenCache(
-		settings.getDeviceAssignmentConfiguration());
+		cache.getDeviceAssignmentConfiguration());
 	this.deviceAssignmentByIdCache = new DeviceManagementCacheProviders.DeviceAssignmentByIdCache(
-		settings.getDeviceAssignmentConfiguration());
+		cache.getDeviceAssignmentConfiguration());
     }
 
     /*
