@@ -71,7 +71,7 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getLogger().info(String.format("Initializing API channel to '%s:%d'", getHostname(), getPort()));
-	this.grpcChannel = (T) createGrpcChannel(getHostname(), getPort());
+	this.grpcChannel = createGrpcChannel(getHostname(), getPort());
 	initializeNestedComponent(getGrpcChannel(), monitor, true);
     }
 
@@ -143,6 +143,8 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
 			}
 			Thread.sleep(waitPeriod);
 		    } else {
+			getLogger().info(
+				String.format("Detected '%s' state for gRPC channel.", ConnectivityState.READY.name()));
 			return;
 		    }
 		}

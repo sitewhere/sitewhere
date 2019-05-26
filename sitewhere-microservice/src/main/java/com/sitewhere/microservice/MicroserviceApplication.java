@@ -37,14 +37,22 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
     /** Executor for background thread */
     private ExecutorService executor;
 
+    /**
+     * Called to initialize and start microservice components.
+     */
     @PostConstruct
     public void start() {
+	getMicroservice().getLogger().info("Starting microservice...");
 	executor = Executors.newSingleThreadExecutor(new MicroserviceThreadFactory());
 	executor.execute(new StartMicroservice());
     }
 
+    /**
+     * Called to shutdown and terminate microservice components.
+     */
     @PreDestroy
     public void stop() {
+	getMicroservice().getLogger().info("Shutdown signal received. Stopping microservice...");
 	if (executor != null) {
 	    executor.shutdown();
 	    (new StopMicroservice()).run();
@@ -62,6 +70,7 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
 	public void run() {
 	    try {
 		startMicroservice();
+		waitForTermination();
 	    } catch (SiteWhereException e) {
 		getMicroservice().getLogger().error("Exception on microservice startup.", e);
 		StringBuilder builder = new StringBuilder();
@@ -79,7 +88,6 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
 		getMicroservice().getLogger().info("\n" + builder.toString() + "\n");
 		System.exit(3);
 	    }
-	    waitForTermination();
 	}
 
 	/**
@@ -106,6 +114,8 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
 		    new LifecycleProgressContext(1, "Initialize " + getMicroservice().getName()), getMicroservice());
 	    getMicroservice().lifecycleInitialize(initMonitor);
 	    if (getMicroservice().getLifecycleStatus() == LifecycleStatus.InitializationError) {
+		getMicroservice().getLogger().info("Error initializing microservice.",
+			getMicroservice().getLifecycleError());
 		throw getMicroservice().getLifecycleError();
 	    }
 
@@ -114,6 +124,8 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
 		    new LifecycleProgressContext(1, "Start " + getMicroservice().getName()), getMicroservice());
 	    getMicroservice().lifecycleStart(startMonitor);
 	    if (getMicroservice().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		getMicroservice().getLogger().info("Error starting microservice.",
+			getMicroservice().getLifecycleError());
 		throw getMicroservice().getLifecycleError();
 	    }
 

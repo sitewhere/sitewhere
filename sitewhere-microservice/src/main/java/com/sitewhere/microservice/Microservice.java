@@ -233,7 +233,7 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 		    .convertDurationsTo(TimeUnit.MILLISECONDS).build();
 	    getMetricsReporter().start(20, TimeUnit.SECONDS);
 	} else {
-	    getLogger().info(MicroserviceMessages.METRICS_REPORTING_DISABLED);
+	    getLogger().info("Metrics reporting is disabled.");
 	}
     }
 
@@ -310,16 +310,16 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     @Override
     public void waitForInstanceInitialization() throws SiteWhereException {
 	try {
-	    getLogger().info(MicroserviceMessages.INSTANCE_VERIFY_BOOTSTRAPPED);
+	    getLogger().info("Verifying that instance has been bootstrapped...");
 	    while (true) {
 		if (getZookeeperManager().getCurator().checkExists().forPath(getInstanceBootstrappedMarker()) != null) {
 		    break;
 		}
-		getLogger().info(MicroserviceMessages.INSTANCE_BOOTSTRAP_MARKER_NOT_FOUND,
-			getInstanceBootstrappedMarker());
+		getLogger().info(String.format("Bootstrap marker not found at '%s'. Waiting...",
+			getInstanceBootstrappedMarker()));
 		Thread.sleep(INSTANCE_BOOTSTRAP_CHECK_INTERVAL_SECS * 1000);
 	    }
-	    getLogger().info(MicroserviceMessages.INSTANCE_BOOTSTRAP_CONFIRMED);
+	    getLogger().info("Confirmed that instance was bootstrapped.");
 	} catch (Exception e) {
 	    throw new SiteWhereException("Error waiting on instance to be bootstrapped.", e);
 	}
@@ -399,26 +399,31 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     @Override
     public void setLifecycleStatus(LifecycleStatus lifecycleStatus) {
 	super.setLifecycleStatus(lifecycleStatus);
-	getLogger().info(MicroserviceMessages.LIFECYCLE_STATUS_SENDING, getLifecycleStatus().name());
-	sendChangedState();
+	if (sendChangedState()) {
+	    getLogger().info(
+		    String.format("Sent state update for lifecycle status change '%s'", getLifecycleStatus().name()));
+	}
     }
 
     /**
      * Send current state for microservice to Kafka topic.
+     * 
+     * @return
      */
-    protected void sendChangedState() {
+    protected boolean sendChangedState() {
 	if ((getStateUpdatesKafkaProducer() != null)
 		&& (getStateUpdatesKafkaProducer().getLifecycleStatus() == LifecycleStatus.Started)) {
 	    try {
 		IMicroserviceState state = getCurrentState();
 		getStateUpdatesKafkaProducer().send(state);
+		return true;
 	    } catch (SiteWhereException e) {
-		getLogger().error(MicroserviceMessages.LIFECYCLE_STATUS_SEND_EXCEPTION);
 		getLogger().error("Unable to send lifecycle status.", e);
 	    }
 	} else {
-	    getLogger().warn(MicroserviceMessages.LIFECYCLE_STATUS_FAILED_NO_KAFKA);
+	    getLogger().debug("Unable to report state. Waiting on Kafka producer to become available.");
 	}
+	return false;
     }
 
     /*
