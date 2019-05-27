@@ -14,6 +14,9 @@ package com.sitewhere.groovy;
  */
 public interface IGroovyVariables {
 
+    /** Groovy variable used for tenant information */
+    public static final String VAR_TENANT = "tenant";
+
     /** Groovy variable used for device management implementaton */
     public static final String VAR_DEVICE_MANAGEMENT = "deviceManagement";
 

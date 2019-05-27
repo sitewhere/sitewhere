@@ -9,7 +9,6 @@ package com.sitewhere.sources.socket;
 
 import java.net.Socket;
 
-import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
@@ -53,10 +52,9 @@ public class GroovySocketInteractionHandler extends TenantEngineLifecycleCompone
     @Override
     public void process(Socket socket, IInboundEventReceiver<byte[]> receiver) throws SiteWhereException {
 	try {
-	    Binding binding = new Binding();
+	    Binding binding = factory.createBindingFor(this);
 	    binding.setVariable(VAR_SOCKET, socket);
 	    binding.setVariable(VAR_EVENT_RECEIVER, receiver);
-	    binding.setVariable(IGroovyVariables.VAR_LOGGER, getLogger());
 	    getLogger().info("About to execute '" + factory.getScriptId() + "' to interact with socket.");
 	    factory.run(binding);
 	} catch (SiteWhereException e) {

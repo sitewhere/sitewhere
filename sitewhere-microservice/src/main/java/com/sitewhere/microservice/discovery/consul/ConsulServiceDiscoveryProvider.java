@@ -16,10 +16,12 @@ import java.util.concurrent.Executors;
 import com.google.common.net.HostAndPort;
 import com.orbitz.consul.AgentClient;
 import com.orbitz.consul.Consul;
+import com.orbitz.consul.ConsulException;
 import com.orbitz.consul.HealthClient;
 import com.orbitz.consul.NotRegisteredException;
 import com.orbitz.consul.model.agent.ImmutableRegistration;
 import com.orbitz.consul.model.agent.Registration;
+import com.orbitz.consul.model.health.HealthCheck;
 import com.orbitz.consul.model.health.ServiceHealth;
 import com.sitewhere.core.Boilerplate;
 import com.sitewhere.microservice.discovery.ServiceNode;
@@ -28,6 +30,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.discovery.IServiceDiscoveryProvider;
 import com.sitewhere.spi.microservice.discovery.IServiceNode;
+import com.sitewhere.spi.microservice.discovery.ServiceNodeStatus;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
@@ -40,7 +43,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public class ConsulServiceDiscoveryProvider extends LifecycleComponent implements IServiceDiscoveryProvider {
 
     /** Number of seconds to wait between registration retries */
-    private static final int REGISTRATION_RETRY_INTERVAL_IN_SECS = 5;
+    private static final int REGISTRATION_RETRY_INTERVAL_IN_SECS = 15;
 
     /** Consul client */
     private Consul consulClient;
@@ -79,49 +82,64 @@ public class ConsulServiceDiscoveryProvider extends LifecycleComponent implement
      */
     @Override
     public void registerService() throws SiteWhereException {
-	getRegistrationExecutor().execute(new BackgroundExecutor());
+	getRegistrationExecutor().execute(new RetryUntilRegistered());
     }
 
     /**
-     * Background thread which attempts to register microservice with Consul.
+     * Get Consul client. Create if it does not already exist.
+     * 
+     * @return
+     */
+    protected Consul getConsulClient() {
+	IInstanceSettings settings = getMicroservice().getInstanceSettings();
+	if (this.consulClient == null) {
+	    this.consulClient = Consul.builder()
+		    .withHostAndPort(HostAndPort.fromParts(settings.getConsulHost(), settings.getConsulPort())).build();
+	}
+	return this.consulClient;
+    }
+
+    /**
+     * Attempt to register with Consul.
+     * 
+     * @throws ConsulException
+     */
+    protected void register() throws ConsulException {
+	getLogger().info("Attempting to register service with Consul...");
+	AgentClient agentClient = getConsulClient().agentClient();
+	List<String> tags = new ArrayList<>();
+	tags.add("microservice");
+	tags.add(getMicroservice().getIdentifier().getShortName());
+	Registration service = ImmutableRegistration.builder().id(getMicroservice().getId().toString())
+		.name(getMicroservice().getIdentifier().getShortName()).address(getMicroservice().getHostname())
+		.port(getMicroservice().getInstanceSettings().getGrpcPort()).check(Registration.RegCheck.ttl(30L))
+		.tags(tags)
+		.meta(Collections.singletonMap("version", getMicroservice().getVersion().getVersionIdentifier()))
+		.build();
+	agentClient.register(service);
+
+	// Log block to indicate registration.
+	List<String> messages = new ArrayList<String>();
+	messages.add("Registered Service with Consul");
+	messages.add("Identifier: " + getMicroservice().getIdentifier().getShortName());
+	messages.add("Registered Address: " + getMicroservice().getHostname());
+	String message = Boilerplate.boilerplate(messages, "*");
+	getLogger().info(message);
+    }
+
+    /**
+     * Background thread which repeatedly attempts to register microservice with
+     * Consul.
      * 
      * @author Derek
      */
-    private class BackgroundExecutor implements Runnable {
+    private class RetryUntilRegistered implements Runnable {
 
 	@Override
 	public void run() {
-	    getLogger().info("Attempting to register service with Consul...");
 	    while (true) {
 		try {
-		    // Create Consul client.
-		    IInstanceSettings settings = getMicroservice().getInstanceSettings();
-		    setConsulClient(Consul.builder()
-			    .withHostAndPort(HostAndPort.fromParts(settings.getConsulHost(), settings.getConsulPort()))
-			    .build());
-
-		    AgentClient agentClient = getConsulClient().agentClient();
-		    List<String> tags = new ArrayList<>();
-		    tags.add("microservice");
-		    tags.add(getMicroservice().getIdentifier().getShortName());
-		    Registration service = ImmutableRegistration.builder().id(getMicroservice().getId().toString())
-			    .name(getMicroservice().getIdentifier().getShortName())
-			    .address(getMicroservice().getHostname())
-			    .port(getMicroservice().getInstanceSettings().getGrpcPort())
-			    .check(Registration.RegCheck.ttl(30L)).tags(tags).meta(Collections.singletonMap("version",
-				    getMicroservice().getVersion().getVersionIdentifier()))
-			    .build();
-		    agentClient.register(service);
-
-		    // Log block to indicate registration.
-		    List<String> messages = new ArrayList<String>();
-		    messages.add("Registered Service with Consul");
-		    messages.add("Identifier: " + getMicroservice().getIdentifier().getShortName());
-		    messages.add("Registered Address: " + getMicroservice().getHostname());
-		    messages.add(
-			    "K8S Pod IP Address: " + getMicroservice().getInstanceSettings().getKubernetesPodAddress());
-		    String message = Boilerplate.boilerplate(messages, "*");
-		    getLogger().info(message);
+		    register();
 		    return;
 		} catch (Throwable t) {
 		    getLogger().warn(String.format("Consul registration attempt failed. Will retry in %d seconds.",
@@ -151,7 +169,12 @@ public class ConsulServiceDiscoveryProvider extends LifecycleComponent implement
 		    agentClient.pass(serviceId);
 		}
 	    } catch (NotRegisteredException e) {
-		throw new SiteWhereException("Unable to send heartbeat.", e);
+		try {
+		    register();
+		} catch (ConsulException c) {
+		    throw new SiteWhereException(
+			    "Heartbeat for non-registered service and unable to re-register with Consul.", c);
+		}
 	    }
 	} else {
 	    getLogger().info("Skipping heartbeat. Consul client not connected.");
@@ -166,28 +189,29 @@ public class ConsulServiceDiscoveryProvider extends LifecycleComponent implement
     public List<IServiceNode> getNodesForFunction(IFunctionIdentifier identifier) throws SiteWhereException {
 	if (getConsulClient() != null) {
 	    HealthClient healthClient = getConsulClient().healthClient();
-	    List<ServiceHealth> matches = healthClient.getHealthyServiceInstances(identifier.getShortName())
-		    .getResponse();
+	    List<ServiceHealth> matches = healthClient.getAllServiceInstances(identifier.getShortName()).getResponse();
 	    List<IServiceNode> nodes = new ArrayList<>();
 	    for (ServiceHealth match : matches) {
 		String host = match.getService().getAddress();
 		ServiceNode node = new ServiceNode();
 		node.setAddress(host);
+		node.setStatus(ServiceNodeStatus.Online);
 		nodes.add(node);
+
+		List<HealthCheck> checks = match.getChecks();
+		for (HealthCheck check : checks) {
+		    if (!"passing".equals(check.getStatus())) {
+			node.setStatus(ServiceNodeStatus.Offline);
+			getLogger().debug(String.format("Service for '%s' at %s is reporting a '%s' status!",
+				identifier.getShortName(), match.getService().getAddress(), check.getStatus()));
+		    }
+		}
 	    }
 	    return nodes;
 	} else {
 	    List<IServiceNode> nodes = new ArrayList<>();
 	    return nodes;
 	}
-    }
-
-    protected Consul getConsulClient() {
-	return consulClient;
-    }
-
-    protected void setConsulClient(Consul consulClient) {
-	this.consulClient = consulClient;
     }
 
     protected ExecutorService getRegistrationExecutor() {
