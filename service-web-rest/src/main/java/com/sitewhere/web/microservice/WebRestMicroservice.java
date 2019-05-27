@@ -7,7 +7,6 @@
  */
 package com.sitewhere.web.microservice;
 
-import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
 import com.sitewhere.grpc.client.asset.AssetManagementApiChannel;
 import com.sitewhere.grpc.client.batch.BatchManagementApiChannel;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
@@ -30,7 +29,6 @@ import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.state.TopologyStateAggregator;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.messages.SiteWhereMessage;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.state.ITopologyStateAggregator;
@@ -124,34 +122,6 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
     @Override
     public String getConfigurationPath() throws SiteWhereException {
 	return CONFIGURATION_PATH;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.Microservice#afterMicroserviceStarted()
-     */
-    @Override
-    public void afterMicroserviceStarted() {
-	try {
-	    waitForDependenciesAvailable();
-	    getLogger().debug("All required microservices detected as available.");
-	} catch (ApiChannelNotAvailableException e) {
-	    getLogger().error(SiteWhereMessage.MICROSERVICE_NOT_AVAILABLE);
-	    getLogger().error("Microservice not available.", e);
-	}
-    }
-
-    /**
-     * Wait for required microservices to become available.
-     * 
-     * @throws ApiChannelNotAvailableException
-     */
-    protected void waitForDependenciesAvailable() throws ApiChannelNotAvailableException {
-	getUserManagementApiChannel().waitForChannelAvailable();
-	getLogger().info("User management microservice detected as available.");
-	getTenantManagementApiChannel().waitForChannelAvailable();
-	getLogger().info("Tenant management microservice detected as available.");
     }
 
     /*

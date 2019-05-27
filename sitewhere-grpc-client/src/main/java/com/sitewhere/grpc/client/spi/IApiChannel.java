@@ -7,9 +7,6 @@
  */
 package com.sitewhere.grpc.client.spi;
 
-import java.util.concurrent.TimeUnit;
-
-import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
 import com.sitewhere.grpc.client.GrpcChannel;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
@@ -49,23 +46,4 @@ public interface IApiChannel<T extends GrpcChannel<?, ?>> extends ITenantEngineL
      * @return
      */
     public T getGrpcChannel();
-
-    /**
-     * Wait the default amount of time for channel to become available.
-     * 
-     * @throws ApiChannelNotAvailableException
-     */
-    public void waitForChannelAvailable() throws ApiChannelNotAvailableException;
-
-    /**
-     * Wait for a maximum amount of time for the channel to become available.
-     * Displays 'waiting' messages to log after a specified delay.
-     * 
-     * @param duration
-     * @param unit
-     * @param logMessageDelay
-     * @throws ApiChannelNotAvailableException
-     */
-    public void waitForChannelAvailable(long duration, TimeUnit unit, long logMessageDelay)
-	    throws ApiChannelNotAvailableException;
 }

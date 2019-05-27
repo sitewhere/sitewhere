@@ -97,20 +97,7 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
 	stopNestedComponent(getGrpcChannel(), monitor);
     }
 
-    /*
-     * @see com.sitewhere.grpc.client.spi.IApiChannel#waitForChannelAvailable()
-     */
-    @Override
-    public void waitForChannelAvailable() throws ApiChannelNotAvailableException {
-	waitForChannelAvailable(5 * 60, TimeUnit.SECONDS, 60);
-    }
-
-    /*
-     * @see com.sitewhere.grpc.client.spi.IApiChannel#waitForChannelAvailable(long,
-     * java.util.concurrent.TimeUnit, long)
-     */
-    @Override
-    public void waitForChannelAvailable(long duration, TimeUnit unit, long logMessageDelay)
+    public void exampleOfExponentialBackoff(long duration, TimeUnit unit, long logMessageDelay)
 	    throws ApiChannelNotAvailableException {
 	if (getGrpcChannel() == null) {
 	    throw new ApiChannelNotAvailableException("GRPC channel not found. Unable to access API.");

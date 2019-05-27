@@ -7,7 +7,6 @@
  */
 package com.sitewhere.labels.microservice;
 
-import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
 import com.sitewhere.grpc.client.asset.AssetManagementApiChannel;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
@@ -86,33 +85,6 @@ public class LabelGenerationMicroservice
     @Override
     public ILabelGenerationTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
 	return new LabelGenerationTenantEngine(tenant);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.Microservice#afterMicroserviceStarted()
-     */
-    @Override
-    public void afterMicroserviceStarted() {
-	try {
-	    waitForDependenciesAvailable();
-	    getLogger().debug("All required microservices detected as available.");
-	} catch (ApiChannelNotAvailableException e) {
-	    getLogger().error("Required APIs not available.", e);
-	}
-    }
-
-    /**
-     * Wait for microservice dependencies to become available.
-     * 
-     * @throws ApiNotAvailableException
-     */
-    protected void waitForDependenciesAvailable() throws ApiChannelNotAvailableException {
-	getDeviceManagementApiChannel().waitForChannelAvailable();
-	getLogger().debug("Device management microservice detected as available.");
-	getAssetManagementApiChannel().waitForChannelAvailable();
-	getLogger().debug("Asset management microservice detected as available.");
     }
 
     /*

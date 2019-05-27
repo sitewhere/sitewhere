@@ -7,7 +7,6 @@
  */
 package com.sitewhere.inbound.microservice;
 
-import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
@@ -18,7 +17,6 @@ import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.messages.SiteWhereMessage;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -82,34 +80,6 @@ public class InboundProcessingMicroservice
     @Override
     public IInboundProcessingTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
 	return new InboundProcessingTenantEngine(tenant);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.Microservice#afterMicroserviceStarted()
-     */
-    @Override
-    public void afterMicroserviceStarted() {
-	try {
-	    waitForDependenciesAvailable();
-	    getLogger().debug("All required microservices detected as available.");
-	} catch (ApiChannelNotAvailableException e) {
-	    getLogger().error(SiteWhereMessage.MICROSERVICE_NOT_AVAILABLE);
-	    getLogger().error("Microservice not available.", e);
-	}
-    }
-
-    /**
-     * Wait for required microservices to become available.
-     * 
-     * @throws ApiNotAvailableException
-     */
-    protected void waitForDependenciesAvailable() throws ApiChannelNotAvailableException {
-	getDeviceManagementApiChannel().waitForChannelAvailable();
-	getLogger().debug("Device management microservice detected as available.");
-	getDeviceEventManagementApiChannel().waitForChannelAvailable();
-	getLogger().debug("Device event management microservice detected as available.");
     }
 
     /*

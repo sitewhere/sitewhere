@@ -682,7 +682,6 @@ public class Instance extends RestControllerBase {
 	channel.setMicroservice(getMicroservice());
 	channel.initialize(monitor);
 	channel.start(monitor);
-	channel.waitForChannelAvailable();
 	return channel;
     }
 

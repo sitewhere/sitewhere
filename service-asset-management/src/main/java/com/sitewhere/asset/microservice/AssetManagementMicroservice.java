@@ -9,17 +9,14 @@ package com.sitewhere.asset.microservice;
 
 import com.sitewhere.asset.configuration.AssetManagementModelProvider;
 import com.sitewhere.asset.grpc.AssetManagementGrpcServer;
-import com.sitewhere.asset.messages.AssetManagementMessages;
 import com.sitewhere.asset.spi.grpc.IAssetManagementGrpcServer;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
-import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.messages.SiteWhereMessage;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -87,32 +84,6 @@ public class AssetManagementMicroservice
     @Override
     public IAssetManagementTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
 	return new AssetManagementTenantEngine(tenant);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.Microservice#afterMicroserviceStarted()
-     */
-    @Override
-    public void afterMicroserviceStarted() {
-	try {
-	    waitForDependenciesAvailable();
-	    getLogger().debug(AssetManagementMessages.ALL_REQUIRED_MS_AVAILABLE);
-	} catch (ApiChannelNotAvailableException e) {
-	    getLogger().error(SiteWhereMessage.MICROSERVICE_NOT_AVAILABLE);
-	    getLogger().error("Microservice not available.", e);
-	}
-    }
-
-    /**
-     * Wait for required microservices to become available.
-     * 
-     * @throws ApiChannelNotAvailableException
-     */
-    protected void waitForDependenciesAvailable() throws ApiChannelNotAvailableException {
-	getDeviceManagementApiChannel().waitForChannelAvailable();
-	getLogger().debug(AssetManagementMessages.DEVICE_MANAGEMENT_MS_AVAILABLE);
     }
 
     /*

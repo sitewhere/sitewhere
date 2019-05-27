@@ -12,13 +12,11 @@ import com.sitewhere.event.grpc.EventManagementGrpcServer;
 import com.sitewhere.event.spi.grpc.IEventManagementGrpcServer;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
-import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.messages.SiteWhereMessage;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -86,32 +84,6 @@ public class EventManagementMicroservice
     @Override
     public IEventManagementTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
 	return new EventManagementTenantEngine(tenant);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.Microservice#afterMicroserviceStarted()
-     */
-    @Override
-    public void afterMicroserviceStarted() {
-	try {
-	    waitForDependenciesAvailable();
-	    getLogger().debug("All required microservices detected as available.");
-	} catch (ApiChannelNotAvailableException e) {
-	    getLogger().error(SiteWhereMessage.MICROSERVICE_NOT_AVAILABLE);
-	    getLogger().error("Microservice not available.", e);
-	}
-    }
-
-    /**
-     * Wait for required microservices to become available.
-     * 
-     * @throws ApiNotAvailableException
-     */
-    protected void waitForDependenciesAvailable() throws ApiChannelNotAvailableException {
-	getDeviceManagementApiChannel().waitForChannelAvailable();
-	getLogger().debug("Device management microservice detected as available.");
     }
 
     /*

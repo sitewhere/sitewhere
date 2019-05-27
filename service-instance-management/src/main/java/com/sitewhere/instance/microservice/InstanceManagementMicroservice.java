@@ -356,11 +356,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	    getInstanceScriptSynchronizer().add(script);
 	}
 
-	// Wait for user management APIs to become available.
-	getLogger().info("About to initialize user model from instance template.");
-	getUserManagementApiChannel().waitForChannelAvailable();
-	getLogger().debug("User management API detected as available.");
-
 	GroovyConfiguration groovy = new GroovyConfiguration(getInstanceScriptSynchronizer());
 	groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize user model."), this));
 	for (String script : scripts) {
@@ -381,11 +376,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	for (String script : scripts) {
 	    getInstanceScriptSynchronizer().add(script);
 	}
-
-	// Wait for tenant management APIs to become available.
-	getLogger().info("About to initialize tenant model from instance template.");
-	getTenantManagementApiChannel().waitForChannelAvailable();
-	getLogger().debug("Tenant management microservice detected as available.");
 
 	GroovyConfiguration groovy = new GroovyConfiguration(getInstanceScriptSynchronizer());
 	groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize tenant model."), this));
