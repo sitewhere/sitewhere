@@ -24,7 +24,7 @@ ext['git.revision.abbrev'] = ext.git.head().abbreviatedId
 ext['docker.base.image'] = 'openjdk:8-jre-alpine'
 ext['docker.maintainer'] = 'admin@sitewhere.com'
 
-ext['sitewhere.grpc.api.version'] = '2.0.2'
+ext['sitewhere.grpc.api.version'] = '2.0.3'
 ext['kafka.version'] = '2.0.0'
 ext['zookeeper.version'] = '3.4.8'
 ext['curator.version'] = '2.12.0'
@@ -42,7 +42,7 @@ apply plugin: 'distribution'
     
 allprojects {
     group = 'com.sitewhere'
-	version = '2.0.6'
+	  version = '2.0.7'
 	
     repositories {
         maven { url "http://repo.maven.apache.org/maven2" }

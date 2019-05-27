@@ -33,6 +33,7 @@ task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, depends
     destFile = project.file('build/docker/Dockerfile')
     from "${rootProject.ext['docker.base.image']}"
     instruction "LABEL maintainer=${rootProject.ext['docker.maintainer']}"
+	instruction "RUN wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.2.2/grpc_health_probe-linux-amd64 && chmod +x /bin/grpc_health_probe"
 	
 	// Copy Spring Boot jar.
 	copyFile("${project.name}-${project.version}-boot.jar", "/")
