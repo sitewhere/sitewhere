@@ -11,6 +11,8 @@ import com.sitewhere.grpc.client.MultitenantGrpcChannel;
 import com.sitewhere.grpc.service.DeviceManagementGrpc;
 import com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementBlockingStub;
 import com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementStub;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Channel that allows for communication with a remote device management GRPC
@@ -21,8 +23,8 @@ import com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementStub;
 public class DeviceManagementGrpcChannel
 	extends MultitenantGrpcChannel<DeviceManagementBlockingStub, DeviceManagementStub> {
 
-    public DeviceManagementGrpcChannel(String host, int port) {
-	super(host, port);
+    public DeviceManagementGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier, int port) {
+	super(settings, identifier, port);
     }
 
     /*

@@ -11,6 +11,8 @@ import com.sitewhere.grpc.client.MultitenantGrpcChannel;
 import com.sitewhere.grpc.service.ScheduleManagementGrpc;
 import com.sitewhere.grpc.service.ScheduleManagementGrpc.ScheduleManagementBlockingStub;
 import com.sitewhere.grpc.service.ScheduleManagementGrpc.ScheduleManagementStub;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Channel that allows for communication with a remote schedule management GRPC
@@ -21,8 +23,8 @@ import com.sitewhere.grpc.service.ScheduleManagementGrpc.ScheduleManagementStub;
 public class ScheduleManagementGrpcChannel
 	extends MultitenantGrpcChannel<ScheduleManagementBlockingStub, ScheduleManagementStub> {
 
-    public ScheduleManagementGrpcChannel(String host, int port) {
-	super(host, port);
+    public ScheduleManagementGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier, int port) {
+	super(settings, identifier, port);
     }
 
     /*

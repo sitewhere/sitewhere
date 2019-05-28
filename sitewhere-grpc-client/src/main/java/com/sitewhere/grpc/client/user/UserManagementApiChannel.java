@@ -43,6 +43,7 @@ import com.sitewhere.grpc.service.GUpdateUserRequest;
 import com.sitewhere.grpc.service.GUpdateUserResponse;
 import com.sitewhere.grpc.service.UserManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
@@ -69,12 +70,14 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
 
     /*
      * @see
-     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(java.lang.String,
-     * int)
+     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
+     * .microservice.instance.IInstanceSettings,
+     * com.sitewhere.spi.microservice.IFunctionIdentifier, int)
      */
     @Override
-    public UserManagementGrpcChannel createGrpcChannel(String host, int port) {
-	return new UserManagementGrpcChannel(host, port);
+    public UserManagementGrpcChannel createGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier,
+	    int port) {
+	return new UserManagementGrpcChannel(settings, identifier, port);
     }
 
     /*

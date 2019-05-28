@@ -16,6 +16,8 @@ import com.sitewhere.grpc.service.GCheckTenantEngineAvailableResponse;
 import com.sitewhere.grpc.service.MultitenantManagementGrpc;
 import com.sitewhere.grpc.service.MultitenantManagementGrpc.MultitenantManagementBlockingStub;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 import io.grpc.ManagedChannelBuilder;
@@ -40,8 +42,8 @@ public abstract class MultitenantGrpcChannel<B, A> extends GrpcChannel<B, A> imp
     /** Executor service used to handle GRPC requests */
     private ExecutorService serverExecutor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
-    public MultitenantGrpcChannel(String hostname, int port) {
-	super(hostname, port);
+    public MultitenantGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier, int port) {
+	super(settings, identifier, port);
     }
 
     /*

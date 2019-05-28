@@ -43,6 +43,7 @@ import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.asset.request.IAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IAssetTypeCreateRequest;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
@@ -65,12 +66,14 @@ public class AssetManagementApiChannel extends MultitenantApiChannel<AssetManage
 
     /*
      * @see
-     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(java.lang.String,
-     * int)
+     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
+     * .microservice.instance.IInstanceSettings,
+     * com.sitewhere.spi.microservice.IFunctionIdentifier, int)
      */
     @Override
-    public AssetManagementGrpcChannel createGrpcChannel(String host, int port) {
-	return new AssetManagementGrpcChannel(host, port);
+    public AssetManagementGrpcChannel createGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier,
+	    int port) {
+	return new AssetManagementGrpcChannel(settings, identifier, port);
     }
 
     /*

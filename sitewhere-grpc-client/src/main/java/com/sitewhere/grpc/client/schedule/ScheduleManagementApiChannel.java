@@ -32,6 +32,7 @@ import com.sitewhere.grpc.service.GUpdateScheduledJobRequest;
 import com.sitewhere.grpc.service.GUpdateScheduledJobResponse;
 import com.sitewhere.grpc.service.ScheduleManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
@@ -57,12 +58,14 @@ public class ScheduleManagementApiChannel extends MultitenantApiChannel<Schedule
 
     /*
      * @see
-     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(java.lang.String,
-     * int)
+     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
+     * .microservice.instance.IInstanceSettings,
+     * com.sitewhere.spi.microservice.IFunctionIdentifier, int)
      */
     @Override
-    public ScheduleManagementGrpcChannel createGrpcChannel(String host, int port) {
-	return new ScheduleManagementGrpcChannel(host, port);
+    public ScheduleManagementGrpcChannel createGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier,
+	    int port) {
+	return new ScheduleManagementGrpcChannel(settings, identifier, port);
     }
 
     /*

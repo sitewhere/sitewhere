@@ -53,12 +53,14 @@ public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceMan
 
     /*
      * @see
-     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(java.lang.String,
-     * int)
+     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
+     * .microservice.instance.IInstanceSettings,
+     * com.sitewhere.spi.microservice.IFunctionIdentifier, int)
      */
     @Override
-    public MicroserviceManagementGrpcChannel createGrpcChannel(String host, int port) {
-	return new MicroserviceManagementGrpcChannel(host, port);
+    public MicroserviceManagementGrpcChannel createGrpcChannel(IInstanceSettings settings,
+	    IFunctionIdentifier identifier, int port) {
+	return new MicroserviceManagementGrpcChannel(settings, identifier, port);
     }
 
     /*

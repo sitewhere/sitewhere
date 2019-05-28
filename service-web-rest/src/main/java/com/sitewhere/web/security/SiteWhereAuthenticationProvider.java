@@ -19,15 +19,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
 import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.security.SitewhereUserDetails;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.web.security.jwt.JwtAuthenticationToken;
+import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
 /**
  * Spring authentication provider using SiteWhere user management APIs.
@@ -40,15 +39,10 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
     private static Log LOGGER = LogFactory.getLog(SiteWhereAuthenticationProvider.class);
 
     /** Microservice */
-    private IMicroservice<?> microservice;
+    private IWebRestMicroservice<?> microservice;
 
-    /** Web rest microservice */
-    private IUserManagementApiChannel<?> userManagementApiChannel;
-
-    public SiteWhereAuthenticationProvider(IMicroservice<?> microservice,
-	    IUserManagementApiChannel<?> userManagementApiChannel) {
+    public SiteWhereAuthenticationProvider(IWebRestMicroservice<?> microservice) {
 	this.microservice = microservice;
-	this.userManagementApiChannel = userManagementApiChannel;
     }
 
     /*
@@ -87,8 +81,8 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
 	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
 	try {
 	    SecurityContextHolder.getContext().setAuthentication(getMicroservice().getSystemUser().getAuthentication());
-	    IUser user = validateUserManagement().authenticate(username, password, false);
 	    IUserManagement userManagement = validateUserManagement();
+	    IUser user = userManagement.authenticate(username, password, false);
 	    List<IGrantedAuthority> auths = userManagement.getGrantedAuthorities(user.getUsername());
 	    SitewhereUserDetails details = new SitewhereUserDetails(user, auths);
 	    return new SitewhereAuthentication(details, password);
@@ -146,26 +140,18 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
      * @throws AuthenticationServiceException
      */
     protected IUserManagement validateUserManagement() throws AuthenticationServiceException {
-	if (getUserManagementApiChannel() == null) {
+	if (getMicroservice().getUserManagementApiChannel() == null) {
 	    throw new AuthenticationServiceException(
 		    "User management API channel not initialized. Check logs for details.");
 	}
-	return getUserManagementApiChannel();
+	return getMicroservice().getUserManagementApiChannel();
     }
 
-    protected IMicroservice<?> getMicroservice() {
+    protected IWebRestMicroservice<?> getMicroservice() {
 	return microservice;
     }
 
-    protected void setMicroservice(IMicroservice<?> microservice) {
+    protected void setMicroservice(IWebRestMicroservice<?> microservice) {
 	this.microservice = microservice;
-    }
-
-    protected IUserManagementApiChannel<?> getUserManagementApiChannel() {
-	return userManagementApiChannel;
-    }
-
-    protected void setUserManagementApiChannel(IUserManagementApiChannel<?> userManagementApiChannel) {
-	this.userManagementApiChannel = userManagementApiChannel;
     }
 }

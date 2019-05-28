@@ -41,6 +41,7 @@ import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.batch.request.IBatchElementCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
@@ -63,12 +64,14 @@ public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManage
 
     /*
      * @see
-     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(java.lang.String,
-     * int)
+     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
+     * .microservice.instance.IInstanceSettings,
+     * com.sitewhere.spi.microservice.IFunctionIdentifier, int)
      */
     @Override
-    public BatchManagementGrpcChannel createGrpcChannel(String host, int port) {
-	return new BatchManagementGrpcChannel(host, port);
+    public BatchManagementGrpcChannel createGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier,
+	    int port) {
+	return new BatchManagementGrpcChannel(settings, identifier, port);
     }
 
     /*

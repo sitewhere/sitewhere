@@ -56,7 +56,7 @@ public class GrpcUtils {
 
     public static void handleClientMethodEntry(IApiChannel<?> channel, MethodDescriptor<?, ?> method,
 	    DebugParameter... parameters) {
-	LOGGER.debug(channel.getClass().getSimpleName() + " connected to '" + channel.getHostname()
+	LOGGER.debug(channel.getClass().getSimpleName() + " connected to '" + channel.getFunctionIdentifier().getPath()
 		+ "' received call to  " + method.getFullMethodName() + ".");
 	if (LOGGER.isTraceEnabled()) {
 	    for (DebugParameter parameter : parameters) {

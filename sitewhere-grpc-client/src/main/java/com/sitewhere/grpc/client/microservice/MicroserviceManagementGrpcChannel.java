@@ -11,6 +11,8 @@ import com.sitewhere.grpc.client.GrpcChannel;
 import com.sitewhere.grpc.service.MicroserviceManagementGrpc;
 import com.sitewhere.grpc.service.MicroserviceManagementGrpc.MicroserviceManagementBlockingStub;
 import com.sitewhere.grpc.service.MicroserviceManagementGrpc.MicroserviceManagementStub;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Channel that allows for communication with a remote microservice mangement
@@ -21,8 +23,8 @@ import com.sitewhere.grpc.service.MicroserviceManagementGrpc.MicroserviceManagem
 public class MicroserviceManagementGrpcChannel
 	extends GrpcChannel<MicroserviceManagementBlockingStub, MicroserviceManagementStub> {
 
-    public MicroserviceManagementGrpcChannel(String host, int port) {
-	super(host, port);
+    public MicroserviceManagementGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier, int port) {
+	super(settings, identifier, port);
     }
 
     /*

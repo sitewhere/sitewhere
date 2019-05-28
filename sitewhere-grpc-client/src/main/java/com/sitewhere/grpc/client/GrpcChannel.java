@@ -7,6 +7,10 @@
  */
 package com.sitewhere.grpc.client;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -15,6 +19,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.sitewhere.grpc.client.spi.IGrpcChannel;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 import io.grpc.ManagedChannel;
@@ -32,6 +38,9 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
 
     /** Max threads used for executing GPRC requests */
     private static final int THREAD_POOL_SIZE = 25;
+
+    /** Function identifier */
+    protected IFunctionIdentifier functionIdentifier;
 
     /** Remote host */
     protected String hostname;
@@ -55,11 +64,27 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
     private ExecutorService serverExecutor = Executors.newFixedThreadPool(THREAD_POOL_SIZE,
 	    new GrpcClientThreadFactory());
 
-    public GrpcChannel(String hostname, int port) {
-	this.hostname = hostname;
+    public GrpcChannel(IInstanceSettings settings, IFunctionIdentifier functionIdentifier, int port) {
+	this.functionIdentifier = functionIdentifier;
+	this.hostname = GrpcChannel.computeHostname(settings, functionIdentifier);
 	this.port = port;
 
 	this.jwtInterceptor = new JwtClientInterceptor();
+    }
+
+    /**
+     * Compute service hostname based on instance settings and functional
+     * indentifier.
+     * 
+     * @param settings
+     * @param identifier
+     * @return
+     */
+    public static String computeHostname(IInstanceSettings settings, IFunctionIdentifier identifier) {
+	String instanceId = "sitewhere".equals(settings.getInstanceId()) ? "sitewhere-"
+		: settings.getInstanceId() + "-sitewhere-";
+	String namespace = "default";
+	return instanceId + identifier.getPath() + "-svc." + namespace + ".svc.cluster.local";
     }
 
     /*
@@ -71,6 +96,7 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	try {
 	    NettyChannelBuilder builder = NettyChannelBuilder.forAddress(getHostname(), getPort());
+	    builder.defaultServiceConfig(buildServiceConfiguration()).enableRetry();
 	    builder.executor(getServerExecutor());
 	    builder.usePlaintext().intercept(getJwtInterceptor());
 	    this.channel = builder.build();
@@ -79,6 +105,46 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
 	} catch (Throwable t) {
 	    throw new SiteWhereException("Unhandled exception starting gRPC channel.", t);
 	}
+    }
+
+    /**
+     * Build service configuration that enables retry support.
+     * 
+     * @return
+     */
+    protected Map<String, Object> buildServiceConfiguration() {
+	Map<String, Object> serviceConfig = new HashMap<>();
+	serviceConfig.put("methodConfig", Collections.<Object>singletonList(buildMethodConfiguration()));
+	return serviceConfig;
+    }
+
+    /**
+     * Build service configuration that enables retry support.
+     * 
+     * @return
+     */
+    protected Map<String, Object> buildMethodConfiguration() {
+	Map<String, Object> methodConfig = new HashMap<>();
+	Map<String, Object> name = new HashMap<>();
+	name.put("service", getFunctionIdentifier().getGrpcServiceName());
+	methodConfig.put("name", Collections.<Object>singletonList(name));
+	methodConfig.put("retryPolicy", buildRetryPolicy());
+	return methodConfig;
+    }
+
+    /**
+     * Configure retry policy.
+     * 
+     * @return
+     */
+    protected Map<String, Object> buildRetryPolicy() {
+	Map<String, Object> retryPolicy = new HashMap<>();
+	retryPolicy.put("maxAttempts", 5D);
+	retryPolicy.put("initialBackoff", "10s");
+	retryPolicy.put("maxBackoff", "300s");
+	retryPolicy.put("backoffMultiplier", 2D);
+	retryPolicy.put("retryableStatusCodes", Arrays.<Object>asList("UNAVAILABLE"));
+	return retryPolicy;
     }
 
     /*
@@ -158,6 +224,14 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
 
     public void setJwtInterceptor(JwtClientInterceptor jwtInterceptor) {
 	this.jwtInterceptor = jwtInterceptor;
+    }
+
+    public IFunctionIdentifier getFunctionIdentifier() {
+	return functionIdentifier;
+    }
+
+    public void setFunctionIdentifier(IFunctionIdentifier functionIdentifier) {
+	this.functionIdentifier = functionIdentifier;
     }
 
     public String getHostname() {

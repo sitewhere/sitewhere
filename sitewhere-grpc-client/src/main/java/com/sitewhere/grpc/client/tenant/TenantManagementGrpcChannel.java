@@ -11,6 +11,8 @@ import com.sitewhere.grpc.client.GrpcChannel;
 import com.sitewhere.grpc.service.TenantManagementGrpc;
 import com.sitewhere.grpc.service.TenantManagementGrpc.TenantManagementBlockingStub;
 import com.sitewhere.grpc.service.TenantManagementGrpc.TenantManagementStub;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Channel that allows for communication with a remote tenant management GRPC
@@ -20,8 +22,8 @@ import com.sitewhere.grpc.service.TenantManagementGrpc.TenantManagementStub;
  */
 public class TenantManagementGrpcChannel extends GrpcChannel<TenantManagementBlockingStub, TenantManagementStub> {
 
-    public TenantManagementGrpcChannel(String host, int port) {
-	super(host, port);
+    public TenantManagementGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier, int port) {
+	super(settings, identifier, port);
     }
 
     /*

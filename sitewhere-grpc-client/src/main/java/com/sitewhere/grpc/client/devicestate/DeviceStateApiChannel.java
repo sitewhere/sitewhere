@@ -29,6 +29,7 @@ import com.sitewhere.grpc.service.GUpdateDeviceStateResponse;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.state.IDeviceState;
 import com.sitewhere.spi.device.state.request.IDeviceStateCreateRequest;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
@@ -50,12 +51,14 @@ public class DeviceStateApiChannel extends MultitenantApiChannel<DeviceStateGrpc
 
     /*
      * @see
-     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(java.lang.String,
-     * int)
+     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
+     * .microservice.instance.IInstanceSettings,
+     * com.sitewhere.spi.microservice.IFunctionIdentifier, int)
      */
     @Override
-    public DeviceStateGrpcChannel createGrpcChannel(String host, int port) {
-	return new DeviceStateGrpcChannel(host, port);
+    public DeviceStateGrpcChannel createGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier,
+	    int port) {
+	return new DeviceStateGrpcChannel(settings, identifier, port);
     }
 
     /*

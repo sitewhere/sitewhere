@@ -53,8 +53,7 @@ public class AuthApiSecurity extends WebSecurityConfigurerAdapter {
      */
     @Bean
     protected SiteWhereAuthenticationProvider sitewhereAuthenticationProvider() {
-	return new SiteWhereAuthenticationProvider(getWebRestMicroservice(),
-		getWebRestMicroservice().getUserManagementApiChannel());
+	return new SiteWhereAuthenticationProvider(getWebRestMicroservice());
     }
 
     /*

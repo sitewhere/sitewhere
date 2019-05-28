@@ -36,6 +36,7 @@ import com.sitewhere.grpc.service.GGetDeviceTypeLabelResponse;
 import com.sitewhere.grpc.service.LabelGenerationGrpc;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.label.ILabel;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
@@ -55,12 +56,14 @@ public class LabelGenerationApiChannel extends MultitenantApiChannel<LabelGenera
 
     /*
      * @see
-     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(java.lang.String,
-     * int)
+     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
+     * .microservice.instance.IInstanceSettings,
+     * com.sitewhere.spi.microservice.IFunctionIdentifier, int)
      */
     @Override
-    public LabelGenerationGrpcChannel createGrpcChannel(String host, int port) {
-	return new LabelGenerationGrpcChannel(host, port);
+    public LabelGenerationGrpcChannel createGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier,
+	    int port) {
+	return new LabelGenerationGrpcChannel(settings, identifier, port);
     }
 
     /*

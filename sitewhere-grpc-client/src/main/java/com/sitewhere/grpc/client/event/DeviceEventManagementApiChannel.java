@@ -71,6 +71,7 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
@@ -94,12 +95,14 @@ public class DeviceEventManagementApiChannel extends MultitenantApiChannel<Devic
 
     /*
      * @see
-     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(java.lang.String,
-     * int)
+     * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
+     * .microservice.instance.IInstanceSettings,
+     * com.sitewhere.spi.microservice.IFunctionIdentifier, int)
      */
     @Override
-    public DeviceEventManagementGrpcChannel createGrpcChannel(String host, int port) {
-	return new DeviceEventManagementGrpcChannel(host, port);
+    public DeviceEventManagementGrpcChannel createGrpcChannel(IInstanceSettings settings,
+	    IFunctionIdentifier identifier, int port) {
+	return new DeviceEventManagementGrpcChannel(settings, identifier, port);
     }
 
     /*
