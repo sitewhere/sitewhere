@@ -92,10 +92,11 @@ task dockerImageLatest(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildI
 
 	if(!project.hasProperty("debug")) {
 		primaryTag = "${dockerRepository}/sitewhere/${project.name}:${version}"
+		secondaryTag = "${dockerRepository}/sitewhere/${project.name}:latest"
 	} else {
 		primaryTag = "${dockerRepository}/sitewhere/${project.name}:debug-${version}"
+		secondaryTag = "${dockerRepository}/sitewhere/${project.name}:debug-latest"
 	}
-	secondaryTag = "${dockerRepository}/sitewhere/${project.name}:latest"
 	tags = [primaryTag, secondaryTag]
 }
 

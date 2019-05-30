@@ -11,10 +11,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.sitewhere.grpc.client.spi.multitenant.IMultitenantGrpcChannel;
-import com.sitewhere.grpc.service.GCheckTenantEngineAvailableRequest;
-import com.sitewhere.grpc.service.GCheckTenantEngineAvailableResponse;
-import com.sitewhere.grpc.service.MultitenantManagementGrpc;
-import com.sitewhere.grpc.service.MultitenantManagementGrpc.MultitenantManagementBlockingStub;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
@@ -56,29 +52,12 @@ public abstract class MultitenantGrpcChannel<B, A> extends GrpcChannel<B, A> imp
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	ManagedChannelBuilder<?> builder = ManagedChannelBuilder.forAddress(getHostname(), getPort());
+	builder.defaultServiceConfig(buildServiceConfiguration()).enableRetry();
 	builder.executor(getServerExecutor());
 	builder.usePlaintext().intercept(getTenantTokenInterceptor()).intercept(getJwtInterceptor());
 	this.channel = builder.build();
 	this.blockingStub = createBlockingStub();
 	this.asyncStub = createAsyncStub();
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantManagement#
-     * checkTenantEngineAvailable()
-     */
-    @Override
-    public boolean checkTenantEngineAvailable() {
-	MultitenantManagementBlockingStub stub = MultitenantManagementGrpc.newBlockingStub(getChannel());
-
-	GCheckTenantEngineAvailableRequest request = GCheckTenantEngineAvailableRequest.newBuilder().build();
-	GCheckTenantEngineAvailableResponse response = stub.checkTenantEngineAvailable(request);
-
-	if (response == null) {
-	    return false;
-	}
-
-	return response.getAvailable();
     }
 
     protected TenantTokenClientInterceptor getTenantTokenInterceptor() {

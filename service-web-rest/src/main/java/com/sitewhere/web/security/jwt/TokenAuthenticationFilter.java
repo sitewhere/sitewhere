@@ -107,10 +107,13 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 		LOGGER.debug("Added authentication to context.");
 		chain.doFilter(request, response);
 	    } catch (JwtExpiredException e) {
+		LOGGER.debug("Expired JWT passed.", e);
 		response.sendError(HttpServletResponse.SC_FORBIDDEN, "JWT has expired.");
 	    } catch (InvalidJwtException e) {
+		LOGGER.debug("Invalid JWT passed.", e);
 		response.sendError(HttpServletResponse.SC_FORBIDDEN, "JWT is invalid.");
 	    } catch (Throwable e) {
+		LOGGER.error("Unhandled exception in token authentication filter.", e);
 		response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing JWT.");
 	    }
 	} else {

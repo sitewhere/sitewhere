@@ -43,8 +43,7 @@ public class StopConfigurationOperation<T extends IConfigurableMicroservice<?>>
      */
     @Override
     public T call() throws Exception {
-	getMicroservice().getLogger()
-		.info("Microservice configuration '" + getMicroservice().getName() + "' stopping.");
+	getMicroservice().getLogger().info("Configuration for '" + getMicroservice().getName() + "' stopping.");
 	try {
 	    // Stop microservice.
 	    if (getMicroservice().getLifecycleStatus() != LifecycleStatus.Stopped) {

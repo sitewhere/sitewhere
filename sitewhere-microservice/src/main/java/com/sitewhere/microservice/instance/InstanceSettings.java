@@ -46,10 +46,6 @@ public class InstanceSettings implements IInstanceSettings {
     @Value("#{systemEnvironment['sitewhere.filesystem.storage.root'] ?: '/var/sitewhere'}")
     private String fileSystemStorageRoot;
 
-    /** Tracer server information */
-    @Value("#{systemEnvironment['sitewhere.tracer.server'] ?: 'jaeger'}")
-    private String tracerServer;
-
     /** Flag for whether to log metrics */
     @Value("#{systemEnvironment['sitewhere.log.metrics'] ?: 'false'}")
     private boolean logMetrics;

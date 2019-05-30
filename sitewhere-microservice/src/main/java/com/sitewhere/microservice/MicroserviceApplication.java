@@ -9,8 +9,11 @@ package com.sitewhere.microservice;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 
 import javax.annotation.PostConstruct;
@@ -44,7 +47,15 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
     public void start() {
 	getMicroservice().getLogger().info("Starting microservice...");
 	executor = Executors.newSingleThreadExecutor(new MicroserviceThreadFactory());
-	executor.execute(new StartMicroservice());
+	Future<Integer> futureCode = executor.submit(new StartMicroservice());
+	try {
+	    int code = futureCode.get();
+	    if (code != 0) {
+		System.exit(code);
+	    }
+	} catch (InterruptedException | ExecutionException e) {
+	    System.exit(1);
+	}
     }
 
     /**
@@ -64,13 +75,16 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
      * 
      * @author Derek
      */
-    private class StartMicroservice implements Runnable {
+    private class StartMicroservice implements Callable<Integer> {
 
+	/*
+	 * @see java.util.concurrent.Callable#call()
+	 */
 	@Override
-	public void run() {
+	public Integer call() throws Exception {
+	    int errorCode = 0;
 	    try {
 		startMicroservice();
-		waitForTermination();
 	    } catch (SiteWhereException e) {
 		getMicroservice().getLogger().error("Exception on microservice startup.", e);
 		StringBuilder builder = new StringBuilder();
@@ -78,7 +92,7 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
 		builder.append("\n");
 		builder.append("Error: " + e.getMessage() + "\n");
 		getMicroservice().getLogger().info("\n" + builder.toString() + "\n");
-		System.exit(2);
+		errorCode = 2;
 	    } catch (Throwable e) {
 		getMicroservice().getLogger().error("Unhandled exception in microservice startup.", e);
 		StringBuilder builder = new StringBuilder();
@@ -86,8 +100,9 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
 		builder.append("\n");
 		builder.append("Error: " + e.getMessage() + "\n");
 		getMicroservice().getLogger().info("\n" + builder.toString() + "\n");
-		System.exit(3);
+		errorCode = 3;
 	    }
+	    return errorCode;
 	}
 
 	/**
@@ -139,25 +154,6 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
 	    // Execute any post-startup code.
 	    getMicroservice().afterMicroserviceStarted();
 	}
-
-	/**
-	 * Wait for application to terminate.
-	 */
-	protected void waitForTermination() {
-	    // Wait for microservice to terminate.
-	    while (true) {
-		if (getMicroservice().getLifecycleStatus() == LifecycleStatus.Terminated) {
-		    getMicroservice().getLogger().info("Terminated " + getMicroservice().getName());
-		    break;
-		}
-		try {
-		    Thread.sleep(1000);
-		} catch (InterruptedException e) {
-		    getMicroservice().getLogger().warn("Microservice shutting down.");
-		    return;
-		}
-	    }
-	}
     }
 
     /**
@@ -193,7 +189,6 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
 		builder.append("\n");
 		builder.append("Error: " + e.getMessage() + "\n");
 		getMicroservice().getLogger().info("\n" + builder.toString() + "\n");
-		System.exit(2);
 	    } catch (Throwable e) {
 		getMicroservice().getLogger().error(
 			"Unhandled exception in '" + getMicroservice().getComponentName() + "' microservice shutdown.",
@@ -203,7 +198,6 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
 		builder.append("\n");
 		builder.append("Error: " + e.getMessage() + "\n");
 		getMicroservice().getLogger().info("\n" + builder.toString() + "\n");
-		System.exit(3);
 	    }
 	}
     }
@@ -212,7 +206,7 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
     private class MicroserviceThreadFactory implements ThreadFactory {
 
 	public Thread newThread(Runnable r) {
-	    return new Thread(r, "Microservice Main");
+	    return new Thread(r, "Service Main");
 	}
     }
 }

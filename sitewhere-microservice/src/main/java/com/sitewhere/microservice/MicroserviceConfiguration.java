@@ -8,6 +8,7 @@
 package com.sitewhere.microservice;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import com.sitewhere.microservice.kafka.KafkaTopicNaming;
 import com.sitewhere.microservice.security.SystemUser;
@@ -18,7 +19,7 @@ import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
 
-@org.springframework.context.annotation.Configuration
+@Configuration
 public class MicroserviceConfiguration {
 
     @Bean

@@ -95,6 +95,7 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
 		public void childEvent(CuratorFramework client, TreeCacheEvent event) throws Exception {
 		    switch (event.getType()) {
 		    case INITIALIZED: {
+			getLogger().info("Zookeeper configuration monitoring initialized.");
 			onCacheInitialized();
 			break;
 		    }
@@ -257,7 +258,7 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
 	private AtomicInteger counter = new AtomicInteger();
 
 	public Thread newThread(Runnable r) {
-	    return new Thread(r, "Configuration Update " + counter.incrementAndGet());
+	    return new Thread(r, "Config Update " + counter.incrementAndGet());
 	}
     }
 

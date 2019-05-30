@@ -430,13 +430,13 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
      */
     @Override
     public void waitForConfigurationReady() throws SiteWhereException {
-	getLogger().debug("Waiting for configuration to be loaded...");
+	getLogger().info("Waiting for configuration to be loaded...");
 	while (true) {
 	    if (getConfigurationState() == ConfigurationState.Failed) {
 		throw new SiteWhereException("Microservice configuration failed.");
 	    }
 	    if (getConfigurationState() == ConfigurationState.Started) {
-		getLogger().debug("Configuration started successfully.");
+		getLogger().info("Configuration started successfully.");
 		return;
 	    }
 	    try {

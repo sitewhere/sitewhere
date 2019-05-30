@@ -73,7 +73,7 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     private static final String INSTANCE_BOOTSTRAP_MARKER = "/bootstrapped";
 
     /** Number of seconds to wait between checks for isntance bootstrap marker */
-    private static final int INSTANCE_BOOTSTRAP_CHECK_INTERVAL_SECS = 3;
+    private static final int INSTANCE_BOOTSTRAP_CHECK_INTERVAL_SECS = 15;
 
     /** Heartbeat interval in seconds */
     private static final int HEARTBEAT_INTERVAL_SECS = 10;
@@ -184,6 +184,12 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	// Organizes steps for initializing microservice.
 	ICompositeLifecycleStep initialize = new CompositeLifecycleStep("Initialize " + getName());
 
+	// Initialize microservice management GRPC server.
+	initialize.addInitializeStep(this, getMicroserviceManagementGrpcServer(), true);
+
+	// Start microservice management GRPC server.
+	initialize.addStartStep(this, getMicroserviceManagementGrpcServer(), true);
+
 	// Initialize script template manager.
 	initialize.addInitializeStep(this, getScriptTemplateManager(), true);
 
@@ -192,12 +198,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
 	// Initialize Zookeeper configuration management.
 	initialize.addInitializeStep(this, getZookeeperManager(), true);
-
-	// Initialize microservice management GRPC server.
-	initialize.addInitializeStep(this, getMicroserviceManagementGrpcServer(), true);
-
-	// Start microservice management GRPC server.
-	initialize.addStartStep(this, getMicroserviceManagementGrpcServer(), true);
 
 	// Initialize Kafka producer for reporting state.
 	initialize.addInitializeStep(this, getStateUpdatesKafkaProducer(), true);
@@ -707,7 +707,7 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	private AtomicInteger counter = new AtomicInteger();
 
 	public Thread newThread(Runnable r) {
-	    return new Thread(r, "Microservice Operations " + counter.incrementAndGet());
+	    return new Thread(r, "Service Ops " + counter.incrementAndGet());
 	}
     }
 
@@ -718,7 +718,7 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	private AtomicInteger counter = new AtomicInteger();
 
 	public Thread newThread(Runnable r) {
-	    return new Thread(r, "Microservice Heartbeat " + counter.incrementAndGet());
+	    return new Thread(r, "Service Heartbeat " + counter.incrementAndGet());
 	}
     }
 }

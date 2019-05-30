@@ -43,8 +43,7 @@ public class StartConfigurationOperation<T extends IConfigurableMicroservice<?>>
      */
     @Override
     public T call() throws Exception {
-	getMicroservice().getLogger()
-		.info("Microservice configuration '" + getMicroservice().getName() + "' starting.");
+	getMicroservice().getLogger().info("Configuration for '" + getMicroservice().getName() + "' starting.");
 	try {
 	    // Start microservice.
 	    ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(

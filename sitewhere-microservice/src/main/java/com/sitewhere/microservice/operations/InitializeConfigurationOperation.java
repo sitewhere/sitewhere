@@ -47,8 +47,7 @@ public class InitializeConfigurationOperation<T extends IConfigurableMicroservic
      */
     @Override
     public T call() throws Exception {
-	getMicroservice().getLogger()
-		.info("Microservice configuration '" + getMicroservice().getName() + "' initializing.");
+	getMicroservice().getLogger().info("Configuration for '" + getMicroservice().getName() + "' initializing.");
 	try {
 	    // Load microservice configuration.
 	    getMicroservice().setConfigurationState(ConfigurationState.Loading);
@@ -56,13 +55,15 @@ public class InitializeConfigurationOperation<T extends IConfigurableMicroservic
 	    if (global == null) {
 		throw new SiteWhereException("Global instance management file not found.");
 	    }
-	    ApplicationContext globalContext = ConfigurationUtils.buildGlobalContext(global,
+	    ApplicationContext globalContext = ConfigurationUtils.buildGlobalContext(getMicroservice(), global,
 		    getMicroservice().getSpringProperties(), getMicroservice().getMicroserviceApplicationContext());
 
 	    String path = getMicroservice().getConfigurationPath();
 	    ApplicationContext localContext = null;
 	    if (path != null) {
 		String fullPath = getMicroservice().getInstanceConfigurationPath() + "/" + path;
+		getMicroservice().getLogger()
+			.info(String.format("Loading configuration from Zookeeper at path '%s'", fullPath));
 		byte[] data = getMicroservice().getConfigurationMonitor().getConfigurationDataFor(fullPath);
 		if (data != null) {
 		    localContext = ConfigurationUtils.buildSubcontext(data, getMicroservice().getSpringProperties(),
@@ -78,8 +79,9 @@ public class InitializeConfigurationOperation<T extends IConfigurableMicroservic
 	    getMicroservice().setConfigurationState(ConfigurationState.Stopped);
 
 	    ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
-		    new LifecycleProgressContext(1, "Start microservice configuration."), getMicroservice());
+		    new LifecycleProgressContext(1, "Initialize microservice configuration."), getMicroservice());
 	    long start = System.currentTimeMillis();
+	    getMicroservice().getLogger().info("Initializing from updated configuration...");
 	    getMicroservice().configurationInitialize(getMicroservice().getGlobalApplicationContext(),
 		    getMicroservice().getLocalApplicationContext(), monitor);
 	    if (getMicroservice().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
