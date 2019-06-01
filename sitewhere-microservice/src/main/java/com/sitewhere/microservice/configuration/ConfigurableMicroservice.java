@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.microservice.Microservice;
@@ -55,10 +54,6 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 
     /** Relative path to tenant bootstrapped indicator data */
     private static final String INSTANCE_TENANT_BOOTSTRAPPED_INDICATOR = "bootstrapped";
-
-    /** Injected Spring context for microservice */
-    @Autowired
-    private ApplicationContext microserviceApplicationContext;
 
     /** Configuration monitor */
     private IConfigurationMonitor configurationMonitor;
@@ -448,6 +443,33 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
     }
 
     /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleProgressMonitor)
+     */
+    @Override
+    public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * microserviceStart(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleProgressMonitor)
+     */
+    @Override
+    public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * microserviceStop(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleProgressMonitor)
+     */
+    @Override
+    public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.microservice.Microservice#getConfigurationMonitor()
@@ -544,18 +566,5 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
     @Override
     public void setLocalApplicationContext(ApplicationContext localApplicationContext) {
 	this.localApplicationContext = localApplicationContext;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * getMicroserviceApplicationContext()
-     */
-    @Override
-    public ApplicationContext getMicroserviceApplicationContext() {
-	return microserviceApplicationContext;
-    }
-
-    protected void setMicroserviceApplicationContext(ApplicationContext microserviceApplicationContext) {
-	this.microserviceApplicationContext = microserviceApplicationContext;
     }
 }

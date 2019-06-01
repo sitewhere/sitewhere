@@ -11,10 +11,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.sitewhere.grpc.client.spi.IGrpcChannel;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -36,9 +32,6 @@ import io.grpc.netty.NettyChannelBuilder;
  */
 public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent implements IGrpcChannel<B, A> {
 
-    /** Max threads used for executing GPRC requests */
-    private static final int THREAD_POOL_SIZE = 25;
-
     /** Function identifier */
     protected IFunctionIdentifier functionIdentifier;
 
@@ -59,10 +52,6 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
 
     /** Client interceptor for adding JWT from Spring Security context */
     private JwtClientInterceptor jwtInterceptor;
-
-    /** Executor service used to handle GRPC requests */
-    private ExecutorService serverExecutor = Executors.newFixedThreadPool(THREAD_POOL_SIZE,
-	    new GrpcClientThreadFactory());
 
     public GrpcChannel(IInstanceSettings settings, IFunctionIdentifier functionIdentifier, int port) {
 	this.functionIdentifier = functionIdentifier;
@@ -96,8 +85,7 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	try {
 	    NettyChannelBuilder builder = NettyChannelBuilder.forAddress(getHostname(), getPort());
-	    builder.defaultServiceConfig(buildServiceConfiguration()).enableRetry();
-	    builder.executor(getServerExecutor());
+	    builder.defaultServiceConfig(buildServiceConfiguration()).enableRetry().disableServiceConfigLookUp();
 	    builder.usePlaintext().intercept(getJwtInterceptor());
 	    this.channel = builder.build();
 	    this.blockingStub = createBlockingStub();
@@ -140,9 +128,9 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
     protected Map<String, Object> buildRetryPolicy() {
 	Map<String, Object> retryPolicy = new HashMap<>();
 	retryPolicy.put("maxAttempts", 5D);
-	retryPolicy.put("initialBackoff", "10s");
-	retryPolicy.put("maxBackoff", "300s");
-	retryPolicy.put("backoffMultiplier", 2D);
+	retryPolicy.put("initialBackoff", "12s");
+	retryPolicy.put("maxBackoff", "600s");
+	retryPolicy.put("backoffMultiplier", 1.6D);
 	retryPolicy.put("retryableStatusCodes", Arrays.<Object>asList("UNAVAILABLE"));
 	return retryPolicy;
     }
@@ -207,17 +195,6 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
     @Override
     public abstract A createAsyncStub();
 
-    /** Used for naming gRPC client executor threads */
-    private class GrpcClientThreadFactory implements ThreadFactory {
-
-	/** Counts threads */
-	private AtomicInteger counter = new AtomicInteger();
-
-	public Thread newThread(Runnable r) {
-	    return new Thread(r, "gRPC Client " + counter.incrementAndGet());
-	}
-    }
-
     public JwtClientInterceptor getJwtInterceptor() {
 	return jwtInterceptor;
     }
@@ -248,13 +225,5 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
 
     public void setPort(int port) {
 	this.port = port;
-    }
-
-    public ExecutorService getServerExecutor() {
-	return serverExecutor;
-    }
-
-    public void setServerExecutor(ExecutorService serverExecutor) {
-	this.serverExecutor = serverExecutor;
     }
 }

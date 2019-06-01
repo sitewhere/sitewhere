@@ -209,14 +209,6 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
 	    ILifecycleProgressMonitor monitor) throws SiteWhereException;
 
     /**
-     * Get base microservice application context.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public ApplicationContext getMicroserviceApplicationContext() throws SiteWhereException;
-
-    /**
      * Get global application context.
      * 
      * @return

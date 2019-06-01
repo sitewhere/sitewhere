@@ -209,12 +209,20 @@ public interface IMicroservice<T extends IFunctionIdentifier>
     public String getInstanceStatePath();
 
     /**
-     * Get path for marker used to indicate instance is bootstrapped.
+     * Get path for marker used to indicate instance configuration is bootstrapped.
      * 
      * @return
      * @throws SiteWhereException
      */
-    public String getInstanceBootstrappedMarker() throws SiteWhereException;
+    public String getInstanceConfigBootstrappedMarker() throws SiteWhereException;
+
+    /**
+     * Get path for marker used to indicate instance data is bootstrapped.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getInstanceDataBootstrappedMarker() throws SiteWhereException;
 
     /**
      * Get root folder on local filesystem where script templates may be found.

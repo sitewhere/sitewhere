@@ -33,14 +33,13 @@ public class ConfigurationUtils {
      * @param logProvider
      * @param configuration
      * @param properties
-     * @param microservice
      * @return
      * @throws SiteWhereException
      */
     public static ApplicationContext buildGlobalContext(ILifecycleComponent logProvider, byte[] configuration,
-	    Map<String, Object> properties, ApplicationContext microservice) throws SiteWhereException {
+	    Map<String, Object> properties) throws SiteWhereException {
 	logProvider.getLogger().info("Using global configuration:\n\n" + new String(configuration) + "\n\n");
-	GenericApplicationContext context = new GenericApplicationContext(microservice);
+	GenericApplicationContext context = new GenericApplicationContext();
 
 	// Plug in custom property source.
 	MapPropertySource source = new MapPropertySource("sitewhere", properties);

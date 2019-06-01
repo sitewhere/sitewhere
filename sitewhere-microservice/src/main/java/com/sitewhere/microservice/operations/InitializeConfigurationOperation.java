@@ -56,7 +56,7 @@ public class InitializeConfigurationOperation<T extends IConfigurableMicroservic
 		throw new SiteWhereException("Global instance management file not found.");
 	    }
 	    ApplicationContext globalContext = ConfigurationUtils.buildGlobalContext(getMicroservice(), global,
-		    getMicroservice().getSpringProperties(), getMicroservice().getMicroserviceApplicationContext());
+		    getMicroservice().getSpringProperties());
 
 	    String path = getMicroservice().getConfigurationPath();
 	    ApplicationContext localContext = null;

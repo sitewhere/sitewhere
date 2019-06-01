@@ -31,6 +31,7 @@ public class UserManagementAccessor extends UserManagementDecorator {
     public IUserManagement getDelegate() {
 	IUserManagement delegate = super.getDelegate();
 	if (delegate == null) {
+	    getLogger().warn("Attempted to access user management via gRPC before implementation was initialized.");
 	    throw new RuntimeServiceNotAvailableException();
 	}
 	return delegate;

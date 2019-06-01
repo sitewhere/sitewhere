@@ -139,7 +139,7 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * @see com.sitewhere.microservice.configuration.ConfigurableMicroservice#
      * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
      * ILifecycleProgressMonitor)
      */
@@ -170,7 +170,7 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * @see com.sitewhere.microservice.configuration.ConfigurableMicroservice#
      * microserviceStart(com.sitewhere.spi.server.lifecycle.
      * ILifecycleProgressMonitor)
      */
@@ -208,7 +208,7 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * @see com.sitewhere.microservice.configuration.ConfigurableMicroservice#
      * microserviceStop(com.sitewhere.spi.server.lifecycle.
      * ILifecycleProgressMonitor)
      */
@@ -281,16 +281,29 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 			getZookeeperManager().getCurator().create().forPath(getInstanceStatePath());
 		    }
 
-		    // Check for existing instance bootstrap marker.
+		    // Check for existing configuration bootstrap marker.
 		    existing = getZookeeperManager().getCurator().checkExists()
-			    .forPath(getInstanceBootstrappedMarker());
+			    .forPath(getInstanceConfigBootstrappedMarker());
 		    if (existing == null) {
-			getLogger().info("Bootstrap marker node '" + getInstanceBootstrappedMarker()
-				+ "' not found. Bootstrapping...");
+			getLogger().info("Configuration bootstrap marker node '" + getInstanceConfigBootstrappedMarker()
+				+ "' not found. Bootstrapping configuration...");
 			bootstrapInstanceConfiguration();
 			getLogger().info("Bootstrapped instance configuration from template.");
 		    } else {
-			getLogger().info("Found bootstrap marker node. Skipping instance bootstrap.");
+			getLogger()
+				.info("Found configuration bootstrap marker node. Skipping configuration bootstrap.");
+		    }
+
+		    // Check for existing data bootstrap marker.
+		    existing = getZookeeperManager().getCurator().checkExists()
+			    .forPath(getInstanceDataBootstrappedMarker());
+		    if (existing == null) {
+			getLogger().info("Data bootstrap marker node '" + getInstanceConfigBootstrappedMarker()
+				+ "' not found. Bootstrapping instance data...");
+			initializeModelFromInstanceTemplate();
+			getLogger().info("Bootstrapped instance data from template.");
+		    } else {
+			getLogger().info("Found data bootstrap marker node. Skipping data bootstrap.");
 		    }
 		} catch (SiteWhereException e) {
 		    throw e;
@@ -308,10 +321,11 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
      */
     protected void bootstrapInstanceConfiguration() throws SiteWhereException {
 	try {
+	    getLogger().info("Copying instance template contents to Zookeeper...");
 	    getInstanceTemplateManager().copyTemplateContentsToZk(getInstanceSettings().getInstanceTemplateId(),
 		    getZookeeperManager().getCurator(), getInstanceZkPath());
-	    getZookeeperManager().getCurator().create().forPath(getInstanceBootstrappedMarker());
-	    initializeModelFromInstanceTemplate();
+	    getLogger().info("Marking instance configuration as bootstrapped.");
+	    getZookeeperManager().getCurator().create().forPath(getInstanceConfigBootstrappedMarker());
 	} catch (Exception e) {
 	    throw new SiteWhereException(e);
 	}
@@ -338,6 +352,9 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 		List<String> tenantScripts = template.getInitializers().getTenantManagement();
 		initializeTenantModelFromInstanceTemplateScripts(templatePath, tenantScripts);
 	    }
+	    getZookeeperManager().getCurator().create().forPath(getInstanceDataBootstrappedMarker());
+	} catch (Exception e) {
+	    throw new SiteWhereException(e);
 	} finally {
 	    SecurityContextHolder.getContext().setAuthentication(previous);
 	}

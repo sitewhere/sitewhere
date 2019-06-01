@@ -76,11 +76,10 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
 		    monitor.startProgress(step.getName());
 		    step.execute(monitor);
 		    monitor.finishProgress();
+		} catch (SiteWhereException t) {
+		    throw t;
 		} catch (Throwable t) {
-		    LOGGER.error(String.format("Exception while executing.'%s'.", getName()), t);
-		    SiteWhereException e = new SiteWhereException("Unhandled exception in composite lifecycle step.",
-			    t);
-		    throw e;
+		    throw new SiteWhereException("Unhandled exception in composite lifecycle step.", t);
 		}
 	    }
 	} finally {

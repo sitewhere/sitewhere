@@ -413,7 +413,8 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	    // Handle updated configuration file.
 	    if (getModuleConfigurationName().equals(path)) {
 		getLogger().info("Tenant engine configuration updated.");
-		((IMultitenantMicroservice<?, ?>) getMicroservice()).restartTenantEngine(getTenant().getId());
+		((IMultitenantMicroservice<?, ?>) getMicroservice()).getTenantEngineManager()
+			.restartTenantEngine(getTenant().getId());
 	    }
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to process updated configuration file.", e);
@@ -433,7 +434,8 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	    // Handle updated configuration file.
 	    if (getModuleConfigurationName().equals(path)) {
 		getLogger().info("Tenant engine configuration deleted.");
-		((IMultitenantMicroservice<?, ?>) getMicroservice()).removeTenantEngine(getTenant().getId());
+		((IMultitenantMicroservice<?, ?>) getMicroservice()).getTenantEngineManager()
+			.removeTenantEngine(getTenant().getId());
 	    }
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to process deleted configuration file.", e);

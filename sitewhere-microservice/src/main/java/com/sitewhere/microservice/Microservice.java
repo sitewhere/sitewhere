@@ -69,8 +69,11 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     /** Instance state folder name */
     private static final String INSTANCE_STATE_FOLDER = "/state";
 
-    /** Relative path to instance bootstrap marker */
-    private static final String INSTANCE_BOOTSTRAP_MARKER = "/bootstrapped";
+    /** Relative path to instance configuration bootstrap marker */
+    private static final String INSTANCE_CONFIG_BOOTSTRAP_MARKER = "/config-bootstrapped";
+
+    /** Relative path to instance data bootstrap marker */
+    private static final String INSTANCE_DATA_BOOTSTRAP_MARKER = "/data-bootstrapped";
 
     /** Number of seconds to wait between checks for isntance bootstrap marker */
     private static final int INSTANCE_BOOTSTRAP_CHECK_INTERVAL_SECS = 15;
@@ -199,6 +202,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	// Initialize Zookeeper configuration management.
 	initialize.addInitializeStep(this, getZookeeperManager(), true);
 
+	// Start Zookeeper configuration management.
+	initialize.addStartStep(this, getZookeeperManager(), true);
+
 	// Initialize Kafka producer for reporting state.
 	initialize.addInitializeStep(this, getStateUpdatesKafkaProducer(), true);
 
@@ -283,22 +289,22 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	}
 
 	// Create step that will stop components.
-	ICompositeLifecycleStep terminate = new CompositeLifecycleStep("Stop " + getComponentName());
-
-	// Stop microservice management GRPC server.
-	terminate.addStopStep(this, getMicroserviceManagementGrpcServer());
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
 
 	// Stop Kafka producer for reporting state.
-	terminate.addStopStep(this, getStateUpdatesKafkaProducer());
+	stop.addStopStep(this, getStateUpdatesKafkaProducer());
 
 	// Terminate Zk manager.
-	terminate.addStopStep(this, getZookeeperManager());
+	stop.addStopStep(this, getZookeeperManager());
 
 	// Terminate script template manager.
-	terminate.addStopStep(this, getScriptTemplateManager());
+	stop.addStopStep(this, getScriptTemplateManager());
+
+	// Stop microservice management GRPC server.
+	stop.addStopStep(this, getMicroserviceManagementGrpcServer());
 
 	// Execute shutdown steps.
-	terminate.execute(monitor);
+	stop.execute(monitor);
     }
 
     /*
@@ -312,11 +318,12 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	try {
 	    getLogger().info("Verifying that instance has been bootstrapped...");
 	    while (true) {
-		if (getZookeeperManager().getCurator().checkExists().forPath(getInstanceBootstrappedMarker()) != null) {
+		if (getZookeeperManager().getCurator().checkExists()
+			.forPath(getInstanceConfigBootstrappedMarker()) != null) {
 		    break;
 		}
-		getLogger().info(String.format("Bootstrap marker not found at '%s'. Waiting...",
-			getInstanceBootstrappedMarker()));
+		getLogger().info(String.format("Configuration bootstrap marker not found at '%s'. Waiting...",
+			getInstanceConfigBootstrappedMarker()));
 		Thread.sleep(INSTANCE_BOOTSTRAP_CHECK_INTERVAL_SECS * 1000);
 	    }
 	    getLogger().info("Confirmed that instance was bootstrapped.");
@@ -470,12 +477,21 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     }
 
     /*
-     * @see com.sitewhere.microservice.spi.IMicroservice#
-     * getInstanceBootstrappedMarker()
+     * @see com.sitewhere.spi.microservice.IMicroservice#
+     * getInstanceConfigBootstrappedMarker()
      */
     @Override
-    public String getInstanceBootstrappedMarker() throws SiteWhereException {
-	return getInstanceStatePath() + INSTANCE_BOOTSTRAP_MARKER;
+    public String getInstanceConfigBootstrappedMarker() throws SiteWhereException {
+	return getInstanceStatePath() + INSTANCE_CONFIG_BOOTSTRAP_MARKER;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#
+     * getInstanceDataBootstrappedMarker()
+     */
+    @Override
+    public String getInstanceDataBootstrappedMarker() throws SiteWhereException {
+	return getInstanceStatePath() + INSTANCE_DATA_BOOTSTRAP_MARKER;
     }
 
     /*
