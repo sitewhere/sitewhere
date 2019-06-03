@@ -8,7 +8,6 @@
 package com.sitewhere.microservice.multitenant;
 
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.client.tenant.TenantManagementApiChannel;
@@ -245,7 +244,7 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
 	    try {
 		// Detect global configuration update and inform all engines.
 		if (getInstanceManagementConfigurationPath().equals(path)) {
-		    ((IMultitenantMicroservice<?, ?>) getMicroservice()).restartConfiguration().get();
+		    ((IMultitenantMicroservice<?, ?>) getMicroservice()).restartConfiguration();
 		    getTenantEngineManager().restartAllTenantEngines();
 		}
 
@@ -257,10 +256,6 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
 			engine.onConfigurationUpdated(pathInfo.getPath(), data);
 		    }
 		}
-	    } catch (InterruptedException e) {
-		getLogger().warn("Interrupted while waiting for global configuration to reload.");
-	    } catch (ExecutionException e) {
-		getLogger().error("Unable to reconfigure microservice based on update.", e);
 	    } catch (SiteWhereException e) {
 		getLogger().error("Error processing configuration update.", e);
 	    }

@@ -388,7 +388,7 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 		    if (getTenantEngineByTenantId(tenantId) == null) {
 			startTenantEngine(tenant);
 		    } else {
-			getLogger().info("Tenant engine already exists for '" + tenantId + "'.");
+			getLogger().debug("Tenant engine already exists for '" + tenantId + "'.");
 		    }
 		} catch (SiteWhereException e) {
 		    getLogger().warn("Exception starting tenant engine.", e);

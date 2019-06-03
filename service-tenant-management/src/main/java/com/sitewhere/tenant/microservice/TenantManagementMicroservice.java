@@ -196,6 +196,8 @@ public class TenantManagementMicroservice extends GlobalMicroservice<Microservic
     @Override
     public void configurationStop(ApplicationContext global, ApplicationContext local,
 	    ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.configurationStop(global, local, monitor);
+
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
