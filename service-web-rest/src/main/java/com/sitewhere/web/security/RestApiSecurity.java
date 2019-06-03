@@ -74,8 +74,7 @@ public class RestApiSecurity extends WebSecurityConfigurerAdapter {
      * @return
      */
     protected TokenAuthenticationFilter tokenAuthenticationFilter() throws Exception {
-	return new TokenAuthenticationFilter(getWebRestMicroservice(),
-		getWebRestMicroservice().getTenantManagementApiChannel(), authenticationManagerBean());
+	return new TokenAuthenticationFilter(getWebRestMicroservice(), authenticationManagerBean());
     }
 
     /*

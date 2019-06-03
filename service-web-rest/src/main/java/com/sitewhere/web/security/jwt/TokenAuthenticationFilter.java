@@ -25,17 +25,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.microservice.security.InvalidJwtException;
 import com.sitewhere.microservice.security.JwtExpiredException;
 import com.sitewhere.security.SitewhereGrantedAuthority;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.security.ITenantAwareAuthentication;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.web.security.SiteWhereHttpHeaders;
+import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
 import io.jsonwebtoken.Claims;
 
@@ -51,18 +50,14 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private static Log LOGGER = LogFactory.getLog(TokenAuthenticationFilter.class);
 
     /** Microservice */
-    private IMicroservice<?> microservice;
-
-    /** Tenant management demux provider */
-    private ITenantManagementApiChannel<?> tenantManagementApiChannel;
+    private IWebRestMicroservice<?> microservice;
 
     /** Authentication manager */
     private AuthenticationManager authenticationManager;
 
-    public TokenAuthenticationFilter(IMicroservice<?> microservice,
-	    ITenantManagementApiChannel<?> tenantManagementApiChannel, AuthenticationManager authenticationManager) {
+    public TokenAuthenticationFilter(IWebRestMicroservice<?> microservice,
+	    AuthenticationManager authenticationManager) {
 	this.microservice = microservice;
-	this.tenantManagementApiChannel = tenantManagementApiChannel;
 	this.authenticationManager = authenticationManager;
     }
 
@@ -139,7 +134,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	    try {
 		SecurityContextHolder.getContext()
 			.setAuthentication(getMicroservice().getSystemUser().getAuthentication());
-		ITenant tenant = getTenantManagementApiChannel().getTenantByToken(tenantToken);
+		ITenant tenant = getMicroservice().getTenantManagementApiChannel().getTenantByToken(tenantToken);
 		if ((tenant == null) || (!tenant.getAuthenticationToken().equals(tenantAuth))) {
 		    throw new SiteWhereException("Auth token passed for tenant id is not correct.");
 		}
@@ -151,20 +146,12 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	}
     }
 
-    protected IMicroservice<?> getMicroservice() {
+    protected IWebRestMicroservice<?> getMicroservice() {
 	return microservice;
     }
 
-    protected void setMicroservice(IMicroservice<?> microservice) {
+    protected void setMicroservice(IWebRestMicroservice<?> microservice) {
 	this.microservice = microservice;
-    }
-
-    protected ITenantManagementApiChannel<?> getTenantManagementApiChannel() {
-	return tenantManagementApiChannel;
-    }
-
-    protected void setTenantManagementApiChannel(ITenantManagementApiChannel<?> tenantManagementApiChannel) {
-	this.tenantManagementApiChannel = tenantManagementApiChannel;
     }
 
     protected AuthenticationManager getAuthenticationManager() {
