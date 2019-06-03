@@ -7,8 +7,8 @@
  */
 package com.sitewhere.labels.microservice;
 
-import com.sitewhere.grpc.client.asset.AssetManagementApiChannel;
-import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
+import com.sitewhere.grpc.client.asset.CachedAssetManagementApiChannel;
+import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.labels.configuration.LabelGenerationModelProvider;
@@ -167,10 +167,12 @@ public class LabelGenerationMicroservice
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
+	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(getInstanceSettings(),
+		new CachedDeviceManagementApiChannel.CacheSettings());
 
 	// Asset management.
-	this.assetManagementApiChannel = new AssetManagementApiChannel(getInstanceSettings());
+	this.assetManagementApiChannel = new CachedAssetManagementApiChannel(getInstanceSettings(),
+		new CachedAssetManagementApiChannel.CacheSettings());
     }
 
     /*

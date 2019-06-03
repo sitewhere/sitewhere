@@ -15,8 +15,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
-import com.sitewhere.grpc.client.tenant.TenantManagementApiChannel;
-import com.sitewhere.grpc.client.user.UserManagementApiChannel;
+import com.sitewhere.grpc.client.tenant.CachedTenantManagementApiChannel;
+import com.sitewhere.grpc.client.user.CachedUserManagementApiChannel;
 import com.sitewhere.instance.configuration.InstanceManagementModelProvider;
 import com.sitewhere.instance.initializer.GroovyTenantModelInitializer;
 import com.sitewhere.instance.initializer.GroovyUserModelInitializer;
@@ -165,8 +165,10 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
      * Create components that interact via GRPC.
      */
     protected void createGrpcComponents() {
-	this.userManagementApiChannel = new UserManagementApiChannel(getInstanceSettings());
-	this.tenantManagementApiChannel = new TenantManagementApiChannel(getInstanceSettings());
+	this.userManagementApiChannel = new CachedUserManagementApiChannel(getInstanceSettings(),
+		new CachedUserManagementApiChannel.CacheSettings());
+	this.tenantManagementApiChannel = new CachedTenantManagementApiChannel(getInstanceSettings(),
+		new CachedTenantManagementApiChannel.CacheSettings());
     }
 
     /*

@@ -7,9 +7,9 @@
  */
 package com.sitewhere.web.microservice;
 
-import com.sitewhere.grpc.client.asset.AssetManagementApiChannel;
+import com.sitewhere.grpc.client.asset.CachedAssetManagementApiChannel;
 import com.sitewhere.grpc.client.batch.BatchManagementApiChannel;
-import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
+import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.devicestate.DeviceStateApiChannel;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.label.LabelGenerationApiChannel;
@@ -23,8 +23,8 @@ import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiChannel;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
-import com.sitewhere.grpc.client.tenant.TenantManagementApiChannel;
-import com.sitewhere.grpc.client.user.UserManagementApiChannel;
+import com.sitewhere.grpc.client.tenant.CachedTenantManagementApiChannel;
+import com.sitewhere.grpc.client.user.CachedUserManagementApiChannel;
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.state.TopologyStateAggregator;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
@@ -180,19 +180,23 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
      */
     protected void createGrpcComponents() throws SiteWhereException {
 	// User management.
-	this.userManagementApiChannel = new UserManagementApiChannel(getInstanceSettings());
+	this.userManagementApiChannel = new CachedUserManagementApiChannel(getInstanceSettings(),
+		new CachedUserManagementApiChannel.CacheSettings());
 
 	// Tenant management.
-	this.tenantManagementApiChannel = new TenantManagementApiChannel(getInstanceSettings());
+	this.tenantManagementApiChannel = new CachedTenantManagementApiChannel(getInstanceSettings(),
+		new CachedTenantManagementApiChannel.CacheSettings());
 
 	// Device management.
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
+	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(getInstanceSettings(),
+		new CachedDeviceManagementApiChannel.CacheSettings());
 
 	// Device event management.
 	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(getInstanceSettings());
 
 	// Asset management.
-	this.assetManagementApiChannel = new AssetManagementApiChannel(getInstanceSettings());
+	this.assetManagementApiChannel = new CachedAssetManagementApiChannel(getInstanceSettings(),
+		new CachedAssetManagementApiChannel.CacheSettings());
 
 	// Batch management.
 	this.batchManagementApiChannel = new BatchManagementApiChannel(getInstanceSettings());

@@ -11,7 +11,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
-import com.sitewhere.grpc.client.tenant.TenantManagementApiChannel;
+import com.sitewhere.grpc.client.tenant.CachedTenantManagementApiChannel;
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
@@ -252,7 +252,8 @@ public class UserManagementMicroservice extends GlobalMicroservice<MicroserviceI
      */
     protected void createGrpcComponents() {
 	this.userManagementGrpcServer = new UserManagementGrpcServer(this, getUserManagementAccessor());
-	this.tenantManagementApiChannel = new TenantManagementApiChannel(getInstanceSettings());
+	this.tenantManagementApiChannel = new CachedTenantManagementApiChannel(getInstanceSettings(),
+		new CachedTenantManagementApiChannel.CacheSettings());
     }
 
     /*

@@ -10,7 +10,7 @@ package com.sitewhere.microservice.multitenant;
 import java.util.UUID;
 
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
-import com.sitewhere.grpc.client.tenant.TenantManagementApiChannel;
+import com.sitewhere.grpc.client.tenant.CachedTenantManagementApiChannel;
 import com.sitewhere.microservice.configuration.ConfigurableMicroservice;
 import com.sitewhere.microservice.configuration.TenantPathInfo;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
@@ -75,7 +75,8 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
      * Create components that interact via GRPC.
      */
     private void createGrpcComponents() {
-	this.tenantManagementApiChannel = new TenantManagementApiChannel(getInstanceSettings());
+	this.tenantManagementApiChannel = new CachedTenantManagementApiChannel(getInstanceSettings(),
+		new CachedTenantManagementApiChannel.CacheSettings());
     }
 
     /*
