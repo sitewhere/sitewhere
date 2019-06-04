@@ -8,9 +8,15 @@
 package com.sitewhere.connectors.groovy.filter;
 
 import com.sitewhere.connectors.filter.DeviceEventFilter;
+import com.sitewhere.connectors.microservice.OutboundConnectorsMicroservice;
 import com.sitewhere.connectors.spi.IDeviceEventFilter;
+import com.sitewhere.groovy.IGroovyVariables;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.microservice.groovy.GroovyComponent;
+import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequestBuilder;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -84,10 +90,18 @@ public class GroovyFilter extends DeviceEventFilter {
      */
     @Override
     public boolean isFiltered(IDeviceEventContext context, IDeviceEvent event) throws SiteWhereException {
-	Binding binding = new Binding();
-	binding.setVariable("logger", getLogger());
-	binding.setVariable("context", context);
-	binding.setVariable("event", event);
+	IDeviceManagementApiChannel<?> deviceManagement = ((OutboundConnectorsMicroservice) getMicroservice())
+		.getDeviceManagementApiChannel();
+	IDeviceAssignment assignment = deviceManagement.getDeviceAssignment(event.getDeviceAssignmentId());
+	IDevice device = deviceManagement.getDevice(assignment.getDeviceId());
+
+	Binding binding = getGroovyComponent().createBindingFor(this);
+	binding.setVariable(IGroovyVariables.VAR_EVENT_CONTEXT, context);
+	binding.setVariable(IGroovyVariables.VAR_EVENT, event);
+	binding.setVariable(IGroovyVariables.VAR_ASSIGNMENT, assignment);
+	binding.setVariable(IGroovyVariables.VAR_DEVICE, device);
+	binding.setVariable(IGroovyVariables.VAR_DEVICE_MANAGEMENT_BUILDER,
+		new DeviceManagementRequestBuilder(deviceManagement));
 	return (boolean) getGroovyComponent().run(binding);
     }
 

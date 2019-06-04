@@ -104,12 +104,11 @@ public class GroovyCommandRouter extends GroovyComponent implements IOutboundCom
     protected String findCommandDestination(IDeviceCommandExecution execution, ISystemCommand system,
 	    IDeviceNestingContext nesting, IDeviceAssignment assignment) throws SiteWhereException {
 	try {
-	    Binding binding = new Binding();
+	    Binding binding = createBindingFor(this);
 	    binding.setVariable(IGroovyVariables.VAR_COMMAND_EXECUTION, execution);
 	    binding.setVariable(IGroovyVariables.VAR_SYSTEM_COMMAND, system);
 	    binding.setVariable(IGroovyVariables.VAR_NESTING_CONTEXT, nesting);
 	    binding.setVariable(IGroovyVariables.VAR_ASSIGNMENT, assignment);
-	    binding.setVariable(IGroovyVariables.VAR_LOGGER, getLogger());
 	    getLogger().debug("About to route command using script '" + getScriptId() + "'");
 	    return (String) run(binding);
 	} catch (SiteWhereException e) {

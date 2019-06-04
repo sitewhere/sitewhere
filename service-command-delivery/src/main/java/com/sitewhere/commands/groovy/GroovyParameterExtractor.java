@@ -45,10 +45,9 @@ public class GroovyParameterExtractor<T> extends GroovyComponent implements ICom
     public T extractDeliveryParameters(IDeviceNestingContext nesting, IDeviceAssignment assignment,
 	    IDeviceCommandExecution execution) throws SiteWhereException {
 	try {
-	    Binding binding = new Binding();
+	    Binding binding = createBindingFor(this);
 	    binding.setVariable(IGroovyVariables.VAR_NESTING_CONTEXT, nesting);
 	    binding.setVariable(IGroovyVariables.VAR_ASSIGNMENT, assignment);
-	    binding.setVariable(IGroovyVariables.VAR_LOGGER, getLogger());
 	    return (T) run(binding);
 	} catch (SiteWhereException e) {
 	    throw new SiteWhereException("Unable to run parameter extractor script.", e);

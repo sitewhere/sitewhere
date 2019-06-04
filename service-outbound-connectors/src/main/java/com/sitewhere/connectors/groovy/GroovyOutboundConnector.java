@@ -176,14 +176,13 @@ public class GroovyOutboundConnector extends SerialOutboundConnector {
 	IDevice device = getDeviceManagement().getDevice(assignment.getDeviceId());
 
 	// Create Groovy binding with handles to everything.
-	Binding binding = new Binding();
+	Binding binding = getGroovyComponent().createBindingFor(this);
 	binding.setVariable(IGroovyVariables.VAR_EVENT_CONTEXT, context);
 	binding.setVariable(IGroovyVariables.VAR_EVENT, event);
 	binding.setVariable(IGroovyVariables.VAR_ASSIGNMENT, assignment);
 	binding.setVariable(IGroovyVariables.VAR_DEVICE, device);
 	binding.setVariable(IGroovyVariables.VAR_DEVICE_MANAGEMENT_BUILDER, deviceBuilder);
 	binding.setVariable(IGroovyVariables.VAR_EVENT_MANAGEMENT_BUILDER, eventsBuilder);
-	binding.setVariable(IGroovyVariables.VAR_LOGGER, getLogger());
 
 	getGroovyComponent().run(binding);
     }
