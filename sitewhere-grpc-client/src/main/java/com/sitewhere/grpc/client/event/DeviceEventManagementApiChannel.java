@@ -14,7 +14,6 @@ import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.MultitenantApiChannel;
 import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
 import com.sitewhere.grpc.client.common.tracing.DebugParameter;
-import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
 import com.sitewhere.grpc.service.GAddAlertsRequest;
@@ -72,9 +71,12 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.tracing.ITracerProvider;
 
 import io.grpc.stub.StreamObserver;
 
@@ -87,18 +89,20 @@ import io.grpc.stub.StreamObserver;
 public class DeviceEventManagementApiChannel extends MultitenantApiChannel<DeviceEventManagementGrpcChannel>
 	implements IDeviceEventManagementApiChannel<DeviceEventManagementGrpcChannel> {
 
-    public DeviceEventManagementApiChannel(IApiDemux<?> demux, String host, int port) {
-	super(demux, host, port);
+    public DeviceEventManagementApiChannel(IInstanceSettings settings) {
+	super(settings, MicroserviceIdentifier.EventManagement, IGrpcSettings.DEFAULT_API_PORT);
     }
 
     /*
      * @see
      * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
-     * .tracing.ITracerProvider, java.lang.String, int)
+     * .microservice.instance.IInstanceSettings,
+     * com.sitewhere.spi.microservice.IFunctionIdentifier, int)
      */
     @Override
-    public DeviceEventManagementGrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	return new DeviceEventManagementGrpcChannel(tracerProvider, host, port);
+    public DeviceEventManagementGrpcChannel createGrpcChannel(IInstanceSettings settings,
+	    IFunctionIdentifier identifier, int port) {
+	return new DeviceEventManagementGrpcChannel(settings, identifier, port);
     }
 
     /*

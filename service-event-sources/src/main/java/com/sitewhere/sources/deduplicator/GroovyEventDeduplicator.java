@@ -45,12 +45,13 @@ public class GroovyEventDeduplicator extends GroovyComponent implements IDeviceE
     @Override
     public boolean isDuplicate(IDecodedDeviceRequest<?> request) throws SiteWhereException {
 	try {
-	    Binding binding = createBindingFor(this);
+	    Binding binding = new Binding();
 	    binding.setVariable(IGroovyVariables.VAR_DEVICE_MANAGEMENT_BUILDER,
 		    new DeviceManagementRequestBuilder(getDeviceManagement()));
 	    binding.setVariable(IGroovyVariables.VAR_EVENT_MANAGEMENT_BUILDER,
 		    new DeviceEventRequestBuilder(getDeviceManagement(), getDeviceEventManagement()));
 	    binding.setVariable(IGroovyVariables.VAR_DECODED_DEVICE_REQUEST, request);
+	    binding.setVariable(IGroovyVariables.VAR_LOGGER, getLogger());
 	    getLogger().debug("About to execute '" + getScriptId() + "' for event request: " + request);
 	    Boolean isDuplicate = (Boolean) run(binding);
 	    return isDuplicate;
@@ -60,12 +61,11 @@ public class GroovyEventDeduplicator extends GroovyComponent implements IDeviceE
     }
 
     private IDeviceManagement getDeviceManagement() {
-	return ((IEventSourcesMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiDemux()
-		.getApiChannel();
+	return ((IEventSourcesMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {
-	return new BlockingDeviceEventManagement(((IEventSourcesMicroservice) getTenantEngine().getMicroservice())
-		.getDeviceEventManagementApiDemux().getApiChannel());
+	return new BlockingDeviceEventManagement(
+		((IEventSourcesMicroservice) getTenantEngine().getMicroservice()).getDeviceEventManagementApiChannel());
     }
 }

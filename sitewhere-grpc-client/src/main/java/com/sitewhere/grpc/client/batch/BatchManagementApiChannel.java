@@ -12,7 +12,6 @@ import java.util.UUID;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.MultitenantApiChannel;
 import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
-import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IBatchManagementApiChannel;
 import com.sitewhere.grpc.service.BatchManagementGrpc;
 import com.sitewhere.grpc.service.GCreateBatchCommandInvocationRequest;
@@ -42,10 +41,13 @@ import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.batch.request.IBatchElementCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.batch.IBatchOperationSearchCriteria;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
-import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Supports SiteWhere batch management APIs on top of a
@@ -56,18 +58,20 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManagementGrpcChannel>
 	implements IBatchManagementApiChannel<BatchManagementGrpcChannel> {
 
-    public BatchManagementApiChannel(IApiDemux<?> demux, String host, int port) {
-	super(demux, host, port);
+    public BatchManagementApiChannel(IInstanceSettings settings) {
+	super(settings, MicroserviceIdentifier.BatchOperations, IGrpcSettings.DEFAULT_API_PORT);
     }
 
     /*
      * @see
      * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
-     * .tracing.ITracerProvider, java.lang.String, int)
+     * .microservice.instance.IInstanceSettings,
+     * com.sitewhere.spi.microservice.IFunctionIdentifier, int)
      */
     @Override
-    public BatchManagementGrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	return new BatchManagementGrpcChannel(tracerProvider, host, port);
+    public BatchManagementGrpcChannel createGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier,
+	    int port) {
+	return new BatchManagementGrpcChannel(settings, identifier, port);
     }
 
     /*

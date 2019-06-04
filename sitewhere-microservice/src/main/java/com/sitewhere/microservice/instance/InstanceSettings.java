@@ -30,14 +30,6 @@ public class InstanceSettings implements IInstanceSettings {
     @Value("#{systemEnvironment['sitewhere.instance.template.id'] ?: 'default'}")
     private String instanceTemplateId;
 
-    /** Consul hostname info for microservices */
-    @Value("#{systemEnvironment['sitewhere.consul.host'] ?: 'consul'}")
-    private String consulHost;
-
-    /** Consul port info for microservices */
-    @Value("#{systemEnvironment['sitewhere.consul.port'] ?: '8500'}")
-    private int consulPort;
-
     /** Zookeeper hostname info for microservices */
     @Value("#{systemEnvironment['sitewhere.zookeeper.host'] ?: 'localhost'}")
     private String zookeeperHost;
@@ -54,18 +46,6 @@ public class InstanceSettings implements IInstanceSettings {
     @Value("#{systemEnvironment['sitewhere.filesystem.storage.root'] ?: '/var/sitewhere'}")
     private String fileSystemStorageRoot;
 
-    /** GRPC port for serving APIs */
-    @Value("#{systemEnvironment['sitewhere.grpc.port'] ?: '9000'}")
-    private int grpcPort;
-
-    /** GRPC port info for microservice management */
-    @Value("#{systemEnvironment['sitewhere.management.grpc.port'] ?: '9001'}")
-    private int managementGrpcPort;
-
-    /** Tracer server information */
-    @Value("#{systemEnvironment['sitewhere.tracer.server'] ?: 'jaeger'}")
-    private String tracerServer;
-
     /** Flag for whether to log metrics */
     @Value("#{systemEnvironment['sitewhere.log.metrics'] ?: 'false'}")
     private boolean logMetrics;
@@ -73,6 +53,10 @@ public class InstanceSettings implements IInstanceSettings {
     /** Microservice publicly resolvable hostname */
     @Value("#{systemEnvironment['sitewhere.service.public.hostname'] ?: '#{null}'}")
     private String publicHostname;
+
+    /** Microservice publicly resolvable hostname */
+    @Value("#{systemEnvironment['sitewhere.namespace'] ?: '#{null}'}")
+    private String kubernetesNamespace;
 
     /** Microservice publicly resolvable hostname */
     @Value("#{systemEnvironment['sitewhere.k8s.pod.ip'] ?: '#{null}'}")
@@ -114,32 +98,6 @@ public class InstanceSettings implements IInstanceSettings {
 
     public void setInstanceTemplateId(String instanceTemplateId) {
 	this.instanceTemplateId = instanceTemplateId;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.microservice.instance.IInstanceSettings#getConsulHost()
-     */
-    @Override
-    public String getConsulHost() {
-	return consulHost;
-    }
-
-    public void setConsulHost(String consulHost) {
-	this.consulHost = consulHost;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.microservice.instance.IInstanceSettings#getConsulPort()
-     */
-    @Override
-    public int getConsulPort() {
-	return consulPort;
-    }
-
-    public void setConsulPort(int consulPort) {
-	this.consulPort = consulPort;
     }
 
     /*
@@ -195,44 +153,6 @@ public class InstanceSettings implements IInstanceSettings {
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#getGrpcPort()
-     */
-    @Override
-    public int getGrpcPort() {
-	return grpcPort;
-    }
-
-    public void setGrpcPort(int grpcPort) {
-	this.grpcPort = grpcPort;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
-     * getManagementGrpcPort()
-     */
-    @Override
-    public int getManagementGrpcPort() {
-	return managementGrpcPort;
-    }
-
-    public void setManagementGrpcPort(int managementGrpcPort) {
-	this.managementGrpcPort = managementGrpcPort;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.microservice.instance.IInstanceSettings#getTracerServer()
-     */
-    @Override
-    public String getTracerServer() {
-	return tracerServer;
-    }
-
-    public void setTracerServer(String tracerServer) {
-	this.tracerServer = tracerServer;
-    }
-
-    /*
      * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#isLogMetrics()
      */
     @Override
@@ -255,6 +175,19 @@ public class InstanceSettings implements IInstanceSettings {
 
     public void setPublicHostname(String publicHostname) {
 	this.publicHostname = publicHostname;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
+     * getKubernetesNamespace()
+     */
+    @Override
+    public String getKubernetesNamespace() {
+	return kubernetesNamespace;
+    }
+
+    public void setKubernetesNamespace(String kubernetesNamespace) {
+	this.kubernetesNamespace = kubernetesNamespace;
     }
 
     /*

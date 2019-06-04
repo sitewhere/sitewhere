@@ -11,7 +11,8 @@ import com.sitewhere.grpc.client.MultitenantGrpcChannel;
 import com.sitewhere.grpc.service.BatchManagementGrpc;
 import com.sitewhere.grpc.service.BatchManagementGrpc.BatchManagementBlockingStub;
 import com.sitewhere.grpc.service.BatchManagementGrpc.BatchManagementStub;
-import com.sitewhere.spi.tracing.ITracerProvider;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Channel that allows for communication with a remote batch management GRPC
@@ -22,8 +23,8 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public class BatchManagementGrpcChannel
 	extends MultitenantGrpcChannel<BatchManagementBlockingStub, BatchManagementStub> {
 
-    public BatchManagementGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	super(tracerProvider, host, port);
+    public BatchManagementGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier, int port) {
+	super(settings, identifier, port);
     }
 
     /*

@@ -21,8 +21,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressContext;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleProgressUtils;
 
-import io.opentracing.ActiveSpan;
-
 /**
  * Default implementation of {@link ILifecycleProgressMonitor}.
  * 
@@ -57,7 +55,7 @@ public class LifecycleProgressMonitor implements ILifecycleProgressMonitor {
      */
     @Override
     public void reportProgress(IProgressMessage message) throws SiteWhereException {
-	LOGGER.info(
+	LOGGER.debug(
 		"[" + message.getTaskName() + "]: (" + message.getProgressPercentage() + "%) " + message.getMessage());
     }
 
@@ -84,37 +82,6 @@ public class LifecycleProgressMonitor implements ILifecycleProgressMonitor {
     @Override
     public void pushContext(ILifecycleProgressContext context) throws SiteWhereException {
 	getContextStack().push(context);
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor#
-     * createTracerSpan(java.lang.String)
-     */
-    @Override
-    public ActiveSpan createTracerSpan(String name) throws SiteWhereException {
-	ILifecycleProgressContext current = getContextStack().peek();
-	if (current != null) {
-	    return getMicroservice().getTracer().buildSpan(name).startActive();
-	}
-	throw new SiteWhereException("Unable to create span. No context found.");
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor#
-     * handleErrorInTracerSpan(io.opentracing.ActiveSpan, java.lang.Throwable)
-     */
-    @Override
-    public void handleErrorInTracerSpan(ActiveSpan span, Throwable t) {
-	TracerUtils.handleErrorInTracerSpan(span, t);
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor#
-     * finishTracerSpan(io.opentracing.ActiveSpan)
-     */
-    @Override
-    public void finishTracerSpan(ActiveSpan span) {
-	TracerUtils.finishTracerSpan(span);
     }
 
     /*

@@ -10,6 +10,7 @@ package com.sitewhere.asset.grpc;
 import com.sitewhere.asset.spi.grpc.IAssetManagementGrpcServer;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.microservice.grpc.MultitenantGrpcServer;
+import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 
 /**
  * Hosts a GRPC server that handles asset management requests.
@@ -19,6 +20,7 @@ import com.sitewhere.microservice.grpc.MultitenantGrpcServer;
 public class AssetManagementGrpcServer extends MultitenantGrpcServer implements IAssetManagementGrpcServer {
 
     public AssetManagementGrpcServer(IAssetManagementMicroservice microservice) {
-	super(new AssetManagementRouter(microservice), microservice.getInstanceSettings().getGrpcPort());
+	super(new AssetManagementRouter(microservice), IGrpcSettings.DEFAULT_API_PORT,
+		IGrpcSettings.DEFAULT_API_HEALTH_PORT);
     }
 }

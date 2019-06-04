@@ -7,8 +7,6 @@
  */
 package com.sitewhere.spi.microservice;
 
-import com.sitewhere.spi.SiteWhereException;
-
 /**
  * Provides a list of known identifiers for microservices.
  * 
@@ -16,65 +14,62 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public enum MicroserviceIdentifier implements IFunctionIdentifier {
 
-    AssetManagement("asset-management"),
+    AssetManagement("asset-management", "com.sitewhere.grpc.service.UserManagement"),
 
-    BatchOperations("batch-operations"),
+    BatchOperations("batch-operations", "com.sitewhere.grpc.service.BatchManagement"),
 
-    CommandDelivery("command-delivery"),
+    CommandDelivery("command-delivery", null),
 
-    DeviceManagement("device-management"),
+    DeviceManagement("device-management", "com.sitewhere.grpc.service.DeviceManagement"),
 
-    DeviceRegistration("device-registration"),
+    DeviceRegistration("device-registration", null),
 
-    EventManagement("event-management"),
+    EventManagement("event-management", "com.sitewhere.grpc.service.DeviceEventManagement"),
 
-    EventSearch("event-search"),
+    EventSearch("event-search", null),
 
-    EventSources("event-sources"),
+    EventSources("event-sources", null),
 
-    InboundProcessing("inbound-processing"),
+    InboundProcessing("inbound-processing", null),
 
-    InstanceManagement("instance-management"),
+    InstanceManagement("instance-management", null),
 
-    LabelGeneration("label-generation"),
+    LabelGeneration("label-generation", "com.sitewhere.grpc.service.LabelGeneration"),
 
-    OutboundConnectors("outbound-connectors"),
+    OutboundConnectors("outbound-connectors", null),
 
-    DeviceState("device-state"),
+    DeviceState("device-state", "com.sitewhere.grpc.service.DeviceState"),
 
-    RuleProcessing("rule-processing"),
+    RuleProcessing("rule-processing", null),
 
-    ScheduleManagement("schedule-management"),
+    ScheduleManagement("schedule-management", "com.sitewhere.grpc.service.ScheduleManagement"),
 
-    StreamingMedia("streaming-media"),
+    StreamingMedia("streaming-media", null),
 
-    TenantManagement("tenant-management"),
+    TenantManagement("tenant-management", "com.sitewhere.grpc.service.TenantManagement"),
 
-    UserManagement("user-management"),
+    UserManagement("user-management", "com.sitewhere.grpc.service.UserManagement"),
 
-    WebRest("web-rest");
+    WebRest("web-rest", null);
 
     /** Path */
     private String path;
 
-    private MicroserviceIdentifier(String path) {
+    /** Service name */
+    private String grpcServiceName;
+
+    private MicroserviceIdentifier(String path, String grpcServiceName) {
 	this.path = path;
+	this.grpcServiceName = grpcServiceName;
     }
 
-    /**
-     * Get microservice identifier by path.
-     * 
-     * @param path
-     * @return
-     * @throws SiteWhereException
-     */
-    public static MicroserviceIdentifier getByPath(String path) throws SiteWhereException {
+    public static MicroserviceIdentifier getByPath(String path) {
 	for (MicroserviceIdentifier value : MicroserviceIdentifier.values()) {
 	    if (value.getPath().equals(path)) {
 		return value;
 	    }
 	}
-	throw new SiteWhereException("Unknown microservice identifier: " + path);
+	return null;
     }
 
     /*
@@ -91,5 +86,13 @@ public enum MicroserviceIdentifier implements IFunctionIdentifier {
     @Override
     public String getShortName() {
 	return name();
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IFunctionIdentifier#getGrpcServiceName()
+     */
+    @Override
+    public String getGrpcServiceName() {
+	return grpcServiceName;
     }
 }

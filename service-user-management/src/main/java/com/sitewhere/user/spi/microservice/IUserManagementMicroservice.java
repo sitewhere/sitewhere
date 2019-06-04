@@ -7,7 +7,7 @@
  */
 package com.sitewhere.user.spi.microservice;
 
-import com.sitewhere.grpc.client.spi.provider.ITenantManagementDemuxProvider;
+import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
 import com.sitewhere.spi.user.IUserManagement;
@@ -18,8 +18,7 @@ import com.sitewhere.user.spi.grpc.IUserManagementGrpcServer;
  * 
  * @author Derek
  */
-public interface IUserManagementMicroservice<T extends IFunctionIdentifier>
-	extends IGlobalMicroservice<T>, ITenantManagementDemuxProvider<T> {
+public interface IUserManagementMicroservice<T extends IFunctionIdentifier> extends IGlobalMicroservice<T> {
 
     /**
      * Get GRPC server for user managment APIS.
@@ -34,4 +33,11 @@ public interface IUserManagementMicroservice<T extends IFunctionIdentifier>
      * @return
      */
     public IUserManagement getUserManagement();
+
+    /**
+     * Get channel for interacting with tenant management via gRPC.
+     * 
+     * @return
+     */
+    public ITenantManagementApiChannel<?> getTenantManagementApiChannel();
 }

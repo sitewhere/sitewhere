@@ -10,6 +10,7 @@ package com.sitewhere.device.grpc;
 import com.sitewhere.device.spi.grpc.IDeviceManagementGrpcServer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.microservice.grpc.MultitenantGrpcServer;
+import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 
 /**
  * Hosts a GRPC server that handles device management requests.
@@ -19,6 +20,7 @@ import com.sitewhere.microservice.grpc.MultitenantGrpcServer;
 public class DeviceManagementGrpcServer extends MultitenantGrpcServer implements IDeviceManagementGrpcServer {
 
     public DeviceManagementGrpcServer(IDeviceManagementMicroservice microservice) {
-	super(new DeviceManagementRouter(microservice), microservice.getInstanceSettings().getGrpcPort());
+	super(new DeviceManagementRouter(microservice), IGrpcSettings.DEFAULT_API_PORT,
+		IGrpcSettings.DEFAULT_API_HEALTH_PORT);
     }
 }

@@ -9,17 +9,14 @@ package com.sitewhere.asset.microservice;
 
 import com.sitewhere.asset.configuration.AssetManagementModelProvider;
 import com.sitewhere.asset.grpc.AssetManagementGrpcServer;
-import com.sitewhere.asset.messages.AssetManagementMessages;
 import com.sitewhere.asset.spi.grpc.IAssetManagementGrpcServer;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
-import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
-import com.sitewhere.grpc.client.device.DeviceManagementApiDemux;
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
+import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.messages.SiteWhereMessage;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -42,7 +39,7 @@ public class AssetManagementMicroservice
     private IAssetManagementGrpcServer assetManagementGrpcServer;
 
     /** Device management API demux */
-    private IDeviceManagementApiDemux deviceManagementApiDemux;
+    private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
 
     /*
      * (non-Javadoc)
@@ -92,32 +89,6 @@ public class AssetManagementMicroservice
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.microservice.Microservice#afterMicroserviceStarted()
-     */
-    @Override
-    public void afterMicroserviceStarted() {
-	try {
-	    waitForDependenciesAvailable();
-	    getLogger().debug(AssetManagementMessages.ALL_REQUIRED_MS_AVAILABLE);
-	} catch (ApiChannelNotAvailableException e) {
-	    getLogger().error(SiteWhereMessage.MICROSERVICE_NOT_AVAILABLE);
-	    getLogger().error("Microservice not available.", e);
-	}
-    }
-
-    /**
-     * Wait for required microservices to become available.
-     * 
-     * @throws ApiChannelNotAvailableException
-     */
-    protected void waitForDependenciesAvailable() throws ApiChannelNotAvailableException {
-	getDeviceManagementApiDemux().waitForMicroserviceAvailable();
-	getLogger().debug(AssetManagementMessages.DEVICE_MANAGEMENT_MS_AVAILABLE);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
      * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
      * ILifecycleProgressMonitor)
@@ -133,8 +104,8 @@ public class AssetManagementMicroservice
 	// Initialize device management GRPC server.
 	init.addInitializeStep(this, getAssetManagementGrpcServer(), true);
 
-	// Initialize device management API demux.
-	init.addInitializeStep(this, getDeviceManagementApiDemux(), true);
+	// Initialize device management API channel.
+	init.addInitializeStep(this, getDeviceManagementApiChannel(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -155,8 +126,8 @@ public class AssetManagementMicroservice
 	// Start asset management GRPC server.
 	start.addStartStep(this, getAssetManagementGrpcServer(), true);
 
-	// Start device mangement API demux.
-	start.addStartStep(this, getDeviceManagementApiDemux(), true);
+	// Start device mangement API channel.
+	start.addStartStep(this, getDeviceManagementApiChannel(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -177,8 +148,8 @@ public class AssetManagementMicroservice
 	// Stop asset management GRPC server.
 	stop.addStopStep(this, getAssetManagementGrpcServer());
 
-	// Stop device mangement API demux.
-	stop.addStopStep(this, getDeviceManagementApiDemux());
+	// Stop device mangement API channel.
+	stop.addStopStep(this, getDeviceManagementApiChannel());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -192,20 +163,21 @@ public class AssetManagementMicroservice
 	this.assetManagementGrpcServer = new AssetManagementGrpcServer(this);
 
 	// Device management.
-	this.deviceManagementApiDemux = new DeviceManagementApiDemux(true);
+	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(getInstanceSettings(),
+		new CachedDeviceManagementApiChannel.CacheSettings());
     }
 
     /*
      * @see com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice#
-     * getDeviceManagementApiDemux()
+     * getDeviceManagementApiChannel()
      */
     @Override
-    public IDeviceManagementApiDemux getDeviceManagementApiDemux() {
-	return deviceManagementApiDemux;
+    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
+	return deviceManagementApiChannel;
     }
 
-    public void setDeviceManagementApiDemux(IDeviceManagementApiDemux deviceManagementApiDemux) {
-	this.deviceManagementApiDemux = deviceManagementApiDemux;
+    public void setDeviceManagementApiChannel(IDeviceManagementApiChannel<?> deviceManagementApiChannel) {
+	this.deviceManagementApiChannel = deviceManagementApiChannel;
     }
 
     public IAssetManagementGrpcServer getAssetManagementGrpcServer() {

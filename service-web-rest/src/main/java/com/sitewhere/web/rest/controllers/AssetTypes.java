@@ -193,10 +193,10 @@ public class AssetTypes extends RestControllerBase {
     }
 
     private IAssetManagement getAssetManagement() throws SiteWhereException {
-	return getMicroservice().getAssetManagementApiDemux().getApiChannel();
+	return getMicroservice().getAssetManagementApiChannel();
     }
 
     private ILabelGeneration getLabelGeneration() {
-	return getMicroservice().getLabelGenerationApiDemux().getApiChannel();
+	return getMicroservice().getLabelGenerationApiChannel();
     }
 }

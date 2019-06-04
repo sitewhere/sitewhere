@@ -223,6 +223,6 @@ public class DeviceCommands extends RestControllerBase {
     }
 
     private IDeviceManagement getDeviceManagement() {
-	return getMicroservice().getDeviceManagementApiDemux().getApiChannel();
+	return getMicroservice().getDeviceManagementApiChannel();
     }
 }

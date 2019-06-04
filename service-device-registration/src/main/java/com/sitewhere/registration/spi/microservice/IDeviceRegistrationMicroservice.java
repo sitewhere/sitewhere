@@ -7,7 +7,7 @@
  */
 package com.sitewhere.registration.spi.microservice;
 
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
@@ -24,5 +24,5 @@ public interface IDeviceRegistrationMicroservice
      * 
      * @return
      */
-    public IDeviceManagementApiDemux getDeviceManagementApiDemux();
+    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel();
 }

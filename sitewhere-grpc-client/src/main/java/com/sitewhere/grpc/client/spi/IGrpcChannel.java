@@ -8,7 +8,6 @@
 package com.sitewhere.grpc.client.spi;
 
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
-import com.sitewhere.spi.tracing.ITracerProvider;
 
 import io.grpc.ManagedChannel;
 
@@ -20,7 +19,7 @@ import io.grpc.ManagedChannel;
  * @param <B>
  * @param <A>
  */
-public interface IGrpcChannel<B, A> extends ITenantEngineLifecycleComponent, ITracerProvider {
+public interface IGrpcChannel<B, A> extends ITenantEngineLifecycleComponent {
 
     /**
      * Get managed channel.

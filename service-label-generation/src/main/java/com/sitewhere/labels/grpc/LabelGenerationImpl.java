@@ -373,7 +373,7 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
      */
     protected IDeviceManagement getDeviceManagement() throws SiteWhereException {
 	return ((ILabelGenerationMicroservice) getLabelGenerationTenantEngine().getMicroservice())
-		.getDeviceManagementApiDemux().getApiChannel();
+		.getDeviceManagementApiChannel();
     }
 
     /**
@@ -384,7 +384,7 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
      */
     protected IAssetManagement getAssetManagement() throws SiteWhereException {
 	return ((ILabelGenerationMicroservice) getLabelGenerationTenantEngine().getMicroservice())
-		.getAssetManagementApiDemux().getApiChannel();
+		.getAssetManagementApiChannel();
     }
 
     /**

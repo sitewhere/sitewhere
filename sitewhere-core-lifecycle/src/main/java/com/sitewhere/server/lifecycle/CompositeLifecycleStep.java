@@ -19,8 +19,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 
-import io.opentracing.ActiveSpan;
-
 /**
  * Implementation of {@link ILifecycleStep} that is composed of multiple
  * lifecycle steps that are executed in order.
@@ -73,21 +71,15 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
 	monitor.pushContext(new LifecycleProgressContext(steps.size(), getName()));
 	try {
 	    for (ILifecycleStep step : steps) {
-		LOGGER.debug("Starting " + step.getName());
-		ActiveSpan span = monitor.getMicroservice().getTracer().activeSpan();
+		LOGGER.debug(String.format("About to start step '%s'...", step.getName()));
 		try {
-		    TracerUtils.logToSpan(span, "Starting step '" + step.getName() + "'.");
 		    monitor.startProgress(step.getName());
 		    step.execute(monitor);
 		    monitor.finishProgress();
-		} catch (SiteWhereException e) {
-		    TracerUtils.handleErrorInTracerSpan(span, e);
-		    throw e;
+		} catch (SiteWhereException t) {
+		    throw t;
 		} catch (Throwable t) {
-		    SiteWhereException e = new SiteWhereException("Unhandled exception in composite lifecycle step.",
-			    t);
-		    TracerUtils.handleErrorInTracerSpan(span, e);
-		    throw e;
+		    throw new SiteWhereException("Unhandled exception in composite lifecycle step.", t);
 		}
 	    }
 	} finally {
@@ -102,6 +94,7 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
      * sitewhere.spi.server.lifecycle.ILifecycleStep)
      */
     public void addStep(ILifecycleStep step) {
+	LOGGER.debug("In addStep() for " + step.getName());
 	getSteps().add(step);
     }
 
@@ -112,10 +105,11 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
      */
     @Override
     public void addInitializeStep(ILifecycleComponent owner, ILifecycleComponent component, boolean require) {
+	LOGGER.debug("In addInitializeStep() for " + component);
 	if (component != null) {
 	    addStep(new InitializeComponentLifecycleStep(owner, component, require));
 	} else {
-	    owner.getLogger().warn("Skipping 'initialize' step for null component.");
+	    LOGGER.warn("Skipping 'initialize' step for null component.");
 	}
     }
 
@@ -126,10 +120,11 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
      */
     @Override
     public void addStartStep(ILifecycleComponent owner, ILifecycleComponent component, boolean require) {
+	LOGGER.debug("In addStartStep() for " + component);
 	if (component != null) {
 	    addStep(new StartComponentLifecycleStep(owner, component, require));
 	} else {
-	    owner.getLogger().warn("Skipping 'start' step for null component.");
+	    LOGGER.warn("Skipping 'start' step for null component.");
 	}
     }
 
@@ -143,7 +138,7 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
 	if (component != null) {
 	    addStep(new StopComponentLifecycleStep(owner, component));
 	} else {
-	    owner.getLogger().warn("Skipping 'stop' step for null component.");
+	    LOGGER.debug("Skipping 'stop' step for null component.");
 	}
     }
 

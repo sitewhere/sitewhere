@@ -5,21 +5,17 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.tracing;
-
-import io.opentracing.Tracer;
+package com.sitewhere.spi.microservice.state;
 
 /**
- * Implemented by objects that can provide a {@link Tracer} instance.
- * 
- * @author Derek
+ * Element which contains state information about part of a microservice.
  */
-public interface ITracerProvider {
+public interface IMicroserviceStateElement {
 
     /**
-     * Get handle to a {@link Tracer}.
+     * Get microservice details.
      * 
      * @return
      */
-    public Tracer getTracer();
+    public IMicroserviceDetails getMicroservice();
 }

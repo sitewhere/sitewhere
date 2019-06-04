@@ -10,6 +10,7 @@ package com.sitewhere.batch.grpc;
 import com.sitewhere.batch.spi.grpc.IBatchManagementGrpcServer;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.microservice.grpc.MultitenantGrpcServer;
+import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 
 /**
  * Hosts a GRPC server that handles batch management requests.
@@ -19,6 +20,7 @@ import com.sitewhere.microservice.grpc.MultitenantGrpcServer;
 public class BatchManagementGrpcServer extends MultitenantGrpcServer implements IBatchManagementGrpcServer {
 
     public BatchManagementGrpcServer(IBatchOperationsMicroservice microservice) {
-	super(new BatchManagementRouter(microservice), microservice.getInstanceSettings().getGrpcPort());
+	super(new BatchManagementRouter(microservice), IGrpcSettings.DEFAULT_API_PORT,
+		IGrpcSettings.DEFAULT_API_HEALTH_PORT);
     }
 }

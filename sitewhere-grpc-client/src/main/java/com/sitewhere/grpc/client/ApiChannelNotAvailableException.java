@@ -7,12 +7,14 @@
  */
 package com.sitewhere.grpc.client;
 
+import com.sitewhere.spi.SiteWhereException;
+
 /**
  * Indicates no API channel is available to complete an operation.
  * 
  * @author Derek
  */
-public class ApiChannelNotAvailableException extends RuntimeException {
+public class ApiChannelNotAvailableException extends SiteWhereException {
 
     /** Serial version UID */
     private static final long serialVersionUID = -6971589967178711085L;
@@ -30,10 +32,5 @@ public class ApiChannelNotAvailableException extends RuntimeException {
 
     public ApiChannelNotAvailableException(String message, Throwable cause) {
 	super(message, cause);
-    }
-
-    public ApiChannelNotAvailableException(String message, Throwable cause, boolean enableSuppression,
-	    boolean writableStackTrace) {
-	super(message, cause, enableSuppression, writableStackTrace);
     }
 }

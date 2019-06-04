@@ -8,6 +8,7 @@
 package com.sitewhere.user.grpc;
 
 import com.sitewhere.microservice.grpc.GrpcServer;
+import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.user.spi.grpc.IUserManagementGrpcServer;
 import com.sitewhere.user.spi.microservice.IUserManagementMicroservice;
@@ -20,6 +21,7 @@ import com.sitewhere.user.spi.microservice.IUserManagementMicroservice;
 public class UserManagementGrpcServer extends GrpcServer implements IUserManagementGrpcServer {
 
     public UserManagementGrpcServer(IUserManagementMicroservice<?> microservice, IUserManagement userManagement) {
-	super(new UserManagementImpl(microservice, userManagement), microservice.getInstanceSettings().getGrpcPort());
+	super(new UserManagementImpl(microservice, userManagement), IGrpcSettings.DEFAULT_API_PORT,
+		IGrpcSettings.DEFAULT_API_HEALTH_PORT);
     }
 }

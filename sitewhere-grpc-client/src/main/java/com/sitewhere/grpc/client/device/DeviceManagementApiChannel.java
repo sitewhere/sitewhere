@@ -13,7 +13,6 @@ import java.util.UUID;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.MultitenantApiChannel;
 import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
-import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.grpc.service.*;
 import com.sitewhere.spi.SiteWhereException;
@@ -44,6 +43,10 @@ import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
@@ -54,7 +57,6 @@ import com.sitewhere.spi.search.device.IDeviceCommandSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceStatusSearchCriteria;
 import com.sitewhere.spi.search.device.IZoneSearchCriteria;
-import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Supports SiteWhere device management APIs on top of a
@@ -65,18 +67,20 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceManagementGrpcChannel>
 	implements IDeviceManagementApiChannel<DeviceManagementGrpcChannel> {
 
-    public DeviceManagementApiChannel(IApiDemux<?> demux, String host, int port) {
-	super(demux, host, port);
+    public DeviceManagementApiChannel(IInstanceSettings settings) {
+	super(settings, MicroserviceIdentifier.DeviceManagement, IGrpcSettings.DEFAULT_API_PORT);
     }
 
     /*
      * @see
      * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
-     * .tracing.ITracerProvider, java.lang.String, int)
+     * .microservice.instance.IInstanceSettings,
+     * com.sitewhere.spi.microservice.IFunctionIdentifier, int)
      */
     @Override
-    public DeviceManagementGrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	return new DeviceManagementGrpcChannel(tracerProvider, host, port);
+    public DeviceManagementGrpcChannel createGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier,
+	    int port) {
+	return new DeviceManagementGrpcChannel(settings, identifier, port);
     }
 
     /*

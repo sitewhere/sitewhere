@@ -35,7 +35,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
-import io.opentracing.ActiveSpan;
 
 /**
  * Base class for implementing {@link ILifecycleComponent}.
@@ -164,11 +163,7 @@ public class LifecycleComponent implements ILifecycleComponent {
      */
     @Override
     public void lifecycleInitialize(ILifecycleProgressMonitor monitor) {
-	ActiveSpan span = null;
 	try {
-	    // Create tracer span for operation.
-	    span = monitor.createTracerSpan("Initialize " + getComponentName());
-
 	    // Initialize parameters before component initialization.
 	    initializeParameters();
 	    validateParameters();
@@ -178,23 +173,19 @@ public class LifecycleComponent implements ILifecycleComponent {
 		return;
 	    }
 	    setLifecycleStatus(LifecycleStatus.Initializing);
-	    getLogger().debug(getComponentName() + " state transitioned to INITIALIZING.");
+	    getLogger().info(getComponentName() + " state transitioned to INITIALIZING.");
 
 	    initialize(monitor);
 	    setLifecycleStatus(LifecycleStatus.Stopped);
-	    getLogger().debug(getComponentName() + " state transitioned to INITIALIZED.");
+	    getLogger().info(getComponentName() + " state transitioned to INITIALIZED.");
 	} catch (SiteWhereException e) {
 	    setLifecycleError(e);
 	    setLifecycleStatus(LifecycleStatus.InitializationError);
 	    getLogger().error(getComponentName() + " state transitioned to ERROR.", e);
-	    monitor.handleErrorInTracerSpan(span, e);
 	} catch (Throwable t) {
 	    setLifecycleError(new SiteWhereException(t));
 	    setLifecycleStatus(LifecycleStatus.InitializationError);
 	    getLogger().error(getComponentName() + " state transitioned to ERROR.", t);
-	    monitor.handleErrorInTracerSpan(span, t);
-	} finally {
-	    monitor.finishTracerSpan(span);
 	}
     }
 
@@ -250,11 +241,7 @@ public class LifecycleComponent implements ILifecycleComponent {
      */
     @Override
     public void lifecycleStart(ILifecycleProgressMonitor monitor) {
-	ActiveSpan span = null;
 	try {
-	    // Create tracer span for operation.
-	    span = monitor.createTracerSpan("Start " + getComponentName());
-
 	    // Verify that component can be started.
 	    if (!canStart()) {
 		return;
@@ -262,7 +249,7 @@ public class LifecycleComponent implements ILifecycleComponent {
 
 	    LifecycleStatus old = getLifecycleStatus();
 	    setLifecycleStatus(LifecycleStatus.Starting);
-	    getLogger().debug(getComponentName() + " state transitioned to STARTING.");
+	    getLogger().info(getComponentName() + " state transitioned to STARTING.");
 
 	    if (old != LifecycleStatus.Paused) {
 		start(monitor);
@@ -279,22 +266,18 @@ public class LifecycleComponent implements ILifecycleComponent {
 
 	    setLifecycleStatus(status);
 	    if (status == LifecycleStatus.Started) {
-		getLogger().debug(getComponentName() + " state transitioned to STARTED.");
+		getLogger().info(getComponentName() + " state transitioned to STARTED.");
 	    } else if (status == LifecycleStatus.StartedWithErrors) {
-		getLogger().debug(getComponentName() + " state transitioned to STARTED WITH ERRORS.");
+		getLogger().info(getComponentName() + " state transitioned to STARTED WITH ERRORS.");
 	    }
 	} catch (SiteWhereException e) {
 	    setLifecycleError(e);
 	    setLifecycleStatus(LifecycleStatus.LifecycleError);
 	    getLogger().error(getComponentName() + " state transitioned to ERROR.", e);
-	    monitor.handleErrorInTracerSpan(span, e);
 	} catch (Throwable t) {
 	    setLifecycleError(new SiteWhereException(t));
 	    setLifecycleStatus(LifecycleStatus.LifecycleError);
 	    getLogger().error(getComponentName() + " state transitioned to ERROR.", t);
-	    monitor.handleErrorInTracerSpan(span, t);
-	} finally {
-	    monitor.finishTracerSpan(span);
 	}
     }
 
@@ -352,7 +335,7 @@ public class LifecycleComponent implements ILifecycleComponent {
 	try {
 	    pause(monitor);
 	    setLifecycleStatus(LifecycleStatus.Paused);
-	    getLogger().debug(getComponentName() + " state transitioned to PAUSED.");
+	    getLogger().info(getComponentName() + " state transitioned to PAUSED.");
 	} catch (SiteWhereException e) {
 	    setLifecycleError(e);
 	    setLifecycleStatus(LifecycleStatus.LifecycleError);
@@ -405,18 +388,14 @@ public class LifecycleComponent implements ILifecycleComponent {
      */
     @Override
     public void lifecycleStop(ILifecycleProgressMonitor monitor, ILifecycleConstraints constraints) {
-	ActiveSpan span = null;
 	try {
-	    // Create tracer span for operation.
-	    span = monitor.createTracerSpan("Stop " + getComponentName());
-
 	    // Verify that we are allowed to stop component.
 	    if (!canStop()) {
 		return;
 	    }
 
 	    setLifecycleStatus(LifecycleStatus.Stopping);
-	    getLogger().debug(getComponentName() + " state transitioned to STOPPING.");
+	    getLogger().info(getComponentName() + " state transitioned to STOPPING.");
 
 	    if (constraints == null) {
 		stop(monitor);
@@ -435,22 +414,18 @@ public class LifecycleComponent implements ILifecycleComponent {
 
 	    setLifecycleStatus(status);
 	    if (status == LifecycleStatus.Stopped) {
-		getLogger().debug(getComponentName() + " state transitioned to STOPPED.");
+		getLogger().info(getComponentName() + " state transitioned to STOPPED.");
 	    } else if (status == LifecycleStatus.StoppedWithErrors) {
-		getLogger().debug(getComponentName() + " state transitioned to STOPPED WITH ERRORS.");
+		getLogger().info(getComponentName() + " state transitioned to STOPPED WITH ERRORS.");
 	    }
 	} catch (SiteWhereException e) {
 	    setLifecycleError(e);
 	    setLifecycleStatus(LifecycleStatus.LifecycleError);
 	    getLogger().error(getComponentName() + " state transitioned to ERROR.", e);
-	    monitor.handleErrorInTracerSpan(span, e);
 	} catch (Throwable t) {
 	    setLifecycleError(new SiteWhereException(t));
 	    setLifecycleStatus(LifecycleStatus.LifecycleError);
 	    getLogger().error(getComponentName() + " state transitioned to ERROR.", t);
-	    monitor.handleErrorInTracerSpan(span, t);
-	} finally {
-	    monitor.finishTracerSpan(span);
 	}
     }
 
@@ -496,11 +471,14 @@ public class LifecycleComponent implements ILifecycleComponent {
     @Override
     public void stopNestedComponent(ILifecycleComponent component, ILifecycleProgressMonitor monitor)
 	    throws SiteWhereException {
-	component.lifecycleStop(monitor);
-	if (component.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
-	    getLogger().error("Unable to stop '" + component.getComponentName() + "'", component.getLifecycleError());
+	if (component != null) {
+	    component.lifecycleStop(monitor);
+	    if (component.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		getLogger().error("Unable to stop '" + component.getComponentName() + "'",
+			component.getLifecycleError());
+	    }
+	    getLifecycleComponents().remove(component.getComponentId(), component);
 	}
-	getLifecycleComponents().remove(component.getComponentId(), component);
     }
 
     /*
@@ -513,11 +491,11 @@ public class LifecycleComponent implements ILifecycleComponent {
     @Override
     public void lifecycleTerminate(ILifecycleProgressMonitor monitor) {
 	setLifecycleStatus(LifecycleStatus.Terminating);
-	getLogger().debug(getComponentName() + " state transitioned to TERMINATING.");
+	getLogger().info(getComponentName() + " state transitioned to TERMINATING.");
 	try {
 	    terminate(monitor);
 	    setLifecycleStatus(LifecycleStatus.Terminated);
-	    getLogger().debug(getComponentName() + " state transitioned to TERMINATED.");
+	    getLogger().info(getComponentName() + " state transitioned to TERMINATED.");
 	} catch (SiteWhereException e) {
 	    setLifecycleError(e);
 	    setLifecycleStatus(LifecycleStatus.LifecycleError);

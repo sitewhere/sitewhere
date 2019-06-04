@@ -12,13 +12,11 @@ import com.sitewhere.event.grpc.EventManagementGrpcServer;
 import com.sitewhere.event.spi.grpc.IEventManagementGrpcServer;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
-import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
-import com.sitewhere.grpc.client.device.DeviceManagementApiDemux;
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
+import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.messages.SiteWhereMessage;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -40,8 +38,8 @@ public class EventManagementMicroservice
     /** Provides server for event management GRPC requests */
     private IEventManagementGrpcServer eventManagementGrpcServer;
 
-    /** Device management API demux */
-    private IDeviceManagementApiDemux deviceManagementApiDemux;
+    /** Device management API channel */
+    private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
 
     /*
      * (non-Javadoc)
@@ -91,32 +89,6 @@ public class EventManagementMicroservice
     /*
      * (non-Javadoc)
      * 
-     * @see com.sitewhere.microservice.Microservice#afterMicroserviceStarted()
-     */
-    @Override
-    public void afterMicroserviceStarted() {
-	try {
-	    waitForDependenciesAvailable();
-	    getLogger().debug("All required microservices detected as available.");
-	} catch (ApiChannelNotAvailableException e) {
-	    getLogger().error(SiteWhereMessage.MICROSERVICE_NOT_AVAILABLE);
-	    getLogger().error("Microservice not available.", e);
-	}
-    }
-
-    /**
-     * Wait for required microservices to become available.
-     * 
-     * @throws ApiNotAvailableException
-     */
-    protected void waitForDependenciesAvailable() throws ApiChannelNotAvailableException {
-	getDeviceManagementApiDemux().waitForMicroserviceAvailable();
-	getLogger().debug("Device management microservice detected as available.");
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
      * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
      * ILifecycleProgressMonitor)
@@ -132,8 +104,8 @@ public class EventManagementMicroservice
 	// Initialize event management GRPC server.
 	init.addInitializeStep(this, getEventManagementGrpcServer(), true);
 
-	// Initialize device management API demux.
-	init.addInitializeStep(this, getDeviceManagementApiDemux(), true);
+	// Initialize device management API channel.
+	init.addInitializeStep(this, getDeviceManagementApiChannel(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -154,8 +126,8 @@ public class EventManagementMicroservice
 	// Start event management GRPC server.
 	start.addStartStep(this, getEventManagementGrpcServer(), true);
 
-	// Start device mangement API demux.
-	start.addStartStep(this, getDeviceManagementApiDemux(), true);
+	// Start device mangement API channel.
+	start.addStartStep(this, getDeviceManagementApiChannel(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -176,8 +148,8 @@ public class EventManagementMicroservice
 	// Stop event management GRPC server.
 	stop.addStopStep(this, getEventManagementGrpcServer());
 
-	// Stop device mangement API demux.
-	stop.addStopStep(this, getDeviceManagementApiDemux());
+	// Stop device mangement API channel.
+	stop.addStopStep(this, getDeviceManagementApiChannel());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -191,20 +163,21 @@ public class EventManagementMicroservice
 	this.eventManagementGrpcServer = new EventManagementGrpcServer(this);
 
 	// Device management.
-	this.deviceManagementApiDemux = new DeviceManagementApiDemux(true);
+	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(getInstanceSettings(),
+		new CachedDeviceManagementApiChannel.CacheSettings());
     }
 
     /*
      * @see com.sitewhere.event.spi.microservice.IEventManagementMicroservice#
-     * getDeviceManagementApiDemux()
+     * getDeviceManagementApiChannel()
      */
     @Override
-    public IDeviceManagementApiDemux getDeviceManagementApiDemux() {
-	return deviceManagementApiDemux;
+    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
+	return deviceManagementApiChannel;
     }
 
-    public void setDeviceManagementApiDemux(IDeviceManagementApiDemux deviceManagementApiDemux) {
-	this.deviceManagementApiDemux = deviceManagementApiDemux;
+    public void setDeviceManagementApiChannel(IDeviceManagementApiChannel<?> deviceManagementApiChannel) {
+	this.deviceManagementApiChannel = deviceManagementApiChannel;
     }
 
     public IEventManagementGrpcServer getEventManagementGrpcServer() {

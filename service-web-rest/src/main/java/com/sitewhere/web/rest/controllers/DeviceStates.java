@@ -80,18 +80,18 @@ public class DeviceStates extends RestControllerBase {
     }
 
     private IDeviceManagement getDeviceManagement() {
-	return getMicroservice().getDeviceManagementApiDemux().getApiChannel();
+	return getMicroservice().getDeviceManagementApiChannel();
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {
-	return new BlockingDeviceEventManagement(getMicroservice().getDeviceEventManagementApiDemux().getApiChannel());
+	return new BlockingDeviceEventManagement(getMicroservice().getDeviceEventManagementApiChannel());
     }
 
     private IAssetManagement getAssetManagement() {
-	return getMicroservice().getAssetManagementApiDemux().getApiChannel();
+	return getMicroservice().getAssetManagementApiChannel();
     }
 
     private IDeviceStateManagement getDeviceStateManagement() {
-	return getMicroservice().getDeviceStateApiDemux().getApiChannel();
+	return getMicroservice().getDeviceStateApiChannel();
     }
 }

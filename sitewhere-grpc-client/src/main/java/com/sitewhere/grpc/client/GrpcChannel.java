@@ -7,21 +7,20 @@
  */
 package com.sitewhere.grpc.client;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.sitewhere.grpc.client.common.tracing.ClientTracingInterceptor;
 import com.sitewhere.grpc.client.spi.IGrpcChannel;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tracing.ITracerProvider;
 
 import io.grpc.ManagedChannel;
 import io.grpc.netty.NettyChannelBuilder;
-import io.opentracing.Tracer;
 
 /**
  * Management wrapper for a GRPC channel.
@@ -33,20 +32,14 @@ import io.opentracing.Tracer;
  */
 public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent implements IGrpcChannel<B, A> {
 
-    /** Max threads used for executing GPRC requests */
-    private static final int THREAD_POOL_SIZE = 25;
-
-    /** Tracer provider */
-    protected ITracerProvider tracerProvider;
+    /** Function identifier */
+    protected IFunctionIdentifier functionIdentifier;
 
     /** Remote host */
     protected String hostname;
 
     /** Remote port */
     protected int port;
-
-    /** Indicates whether to use the tracing interceptor */
-    protected boolean useTracingInterceptor = false;
 
     /** GRPC managed channe */
     protected ManagedChannel channel;
@@ -60,22 +53,27 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
     /** Client interceptor for adding JWT from Spring Security context */
     private JwtClientInterceptor jwtInterceptor;
 
-    /** Client interceptor for GRPC tracing */
-    private ClientTracingInterceptor tracingInterceptor;
-
-    /** Executor service used to handle GRPC requests */
-    private ExecutorService serverExecutor = Executors.newFixedThreadPool(THREAD_POOL_SIZE,
-	    new GrpcClientThreadFactory());
-
-    public GrpcChannel(ITracerProvider tracerProvider, String hostname, int port) {
-	this.tracerProvider = tracerProvider;
-	this.hostname = hostname;
+    public GrpcChannel(IInstanceSettings settings, IFunctionIdentifier functionIdentifier, int port) {
+	this.functionIdentifier = functionIdentifier;
+	this.hostname = GrpcChannel.computeHostname(settings, functionIdentifier);
 	this.port = port;
 
 	this.jwtInterceptor = new JwtClientInterceptor();
-	if ((tracerProvider != null) && (isUseTracingInterceptor())) {
-	    this.tracingInterceptor = new ClientTracingInterceptor(tracerProvider.getTracer());
-	}
+    }
+
+    /**
+     * Compute service hostname based on instance settings and functional
+     * indentifier.
+     * 
+     * @param settings
+     * @param identifier
+     * @return
+     */
+    public static String computeHostname(IInstanceSettings settings, IFunctionIdentifier identifier) {
+	String instanceId = "sitewhere".equals(settings.getInstanceId()) ? "sitewhere-"
+		: settings.getInstanceId() + "-sitewhere-";
+	String namespace = settings.getKubernetesNamespace() != null ? settings.getKubernetesNamespace() : "default";
+	return instanceId + identifier.getPath() + "-svc." + namespace + ".svc.cluster.local";
     }
 
     /*
@@ -87,17 +85,54 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	try {
 	    NettyChannelBuilder builder = NettyChannelBuilder.forAddress(getHostname(), getPort());
-	    builder.executor(getServerExecutor());
+	    builder.defaultServiceConfig(buildServiceConfiguration()).enableRetry().disableServiceConfigLookUp();
 	    builder.usePlaintext().intercept(getJwtInterceptor());
-	    if (isUseTracingInterceptor()) {
-		builder.intercept(getTracingInterceptor());
-	    }
 	    this.channel = builder.build();
 	    this.blockingStub = createBlockingStub();
 	    this.asyncStub = createAsyncStub();
 	} catch (Throwable t) {
 	    throw new SiteWhereException("Unhandled exception starting gRPC channel.", t);
 	}
+    }
+
+    /**
+     * Build service configuration that enables retry support.
+     * 
+     * @return
+     */
+    protected Map<String, Object> buildServiceConfiguration() {
+	Map<String, Object> serviceConfig = new HashMap<>();
+	serviceConfig.put("methodConfig", Collections.<Object>singletonList(buildMethodConfiguration()));
+	return serviceConfig;
+    }
+
+    /**
+     * Build service configuration that enables retry support.
+     * 
+     * @return
+     */
+    protected Map<String, Object> buildMethodConfiguration() {
+	Map<String, Object> methodConfig = new HashMap<>();
+	Map<String, Object> name = new HashMap<>();
+	name.put("service", getFunctionIdentifier().getGrpcServiceName());
+	methodConfig.put("name", Collections.<Object>singletonList(name));
+	methodConfig.put("retryPolicy", buildRetryPolicy());
+	return methodConfig;
+    }
+
+    /**
+     * Configure retry policy.
+     * 
+     * @return
+     */
+    protected Map<String, Object> buildRetryPolicy() {
+	Map<String, Object> retryPolicy = new HashMap<>();
+	retryPolicy.put("maxAttempts", 5D);
+	retryPolicy.put("initialBackoff", "12s");
+	retryPolicy.put("maxBackoff", "600s");
+	retryPolicy.put("backoffMultiplier", 1.6D);
+	retryPolicy.put("retryableStatusCodes", Arrays.<Object>asList("UNAVAILABLE"));
+	return retryPolicy;
     }
 
     /*
@@ -160,25 +195,6 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
     @Override
     public abstract A createAsyncStub();
 
-    /*
-     * @see com.sitewhere.spi.tracing.ITracerProvider#getTracer()
-     */
-    @Override
-    public Tracer getTracer() {
-	return getTracerProvider().getTracer();
-    }
-
-    /** Used for naming gRPC client executor threads */
-    private class GrpcClientThreadFactory implements ThreadFactory {
-
-	/** Counts threads */
-	private AtomicInteger counter = new AtomicInteger();
-
-	public Thread newThread(Runnable r) {
-	    return new Thread(r, "gRPC Client " + counter.incrementAndGet());
-	}
-    }
-
     public JwtClientInterceptor getJwtInterceptor() {
 	return jwtInterceptor;
     }
@@ -187,20 +203,12 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
 	this.jwtInterceptor = jwtInterceptor;
     }
 
-    public ClientTracingInterceptor getTracingInterceptor() {
-	return tracingInterceptor;
+    public IFunctionIdentifier getFunctionIdentifier() {
+	return functionIdentifier;
     }
 
-    public void setTracingInterceptor(ClientTracingInterceptor tracingInterceptor) {
-	this.tracingInterceptor = tracingInterceptor;
-    }
-
-    public ITracerProvider getTracerProvider() {
-	return tracerProvider;
-    }
-
-    public void setTracerProvider(ITracerProvider tracerProvider) {
-	this.tracerProvider = tracerProvider;
+    public void setFunctionIdentifier(IFunctionIdentifier functionIdentifier) {
+	this.functionIdentifier = functionIdentifier;
     }
 
     public String getHostname() {
@@ -217,21 +225,5 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
 
     public void setPort(int port) {
 	this.port = port;
-    }
-
-    public boolean isUseTracingInterceptor() {
-	return useTracingInterceptor;
-    }
-
-    public void setUseTracingInterceptor(boolean useTracingInterceptor) {
-	this.useTracingInterceptor = useTracingInterceptor;
-    }
-
-    public ExecutorService getServerExecutor() {
-	return serverExecutor;
-    }
-
-    public void setServerExecutor(ExecutorService serverExecutor) {
-	this.serverExecutor = serverExecutor;
     }
 }

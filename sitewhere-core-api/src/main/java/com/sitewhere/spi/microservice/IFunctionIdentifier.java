@@ -27,4 +27,11 @@ public interface IFunctionIdentifier {
      * @return
      */
     public String getShortName();
+
+    /**
+     * Get gRPC service name.
+     * 
+     * @return
+     */
+    public String getGrpcServiceName();
 }

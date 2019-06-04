@@ -7,15 +7,15 @@
  */
 package com.sitewhere.web.spi.microservice;
 
-import com.sitewhere.grpc.client.spi.client.IAssetManagementApiDemux;
-import com.sitewhere.grpc.client.spi.client.IBatchManagementApiDemux;
-import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
-import com.sitewhere.grpc.client.spi.client.IDeviceStateApiDemux;
-import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiDemux;
-import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiDemux;
-import com.sitewhere.grpc.client.spi.provider.ITenantManagementDemuxProvider;
-import com.sitewhere.grpc.client.spi.provider.IUserManagementDemuxProvider;
+import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IBatchManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceStateApiChannel;
+import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiChannel;
+import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
 import com.sitewhere.spi.microservice.state.ITopologyStateAggregator;
@@ -25,57 +25,70 @@ import com.sitewhere.spi.microservice.state.ITopologyStateAggregator;
  * 
  * @author Derek
  */
-public interface IWebRestMicroservice<T extends IFunctionIdentifier>
-	extends IGlobalMicroservice<T>, IUserManagementDemuxProvider<T>, ITenantManagementDemuxProvider<T> {
+public interface IWebRestMicroservice<T extends IFunctionIdentifier> extends IGlobalMicroservice<T> {
+
+    /**
+     * User API access via GRPC channel.
+     * 
+     * @return
+     */
+    public IUserManagementApiChannel<?> getUserManagementApiChannel();
+
+    /**
+     * Tenant API access via GRPC channel.
+     * 
+     * @return
+     */
+    public ITenantManagementApiChannel<?> getTenantManagementApiChannel();
 
     /**
      * Device management API access via GRPC channel.
      * 
      * @return
      */
-    public IDeviceManagementApiDemux getDeviceManagementApiDemux();
+    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel();
 
     /**
      * Device event management API access via GRPC channel.
      * 
      * @return
      */
-    public IDeviceEventManagementApiDemux getDeviceEventManagementApiDemux();
+    public IDeviceEventManagementApiChannel<?> getDeviceEventManagementApiChannel();
 
     /**
-     * Asset management API demux.
+     * Asset management API access via GRPC channel.
      * 
      * @return
      */
-    public IAssetManagementApiDemux getAssetManagementApiDemux();
+    public IAssetManagementApiChannel<?> getAssetManagementApiChannel();
 
     /**
      * Batch management API access via GRPC channel.
      * 
      * @return
      */
-    public IBatchManagementApiDemux getBatchManagementApiDemux();
+    public IBatchManagementApiChannel<?> getBatchManagementApiChannel();
 
     /**
      * Schedule management API access via GRPC channel.
      * 
      * @return
      */
-    public IScheduleManagementApiDemux getScheduleManagementApiDemux();
+    public IScheduleManagementApiChannel<?> getScheduleManagementApiChannel();
 
     /**
      * Label generation API access via GRPC channel.
      * 
      * @return
      */
-    public ILabelGenerationApiDemux getLabelGenerationApiDemux();
+    public ILabelGenerationApiChannel<?> getLabelGenerationApiChannel();
 
     /**
      * Device state API access via GRPC channel.
      * 
      * @return
      */
-    public IDeviceStateApiDemux getDeviceStateApiDemux();
+    public IDeviceStateApiChannel<?> getDeviceStateApiChannel();
 
     /**
      * Get topology state aggregator.

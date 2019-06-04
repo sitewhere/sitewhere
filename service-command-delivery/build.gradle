@@ -5,6 +5,9 @@ dependencies {
 	compile project(':sitewhere-microservice')
 	compile project(':sitewhere-grpc-client')
 	
+	// Commons Lang 3 for utility functions.
+	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
+	
 	// Twilio dependencies.
     compile group: 'com.twilio.sdk', name: 'twilio-java-sdk', version:'3.4.5'
 }
@@ -53,7 +56,7 @@ task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, depends
 	} else {
 		println "Generating DEBUG IMAGE for project ${project.name}"
 
-		def jdwpPort = 8001
+		def jdwpPort = 8012
 		def jmxPort = 1112
 		
 		// Set Env 
@@ -93,10 +96,11 @@ task dockerImageLatest(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildI
 
 	if(!project.hasProperty("debug")) {
 		primaryTag = "${dockerRepository}/sitewhere/${project.name}:${version}"
+		secondaryTag = "${dockerRepository}/sitewhere/${project.name}:latest"
 	} else {
 		primaryTag = "${dockerRepository}/sitewhere/${project.name}:debug-${version}"
+		secondaryTag = "${dockerRepository}/sitewhere/${project.name}:debug-latest"
 	}
-	secondaryTag = "${dockerRepository}/sitewhere/${project.name}:latest"
 	tags = [primaryTag, secondaryTag]
 }
 

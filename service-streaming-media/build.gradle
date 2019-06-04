@@ -44,7 +44,7 @@ task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, depends
 	} else {
 		println "Generating DEBUG IMAGE for project ${project.name}"
 
-		def jdwpPort = 8001
+		def jdwpPort = 8019
 		def jmxPort = 1119
 		
 		// Set Env 
@@ -83,10 +83,11 @@ task dockerImageLatest(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildI
 
 	if(!project.hasProperty("debug")) {
 		primaryTag = "${dockerRepository}/sitewhere/${project.name}:${version}"
+		secondaryTag = "${dockerRepository}/sitewhere/${project.name}:latest"
 	} else {
 		primaryTag = "${dockerRepository}/sitewhere/${project.name}:debug-${version}"
+		secondaryTag = "${dockerRepository}/sitewhere/${project.name}:debug-latest"
 	}
-	secondaryTag = "${dockerRepository}/sitewhere/${project.name}:latest"
 	tags = [primaryTag, secondaryTag]
 }
 

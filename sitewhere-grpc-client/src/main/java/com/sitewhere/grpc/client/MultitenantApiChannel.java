@@ -7,11 +7,9 @@
  */
 package com.sitewhere.grpc.client;
 
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
-import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.multitenant.IMultitenantApiChannel;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Extends {@link ApiChannel} with methods for dealing with multitenant
@@ -24,34 +22,7 @@ import com.sitewhere.grpc.client.spi.multitenant.IMultitenantApiChannel;
 public abstract class MultitenantApiChannel<T extends MultitenantGrpcChannel<?, ?>> extends ApiChannel<T>
 	implements IMultitenantApiChannel<T> {
 
-    public MultitenantApiChannel(IApiDemux<?> demux, String hostname, int port) {
-	super(demux, hostname, port);
-    }
-
-    /*
-     * @see com.sitewhere.grpc.client.spi.IMultitenantApiChannel#
-     * waitForTenantApiAvailable(java.util.UUID)
-     */
-    @Override
-    public void waitForTenantApiAvailable(UUID tenantId) throws ApiChannelNotAvailableException {
-    }
-
-    /*
-     * @see com.sitewhere.grpc.client.spi.IMultitenantApiChannel#
-     * waitForTenantApiAvailable(java.util.UUID, long,
-     * java.util.concurrent.TimeUnit, long)
-     */
-    @Override
-    public void waitForTenantApiAvailable(UUID tenantId, long duration, TimeUnit unit, long logMessageDelay)
-	    throws ApiChannelNotAvailableException {
-    }
-
-    /*
-     * @see com.sitewhere.grpc.client.spi.multitenant.IMultitenantApiChannel#
-     * checkTenantEngineAvailable()
-     */
-    @Override
-    public boolean checkTenantEngineAvailable() {
-	return getGrpcChannel().checkTenantEngineAvailable();
+    public MultitenantApiChannel(IInstanceSettings settings, IFunctionIdentifier identifier, int port) {
+	super(settings, identifier, port);
     }
 }

@@ -12,6 +12,7 @@ import java.util.UUID;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
+import com.sitewhere.spi.microservice.configuration.ITenantPathInfo;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -21,6 +22,13 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public interface IMultitenantMicroservice<I extends IFunctionIdentifier, T extends IMicroserviceTenantEngine>
 	extends IConfigurableMicroservice<I> {
+
+    /**
+     * Get tenant engine manager.
+     * 
+     * @return
+     */
+    public ITenantEngineManager<T> getTenantEngineManager();
 
     /**
      * Create tenant engine specific to microservice function.
@@ -50,20 +58,13 @@ public interface IMultitenantMicroservice<I extends IFunctionIdentifier, T exten
     public T assureTenantEngineAvailable(UUID tenantId) throws TenantEngineNotAvailableException;
 
     /**
-     * Shuts down and restarts the given tenant engine.
+     * Get tenant engine based on path information.
      * 
-     * @param tenantId
+     * @param pathInfo
+     * @return
      * @throws SiteWhereException
      */
-    public void restartTenantEngine(UUID tenantId) throws SiteWhereException;
-
-    /**
-     * Shuts down and removes a tenant engine.
-     * 
-     * @param tenantId
-     * @throws SiteWhereException
-     */
-    public void removeTenantEngine(UUID tenantId) throws SiteWhereException;
+    public IMicroserviceTenantEngine getTenantEngineForPathInfo(ITenantPathInfo pathInfo) throws SiteWhereException;
 
     /**
      * Get configuration for the given tenant.

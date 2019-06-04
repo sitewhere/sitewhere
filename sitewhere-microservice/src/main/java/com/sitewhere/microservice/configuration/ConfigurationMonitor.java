@@ -7,8 +7,8 @@
  */
 package com.sitewhere.microservice.configuration;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -49,7 +49,7 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
     private TreeCache treeCache;
 
     /** List of configuration listeners */
-    private List<IConfigurationListener> listeners = new ArrayList<IConfigurationListener>();
+    private List<IConfigurationListener> listeners = new CopyOnWriteArrayList<IConfigurationListener>();
 
     /** Executor */
     private ExecutorService executor;
@@ -95,6 +95,7 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
 		public void childEvent(CuratorFramework client, TreeCacheEvent event) throws Exception {
 		    switch (event.getType()) {
 		    case INITIALIZED: {
+			getLogger().info("Zookeeper configuration monitoring initialized.");
 			onCacheInitialized();
 			break;
 		    }
@@ -257,7 +258,7 @@ public class ConfigurationMonitor extends LifecycleComponent implements IConfigu
 	private AtomicInteger counter = new AtomicInteger();
 
 	public Thread newThread(Runnable r) {
-	    return new Thread(r, "Configuration Update " + counter.incrementAndGet());
+	    return new Thread(r, "Config Update " + counter.incrementAndGet());
 	}
     }
 

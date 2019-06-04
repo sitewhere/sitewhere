@@ -182,7 +182,7 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
     }
 
     private IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
-	return ((ICommandDeliveryMicroservice) getMicroservice()).getDeviceManagementApiDemux().getApiChannel();
+	return ((ICommandDeliveryMicroservice) getMicroservice()).getDeviceManagementApiChannel();
     }
 
     private IOutboundCommandRouter getOutboundCommandRouter() {

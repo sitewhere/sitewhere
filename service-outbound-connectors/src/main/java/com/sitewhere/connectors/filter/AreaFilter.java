@@ -34,7 +34,7 @@ public class AreaFilter extends DeviceEventFilter {
     @Override
     public boolean isFiltered(IDeviceEventContext context, IDeviceEvent event) throws SiteWhereException {
 	if (event.getAreaId() != null) {
-	    IArea area = getDeviceManagementApiDemux().getApiChannel().getArea(event.getAreaId());
+	    IArea area = getDeviceManagementApiChannel().getArea(event.getAreaId());
 	    if (area == null) {
 		throw new SiteWhereException("Unable to process event filter for non-existent area.");
 	    }

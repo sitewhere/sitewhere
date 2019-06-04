@@ -13,10 +13,10 @@ import org.apache.zookeeper.data.Stat;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.sitewhere.grpc.client.spi.client.ITenantManagementApiDemux;
-import com.sitewhere.grpc.client.spi.client.IUserManagementApiDemux;
-import com.sitewhere.grpc.client.tenant.TenantManagementApiDemux;
-import com.sitewhere.grpc.client.user.UserManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
+import com.sitewhere.grpc.client.tenant.CachedTenantManagementApiChannel;
+import com.sitewhere.grpc.client.user.CachedUserManagementApiChannel;
 import com.sitewhere.instance.configuration.InstanceManagementModelProvider;
 import com.sitewhere.instance.initializer.GroovyTenantModelInitializer;
 import com.sitewhere.instance.initializer.GroovyUserModelInitializer;
@@ -59,11 +59,11 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     /** Instance script synchronizer */
     private IScriptSynchronizer instanceScriptSynchronizer;
 
-    /** User management API demux */
-    private IUserManagementApiDemux userManagementApiDemux;
+    /** User management API channel */
+    private IUserManagementApiChannel<?> userManagementApiChannel;
 
-    /** Tenant management API demux */
-    private ITenantManagementApiDemux tenantManagementApiDemux;
+    /** Tenant management API channel */
+    private ITenantManagementApiChannel<?> tenantManagementApiChannel;
 
     /*
      * (non-Javadoc)
@@ -139,7 +139,7 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * @see com.sitewhere.microservice.configuration.ConfigurableMicroservice#
      * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
      * ILifecycleProgressMonitor)
      */
@@ -165,12 +165,14 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
      * Create components that interact via GRPC.
      */
     protected void createGrpcComponents() {
-	this.userManagementApiDemux = new UserManagementApiDemux(true);
-	this.tenantManagementApiDemux = new TenantManagementApiDemux(true);
+	this.userManagementApiChannel = new CachedUserManagementApiChannel(getInstanceSettings(),
+		new CachedUserManagementApiChannel.CacheSettings());
+	this.tenantManagementApiChannel = new CachedTenantManagementApiChannel(getInstanceSettings(),
+		new CachedTenantManagementApiChannel.CacheSettings());
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * @see com.sitewhere.microservice.configuration.ConfigurableMicroservice#
      * microserviceStart(com.sitewhere.spi.server.lifecycle.
      * ILifecycleProgressMonitor)
      */
@@ -189,16 +191,16 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	start.addStartStep(this, getInstanceScriptSynchronizer(), true);
 
 	// Initialize user management API channel.
-	start.addInitializeStep(this, getUserManagementApiDemux(), true);
+	start.addInitializeStep(this, getUserManagementApiChannel(), true);
 
 	// Start user mangement API channel.
-	start.addStartStep(this, getUserManagementApiDemux(), true);
+	start.addStartStep(this, getUserManagementApiChannel(), true);
 
 	// Initialize tenant management API channel.
-	start.addInitializeStep(this, getTenantManagementApiDemux(), true);
+	start.addInitializeStep(this, getTenantManagementApiChannel(), true);
 
 	// Start tenant mangement API channel.
-	start.addStartStep(this, getTenantManagementApiDemux(), true);
+	start.addStartStep(this, getTenantManagementApiChannel(), true);
 
 	// Verify Zk node for instance configuration or bootstrap instance.
 	start.addStep(verifyOrBootstrapConfiguration());
@@ -208,7 +210,7 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * @see com.sitewhere.microservice.configuration.ConfigurableMicroservice#
      * microserviceStop(com.sitewhere.spi.server.lifecycle.
      * ILifecycleProgressMonitor)
      */
@@ -217,11 +219,11 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
-	// Stop tenant management API demux.
-	stop.addStopStep(this, getTenantManagementApiDemux());
+	// Stop tenant management API channel.
+	stop.addStopStep(this, getTenantManagementApiChannel());
 
-	// Stop user management API demux.
-	stop.addStopStep(this, getUserManagementApiDemux());
+	// Stop user management API channel.
+	stop.addStopStep(this, getUserManagementApiChannel());
 
 	// Stop instance script synchronizer.
 	stop.addStopStep(this, getInstanceScriptSynchronizer());
@@ -281,16 +283,29 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 			getZookeeperManager().getCurator().create().forPath(getInstanceStatePath());
 		    }
 
-		    // Check for existing instance bootstrap marker.
+		    // Check for existing configuration bootstrap marker.
 		    existing = getZookeeperManager().getCurator().checkExists()
-			    .forPath(getInstanceBootstrappedMarker());
+			    .forPath(getInstanceConfigBootstrappedMarker());
 		    if (existing == null) {
-			getLogger().info("Bootstrap marker node '" + getInstanceBootstrappedMarker()
-				+ "' not found. Bootstrapping...");
+			getLogger().info("Configuration bootstrap marker node '" + getInstanceConfigBootstrappedMarker()
+				+ "' not found. Bootstrapping configuration...");
 			bootstrapInstanceConfiguration();
 			getLogger().info("Bootstrapped instance configuration from template.");
 		    } else {
-			getLogger().info("Found bootstrap marker node. Skipping instance bootstrap.");
+			getLogger()
+				.info("Found configuration bootstrap marker node. Skipping configuration bootstrap.");
+		    }
+
+		    // Check for existing data bootstrap marker.
+		    existing = getZookeeperManager().getCurator().checkExists()
+			    .forPath(getInstanceDataBootstrappedMarker());
+		    if (existing == null) {
+			getLogger().info("Data bootstrap marker node '" + getInstanceConfigBootstrappedMarker()
+				+ "' not found. Bootstrapping instance data...");
+			initializeModelFromInstanceTemplate();
+			getLogger().info("Bootstrapped instance data from template.");
+		    } else {
+			getLogger().info("Found data bootstrap marker node. Skipping data bootstrap.");
 		    }
 		} catch (SiteWhereException e) {
 		    throw e;
@@ -308,10 +323,11 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
      */
     protected void bootstrapInstanceConfiguration() throws SiteWhereException {
 	try {
+	    getLogger().info("Copying instance template contents to Zookeeper...");
 	    getInstanceTemplateManager().copyTemplateContentsToZk(getInstanceSettings().getInstanceTemplateId(),
 		    getZookeeperManager().getCurator(), getInstanceZkPath());
-	    getZookeeperManager().getCurator().create().forPath(getInstanceBootstrappedMarker());
-	    initializeModelFromInstanceTemplate();
+	    getLogger().info("Marking instance configuration as bootstrapped.");
+	    getZookeeperManager().getCurator().create().forPath(getInstanceConfigBootstrappedMarker());
 	} catch (Exception e) {
 	    throw new SiteWhereException(e);
 	}
@@ -338,6 +354,9 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 		List<String> tenantScripts = template.getInitializers().getTenantManagement();
 		initializeTenantModelFromInstanceTemplateScripts(templatePath, tenantScripts);
 	    }
+	    getZookeeperManager().getCurator().create().forPath(getInstanceDataBootstrappedMarker());
+	} catch (Exception e) {
+	    throw new SiteWhereException(e);
 	} finally {
 	    SecurityContextHolder.getContext().setAuthentication(previous);
 	}
@@ -356,16 +375,11 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	    getInstanceScriptSynchronizer().add(script);
 	}
 
-	// Wait for user management APIs to become available.
-	getLogger().info("About to initialize user model from instance template.");
-	getUserManagementApiDemux().waitForMicroserviceAvailable();
-	getLogger().debug("User management API detected as available.");
-
 	GroovyConfiguration groovy = new GroovyConfiguration(getInstanceScriptSynchronizer());
 	groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize user model."), this));
 	for (String script : scripts) {
 	    GroovyUserModelInitializer initializer = new GroovyUserModelInitializer(groovy, script);
-	    initializer.initialize(getUserManagementApiDemux().getApiChannel());
+	    initializer.initialize(getUserManagementApiChannel());
 	}
     }
 
@@ -382,16 +396,11 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	    getInstanceScriptSynchronizer().add(script);
 	}
 
-	// Wait for tenant management APIs to become available.
-	getLogger().info("About to initialize tenant model from instance template.");
-	getTenantManagementApiDemux().waitForMicroserviceAvailable();
-	getLogger().debug("Tenant management microservice detected as available.");
-
 	GroovyConfiguration groovy = new GroovyConfiguration(getInstanceScriptSynchronizer());
 	groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize tenant model."), this));
 	for (String script : scripts) {
 	    GroovyTenantModelInitializer initializer = new GroovyTenantModelInitializer(groovy, script);
-	    initializer.initialize(getTenantManagementApiDemux().getApiChannel());
+	    initializer.initialize(getTenantManagementApiChannel());
 	}
     }
 
@@ -439,28 +448,28 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     }
 
     /*
-     * @see com.sitewhere.grpc.client.spi.provider.IUserManagementDemuxProvider#
-     * getUserManagementApiDemux()
+     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * getUserManagementApiChannel()
      */
     @Override
-    public IUserManagementApiDemux getUserManagementApiDemux() {
-	return userManagementApiDemux;
+    public IUserManagementApiChannel<?> getUserManagementApiChannel() {
+	return userManagementApiChannel;
     }
 
-    public void setUserManagementApiDemux(IUserManagementApiDemux userManagementApiDemux) {
-	this.userManagementApiDemux = userManagementApiDemux;
+    public void setUserManagementApiChannel(IUserManagementApiChannel<?> userManagementApiChannel) {
+	this.userManagementApiChannel = userManagementApiChannel;
     }
 
     /*
-     * @see com.sitewhere.grpc.client.spi.provider.ITenantManagementDemuxProvider#
-     * getTenantManagementApiDemux()
+     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * getTenantManagementApiChannel()
      */
     @Override
-    public ITenantManagementApiDemux getTenantManagementApiDemux() {
-	return tenantManagementApiDemux;
+    public ITenantManagementApiChannel<?> getTenantManagementApiChannel() {
+	return tenantManagementApiChannel;
     }
 
-    public void setTenantManagementApiDemux(ITenantManagementApiDemux tenantManagementApiDemux) {
-	this.tenantManagementApiDemux = tenantManagementApiDemux;
+    public void setTenantManagementApiChannel(ITenantManagementApiChannel<?> tenantManagementApiChannel) {
+	this.tenantManagementApiChannel = tenantManagementApiChannel;
     }
 }

@@ -11,7 +11,8 @@ import com.sitewhere.grpc.client.MultitenantGrpcChannel;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc.DeviceEventManagementBlockingStub;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc.DeviceEventManagementStub;
-import com.sitewhere.spi.tracing.ITracerProvider;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Channel that allows for communication with a remote device event management
@@ -22,8 +23,8 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public class DeviceEventManagementGrpcChannel
 	extends MultitenantGrpcChannel<DeviceEventManagementBlockingStub, DeviceEventManagementStub> {
 
-    public DeviceEventManagementGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	super(tracerProvider, host, port);
+    public DeviceEventManagementGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier, int port) {
+	super(settings, identifier, port);
     }
 
     /*

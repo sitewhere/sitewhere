@@ -121,6 +121,6 @@ public class Authorities extends RestControllerBase {
      * @throws SiteWhereException
      */
     protected IUserManagement getUserManagement() throws SiteWhereException {
-	return getMicroservice().getUserManagementApiDemux().getApiChannel();
+	return getMicroservice().getUserManagementApiChannel();
     }
 }

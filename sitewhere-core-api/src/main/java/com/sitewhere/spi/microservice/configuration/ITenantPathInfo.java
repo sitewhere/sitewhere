@@ -5,26 +5,26 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.microservice.discovery;
+package com.sitewhere.spi.microservice.configuration;
+
+import java.util.UUID;
 
 /**
- * Remote node that provides a SiteWhere service.
- * 
- * @author Derek
+ * Wraps data for looking up tenant by path.
  */
-public interface IServiceNode {
+public interface ITenantPathInfo {
 
     /**
-     * Get address used to access node.
+     * Tenant id.
      * 
      * @return
      */
-    public String getAddress();
+    public UUID getTenantId();
 
     /**
-     * Get service node status.
+     * Path.
      * 
      * @return
      */
-    public ServiceNodeStatus getStatus();
+    public String getPath();
 }

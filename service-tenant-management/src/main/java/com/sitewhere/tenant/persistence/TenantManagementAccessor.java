@@ -31,6 +31,7 @@ public class TenantManagementAccessor extends TenantManagementDecorator {
     public ITenantManagement getDelegate() {
 	ITenantManagement delegate = super.getDelegate();
 	if (delegate == null) {
+	    getLogger().warn("Attempted to access tenant management via gRPC before implementation was initialized.");
 	    throw new RuntimeServiceNotAvailableException();
 	}
 	return delegate;

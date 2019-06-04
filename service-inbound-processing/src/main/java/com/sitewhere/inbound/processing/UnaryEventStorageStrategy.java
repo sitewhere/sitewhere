@@ -106,8 +106,7 @@ public class UnaryEventStorageStrategy implements IInboundEventStorageStrategy {
      * @return
      */
     protected IDeviceManagement getDeviceManagement() {
-	return ((IInboundProcessingMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiDemux()
-		.getApiChannel();
+	return ((IInboundProcessingMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
     }
 
     /**
@@ -116,8 +115,8 @@ public class UnaryEventStorageStrategy implements IInboundEventStorageStrategy {
      * @return
      */
     protected IDeviceEventManagementApiChannel<?> getDeviceEventManagement() {
-	return ((IInboundProcessingMicroservice) getTenantEngine().getMicroservice()).getDeviceEventManagementApiDemux()
-		.getApiChannel();
+	return ((IInboundProcessingMicroservice) getTenantEngine().getMicroservice())
+		.getDeviceEventManagementApiChannel();
     }
 
     protected IInboundProcessingTenantEngine getTenantEngine() {

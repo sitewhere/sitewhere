@@ -8,7 +8,6 @@
 package com.sitewhere.spi.microservice.configuration;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 import org.springframework.context.ApplicationContext;
 
@@ -209,14 +208,6 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
 	    ILifecycleProgressMonitor monitor) throws SiteWhereException;
 
     /**
-     * Get base microservice application context.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public ApplicationContext getMicroserviceApplicationContext() throws SiteWhereException;
-
-    /**
      * Get global application context.
      * 
      * @return
@@ -313,10 +304,37 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
     public ILifecycleStep terminateDiscoverableBeans(ApplicationContext context) throws SiteWhereException;
 
     /**
-     * Restart the microservice configuration and return a {@link CompletableFuture}
-     * to handle results asynchronously.
+     * Initialize the current configuration.
      * 
-     * @return
+     * @throws SiteWhereException
      */
-    public CompletableFuture<?> restartConfiguration();
+    public void initializeConfiguration() throws SiteWhereException;
+
+    /**
+     * Start the current configuration.
+     * 
+     * @throws SiteWhereException
+     */
+    public void startConfiguration() throws SiteWhereException;
+
+    /**
+     * Stop the current configuration.
+     * 
+     * @throws SiteWhereException
+     */
+    public void stopConfiguration() throws SiteWhereException;
+
+    /**
+     * Terminate the current configuration.
+     * 
+     * @throws SiteWhereException
+     */
+    public void terminateConfiguration() throws SiteWhereException;
+
+    /**
+     * Restart the current configuration.
+     * 
+     * @throws SiteWhereException
+     */
+    public void restartConfiguration() throws SiteWhereException;
 }
