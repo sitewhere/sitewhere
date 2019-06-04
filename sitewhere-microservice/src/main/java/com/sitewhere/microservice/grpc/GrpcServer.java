@@ -8,10 +8,6 @@
 package com.sitewhere.microservice.grpc;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.sitewhere.grpc.client.spi.server.IGrpcServer;
 import com.sitewhere.microservice.health.HealthServiceImpl;
@@ -22,7 +18,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.netty.NettyServerBuilder;
-import io.netty.channel.nio.NioEventLoopGroup;
 
 /**
  * Base class for GRPC servers used by microservices.
@@ -30,9 +25,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
  * @author Derek
  */
 public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcServer {
-
-    /** Max threads used for executing GPRC requests */
-    private static final int THREAD_POOL_SIZE = 25;
 
     /** Port for gRPC server */
     private int apiPort;
@@ -55,10 +47,6 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
     /** Health Service Implementation */
     private HealthServiceImpl healthService = new HealthServiceImpl();
 
-    /** Executor service used to handle GRPC requests */
-    private ExecutorService serverExecutor = Executors.newFixedThreadPool(THREAD_POOL_SIZE,
-	    new GrpcServerThreadFactory());
-
     public GrpcServer(BindableService serviceImplementation, int apiPort, int healthPort) {
 	this.serviceImplementation = serviceImplementation;
 	this.apiPort = apiPort;
@@ -73,9 +61,6 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
     protected Server buildServer() {
 	NettyServerBuilder builder = NettyServerBuilder.forPort(getApiPort());
 	builder.addService(getServiceImplementation()).intercept(getJwtInterceptor());
-	builder.executor(getServerExecutor());
-	builder.bossEventLoopGroup(new NioEventLoopGroup(1));
-	builder.workerEventLoopGroup(new NioEventLoopGroup(100));
 	return builder.build();
     }
 
@@ -104,8 +89,8 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
 	    getLogger().info("Initialized gRPC API server on port " + getApiPort() + ".");
 	    this.healthServer = buildHealthServer();
 	    getLogger().info("Initialized gRPC Health Probe server on port " + getHealthPort() + ".");
-	} catch (Throwable e) {
-	    throw new SiteWhereException("Unable to initialize gRPC server.", e);
+	} catch (Throwable t) {
+	    getLogger().error("Unhandled exception initializing gRPC server.", t);
 	}
     }
 
@@ -128,6 +113,8 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
 	    getLogger().info("Started gRPC Health Probe server on port " + getHealthPort() + ".");
 	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to start gRPC server.", e);
+	} catch (Throwable t) {
+	    getLogger().error("Unhandled exception starting gRPC server.", t);
 	}
     }
 
@@ -146,10 +133,13 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
 		getServer().awaitTermination();
 		getLogger().info("gRPC server terminated successfully.");
 
+		getHealthServer().shutdown();
 		getHealthServer().awaitTermination();
 		getLogger().info("gRPC Health server terminated successfully.");
 	    } catch (InterruptedException e) {
 		getLogger().error("Interrupted while waiting for gRPC server to terminate.", e);
+	    } catch (Throwable t) {
+		getLogger().error("Unhandled exception stopping gRPC server.", t);
 	    }
 	}
     }
@@ -165,17 +155,6 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
 
     public void setServiceImplementation(BindableService serviceImplementation) {
 	this.serviceImplementation = serviceImplementation;
-    }
-
-    /** Used for naming gRPC server executor threads */
-    private class GrpcServerThreadFactory implements ThreadFactory {
-
-	/** Counts threads */
-	private AtomicInteger counter = new AtomicInteger();
-
-	public Thread newThread(Runnable r) {
-	    return new Thread(r, "gRPC Server " + counter.incrementAndGet());
-	}
     }
 
     public Server getServer() {
@@ -216,14 +195,6 @@ public class GrpcServer extends TenantEngineLifecycleComponent implements IGrpcS
 
     public void setJwtInterceptor(JwtServerInterceptor jwtInterceptor) {
 	this.jwtInterceptor = jwtInterceptor;
-    }
-
-    public ExecutorService getServerExecutor() {
-	return serverExecutor;
-    }
-
-    public void setServerExecutor(ExecutorService serverExecutor) {
-	this.serverExecutor = serverExecutor;
     }
 
     public HealthServiceImpl getHealthService() {

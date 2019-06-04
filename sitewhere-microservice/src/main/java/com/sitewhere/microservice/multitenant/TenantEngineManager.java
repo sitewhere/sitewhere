@@ -63,7 +63,7 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
     private ConcurrentMap<UUID, ITenant> initializingTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
 
     /** Map of tenant engines in the process of shutting down */
-    private ConcurrentMap<UUID, ITenant> stoppingTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
+    private ConcurrentMap<UUID, UUID> stoppingTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
 
     /** List of tenant ids waiting for an engine to be created */
     private BlockingDeque<UUID> tenantInitializationQueue = new LinkedBlockingDeque<>();
@@ -264,7 +264,6 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 	IMicroserviceTenantEngine engine = getInitializedTenantEngines().get(tenantId);
 	if (engine != null) {
 	    // Remove initialized engine if one exists.
-	    getInitializedTenantEngines().remove(tenantId);
 	    getTenantShutdownQueue().add(tenantId);
 	} else {
 	    // Remove failed engine if one exists.
@@ -318,11 +317,11 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 	this.initializedTenantEngines = initializedTenantEngines;
     }
 
-    public ConcurrentMap<UUID, ITenant> getStoppingTenantEngines() {
+    public ConcurrentMap<UUID, UUID> getStoppingTenantEngines() {
 	return stoppingTenantEngines;
     }
 
-    public void setStoppingTenantEngines(ConcurrentMap<UUID, ITenant> stoppingTenantEngines) {
+    public void setStoppingTenantEngines(ConcurrentMap<UUID, UUID> stoppingTenantEngines) {
 	this.stoppingTenantEngines = stoppingTenantEngines;
     }
 
@@ -551,15 +550,14 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 		    }
 
 		    // Look up tenant and add it to initializing tenants map.
-		    ITenant tenant = getTenantManagementApiChannel().getTenant(tenantId);
-		    if (tenant == null) {
-			throw new SiteWhereException("Unable to locate tenant by id '" + tenantId + "'.");
-		    }
-		    getStoppingTenantEngines().put(tenantId, tenant);
+		    getStoppingTenantEngines().put(tenantId, tenantId);
 
 		    // Start tenant shutdown.
 		    T engine = getTenantEngineByTenantId(tenantId);
 		    if (engine != null) {
+			// Remove from list of initialized engines.
+			getInitializedTenantEngines().remove(tenantId);
+
 			// Stop tenant engine.
 			getLogger().info("Stopping tenant engine for '" + engine.getTenant().getName() + "'.");
 			ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(

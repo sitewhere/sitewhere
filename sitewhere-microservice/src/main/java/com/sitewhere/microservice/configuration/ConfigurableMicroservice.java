@@ -205,6 +205,7 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.initialize(monitor);
+	getLogger().info("Shutting down configurable microservice components...");
 
 	// Create configuration monitor.
 	this.configurationMonitor = new ConfigurationMonitor(getZookeeperManager(), getInstanceConfigurationPath());
@@ -301,6 +302,7 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		getLogger().info("Initializing discoverable beans...");
 		Map<String, IDiscoverableTenantLifecycleComponent> components = context
 			.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
 
@@ -321,6 +323,7 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		getLogger().info("Starting discoverable beans...");
 		Map<String, IDiscoverableTenantLifecycleComponent> components = context
 			.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
 
@@ -341,6 +344,7 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		getLogger().info("Stopping discoverable beans...");
 		Map<String, IDiscoverableTenantLifecycleComponent> components = context
 			.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
 
@@ -361,6 +365,7 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		getLogger().info("Terminating discoverable beans...");
 		Map<String, IDiscoverableTenantLifecycleComponent> components = context
 			.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
 
@@ -381,6 +386,7 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
     @Override
     public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Stop and terminate the configuration components.
+	getLogger().info("Shutting down configurable microservice components...");
 	stopConfiguration();
 	terminateConfiguration();
 

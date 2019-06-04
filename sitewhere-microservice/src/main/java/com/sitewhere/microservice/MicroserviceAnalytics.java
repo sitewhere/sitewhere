@@ -37,12 +37,14 @@ public class MicroserviceAnalytics implements IMicroserviceAnalytics {
      */
     @Override
     public void sendMicroserviceStarted(IMicroservice<?> microservice) throws SiteWhereException {
-	try {
-	    getGoogleAnalytics().event().eventCategory("Microservice_" + microservice.getIdentifier().getShortName())
-		    .eventAction("Started").eventLabel(microservice.getVersion().getVersionIdentifier()).send();
-	} catch (Throwable t) {
-	    microservice.getLogger().warn("Unable to send Google Analytics started event.", t);
-	}
+	// try {
+	// getGoogleAnalytics().event().eventCategory("Microservice_" +
+	// microservice.getIdentifier().getShortName())
+	// .eventAction("Started").eventLabel(microservice.getVersion().getVersionIdentifier()).send();
+	// } catch (Throwable t) {
+	// microservice.getLogger().warn("Unable to send Google Analytics started
+	// event.", t);
+	// }
     }
 
     /*
@@ -52,13 +54,15 @@ public class MicroserviceAnalytics implements IMicroserviceAnalytics {
      */
     @Override
     public void sendMicroserviceUptime(IMicroservice<?> microservice) throws SiteWhereException {
-	try {
-	    getGoogleAnalytics().event().eventCategory("Microservice_" + microservice.getIdentifier().getShortName())
-		    .eventAction("Uptime").eventLabel(microservice.getVersion().getVersionIdentifier())
-		    .eventValue((int) microservice.getCurrentState().getUptime()).send();
-	} catch (Throwable t) {
-	    microservice.getLogger().warn("Unable to send Google Analytics uptime event.", t);
-	}
+	// try {
+	// getGoogleAnalytics().event().eventCategory("Microservice_" +
+	// microservice.getIdentifier().getShortName())
+	// .eventAction("Uptime").eventLabel(microservice.getVersion().getVersionIdentifier())
+	// .eventValue((int) microservice.getCurrentState().getUptime()).send();
+	// } catch (Throwable t) {
+	// microservice.getLogger().warn("Unable to send Google Analytics uptime
+	// event.", t);
+	// }
     }
 
     /*
@@ -68,12 +72,14 @@ public class MicroserviceAnalytics implements IMicroserviceAnalytics {
      */
     @Override
     public void sendMicroserviceStopped(IMicroservice<?> microservice) throws SiteWhereException {
-	try {
-	    getGoogleAnalytics().event().eventCategory("Microservice_" + microservice.getIdentifier().getShortName())
-		    .eventAction("Stopped").eventLabel(microservice.getVersion().getVersionIdentifier()).send();
-	} catch (Throwable t) {
-	    microservice.getLogger().warn("Unable to send Google Analytics stopped event.", t);
-	}
+	// try {
+	// getGoogleAnalytics().event().eventCategory("Microservice_" +
+	// microservice.getIdentifier().getShortName())
+	// .eventAction("Stopped").eventLabel(microservice.getVersion().getVersionIdentifier()).send();
+	// } catch (Throwable t) {
+	// microservice.getLogger().warn("Unable to send Google Analytics stopped
+	// event.", t);
+	// }
     }
 
     protected GoogleAnalytics getGoogleAnalytics() {

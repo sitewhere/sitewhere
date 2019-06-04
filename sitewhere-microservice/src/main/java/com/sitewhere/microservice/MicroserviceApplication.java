@@ -38,7 +38,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 public abstract class MicroserviceApplication<T extends IMicroservice<?>> implements IMicroserviceApplication<T> {
 
     /** Executor for background thread */
-    private ExecutorService executor;
+    private ExecutorService executor = Executors.newSingleThreadExecutor(new MicroserviceThreadFactory());
 
     /**
      * Called to initialize and start microservice components.
@@ -46,14 +46,16 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
     @PostConstruct
     public void start() {
 	getMicroservice().getLogger().info("Starting microservice...");
-	executor = Executors.newSingleThreadExecutor(new MicroserviceThreadFactory());
 	Future<Integer> futureCode = executor.submit(new StartMicroservice());
 	try {
 	    int code = futureCode.get();
+	    getMicroservice().getLogger().info(String.format("Microservice startup returned with code %d.", code));
 	    if (code != 0) {
+		getMicroservice().getLogger().info("Exiting due to non-zero return code.");
 		System.exit(code);
 	    }
 	} catch (InterruptedException | ExecutionException e) {
+	    getMicroservice().getLogger().info("Exiting due to interrupted startup.");
 	    System.exit(1);
 	}
     }
@@ -64,9 +66,17 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
     @PreDestroy
     public void stop() {
 	getMicroservice().getLogger().info("Shutdown signal received. Stopping microservice...");
-	if (executor != null) {
-	    executor.shutdown();
-	    (new StopMicroservice()).run();
+	Future<Integer> futureCode = executor.submit(new StopMicroservice());
+	try {
+	    int code = futureCode.get();
+	    getMicroservice().getLogger().info(String.format("Microservice shutdown returned with code %d.", code));
+	    if (code != 0) {
+		getMicroservice().getLogger().info("Exiting due to non-zero return code.");
+		System.exit(code);
+	    }
+	} catch (InterruptedException | ExecutionException e) {
+	    getMicroservice().getLogger().info("Exiting due to interrupted shutdown.");
+	    System.exit(1);
 	}
     }
 
@@ -157,47 +167,58 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
     }
 
     /**
-     * Runnable for stopping microservice.
-     * 
-     * @author Derek
+     * Stop the microservice.
      */
-    private class StopMicroservice implements Runnable {
+    private class StopMicroservice implements Callable<Integer> {
 
+	/*
+	 * @see java.util.concurrent.Callable#call()
+	 */
 	@Override
-	public void run() {
+	public Integer call() throws Exception {
+	    int errorCode = 0;
 	    try {
-		// Stop microservice.
-		LifecycleProgressMonitor stopMonitor = new LifecycleProgressMonitor(
-			new LifecycleProgressContext(1, "Stop " + getMicroservice().getName()), getMicroservice());
-		getMicroservice().lifecycleStop(stopMonitor);
-		if (getMicroservice().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
-		    throw getMicroservice().getLifecycleError();
-		}
-
-		// Terminate microservice.
-		LifecycleProgressMonitor termMonitor = new LifecycleProgressMonitor(
-			new LifecycleProgressContext(1, "Terminate " + getMicroservice().getName()), getMicroservice());
-		getMicroservice().lifecycleTerminate(termMonitor);
-		if (getMicroservice().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
-		    throw getMicroservice().getLifecycleError();
-		}
+		stopMicroservice();
 	    } catch (SiteWhereException e) {
 		getMicroservice().getLogger().error("Exception on microservice shutdown.", e);
 		StringBuilder builder = new StringBuilder();
-		builder.append(
-			"\n!!!! Microservice '" + getMicroservice().getComponentName() + "' failed to shutdown !!!!\n");
+		builder.append("\n!!!! Microservice failed to stop !!!!\n");
 		builder.append("\n");
 		builder.append("Error: " + e.getMessage() + "\n");
 		getMicroservice().getLogger().info("\n" + builder.toString() + "\n");
+		errorCode = 2;
 	    } catch (Throwable e) {
-		getMicroservice().getLogger().error(
-			"Unhandled exception in '" + getMicroservice().getComponentName() + "' microservice shutdown.",
-			e);
+		getMicroservice().getLogger().error("Unhandled exception in microservice shutdown.", e);
 		StringBuilder builder = new StringBuilder();
 		builder.append("\n!!!! Unhandled Exception !!!!\n");
 		builder.append("\n");
 		builder.append("Error: " + e.getMessage() + "\n");
 		getMicroservice().getLogger().info("\n" + builder.toString() + "\n");
+		errorCode = 3;
+	    }
+	    return errorCode;
+	}
+
+	/**
+	 * Stop microservice.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void stopMicroservice() throws SiteWhereException {
+	    // Stop microservice.
+	    LifecycleProgressMonitor stopMonitor = new LifecycleProgressMonitor(
+		    new LifecycleProgressContext(1, "Stop " + getMicroservice().getName()), getMicroservice());
+	    getMicroservice().lifecycleStop(stopMonitor);
+	    if (getMicroservice().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		throw getMicroservice().getLifecycleError();
+	    }
+
+	    // Terminate microservice.
+	    LifecycleProgressMonitor termMonitor = new LifecycleProgressMonitor(
+		    new LifecycleProgressContext(1, "Terminate " + getMicroservice().getName()), getMicroservice());
+	    getMicroservice().lifecycleTerminate(termMonitor);
+	    if (getMicroservice().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		throw getMicroservice().getLifecycleError();
 	    }
 	}
     }

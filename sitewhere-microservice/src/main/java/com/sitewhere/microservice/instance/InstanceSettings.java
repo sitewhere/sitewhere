@@ -55,6 +55,10 @@ public class InstanceSettings implements IInstanceSettings {
     private String publicHostname;
 
     /** Microservice publicly resolvable hostname */
+    @Value("#{systemEnvironment['sitewhere.namespace'] ?: '#{null}'}")
+    private String kubernetesNamespace;
+
+    /** Microservice publicly resolvable hostname */
     @Value("#{systemEnvironment['sitewhere.k8s.pod.ip'] ?: '#{null}'}")
     private String kubernetesPodAddress;
 
@@ -171,6 +175,19 @@ public class InstanceSettings implements IInstanceSettings {
 
     public void setPublicHostname(String publicHostname) {
 	this.publicHostname = publicHostname;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
+     * getKubernetesNamespace()
+     */
+    @Override
+    public String getKubernetesNamespace() {
+	return kubernetesNamespace;
+    }
+
+    public void setKubernetesNamespace(String kubernetesNamespace) {
+	this.kubernetesNamespace = kubernetesNamespace;
     }
 
     /*

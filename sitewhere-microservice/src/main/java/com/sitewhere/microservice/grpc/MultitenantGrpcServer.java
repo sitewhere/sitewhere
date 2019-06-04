@@ -12,7 +12,6 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.netty.NettyServerBuilder;
-import io.netty.channel.nio.NioEventLoopGroup;
 
 /**
  * Base class for GRPC servers that handle requests for multiple tenants.
@@ -39,9 +38,6 @@ public class MultitenantGrpcServer extends GrpcServer {
 	builder.addService(getServiceImplementation()).intercept(getTenantTokenInterceptor())
 		.intercept(getJwtInterceptor());
 	builder.addService(new MultitenantManagementImpl((IMultitenantMicroservice<?, ?>) getMicroservice()));
-	builder.executor(getServerExecutor());
-	builder.bossEventLoopGroup(new NioEventLoopGroup(1));
-	builder.workerEventLoopGroup(new NioEventLoopGroup(100));
 	return builder.build();
     }
 

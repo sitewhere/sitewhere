@@ -78,6 +78,13 @@ public interface IInstanceSettings {
     public String getPublicHostname();
 
     /**
+     * Get Kubernetes namespace.
+     * 
+     * @return
+     */
+    public String getKubernetesNamespace();
+
+    /**
      * Get IP address for Kubernetes Pod running microservice.
      * 
      * @return

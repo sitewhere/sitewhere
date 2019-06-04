@@ -29,6 +29,7 @@ import com.sitewhere.microservice.security.InvalidJwtException;
 import com.sitewhere.microservice.security.JwtExpiredException;
 import com.sitewhere.security.SitewhereGrantedAuthority;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.security.ITenantAwareAuthentication;
 import com.sitewhere.spi.tenant.ITenant;
@@ -107,6 +108,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	    } catch (InvalidJwtException e) {
 		LOGGER.debug("Invalid JWT passed.", e);
 		response.sendError(HttpServletResponse.SC_FORBIDDEN, "JWT is invalid.");
+	    } catch (TenantEngineNotAvailableException e) {
+		LOGGER.debug("Requested tenant engine was not available.", e);
+		response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "Tenant engine not available.");
 	    } catch (Throwable e) {
 		LOGGER.error("Unhandled exception in token authentication filter.", e);
 		response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing JWT.");
