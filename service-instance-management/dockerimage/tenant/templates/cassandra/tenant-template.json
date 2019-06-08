@@ -1,0 +1,5 @@
+{
+	"id": "cassandra",
+	"name": "Cassandra ",
+	"description": "MongoDB device management + Cassandra event management"
+}

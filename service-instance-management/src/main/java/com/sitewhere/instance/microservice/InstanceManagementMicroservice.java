@@ -13,17 +13,25 @@ import org.apache.zookeeper.data.Stat;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
-import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
-import com.sitewhere.grpc.client.tenant.CachedTenantManagementApiChannel;
-import com.sitewhere.grpc.client.user.CachedUserManagementApiChannel;
 import com.sitewhere.instance.configuration.InstanceManagementModelProvider;
 import com.sitewhere.instance.initializer.GroovyTenantModelInitializer;
 import com.sitewhere.instance.initializer.GroovyUserModelInitializer;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.instance.spi.templates.IInstanceTemplate;
 import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
+import com.sitewhere.instance.spi.tenant.grpc.ITenantManagementGrpcServer;
+import com.sitewhere.instance.spi.tenant.kafka.ITenantBootstrapModelConsumer;
+import com.sitewhere.instance.spi.tenant.kafka.ITenantModelProducer;
+import com.sitewhere.instance.spi.tenant.templates.IDatasetTemplateManager;
+import com.sitewhere.instance.spi.tenant.templates.ITenantTemplateManager;
+import com.sitewhere.instance.spi.user.grpc.IUserManagementGrpcServer;
 import com.sitewhere.instance.templates.InstanceTemplateManager;
+import com.sitewhere.instance.tenant.grpc.TenantManagementGrpcServer;
+import com.sitewhere.instance.tenant.kafka.TenantBootstrapModelConsumer;
+import com.sitewhere.instance.tenant.kafka.TenantModelProducer;
+import com.sitewhere.instance.tenant.templates.DatasetTemplateManager;
+import com.sitewhere.instance.tenant.templates.TenantTemplateManager;
+import com.sitewhere.instance.user.grpc.UserManagementGrpcServer;
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.scripting.InstanceScriptSynchronizer;
@@ -34,10 +42,14 @@ import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
+import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
+import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
+import com.sitewhere.spi.tenant.ITenantManagement;
+import com.sitewhere.spi.user.IUserManagement;
 
 /**
  * Microservice that provides instance management functionality.
@@ -59,11 +71,29 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     /** Instance script synchronizer */
     private IScriptSynchronizer instanceScriptSynchronizer;
 
-    /** User management API channel */
-    private IUserManagementApiChannel<?> userManagementApiChannel;
+    /** Responds to user management GRPC requests */
+    private IUserManagementGrpcServer userManagementGrpcServer;
 
-    /** Tenant management API channel */
-    private ITenantManagementApiChannel<?> tenantManagementApiChannel;
+    /** User management implementation */
+    private IUserManagement userManagement;
+
+    /** Responds to tenant management GRPC requests */
+    private ITenantManagementGrpcServer tenantManagementGrpcServer;
+
+    /** Tenant management implementation */
+    private ITenantManagement tenantManagement;
+
+    /** Tenant template manager */
+    private ITenantTemplateManager tenantConfigurationTemplateManager = new TenantTemplateManager();
+
+    /** Dataset template manager */
+    private IDatasetTemplateManager tenantDatasetTemplateManager = new DatasetTemplateManager();
+
+    /** Reflects tenant model updates to Kafka topic */
+    private ITenantModelProducer tenantModelProducer;
+
+    /** Watches tenant model updates and bootstraps new tenants */
+    private ITenantBootstrapModelConsumer tenantBootstrapModelConsumer;
 
     /*
      * (non-Javadoc)
@@ -148,6 +178,9 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Create script synchronizer.
 	this.instanceScriptSynchronizer = new InstanceScriptSynchronizer();
 
+	// Create Kafka components.
+	createKafkaComponents();
+
 	// Create GRPC components.
 	createGrpcComponents();
 
@@ -157,6 +190,21 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Initialize instance script synchronizer.
 	init.addInitializeStep(this, getInstanceScriptSynchronizer(), true);
 
+	// Initialize tenant configuration template manager.
+	init.addInitializeStep(this, getTenantConfigurationTemplateManager(), true);
+
+	// Initialize tenant dataset template manager.
+	init.addInitializeStep(this, getTenantDatasetTemplateManager(), true);
+
+	// Initialize tenant management GRPC server.
+	init.addInitializeStep(this, getTenantManagementGrpcServer(), true);
+
+	// Initialize tenant bootstrap model consumer.
+	init.addInitializeStep(this, getTenantBootstrapModelConsumer(), true);
+
+	// Initialize tenant model producer.
+	init.addInitializeStep(this, getTenantModelProducer(), true);
+
 	// Execute initialization steps.
 	init.execute(monitor);
     }
@@ -165,10 +213,18 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
      * Create components that interact via GRPC.
      */
     protected void createGrpcComponents() {
-	this.userManagementApiChannel = new CachedUserManagementApiChannel(getInstanceSettings(),
-		new CachedUserManagementApiChannel.CacheSettings());
-	this.tenantManagementApiChannel = new CachedTenantManagementApiChannel(getInstanceSettings(),
-		new CachedTenantManagementApiChannel.CacheSettings());
+	this.userManagementGrpcServer = new UserManagementGrpcServer(this, getUserManagement());
+	this.tenantManagementGrpcServer = new TenantManagementGrpcServer(this, getTenantManagement(), this);
+    }
+
+    /**
+     * Create Apache Kafka components.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void createKafkaComponents() throws SiteWhereException {
+	this.tenantModelProducer = new TenantModelProducer();
+	this.tenantBootstrapModelConsumer = new TenantBootstrapModelConsumer();
     }
 
     /*
@@ -190,17 +246,20 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Start instance script synchronizer.
 	start.addStartStep(this, getInstanceScriptSynchronizer(), true);
 
-	// Initialize user management API channel.
-	start.addInitializeStep(this, getUserManagementApiChannel(), true);
+	// Start tenant configuration template manager.
+	start.addStartStep(this, getTenantConfigurationTemplateManager(), true);
 
-	// Start user mangement API channel.
-	start.addStartStep(this, getUserManagementApiChannel(), true);
+	// Start tenant dataset template manager.
+	start.addStartStep(this, getTenantDatasetTemplateManager(), true);
 
-	// Initialize tenant management API channel.
-	start.addInitializeStep(this, getTenantManagementApiChannel(), true);
+	// Start GRPC server.
+	start.addStartStep(this, getTenantManagementGrpcServer(), true);
 
-	// Start tenant mangement API channel.
-	start.addStartStep(this, getTenantManagementApiChannel(), true);
+	// Start tenant bootstrap model consumer.
+	start.addStartStep(this, getTenantBootstrapModelConsumer(), true);
+
+	// Start tenant model producer.
+	start.addStartStep(this, getTenantModelProducer(), true);
 
 	// Verify Zk node for instance configuration or bootstrap instance.
 	start.addStep(verifyOrBootstrapConfiguration());
@@ -219,11 +278,20 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
-	// Stop tenant management API channel.
-	stop.addStopStep(this, getTenantManagementApiChannel());
+	// Stop tenant model producer.
+	stop.addStopStep(this, getTenantModelProducer());
 
-	// Stop user management API channel.
-	stop.addStopStep(this, getUserManagementApiChannel());
+	// Stop tenant bootstrap model consumer.
+	stop.addStopStep(this, getTenantBootstrapModelConsumer());
+
+	// Stop GRPC manager.
+	stop.addStopStep(this, getTenantManagementGrpcServer());
+
+	// Stop tenant dataset template manager.
+	stop.addStopStep(this, getTenantDatasetTemplateManager());
+
+	// Stop tenant configuration template manager.
+	stop.addStopStep(this, getTenantConfigurationTemplateManager());
 
 	// Stop instance script synchronizer.
 	stop.addStopStep(this, getInstanceScriptSynchronizer());
@@ -379,7 +447,7 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize user model."), this));
 	for (String script : scripts) {
 	    GroovyUserModelInitializer initializer = new GroovyUserModelInitializer(groovy, script);
-	    initializer.initialize(getUserManagementApiChannel());
+	    initializer.initialize(getUserManagement());
 	}
     }
 
@@ -400,7 +468,7 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize tenant model."), this));
 	for (String script : scripts) {
 	    GroovyTenantModelInitializer initializer = new GroovyTenantModelInitializer(groovy, script);
-	    initializer.initialize(getTenantManagementApiChannel());
+	    initializer.initialize(getTenantManagement());
 	}
     }
 
@@ -417,6 +485,22 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	    throw new SiteWhereException("Unable to locate instance template: " + templateId);
 	}
 	return template;
+    }
+
+    /*
+     * @see com.sitewhere.spi.tenant.ITenantAdministration#getTenantTemplates()
+     */
+    @Override
+    public List<ITenantTemplate> getTenantTemplates() throws SiteWhereException {
+	return getTenantConfigurationTemplateManager().getTenantTemplates();
+    }
+
+    /*
+     * @see com.sitewhere.spi.tenant.ITenantAdministration#getDatasetTemplates()
+     */
+    @Override
+    public List<IDatasetTemplate> getDatasetTemplates() throws SiteWhereException {
+	return getTenantDatasetTemplateManager().getDatasetTemplates();
     }
 
     /*
@@ -449,27 +533,105 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
     /*
      * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
-     * getUserManagementApiChannel()
+     * getUserManagementGrpcServer()
      */
     @Override
-    public IUserManagementApiChannel<?> getUserManagementApiChannel() {
-	return userManagementApiChannel;
+    public IUserManagementGrpcServer getUserManagementGrpcServer() {
+	return userManagementGrpcServer;
     }
 
-    public void setUserManagementApiChannel(IUserManagementApiChannel<?> userManagementApiChannel) {
-	this.userManagementApiChannel = userManagementApiChannel;
+    public void setUserManagementGrpcServer(IUserManagementGrpcServer userManagementGrpcServer) {
+	this.userManagementGrpcServer = userManagementGrpcServer;
     }
 
     /*
      * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
-     * getTenantManagementApiChannel()
+     * getUserManagement()
      */
     @Override
-    public ITenantManagementApiChannel<?> getTenantManagementApiChannel() {
-	return tenantManagementApiChannel;
+    public IUserManagement getUserManagement() {
+	return userManagement;
     }
 
-    public void setTenantManagementApiChannel(ITenantManagementApiChannel<?> tenantManagementApiChannel) {
-	this.tenantManagementApiChannel = tenantManagementApiChannel;
+    public void setUserManagement(IUserManagement userManagement) {
+	this.userManagement = userManagement;
+    }
+
+    /*
+     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * getTenantManagementGrpcServer()
+     */
+    @Override
+    public ITenantManagementGrpcServer getTenantManagementGrpcServer() {
+	return tenantManagementGrpcServer;
+    }
+
+    public void setTenantManagementGrpcServer(ITenantManagementGrpcServer tenantManagementGrpcServer) {
+	this.tenantManagementGrpcServer = tenantManagementGrpcServer;
+    }
+
+    /*
+     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * getTenantManagement()
+     */
+    @Override
+    public ITenantManagement getTenantManagement() {
+	return tenantManagement;
+    }
+
+    public void setTenantManagement(ITenantManagement tenantManagement) {
+	this.tenantManagement = tenantManagement;
+    }
+
+    /*
+     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * getTenantConfigurationTemplateManager()
+     */
+    @Override
+    public ITenantTemplateManager getTenantConfigurationTemplateManager() {
+	return tenantConfigurationTemplateManager;
+    }
+
+    public void setTenantConfigurationTemplateManager(ITenantTemplateManager tenantConfigurationTemplateManager) {
+	this.tenantConfigurationTemplateManager = tenantConfigurationTemplateManager;
+    }
+
+    /*
+     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * getTenantDatasetTemplateManager()
+     */
+    @Override
+    public IDatasetTemplateManager getTenantDatasetTemplateManager() {
+	return tenantDatasetTemplateManager;
+    }
+
+    public void setTenantDatasetTemplateManager(IDatasetTemplateManager tenantDatasetTemplateManager) {
+	this.tenantDatasetTemplateManager = tenantDatasetTemplateManager;
+    }
+
+    /*
+     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * getTenantModelProducer()
+     */
+    @Override
+    public ITenantModelProducer getTenantModelProducer() {
+	return tenantModelProducer;
+    }
+
+    public void setTenantModelProducer(ITenantModelProducer tenantModelProducer) {
+	this.tenantModelProducer = tenantModelProducer;
+    }
+
+    /*
+     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * getTenantBootstrapModelConsumer()
+     */
+    @Override
+    public ITenantBootstrapModelConsumer getTenantBootstrapModelConsumer() {
+	return tenantBootstrapModelConsumer;
+    }
+
+    public void setTenantBootstrapModelConsumer(ITenantBootstrapModelConsumer tenantBootstrapModelConsumer) {
+	this.tenantBootstrapModelConsumer = tenantBootstrapModelConsumer;
     }
 }

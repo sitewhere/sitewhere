@@ -23,4 +23,16 @@ public interface IGrpcSettings {
 
     /** Default gRPC Management Health Protocol Port */
     public static final int DEFAULT_MANAGEMENT_HEALTH_PORT = 9003;
+
+    /** User management API port for instance management microservice */
+    public static final int USER_MANAGEMENT_API_PORT = 9004;
+
+    /** Tenant management API port for instance management microservice */
+    public static final int TENANT_MANAGEMENT_API_PORT = 9005;
+
+    /** User management API port for instance management microservice */
+    public static final int USER_MANAGEMENT_API_HEALTH_PORT = 9006;
+
+    /** Tenant management API port for instance management microservice */
+    public static final int TENANT_MANAGEMENT_API_HEALTH_PORT = 9007;
 }

@@ -46,10 +46,6 @@ public enum MicroserviceIdentifier implements IFunctionIdentifier {
 
     StreamingMedia("streaming-media", null),
 
-    TenantManagement("tenant-management", "com.sitewhere.grpc.service.TenantManagement"),
-
-    UserManagement("user-management", "com.sitewhere.grpc.service.UserManagement"),
-
     WebRest("web-rest", null);
 
     /** Path */

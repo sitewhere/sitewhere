@@ -53,7 +53,7 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
 	implements ITenantManagementApiChannel<TenantManagementGrpcChannel> {
 
     public TenantManagementApiChannel(IInstanceSettings settings) {
-	super(settings, MicroserviceIdentifier.TenantManagement, IGrpcSettings.DEFAULT_API_PORT);
+	super(settings, MicroserviceIdentifier.InstanceManagement, IGrpcSettings.TENANT_MANAGEMENT_API_PORT);
     }
 
     /*

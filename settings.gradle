@@ -15,8 +15,6 @@ include ':service-outbound-connectors'
 include ':service-rule-processing'
 include ':service-schedule-management'
 include ':service-streaming-media'
-include ':service-tenant-management'
-include ':service-user-management'
 include ':service-web-rest'
 
 include ':sitewhere-cassandra'
@@ -47,8 +45,6 @@ project(':service-outbound-connectors').projectDir = "$rootDir/service-outbound-
 project(':service-rule-processing').projectDir = "$rootDir/service-rule-processing" as File
 project(':service-schedule-management').projectDir = "$rootDir/service-schedule-management" as File
 project(':service-streaming-media').projectDir = "$rootDir/service-streaming-media" as File
-project(':service-tenant-management').projectDir = "$rootDir/service-tenant-management" as File
-project(':service-user-management').projectDir = "$rootDir/service-user-management" as File
 project(':service-web-rest').projectDir = "$rootDir/service-web-rest" as File
 
 project(':sitewhere-cassandra').projectDir = "$rootDir/sitewhere-cassandra" as File

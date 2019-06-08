@@ -65,7 +65,7 @@ public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChann
 	implements IUserManagementApiChannel<UserManagementGrpcChannel> {
 
     public UserManagementApiChannel(IInstanceSettings settings) {
-	super(settings, MicroserviceIdentifier.UserManagement, IGrpcSettings.DEFAULT_API_PORT);
+	super(settings, MicroserviceIdentifier.InstanceManagement, IGrpcSettings.USER_MANAGEMENT_API_PORT);
     }
 
     /*
