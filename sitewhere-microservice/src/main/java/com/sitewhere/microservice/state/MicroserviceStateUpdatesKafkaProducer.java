@@ -57,6 +57,18 @@ public class MicroserviceStateUpdatesKafkaProducer extends MicroserviceKafkaProd
 
     /*
      * @see
+     * com.sitewhere.microservice.kafka.MicroserviceKafkaProducer#stop(com.sitewhere
+     * .spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	if (getUpdatesService() != null) {
+	    getUpdatesService().shutdownNow();
+	}
+    }
+
+    /*
+     * @see
      * com.sitewhere.spi.microservice.state.IMicroserviceStateUpdatesKafkaProducer#
      * send(com.sitewhere.spi.microservice.state.IMicroserviceState)
      */
@@ -96,6 +108,7 @@ public class MicroserviceStateUpdatesKafkaProducer extends MicroserviceKafkaProd
 		getKafkaAvailable().await();
 	    } catch (InterruptedException e1) {
 		getLogger().info("Interrupted while waiting for Kafka to become available.");
+		return;
 	    }
 	    while (true) {
 		try {
@@ -122,6 +135,9 @@ public class MicroserviceStateUpdatesKafkaProducer extends MicroserviceKafkaProd
 			    getLogger().debug("Skipping tenant engine state update. Kafka producer not started.");
 			}
 		    }
+		} catch (InterruptedException e) {
+		    getLogger().info("Microservice state updates thread shutting down.");
+		    return;
 		} catch (Throwable e) {
 		    getLogger().error("Unable to deliver microservice element state.", e);
 		}
