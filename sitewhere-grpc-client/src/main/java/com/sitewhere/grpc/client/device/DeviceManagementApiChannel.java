@@ -45,6 +45,8 @@ import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.grpc.GrpcServiceIdentifier;
+import com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier;
 import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.search.ISearchCriteria;
@@ -61,26 +63,26 @@ import com.sitewhere.spi.search.device.IZoneSearchCriteria;
 /**
  * Supports SiteWhere device management APIs on top of a
  * {@link DeviceManagementGrpcChannel}.
- * 
- * @author Derek
  */
 public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceManagementGrpcChannel>
 	implements IDeviceManagementApiChannel<DeviceManagementGrpcChannel> {
 
     public DeviceManagementApiChannel(IInstanceSettings settings) {
-	super(settings, MicroserviceIdentifier.DeviceManagement, IGrpcSettings.DEFAULT_API_PORT);
+	super(settings, MicroserviceIdentifier.DeviceManagement, GrpcServiceIdentifier.DeviceManagement,
+		IGrpcSettings.DEFAULT_API_PORT);
     }
 
     /*
      * @see
      * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
      * .microservice.instance.IInstanceSettings,
-     * com.sitewhere.spi.microservice.IFunctionIdentifier, int)
+     * com.sitewhere.spi.microservice.IFunctionIdentifier,
+     * com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier, int)
      */
     @Override
     public DeviceManagementGrpcChannel createGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier,
-	    int port) {
-	return new DeviceManagementGrpcChannel(settings, identifier, port);
+	    IGrpcServiceIdentifier grpcServiceIdentifier, int port) {
+	return new DeviceManagementGrpcChannel(settings, identifier, grpcServiceIdentifier, port);
     }
 
     /*

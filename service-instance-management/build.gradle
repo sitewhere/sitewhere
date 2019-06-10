@@ -41,8 +41,9 @@ task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, depends
 	// Copy Spring Boot jar.
 	copyFile("${project.name}-${project.version}-boot.jar", "/")
 	
-	// Copy tenant templates.
-	copyFile("templates", "/templates")
+	// Copy instance and tenant templates.
+	copyFile("instance", "/instance")
+	copyFile("tenant", "/tenant")
 
 	// Run Java command to start application.
 	if(!project.hasProperty("debug")) {

@@ -86,8 +86,9 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 	// Handles threading for tenant operations.
 	this.tenantOperations = Executors.newFixedThreadPool(MAX_CONCURRENT_TENANT_OPERATIONS,
 		new TenantOperationsThreadFactory());
-	tenantOperations.execute(new TenantEngineStarter(getMicroservice()));
-	tenantOperations.execute(new TenantEngineStopper(getMicroservice()));
+
+	// Initialize tenant engines.
+	initializeTenantEngines();
     }
 
     /*
@@ -99,8 +100,8 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.start(monitor);
 
-	// Initialize tenant engines.
-	initializeTenantEngines();
+	tenantOperations.execute(new TenantEngineStarter(getMicroservice()));
+	tenantOperations.execute(new TenantEngineStopper(getMicroservice()));
     }
 
     /*
@@ -187,20 +188,27 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 		if (tenantIds.size() > 0) {
 		    getLogger()
 			    .info(String.format("Queueing %d tenant engines for initialization...", tenantIds.size()));
+		} else {
+		    getLogger().info("No tenants found. Skipping tenant engine initialization.");
 		}
 		for (String tenantIdStr : tenantIds) {
 		    UUID tenantId = UUID.fromString(tenantIdStr);
 		    if (getTenantEngineByTenantId(tenantId) == null) {
-			if (!getTenantInitializationQueue().contains(tenantId)) {
-			    getTenantInitializationQueue().offer(tenantId);
+			String bootstrapped = getMultitenantMicroservice()
+				.getInstanceTenantBootstrappedIndicatorPath(tenantId);
+			// Only initialize tenants which have been bootstrapped.
+			if (curator.checkExists().forPath(bootstrapped) != null) {
+			    if (!getTenantInitializationQueue().contains(tenantId)) {
+				getTenantInitializationQueue().offer(tenantId);
+			    }
 			}
 		    }
 		}
 	    } else {
-		getLogger().warn("No tenants currently configured.");
+		throw new SiteWhereException("Zookeeper path for tenant configurations was not found.");
 	    }
-	} catch (Exception e) {
-	    throw new SiteWhereException("Unable to create tenant engines.", e);
+	} catch (Throwable e) {
+	    throw new SiteWhereException("Unhandled exception while processing tenant engines for initialization.", e);
 	}
     }
 
@@ -487,7 +495,7 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 			    .getInstanceTenantBootstrappedIndicatorPath(tenant.getId())) != null) {
 			return;
 		    }
-		    Thread.sleep(1000);
+		    Thread.sleep(3000);
 		}
 		throw new SiteWhereException("Tenant not bootstrapped within time limit. Aborting");
 	    } catch (Throwable t) {

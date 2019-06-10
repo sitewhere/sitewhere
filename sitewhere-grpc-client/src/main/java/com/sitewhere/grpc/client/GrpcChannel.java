@@ -16,6 +16,7 @@ import com.sitewhere.grpc.client.spi.IGrpcChannel;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
@@ -24,8 +25,6 @@ import io.grpc.netty.NettyChannelBuilder;
 
 /**
  * Management wrapper for a GRPC channel.
- * 
- * @author Derek
  *
  * @param <B>
  * @param <A>
@@ -34,6 +33,9 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
 
     /** Function identifier */
     protected IFunctionIdentifier functionIdentifier;
+
+    /** gRPC service identifier */
+    protected IGrpcServiceIdentifier grpcServiceIdentifier;
 
     /** Remote host */
     protected String hostname;
@@ -53,8 +55,10 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
     /** Client interceptor for adding JWT from Spring Security context */
     private JwtClientInterceptor jwtInterceptor;
 
-    public GrpcChannel(IInstanceSettings settings, IFunctionIdentifier functionIdentifier, int port) {
+    public GrpcChannel(IInstanceSettings settings, IFunctionIdentifier functionIdentifier,
+	    IGrpcServiceIdentifier grpcServiceIdentifier, int port) {
 	this.functionIdentifier = functionIdentifier;
+	this.grpcServiceIdentifier = grpcServiceIdentifier;
 	this.hostname = GrpcChannel.computeHostname(settings, functionIdentifier);
 	this.port = port;
 
@@ -114,7 +118,7 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
     protected Map<String, Object> buildMethodConfiguration() {
 	Map<String, Object> methodConfig = new HashMap<>();
 	Map<String, Object> name = new HashMap<>();
-	name.put("service", getFunctionIdentifier().getGrpcServiceName());
+	name.put("service", getGrpcServiceIdentifier().getGrpcServiceName());
 	methodConfig.put("name", Collections.<Object>singletonList(name));
 	methodConfig.put("retryPolicy", buildRetryPolicy());
 	return methodConfig;
@@ -199,31 +203,19 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
 	return jwtInterceptor;
     }
 
-    public void setJwtInterceptor(JwtClientInterceptor jwtInterceptor) {
-	this.jwtInterceptor = jwtInterceptor;
-    }
-
     public IFunctionIdentifier getFunctionIdentifier() {
 	return functionIdentifier;
     }
 
-    public void setFunctionIdentifier(IFunctionIdentifier functionIdentifier) {
-	this.functionIdentifier = functionIdentifier;
+    public IGrpcServiceIdentifier getGrpcServiceIdentifier() {
+	return grpcServiceIdentifier;
     }
 
     public String getHostname() {
 	return hostname;
     }
 
-    public void setHostname(String hostname) {
-	this.hostname = hostname;
-    }
-
     public int getPort() {
 	return port;
-    }
-
-    public void setPort(int port) {
-	this.port = port;
     }
 }

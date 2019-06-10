@@ -12,6 +12,7 @@ import com.sitewhere.grpc.service.MicroserviceManagementGrpc;
 import com.sitewhere.grpc.service.MicroserviceManagementGrpc.MicroserviceManagementBlockingStub;
 import com.sitewhere.grpc.service.MicroserviceManagementGrpc.MicroserviceManagementStub;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
@@ -23,8 +24,9 @@ import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 public class MicroserviceManagementGrpcChannel
 	extends GrpcChannel<MicroserviceManagementBlockingStub, MicroserviceManagementStub> {
 
-    public MicroserviceManagementGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier, int port) {
-	super(settings, identifier, port);
+    public MicroserviceManagementGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier,
+	    IGrpcServiceIdentifier grpcServiceIdentifier, int port) {
+	super(settings, identifier, grpcServiceIdentifier, port);
     }
 
     /*

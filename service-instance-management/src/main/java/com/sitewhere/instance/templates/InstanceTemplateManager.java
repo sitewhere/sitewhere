@@ -32,7 +32,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public class InstanceTemplateManager extends LifecycleComponent implements IInstanceTemplateManager {
 
     /** Root folder for instance templates */
-    private static final String TEMPLATES_ROOT = "/templates";
+    private static final String TEMPLATES_ROOT = "/instance/templates";
 
     /** File name for instance template metadata */
     private static final String TEMPLATE_FILE = "template.json";

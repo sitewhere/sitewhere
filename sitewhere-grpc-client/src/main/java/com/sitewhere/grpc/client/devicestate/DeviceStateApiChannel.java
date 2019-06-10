@@ -31,6 +31,8 @@ import com.sitewhere.spi.device.state.IDeviceState;
 import com.sitewhere.spi.device.state.request.IDeviceStateCreateRequest;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.grpc.GrpcServiceIdentifier;
+import com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier;
 import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.search.ISearchResults;
@@ -46,19 +48,21 @@ public class DeviceStateApiChannel extends MultitenantApiChannel<DeviceStateGrpc
 	implements IDeviceStateApiChannel<DeviceStateGrpcChannel> {
 
     public DeviceStateApiChannel(IInstanceSettings settings) {
-	super(settings, MicroserviceIdentifier.DeviceState, IGrpcSettings.DEFAULT_API_PORT);
+	super(settings, MicroserviceIdentifier.DeviceState, GrpcServiceIdentifier.DeviceState,
+		IGrpcSettings.DEFAULT_API_PORT);
     }
 
     /*
      * @see
      * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
      * .microservice.instance.IInstanceSettings,
-     * com.sitewhere.spi.microservice.IFunctionIdentifier, int)
+     * com.sitewhere.spi.microservice.IFunctionIdentifier,
+     * com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier, int)
      */
     @Override
     public DeviceStateGrpcChannel createGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier,
-	    int port) {
-	return new DeviceStateGrpcChannel(settings, identifier, port);
+	    IGrpcServiceIdentifier grpcServiceIdentifier, int port) {
+	return new DeviceStateGrpcChannel(settings, identifier, grpcServiceIdentifier, port);
     }
 
     /*

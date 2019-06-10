@@ -1,0 +1,12 @@
+{
+	"id": "default",
+	"name": "Default",
+	"initializers": {
+		"userManagement": [
+			"scripts/groovy/initializer/userModel.groovy"
+		],
+		"tenantManagement": [
+			"scripts/groovy/initializer/tenantModel.groovy"
+		]
+	}
+}

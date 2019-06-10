@@ -45,7 +45,13 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
     /** Relative path to instance management configuration file */
     private static final String INSTANCE_MANAGEMENT_CONFIGURATION_PATH = "/instance-management.xml";
 
-    /** Relative path for tenant-specific data */
+    /** Relative path for authority configuration data */
+    private static final String INSTANCE_AUTHORITIES_SUBPATH = "/authoritities";
+
+    /** Relative path for user configuration data */
+    private static final String INSTANCE_USERS_SUBPATH = "/users";
+
+    /** Relative path for tenant configuration data */
     private static final String INSTANCE_TENANTS_SUBPATH = "/tenants";
 
     /** Relative path for script data */
@@ -138,6 +144,42 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
     @Override
     public byte[] getInstanceManagementConfigurationData() throws SiteWhereException {
 	return getConfigurationMonitor().getConfigurationDataFor(getInstanceManagementConfigurationPath());
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getInstanceAuthoritiesConfigurationPath()
+     */
+    @Override
+    public String getInstanceAuthoritiesConfigurationPath() throws SiteWhereException {
+	return getInstanceConfigurationPath() + INSTANCE_AUTHORITIES_SUBPATH;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getInstanceAuthorityConfigurationPath(java.lang.String)
+     */
+    @Override
+    public String getInstanceAuthorityConfigurationPath(String authority) throws SiteWhereException {
+	return getInstanceAuthoritiesConfigurationPath() + "/" + authority;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getInstanceUsersConfigurationPath()
+     */
+    @Override
+    public String getInstanceUsersConfigurationPath() throws SiteWhereException {
+	return getInstanceConfigurationPath() + INSTANCE_USERS_SUBPATH;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getInstanceUserConfigurationPath(java.lang.String)
+     */
+    @Override
+    public String getInstanceUserConfigurationPath(String username) throws SiteWhereException {
+	return getInstanceUsersConfigurationPath() + "/" + username;
     }
 
     /*
