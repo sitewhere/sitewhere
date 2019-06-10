@@ -11,6 +11,7 @@ import com.sitewhere.grpc.client.spi.IApiChannel;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
@@ -31,15 +32,20 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
     /** Function identifier */
     private IFunctionIdentifier functionIdentifier;
 
+    /** gRPC service identifier */
+    private IGrpcServiceIdentifier grpcServiceIdentifier;
+
     /** Binding port */
     private int port;
 
     /** Underlying GRPC channel */
     private T grpcChannel;
 
-    public ApiChannel(IInstanceSettings settings, IFunctionIdentifier functionIdentifier, int port) {
+    public ApiChannel(IInstanceSettings settings, IFunctionIdentifier functionIdentifier,
+	    IGrpcServiceIdentifier grpcServiceIdentifier, int port) {
 	this.settings = settings;
 	this.functionIdentifier = functionIdentifier;
+	this.grpcServiceIdentifier = grpcServiceIdentifier;
 	this.port = port;
     }
 
@@ -58,9 +64,10 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.grpcChannel = createGrpcChannel(getSettings(), getFunctionIdentifier(), getPort());
-	getLogger().info(String.format("Initializing gRPC channel to '%s:%d'", getGrpcChannel().getHostname(),
-		getGrpcChannel().getPort()));
+	this.grpcChannel = createGrpcChannel(getSettings(), getFunctionIdentifier(), getGrpcServiceIdentifier(),
+		getPort());
+	getLogger().info(String.format("Initializing gRPC channel for %s to '%s:%d'", getGrpcServiceIdentifier(),
+		getGrpcChannel().getHostname(), getGrpcChannel().getPort()));
 	initializeNestedComponent(getGrpcChannel(), monitor, true);
     }
 
@@ -98,6 +105,18 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
 
     public void setFunctionIdentifier(IFunctionIdentifier functionIdentifier) {
 	this.functionIdentifier = functionIdentifier;
+    }
+
+    /*
+     * @see com.sitewhere.grpc.client.spi.IApiChannel#getGrpcServiceIdentifier()
+     */
+    @Override
+    public IGrpcServiceIdentifier getGrpcServiceIdentifier() {
+	return grpcServiceIdentifier;
+    }
+
+    public void setGrpcServiceIdentifier(IGrpcServiceIdentifier grpcServiceIdentifier) {
+	this.grpcServiceIdentifier = grpcServiceIdentifier;
     }
 
     /*

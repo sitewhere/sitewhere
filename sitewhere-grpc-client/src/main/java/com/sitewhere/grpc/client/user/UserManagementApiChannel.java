@@ -45,6 +45,8 @@ import com.sitewhere.grpc.service.UserManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.grpc.GrpcServiceIdentifier;
+import com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier;
 import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.search.ISearchResults;
@@ -58,26 +60,26 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
 /**
  * Supports SiteWhere user management APIs on top of a
  * {@link UserManagementGrpcChannel}.
- * 
- * @author Derek
  */
 public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChannel>
 	implements IUserManagementApiChannel<UserManagementGrpcChannel> {
 
     public UserManagementApiChannel(IInstanceSettings settings) {
-	super(settings, MicroserviceIdentifier.InstanceManagement, IGrpcSettings.USER_MANAGEMENT_API_PORT);
+	super(settings, MicroserviceIdentifier.InstanceManagement, GrpcServiceIdentifier.UserManagement,
+		IGrpcSettings.USER_MANAGEMENT_API_PORT);
     }
 
     /*
      * @see
      * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
      * .microservice.instance.IInstanceSettings,
-     * com.sitewhere.spi.microservice.IFunctionIdentifier, int)
+     * com.sitewhere.spi.microservice.IFunctionIdentifier,
+     * com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier, int)
      */
     @Override
     public UserManagementGrpcChannel createGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier,
-	    int port) {
-	return new UserManagementGrpcChannel(settings, identifier, port);
+	    IGrpcServiceIdentifier grpcServiceIdentifier, int port) {
+	return new UserManagementGrpcChannel(settings, identifier, grpcServiceIdentifier, port);
     }
 
     /*

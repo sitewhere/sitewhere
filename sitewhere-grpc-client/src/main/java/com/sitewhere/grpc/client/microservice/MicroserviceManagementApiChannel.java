@@ -35,6 +35,7 @@ import com.sitewhere.grpc.service.MicroserviceManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
+import com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.scripting.IScriptTemplate;
 
@@ -47,8 +48,9 @@ import com.sitewhere.spi.microservice.scripting.IScriptTemplate;
 public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceManagementGrpcChannel>
 	implements IMicroserviceManagementApiChannel<MicroserviceManagementGrpcChannel> {
 
-    public MicroserviceManagementApiChannel(IInstanceSettings settings, IFunctionIdentifier identifier, int port) {
-	super(settings, identifier, port);
+    public MicroserviceManagementApiChannel(IInstanceSettings settings, IFunctionIdentifier identifier,
+	    IGrpcServiceIdentifier grpcServiceIdentifier, int port) {
+	super(settings, identifier, grpcServiceIdentifier, port);
     }
 
     /*
@@ -59,8 +61,8 @@ public class MicroserviceManagementApiChannel extends ApiChannel<MicroserviceMan
      */
     @Override
     public MicroserviceManagementGrpcChannel createGrpcChannel(IInstanceSettings settings,
-	    IFunctionIdentifier identifier, int port) {
-	return new MicroserviceManagementGrpcChannel(settings, identifier, port);
+	    IFunctionIdentifier identifier, IGrpcServiceIdentifier grpcServiceIdentifier, int port) {
+	return new MicroserviceManagementGrpcChannel(settings, identifier, grpcServiceIdentifier, port);
     }
 
     /*

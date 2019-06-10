@@ -9,20 +9,20 @@ package com.sitewhere.grpc.client;
 
 import com.sitewhere.grpc.client.spi.multitenant.IMultitenantApiChannel;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Extends {@link ApiChannel} with methods for dealing with multitenant
  * microservices.
- * 
- * @author Derek
  *
  * @param <T>
  */
 public abstract class MultitenantApiChannel<T extends MultitenantGrpcChannel<?, ?>> extends ApiChannel<T>
 	implements IMultitenantApiChannel<T> {
 
-    public MultitenantApiChannel(IInstanceSettings settings, IFunctionIdentifier identifier, int port) {
-	super(settings, identifier, port);
+    public MultitenantApiChannel(IInstanceSettings settings, IFunctionIdentifier identifier,
+	    IGrpcServiceIdentifier grpcServiceIdentifier, int port) {
+	super(settings, identifier, grpcServiceIdentifier, port);
     }
 }

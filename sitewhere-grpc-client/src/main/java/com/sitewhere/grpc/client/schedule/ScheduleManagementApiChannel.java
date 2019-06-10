@@ -34,6 +34,8 @@ import com.sitewhere.grpc.service.ScheduleManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.grpc.GrpcServiceIdentifier;
+import com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier;
 import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.scheduling.ISchedule;
@@ -46,26 +48,26 @@ import com.sitewhere.spi.search.ISearchResults;
 /**
  * Supports SiteWhere schedule management APIs on top of a
  * {@link ScheduleManagementGrpcChannel}.
- * 
- * @author Derek
  */
 public class ScheduleManagementApiChannel extends MultitenantApiChannel<ScheduleManagementGrpcChannel>
 	implements IScheduleManagementApiChannel<ScheduleManagementGrpcChannel> {
 
     public ScheduleManagementApiChannel(IInstanceSettings settings) {
-	super(settings, MicroserviceIdentifier.ScheduleManagement, IGrpcSettings.DEFAULT_API_PORT);
+	super(settings, MicroserviceIdentifier.ScheduleManagement, GrpcServiceIdentifier.ScheduleManagement,
+		IGrpcSettings.DEFAULT_API_PORT);
     }
 
     /*
      * @see
      * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
      * .microservice.instance.IInstanceSettings,
-     * com.sitewhere.spi.microservice.IFunctionIdentifier, int)
+     * com.sitewhere.spi.microservice.IFunctionIdentifier,
+     * com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier, int)
      */
     @Override
     public ScheduleManagementGrpcChannel createGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier,
-	    int port) {
-	return new ScheduleManagementGrpcChannel(settings, identifier, port);
+	    IGrpcServiceIdentifier grpcServiceIdentifier, int port) {
+	return new ScheduleManagementGrpcChannel(settings, identifier, grpcServiceIdentifier, port);
     }
 
     /*

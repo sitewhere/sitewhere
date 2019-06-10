@@ -43,6 +43,8 @@ import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.grpc.GrpcServiceIdentifier;
+import com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier;
 import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.search.ISearchResults;
@@ -52,26 +54,26 @@ import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 /**
  * Supports SiteWhere batch management APIs on top of a
  * {@link BatchManagementGrpcChannel}.
- * 
- * @author Derek
  */
 public class BatchManagementApiChannel extends MultitenantApiChannel<BatchManagementGrpcChannel>
 	implements IBatchManagementApiChannel<BatchManagementGrpcChannel> {
 
     public BatchManagementApiChannel(IInstanceSettings settings) {
-	super(settings, MicroserviceIdentifier.BatchOperations, IGrpcSettings.DEFAULT_API_PORT);
+	super(settings, MicroserviceIdentifier.BatchOperations, GrpcServiceIdentifier.BatchOperations,
+		IGrpcSettings.DEFAULT_API_PORT);
     }
 
     /*
      * @see
      * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
      * .microservice.instance.IInstanceSettings,
-     * com.sitewhere.spi.microservice.IFunctionIdentifier, int)
+     * com.sitewhere.spi.microservice.IFunctionIdentifier,
+     * com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier, int)
      */
     @Override
     public BatchManagementGrpcChannel createGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier,
-	    int port) {
-	return new BatchManagementGrpcChannel(settings, identifier, port);
+	    IGrpcServiceIdentifier grpcServiceIdentifier, int port) {
+	return new BatchManagementGrpcChannel(settings, identifier, grpcServiceIdentifier, port);
     }
 
     /*

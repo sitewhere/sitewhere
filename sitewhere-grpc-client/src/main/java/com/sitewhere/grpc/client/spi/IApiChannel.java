@@ -9,6 +9,7 @@ package com.sitewhere.grpc.client.spi;
 
 import com.sitewhere.grpc.client.GrpcChannel;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
@@ -27,6 +28,13 @@ public interface IApiChannel<T extends GrpcChannel<?, ?>> extends ITenantEngineL
     public IFunctionIdentifier getFunctionIdentifier();
 
     /**
+     * Get gRPC service identifier.
+     * 
+     * @return
+     */
+    public IGrpcServiceIdentifier getGrpcServiceIdentifier();
+
+    /**
      * Get target port.
      * 
      * @return
@@ -38,10 +46,12 @@ public interface IApiChannel<T extends GrpcChannel<?, ?>> extends ITenantEngineL
      * 
      * @param settings
      * @param identifier
+     * @param grpcServiceIdentifier
      * @param port
      * @return
      */
-    public T createGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier, int port);
+    public T createGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier,
+	    IGrpcServiceIdentifier grpcServiceIdentifier, int port);
 
     /**
      * Get underlying GRPC channel.

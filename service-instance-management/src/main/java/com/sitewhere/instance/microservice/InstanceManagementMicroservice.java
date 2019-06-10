@@ -9,6 +9,7 @@ package com.sitewhere.instance.microservice;
 
 import java.util.List;
 
+import org.apache.curator.framework.CuratorFramework;
 import org.apache.zookeeper.data.Stat;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,10 +29,14 @@ import com.sitewhere.instance.spi.user.grpc.IUserManagementGrpcServer;
 import com.sitewhere.instance.templates.InstanceTemplateManager;
 import com.sitewhere.instance.tenant.grpc.TenantManagementGrpcServer;
 import com.sitewhere.instance.tenant.kafka.TenantBootstrapModelConsumer;
+import com.sitewhere.instance.tenant.kafka.TenantManagementKafkaTriggers;
 import com.sitewhere.instance.tenant.kafka.TenantModelProducer;
+import com.sitewhere.instance.tenant.persistence.ZookeeperTenantManagement;
 import com.sitewhere.instance.tenant.templates.DatasetTemplateManager;
 import com.sitewhere.instance.tenant.templates.TenantTemplateManager;
 import com.sitewhere.instance.user.grpc.UserManagementGrpcServer;
+import com.sitewhere.instance.user.kafka.UserManagementKafkaTriggers;
+import com.sitewhere.instance.user.persistence.ZookeeperUserManagement;
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.scripting.InstanceScriptSynchronizer;
@@ -53,8 +58,6 @@ import com.sitewhere.spi.user.IUserManagement;
 
 /**
  * Microservice that provides instance management functionality.
- * 
- * @author Derek
  */
 public class InstanceManagementMicroservice extends GlobalMicroservice<MicroserviceIdentifier>
 	implements IInstanceManagementMicroservice<MicroserviceIdentifier> {
@@ -181,11 +184,20 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Create Kafka components.
 	createKafkaComponents();
 
+	// Create management implementations.
+	createManagementImplementations();
+
 	// Create GRPC components.
 	createGrpcComponents();
 
 	// Create step that will start components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
+
+	// Initialize user management implementation.
+	init.addInitializeStep(this, getUserManagement(), true);
+
+	// Initialize tenant management implementation.
+	init.addInitializeStep(this, getTenantManagement(), true);
 
 	// Initialize instance script synchronizer.
 	init.addInitializeStep(this, getInstanceScriptSynchronizer(), true);
@@ -195,6 +207,9 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
 	// Initialize tenant dataset template manager.
 	init.addInitializeStep(this, getTenantDatasetTemplateManager(), true);
+
+	// Initialize user management GRPC server.
+	init.addInitializeStep(this, getUserManagementGrpcServer(), true);
 
 	// Initialize tenant management GRPC server.
 	init.addInitializeStep(this, getTenantManagementGrpcServer(), true);
@@ -207,6 +222,14 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
 	// Execute initialization steps.
 	init.execute(monitor);
+    }
+
+    /**
+     * Create management implementations.
+     */
+    protected void createManagementImplementations() {
+	this.userManagement = new UserManagementKafkaTriggers(new ZookeeperUserManagement());
+	this.tenantManagement = new TenantManagementKafkaTriggers(new ZookeeperTenantManagement());
     }
 
     /**
@@ -240,6 +263,12 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Verify or create Zk node for instance information.
 	start.addStep(verifyOrCreateInstanceNode());
 
+	// Start user management implementation.
+	start.addStartStep(this, getUserManagement(), true);
+
+	// Start tenant management implementation.
+	start.addStartStep(this, getTenantManagement(), true);
+
 	// Start instance template manager.
 	start.addStartStep(this, getInstanceTemplateManager(), true);
 
@@ -251,6 +280,9 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
 	// Start tenant dataset template manager.
 	start.addStartStep(this, getTenantDatasetTemplateManager(), true);
+
+	// Start user management GRPC server.
+	start.addStartStep(this, getUserManagementGrpcServer(), true);
 
 	// Start GRPC server.
 	start.addStartStep(this, getTenantManagementGrpcServer(), true);
@@ -287,6 +319,9 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Stop GRPC manager.
 	stop.addStopStep(this, getTenantManagementGrpcServer());
 
+	// Stop user management GRPC server.
+	stop.addStopStep(this, getUserManagementGrpcServer());
+
 	// Stop tenant dataset template manager.
 	stop.addStopStep(this, getTenantDatasetTemplateManager());
 
@@ -298,6 +333,12 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
 	// Stop instance template manager.
 	stop.addStopStep(this, getInstanceTemplateManager());
+
+	// Stop tenant management implementation.
+	stop.addStopStep(this, getTenantManagement());
+
+	// Stop user management implementation.
+	stop.addStopStep(this, getUserManagement());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -385,7 +426,8 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     }
 
     /**
-     * Bootstrap instance configuration data from chosen instance template.
+     * Bootstrap instance configuration data from chosen instance template and
+     * create root paths for configuring users and tenants.
      * 
      * @throws SiteWhereException
      */
@@ -394,10 +436,51 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	    getLogger().info("Copying instance template contents to Zookeeper...");
 	    getInstanceTemplateManager().copyTemplateContentsToZk(getInstanceSettings().getInstanceTemplateId(),
 		    getZookeeperManager().getCurator(), getInstanceZkPath());
+
+	    // Create root path for configuring users.
+	    createUsersConfigurationRootIfNotFound(getZookeeperManager().getCurator());
+
+	    // Create root path for configuring tenants.
+	    createTenantsConfigurationRootIfNotFound(getZookeeperManager().getCurator());
+
 	    getLogger().info("Marking instance configuration as bootstrapped.");
 	    getZookeeperManager().getCurator().create().forPath(getInstanceConfigBootstrappedMarker());
 	} catch (Exception e) {
 	    throw new SiteWhereException(e);
+	}
+    }
+
+    /**
+     * Verify that instance users configuration node has been created.
+     * 
+     * @param curator
+     * @throws Exception
+     */
+    protected void createUsersConfigurationRootIfNotFound(CuratorFramework curator) throws Exception {
+	Stat existing = curator.checkExists().forPath(getInstanceUsersConfigurationPath());
+	if (existing == null) {
+	    getLogger().info("Zk node for user configurations not found. Creating...");
+	    curator.create().forPath(getInstanceUsersConfigurationPath());
+	    getLogger().info("Created user configurations Zk node.");
+	} else {
+	    getLogger().info("Found Zk node for user configurations.");
+	}
+    }
+
+    /**
+     * Verify that instance tenants configuration node has been created.
+     * 
+     * @param curator
+     * @throws Exception
+     */
+    protected void createTenantsConfigurationRootIfNotFound(CuratorFramework curator) throws Exception {
+	Stat existing = curator.checkExists().forPath(getInstanceTenantsConfigurationPath());
+	if (existing == null) {
+	    getLogger().info("Zk node for tenant configurations not found. Creating...");
+	    curator.create().forPath(getInstanceTenantsConfigurationPath());
+	    getLogger().info("Created tenant configurations Zk node.");
+	} else {
+	    getLogger().info("Found Zk node for tenant configurations.");
 	}
     }
 

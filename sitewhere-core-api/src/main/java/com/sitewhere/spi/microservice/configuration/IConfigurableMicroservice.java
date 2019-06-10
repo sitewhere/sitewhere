@@ -111,6 +111,40 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
     public byte[] getInstanceManagementConfigurationData() throws SiteWhereException;
 
     /**
+     * Subpath of instance configuration that contains authority configuration data.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getInstanceAuthoritiesConfigurationPath() throws SiteWhereException;
+
+    /**
+     * Get path for authority configuration.
+     * 
+     * @param username
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getInstanceAuthorityConfigurationPath(String authority) throws SiteWhereException;
+
+    /**
+     * Subpath of instance configuration that contains user configuration data.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getInstanceUsersConfigurationPath() throws SiteWhereException;
+
+    /**
+     * Get path for user configuration.
+     * 
+     * @param username
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getInstanceUserConfigurationPath(String username) throws SiteWhereException;
+
+    /**
      * Subpath of instance configuration that contains tenant configuration data.
      * 
      * @return

@@ -9,6 +9,7 @@ package com.sitewhere.instance.tenant.kafka;
 
 import java.util.UUID;
 
+import com.sitewhere.instance.microservice.InstanceManagementMicroservice;
 import com.sitewhere.instance.spi.tenant.kafka.ITenantModelProducer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
@@ -24,12 +25,8 @@ import com.sitewhere.tenant.TenantManagementDecorator;
  */
 public class TenantManagementKafkaTriggers extends TenantManagementDecorator {
 
-    /** Kafka producer for tenant model updated */
-    private ITenantModelProducer tenantModelProducer;
-
-    public TenantManagementKafkaTriggers(ITenantManagement delegate, ITenantModelProducer tenantModelProducer) {
+    public TenantManagementKafkaTriggers(ITenantManagement delegate) {
 	super(delegate);
-	this.tenantModelProducer = tenantModelProducer;
     }
 
     /*
@@ -70,10 +67,6 @@ public class TenantManagementKafkaTriggers extends TenantManagementDecorator {
     }
 
     public ITenantModelProducer getTenantModelProducer() {
-	return tenantModelProducer;
-    }
-
-    public void setTenantModelProducer(ITenantModelProducer tenantModelProducer) {
-	this.tenantModelProducer = tenantModelProducer;
+	return ((InstanceManagementMicroservice) getMicroservice()).getTenantModelProducer();
     }
 }

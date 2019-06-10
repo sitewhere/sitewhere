@@ -12,6 +12,7 @@ import com.sitewhere.grpc.service.UserManagementGrpc;
 import com.sitewhere.grpc.service.UserManagementGrpc.UserManagementBlockingStub;
 import com.sitewhere.grpc.service.UserManagementGrpc.UserManagementStub;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
@@ -22,8 +23,9 @@ import com.sitewhere.spi.microservice.instance.IInstanceSettings;
  */
 public class UserManagementGrpcChannel extends GrpcChannel<UserManagementBlockingStub, UserManagementStub> {
 
-    public UserManagementGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier, int port) {
-	super(settings, identifier, port);
+    public UserManagementGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier,
+	    IGrpcServiceIdentifier grpcServiceIdentifier, int port) {
+	super(settings, identifier, grpcServiceIdentifier, port);
     }
 
     /*

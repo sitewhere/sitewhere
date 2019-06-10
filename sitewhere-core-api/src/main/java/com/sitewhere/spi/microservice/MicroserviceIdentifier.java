@@ -14,49 +14,45 @@ package com.sitewhere.spi.microservice;
  */
 public enum MicroserviceIdentifier implements IFunctionIdentifier {
 
-    AssetManagement("asset-management", "com.sitewhere.grpc.service.UserManagement"),
+    AssetManagement("asset-management"),
 
-    BatchOperations("batch-operations", "com.sitewhere.grpc.service.BatchManagement"),
+    BatchOperations("batch-operations"),
 
-    CommandDelivery("command-delivery", null),
+    CommandDelivery("command-delivery"),
 
-    DeviceManagement("device-management", "com.sitewhere.grpc.service.DeviceManagement"),
+    DeviceManagement("device-management"),
 
-    DeviceRegistration("device-registration", null),
+    DeviceRegistration("device-registration"),
 
-    EventManagement("event-management", "com.sitewhere.grpc.service.DeviceEventManagement"),
+    EventManagement("event-management"),
 
-    EventSearch("event-search", null),
+    EventSearch("event-search"),
 
-    EventSources("event-sources", null),
+    EventSources("event-sources"),
 
-    InboundProcessing("inbound-processing", null),
+    InboundProcessing("inbound-processing"),
 
-    InstanceManagement("instance-management", null),
+    InstanceManagement("instance-management"),
 
-    LabelGeneration("label-generation", "com.sitewhere.grpc.service.LabelGeneration"),
+    LabelGeneration("label-generation"),
 
-    OutboundConnectors("outbound-connectors", null),
+    OutboundConnectors("outbound-connectors"),
 
-    DeviceState("device-state", "com.sitewhere.grpc.service.DeviceState"),
+    DeviceState("device-state"),
 
-    RuleProcessing("rule-processing", null),
+    RuleProcessing("rule-processing"),
 
-    ScheduleManagement("schedule-management", "com.sitewhere.grpc.service.ScheduleManagement"),
+    ScheduleManagement("schedule-management"),
 
-    StreamingMedia("streaming-media", null),
+    StreamingMedia("streaming-media"),
 
-    WebRest("web-rest", null);
+    WebRest("web-rest");
 
     /** Path */
     private String path;
 
-    /** Service name */
-    private String grpcServiceName;
-
-    private MicroserviceIdentifier(String path, String grpcServiceName) {
+    private MicroserviceIdentifier(String path) {
 	this.path = path;
-	this.grpcServiceName = grpcServiceName;
     }
 
     public static MicroserviceIdentifier getByPath(String path) {
@@ -82,13 +78,5 @@ public enum MicroserviceIdentifier implements IFunctionIdentifier {
     @Override
     public String getShortName() {
 	return name();
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.IFunctionIdentifier#getGrpcServiceName()
-     */
-    @Override
-    public String getGrpcServiceName() {
-	return grpcServiceName;
     }
 }

@@ -156,30 +156,11 @@ public class TenantBootstrapModelConsumer extends DirectKafkaConsumer implements
 	    try {
 		getLogger().info("About to bootstrap new tenant.");
 		CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
-		createTenantsConfigurationRootIfNotFound(curator);
 		createTenantConfigurationIfNotFound(curator);
 	    } catch (SiteWhereException e) {
 		getLogger().error("Unable to bootstrap tenant.", e);
 	    } catch (Throwable e) {
 		getLogger().error("Unhandled exception while bootstrapping tenant.", e);
-	    }
-	}
-
-	/**
-	 * Verify that instance tenants configuration node has been created.
-	 * 
-	 * @param curator
-	 * @throws Exception
-	 */
-	protected void createTenantsConfigurationRootIfNotFound(CuratorFramework curator) throws Exception {
-	    Stat existing = curator.checkExists()
-		    .forPath(getInstanceManagementMicroservice().getInstanceTenantsConfigurationPath());
-	    if (existing == null) {
-		getLogger().info("Zk node for tenant configurations not found. Creating...");
-		curator.create().forPath(getInstanceManagementMicroservice().getInstanceTenantsConfigurationPath());
-		getLogger().info("Created tenant configurations Zk node.");
-	    } else {
-		getLogger().info("Found Zk node for tenant configurations.");
 	    }
 	}
 
@@ -192,11 +173,15 @@ public class TenantBootstrapModelConsumer extends DirectKafkaConsumer implements
 	protected void createTenantConfigurationIfNotFound(CuratorFramework curator) throws Exception {
 	    String tenantPath = getInstanceManagementMicroservice()
 		    .getInstanceTenantConfigurationPath(getTenant().getId());
-	    Stat existing = curator.checkExists().forPath(tenantPath);
-	    if (existing == null) {
-		getLogger().info(
-			"Zk node for tenant '" + getTenant().getName() + "' configuration not found. Creating...");
-		curator.create().forPath(tenantPath);
+	    Stat bootstrapped = curator.checkExists().forPath(getInstanceManagementMicroservice()
+		    .getInstanceTenantBootstrappedIndicatorPath(getTenant().getId()));
+	    if (bootstrapped == null) {
+		Stat config = curator.checkExists().forPath(tenantPath);
+		if (config == null) {
+		    getLogger().info(
+			    "Zk node for tenant '" + getTenant().getName() + "' configuration not found. Creating...");
+		    curator.create().forPath(tenantPath);
+		}
 		getLogger().info("Copying tenant template contents into Zk node...");
 		getInstanceManagementMicroservice().getTenantConfigurationTemplateManager()
 			.initializeTenantZkFromTemplateContents(curator, getTenant());

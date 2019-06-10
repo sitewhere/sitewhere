@@ -19,6 +19,12 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  */
 public abstract class MongoTenantComponent<T extends MongoDbClient> extends TenantEngineLifecycleComponent {
 
+    /** Number of seconds to wait between liveness checks */
+    private static final int MONGODB_LIVENESS_CHECK_IN_SECS = 5;
+
+    /** Number of retries before writing warnings to log */
+    private static final int WARN_AFTER_RETRIES = 20;
+
     public MongoTenantComponent() {
     }
 
@@ -46,13 +52,19 @@ public abstract class MongoTenantComponent<T extends MongoDbClient> extends Tena
      * @throws SiteWhereException
      */
     protected void waitForMongoAvailable() throws SiteWhereException {
+	int retries = 0;
 	while (true) {
 	    if (getMongoClient().getLifecycleStatus() == LifecycleStatus.Started) {
+		getLogger().info("MongoDB detected as available.");
 		return;
 	    }
 
 	    try {
-		Thread.sleep(1000);
+		Thread.sleep(MONGODB_LIVENESS_CHECK_IN_SECS * 1000);
+		retries++;
+		if (retries > WARN_AFTER_RETRIES) {
+		    getLogger().warn(String.format("MongoDB not available after %d retries.", retries));
+		}
 	    } catch (InterruptedException e) {
 		getLogger().warn("Interrupted while waiting for MongoDB to become available.");
 		throw new SiteWhereException(e);

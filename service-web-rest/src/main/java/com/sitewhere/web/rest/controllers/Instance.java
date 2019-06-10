@@ -39,6 +39,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
+import com.sitewhere.spi.microservice.grpc.GrpcServiceIdentifier;
 import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.microservice.scripting.IScriptManagement;
 import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
@@ -678,7 +679,8 @@ public class Instance extends RestControllerBase {
 	LifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
 		new LifecycleProgressContext(1, "Start management interface."), getMicroservice());
 	MicroserviceManagementApiChannel channel = new MicroserviceManagementApiChannel(
-		getMicroservice().getInstanceSettings(), target, IGrpcSettings.DEFAULT_MANAGEMENT_PORT);
+		getMicroservice().getInstanceSettings(), target, GrpcServiceIdentifier.MicroserviceManagement,
+		IGrpcSettings.DEFAULT_MANAGEMENT_PORT);
 	channel.setMicroservice(getMicroservice());
 	channel.initialize(monitor);
 	channel.start(monitor);

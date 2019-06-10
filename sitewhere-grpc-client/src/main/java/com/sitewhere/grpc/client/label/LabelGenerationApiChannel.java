@@ -38,6 +38,8 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.label.ILabel;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.grpc.GrpcServiceIdentifier;
+import com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier;
 import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
@@ -51,19 +53,21 @@ public class LabelGenerationApiChannel extends MultitenantApiChannel<LabelGenera
 	implements ILabelGenerationApiChannel<LabelGenerationGrpcChannel> {
 
     public LabelGenerationApiChannel(IInstanceSettings settings) {
-	super(settings, MicroserviceIdentifier.LabelGeneration, IGrpcSettings.DEFAULT_API_PORT);
+	super(settings, MicroserviceIdentifier.LabelGeneration, GrpcServiceIdentifier.LabelGeneration,
+		IGrpcSettings.DEFAULT_API_PORT);
     }
 
     /*
      * @see
      * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
      * .microservice.instance.IInstanceSettings,
-     * com.sitewhere.spi.microservice.IFunctionIdentifier, int)
+     * com.sitewhere.spi.microservice.IFunctionIdentifier,
+     * com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier, int)
      */
     @Override
     public LabelGenerationGrpcChannel createGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier,
-	    int port) {
-	return new LabelGenerationGrpcChannel(settings, identifier, port);
+	    IGrpcServiceIdentifier grpcServiceIdentifier, int port) {
+	return new LabelGenerationGrpcChannel(settings, identifier, grpcServiceIdentifier, port);
     }
 
     /*

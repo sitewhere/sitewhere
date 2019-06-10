@@ -12,19 +12,19 @@ import com.sitewhere.grpc.service.AssetManagementGrpc;
 import com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementBlockingStub;
 import com.sitewhere.grpc.service.AssetManagementGrpc.AssetManagementStub;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Channel that allows for communication with a remote asset management GRPC
  * server.
- * 
- * @author Derek
  */
 public class AssetManagementGrpcChannel
 	extends MultitenantGrpcChannel<AssetManagementBlockingStub, AssetManagementStub> {
 
-    public AssetManagementGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier, int port) {
-	super(settings, identifier, port);
+    public AssetManagementGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier,
+	    IGrpcServiceIdentifier grpcServiceIdentifier, int port) {
+	super(settings, identifier, grpcServiceIdentifier, port);
     }
 
     /*
