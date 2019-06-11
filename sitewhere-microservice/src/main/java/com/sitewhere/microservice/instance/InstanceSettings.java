@@ -42,6 +42,26 @@ public class InstanceSettings implements IInstanceSettings {
     @Value("#{systemEnvironment['sitewhere.kafka.bootstrap.servers'] ?: 'kafka:9092'}")
     private String kafkaBootstrapServers;
 
+    /** Number of retries on gRPC exponential backoff */
+    @Value("#{systemEnvironment['sitewhere.grpc.maxRetryCount'] ?: '6'}")
+    private double grpcMaxRetryCount;
+
+    /** Initial backoff in seconds for gRPC exponential backoff */
+    @Value("#{systemEnvironment['sitewhere.grpc.initialBackoffSeconds'] ?: '10'}")
+    private int grpcInitialBackoffInSeconds;
+
+    /** Max backoff in seconds for gRPC exponential backoff */
+    @Value("#{systemEnvironment['sitewhere.grpc.maxBackoffSeconds'] ?: '600'}")
+    private int grpcMaxBackoffInSeconds;
+
+    /** Mulitplier used for gRPC exponential backoff */
+    @Value("#{systemEnvironment['sitewhere.grpc.backoffMultiplier'] ?: '1.5'}")
+    private double grpcBackoffMultiplier;
+
+    /** Flag for whether to resolve via FQDN on gRPC calls */
+    @Value("#{systemEnvironment['sitewhere.grpc.resolveFQDN'] ?: 'false'}")
+    private boolean grpcResolveFQDN;
+
     /** File system root for storing SiteWhere data for microservices */
     @Value("#{systemEnvironment['sitewhere.filesystem.storage.root'] ?: '/var/sitewhere'}")
     private String fileSystemStorageRoot;
@@ -137,6 +157,71 @@ public class InstanceSettings implements IInstanceSettings {
 
     public void setKafkaBootstrapServers(String kafkaBootstrapServers) {
 	this.kafkaBootstrapServers = kafkaBootstrapServers;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
+     * getGrpcMaxRetryCount()
+     */
+    @Override
+    public double getGrpcMaxRetryCount() {
+	return grpcMaxRetryCount;
+    }
+
+    public void setGrpcMaxRetryCount(double grpcMaxRetryCount) {
+	this.grpcMaxRetryCount = grpcMaxRetryCount;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
+     * getGrpcInitialBackoffInSeconds()
+     */
+    @Override
+    public int getGrpcInitialBackoffInSeconds() {
+	return grpcInitialBackoffInSeconds;
+    }
+
+    public void setGrpcInitialBackoffInSeconds(int grpcInitialBackoffInSeconds) {
+	this.grpcInitialBackoffInSeconds = grpcInitialBackoffInSeconds;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
+     * getGrpcMaxBackoffInSeconds()
+     */
+    @Override
+    public int getGrpcMaxBackoffInSeconds() {
+	return grpcMaxBackoffInSeconds;
+    }
+
+    public void setGrpcMaxBackoffInSeconds(int grpcMaxBackoffInSeconds) {
+	this.grpcMaxBackoffInSeconds = grpcMaxBackoffInSeconds;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.instance.IInstanceSettings#isGrpcResolveFQDN()
+     */
+    @Override
+    public boolean isGrpcResolveFQDN() {
+	return grpcResolveFQDN;
+    }
+
+    public void setGrpcResolveFQDN(boolean grpcResolveFQDN) {
+	this.grpcResolveFQDN = grpcResolveFQDN;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
+     * getGrpcBackoffMultiplier()
+     */
+    @Override
+    public double getGrpcBackoffMultiplier() {
+	return grpcBackoffMultiplier;
+    }
+
+    public void setGrpcBackoffMultiplier(double grpcBackoffMultiplier) {
+	this.grpcBackoffMultiplier = grpcBackoffMultiplier;
     }
 
     /*

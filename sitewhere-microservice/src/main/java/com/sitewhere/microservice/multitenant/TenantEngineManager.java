@@ -29,6 +29,7 @@ import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.ServiceNotAvailableException;
 import com.sitewhere.spi.microservice.configuration.ITenantPathInfo;
 import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
@@ -52,6 +53,9 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 
     /** Max time to wait for tenant to be bootstrapped from template */
     private static final long MAX_WAIT_FOR_TENANT_BOOTSTRAPPED = 60 * 1000;
+
+    /** Max retries for tenant management to become available */
+    private static final long MAX_TENANT_MANAGEMENT_RETRIES = 5;
 
     /** Map of tenant engines that have been initialized */
     private ConcurrentMap<UUID, T> initializedTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
@@ -373,10 +377,12 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 	 */
 	@Override
 	public void runAsSystemUser() {
+	    getLogger().info("Starting to process tenant startup queue.");
 	    while (true) {
 		try {
 		    // Get next tenant id from the queue and look up the tenant.
 		    UUID tenantId = getTenantInitializationQueue().take();
+		    getLogger().info(String.format("Starting processing for tenant id '%s'.", tenantId.toString()));
 
 		    // Verify that multiple threads don't start duplicate engines.
 		    if (getInitializingTenantEngines().get(tenantId) != null) {
@@ -385,7 +391,7 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 		    }
 
 		    // Look up tenant and add it to initializing tenants map.
-		    ITenant tenant = getTenantManagementApiChannel().getTenant(tenantId);
+		    ITenant tenant = getTenant(tenantId);
 		    if (tenant == null) {
 			throw new SiteWhereException("Unable to locate tenant by id '" + tenantId + "'.");
 		    }
@@ -401,6 +407,32 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 		    getLogger().warn("Exception starting tenant engine.", e);
 		} catch (Throwable e) {
 		    getLogger().warn("Unhandled exception starting tenant engine.", e);
+		}
+	    }
+	}
+
+	/**
+	 * Wait for tenant management to become available.
+	 * 
+	 * @param tenantId
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected ITenant getTenant(UUID tenantId) throws SiteWhereException {
+	    long retries = MAX_TENANT_MANAGEMENT_RETRIES;
+	    while (true) {
+		try {
+		    return getTenantManagementApiChannel().getTenant(tenantId);
+		} catch (ServiceNotAvailableException e) {
+		    retries--;
+		    if (retries == 0) {
+			throw new SiteWhereException("Exceeded maximum retries for accessing tenant management.");
+		    }
+		    getLogger().warn("Waiting on tenant management to become available...");
+		} catch (SiteWhereException e) {
+		    throw e;
+		} catch (Throwable e) {
+		    throw new SiteWhereException("Unhandled exception getting tenant information.", e);
 		}
 	    }
 	}
@@ -546,6 +578,7 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 	 */
 	@Override
 	public void runAsSystemUser() {
+	    getLogger().info("Starting to process tenant shutdown queue.");
 	    while (true) {
 		try {
 		    // Get next tenant id from the queue and look up the tenant.

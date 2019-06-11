@@ -57,6 +57,41 @@ public interface IInstanceSettings {
     public String getKafkaBootstrapServers();
 
     /**
+     * Get max retries for gRPC exponential backoff.
+     * 
+     * @return
+     */
+    public double getGrpcMaxRetryCount();
+
+    /**
+     * Get initial wait time for exponential backoff on gRPC calls.
+     * 
+     * @return
+     */
+    public int getGrpcInitialBackoffInSeconds();
+
+    /**
+     * Get max time for exponential backoff on gRPC calls.
+     * 
+     * @return
+     */
+    public int getGrpcMaxBackoffInSeconds();
+
+    /**
+     * Get multiplier used for exponential backoff.
+     * 
+     * @return
+     */
+    public double getGrpcBackoffMultiplier();
+
+    /**
+     * Indicates whether FQDN is used when resolving gRPC services.
+     * 
+     * @return
+     */
+    public boolean isGrpcResolveFQDN();
+
+    /**
      * Get root filesystem path where microservice resources may be stored.
      * 
      * @return

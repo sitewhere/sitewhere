@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.client.spi.IGrpcChannel;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -30,6 +31,9 @@ import io.grpc.netty.NettyChannelBuilder;
  * @param <A>
  */
 public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent implements IGrpcChannel<B, A> {
+
+    /** Instance settings */
+    protected IInstanceSettings instanceSettings;
 
     /** Function identifier */
     protected IFunctionIdentifier functionIdentifier;
@@ -53,13 +57,14 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
     protected A asyncStub;
 
     /** Client interceptor for adding JWT from Spring Security context */
-    private JwtClientInterceptor jwtInterceptor;
+    protected JwtClientInterceptor jwtInterceptor;
 
-    public GrpcChannel(IInstanceSettings settings, IFunctionIdentifier functionIdentifier,
+    public GrpcChannel(IInstanceSettings instanceSettings, IFunctionIdentifier functionIdentifier,
 	    IGrpcServiceIdentifier grpcServiceIdentifier, int port) {
+	this.instanceSettings = instanceSettings;
 	this.functionIdentifier = functionIdentifier;
 	this.grpcServiceIdentifier = grpcServiceIdentifier;
-	this.hostname = GrpcChannel.computeHostname(settings, functionIdentifier);
+	this.hostname = GrpcChannel.computeHostname(instanceSettings, functionIdentifier);
 	this.port = port;
 
 	this.jwtInterceptor = new JwtClientInterceptor();
@@ -77,7 +82,11 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
 	String instanceId = "sitewhere".equals(settings.getInstanceId()) ? "sitewhere-"
 		: settings.getInstanceId() + "-sitewhere-";
 	String namespace = settings.getKubernetesNamespace() != null ? settings.getKubernetesNamespace() : "default";
-	return instanceId + identifier.getPath() + "-svc." + namespace + ".svc.cluster.local";
+	if (settings.isGrpcResolveFQDN()) {
+	    return instanceId + identifier.getPath() + "-svc." + namespace + ".svc.cluster.local";
+	} else {
+	    return instanceId + identifier.getPath() + "-svc";
+	}
     }
 
     /*
@@ -107,6 +116,8 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
     protected Map<String, Object> buildServiceConfiguration() {
 	Map<String, Object> serviceConfig = new HashMap<>();
 	serviceConfig.put("methodConfig", Collections.<Object>singletonList(buildMethodConfiguration()));
+	getLogger().info(
+		"Channel using service configuration:\n\n" + MarshalUtils.marshalJsonAsPrettyString(serviceConfig));
 	return serviceConfig;
     }
 
@@ -131,10 +142,10 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
      */
     protected Map<String, Object> buildRetryPolicy() {
 	Map<String, Object> retryPolicy = new HashMap<>();
-	retryPolicy.put("maxAttempts", 5D);
-	retryPolicy.put("initialBackoff", "12s");
-	retryPolicy.put("maxBackoff", "600s");
-	retryPolicy.put("backoffMultiplier", 1.6D);
+	retryPolicy.put("maxAttempts", getInstanceSettings().getGrpcMaxRetryCount());
+	retryPolicy.put("initialBackoff", String.format("%ds", getInstanceSettings().getGrpcInitialBackoffInSeconds()));
+	retryPolicy.put("maxBackoff", String.format("%ds", getInstanceSettings().getGrpcMaxBackoffInSeconds()));
+	retryPolicy.put("backoffMultiplier", getInstanceSettings().getGrpcBackoffMultiplier());
 	retryPolicy.put("retryableStatusCodes", Arrays.<Object>asList("UNAVAILABLE"));
 	return retryPolicy;
     }
@@ -201,6 +212,10 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
 
     public JwtClientInterceptor getJwtInterceptor() {
 	return jwtInterceptor;
+    }
+
+    public IInstanceSettings getInstanceSettings() {
+	return instanceSettings;
     }
 
     public IFunctionIdentifier getFunctionIdentifier() {
