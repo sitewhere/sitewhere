@@ -13,8 +13,6 @@ import ch.qos.cal10n.LocaleData;
 
 /**
  * Localized messages for microservice core classes.
- * 
- * @author Derek
  */
 @BaseName("microservice")
 @LocaleData({ @Locale("en_US") })

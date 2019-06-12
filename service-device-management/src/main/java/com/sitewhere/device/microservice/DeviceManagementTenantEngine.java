@@ -9,7 +9,6 @@ package com.sitewhere.device.microservice;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -123,7 +122,7 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	}
 
 	// Wait for asset management module to be bootstrapped.
-	waitForModuleBootstrapped(MicroserviceIdentifier.AssetManagement.getPath(), 2, TimeUnit.MINUTES);
+	waitForModuleBootstrapped(MicroserviceIdentifier.AssetManagement);
 
 	// Execute remote calls as superuser.
 	Authentication previous = SecurityContextHolder.getContext().getAuthentication();

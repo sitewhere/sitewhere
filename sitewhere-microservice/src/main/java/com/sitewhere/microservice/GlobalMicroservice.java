@@ -17,8 +17,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Microservice that serves a global function in a SiteWhere instance.
- * 
- * @author Derek
  */
 public abstract class GlobalMicroservice<T extends IFunctionIdentifier> extends ConfigurableMicroservice<T>
 	implements IGlobalMicroservice<T> {

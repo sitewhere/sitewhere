@@ -15,8 +15,6 @@ import com.sitewhere.spi.microservice.IMicroserviceAnalytics;
 /**
  * Implementation of {@link IMicroserviceAnalytics} that sends information to
  * Google Analytics based on microservice lifecycle and other events.
- * 
- * @author Derek
  */
 public class MicroserviceAnalytics implements IMicroserviceAnalytics {
 
