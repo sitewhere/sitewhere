@@ -14,7 +14,7 @@ public enum GrpcServiceIdentifier implements IGrpcServiceIdentifier {
 
     MicroserviceManagement("com.sitewhere.grpc.service.MicroserviceManagement"),
 
-    AssetManagement("com.sitewhere.grpc.service.UserManagement"),
+    AssetManagement("com.sitewhere.grpc.service.AssetManagement"),
 
     BatchOperations("com.sitewhere.grpc.service.BatchManagement"),
 
