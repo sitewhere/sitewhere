@@ -7,12 +7,18 @@
  */
 package com.sitewhere.microservice.multitenant;
 
+import java.time.Duration;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Callable;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.springframework.context.ApplicationContext;
 
+import com.evanlennick.retry4j.CallExecutorBuilder;
+import com.evanlennick.retry4j.Status;
+import com.evanlennick.retry4j.config.RetryConfig;
+import com.evanlennick.retry4j.config.RetryConfigBuilder;
+import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
@@ -25,6 +31,7 @@ import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
@@ -42,8 +49,6 @@ import com.sitewhere.spi.tenant.ITenant;
 /**
  * Specialized tenant engine that runs within an
  * {@link IMultitenantMicroservice}.
- * 
- * @author Derek
  */
 public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComponent
 	implements IMicroserviceTenantEngine {
@@ -487,29 +492,30 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * waitForModuleBootstrapped(java.lang.String, long,
-     * java.util.concurrent.TimeUnit)
+     * waitForModuleBootstrapped(com.sitewhere.spi.microservice.IFunctionIdentifier)
      */
     @Override
-    public void waitForModuleBootstrapped(String identifier, long time, TimeUnit unit) throws SiteWhereException {
-	String bspath = ((IConfigurableMicroservice<?>) getMicroservice()).getInstanceTenantStatePath(
-		getTenant().getId()) + "/" + identifier + "/" + MicroserviceTenantEngine.MODULE_BOOTSTRAPPED_NAME;
-	CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
-	long deadline = System.currentTimeMillis() + unit.toMillis(time);
-	while ((deadline - System.currentTimeMillis()) > 0) {
-	    try {
-		if (curator.checkExists().forPath(bspath) != null) {
-		    return;
-		}
-		getLogger().info("Waiting for bootstrap file at " + bspath + " before continuing...");
-		Thread.sleep(3000);
-	    } catch (InterruptedException e) {
-		throw new SiteWhereException("Interrupted while waiting for module to be bootstrapped.", e);
-	    } catch (Exception e) {
-		throw new SiteWhereException("Error checking for module bootstrapped.", e);
-	    }
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void waitForModuleBootstrapped(IFunctionIdentifier identifier) throws SiteWhereException {
+	try {
+	    getLogger().info(
+		    String.format("Verifying that module '%s' has been bootstrapped.", identifier.getShortName()));
+	    String path = ((IConfigurableMicroservice<?>) getMicroservice())
+		    .getInstanceTenantStatePath(getTenant().getId()) + "/" + identifier.getPath() + "/"
+		    + MicroserviceTenantEngine.MODULE_BOOTSTRAPPED_NAME;
+	    Callable<Boolean> bootstrapCheck = () -> {
+		return getMicroservice().getZookeeperManager().getCurator().checkExists().forPath(path) == null ? false
+			: true;
+	    };
+	    RetryConfig config = new RetryConfigBuilder().retryOnReturnValue(Boolean.FALSE).withMaxNumberOfTries(7)
+		    .withDelayBetweenTries(Duration.ofSeconds(1)).withRandomExponentialBackoff().build();
+	    new CallExecutorBuilder().config(config).build().execute(bootstrapCheck);
+	} catch (RetriesExhaustedException e) {
+	    Status status = e.getStatus();
+	    throw new SiteWhereException(String.format(
+		    "Unable to find bootstrap indicator for '%s' after %d attempts (%dms).", identifier.getShortName(),
+		    status.getTotalTries(), status.getTotalElapsedDuration().toMillis()));
 	}
-	throw new SiteWhereException("Time limit exceeded for '" + identifier + "' to bootstrap.");
     }
 
     /*

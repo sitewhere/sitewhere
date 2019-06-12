@@ -10,8 +10,10 @@ package com.sitewhere.microservice;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -23,6 +25,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.ScheduledReporter;
 import com.codahale.metrics.Slf4jReporter;
+import com.evanlennick.retry4j.CallExecutorBuilder;
+import com.evanlennick.retry4j.Status;
+import com.evanlennick.retry4j.config.RetryConfig;
+import com.evanlennick.retry4j.config.RetryConfigBuilder;
+import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.sitewhere.Version;
 import com.sitewhere.microservice.management.MicroserviceManagementGrpcServer;
 import com.sitewhere.microservice.scripting.ScriptTemplateManager;
@@ -57,8 +64,6 @@ import com.sitewhere.spi.system.IVersion;
 
 /**
  * Common base class for all SiteWhere microservices.
- * 
- * @author Derek
  */
 public abstract class Microservice<T extends IFunctionIdentifier> extends LifecycleComponent
 	implements IMicroservice<T> {
@@ -74,9 +79,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     /** Relative path to instance data bootstrap marker */
     private static final String INSTANCE_DATA_BOOTSTRAP_MARKER = "/data-bootstrapped";
-
-    /** Number of seconds to wait between checks for isntance bootstrap marker */
-    private static final int INSTANCE_BOOTSTRAP_CHECK_INTERVAL_SECS = 15;
 
     /** Heartbeat interval in seconds */
     private static final int HEARTBEAT_INTERVAL_SECS = 10;
@@ -314,21 +316,23 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
      * waitForInstanceInitialization()
      */
     @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void waitForInstanceInitialization() throws SiteWhereException {
 	try {
 	    getLogger().info("Verifying that instance has been bootstrapped...");
-	    while (true) {
-		if (getZookeeperManager().getCurator().checkExists()
-			.forPath(getInstanceConfigBootstrappedMarker()) != null) {
-		    break;
-		}
-		getLogger().info(String.format("Configuration bootstrap marker not found at '%s'. Waiting...",
-			getInstanceConfigBootstrappedMarker()));
-		Thread.sleep(INSTANCE_BOOTSTRAP_CHECK_INTERVAL_SECS * 1000);
-	    }
+	    Callable<Boolean> bootstrapCheck = () -> {
+		return getZookeeperManager().getCurator().checkExists()
+			.forPath(getInstanceConfigBootstrappedMarker()) == null ? false : true;
+	    };
+	    RetryConfig config = new RetryConfigBuilder().retryOnReturnValue(Boolean.FALSE).withMaxNumberOfTries(10)
+		    .withDelayBetweenTries(Duration.ofSeconds(2)).withRandomExponentialBackoff().build();
+	    new CallExecutorBuilder().config(config).build().execute(bootstrapCheck);
 	    getLogger().info("Confirmed that instance was bootstrapped.");
-	} catch (Exception e) {
-	    throw new SiteWhereException("Error waiting on instance to be bootstrapped.", e);
+	} catch (RetriesExhaustedException e) {
+	    Status status = e.getStatus();
+	    throw new SiteWhereException(
+		    String.format("Unable to find instance bootstrap indicator for after %d attempts (%dms).",
+			    status.getTotalTries(), status.getTotalElapsedDuration().toMillis()));
 	}
     }
 
