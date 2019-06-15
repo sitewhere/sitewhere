@@ -57,6 +57,20 @@ public interface IInstanceSettings {
     public String getKafkaBootstrapServers();
 
     /**
+     * Get hostname used by microservices to connect to Apache Syncope API.
+     * 
+     * @return
+     */
+    public String getSyncopeHost();
+
+    /**
+     * Get port used by microservices to connect to Apache Syncope API.
+     * 
+     * @return
+     */
+    public int getSyncopePort();
+
+    /**
      * Get max retries for gRPC exponential backoff.
      * 
      * @return

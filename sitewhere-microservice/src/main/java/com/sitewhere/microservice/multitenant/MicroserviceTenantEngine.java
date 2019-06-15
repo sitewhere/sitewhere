@@ -19,6 +19,7 @@ import com.evanlennick.retry4j.Status;
 import com.evanlennick.retry4j.config.RetryConfig;
 import com.evanlennick.retry4j.config.RetryConfigBuilder;
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
+import com.evanlennick.retry4j.listener.RetryListener;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
@@ -507,9 +508,18 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 		return getMicroservice().getZookeeperManager().getCurator().checkExists().forPath(path) == null ? false
 			: true;
 	    };
-	    RetryConfig config = new RetryConfigBuilder().retryOnReturnValue(Boolean.FALSE).withMaxNumberOfTries(7)
-		    .withDelayBetweenTries(Duration.ofSeconds(1)).withRandomExponentialBackoff().build();
-	    new CallExecutorBuilder().config(config).build().execute(bootstrapCheck);
+	    RetryConfig config = new RetryConfigBuilder().retryOnReturnValue(Boolean.FALSE).withMaxNumberOfTries(12)
+		    .withDelayBetweenTries(Duration.ofSeconds(1)).withFibonacciBackoff().build();
+	    RetryListener listener = new RetryListener<Boolean>() {
+
+		@Override
+		public void onEvent(Status<Boolean> status) {
+		    getLogger().info(String.format(
+			    "Unable to locate bootstrap marker on attempt %d (total wait so far %dms). Retrying after fallback...",
+			    status.getTotalTries(), status.getTotalElapsedDuration().toMillis()));
+		}
+	    };
+	    new CallExecutorBuilder().config(config).afterFailedTryListener(listener).build().execute(bootstrapCheck);
 	} catch (RetriesExhaustedException e) {
 	    Status status = e.getStatus();
 	    throw new SiteWhereException(String.format(

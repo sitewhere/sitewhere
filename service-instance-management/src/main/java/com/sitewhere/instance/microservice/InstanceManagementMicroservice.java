@@ -36,7 +36,7 @@ import com.sitewhere.instance.tenant.templates.DatasetTemplateManager;
 import com.sitewhere.instance.tenant.templates.TenantTemplateManager;
 import com.sitewhere.instance.user.grpc.UserManagementGrpcServer;
 import com.sitewhere.instance.user.kafka.UserManagementKafkaTriggers;
-import com.sitewhere.instance.user.persistence.ZookeeperUserManagement;
+import com.sitewhere.instance.user.persistence.SyncopeUserManagement;
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.scripting.InstanceScriptSynchronizer;
@@ -193,11 +193,11 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Create step that will start components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
-	// Initialize user management implementation.
-	init.addInitializeStep(this, getUserManagement(), true);
-
 	// Initialize tenant management implementation.
 	init.addInitializeStep(this, getTenantManagement(), true);
+
+	// Initialize user management implementation.
+	init.addInitializeStep(this, getUserManagement(), true);
 
 	// Initialize instance script synchronizer.
 	init.addInitializeStep(this, getInstanceScriptSynchronizer(), true);
@@ -228,7 +228,7 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
      * Create management implementations.
      */
     protected void createManagementImplementations() {
-	this.userManagement = new UserManagementKafkaTriggers(new ZookeeperUserManagement());
+	this.userManagement = new UserManagementKafkaTriggers(new SyncopeUserManagement());
 	this.tenantManagement = new TenantManagementKafkaTriggers(new ZookeeperTenantManagement());
     }
 
@@ -260,20 +260,20 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
-	// Verify or create Zk node for instance information.
-	start.addStep(verifyOrCreateInstanceNode());
-
-	// Start user management implementation.
-	start.addStartStep(this, getUserManagement(), true);
-
-	// Start tenant management implementation.
-	start.addStartStep(this, getTenantManagement(), true);
-
 	// Start instance template manager.
 	start.addStartStep(this, getInstanceTemplateManager(), true);
 
 	// Start instance script synchronizer.
 	start.addStartStep(this, getInstanceScriptSynchronizer(), true);
+
+	// Verify or create Zk configuration based on instance template.
+	start.addStep(verifyOrBootstrapInstanceConfigurationModel());
+
+	// Start tenant management implementation.
+	start.addStartStep(this, getTenantManagement(), true);
+
+	// Start user management implementation.
+	start.addStartStep(this, getUserManagement(), true);
 
 	// Start tenant configuration template manager.
 	start.addStartStep(this, getTenantConfigurationTemplateManager(), true);
@@ -294,7 +294,7 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	start.addStartStep(this, getTenantModelProducer(), true);
 
 	// Verify Zk node for instance configuration or bootstrap instance.
-	start.addStep(verifyOrBootstrapConfiguration());
+	start.addStep(verifyOrBootstrapInstanceDataModel());
 
 	// Execute initialization steps.
 	start.execute(monitor);
@@ -351,7 +351,7 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
      * 
      * @return
      */
-    public ILifecycleStep verifyOrCreateInstanceNode() {
+    public ILifecycleStep verifyOrBootstrapInstanceConfigurationModel() {
 	return new SimpleLifecycleStep("Verify instance bootstrapped") {
 
 	    @Override
@@ -365,6 +365,7 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 		    } else {
 			getLogger().info("Found Zk node for instance.");
 		    }
+		    verifyOrBootstrapInstanceConfiguration();
 		} catch (Exception e) {
 		    throw new SiteWhereException(e);
 		}
@@ -379,50 +380,28 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
      * 
      * @return
      */
-    public ILifecycleStep verifyOrBootstrapConfiguration() {
-	return new SimpleLifecycleStep("Verify instance configured") {
-
-	    @Override
-	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-		try {
-		    // Verify that instance state path exists.
-		    Stat existing = getZookeeperManager().getCurator().checkExists().forPath(getInstanceStatePath());
-		    if (existing == null) {
-			getLogger().info("Instance state path '" + getInstanceStatePath() + "' not found. Creating...");
-			getZookeeperManager().getCurator().create().forPath(getInstanceStatePath());
-		    }
-
-		    // Check for existing configuration bootstrap marker.
-		    existing = getZookeeperManager().getCurator().checkExists()
-			    .forPath(getInstanceConfigBootstrappedMarker());
-		    if (existing == null) {
-			getLogger().info("Configuration bootstrap marker node '" + getInstanceConfigBootstrappedMarker()
-				+ "' not found. Bootstrapping configuration...");
-			bootstrapInstanceConfiguration();
-			getLogger().info("Bootstrapped instance configuration from template.");
-		    } else {
-			getLogger()
-				.info("Found configuration bootstrap marker node. Skipping configuration bootstrap.");
-		    }
-
-		    // Check for existing data bootstrap marker.
-		    existing = getZookeeperManager().getCurator().checkExists()
-			    .forPath(getInstanceDataBootstrappedMarker());
-		    if (existing == null) {
-			getLogger().info("Data bootstrap marker node '" + getInstanceConfigBootstrappedMarker()
-				+ "' not found. Bootstrapping instance data...");
-			initializeModelFromInstanceTemplate();
-			getLogger().info("Bootstrapped instance data from template.");
-		    } else {
-			getLogger().info("Found data bootstrap marker node. Skipping data bootstrap.");
-		    }
-		} catch (SiteWhereException e) {
-		    throw e;
-		} catch (Exception e) {
-		    throw new SiteWhereException(e);
-		}
+    public void verifyOrBootstrapInstanceConfiguration() throws SiteWhereException {
+	try {
+	    // Verify that instance state path exists.
+	    Stat existing = getZookeeperManager().getCurator().checkExists().forPath(getInstanceStatePath());
+	    if (existing == null) {
+		getLogger().info("Instance state path '" + getInstanceStatePath() + "' not found. Creating...");
+		getZookeeperManager().getCurator().create().forPath(getInstanceStatePath());
 	    }
-	};
+
+	    // Check for existing configuration bootstrap marker.
+	    existing = getZookeeperManager().getCurator().checkExists().forPath(getInstanceConfigBootstrappedMarker());
+	    if (existing == null) {
+		getLogger().info("Configuration bootstrap marker node '" + getInstanceConfigBootstrappedMarker()
+			+ "' not found. Bootstrapping configuration...");
+		bootstrapInstanceConfiguration();
+		getLogger().info("Bootstrapped instance configuration from template.");
+	    } else {
+		getLogger().info("Found configuration bootstrap marker node. Skipping configuration bootstrap.");
+	    }
+	} catch (Exception e) {
+	    throw new SiteWhereException(e);
+	}
     }
 
     /**
@@ -482,6 +461,35 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	} else {
 	    getLogger().info("Found Zk node for tenant configurations.");
 	}
+    }
+
+    /**
+     * Bootstrap core data such as users and tenants based on instance template
+     * configurations.
+     * 
+     * @return
+     */
+    public ILifecycleStep verifyOrBootstrapInstanceDataModel() {
+	return new SimpleLifecycleStep("Verify instance configured") {
+
+	    @Override
+	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		try {
+		    Stat existing = getZookeeperManager().getCurator().checkExists()
+			    .forPath(getInstanceDataBootstrappedMarker());
+		    if (existing == null) {
+			getLogger().info("Data bootstrap marker node '" + getInstanceConfigBootstrappedMarker()
+				+ "' not found. Bootstrapping instance data...");
+			initializeModelFromInstanceTemplate();
+			getLogger().info("Bootstrapped instance data from template.");
+		    } else {
+			getLogger().info("Found data bootstrap marker node. Skipping data bootstrap.");
+		    }
+		} catch (Exception e) {
+		    throw new SiteWhereException(e);
+		}
+	    }
+	};
     }
 
     /**
