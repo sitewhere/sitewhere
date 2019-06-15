@@ -4,6 +4,8 @@ dependencies {
 	compile project(':sitewhere-core')
 	compile project(':sitewhere-microservice')
 	compile project(':sitewhere-grpc-client')
+	
+	compile group: 'org.apache.syncope.client', name: 'syncope-client-lib', version: '2.1.4'
 }
 
 apply plugin: 'org.springframework.boot'

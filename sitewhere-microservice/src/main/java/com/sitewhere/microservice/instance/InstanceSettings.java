@@ -31,7 +31,7 @@ public class InstanceSettings implements IInstanceSettings {
     private String instanceTemplateId;
 
     /** Zookeeper hostname info for microservices */
-    @Value("#{systemEnvironment['sitewhere.zookeeper.host'] ?: 'localhost'}")
+    @Value("#{systemEnvironment['sitewhere.zookeeper.host'] ?: 'cp-zookeeper'}")
     private String zookeeperHost;
 
     /** Zookeeper port info for microservices */
@@ -39,8 +39,16 @@ public class InstanceSettings implements IInstanceSettings {
     private int zookeeperPort;
 
     /** Kafka bootstrap services configuration for microservices */
-    @Value("#{systemEnvironment['sitewhere.kafka.bootstrap.servers'] ?: 'kafka:9092'}")
+    @Value("#{systemEnvironment['sitewhere.kafka.bootstrap.servers'] ?: 'cp-kafka:9092'}")
     private String kafkaBootstrapServers;
+
+    /** Apache Synote hostname info for microservices */
+    @Value("#{systemEnvironment['sitewhere.syncope.host'] ?: 'syncope'}")
+    private String syncopeHost;
+
+    /** Apache Synote port info for microservices */
+    @Value("#{systemEnvironment['sitewhere.syncope.port'] ?: '8080'}")
+    private int syncopePort;
 
     /** Number of retries on gRPC exponential backoff */
     @Value("#{systemEnvironment['sitewhere.grpc.maxRetryCount'] ?: '6'}")
@@ -157,6 +165,32 @@ public class InstanceSettings implements IInstanceSettings {
 
     public void setKafkaBootstrapServers(String kafkaBootstrapServers) {
 	this.kafkaBootstrapServers = kafkaBootstrapServers;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.instance.IInstanceSettings#getSyncopeHost()
+     */
+    @Override
+    public String getSyncopeHost() {
+	return syncopeHost;
+    }
+
+    public void setSyncopeHost(String syncopeHost) {
+	this.syncopeHost = syncopeHost;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.instance.IInstanceSettings#getSyncopePort()
+     */
+    @Override
+    public int getSyncopePort() {
+	return syncopePort;
+    }
+
+    public void setSyncopePort(int syncopePort) {
+	this.syncopePort = syncopePort;
     }
 
     /*
