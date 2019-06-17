@@ -71,8 +71,7 @@ public class DeviceStateEnrichedEventsConsumer extends MicroserviceKafkaConsumer
     @Override
     public List<String> getSourceTopicNames() throws SiteWhereException {
 	List<String> topics = new ArrayList<String>();
-	topics.add(
-		getMicroservice().getKafkaTopicNaming().getInboundEnrichedEventsTopic(getTenantEngine().getTenant()));
+	topics.add(getMicroservice().getKafkaTopicNaming().getOutboundEventsTopic(getTenantEngine().getTenant()));
 	return topics;
     }
 

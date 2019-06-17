@@ -15,13 +15,11 @@ import com.sitewhere.spi.SiteWhereException;
 /**
  * Kafka producer that sends events for unregistered devices to a topic for
  * out-of-band processing.
- * 
- * @author Derek
  */
 public class UnregisteredEventsProducer extends MicroserviceKafkaProducer implements IUnregisteredEventsProducer {
 
     public UnregisteredEventsProducer() {
-	super(AckPolicy.FireAndForget);
+	super(AckPolicy.Leader);
     }
 
     /*

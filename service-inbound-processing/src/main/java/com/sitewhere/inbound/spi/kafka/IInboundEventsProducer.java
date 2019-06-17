@@ -10,10 +10,8 @@ package com.sitewhere.inbound.spi.kafka;
 import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer;
 
 /**
- * Kafka producer that sends sends enriched events to a topic for further
+ * Kafka producer that sends events which have successfully completed inbound
  * processing.
- * 
- * @author Derek
  */
-public interface IEnrichedEventsProducer extends IMicroserviceKafkaProducer {
+public interface IInboundEventsProducer extends IMicroserviceKafkaProducer {
 }

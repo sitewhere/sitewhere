@@ -5,9 +5,9 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.inbound.kafka;
+package com.sitewhere.event.kafka;
 
-import com.sitewhere.inbound.spi.kafka.IEnrichedCommandInvocationsProducer;
+import com.sitewhere.event.spi.kafka.IOutboundCommandInvocationsProducer;
 import com.sitewhere.microservice.kafka.AckPolicy;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
@@ -18,10 +18,10 @@ import com.sitewhere.spi.SiteWhereException;
  * 
  * @author Derek
  */
-public class EnrichedCommandInvocationsProducer extends MicroserviceKafkaProducer
-	implements IEnrichedCommandInvocationsProducer {
+public class OutboundCommandInvocationsProducer extends MicroserviceKafkaProducer
+	implements IOutboundCommandInvocationsProducer {
 
-    public EnrichedCommandInvocationsProducer() {
+    public OutboundCommandInvocationsProducer() {
 	super(AckPolicy.FireAndForget);
     }
 
@@ -32,6 +32,6 @@ public class EnrichedCommandInvocationsProducer extends MicroserviceKafkaProduce
     @Override
     public String getTargetTopicName() throws SiteWhereException {
 	return getMicroservice().getKafkaTopicNaming()
-		.getInboundEnrichedCommandInvocationsTopic(getTenantEngine().getTenant());
+		.getOutboundCommandInvocationsTopic(getTenantEngine().getTenant());
     }
 }

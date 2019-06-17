@@ -22,12 +22,12 @@ import org.apache.kafka.common.TopicPartition;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.client.event.EventModelConverter;
 import com.sitewhere.grpc.client.event.EventModelMarshaler;
-import com.sitewhere.grpc.model.DeviceEventModel.GInboundEventPayload;
+import com.sitewhere.grpc.model.DeviceEventModel.GDecodedEventPayload;
 import com.sitewhere.microservice.kafka.DirectKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.registration.spi.kafka.IUnregisteredEventsConsumer;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationTenantEngine;
-import com.sitewhere.rest.model.device.event.kafka.InboundEventPayload;
+import com.sitewhere.rest.model.device.event.kafka.DecodedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -154,8 +154,8 @@ public class UnregisteredEventsConsumer extends DirectKafkaConsumer implements I
 	@Override
 	public void runAsSystemUser() throws SiteWhereException {
 	    try {
-		GInboundEventPayload grpc = EventModelMarshaler.parseInboundEventPayloadMessage(encoded);
-		InboundEventPayload eventPayload = EventModelConverter.asApiInboundEventPayload(grpc);
+		GDecodedEventPayload grpc = EventModelMarshaler.parseDecodedEventPayloadMessage(encoded);
+		DecodedEventPayload eventPayload = EventModelConverter.asApiDecodedEventPayload(grpc);
 		if (getLogger().isDebugEnabled()) {
 		    getLogger().debug("Received event for unregistered device:\n\n"
 			    + MarshalUtils.marshalJsonAsPrettyString(eventPayload));

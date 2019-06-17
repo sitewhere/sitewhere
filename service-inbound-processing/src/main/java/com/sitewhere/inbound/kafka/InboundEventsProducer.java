@@ -7,21 +7,19 @@
  */
 package com.sitewhere.inbound.kafka;
 
-import com.sitewhere.inbound.spi.kafka.IEnrichedEventsProducer;
+import com.sitewhere.inbound.spi.kafka.IInboundEventsProducer;
 import com.sitewhere.microservice.kafka.AckPolicy;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
- * Kafka producer that sends sends enriched events to a topic for further
+ * Kafka producer that sends events which have successfully completed inbound
  * processing.
- * 
- * @author Derek
  */
-public class EnrichedEventsProducer extends MicroserviceKafkaProducer implements IEnrichedEventsProducer {
+public class InboundEventsProducer extends MicroserviceKafkaProducer implements IInboundEventsProducer {
 
-    public EnrichedEventsProducer() {
-	super(AckPolicy.FireAndForget);
+    public InboundEventsProducer() {
+	super(AckPolicy.Leader);
     }
 
     /*
@@ -30,6 +28,6 @@ public class EnrichedEventsProducer extends MicroserviceKafkaProducer implements
      */
     @Override
     public String getTargetTopicName() throws SiteWhereException {
-	return getMicroservice().getKafkaTopicNaming().getInboundEnrichedEventsTopic(getTenantEngine().getTenant());
+	return getMicroservice().getKafkaTopicNaming().getInboundEventsTopic(getTenantEngine().getTenant());
     }
 }

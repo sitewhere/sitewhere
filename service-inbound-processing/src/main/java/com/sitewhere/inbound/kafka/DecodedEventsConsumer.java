@@ -17,11 +17,17 @@ import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.consumer.OffsetCommitCallback;
 import org.apache.kafka.common.TopicPartition;
 
+import com.codahale.metrics.Meter;
+import com.sitewhere.common.MarshalUtils;
+import com.sitewhere.grpc.client.event.EventModelConverter;
+import com.sitewhere.grpc.client.event.EventModelMarshaler;
+import com.sitewhere.grpc.model.DeviceEventModel.GDecodedEventPayload;
 import com.sitewhere.inbound.processing.InboundPayloadProcessingLogic;
 import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
 import com.sitewhere.inbound.spi.processing.IInboundPayloadProcessingLogic;
 import com.sitewhere.inbound.spi.processing.IInboundProcessingConfiguration;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
+import com.sitewhere.rest.model.device.event.kafka.DecodedEventPayload;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -30,8 +36,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 /**
  * Listens on Kafka topic for decoded events, making them available for inbound
  * processing.
- * 
- * @author Derek
  */
 public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements IDecodedEventsConsumer {
 
@@ -46,6 +50,12 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 
     /** Inbound payload processing logic */
     private IInboundPayloadProcessingLogic inboundPayloadProcessingLogic;
+
+    /** Meter for counting processed events */
+    private Meter processedEvents;
+
+    /** Meter for counting decode failed events */
+    private Meter decodeFailedEvents;
 
     public DecodedEventsConsumer(IInboundProcessingConfiguration inboundProcessingConfiguration) {
 	this.inboundProcessingConfiguration = inboundProcessingConfiguration;
@@ -92,6 +102,10 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.initialize(monitor);
+
+	// Set up metrics.
+	this.processedEvents = createMeterMetric("processedEvents");
+	this.decodeFailedEvents = createMeterMetric("decodeFailedEvents");
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
@@ -153,7 +167,17 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
     @Override
     public void process(TopicPartition topicPartition, List<ConsumerRecord<String, byte[]>> records) {
 	try {
-	    getInboundPayloadProcessingLogic().process(topicPartition, records);
+	    List<GDecodedEventPayload> decoded = new ArrayList<>();
+	    for (ConsumerRecord<String, byte[]> record : records) {
+		GDecodedEventPayload message = EventModelMarshaler.parseDecodedEventPayloadMessage(record.value());
+		if (getLogger().isDebugEnabled()) {
+		    DecodedEventPayload payload = EventModelConverter.asApiDecodedEventPayload(message);
+		    getLogger().debug(
+			    "Received decoded event payload:\n\n" + MarshalUtils.marshalJsonAsPrettyString(payload));
+		}
+		decoded.add(message);
+	    }
+	    getInboundPayloadProcessingLogic().process(topicPartition, decoded);
 	    getConsumer().commitAsync(new OffsetCommitCallback() {
 		public void onComplete(Map<TopicPartition, OffsetAndMetadata> offsets, Exception e) {
 		    if (e != null) {
@@ -162,7 +186,7 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 		}
 	    });
 	} catch (SiteWhereException e) {
-	    getLogger().error("Inbound processing batch failed.", e);
+	    getLogger().error("Inbound processing for event batch failed.", e);
 	}
     }
 
@@ -188,7 +212,11 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 	return inboundProcessingConfiguration;
     }
 
-    public void setInboundProcessingConfiguration(IInboundProcessingConfiguration inboundProcessingConfiguration) {
-	this.inboundProcessingConfiguration = inboundProcessingConfiguration;
+    protected Meter getProcessedEvents() {
+	return processedEvents;
+    }
+
+    protected Meter getDecodeFailedEvents() {
+	return decodeFailedEvents;
     }
 }

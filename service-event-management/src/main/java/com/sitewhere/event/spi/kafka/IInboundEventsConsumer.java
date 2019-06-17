@@ -7,14 +7,10 @@
  */
 package com.sitewhere.event.spi.kafka;
 
-import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer;
+import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer;
 
 /**
- * Kafka producer for events that have been persisted to the event datastore and
- * are ready for further processing.
- * 
- * @author Derek
- *
+ * Kafka consumer for events which have already completed inbound processing.
  */
-public interface IInboundPersistedEventsProducer extends IMicroserviceKafkaProducer {
+public interface IInboundEventsConsumer extends IMicroserviceKafkaConsumer {
 }

@@ -81,7 +81,7 @@ public class EnrichedCommandInvocationsConsumer extends DirectKafkaConsumer
     public List<String> getSourceTopicNames() throws SiteWhereException {
 	List<String> topics = new ArrayList<String>();
 	topics.add(getMicroservice().getKafkaTopicNaming()
-		.getInboundEnrichedCommandInvocationsTopic(getTenantEngine().getTenant()));
+		.getOutboundCommandInvocationsTopic(getTenantEngine().getTenant()));
 	return topics;
     }
 
