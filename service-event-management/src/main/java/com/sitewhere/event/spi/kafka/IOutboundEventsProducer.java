@@ -5,14 +5,15 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.inbound.spi.kafka;
+package com.sitewhere.event.spi.kafka;
 
-import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer;
+import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer;
 
 /**
- * Consumer for events that have been persisted via the event management APIs.
+ * Kafka producer that sends sends enriched events to a topic for further
+ * processing.
  * 
  * @author Derek
  */
-public interface IPersistedEventsConsumer extends IMicroserviceKafkaConsumer {
+public interface IOutboundEventsProducer extends IMicroserviceKafkaProducer {
 }

@@ -47,11 +47,11 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     /** Topic suffix for events that could not be decoded for a tenant */
     protected static final String TENANT_TOPIC_EVENT_SOURCE_FAILED_DECODE_EVENTS = "event-source-failed-decode-events";
 
+    /** Topic suffix for events that have completed inbound processing */
+    protected static final String TENANT_TOPIC_INBOUND_EVENTS = "inbound-events";
+
     /** Topic suffix for events that should be reprocessed */
     protected static final String TENANT_TOPIC_INBOUND_REPROCESS_EVENTS = "inbound-reprocess-events";
-
-    /** Topic suffix for events that have been persisted */
-    protected static final String TENANT_TOPIC_INBOUND_PERSISTED_EVENTS = "inbound-persisted-events";
 
     /** Topic suffix for device registration events from inbound event sources */
     protected static final String TENANT_TOPIC_INBOUND_DEVICE_REGISTRATION_EVENTS = "inbound-device-registration-events";
@@ -59,11 +59,11 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     /** Topic suffix for tenant events sent to unregistered devices */
     protected static final String TENANT_TOPIC_INBOUND_UNREGISTERED_DEVICE_EVENTS = "inbound-unregistered-device-events";
 
-    /** Topic suffix for events that have been persisted and enriched */
-    protected static final String TENANT_TOPIC_INBOUND_ENRICHED_EVENTS = "inbound-enriched-events";
+    /** Topic suffix for events that have been enriched and persisted */
+    protected static final String TENANT_TOPIC_OUTBOUND_EVENTS = "outbound-events";
 
     /** Topic suffix for persisted and enriched command invocations */
-    protected static final String TENANT_TOPIC_INBOUND_ENRICHED_COMMAND_INVOCATIONS = "inbound-enriched-command-invocations";
+    protected static final String TENANT_TOPIC_OUTBOUND_COMMAND_INVOCATIONS = "outbound-command-invocations";
 
     /** Topic suffix for undelivered command invocations */
     protected static final String TENANT_TOPIC_UNDELIVERED_COMMAND_INVOCATIONS = "undelivered-command-invocations";
@@ -165,21 +165,22 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     }
 
     /*
+     * @see
+     * com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#getInboundEventsTopic(
+     * com.sitewhere.spi.tenant.ITenant)
+     */
+    @Override
+    public String getInboundEventsTopic(ITenant tenant) {
+	return getTenantPrefix(tenant) + TENANT_TOPIC_INBOUND_EVENTS;
+    }
+
+    /*
      * @see com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#
      * getInboundReprocessEventsTopic(com.sitewhere.spi.tenant.ITenant)
      */
     @Override
     public String getInboundReprocessEventsTopic(ITenant tenant) {
 	return getTenantPrefix(tenant) + TENANT_TOPIC_INBOUND_REPROCESS_EVENTS;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#
-     * getInboundPersistedEventsTopic(com.sitewhere.spi.tenant.ITenant)
-     */
-    @Override
-    public String getInboundPersistedEventsTopic(ITenant tenant) {
-	return getTenantPrefix(tenant) + TENANT_TOPIC_INBOUND_PERSISTED_EVENTS;
     }
 
     /*
@@ -201,21 +202,22 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#
-     * getInboundEnrichedEventsTopic(com.sitewhere.spi.tenant.ITenant)
+     * @see
+     * com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#getOutboundEventsTopic
+     * (com.sitewhere.spi.tenant.ITenant)
      */
     @Override
-    public String getInboundEnrichedEventsTopic(ITenant tenant) {
-	return getTenantPrefix(tenant) + TENANT_TOPIC_INBOUND_ENRICHED_EVENTS;
+    public String getOutboundEventsTopic(ITenant tenant) {
+	return getTenantPrefix(tenant) + TENANT_TOPIC_OUTBOUND_EVENTS;
     }
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming#
-     * getInboundEnrichedCommandInvocationsTopic(com.sitewhere.spi.tenant.ITenant)
+     * getOutboundCommandInvocationsTopic(com.sitewhere.spi.tenant.ITenant)
      */
     @Override
-    public String getInboundEnrichedCommandInvocationsTopic(ITenant tenant) {
-	return getTenantPrefix(tenant) + TENANT_TOPIC_INBOUND_ENRICHED_COMMAND_INVOCATIONS;
+    public String getOutboundCommandInvocationsTopic(ITenant tenant) {
+	return getTenantPrefix(tenant) + TENANT_TOPIC_OUTBOUND_COMMAND_INVOCATIONS;
     }
 
     /*

@@ -5,17 +5,16 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.inbound.processing;
+package com.sitewhere.event.processing;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
+import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
 import com.sitewhere.grpc.client.event.EventModelConverter;
 import com.sitewhere.grpc.client.event.EventModelMarshaler;
 import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
-import com.sitewhere.grpc.model.DeviceEventModel.GPersistedEventPayload;
-import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
-import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.rest.model.device.event.DeviceEventContext;
 import com.sitewhere.rest.model.device.event.kafka.EnrichedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
@@ -38,9 +37,9 @@ public class OutboundPayloadEnrichmentLogic {
     private static Log LOGGER = LogFactory.getLog(OutboundPayloadEnrichmentLogic.class);
 
     /** Handle to inbound processing tenant engine */
-    private IInboundProcessingTenantEngine tenantEngine;
+    private IEventManagementTenantEngine tenantEngine;
 
-    public OutboundPayloadEnrichmentLogic(IInboundProcessingTenantEngine tenantEngine) {
+    public OutboundPayloadEnrichmentLogic(IEventManagementTenantEngine tenantEngine) {
 	this.tenantEngine = tenantEngine;
     }
 
@@ -51,8 +50,7 @@ public class OutboundPayloadEnrichmentLogic {
      * @param payload
      * @throws SiteWhereException
      */
-    public void process(GPersistedEventPayload payload) throws SiteWhereException {
-	IDeviceEvent event = EventModelConverter.asApiGenericDeviceEvent(payload.getEvent());
+    public void enrichAndDeliver(IDeviceEvent event) throws SiteWhereException {
 	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignment(event.getDeviceAssignmentId());
 	if (assignment == null) {
 	    // TODO: Is there a separate topic for these events?
@@ -83,11 +81,11 @@ public class OutboundPayloadEnrichmentLogic {
 	// Send enriched payload to topic.
 	GEnrichedEventPayload grpc = EventModelConverter.asGrpcEnrichedEventPayload(enriched);
 	byte[] message = EventModelMarshaler.buildEnrichedEventPayloadMessage(grpc);
-	getTenantEngine().getEnrichedEventsProducer().send(device.getToken(), message);
+	getTenantEngine().getOutboundEventsProducer().send(device.getToken(), message);
 
 	// Send enriched command invocations to topic.
 	if (event.getEventType() == DeviceEventType.CommandInvocation) {
-	    getTenantEngine().getEnrichedCommandInvocationsProducer().send(device.getToken(), message);
+	    getTenantEngine().getOutboundCommandInvocationsProducer().send(device.getToken(), message);
 	}
     }
 
@@ -97,14 +95,10 @@ public class OutboundPayloadEnrichmentLogic {
      * @return
      */
     protected IDeviceManagement getDeviceManagement() {
-	return ((IInboundProcessingMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
+	return ((IEventManagementMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
     }
 
-    public IInboundProcessingTenantEngine getTenantEngine() {
+    protected IEventManagementTenantEngine getTenantEngine() {
 	return tenantEngine;
-    }
-
-    public void setTenantEngine(IInboundProcessingTenantEngine tenantEngine) {
-	this.tenantEngine = tenantEngine;
     }
 }

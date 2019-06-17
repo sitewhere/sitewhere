@@ -7,22 +7,21 @@
  */
 package com.sitewhere.event.kafka;
 
-import com.sitewhere.event.spi.kafka.IInboundPersistedEventsProducer;
+import com.sitewhere.event.spi.kafka.IOutboundEventsProducer;
 import com.sitewhere.microservice.kafka.AckPolicy;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
- * Kafka producer for events that have been persisted to the event datastore and
- * are ready for further processing.
+ * Kafka producer that sends sends enriched events to a topic for further
+ * processing.
  * 
  * @author Derek
  */
-public class InboundPersistedEventsProducer extends MicroserviceKafkaProducer
-	implements IInboundPersistedEventsProducer {
+public class OutboundEventsProducer extends MicroserviceKafkaProducer implements IOutboundEventsProducer {
 
-    public InboundPersistedEventsProducer() {
-	super(AckPolicy.FireAndForget);
+    public OutboundEventsProducer() {
+	super(AckPolicy.Leader);
     }
 
     /*
@@ -31,6 +30,6 @@ public class InboundPersistedEventsProducer extends MicroserviceKafkaProducer
      */
     @Override
     public String getTargetTopicName() throws SiteWhereException {
-	return getMicroservice().getKafkaTopicNaming().getInboundPersistedEventsTopic(getTenantEngine().getTenant());
+	return getMicroservice().getKafkaTopicNaming().getOutboundEventsTopic(getTenantEngine().getTenant());
     }
 }

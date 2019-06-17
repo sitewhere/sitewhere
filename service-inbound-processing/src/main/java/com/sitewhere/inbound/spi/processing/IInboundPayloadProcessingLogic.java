@@ -9,9 +9,9 @@ package com.sitewhere.inbound.spi.processing;
 
 import java.util.List;
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
 
+import com.sitewhere.grpc.model.DeviceEventModel.GDecodedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
@@ -23,12 +23,11 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 public interface IInboundPayloadProcessingLogic extends ITenantEngineLifecycleComponent {
 
     /**
-     * Process batch of records from a Kafka topic partition.
+     * Process batch of decoded records for a topic partition.
      * 
      * @param topicPartition
-     * @param records
+     * @param decoded
      * @throws SiteWhereException
      */
-    public void process(TopicPartition topicPartition, List<ConsumerRecord<String, byte[]>> records)
-	    throws SiteWhereException;
+    public void process(TopicPartition topicPartition, List<GDecodedEventPayload> decoded) throws SiteWhereException;
 }

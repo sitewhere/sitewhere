@@ -14,12 +14,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.event.DeviceEventManagementDecorator;
+import com.sitewhere.event.processing.OutboundPayloadEnrichmentLogic;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
-import com.sitewhere.grpc.client.event.EventModelConverter;
-import com.sitewhere.grpc.client.event.EventModelMarshaler;
-import com.sitewhere.grpc.model.DeviceEventModel.GPersistedEventPayload;
-import com.sitewhere.rest.model.device.event.kafka.PersistedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -53,12 +50,12 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
     @SuppressWarnings("unused")
     private static Log LOGGER = LogFactory.getLog(KafkaEventPersistenceTriggers.class);
 
-    /** Parent tenant engine */
-    private IEventManagementTenantEngine tenantEngine;
+    /** Enriches events and delivers them via Kafka */
+    private OutboundPayloadEnrichmentLogic enrichmentLogic;
 
     public KafkaEventPersistenceTriggers(IEventManagementTenantEngine tenantEngine, IDeviceEventManagement delegate) {
 	super(delegate);
-	this.tenantEngine = tenantEngine;
+	this.enrichmentLogic = new OutboundPayloadEnrichmentLogic(tenantEngine);
     }
 
     /**
@@ -71,15 +68,8 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
      */
     protected <T extends IDeviceEvent> List<T> forwardEvents(UUID deviceAssignmentId, List<T> events)
 	    throws SiteWhereException {
-	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
 	for (T event : events) {
-	    PersistedEventPayload api = new PersistedEventPayload();
-	    api.setDeviceId(assignment.getDeviceId());
-	    api.setEvent(event);
-	    GPersistedEventPayload payload = EventModelConverter.asGrpcPersistedEventPayload(api);
-
-	    getTenantEngine().getInboundPersistedEventsProducer().send(assignment.getId().toString(),
-		    EventModelMarshaler.buildPersistedEventPayloadMessage(payload));
+	    getEnrichmentLogic().enrichAndDeliver(event);
 	}
 	return events;
     }
@@ -174,11 +164,7 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
 	return ((IEventManagementMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
     }
 
-    public IEventManagementTenantEngine getTenantEngine() {
-	return tenantEngine;
-    }
-
-    public void setTenantEngine(IEventManagementTenantEngine tenantEngine) {
-	this.tenantEngine = tenantEngine;
+    protected OutboundPayloadEnrichmentLogic getEnrichmentLogic() {
+	return enrichmentLogic;
     }
 }

@@ -8,17 +8,13 @@
 package com.sitewhere.inbound.spi.microservice;
 
 import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
-import com.sitewhere.inbound.spi.kafka.IEnrichedCommandInvocationsProducer;
-import com.sitewhere.inbound.spi.kafka.IEnrichedEventsProducer;
-import com.sitewhere.inbound.spi.kafka.IPersistedEventsConsumer;
+import com.sitewhere.inbound.spi.kafka.IInboundEventsProducer;
 import com.sitewhere.inbound.spi.kafka.IUnregisteredEventsProducer;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
  * Extends {@link IMicroserviceTenantEngine} with features specific to inbound
  * event processing.
- * 
- * @author Derek
  */
 public interface IInboundProcessingTenantEngine extends IMicroserviceTenantEngine {
 
@@ -38,26 +34,10 @@ public interface IInboundProcessingTenantEngine extends IMicroserviceTenantEngin
     public IUnregisteredEventsProducer getUnregisteredDeviceEventsProducer();
 
     /**
-     * Get Kafka consumer that receives events that have been persisted via the
-     * event management APIs.
+     * Get Kafka producer that forwards events which have successfully completed
+     * inbound processing.
      * 
      * @return
      */
-    public IPersistedEventsConsumer getPersistedEventsConsumer();
-
-    /**
-     * Get Kafka producer that sends enriched events to a topic for further
-     * processing.
-     * 
-     * @return
-     */
-    public IEnrichedEventsProducer getEnrichedEventsProducer();
-
-    /**
-     * Get Kafka producer that sends enriched command invocations to a topic for
-     * further processing.
-     * 
-     * @return
-     */
-    public IEnrichedCommandInvocationsProducer getEnrichedCommandInvocationsProducer();
+    public IInboundEventsProducer getInboundEventsProducer();
 }

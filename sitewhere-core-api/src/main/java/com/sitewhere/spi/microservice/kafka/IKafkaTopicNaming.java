@@ -85,6 +85,15 @@ public interface IKafkaTopicNaming {
     public String getEventSourceFailedDecodeTopic(ITenant tenant);
 
     /**
+     * Get topic for inbound events that have been validated by inbound processing
+     * logic.
+     * 
+     * @param tenant
+     * @return
+     */
+    public String getInboundEventsTopic(ITenant tenant);
+
+    /**
      * Get topic for inbound events that were sent for out-of-band processing, then
      * returned to be reprocessed.
      * 
@@ -92,14 +101,6 @@ public interface IKafkaTopicNaming {
      * @return
      */
     public String getInboundReprocessEventsTopic(ITenant tenant);
-
-    /**
-     * Get topic for events that have been persisted to an event datastore.
-     * 
-     * @param tenant
-     * @return
-     */
-    public String getInboundPersistedEventsTopic(ITenant tenant);
 
     /**
      * Get name for topic that contains events for device registration requests
@@ -126,7 +127,7 @@ public interface IKafkaTopicNaming {
      * @param tenant
      * @return
      */
-    public String getInboundEnrichedEventsTopic(ITenant tenant);
+    public String getOutboundEventsTopic(ITenant tenant);
 
     /**
      * Get topic for device command invocations that have been persisted and
@@ -135,7 +136,7 @@ public interface IKafkaTopicNaming {
      * @param tenant
      * @return
      */
-    public String getInboundEnrichedCommandInvocationsTopic(ITenant tenant);
+    public String getOutboundCommandInvocationsTopic(ITenant tenant);
 
     /**
      * Get topic for device command invocations that could not be delievered.

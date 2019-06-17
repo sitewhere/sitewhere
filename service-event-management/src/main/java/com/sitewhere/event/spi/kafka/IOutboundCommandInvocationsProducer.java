@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.inbound.spi.kafka;
+package com.sitewhere.event.spi.kafka;
 
 import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer;
 
@@ -15,5 +15,5 @@ import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer;
  * 
  * @author Derek
  */
-public interface IEnrichedCommandInvocationsProducer extends IMicroserviceKafkaProducer {
+public interface IOutboundCommandInvocationsProducer extends IMicroserviceKafkaProducer {
 }

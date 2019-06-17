@@ -12,8 +12,6 @@ import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer;
 /**
  * Kafka producer that sends events for unregistered devices to a topic for
  * out-of-band processing.
- * 
- * @author Derek
  */
 public interface IUnregisteredEventsProducer extends IMicroserviceKafkaProducer {
 }

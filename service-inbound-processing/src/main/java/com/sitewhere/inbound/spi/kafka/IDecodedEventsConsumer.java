@@ -12,9 +12,7 @@ import com.sitewhere.inbound.spi.processing.IInboundProcessingConfiguration;
 import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer;
 
 /**
- * Consumer for inbound decoded events that need to be processed.
- * 
- * @author Derek
+ * Kafka consumer for inbound decoded events that need to be processed.
  */
 public interface IDecodedEventsConsumer extends IMicroserviceKafkaConsumer {
 

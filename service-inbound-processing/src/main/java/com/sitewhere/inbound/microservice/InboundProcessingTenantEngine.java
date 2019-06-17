@@ -8,14 +8,10 @@
 package com.sitewhere.inbound.microservice;
 
 import com.sitewhere.inbound.kafka.DecodedEventsConsumer;
-import com.sitewhere.inbound.kafka.EnrichedCommandInvocationsProducer;
-import com.sitewhere.inbound.kafka.EnrichedEventsProducer;
-import com.sitewhere.inbound.kafka.PersistedEventsConsumer;
+import com.sitewhere.inbound.kafka.InboundEventsProducer;
 import com.sitewhere.inbound.kafka.UnregisteredEventsProducer;
 import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
-import com.sitewhere.inbound.spi.kafka.IEnrichedCommandInvocationsProducer;
-import com.sitewhere.inbound.spi.kafka.IEnrichedEventsProducer;
-import com.sitewhere.inbound.spi.kafka.IPersistedEventsConsumer;
+import com.sitewhere.inbound.spi.kafka.IInboundEventsProducer;
 import com.sitewhere.inbound.spi.kafka.IUnregisteredEventsProducer;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.inbound.spi.processing.IInboundProcessingConfiguration;
@@ -43,14 +39,8 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
     /** Kafka producer for events sent to unregistered devices */
     private IUnregisteredEventsProducer unregisteredDeviceEventsProducer;
 
-    /** Kafka consumer for events persisted via event management APIs */
-    private IPersistedEventsConsumer persistedEventsConsumer;
-
-    /** Kafka producer for forwarding enriched events */
-    private IEnrichedEventsProducer enrichedEventsProducer;
-
-    /** Kafka producer for forwarding enriched command invocations */
-    private IEnrichedCommandInvocationsProducer enrichedCommandInvocationsProducer;
+    /** Kafka producer for forwarding processed events */
+    private IInboundEventsProducer inboundEventsProducer;
 
     public InboundProcessingTenantEngine(ITenant tenant) {
 	super(tenant);
@@ -69,9 +59,7 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
 
 	this.decodedEventsConsumer = new DecodedEventsConsumer(configuration);
 	this.unregisteredDeviceEventsProducer = new UnregisteredEventsProducer();
-	this.persistedEventsConsumer = new PersistedEventsConsumer();
-	this.enrichedEventsProducer = new EnrichedEventsProducer();
-	this.enrichedCommandInvocationsProducer = new EnrichedCommandInvocationsProducer();
+	this.inboundEventsProducer = new InboundEventsProducer();
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
@@ -82,14 +70,8 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
 	// Initialize unregistered device events producer.
 	init.addInitializeStep(this, getUnregisteredDeviceEventsProducer(), true);
 
-	// Initialize persisted events consumer.
-	init.addInitializeStep(this, getPersistedEventsConsumer(), true);
-
-	// Initialize enriched events producer.
-	init.addInitializeStep(this, getEnrichedEventsProducer(), true);
-
-	// Initialize enriched command invocations producer.
-	init.addInitializeStep(this, getEnrichedCommandInvocationsProducer(), true);
+	// Initialize inbound events producer.
+	init.addInitializeStep(this, getInboundEventsProducer(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -110,14 +92,8 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
 	// Start decoded events consumer.
 	start.addStartStep(this, getDecodedEventsConsumer(), true);
 
-	// Start persisted events consumer.
-	start.addStartStep(this, getPersistedEventsConsumer(), true);
-
-	// Start enriched events producer.
-	start.addStartStep(this, getEnrichedEventsProducer(), true);
-
-	// Start enriched command invocations producer.
-	start.addStartStep(this, getEnrichedCommandInvocationsProducer(), true);
+	// Start inbound events producer.
+	start.addStartStep(this, getInboundEventsProducer(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -148,14 +124,8 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
 	// Stop unregistered device events producer.
 	stop.addStopStep(this, getUnregisteredDeviceEventsProducer());
 
-	// Stop persisted events consumer.
-	stop.addStopStep(this, getPersistedEventsConsumer());
-
-	// Stop enriched events producer.
-	stop.addStopStep(this, getEnrichedEventsProducer());
-
-	// Stop enriched command invocations producer.
-	stop.addStopStep(this, getEnrichedCommandInvocationsProducer());
+	// Stop inbound events producer.
+	stop.addStopStep(this, getInboundEventsProducer());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -189,41 +159,14 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
 
     /*
      * @see com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine#
-     * getPersistedEventsConsumer()
+     * getInboundEventsProducer()
      */
     @Override
-    public IPersistedEventsConsumer getPersistedEventsConsumer() {
-	return persistedEventsConsumer;
+    public IInboundEventsProducer getInboundEventsProducer() {
+	return inboundEventsProducer;
     }
 
-    public void setPersistedEventsConsumer(IPersistedEventsConsumer persistedEventsConsumer) {
-	this.persistedEventsConsumer = persistedEventsConsumer;
-    }
-
-    /*
-     * @see com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine#
-     * getEnrichedEventsProducer()
-     */
-    @Override
-    public IEnrichedEventsProducer getEnrichedEventsProducer() {
-	return enrichedEventsProducer;
-    }
-
-    public void setEnrichedEventsProducer(IEnrichedEventsProducer enrichedEventsProducer) {
-	this.enrichedEventsProducer = enrichedEventsProducer;
-    }
-
-    /*
-     * @see com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine#
-     * getEnrichedCommandInvocationsProducer()
-     */
-    @Override
-    public IEnrichedCommandInvocationsProducer getEnrichedCommandInvocationsProducer() {
-	return enrichedCommandInvocationsProducer;
-    }
-
-    public void setEnrichedCommandInvocationsProducer(
-	    IEnrichedCommandInvocationsProducer enrichedCommandInvocationsProducer) {
-	this.enrichedCommandInvocationsProducer = enrichedCommandInvocationsProducer;
+    public void setInboundEventsProducer(IInboundEventsProducer inboundEventsProducer) {
+	this.inboundEventsProducer = inboundEventsProducer;
     }
 }
