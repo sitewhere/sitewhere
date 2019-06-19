@@ -17,7 +17,6 @@ import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.consumer.OffsetCommitCallback;
 import org.apache.kafka.common.TopicPartition;
 
-import com.codahale.metrics.Meter;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.client.event.EventModelConverter;
 import com.sitewhere.grpc.client.event.EventModelMarshaler;
@@ -29,9 +28,12 @@ import com.sitewhere.inbound.spi.processing.IInboundProcessingConfiguration;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.rest.model.device.event.kafka.DecodedEventPayload;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+
+import io.prometheus.client.Counter;
 
 /**
  * Listens on Kafka topic for decoded events, making them available for inbound
@@ -52,10 +54,8 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
     private IInboundPayloadProcessingLogic inboundPayloadProcessingLogic;
 
     /** Meter for counting processed events */
-    private Meter processedEvents;
-
-    /** Meter for counting decode failed events */
-    private Meter decodeFailedEvents;
+    private Counter processedEvents = TenantEngineLifecycleComponent.createCounterMetric("processed_event_count",
+	    "Count of total events processed by consumer");
 
     public DecodedEventsConsumer(IInboundProcessingConfiguration inboundProcessingConfiguration) {
 	this.inboundProcessingConfiguration = inboundProcessingConfiguration;
@@ -102,10 +102,6 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.initialize(monitor);
-
-	// Set up metrics.
-	this.processedEvents = createMeterMetric("processedEvents");
-	this.decodeFailedEvents = createMeterMetric("decodeFailedEvents");
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
@@ -212,11 +208,7 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 	return inboundProcessingConfiguration;
     }
 
-    protected Meter getProcessedEvents() {
+    protected Counter getProcessedEvents() {
 	return processedEvents;
-    }
-
-    protected Meter getDecodeFailedEvents() {
-	return decodeFailedEvents;
     }
 }

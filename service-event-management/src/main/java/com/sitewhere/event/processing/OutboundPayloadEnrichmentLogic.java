@@ -51,41 +51,47 @@ public class OutboundPayloadEnrichmentLogic {
      * @throws SiteWhereException
      */
     public void enrichAndDeliver(IDeviceEvent event) throws SiteWhereException {
-	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignment(event.getDeviceAssignmentId());
-	if (assignment == null) {
-	    // TODO: Is there a separate topic for these events?
-	    throw new SiteWhereException("Event references non-existent device assignment.");
-	}
+	try {
+	    IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignment(event.getDeviceAssignmentId());
+	    if (assignment == null) {
+		// TODO: Is there a separate topic for these events?
+		throw new SiteWhereException("Event references non-existent device assignment.");
+	    }
 
-	IDevice device = getDeviceManagement().getDevice(assignment.getDeviceId());
-	if (device == null) {
-	    // TODO: Is there a separate topic for these events?
-	    throw new SiteWhereException("Event references assignment for non-existent device.");
-	}
+	    IDevice device = getDeviceManagement().getDevice(assignment.getDeviceId());
+	    if (device == null) {
+		// TODO: Is there a separate topic for these events?
+		throw new SiteWhereException("Event references assignment for non-existent device.");
+	    }
 
-	// Build event context.
-	DeviceEventContext context = new DeviceEventContext();
-	context.setDeviceId(device.getId());
-	context.setDeviceTypeId(device.getDeviceTypeId());
-	context.setParentDeviceId(device.getParentDeviceId());
-	context.setDeviceStatus(device.getStatus());
-	context.setDeviceMetadata(device.getMetadata());
-	context.setAssignmentStatus(assignment.getStatus());
-	context.setAssignmentMetadata(assignment.getMetadata());
+	    // Build event context.
+	    DeviceEventContext context = new DeviceEventContext();
+	    context.setDeviceId(device.getId());
+	    context.setDeviceTypeId(device.getDeviceTypeId());
+	    context.setParentDeviceId(device.getParentDeviceId());
+	    context.setDeviceStatus(device.getStatus());
+	    context.setDeviceMetadata(device.getMetadata());
+	    context.setAssignmentStatus(assignment.getStatus());
+	    context.setAssignmentMetadata(assignment.getMetadata());
 
-	// Build enriched payload.
-	EnrichedEventPayload enriched = new EnrichedEventPayload();
-	enriched.setEventContext(context);
-	enriched.setEvent(event);
+	    // Build enriched payload.
+	    EnrichedEventPayload enriched = new EnrichedEventPayload();
+	    enriched.setEventContext(context);
+	    enriched.setEvent(event);
 
-	// Send enriched payload to topic.
-	GEnrichedEventPayload grpc = EventModelConverter.asGrpcEnrichedEventPayload(enriched);
-	byte[] message = EventModelMarshaler.buildEnrichedEventPayloadMessage(grpc);
-	getTenantEngine().getOutboundEventsProducer().send(device.getToken(), message);
+	    // Send enriched payload to topic.
+	    GEnrichedEventPayload grpc = EventModelConverter.asGrpcEnrichedEventPayload(enriched);
+	    byte[] message = EventModelMarshaler.buildEnrichedEventPayloadMessage(grpc);
+	    getTenantEngine().getOutboundEventsProducer().send(device.getToken(), message);
 
-	// Send enriched command invocations to topic.
-	if (event.getEventType() == DeviceEventType.CommandInvocation) {
-	    getTenantEngine().getOutboundCommandInvocationsProducer().send(device.getToken(), message);
+	    // Send enriched command invocations to topic.
+	    if (event.getEventType() == DeviceEventType.CommandInvocation) {
+		getTenantEngine().getOutboundCommandInvocationsProducer().send(device.getToken(), message);
+	    }
+	} catch (SiteWhereException e) {
+	    throw e;
+	} catch (Throwable t) {
+	    throw new SiteWhereException("Unhandled exception in event enrichment logic.", t);
 	}
     }
 

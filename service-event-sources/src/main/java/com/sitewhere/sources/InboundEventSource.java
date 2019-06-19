@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.codahale.metrics.Meter;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
@@ -24,6 +23,8 @@ import com.sitewhere.sources.spi.microservice.IEventSourcesTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+
+import io.prometheus.client.Counter;
 
 /**
  * Default implementation of {@link IInboundEventSource}.
@@ -47,13 +48,16 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
     private List<IInboundEventReceiver<T>> inboundEventReceivers = new ArrayList<IInboundEventReceiver<T>>();
 
     /** Meter for counting decoded events */
-    private Meter decodedEvents;
+    private Counter decodedEvents = TenantEngineLifecycleComponent.createCounterMetric(
+	    "event_source_decoded_event_count", "Count of events successfully decoded", "source_id");
 
     /** Meter for counting decode failures */
-    private Meter decodeFailures;
+    private Counter decodeFailures = TenantEngineLifecycleComponent.createCounterMetric(
+	    "event_source_decode_failure_count", "Count of events which failed to decode", "source_id");
 
     /** Meter for counting duplicate events */
-    private Meter duplicates;
+    private Counter duplicates = TenantEngineLifecycleComponent.createCounterMetric("event_source_duplicate_count",
+	    "Count of events which were duplicates", "source_id");
 
     public InboundEventSource() {
 	super(LifecycleComponentType.InboundEventSource);
@@ -74,11 +78,6 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
 	if (getDeviceEventDecoder() == null) {
 	    throw new SiteWhereException("No device event decoder assigned.");
 	}
-
-	// Set up metrics.
-	this.decodedEvents = createMeterMetric(getMetricPrefix() + "decodedEvents");
-	this.decodeFailures = createMeterMetric(getMetricPrefix() + "decodeFailures");
-	this.duplicates = createMeterMetric(getMetricPrefix() + "duplicates");
 
 	// Initialize device event decoder.
 	initializeNestedComponent(getDeviceEventDecoder(), monitor, true);
@@ -190,7 +189,7 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
 	List<IDecodedDeviceRequest<?>> requests = decodeEvent(encoded, metadata);
 	if (requests != null) {
 	    for (IDecodedDeviceRequest<?> decoded : requests) {
-		getDecodedEvents().mark();
+		getDecodedEvents().labels(buildLabels(getSourceId())).inc();
 		if (shouldProcess(decoded)) {
 		    handleDecodedRequest(encoded, metadata, decoded);
 		}
@@ -226,7 +225,7 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
 	    boolean isDuplicate = ((getDeviceEventDeduplicator() != null)
 		    && (getDeviceEventDeduplicator().isDuplicate(decoded)));
 	    if (isDuplicate) {
-		getDuplicates().mark();
+		getDuplicates().labels(buildLabels(getSourceId())).inc();
 		getLogger().info("Event not processed due to duplicate detected.");
 	    }
 	    return !isDuplicate;
@@ -262,7 +261,7 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
      */
     protected void onEventDecodeFailed(T encoded, Map<String, Object> metadata, Throwable t) {
 	try {
-	    getDecodeFailures().mark();
+	    getDecodeFailures().labels(buildLabels(getSourceId())).inc();
 	    getEventSourcesManager().handleFailedDecode(getSourceId(), getRawPayload(encoded), metadata, t);
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to handle failed event decode.", e);
@@ -333,15 +332,15 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
 	this.inboundEventReceivers = inboundEventReceivers;
     }
 
-    protected Meter getDecodedEvents() {
+    protected Counter getDecodedEvents() {
 	return decodedEvents;
     }
 
-    protected Meter getDecodeFailures() {
+    protected Counter getDecodeFailures() {
 	return decodeFailures;
     }
 
-    protected Meter getDuplicates() {
+    protected Counter getDuplicates() {
 	return duplicates;
     }
 

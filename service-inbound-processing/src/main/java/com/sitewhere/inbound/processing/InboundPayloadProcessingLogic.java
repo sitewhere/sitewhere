@@ -13,7 +13,6 @@ import java.util.concurrent.Executors;
 
 import org.apache.kafka.common.TopicPartition;
 
-import com.codahale.metrics.Timer;
 import com.sitewhere.grpc.client.event.EventModelMarshaler;
 import com.sitewhere.grpc.model.DeviceEventModel.GDecodedEventPayload;
 import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
@@ -30,6 +29,8 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
+import io.prometheus.client.Histogram;
+
 /**
  * Processing logic which verifies that an incoming event belongs to a
  * registered device. If the event does not belong to a registered device, it is
@@ -42,10 +43,10 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	implements IInboundPayloadProcessingLogic {
 
     /** Histogram for device lookup */
-    private Timer deviceLookupTimer;
+    private Histogram deviceLookupTimer;
 
     /** Histogram for assignment lookup */
-    private Timer assignmentLookupTimer;
+    private Histogram assignmentLookupTimer;
 
     /** Decoded events consumer */
     private IDecodedEventsConsumer decodedEventsConsumer;
@@ -55,20 +56,6 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 
     public InboundPayloadProcessingLogic(IDecodedEventsConsumer decodedEventsConsumer) {
 	this.decodedEventsConsumer = decodedEventsConsumer;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
-     * spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	super.initialize(monitor);
-
-	// Set up metrics.
-	this.deviceLookupTimer = createTimerMetric("deviceLookup");
-	this.assignmentLookupTimer = createTimerMetric("assignmentLookup");
     }
 
     /*
@@ -136,12 +123,12 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
      */
     protected IDeviceAssignment validateAssignment(GDecodedEventPayload payload) throws SiteWhereException {
 	// Verify that device is registered.
-	final Timer.Context deviceLookupTime = getDeviceLookupTimer().time();
+	final Histogram.Timer deviceLookupTime = getDeviceLookupTimer().labels(buildLabels()).startTimer();
 	IDevice device = null;
 	try {
 	    device = getDeviceManagement().getDeviceByToken(payload.getDeviceToken());
 	} finally {
-	    deviceLookupTime.stop();
+	    deviceLookupTime.close();
 	}
 	if (device == null) {
 	    handleUnregisteredDevice(payload);
@@ -155,12 +142,12 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	}
 
 	// Verify that device assignment exists.
-	final Timer.Context assignmentLookupTime = getAssignmentLookupTimer().time();
+	final Histogram.Timer assignmentLookupTime = getAssignmentLookupTimer().labels(buildLabels()).startTimer();
 	IDeviceAssignment assignment = null;
 	try {
 	    assignment = getDeviceManagement().getDeviceAssignment(device.getDeviceAssignmentId());
 	} finally {
-	    assignmentLookupTime.stop();
+	    assignmentLookupTime.close();
 	}
 	if (assignment == null) {
 	    handleUnassignedDevice(payload);
@@ -255,11 +242,11 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	return decodedEventsConsumer;
     }
 
-    protected Timer getDeviceLookupTimer() {
+    protected Histogram getDeviceLookupTimer() {
 	return deviceLookupTimer;
     }
 
-    protected Timer getAssignmentLookupTimer() {
+    protected Histogram getAssignmentLookupTimer() {
 	return assignmentLookupTimer;
     }
 }

@@ -17,7 +17,6 @@ import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.consumer.OffsetCommitCallback;
 import org.apache.kafka.common.TopicPartition;
 
-import com.codahale.metrics.Meter;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.event.spi.kafka.IInboundEventsConsumer;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
@@ -28,6 +27,7 @@ import com.sitewhere.grpc.model.DeviceEventModel.GAnyDeviceEventCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GPreprocessedEventPayload;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.rest.model.device.event.kafka.PreprocessedEventPayload;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
@@ -37,7 +37,9 @@ import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+
+import io.prometheus.client.Counter;
+import io.prometheus.client.Gauge;
 
 /**
  * Kafka consumer which takes events that have been pre-processed by inbound
@@ -51,8 +53,13 @@ public class InboundEventsConsumer extends MicroserviceKafkaConsumer implements 
     /** Suffix for group id */
     private static String GROUP_ID_SUFFIX = "inbound-event-consumers";
 
-    /** Meter for counting processed events */
-    private Meter processedEvents;
+    /** Counter for processed events */
+    private Gauge kafkaBatchSize = TenantEngineLifecycleComponent.createGaugeMetric("inbound_events_kafka_batch_size",
+	    "Size of Kafka inbound event batches");
+
+    /** Counter for processed events */
+    private Counter processedEvents = TenantEngineLifecycleComponent.createCounterMetric("inbound_events_event_count",
+	    "Count of total events processed by consumer");
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#
@@ -81,19 +88,6 @@ public class InboundEventsConsumer extends MicroserviceKafkaConsumer implements 
 	List<String> topics = new ArrayList<String>();
 	topics.add(getMicroservice().getKafkaTopicNaming().getInboundEventsTopic(getTenantEngine().getTenant()));
 	return topics;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
-     * spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	super.initialize(monitor);
-
-	// Set up metrics.
-	this.processedEvents = createMeterMetric("processedEvents");
     }
 
     /*
@@ -134,6 +128,7 @@ public class InboundEventsConsumer extends MicroserviceKafkaConsumer implements 
      * @throws SiteWhereException
      */
     protected void storeEvents(List<GPreprocessedEventPayload> payloads) throws SiteWhereException {
+	getKafkaBatchSize().labels(buildLabels()).set(payloads.size());
 	for (GPreprocessedEventPayload payload : payloads) {
 	    GAnyDeviceEventCreateRequest grpc = payload.getEvent();
 	    UUID assignmentId = CommonModelConverter.asApiUuid(payload.getDeviceAssignmentId());
@@ -162,12 +157,20 @@ public class InboundEventsConsumer extends MicroserviceKafkaConsumer implements 
 			(IDeviceStateChangeCreateRequest) request);
 		break;
 	    default:
-		throw new SiteWhereException("Unknown event type sent for storage: " + request.getEventType().name());
+		getLogger()
+			.warn(String.format("Unknown event type sent for storage: %s", request.getEventType().name()));
 	    }
+
+	    // Keep metrics on processed events.
+	    getProcessedEvents().labels(buildLabels()).inc();
 	}
     }
 
-    protected Meter getProcessedEvents() {
+    protected Gauge getKafkaBatchSize() {
+	return kafkaBatchSize;
+    }
+
+    protected Counter getProcessedEvents() {
 	return processedEvents;
     }
 

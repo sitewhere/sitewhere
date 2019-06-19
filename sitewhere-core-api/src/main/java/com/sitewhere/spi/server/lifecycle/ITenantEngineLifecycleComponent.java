@@ -7,8 +7,6 @@
  */
 package com.sitewhere.spi.server.lifecycle;
 
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.Timer;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
@@ -19,22 +17,12 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 public interface ITenantEngineLifecycleComponent extends ILifecycleComponent {
 
     /**
-     * Create a meter metric for the component (registered with the metric registry
-     * for the microservice).
+     * Build microservice/tenant-specific labels.
      * 
-     * @param name
+     * @param labels
      * @return
      */
-    public Meter createMeterMetric(String name);
-
-    /**
-     * Create a timer metric for the component (registered with the metric registry
-     * for the microservice).
-     * 
-     * @param name
-     * @return
-     */
-    public Timer createTimerMetric(String name);
+    public String[] buildLabels(String... labels);
 
     /**
      * Set tenant engine for component.
