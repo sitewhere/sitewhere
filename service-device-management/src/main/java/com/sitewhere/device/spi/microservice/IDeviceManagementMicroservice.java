@@ -9,7 +9,6 @@ package com.sitewhere.device.spi.microservice;
 
 import com.sitewhere.device.spi.grpc.IDeviceManagementGrpcServer;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
-import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
@@ -27,13 +26,6 @@ public interface IDeviceManagementMicroservice
      * @return
      */
     public IDeviceManagementGrpcServer getDeviceManagementGrpcServer();
-
-    /**
-     * Get device event management API channel.
-     * 
-     * @return
-     */
-    public IDeviceEventManagementApiChannel<?> getEventManagementApiChannel();
 
     /**
      * Get asset management API channel.

@@ -12,9 +12,6 @@ import com.sitewhere.spi.SiteWhereException;
 /**
  * Exception thrown when a tenant engine is expected to be available but is not
  * created and/or started.
- * 
- * @author Derek
- *
  */
 public class TenantEngineNotAvailableException extends SiteWhereException {
 

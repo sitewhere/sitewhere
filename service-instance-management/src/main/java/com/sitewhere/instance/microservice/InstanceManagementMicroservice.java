@@ -196,20 +196,11 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Initialize tenant management implementation.
 	init.addInitializeStep(this, getTenantManagement(), true);
 
-	// Initialize user management implementation.
-	init.addInitializeStep(this, getUserManagement(), true);
-
-	// Initialize instance script synchronizer.
-	init.addInitializeStep(this, getInstanceScriptSynchronizer(), true);
-
 	// Initialize tenant configuration template manager.
 	init.addInitializeStep(this, getTenantConfigurationTemplateManager(), true);
 
 	// Initialize tenant dataset template manager.
 	init.addInitializeStep(this, getTenantDatasetTemplateManager(), true);
-
-	// Initialize user management GRPC server.
-	init.addInitializeStep(this, getUserManagementGrpcServer(), true);
 
 	// Initialize tenant management GRPC server.
 	init.addInitializeStep(this, getTenantManagementGrpcServer(), true);
@@ -219,6 +210,15 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
 	// Initialize tenant model producer.
 	init.addInitializeStep(this, getTenantModelProducer(), true);
+
+	// Initialize user management implementation.
+	init.addInitializeStep(this, getUserManagement(), true);
+
+	// Initialize user management GRPC server.
+	init.addInitializeStep(this, getUserManagementGrpcServer(), true);
+
+	// Initialize instance script synchronizer.
+	init.addInitializeStep(this, getInstanceScriptSynchronizer(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -272,17 +272,11 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Start tenant management implementation.
 	start.addStartStep(this, getTenantManagement(), true);
 
-	// Start user management implementation.
-	start.addStartStep(this, getUserManagement(), true);
-
 	// Start tenant configuration template manager.
 	start.addStartStep(this, getTenantConfigurationTemplateManager(), true);
 
 	// Start tenant dataset template manager.
 	start.addStartStep(this, getTenantDatasetTemplateManager(), true);
-
-	// Start user management GRPC server.
-	start.addStartStep(this, getUserManagementGrpcServer(), true);
 
 	// Start GRPC server.
 	start.addStartStep(this, getTenantManagementGrpcServer(), true);
@@ -293,8 +287,17 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Start tenant model producer.
 	start.addStartStep(this, getTenantModelProducer(), true);
 
-	// Verify Zk node for instance configuration or bootstrap instance.
-	start.addStep(verifyOrBootstrapInstanceDataModel());
+	// Boostrap tenants from instance template configuration.
+	start.addStep(initializeTenantModelFromInstanceTemplate());
+
+	// Start user management implementation.
+	start.addStartStep(this, getUserManagement(), true);
+
+	// Start user management GRPC server.
+	start.addStartStep(this, getUserManagementGrpcServer(), true);
+
+	// Boostrap users from instance template configuration.
+	start.addStep(initializeUserModelFromInstanceTemplate());
 
 	// Execute initialization steps.
 	start.execute(monitor);
@@ -464,61 +467,43 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     }
 
     /**
-     * Bootstrap core data such as users and tenants based on instance template
-     * configurations.
+     * Initialize user model based on scripts in instance template.
      * 
      * @return
+     * @throws SiteWhereException
      */
-    public ILifecycleStep verifyOrBootstrapInstanceDataModel() {
-	return new SimpleLifecycleStep("Verify instance configured") {
+    protected ILifecycleStep initializeUserModelFromInstanceTemplate() throws SiteWhereException {
+	return new SimpleLifecycleStep("Verify instance users configured") {
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		Authentication previous = SecurityContextHolder.getContext().getAuthentication();
 		try {
 		    Stat existing = getZookeeperManager().getCurator().checkExists()
-			    .forPath(getInstanceDataBootstrappedMarker());
-		    if (existing == null) {
-			getLogger().info("Data bootstrap marker node '" + getInstanceConfigBootstrappedMarker()
-				+ "' not found. Bootstrapping instance data...");
-			initializeModelFromInstanceTemplate();
-			getLogger().info("Bootstrapped instance data from template.");
-		    } else {
-			getLogger().info("Found data bootstrap marker node. Skipping data bootstrap.");
+			    .forPath(getInstanceUsersBootstrappedMarker());
+		    if (existing != null) {
+			getLogger().info("Found users bootstrap marker node. Skipping users bootstrap.");
+			return;
 		    }
+		    getLogger().info("Users bootstrap marker node '" + getInstanceConfigBootstrappedMarker()
+			    + "' not found. Bootstrapping user data...");
+
+		    SecurityContextHolder.getContext().setAuthentication(getSystemUser().getAuthentication());
+		    IInstanceTemplate template = getChosenInstanceTemplate();
+		    getLogger().info("Initializing instance users from template '" + template.getName() + "'.");
+		    String templatePath = getInstanceZkPath() + "/" + template.getId();
+		    if (template.getInitializers() != null) {
+			List<String> userScripts = template.getInitializers().getUserManagement();
+			initializeUserModelFromInstanceTemplateScripts(templatePath, userScripts);
+		    }
+		    getZookeeperManager().getCurator().create().forPath(getInstanceUsersBootstrappedMarker());
 		} catch (Exception e) {
 		    throw new SiteWhereException(e);
+		} finally {
+		    SecurityContextHolder.getContext().setAuthentication(previous);
 		}
 	    }
 	};
-    }
-
-    /**
-     * Initialize user/tenant model from scripts included in instance template.
-     * Note: The scripts execute in the context of the system superuser so that the
-     * initial users/tenants can be populated.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void initializeModelFromInstanceTemplate() throws SiteWhereException {
-	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
-	try {
-	    SecurityContextHolder.getContext().setAuthentication(getSystemUser().getAuthentication());
-	    IInstanceTemplate template = getChosenInstanceTemplate();
-	    getLogger().info("Initializing instance from template '" + template.getName() + "'.");
-	    String templatePath = getInstanceZkPath() + "/" + template.getId();
-	    if (template.getInitializers() != null) {
-		List<String> userScripts = template.getInitializers().getUserManagement();
-		initializeUserModelFromInstanceTemplateScripts(templatePath, userScripts);
-
-		List<String> tenantScripts = template.getInitializers().getTenantManagement();
-		initializeTenantModelFromInstanceTemplateScripts(templatePath, tenantScripts);
-	    }
-	    getZookeeperManager().getCurator().create().forPath(getInstanceDataBootstrappedMarker());
-	} catch (Exception e) {
-	    throw new SiteWhereException(e);
-	} finally {
-	    SecurityContextHolder.getContext().setAuthentication(previous);
-	}
     }
 
     /**
@@ -540,6 +525,46 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	    GroovyUserModelInitializer initializer = new GroovyUserModelInitializer(groovy, script);
 	    initializer.initialize(getUserManagement());
 	}
+    }
+
+    /**
+     * Initialize tenant model based on scripts in instance template.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    protected ILifecycleStep initializeTenantModelFromInstanceTemplate() throws SiteWhereException {
+	return new SimpleLifecycleStep("Verify instance tenants configured") {
+
+	    @Override
+	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		Authentication previous = SecurityContextHolder.getContext().getAuthentication();
+		try {
+		    Stat existing = getZookeeperManager().getCurator().checkExists()
+			    .forPath(getInstanceTenantsBootstrappedMarker());
+		    if (existing != null) {
+			getLogger().info("Found tenants bootstrap marker node. Skipping tenants bootstrap.");
+			return;
+		    }
+		    getLogger().info("Tenants bootstrap marker node '" + getInstanceConfigBootstrappedMarker()
+			    + "' not found. Bootstrapping tenant data...");
+
+		    SecurityContextHolder.getContext().setAuthentication(getSystemUser().getAuthentication());
+		    IInstanceTemplate template = getChosenInstanceTemplate();
+		    getLogger().info("Initializing instance tenants from template '" + template.getName() + "'.");
+		    String templatePath = getInstanceZkPath() + "/" + template.getId();
+		    if (template.getInitializers() != null) {
+			List<String> tenantScripts = template.getInitializers().getTenantManagement();
+			initializeTenantModelFromInstanceTemplateScripts(templatePath, tenantScripts);
+		    }
+		    getZookeeperManager().getCurator().create().forPath(getInstanceTenantsBootstrappedMarker());
+		} catch (Exception e) {
+		    throw new SiteWhereException(e);
+		} finally {
+		    SecurityContextHolder.getContext().setAuthentication(previous);
+		}
+	    }
+	};
     }
 
     /**

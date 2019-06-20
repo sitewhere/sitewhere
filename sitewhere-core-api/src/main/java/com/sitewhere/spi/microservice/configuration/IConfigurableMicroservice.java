@@ -188,14 +188,14 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
     public String getInstanceTenantStatePath(UUID tenantId) throws SiteWhereException;
 
     /**
-     * Get path to Zk node that indicates a tenant has been bootstrapped with
-     * template data.
+     * Get path to Zk node that indicates a tenant has been configured with template
+     * data.
      * 
      * @param tenantId
      * @return
      * @throws SiteWhereException
      */
-    public String getInstanceTenantBootstrappedIndicatorPath(UUID tenantId) throws SiteWhereException;
+    public String getInstanceTenantConfiguredIndicatorPath(UUID tenantId) throws SiteWhereException;
 
     /**
      * Initialize configurable components.

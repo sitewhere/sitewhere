@@ -7,7 +7,14 @@
  */
 package com.sitewhere.event.microservice;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import com.sitewhere.event.grpc.EventManagementImpl;
+import com.sitewhere.event.initializer.GroovyEventModelInitializer;
 import com.sitewhere.event.kafka.KafkaEventPersistenceTriggers;
 import com.sitewhere.event.kafka.OutboundEventsProducer;
 import com.sitewhere.event.spi.kafka.IInboundEventsConsumer;
@@ -15,11 +22,17 @@ import com.sitewhere.event.spi.kafka.IOutboundCommandInvocationsProducer;
 import com.sitewhere.event.spi.kafka.IOutboundEventsProducer;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
+import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.server.lifecycle.LifecycleProgressContext;
+import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.spring.EventManagementBeans;
@@ -135,6 +148,15 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
     }
 
     /*
+     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
+     * getTenantBootstrapPrerequisites()
+     */
+    @Override
+    public IFunctionIdentifier[] getTenantBootstrapPrerequisites() {
+	return new IFunctionIdentifier[] { MicroserviceIdentifier.DeviceManagement };
+    }
+
+    /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
      * tenantBootstrap(com.sitewhere.spi.microservice.multitenant.IDatasetTemplate,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
@@ -142,6 +164,29 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
     @Override
     public void tenantBootstrap(IDatasetTemplate template, ILifecycleProgressMonitor monitor)
 	    throws SiteWhereException {
+	List<String> scripts = Collections.emptyList();
+	if (template.getInitializers() != null) {
+	    scripts = template.getInitializers().getDeviceManagement();
+	    for (String script : scripts) {
+		getTenantScriptSynchronizer().add(script);
+	    }
+	}
+
+	// Execute remote calls as superuser.
+	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
+	try {
+	    SecurityContextHolder.getContext()
+		    .setAuthentication(getMicroservice().getSystemUser().getAuthenticationForTenant(getTenant()));
+	    GroovyConfiguration groovy = new GroovyConfiguration(getTenantScriptSynchronizer());
+	    groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize event model."),
+		    getMicroservice()));
+	    for (String script : scripts) {
+		GroovyEventModelInitializer initializer = new GroovyEventModelInitializer(groovy, script);
+		initializer.initialize(getDeviceManagementApiChannel(), getEventManagement());
+	    }
+	} finally {
+	    SecurityContextHolder.getContext().setAuthentication(previous);
+	}
     }
 
     /*
@@ -242,5 +287,9 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
     public void setOutboundCommandInvocationsProducer(
 	    IOutboundCommandInvocationsProducer outboundCommandInvocationsProducer) {
 	this.outboundCommandInvocationsProducer = outboundCommandInvocationsProducer;
+    }
+
+    protected IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
+	return ((IEventManagementMicroservice) getMicroservice()).getDeviceManagementApiChannel();
     }
 }

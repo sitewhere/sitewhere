@@ -74,8 +74,11 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     /** Relative path to instance configuration bootstrap marker */
     private static final String INSTANCE_CONFIG_BOOTSTRAP_MARKER = "/config-bootstrapped";
 
-    /** Relative path to instance data bootstrap marker */
-    private static final String INSTANCE_DATA_BOOTSTRAP_MARKER = "/data-bootstrapped";
+    /** Relative path to instance users bootstrap marker */
+    private static final String INSTANCE_USERS_BOOTSTRAP_MARKER = "/users-bootstrapped";
+
+    /** Relative path to instance tenants bootstrap marker */
+    private static final String INSTANCE_TENANTS_BOOTSTRAP_MARKER = "/tenants-bootstrapped";
 
     /** Heartbeat interval in seconds */
     private static final int HEARTBEAT_INTERVAL_SECS = 10;
@@ -470,11 +473,20 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#
-     * getInstanceDataBootstrappedMarker()
+     * getInstanceUsersBootstrappedMarker()
      */
     @Override
-    public String getInstanceDataBootstrappedMarker() throws SiteWhereException {
-	return getInstanceStatePath() + INSTANCE_DATA_BOOTSTRAP_MARKER;
+    public String getInstanceUsersBootstrappedMarker() throws SiteWhereException {
+	return getInstanceStatePath() + INSTANCE_USERS_BOOTSTRAP_MARKER;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#
+     * getInstanceTenantsBootstrappedMarker()
+     */
+    @Override
+    public String getInstanceTenantsBootstrappedMarker() throws SiteWhereException {
+	return getInstanceStatePath() + INSTANCE_TENANTS_BOOTSTRAP_MARKER;
     }
 
     /*

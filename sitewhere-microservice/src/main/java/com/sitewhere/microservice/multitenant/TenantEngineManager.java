@@ -18,7 +18,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 
 import com.google.common.collect.MapMaker;
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
@@ -29,9 +28,7 @@ import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.ServiceNotAvailableException;
 import com.sitewhere.spi.microservice.configuration.ITenantPathInfo;
-import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineManager;
 import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
@@ -53,9 +50,6 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 
     /** Max time to wait for tenant to be bootstrapped from template */
     private static final long MAX_WAIT_FOR_TENANT_BOOTSTRAPPED = 60 * 1000;
-
-    /** Max retries for tenant management to become available */
-    private static final long MAX_TENANT_MANAGEMENT_RETRIES = 5;
 
     /** Map of tenant engines that have been initialized */
     private ConcurrentMap<UUID, T> initializedTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
@@ -198,10 +192,10 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 		for (String tenantIdStr : tenantIds) {
 		    UUID tenantId = UUID.fromString(tenantIdStr);
 		    if (getTenantEngineByTenantId(tenantId) == null) {
-			String bootstrapped = getMultitenantMicroservice()
-				.getInstanceTenantBootstrappedIndicatorPath(tenantId);
+			String configured = getMultitenantMicroservice()
+				.getInstanceTenantConfiguredIndicatorPath(tenantId);
 			// Only initialize tenants which have been bootstrapped.
-			if (curator.checkExists().forPath(bootstrapped) != null) {
+			if (curator.checkExists().forPath(configured) != null) {
 			    if (!getTenantInitializationQueue().contains(tenantId)) {
 				getTenantInitializationQueue().offer(tenantId);
 			    }
@@ -379,24 +373,38 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 	public void runAsSystemUser() {
 	    getLogger().info("Starting to process tenant startup queue.");
 	    while (true) {
+		UUID tenantId = null;
+		ITenant tenant = null;
 		try {
-		    // Get next tenant id from the queue and look up the tenant.
-		    UUID tenantId = getTenantInitializationQueue().take();
+		    tenantId = getTenantInitializationQueue().take();
 		    getLogger().info(String.format("Starting processing for tenant id '%s'.", tenantId.toString()));
+		    tenant = getTenantManagementApiChannel().getTenant(tenantId);
+		} catch (InterruptedException e) {
+		    getLogger().info("Tenant startup queue shutting down.");
+		    return;
+		} catch (SiteWhereException e) {
+		    getLogger().error("Exception in tenant lookup. Tenant will be queued again.", e);
+		    getTenantInitializationQueue().add(tenantId);
+		    continue;
+		} catch (Throwable e) {
+		    getLogger().error("Unhandled exception in tenant lookup. Tenant will be queued again.", e);
+		    getTenantInitializationQueue().add(tenantId);
+		    continue;
+		}
 
-		    // Verify that multiple threads don't start duplicate engines.
-		    if (getInitializingTenantEngines().get(tenantId) != null) {
-			getLogger().debug("Skipping initialization for existing tenant engine '" + tenantId + "'.");
-			continue;
-		    }
+		// Verify that multiple threads don't start duplicate engines.
+		if (getInitializingTenantEngines().get(tenantId) != null) {
+		    getLogger().debug("Skipping initialization for existing tenant engine '" + tenantId + "'.");
+		    continue;
+		}
 
-		    // Look up tenant and add it to initializing tenants map.
-		    ITenant tenant = getTenant(tenantId);
-		    if (tenant == null) {
-			throw new SiteWhereException("Unable to locate tenant by id '" + tenantId + "'.");
-		    }
-		    getInitializingTenantEngines().put(tenantId, tenant);
+		// If tenant doesn't exist, skip startup.
+		if (tenant == null) {
+		    getLogger().error(String.format("Unable to locate tenant'%s'. Skipping engine startup.", tenantId));
+		    continue;
+		}
 
+		try {
 		    // Start tenant initialization.
 		    if (getTenantEngineByTenantId(tenantId) == null) {
 			startTenantEngine(tenant);
@@ -412,32 +420,6 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 	}
 
 	/**
-	 * Wait for tenant management to become available.
-	 * 
-	 * @param tenantId
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected ITenant getTenant(UUID tenantId) throws SiteWhereException {
-	    long retries = MAX_TENANT_MANAGEMENT_RETRIES;
-	    while (true) {
-		try {
-		    return getTenantManagementApiChannel().getTenant(tenantId);
-		} catch (ServiceNotAvailableException e) {
-		    retries--;
-		    if (retries == 0) {
-			throw new SiteWhereException("Exceeded maximum retries for accessing tenant management.");
-		    }
-		    getLogger().warn("Waiting on tenant management to become available...");
-		} catch (SiteWhereException e) {
-		    throw e;
-		} catch (Throwable e) {
-		    throw new SiteWhereException("Unhandled exception getting tenant information.", e);
-		}
-	    }
-	}
-
-	/**
 	 * Start engine for a tenant.
 	 * 
 	 * @param tenant
@@ -446,13 +428,16 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 	protected void startTenantEngine(ITenant tenant) throws SiteWhereException {
 	    T created = null;
 	    try {
+		// Mark that an engine is being initialized.
+		getInitializingTenantEngines().put(tenant.getId(), tenant);
 		getLogger().info("Creating tenant engine for '" + tenant.getName() + "'...");
+
 		created = getMultitenantMicroservice().createTenantEngine(tenant);
 		created.setTenantEngine(created); // Required for nested components.
 
 		// Configuration files must be present before initialization.
-		getLogger().info("Verifying tenant '" + tenant.getName() + "' configuration bootstrapped.");
-		waitForTenantConfigurationBootstrapped(tenant);
+		getLogger().info("Verifying tenant '" + tenant.getName() + "' configuration available.");
+		waitForTenantConfigured(tenant);
 
 		// Initialize new engine.
 		getLogger().info("Intializing tenant engine for '" + tenant.getName() + "'.");
@@ -479,24 +464,6 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 		}
 		getLogger().info("Tenant engine for '" + created.getTenant().getName() + "' started in "
 			+ (System.currentTimeMillis() - start) + "ms.");
-
-		// Lock the module and check whether tenant needs bootstrap.
-		getLogger().info("Getting lock for testing tenant engine bootstrap state for '"
-			+ created.getTenant().getName() + "'.");
-		CuratorFramework curator = created.getMicroservice().getZookeeperManager().getCurator();
-		InterProcessMutex lock = new InterProcessMutex(curator, created.getModuleLockPath());
-		try {
-		    lock.acquire();
-		    if (curator.checkExists().forPath(created.getModuleBootstrappedPath()) == null) {
-			getLogger().info("Tenant engine '" + created.getTenant().getName()
-				+ "' not bootstrapped. Bootstrapping...");
-			bootstrapTenantEngine(created, curator);
-		    } else {
-			getLogger().info("Tenant engine '" + created.getTenant().getName() + "' already bootstrapped.");
-		    }
-		} finally {
-		    lock.release();
-		}
 	    } catch (Throwable t) {
 		// Keep map of failed tenant engines.
 		if (created != null) {
@@ -512,19 +479,19 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 	}
 
 	/**
-	 * Wait until tenant configuration has been bootstrapped before starting
+	 * Wait until tenant configuration has been copied before starting
 	 * initialization.
 	 * 
 	 * @param tenant
 	 * @throws SiteWhereException
 	 */
-	protected void waitForTenantConfigurationBootstrapped(ITenant tenant) throws SiteWhereException {
+	protected void waitForTenantConfigured(ITenant tenant) throws SiteWhereException {
 	    CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
 	    try {
 		long deadline = System.currentTimeMillis() + MAX_WAIT_FOR_TENANT_BOOTSTRAPPED;
 		while ((deadline - System.currentTimeMillis()) > 0) {
 		    if (curator.checkExists().forPath(getMultitenantMicroservice()
-			    .getInstanceTenantBootstrappedIndicatorPath(tenant.getId())) != null) {
+			    .getInstanceTenantConfiguredIndicatorPath(tenant.getId())) != null) {
 			return;
 		    }
 		    Thread.sleep(3000);
@@ -532,32 +499,6 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 		throw new SiteWhereException("Tenant not bootstrapped within time limit. Aborting");
 	    } catch (Throwable t) {
 		throw new SiteWhereException("Unable to wait for tenant configuration bootstrap.", t);
-	    }
-	}
-
-	/**
-	 * Bootstrap a tenant engine with data as specified in the tenant template.
-	 * 
-	 * @param curator
-	 * @throws SiteWhereException
-	 */
-	protected void bootstrapTenantEngine(IMicroserviceTenantEngine engine, CuratorFramework curator)
-		throws SiteWhereException {
-	    ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
-		    new LifecycleProgressContext(1, "Bootstrap tenant engine."), engine.getMicroservice());
-	    String tenantName = engine.getTenant().getName();
-	    long start = System.currentTimeMillis();
-
-	    // Execute tenant bootstrap.
-	    IDatasetTemplate template = engine.getDatasetTemplate();
-	    engine.tenantBootstrap(template, monitor);
-
-	    try {
-		curator.create().forPath(engine.getModuleBootstrappedPath());
-		getLogger().info("Tenant engine for '" + tenantName + "' bootstrapped in "
-			+ (System.currentTimeMillis() - start) + "ms.");
-	    } catch (Exception e) {
-		getLogger().info("Error marking tenant engine '" + tenantName + "' as bootstrapped.");
 	    }
 	}
     }

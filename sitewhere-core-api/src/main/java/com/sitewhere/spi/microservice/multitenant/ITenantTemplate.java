@@ -10,8 +10,6 @@ package com.sitewhere.spi.microservice.multitenant;
 /**
  * Contains information about a template that can be used to configure a new
  * tenant.
- * 
- * @author Derek
  */
 public interface ITenantTemplate {
 

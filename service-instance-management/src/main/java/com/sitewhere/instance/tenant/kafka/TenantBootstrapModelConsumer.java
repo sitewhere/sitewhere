@@ -173,8 +173,8 @@ public class TenantBootstrapModelConsumer extends DirectKafkaConsumer implements
 	protected void createTenantConfigurationIfNotFound(CuratorFramework curator) throws Exception {
 	    String tenantPath = getInstanceManagementMicroservice()
 		    .getInstanceTenantConfigurationPath(getTenant().getId());
-	    Stat bootstrapped = curator.checkExists().forPath(getInstanceManagementMicroservice()
-		    .getInstanceTenantBootstrappedIndicatorPath(getTenant().getId()));
+	    Stat bootstrapped = curator.checkExists().forPath(
+		    getInstanceManagementMicroservice().getInstanceTenantConfiguredIndicatorPath(getTenant().getId()));
 	    if (bootstrapped == null) {
 		Stat config = curator.checkExists().forPath(tenantPath);
 		if (config == null) {
@@ -189,7 +189,7 @@ public class TenantBootstrapModelConsumer extends DirectKafkaConsumer implements
 		getInstanceManagementMicroservice().getTenantDatasetTemplateManager()
 			.copyTemplateContentsToZk(getTenant().getDatasetTemplateId(), curator, tenantPath);
 		curator.create().forPath(getInstanceManagementMicroservice()
-			.getInstanceTenantBootstrappedIndicatorPath(getTenant().getId()));
+			.getInstanceTenantConfiguredIndicatorPath(getTenant().getId()));
 		getLogger().info("Tenant '" + getTenant().getName() + "' bootstrapped with template data.");
 	    } else {
 		getLogger().info("Found Zk node for tenant '" + getTenant().getName() + "'.");

@@ -57,8 +57,8 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
     /** Relative path for script data */
     private static final String SCRIPTS_SUBPATH = "/scripts";
 
-    /** Relative path to tenant bootstrapped indicator data */
-    private static final String INSTANCE_TENANT_BOOTSTRAPPED_INDICATOR = "bootstrapped";
+    /** Relative path to tenant configured indicator data */
+    private static final String INSTANCE_TENANT_CONFIGURED_INDICATOR = "configured";
 
     /** Configuration monitor */
     private IConfigurationMonitor configurationMonitor;
@@ -231,11 +231,11 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * getInstanceTenantBootstrappedIndicatorPath(java.util.UUID)
+     * getInstanceTenantConfiguredIndicatorPath(java.util.UUID)
      */
     @Override
-    public String getInstanceTenantBootstrappedIndicatorPath(UUID tenantId) throws SiteWhereException {
-	return getInstanceTenantConfigurationPath(tenantId) + "/" + INSTANCE_TENANT_BOOTSTRAPPED_INDICATOR;
+    public String getInstanceTenantConfiguredIndicatorPath(UUID tenantId) throws SiteWhereException {
+	return getInstanceTenantConfigurationPath(tenantId) + "/" + INSTANCE_TENANT_CONFIGURED_INDICATOR;
     }
 
     /*
