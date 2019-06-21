@@ -7,9 +7,9 @@
  */
 package com.sitewhere.schedule.microservice;
 
+import com.sitewhere.microservice.grpc.ScheduleManagementGrpcServer;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.schedule.configuration.ScheduleManagementModelProvider;
-import com.sitewhere.schedule.grpc.ScheduleManagementGrpcServer;
 import com.sitewhere.schedule.spi.grpc.IScheduleManagementGrpcServer;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementMicroservice;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementTenantEngine;

@@ -108,6 +108,9 @@ public abstract class MicroserviceKafkaProducer extends TenantEngineLifecycleCom
     public Future<RecordMetadata> send(String key, byte[] message) throws SiteWhereException {
 	ProducerRecord<String, byte[]> record = new ProducerRecord<String, byte[]>(getTargetTopicName(), key, message);
 	try {
+	    if (getKafkaAvailable().getCount() != 0) {
+		getLogger().info("Producer waiting on Kafka to become available...");
+	    }
 	    getKafkaAvailable().await();
 	    return getProducer().send(record);
 	} catch (InterruptedException e) {
@@ -165,13 +168,14 @@ public abstract class MicroserviceKafkaProducer extends TenantEngineLifecycleCom
 			getLogger().info("Kafka detected as available.");
 			getKafkaAvailable().countDown();
 			return;
+		    } else {
+			getLogger().debug(String.format("Kafka topic map did not contain %s.", getTargetTopicName()));
 		    }
 		} catch (ExecutionException e) {
 		    Throwable t = e.getCause();
 		    if (t instanceof UnknownTopicOrPartitionException) {
-			getLogger().debug(
-				"Kafka topic not found. Will continue attempting to connect. (" + e.getMessage() + ")",
-				t);
+			getLogger().debug(String.format(
+				"Kafka topic not found. Will continue attempting to connect. (%s)", e.getMessage()), t);
 		    } else {
 			getLogger()
 				.warn("Execution exception connecting to Kafka. Will continue attempting to connect. ("

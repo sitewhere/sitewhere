@@ -7,14 +7,14 @@
  */
 package com.sitewhere.inbound.microservice;
 
-import com.sitewhere.inbound.kafka.DecodedEventsConsumer;
-import com.sitewhere.inbound.kafka.InboundEventsProducer;
-import com.sitewhere.inbound.kafka.UnregisteredEventsProducer;
 import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
 import com.sitewhere.inbound.spi.kafka.IInboundEventsProducer;
 import com.sitewhere.inbound.spi.kafka.IUnregisteredEventsProducer;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.inbound.spi.processing.IInboundProcessingConfiguration;
+import com.sitewhere.microservice.kafka.DecodedEventsConsumer;
+import com.sitewhere.microservice.kafka.InboundEventsProducer;
+import com.sitewhere.microservice.kafka.UnregisteredEventsProducer;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;

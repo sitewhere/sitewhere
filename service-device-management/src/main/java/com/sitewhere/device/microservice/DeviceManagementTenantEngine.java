@@ -14,15 +14,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.device.DeviceManagementTriggers;
-import com.sitewhere.device.grpc.DeviceManagementImpl;
 import com.sitewhere.device.initializer.GroovyDeviceModelInitializer;
-import com.sitewhere.device.kafka.DeviceInteractionEventsProducer;
 import com.sitewhere.device.spi.kafka.IDeviceInteractionEventsProducer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.service.DeviceManagementGrpc;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
+import com.sitewhere.microservice.grpc.DeviceManagementImpl;
+import com.sitewhere.microservice.kafka.DeviceInteractionEventsProducer;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;

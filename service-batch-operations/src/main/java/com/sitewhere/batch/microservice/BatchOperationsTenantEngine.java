@@ -8,10 +8,6 @@
 package com.sitewhere.batch.microservice;
 
 import com.sitewhere.batch.BatchManagementTriggers;
-import com.sitewhere.batch.grpc.BatchManagementImpl;
-import com.sitewhere.batch.kafka.FailedBatchElementsProducer;
-import com.sitewhere.batch.kafka.UnprocessedBatchElementsProducer;
-import com.sitewhere.batch.kafka.UnprocessedBatchOperationsProducer;
 import com.sitewhere.batch.spi.IBatchOperationManager;
 import com.sitewhere.batch.spi.kafka.IFailedBatchElementsProducer;
 import com.sitewhere.batch.spi.kafka.IUnprocessedBatchElementsProducer;
@@ -19,6 +15,10 @@ import com.sitewhere.batch.spi.kafka.IUnprocessedBatchOperationsProducer;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
 import com.sitewhere.grpc.service.BatchManagementGrpc;
+import com.sitewhere.microservice.grpc.BatchManagementImpl;
+import com.sitewhere.microservice.kafka.FailedBatchElementsProducer;
+import com.sitewhere.microservice.kafka.UnprocessedBatchElementsProducer;
+import com.sitewhere.microservice.kafka.UnprocessedBatchOperationsProducer;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
