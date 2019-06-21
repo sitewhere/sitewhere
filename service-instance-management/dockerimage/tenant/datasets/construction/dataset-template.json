@@ -5,6 +5,9 @@
 		"deviceManagement": [
 			"initializer/deviceModel.groovy"
 		],
+		"eventManagement": [
+			"initializer/eventModel.groovy"
+		],
 		"assetManagement": [
 			"initializer/assetModel.groovy"
 		],

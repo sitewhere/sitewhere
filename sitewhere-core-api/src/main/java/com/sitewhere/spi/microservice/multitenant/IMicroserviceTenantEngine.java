@@ -25,8 +25,6 @@ import com.sitewhere.spi.tenant.ITenant;
 /**
  * Engine that manages operations for a single tenant within an
  * {@link IMultitenantMicroservice}.
- * 
- * @author Derek
  */
 public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleComponent, IConfigurationListener {
 
@@ -74,6 +72,14 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
      * @throws SiteWhereException
      */
     public IScriptManager getScriptManager() throws SiteWhereException;
+
+    /**
+     * Get bootstrap manager.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public IDatasetBootstrapManager getBootstrapManager() throws SiteWhereException;
 
     /**
      * Get Groovy configuration.
@@ -154,20 +160,21 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
     public void onGlobalConfigurationUpdated() throws SiteWhereException;
 
     /**
-     * Get Zk configuration path for module bootstrapped indicator.
+     * Get Zk configuration path for tenant dataset bootstrapped indicator.
      * 
      * @return
      * @throws SiteWhereException
      */
-    public String getModuleBootstrappedPath() throws SiteWhereException;
+    public String getTenantDatasetBootstrappedPath() throws SiteWhereException;
 
     /**
-     * Wait a for another module to be bootstrapped using a backoff policy.
+     * Wait for dataset in another tenant engine to be bootstrapped using a backoff
+     * policy.
      * 
      * @param identifier
      * @throws SiteWhereException
      */
-    public void waitForModuleBootstrapped(IFunctionIdentifier identifier) throws SiteWhereException;
+    public void waitForTenantDatasetBootstrapped(IFunctionIdentifier identifier) throws SiteWhereException;
 
     /**
      * Executes tenant initialization code. Called after Spring context has been
@@ -185,6 +192,14 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
      * @throws SiteWhereException
      */
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException;
+
+    /**
+     * Get list of tenant engines in other microservices that must be bootstrapped
+     * before bootstrap logic in this engine is executed.
+     * 
+     * @return
+     */
+    public IFunctionIdentifier[] getTenantBootstrapPrerequisites();
 
     /**
      * Bootstrap a tenant with data provided in dataset template.

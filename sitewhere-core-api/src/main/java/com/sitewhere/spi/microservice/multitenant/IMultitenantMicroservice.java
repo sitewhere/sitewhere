@@ -17,8 +17,6 @@ import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Microservice that contains engines for multiple tenants.
- * 
- * @author Derek
  */
 public interface IMultitenantMicroservice<I extends IFunctionIdentifier, T extends IMicroserviceTenantEngine>
 	extends IConfigurableMicroservice<I> {

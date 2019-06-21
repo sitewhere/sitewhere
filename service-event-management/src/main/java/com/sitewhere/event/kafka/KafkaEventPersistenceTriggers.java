@@ -10,9 +10,6 @@ package com.sitewhere.event.kafka;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sitewhere.event.DeviceEventManagementDecorator;
 import com.sitewhere.event.processing.OutboundPayloadEnrichmentLogic;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
@@ -46,10 +43,6 @@ import com.sitewhere.spi.error.ErrorLevel;
  */
 public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorator {
 
-    /** Static logger instance */
-    @SuppressWarnings("unused")
-    private static Log LOGGER = LogFactory.getLog(KafkaEventPersistenceTriggers.class);
-
     /** Enriches events and delivers them via Kafka */
     private OutboundPayloadEnrichmentLogic enrichmentLogic;
 
@@ -68,6 +61,7 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
      */
     protected <T extends IDeviceEvent> List<T> forwardEvents(UUID deviceAssignmentId, List<T> events)
 	    throws SiteWhereException {
+	getLogger().info(String.format("Forwarding %d events.", events.size()));
 	for (T event : events) {
 	    getEnrichmentLogic().enrichAndDeliver(event);
 	}

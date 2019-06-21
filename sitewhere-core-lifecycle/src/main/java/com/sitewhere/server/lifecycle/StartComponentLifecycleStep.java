@@ -25,6 +25,7 @@ public class StartComponentLifecycleStep extends ComponentOperationLifecycleStep
 
     protected StartComponentLifecycleStep(ILifecycleComponent owner, ILifecycleComponent component, boolean require) {
 	super(owner, component);
+	this.require = require;
     }
 
     /*

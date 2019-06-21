@@ -5,25 +5,25 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.device.spi.initializer;
+package com.sitewhere.event.spi.initializer;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.server.IModelInitializer;
 
 /**
- * Initializes the device model with data needed to bootstrap the system.
+ * Initializes the event model with data needed to bootstrap the system.
  */
-public interface IDeviceModelInitializer extends IModelInitializer {
+public interface IEventModelInitializer extends IModelInitializer {
 
     /**
-     * Initialize the device model.
+     * Initialize the event model.
      * 
      * @param deviceManagement
-     * @param assetManagement
+     * @param eventManagement
      * @throws SiteWhereException
      */
-    public void initialize(IDeviceManagement deviceManagement, IAssetManagement assetManagement)
+    public void initialize(IDeviceManagement deviceManagement, IDeviceEventManagement eventManagement)
 	    throws SiteWhereException;
 }

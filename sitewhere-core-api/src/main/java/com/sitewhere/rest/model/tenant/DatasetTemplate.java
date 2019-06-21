@@ -77,6 +77,9 @@ public class DatasetTemplate implements IDatasetTemplate {
 	/** Device management Groovy script location */
 	private List<String> deviceManagement;
 
+	/** Event management Groovy script location */
+	private List<String> eventManagement;
+
 	/** Asset management Groovy script location */
 	private List<String> assetManagement;
 
@@ -95,6 +98,20 @@ public class DatasetTemplate implements IDatasetTemplate {
 
 	public void setDeviceManagement(List<String> deviceManagement) {
 	    this.deviceManagement = deviceManagement;
+	}
+
+	/*
+	 * @see
+	 * com.sitewhere.spi.microservice.multitenant.IDatasetTemplate.Initializers#
+	 * getEventManagement()
+	 */
+	@Override
+	public List<String> getEventManagement() {
+	    return eventManagement;
+	}
+
+	public void setEventManagement(List<String> eventManagement) {
+	    this.eventManagement = eventManagement;
 	}
 
 	/*
