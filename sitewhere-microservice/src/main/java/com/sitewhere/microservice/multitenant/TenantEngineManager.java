@@ -384,7 +384,8 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 		    getLogger().info("Tenant startup queue shutting down.");
 		    return;
 		} catch (ServiceNotAvailableException e) {
-		    getLogger().info("Tenant API not available yet. Tenant will be queued again.");
+		    getLogger().info(String.format("Tenant API not available yet (%s). Tenant will be queued again.",
+			    e.getMessage()));
 		    getTenantInitializationQueue().add(tenantId);
 		    continue;
 		} catch (SiteWhereException e) {
