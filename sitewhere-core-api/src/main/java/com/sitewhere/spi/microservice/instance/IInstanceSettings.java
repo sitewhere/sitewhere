@@ -57,6 +57,20 @@ public interface IInstanceSettings {
     public String getKafkaBootstrapServers();
 
     /**
+     * Get default number of partitions used for Kafka topics.
+     * 
+     * @return
+     */
+    public int getKafkaDefaultTopicPartitions();
+
+    /**
+     * Get default replication factor used for Kafka topics.
+     * 
+     * @return
+     */
+    public int getKafkaDefaultTopicReplicationFactor();
+
+    /**
      * Get hostname used by microservices to connect to Apache Syncope API.
      * 
      * @return

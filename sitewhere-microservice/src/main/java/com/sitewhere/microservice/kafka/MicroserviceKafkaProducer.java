@@ -8,6 +8,7 @@
 package com.sitewhere.microservice.kafka;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
@@ -18,17 +19,22 @@ import java.util.concurrent.Future;
 
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.admin.CreateTopicsResult;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.errors.InvalidReplicationFactorException;
+import org.apache.kafka.common.errors.TopicExistsException;
 import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
@@ -168,14 +174,33 @@ public abstract class MicroserviceKafkaProducer extends TenantEngineLifecycleCom
 			getLogger().info("Kafka detected as available.");
 			getKafkaAvailable().countDown();
 			return;
-		    } else {
-			getLogger().debug(String.format("Kafka topic map did not contain %s.", getTargetTopicName()));
 		    }
 		} catch (ExecutionException e) {
 		    Throwable t = e.getCause();
 		    if (t instanceof UnknownTopicOrPartitionException) {
-			getLogger().debug(String.format(
-				"Kafka topic not found. Will continue attempting to connect. (%s)", e.getMessage()), t);
+			try {
+			    IInstanceSettings settings = getMicroservice().getInstanceSettings();
+			    NewTopic newTopic = new NewTopic(getTargetTopicName(),
+				    settings.getKafkaDefaultTopicPartitions(),
+				    (short) settings.getKafkaDefaultTopicReplicationFactor());
+			    CreateTopicsResult result = getKafkaAdmin()
+				    .createTopics(Collections.singletonList(newTopic));
+			    result.all().get();
+			    getLogger().info(String.format("Kafka topic '%s' created.", getTargetTopicName()));
+			} catch (SiteWhereException e1) {
+			    getLogger().error("Exception creating topic.", e1);
+			} catch (ExecutionException e1) {
+			    if (e1.getCause() instanceof TopicExistsException) {
+				getLogger().debug("Topic already existed.");
+			    } else if (e1.getCause() instanceof InvalidReplicationFactorException) {
+				getLogger().info("Not enough replicas are available to create topic. Waiting.");
+			    } else {
+				getLogger().error("Kakfa exception creating topic.", e1);
+			    }
+			} catch (InterruptedException e1) {
+			    getLogger().error("Interrupted while creating topic.");
+			    return;
+			}
 		    } else {
 			getLogger()
 				.warn("Execution exception connecting to Kafka. Will continue attempting to connect. ("

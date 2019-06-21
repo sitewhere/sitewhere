@@ -42,6 +42,14 @@ public class InstanceSettings implements IInstanceSettings {
     @Value("#{systemEnvironment['sitewhere.kafka.bootstrap.servers'] ?: 'cp-kafka:9092'}")
     private String kafkaBootstrapServers;
 
+    /** Kafka default number of partitions for topics */
+    @Value("#{systemEnvironment['sitewhere.kafka.defaultTopicPartitions'] ?: '8'}")
+    private int kafkaDefaultTopicPartitions;
+
+    /** Kafka default number of partitions for topics */
+    @Value("#{systemEnvironment['sitewhere.kafka.defaultTopicReplicationFactor'] ?: '3'}")
+    private int kafkaDefaultTopicReplicationFactor;
+
     /** Apache Synote hostname info for microservices */
     @Value("#{systemEnvironment['sitewhere.syncope.host'] ?: 'syncope'}")
     private String syncopeHost;
@@ -165,6 +173,32 @@ public class InstanceSettings implements IInstanceSettings {
 
     public void setKafkaBootstrapServers(String kafkaBootstrapServers) {
 	this.kafkaBootstrapServers = kafkaBootstrapServers;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
+     * getKafkaDefaultTopicPartitions()
+     */
+    @Override
+    public int getKafkaDefaultTopicPartitions() {
+	return kafkaDefaultTopicPartitions;
+    }
+
+    public void setKafkaDefaultTopicPartitions(int kafkaDefaultTopicPartitions) {
+	this.kafkaDefaultTopicPartitions = kafkaDefaultTopicPartitions;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
+     * getKafkaDefaultTopicReplicationFactor()
+     */
+    @Override
+    public int getKafkaDefaultTopicReplicationFactor() {
+	return kafkaDefaultTopicReplicationFactor;
+    }
+
+    public void setKafkaDefaultTopicReplicationFactor(int kafkaDefaultTopicReplicationFactor) {
+	this.kafkaDefaultTopicReplicationFactor = kafkaDefaultTopicReplicationFactor;
     }
 
     /*
