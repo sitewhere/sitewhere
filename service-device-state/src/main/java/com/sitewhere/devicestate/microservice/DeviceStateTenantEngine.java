@@ -7,13 +7,13 @@
  */
 package com.sitewhere.devicestate.microservice;
 
-import com.sitewhere.devicestate.grpc.DeviceStateImpl;
-import com.sitewhere.devicestate.kafka.DeviceStateEnrichedEventsConsumer;
 import com.sitewhere.devicestate.spi.IDevicePresenceManager;
 import com.sitewhere.devicestate.spi.kafka.IDeviceStateEnrichedEventsConsumer;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
 import com.sitewhere.grpc.service.DeviceStateGrpc;
+import com.sitewhere.microservice.grpc.DeviceStateImpl;
+import com.sitewhere.microservice.kafka.DeviceStateEnrichedEventsConsumer;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;

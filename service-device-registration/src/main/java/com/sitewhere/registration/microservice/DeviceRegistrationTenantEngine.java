@@ -7,9 +7,9 @@
  */
 package com.sitewhere.registration.microservice;
 
+import com.sitewhere.microservice.kafka.DeviceRegistrationEventsConsumer;
+import com.sitewhere.microservice.kafka.UnregisteredEventsConsumer;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
-import com.sitewhere.registration.kafka.DeviceRegistrationEventsConsumer;
-import com.sitewhere.registration.kafka.UnregisteredEventsConsumer;
 import com.sitewhere.registration.spi.IRegistrationManager;
 import com.sitewhere.registration.spi.kafka.IDeviceRegistrationEventsConsumer;
 import com.sitewhere.registration.spi.kafka.IUnregisteredEventsConsumer;

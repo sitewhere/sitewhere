@@ -28,6 +28,7 @@ import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.ServiceNotAvailableException;
 import com.sitewhere.spi.microservice.configuration.ITenantPathInfo;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineManager;
@@ -382,6 +383,10 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 		} catch (InterruptedException e) {
 		    getLogger().info("Tenant startup queue shutting down.");
 		    return;
+		} catch (ServiceNotAvailableException e) {
+		    getLogger().info("Tenant API not available yet. Tenant will be queued again.");
+		    getTenantInitializationQueue().add(tenantId);
+		    continue;
 		} catch (SiteWhereException e) {
 		    getLogger().error("Exception in tenant lookup. Tenant will be queued again.", e);
 		    getTenantInitializationQueue().add(tenantId);

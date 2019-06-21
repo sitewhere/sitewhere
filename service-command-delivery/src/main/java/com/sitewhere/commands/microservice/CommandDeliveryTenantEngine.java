@@ -8,14 +8,14 @@
 package com.sitewhere.commands.microservice;
 
 import com.sitewhere.commands.DefaultCommandProcessingStrategy;
-import com.sitewhere.commands.kafka.EnrichedCommandInvocationsConsumer;
-import com.sitewhere.commands.kafka.UndeliveredCommandInvocationsProducer;
 import com.sitewhere.commands.spi.ICommandDestinationsManager;
 import com.sitewhere.commands.spi.ICommandProcessingStrategy;
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
 import com.sitewhere.commands.spi.kafka.IEnrichedCommandInvocationsConsumer;
 import com.sitewhere.commands.spi.kafka.IUndeliveredCommandInvocationsProducer;
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryTenantEngine;
+import com.sitewhere.microservice.kafka.EnrichedCommandInvocationsConsumer;
+import com.sitewhere.microservice.kafka.UndeliveredCommandInvocationsProducer;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;

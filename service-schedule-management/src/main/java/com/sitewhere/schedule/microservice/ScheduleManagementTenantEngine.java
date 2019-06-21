@@ -15,8 +15,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.grpc.service.ScheduleManagementGrpc;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
+import com.sitewhere.microservice.grpc.ScheduleManagementImpl;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
-import com.sitewhere.schedule.grpc.ScheduleManagementImpl;
 import com.sitewhere.schedule.initializer.GroovyScheduleModelInitializer;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementMicroservice;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementTenantEngine;
