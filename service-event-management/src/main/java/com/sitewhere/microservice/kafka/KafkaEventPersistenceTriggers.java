@@ -61,7 +61,7 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
      */
     protected <T extends IDeviceEvent> List<T> forwardEvents(UUID deviceAssignmentId, List<T> events)
 	    throws SiteWhereException {
-	getLogger().info(String.format("Forwarding %d events.", events.size()));
+	getLogger().debug(String.format("Forwarding %d events to outbound topic.", events.size()));
 	for (T event : events) {
 	    getEnrichmentLogic().enrichAndDeliver(event);
 	}

@@ -166,7 +166,7 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 	    throws SiteWhereException {
 	List<String> scripts = Collections.emptyList();
 	if (template.getInitializers() != null) {
-	    scripts = template.getInitializers().getDeviceManagement();
+	    scripts = template.getInitializers().getEventManagement();
 	    for (String script : scripts) {
 		getTenantScriptSynchronizer().add(script);
 	    }

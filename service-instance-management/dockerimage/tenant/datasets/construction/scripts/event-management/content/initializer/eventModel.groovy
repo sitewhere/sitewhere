@@ -89,7 +89,7 @@ def createMeasurements = { assn, start ->
 }
 
 // Closure for creating location events.
-def createLocations = { assn, startDate ->
+def createLocations = { assn, startDate, zone ->
 	long current = startDate.time - (long) (Math.random() * 60000.0);
 	Polygon polyZone = com.sitewhere.geospatial.GeoUtils.createPolygonForLocations(zone.bounds);
 	Point centroid = polyZone.getCentroid();
@@ -154,7 +154,10 @@ def createLocations = { assn, startDate ->
 // Create Events for Assignments //
 // ############################# //
 
-// Start events two hours before current.
 Date start = new Date(System.currentTimeMillis() - (2 * 60 * 60 * 1000));
-createMeasurements assn, start
-createLocations assn, start
+def allActiveAssn = deviceBuilder.allActiveAssignments()
+def zone = deviceBuilder.zoneByToken 'workarea'
+allActiveAssn.each { assn ->
+	createMeasurements assn, start
+	createLocations assn, start, zone
+}

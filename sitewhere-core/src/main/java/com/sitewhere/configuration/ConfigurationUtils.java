@@ -38,7 +38,7 @@ public class ConfigurationUtils {
      */
     public static ApplicationContext buildGlobalContext(ILifecycleComponent logProvider, byte[] configuration,
 	    Map<String, Object> properties) throws SiteWhereException {
-	logProvider.getLogger().info("Using global configuration:\n\n" + new String(configuration) + "\n\n");
+	logProvider.getLogger().debug("Using global configuration:\n\n" + new String(configuration) + "\n\n");
 	GenericApplicationContext context = new GenericApplicationContext();
 
 	// Plug in custom property source.

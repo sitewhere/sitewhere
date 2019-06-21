@@ -78,21 +78,21 @@ seRegion = deviceBuilder.persist seRegion
 logger.info "[Create Area] ${seRegion.name}"
 
 // Peachtree construction site.
-def ptreeSite = deviceBuilder.newArea constAreaType.token, seRegion.token, 'peachtree', 'Peachtree Construction Site'
-ptreeSite.withDescription '''A construction site with many high-value assets that should not be taken offsite. 
+def ptreeArea = deviceBuilder.newArea constAreaType.token, seRegion.token, 'peachtree', 'Peachtree Construction Site'
+ptreeArea.withDescription '''A construction site with many high-value assets that should not be taken offsite. 
 The system provides location tracking for the assets and notifies administrators if any of the assets move 
 outside of the general site area or into areas where they are not allowed.'''
-ptreeSite.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/construction.jpg'
-ptreeSite.coord(34.10260138703638, -84.24412965774536) coord(34.101837372446774, -84.24243450164795)
-ptreeSite.coord(34.101517550337825, -84.24091100692749) coord(34.10154953265732, -84.23856675624847)
-ptreeSite.coord(34.10153176473365, -84.23575580120087) coord(34.10409030732968, -84.23689305782318)
-ptreeSite.coord(34.104996439280704, -84.23700034618376) coord(34.10606246444614, -84.23700034618376)
-ptreeSite.coord(34.107691680235604, -84.23690915107727)
-ptreeSite = deviceBuilder.persist ptreeSite
-logger.info "[Create Area] ${ptreeSite.name}"
+ptreeArea.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/construction.jpg'
+ptreeArea.coord(34.10260138703638, -84.24412965774536) coord(34.101837372446774, -84.24243450164795)
+ptreeArea.coord(34.101517550337825, -84.24091100692749) coord(34.10154953265732, -84.23856675624847)
+ptreeArea.coord(34.10153176473365, -84.23575580120087) coord(34.10409030732968, -84.23689305782318)
+ptreeArea.coord(34.104996439280704, -84.23700034618376) coord(34.10606246444614, -84.23700034618376)
+ptreeArea.coord(34.107691680235604, -84.23690915107727)
+ptreeArea = deviceBuilder.persist ptreeArea
+logger.info "[Create Area] ${ptreeArea.name}"
 
 // Create zone associated with construction site.
-def zone = deviceBuilder.newZone 'workarea', 'Work Area', ptreeSite
+def zone = deviceBuilder.newZone 'workarea', 'Work Area', ptreeArea
 zone.withBorderColor('#017112') withFillColor('#1db32e') withOpacity(0.4)
 zone.coord(34.10260138703638, -84.24412965774536) coord(34.101837372446774, -84.24243450164795)
 zone.coord(34.101517550337825, -84.24091100692749) coord(34.10154953265732, -84.23856675624847)
