@@ -194,6 +194,12 @@ public abstract class MicroserviceKafkaProducer extends TenantEngineLifecycleCom
 				getLogger().debug("Topic already existed.");
 			    } else if (e1.getCause() instanceof InvalidReplicationFactorException) {
 				getLogger().info("Not enough replicas are available to create topic. Waiting.");
+				try {
+				    Thread.sleep(1000);
+				} catch (InterruptedException e2) {
+				    getLogger().error("Interrupted while waiting for replicas.");
+				    return;
+				}
 			    } else {
 				getLogger().error("Kakfa exception creating topic.", e1);
 			    }

@@ -221,7 +221,8 @@ public class GrpcUtils {
 		return new UnauthenticatedException(sre.getStatus().getDescription(), sre);
 	    }
 	    case UNAVAILABLE: {
-		return new ServiceNotAvailableException("The requested service is not available.", sre);
+		return new ServiceNotAvailableException(
+			String.format("The requested service is not available [%s]", sre.getMessage()), sre);
 	    }
 	    case FAILED_PRECONDITION: {
 		String delimited = sre.getStatus().getDescription();

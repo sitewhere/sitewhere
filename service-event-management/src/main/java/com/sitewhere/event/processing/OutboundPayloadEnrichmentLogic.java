@@ -52,14 +52,14 @@ public class OutboundPayloadEnrichmentLogic {
      */
     public void enrichAndDeliver(IDeviceEvent event) throws SiteWhereException {
 	try {
-	    LOGGER.info("Looking up device assignment.");
+	    LOGGER.debug("Looking up device assignment.");
 	    IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignment(event.getDeviceAssignmentId());
 	    if (assignment == null) {
 		// TODO: Is there a separate topic for these events?
 		throw new SiteWhereException("Event references non-existent device assignment.");
 	    }
 
-	    LOGGER.info("Looking up device.");
+	    LOGGER.debug("Looking up device.");
 	    IDevice device = getDeviceManagement().getDevice(assignment.getDeviceId());
 	    if (device == null) {
 		// TODO: Is there a separate topic for these events?
