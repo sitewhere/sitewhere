@@ -12,8 +12,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.ScheduledReporter;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
@@ -237,20 +235,6 @@ public interface IMicroservice<T extends IFunctionIdentifier>
      * @return
      */
     public IZookeeperManager getZookeeperManager();
-
-    /**
-     * Get metric registry.
-     * 
-     * @return
-     */
-    public MetricRegistry getMetricRegistry();
-
-    /**
-     * Get metrics reporter.
-     * 
-     * @return
-     */
-    public ScheduledReporter getMetricsReporter();
 
     /**
      * Wait for SiteWhere instance configuration metadata to become initialized

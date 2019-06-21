@@ -7,8 +7,6 @@
  */
 package com.sitewhere.server.lifecycle;
 
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.Timer;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
@@ -21,20 +19,11 @@ public class TenantEngineLifecycleComponentDecorator<T extends ITenantEngineLife
 
     /*
      * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
-     * createMeterMetric(java.lang.String)
+     * buildLabels(java.lang.String[])
      */
     @Override
-    public Meter createMeterMetric(String name) {
-	return getDelegate().createMeterMetric(name);
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
-     * createTimerMetric(java.lang.String)
-     */
-    @Override
-    public Timer createTimerMetric(String name) {
-	return getDelegate().createTimerMetric(name);
+    public String[] buildLabels(String... labels) {
+	return getDelegate().buildLabels(labels);
     }
 
     /*

@@ -7,16 +7,19 @@
  */
 package com.sitewhere.server.lifecycle;
 
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.Timer;
+import java.util.Arrays;
+import java.util.List;
+
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.tenant.ITenant;
+
+import io.prometheus.client.Counter;
+import io.prometheus.client.Gauge;
+import io.prometheus.client.Histogram;
 
 /**
  * Base class for implementing {@link ITenantEngineLifecycleComponent}.
@@ -25,6 +28,18 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public abstract class TenantEngineLifecycleComponent extends LifecycleComponent
 	implements ITenantEngineLifecycleComponent {
+
+    /** Namespace prefix added for metrics */
+    private static final String METRIC_PREFIX = "sitewhere_";
+
+    /** Metrics label for microservice type */
+    private static final String LABEL_MICROSERVICE = "microservice";
+
+    /** Metrics label for microservice pod IP */
+    private static final String LABEL_POD_IP = "pod";
+
+    /** Metrics label for microservice tenant id */
+    private static final String LABEL_TENANT_ID = "tenant";
 
     /** Tenant engine associated with component */
     private IMicroserviceTenantEngine tenantEngine;
@@ -37,36 +52,71 @@ public abstract class TenantEngineLifecycleComponent extends LifecycleComponent
 	super(type);
     }
 
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
-     * createMeterMetric(java.lang.String)
+    /**
+     * Creates a gauge metric with labels for slicing by microservice and tenant.
+     * 
+     * @param name
+     * @param description
+     * @param labelNames
+     * @return
      */
-    @Override
-    public Meter createMeterMetric(String name) {
-	return getTenantEngine().getMicroservice().getMetricRegistry().meter(getTenentMetricPrefix() + name);
-    }
-
-    /*
-     * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
-     * createTimerMetric(java.lang.String)
-     */
-    @Override
-    public Timer createTimerMetric(String name) {
-	return getTenantEngine().getMicroservice().getMetricRegistry().timer(getTenentMetricPrefix() + name);
+    public static Gauge createGaugeMetric(String name, String description, String... labelNames) {
+	return Gauge.build().name(METRIC_PREFIX + name).help(description).labelNames(mergeLabels(labelNames))
+		.register();
     }
 
     /**
-     * Get prefix added to metrics so they are unique.
+     * Creates a counter metric with labels for slicing by microservice and tenant.
      * 
+     * @param name
+     * @param description
+     * @param labelNames
      * @return
      */
-    protected String getTenentMetricPrefix() {
-	IMicroservice<?> microservice = getTenantEngine().getMicroservice();
-	ITenant tenant = getTenantEngine().getTenant();
-	String instanceId = microservice.getInstanceSettings().getInstanceId();
-	String identifier = microservice.getIdentifier().getPath();
-	String tenantToken = tenant.getToken();
-	return instanceId + "." + identifier + "." + tenantToken + ".";
+    public static Counter createCounterMetric(String name, String description, String... labelNames) {
+	return Counter.build().name(METRIC_PREFIX + name).help(description).labelNames(mergeLabels(labelNames))
+		.register();
+    }
+
+    /**
+     * Creates a histogram metric with labels for slicing by microservice and
+     * tenant.
+     * 
+     * @param name
+     * @param description
+     * @param labelNames
+     * @return
+     */
+    public static Histogram createHistogramMetric(String name, String description, String... labelNames) {
+	return Histogram.build().name(METRIC_PREFIX + name).help(description).labelNames(mergeLabels(labelNames))
+		.register();
+    }
+
+    /**
+     * Merge standard SiteWhere labels before extras.
+     * 
+     * @param labelNames
+     * @return
+     */
+    protected static String[] mergeLabels(String... labelNames) {
+	List<String> all = Arrays.asList(labelNames);
+	all.add(0, LABEL_TENANT_ID);
+	all.add(0, LABEL_POD_IP);
+	all.add(0, LABEL_MICROSERVICE);
+	return all.toArray(new String[all.size()]);
+    }
+
+    /*
+     * @see com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent#
+     * buildLabels(java.lang.String[])
+     */
+    @Override
+    public String[] buildLabels(String... labels) {
+	List<String> all = Arrays.asList(labels);
+	all.add(0, getTenantEngine().getTenant().getId().toString());
+	all.add(0, getMicroservice().getInstanceSettings().getKubernetesPodAddress());
+	all.add(0, getMicroservice().getIdentifier().getPath());
+	return all.toArray(new String[all.size()]);
     }
 
     /*
