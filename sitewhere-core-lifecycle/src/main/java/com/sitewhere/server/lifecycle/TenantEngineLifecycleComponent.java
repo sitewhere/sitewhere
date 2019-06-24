@@ -7,6 +7,7 @@
  */
 package com.sitewhere.server.lifecycle;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -99,7 +100,8 @@ public abstract class TenantEngineLifecycleComponent extends LifecycleComponent
      * @return
      */
     protected static String[] mergeLabels(String... labelNames) {
-	List<String> all = Arrays.asList(labelNames);
+	List<String> all = new ArrayList<>();
+	all.addAll(Arrays.asList(labelNames));
 	all.add(0, LABEL_TENANT_ID);
 	all.add(0, LABEL_POD_IP);
 	all.add(0, LABEL_MICROSERVICE);
@@ -112,7 +114,8 @@ public abstract class TenantEngineLifecycleComponent extends LifecycleComponent
      */
     @Override
     public String[] buildLabels(String... labels) {
-	List<String> all = Arrays.asList(labels);
+	List<String> all = new ArrayList<>();
+	all.addAll(Arrays.asList(labels));
 	all.add(0, getTenantEngine().getTenant().getId().toString());
 	all.add(0, getMicroservice().getInstanceSettings().getKubernetesPodAddress());
 	all.add(0, getMicroservice().getIdentifier().getPath());

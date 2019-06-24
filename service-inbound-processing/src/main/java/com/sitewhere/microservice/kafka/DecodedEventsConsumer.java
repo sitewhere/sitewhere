@@ -25,15 +25,11 @@ import com.sitewhere.inbound.processing.InboundPayloadProcessingLogic;
 import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
 import com.sitewhere.inbound.spi.processing.IInboundPayloadProcessingLogic;
 import com.sitewhere.inbound.spi.processing.IInboundProcessingConfiguration;
-import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.rest.model.device.event.kafka.DecodedEventPayload;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-
-import io.prometheus.client.Counter;
 
 /**
  * Listens on Kafka topic for decoded events, making them available for inbound
@@ -52,10 +48,6 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
 
     /** Inbound payload processing logic */
     private IInboundPayloadProcessingLogic inboundPayloadProcessingLogic;
-
-    /** Meter for counting processed events */
-    private Counter processedEvents = TenantEngineLifecycleComponent.createCounterMetric("processed_event_count",
-	    "Count of total events processed by consumer");
 
     public DecodedEventsConsumer(IInboundProcessingConfiguration inboundProcessingConfiguration) {
 	this.inboundProcessingConfiguration = inboundProcessingConfiguration;
@@ -206,9 +198,5 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
     @Override
     public IInboundProcessingConfiguration getInboundProcessingConfiguration() {
 	return inboundProcessingConfiguration;
-    }
-
-    protected Counter getProcessedEvents() {
-	return processedEvents;
     }
 }

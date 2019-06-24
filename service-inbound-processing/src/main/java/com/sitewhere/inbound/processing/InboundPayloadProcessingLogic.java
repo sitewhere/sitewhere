@@ -43,10 +43,12 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	implements IInboundPayloadProcessingLogic {
 
     /** Histogram for device lookup */
-    private Histogram deviceLookupTimer;
+    private static final Histogram DEVICE_LOOKUP_TIMER = TenantEngineLifecycleComponent
+	    .createHistogramMetric("inbound_device_lookup_timer", "Timer for device lookup on inbound events");
 
     /** Histogram for assignment lookup */
-    private Histogram assignmentLookupTimer;
+    private static final Histogram ASSIGNMENT_LOOKUP_TIMER = TenantEngineLifecycleComponent
+	    .createHistogramMetric("inbound_aaignment_lookup_timer", "Timer for assignment lookup on inbound events");
 
     /** Decoded events consumer */
     private IDecodedEventsConsumer decodedEventsConsumer;
@@ -123,7 +125,7 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
      */
     protected IDeviceAssignment validateAssignment(GDecodedEventPayload payload) throws SiteWhereException {
 	// Verify that device is registered.
-	final Histogram.Timer deviceLookupTime = getDeviceLookupTimer().labels(buildLabels()).startTimer();
+	final Histogram.Timer deviceLookupTime = DEVICE_LOOKUP_TIMER.labels(buildLabels()).startTimer();
 	IDevice device = null;
 	try {
 	    device = getDeviceManagement().getDeviceByToken(payload.getDeviceToken());
@@ -142,7 +144,7 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	}
 
 	// Verify that device assignment exists.
-	final Histogram.Timer assignmentLookupTime = getAssignmentLookupTimer().labels(buildLabels()).startTimer();
+	final Histogram.Timer assignmentLookupTime = ASSIGNMENT_LOOKUP_TIMER.labels(buildLabels()).startTimer();
 	IDeviceAssignment assignment = null;
 	try {
 	    assignment = getDeviceManagement().getDeviceAssignment(device.getDeviceAssignmentId());
@@ -240,13 +242,5 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 
     protected IDecodedEventsConsumer getDecodedEventsConsumer() {
 	return decodedEventsConsumer;
-    }
-
-    protected Histogram getDeviceLookupTimer() {
-	return deviceLookupTimer;
-    }
-
-    protected Histogram getAssignmentLookupTimer() {
-	return assignmentLookupTimer;
     }
 }
