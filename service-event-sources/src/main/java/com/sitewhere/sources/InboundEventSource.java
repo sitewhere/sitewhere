@@ -48,16 +48,16 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
     private List<IInboundEventReceiver<T>> inboundEventReceivers = new ArrayList<IInboundEventReceiver<T>>();
 
     /** Meter for counting decoded events */
-    private Counter decodedEvents = TenantEngineLifecycleComponent.createCounterMetric(
+    private static final Counter DECODED_EVENTS = TenantEngineLifecycleComponent.createCounterMetric(
 	    "event_source_decoded_event_count", "Count of events successfully decoded", "source_id");
 
     /** Meter for counting decode failures */
-    private Counter decodeFailures = TenantEngineLifecycleComponent.createCounterMetric(
+    private static final Counter DECODE_FAILURES = TenantEngineLifecycleComponent.createCounterMetric(
 	    "event_source_decode_failure_count", "Count of events which failed to decode", "source_id");
 
     /** Meter for counting duplicate events */
-    private Counter duplicates = TenantEngineLifecycleComponent.createCounterMetric("event_source_duplicate_count",
-	    "Count of events which were duplicates", "source_id");
+    private static final Counter DUPLICATES = TenantEngineLifecycleComponent
+	    .createCounterMetric("event_source_duplicate_count", "Count of events which were duplicates", "source_id");
 
     public InboundEventSource() {
 	super(LifecycleComponentType.InboundEventSource);
@@ -189,7 +189,7 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
 	List<IDecodedDeviceRequest<?>> requests = decodeEvent(encoded, metadata);
 	if (requests != null) {
 	    for (IDecodedDeviceRequest<?> decoded : requests) {
-		getDecodedEvents().labels(buildLabels(getSourceId())).inc();
+		DECODED_EVENTS.labels(buildLabels(getSourceId())).inc();
 		if (shouldProcess(decoded)) {
 		    handleDecodedRequest(encoded, metadata, decoded);
 		}
@@ -225,7 +225,7 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
 	    boolean isDuplicate = ((getDeviceEventDeduplicator() != null)
 		    && (getDeviceEventDeduplicator().isDuplicate(decoded)));
 	    if (isDuplicate) {
-		getDuplicates().labels(buildLabels(getSourceId())).inc();
+		DUPLICATES.labels(buildLabels(getSourceId())).inc();
 		getLogger().info("Event not processed due to duplicate detected.");
 	    }
 	    return !isDuplicate;
@@ -261,7 +261,7 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
      */
     protected void onEventDecodeFailed(T encoded, Map<String, Object> metadata, Throwable t) {
 	try {
-	    getDecodeFailures().labels(buildLabels(getSourceId())).inc();
+	    DECODE_FAILURES.labels(buildLabels(getSourceId())).inc();
 	    getEventSourcesManager().handleFailedDecode(getSourceId(), getRawPayload(encoded), metadata, t);
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to handle failed event decode.", e);
@@ -330,18 +330,6 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
 
     public void setInboundEventReceivers(List<IInboundEventReceiver<T>> inboundEventReceivers) {
 	this.inboundEventReceivers = inboundEventReceivers;
-    }
-
-    protected Counter getDecodedEvents() {
-	return decodedEvents;
-    }
-
-    protected Counter getDecodeFailures() {
-	return decodeFailures;
-    }
-
-    protected Counter getDuplicates() {
-	return duplicates;
     }
 
     protected IEventSourcesManager getEventSourcesManager() {

@@ -49,6 +49,10 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
     /** MQTT Topic Quality of Service */
     public static final QoS DEFAULT_QoS = QoS.AT_LEAST_ONCE;
 
+    /** Meter for counting received events */
+    private static final Counter RECEIVED_EVENTS = TenantEngineLifecycleComponent
+	    .createCounterMetric("mqtt_events_received_count", "Count of MQTT events received", "source_id");
+
     /** Parent event source */
     private IInboundEventSource<byte[]> eventSource;
 
@@ -66,10 +70,6 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 
     /** Used to process MQTT events in a thread pool */
     private ExecutorService processorsExecutor;
-
-    /** Meter for counting received events */
-    private Counter receivedEvents = TenantEngineLifecycleComponent.createCounterMetric("mqtt_events_received_count",
-	    "Count of MQTT events received", "source_id");
 
     public MqttInboundEventReceiver() {
 	super(LifecycleComponentType.InboundEventReceiver);
@@ -203,7 +203,7 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 	@Override
 	public void run() {
 	    try {
-		getReceivedEvents().labels(buildLabels(getEventSource().getSourceId())).inc();
+		RECEIVED_EVENTS.labels(buildLabels(getEventSource().getSourceId())).inc();
 		byte[] payload = message.getPayload();
 		getEventSource().onEncodedEventReceived(MqttInboundEventReceiver.this, payload, null);
 		message.ack();
@@ -274,10 +274,6 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 
     public void setNumThreads(int numThreads) {
 	this.numThreads = numThreads;
-    }
-
-    protected Counter getReceivedEvents() {
-	return receivedEvents;
     }
 
     /** Used for naming consumer threads */

@@ -25,7 +25,6 @@ import com.sitewhere.grpc.client.event.EventModelConverter;
 import com.sitewhere.grpc.client.event.EventModelMarshaler;
 import com.sitewhere.grpc.model.DeviceEventModel.GAnyDeviceEventCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GPreprocessedEventPayload;
-import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.rest.model.device.event.kafka.PreprocessedEventPayload;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -54,12 +53,12 @@ public class InboundEventsConsumer extends MicroserviceKafkaConsumer implements 
     private static String GROUP_ID_SUFFIX = "inbound-event-consumers";
 
     /** Counter for processed events */
-    private Gauge kafkaBatchSize = TenantEngineLifecycleComponent.createGaugeMetric("inbound_events_kafka_batch_size",
-	    "Size of Kafka inbound event batches");
+    private static final Gauge KAFFA_BATCH_SIZE = TenantEngineLifecycleComponent
+	    .createGaugeMetric("inbound_events_kafka_batch_size", "Size of Kafka inbound event batches");
 
     /** Counter for processed events */
-    private Counter processedEvents = TenantEngineLifecycleComponent.createCounterMetric("inbound_events_event_count",
-	    "Count of total events processed by consumer");
+    private static final Counter PROCESSED_EVENTS = TenantEngineLifecycleComponent
+	    .createCounterMetric("inbound_events_event_count", "Count of total events processed by consumer");
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#
@@ -128,7 +127,7 @@ public class InboundEventsConsumer extends MicroserviceKafkaConsumer implements 
      * @throws SiteWhereException
      */
     protected void storeEvents(List<GPreprocessedEventPayload> payloads) throws SiteWhereException {
-	getKafkaBatchSize().labels(buildLabels()).set(payloads.size());
+	KAFFA_BATCH_SIZE.labels(buildLabels()).set(payloads.size());
 	for (GPreprocessedEventPayload payload : payloads) {
 	    GAnyDeviceEventCreateRequest grpc = payload.getEvent();
 	    UUID assignmentId = CommonModelConverter.asApiUuid(payload.getDeviceAssignmentId());
@@ -162,16 +161,8 @@ public class InboundEventsConsumer extends MicroserviceKafkaConsumer implements 
 	    }
 
 	    // Keep metrics on processed events.
-	    getProcessedEvents().labels(buildLabels()).inc();
+	    PROCESSED_EVENTS.labels(buildLabels()).inc();
 	}
-    }
-
-    protected Gauge getKafkaBatchSize() {
-	return kafkaBatchSize;
-    }
-
-    protected Counter getProcessedEvents() {
-	return processedEvents;
     }
 
     protected IDeviceEventManagement getDeviceEventManagement() {

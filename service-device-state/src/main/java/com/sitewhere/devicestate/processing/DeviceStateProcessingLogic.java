@@ -41,8 +41,8 @@ import io.prometheus.client.Counter;
 public class DeviceStateProcessingLogic extends TenantEngineLifecycleComponent implements IDeviceStateProcessingLogic {
 
     /** Counter for processed events */
-    private Counter processedEvents = TenantEngineLifecycleComponent.createCounterMetric("processed_event_count",
-	    "Count of total events processed by consumer");
+    private static final Counter PROCESSED_EVENTS = TenantEngineLifecycleComponent
+	    .createCounterMetric("processed_event_count", "Count of total events processed by consumer");
 
     /*
      * @see
@@ -79,7 +79,7 @@ public class DeviceStateProcessingLogic extends TenantEngineLifecycleComponent i
      * @throws SiteWhereException
      */
     protected void processRecord(ConsumerRecord<String, byte[]> record) throws SiteWhereException {
-	getProcessedEvents().labels(buildLabels()).inc();
+	PROCESSED_EVENTS.labels(buildLabels()).inc();
 	try {
 	    GEnrichedEventPayload grpc = EventModelMarshaler.parseEnrichedEventPayloadMessage(record.value());
 	    EnrichedEventPayload payload = EventModelConverter.asApiEnrichedEventPayload(grpc);
@@ -186,10 +186,6 @@ public class DeviceStateProcessingLogic extends TenantEngineLifecycleComponent i
 	    request.getLastMeasurementEventIds().putAll(original.getLastMeasurementEventIds());
 	}
 	request.getLastMeasurementEventIds().put(mx.getName(), mx.getId());
-    }
-
-    protected Counter getProcessedEvents() {
-	return processedEvents;
     }
 
     protected IDeviceStateManagement getDeviceStateManagement() {
