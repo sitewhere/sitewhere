@@ -15,6 +15,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.codec.binary.Base64;
@@ -87,6 +89,9 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
     /** Attribute that holds JSON payload */
     private static final String ATTR_JSON = "json";
 
+    /** Time in minutes to wait between token refreshes */
+    private static final int TOKEN_REFRESH_IN_MINUTES = 5;
+
     /** Client for interacting with Syncope */
     private SyncopeClient client;
 
@@ -100,7 +105,10 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
     private ApplicationService applicationService;
 
     /** Provides thread for waiter */
-    private ExecutorService executor;
+    private ExecutorService waiter;
+
+    /** Provides thread for refreshing access token */
+    private ScheduledExecutorService refresher;
 
     /** User service */
     private UserService userService;
@@ -123,8 +131,11 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Wait for connection in background thread.
-	this.executor = Executors.newSingleThreadExecutor();
-	executor.execute(new SyncopeConnectionWaiter());
+	this.waiter = Executors.newSingleThreadExecutor();
+	waiter.execute(new SyncopeConnectionWaiter());
+
+	// Prepare executor for refreshing access token.
+	this.refresher = Executors.newSingleThreadScheduledExecutor();
     }
 
     /*
@@ -206,51 +217,6 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 	}
     }
 
-    /**
-     * Waits for Syncope connection to become available.
-     */
-    protected class SyncopeConnectionWaiter implements Runnable {
-
-	@Override
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void run() {
-	    IInstanceSettings settings = getMicroservice().getInstanceSettings();
-	    String syncopeUrl = String.format("http://%s:%d/syncope/rest", settings.getSyncopeHost(),
-		    settings.getSyncopePort());
-	    SyncopeClientFactoryBean clientFactory = new SyncopeClientFactoryBean().setAddress(syncopeUrl);
-
-	    try {
-		getLogger().info(String.format("Attempting to connect to Syncope at '%s:%d' as '%s'...",
-			settings.getSyncopeHost(), settings.getSyncopePort(), SYNCOPE_USERNAME));
-		Callable<Boolean> connectCheck = () -> {
-		    SyncopeUserManagement.this.client = clientFactory.create(SYNCOPE_USERNAME, SYNCOPE_PASSWORD);
-		    getSyncopeAvailable().countDown();
-		    return true;
-		};
-		RetryConfig config = new RetryConfigBuilder().retryOnAnyException().withMaxNumberOfTries(7)
-			.withDelayBetweenTries(Duration.ofSeconds(2)).withRandomExponentialBackoff().build();
-		RetryListener listener = new RetryListener<Boolean>() {
-
-		    @Override
-		    public void onEvent(Status<Boolean> status) {
-			getLogger().info(String.format(
-				"Unable to connect to Syncope on attempt %d [%s] (total wait so far %dms). Retrying after fallback...",
-				status.getTotalTries(), status.getLastExceptionThatCausedRetry().getMessage(),
-				status.getTotalElapsedDuration().toMillis()));
-		    }
-		};
-		new CallExecutorBuilder().config(config).afterFailedTryListener(listener).build().execute(connectCheck);
-	    } catch (RetriesExhaustedException e) {
-		Status status = e.getStatus();
-		getLogger().error(String.format("Unable to connect to Syncope at '%s:%d' after %d attempts (%dms).",
-			settings.getSyncopeHost(), settings.getSyncopePort(), status.getTotalTries(),
-			status.getTotalElapsedDuration().toMillis()));
-		getConnectionFailed().set(true);
-		getSyncopeAvailable().countDown();
-	    }
-	}
-    }
-
     /*
      * @see
      * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
@@ -258,6 +224,12 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	if (this.waiter != null) {
+	    this.waiter.shutdownNow();
+	}
+	if (this.refresher != null) {
+	    this.refresher.shutdownNow();
+	}
     }
 
     /*
@@ -538,6 +510,65 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 	    } catch (Throwable t) {
 		throw new SiteWhereException(String.format("Unable to delete granted authority '%s'.", authority), t);
 	    }
+	}
+    }
+
+    /**
+     * Waits for Syncope connection to become available.
+     */
+    protected class SyncopeConnectionWaiter implements Runnable {
+
+	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void run() {
+	    IInstanceSettings settings = getMicroservice().getInstanceSettings();
+	    String syncopeUrl = String.format("http://%s:%d/syncope/rest", settings.getSyncopeHost(),
+		    settings.getSyncopePort());
+	    SyncopeClientFactoryBean clientFactory = new SyncopeClientFactoryBean().setAddress(syncopeUrl);
+
+	    try {
+		getLogger().info(String.format("Attempting to connect to Syncope at '%s:%d' as '%s'...",
+			settings.getSyncopeHost(), settings.getSyncopePort(), SYNCOPE_USERNAME));
+		Callable<Boolean> connectCheck = () -> {
+		    SyncopeUserManagement.this.client = clientFactory.create(SYNCOPE_USERNAME, SYNCOPE_PASSWORD);
+		    getSyncopeAvailable().countDown();
+		    refresher.scheduleAtFixedRate(new SyncopeConnectionRefresher(), TOKEN_REFRESH_IN_MINUTES,
+			    TOKEN_REFRESH_IN_MINUTES, TimeUnit.MINUTES);
+		    return true;
+		};
+		RetryConfig config = new RetryConfigBuilder().retryOnAnyException().withMaxNumberOfTries(7)
+			.withDelayBetweenTries(Duration.ofSeconds(2)).withRandomExponentialBackoff().build();
+		RetryListener listener = new RetryListener<Boolean>() {
+
+		    @Override
+		    public void onEvent(Status<Boolean> status) {
+			getLogger().info(String.format(
+				"Unable to connect to Syncope on attempt %d [%s] (total wait so far %dms). Retrying after fallback...",
+				status.getTotalTries(), status.getLastExceptionThatCausedRetry().getMessage(),
+				status.getTotalElapsedDuration().toMillis()));
+		    }
+		};
+		new CallExecutorBuilder().config(config).afterFailedTryListener(listener).build().execute(connectCheck);
+	    } catch (RetriesExhaustedException e) {
+		Status status = e.getStatus();
+		getLogger().error(String.format("Unable to connect to Syncope at '%s:%d' after %d attempts (%dms).",
+			settings.getSyncopeHost(), settings.getSyncopePort(), status.getTotalTries(),
+			status.getTotalElapsedDuration().toMillis()));
+		getConnectionFailed().set(true);
+		getSyncopeAvailable().countDown();
+	    }
+	}
+    }
+
+    /**
+     * Refreshes access token at a given interval.
+     */
+    protected class SyncopeConnectionRefresher implements Runnable {
+
+	@Override
+	public void run() {
+	    getLogger().debug("Refreshing access token...");
+	    getClient().refresh();
 	}
     }
 
