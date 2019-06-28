@@ -177,10 +177,12 @@ public abstract class ScriptSynchronizer extends LifecycleComponent implements I
      */
     protected boolean isScriptContent(String path) throws SiteWhereException {
 	if (path.startsWith(getZkScriptRootPath())) {
-	    if (path.substring(getZkScriptRootPath().length()).length() == 0) {
-		return false;
+	    String relative = path.substring(getZkScriptRootPath().length());
+	    if (relative.startsWith("scripts/")) {
+		getLogger().info(String.format("Script content found for '%s'.", relative));
+		return true;
 	    }
-	    return true;
+	    return false;
 	}
 	return false;
     }

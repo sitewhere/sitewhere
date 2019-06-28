@@ -11,17 +11,8 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
  * Contains information about the current state of a microservice.
- * 
- * @author Derek
  */
-public interface IMicroserviceState {
-
-    /**
-     * Get microservice details.
-     * 
-     * @return
-     */
-    public IMicroserviceDetails getMicroservice();
+public interface IMicroserviceState extends IMicroserviceStateElement {
 
     /**
      * Get current lifeycle status of tenant engine.

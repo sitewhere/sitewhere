@@ -14,21 +14,17 @@ import com.sitewhere.device.spi.initializer.IDeviceModelInitializer;
 import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.rest.model.asset.request.scripting.AssetManagementRequestBuilder;
-import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventRequestBuilder;
 import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequestBuilder;
 import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
 
 import groovy.lang.Binding;
 
 /**
  * Implementation of {@link IDeviceModelInitializer} that delegates creation
  * logic to a Groovy script.
- * 
- * @author Derek
  */
 public class GroovyDeviceModelInitializer extends ModelInitializer implements IDeviceModelInitializer {
 
@@ -50,18 +46,15 @@ public class GroovyDeviceModelInitializer extends ModelInitializer implements ID
      * @see
      * com.sitewhere.device.spi.initializer.IDeviceModelInitializer#initialize(com.
      * sitewhere.spi.device.IDeviceManagement,
-     * com.sitewhere.spi.device.event.IDeviceEventManagement,
      * com.sitewhere.spi.asset.IAssetManagement)
      */
     @Override
-    public void initialize(IDeviceManagement deviceManagement, IDeviceEventManagement deviceEventManagement,
-	    IAssetManagement assetManagement) throws SiteWhereException {
+    public void initialize(IDeviceManagement deviceManagement, IAssetManagement assetManagement)
+	    throws SiteWhereException {
 	Binding binding = new Binding();
 	binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
 	binding.setVariable(IGroovyVariables.VAR_DEVICE_MANAGEMENT_BUILDER,
 		new DeviceManagementRequestBuilder(deviceManagement));
-	binding.setVariable(IGroovyVariables.VAR_EVENT_MANAGEMENT_BUILDER,
-		new DeviceEventRequestBuilder(deviceManagement, deviceEventManagement));
 	binding.setVariable(IGroovyVariables.VAR_ASSET_MANAGEMENT_BUILDER,
 		new AssetManagementRequestBuilder(assetManagement));
 

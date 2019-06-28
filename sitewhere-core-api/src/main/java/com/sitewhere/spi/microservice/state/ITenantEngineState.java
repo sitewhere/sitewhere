@@ -11,17 +11,8 @@ import java.util.UUID;
 
 /**
  * Contains information about the current state of a microservice tenant engine.
- * 
- * @author Derek
  */
-public interface ITenantEngineState {
-
-    /**
-     * Get microservice details.
-     * 
-     * @return
-     */
-    public IMicroserviceDetails getMicroservice();
+public interface ITenantEngineState extends IMicroserviceStateElement {
 
     /**
      * Get tenant id.

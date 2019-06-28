@@ -11,90 +11,53 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
 
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.Timer;
-import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
-import com.sitewhere.grpc.client.event.EventModelConverter;
 import com.sitewhere.grpc.client.event.EventModelMarshaler;
-import com.sitewhere.grpc.model.DeviceEventModel.GInboundEventPayload;
+import com.sitewhere.grpc.model.DeviceEventModel.GDecodedEventPayload;
 import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
+import com.sitewhere.inbound.spi.kafka.IInboundEventsProducer;
 import com.sitewhere.inbound.spi.kafka.IUnregisteredEventsProducer;
-import com.sitewhere.inbound.spi.microservice.IInboundEventStorageStrategy;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.inbound.spi.processing.IInboundPayloadProcessingLogic;
 import com.sitewhere.microservice.security.SystemUserRunnable;
-import com.sitewhere.rest.model.device.event.kafka.InboundEventPayload;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+
+import io.prometheus.client.Histogram;
 
 /**
  * Processing logic which verifies that an incoming event belongs to a
  * registered device. If the event does not belong to a registered device, it is
  * added to a Kafka topic that can be processed by a registration manager to
  * register the device automatically if so configured. The logic also verifies
- * that an active assignment exists for the device. Finally, the event is
- * persisted via the event management microservice.
- * 
- * @author Derek
+ * that an active assignment exists for the device. Finally, the event is sent
+ * to a Kafka topic for further processing (such as event persistence).
  */
 public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponent
 	implements IInboundPayloadProcessingLogic {
 
-    /** Meter for counting processed events */
-    private Meter processedEvents;
-
-    /** Meter for counting failed events */
-    private Meter failedEvents;
-
     /** Histogram for device lookup */
-    private Timer deviceLookupTimer;
+    private static final Histogram DEVICE_LOOKUP_TIMER = TenantEngineLifecycleComponent
+	    .createHistogramMetric("inbound_device_lookup_timer", "Timer for device lookup on inbound events");
 
     /** Histogram for assignment lookup */
-    private Timer assignmentLookupTimer;
-
-    /** Histogram for event storage time */
-    private Timer eventStorageTimer;
+    private static final Histogram ASSIGNMENT_LOOKUP_TIMER = TenantEngineLifecycleComponent
+	    .createHistogramMetric("inbound_aaignment_lookup_timer", "Timer for assignment lookup on inbound events");
 
     /** Decoded events consumer */
     private IDecodedEventsConsumer decodedEventsConsumer;
-
-    /** Event storage strategy */
-    private IInboundEventStorageStrategy eventStorageStrategy;
 
     /** Executor service for inbound payload processors */
     private ExecutorService inboundProcessorsExecutor;
 
     public InboundPayloadProcessingLogic(IDecodedEventsConsumer decodedEventsConsumer) {
 	this.decodedEventsConsumer = decodedEventsConsumer;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
-     * spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	super.initialize(monitor);
-
-	// Set up metrics.
-	this.processedEvents = createMeterMetric("processedEvents");
-	this.failedEvents = createMeterMetric("failedEvents");
-	this.deviceLookupTimer = createTimerMetric("deviceLookup");
-	this.assignmentLookupTimer = createTimerMetric("assignmentLookup");
-	this.eventStorageTimer = createTimerMetric("eventStorage");
-	this.eventStorageStrategy = new UnaryEventStorageStrategy((IInboundProcessingTenantEngine) getTenantEngine(),
-		this);
     }
 
     /*
@@ -132,46 +95,24 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
      * org.apache.kafka.common.TopicPartition, java.util.List)
      */
     @Override
-    public void process(TopicPartition topicPartition, List<ConsumerRecord<String, byte[]>> records)
-	    throws SiteWhereException {
-	for (ConsumerRecord<String, byte[]> record : records) {
-	    getInboundProcessorsExecutor().execute(new InboundEventPayloadProcessor(record));
+    public void process(TopicPartition topicPartition, List<GDecodedEventPayload> decoded) throws SiteWhereException {
+	for (GDecodedEventPayload event : decoded) {
+	    getInboundProcessorsExecutor().execute(new InboundEventPayloadProcessor(event));
 	}
     }
 
     /**
-     * Process a single record.
+     * Process a single decoded event.
      * 
-     * @param record
+     * @param event
      * @throws SiteWhereException
      */
-    protected void processRecord(ConsumerRecord<String, byte[]> record) throws SiteWhereException {
-	GInboundEventPayload payload = decodeRequest(record);
-	IDeviceAssignment assignment = validateAssignment(payload);
+    protected void processDecodedEvent(GDecodedEventPayload event) throws SiteWhereException {
+	IDeviceAssignment assignment = validateAssignment(event);
 	if (assignment != null) {
-	    final Timer.Context eventStorageTime = getEventStorageTimer().time();
-	    try {
-		getEventStorageStrategy().storeDeviceEvent(assignment, payload);
-	    } finally {
-		eventStorageTime.stop();
-	    }
+	    byte[] marshaled = EventModelMarshaler.buildDecodedEventPayloadMessage(event);
+	    getInboundEventsProducer().send(event.getDeviceToken(), marshaled);
 	}
-    }
-
-    /**
-     * Process an inbound payload into an assignment event create request.
-     * 
-     * @param record
-     * @return
-     * @throws SiteWhereException
-     */
-    protected GInboundEventPayload decodeRequest(ConsumerRecord<String, byte[]> record) throws SiteWhereException {
-	GInboundEventPayload message = EventModelMarshaler.parseInboundEventPayloadMessage(record.value());
-	if (getLogger().isDebugEnabled()) {
-	    InboundEventPayload payload = EventModelConverter.asApiInboundEventPayload(message);
-	    getLogger().debug("Received decoded event payload:\n\n" + MarshalUtils.marshalJsonAsPrettyString(payload));
-	}
-	return message;
     }
 
     /**
@@ -182,14 +123,14 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
      * @return
      * @throws SiteWhereException
      */
-    protected IDeviceAssignment validateAssignment(GInboundEventPayload payload) throws SiteWhereException {
+    protected IDeviceAssignment validateAssignment(GDecodedEventPayload payload) throws SiteWhereException {
 	// Verify that device is registered.
-	final Timer.Context deviceLookupTime = getDeviceLookupTimer().time();
+	final Histogram.Timer deviceLookupTime = DEVICE_LOOKUP_TIMER.labels(buildLabels()).startTimer();
 	IDevice device = null;
 	try {
 	    device = getDeviceManagement().getDeviceByToken(payload.getDeviceToken());
 	} finally {
-	    deviceLookupTime.stop();
+	    deviceLookupTime.close();
 	}
 	if (device == null) {
 	    handleUnregisteredDevice(payload);
@@ -203,12 +144,12 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	}
 
 	// Verify that device assignment exists.
-	final Timer.Context assignmentLookupTime = getAssignmentLookupTimer().time();
+	final Histogram.Timer assignmentLookupTime = ASSIGNMENT_LOOKUP_TIMER.labels(buildLabels()).startTimer();
 	IDeviceAssignment assignment = null;
 	try {
 	    assignment = getDeviceManagement().getDeviceAssignment(device.getDeviceAssignmentId());
 	} finally {
-	    assignmentLookupTime.stop();
+	    assignmentLookupTime.close();
 	}
 	if (assignment == null) {
 	    handleUnassignedDevice(payload);
@@ -225,10 +166,10 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
      * @param payload
      * @throws SiteWhereException
      */
-    protected void handleUnregisteredDevice(GInboundEventPayload payload) throws SiteWhereException {
+    protected void handleUnregisteredDevice(GDecodedEventPayload payload) throws SiteWhereException {
 	getLogger().info("Device '" + payload.getDeviceToken()
 		+ "' is not registered. Forwarding to unregistered devices topic.");
-	byte[] marshaled = EventModelMarshaler.buildInboundEventPayloadMessage(payload);
+	byte[] marshaled = EventModelMarshaler.buildDecodedEventPayloadMessage(payload);
 	getUnregisteredDeviceEventsProducer().send(payload.getDeviceToken(), marshaled);
     }
 
@@ -239,10 +180,10 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
      * @param payload
      * @throws SiteWhereException
      */
-    protected void handleUnassignedDevice(GInboundEventPayload payload) throws SiteWhereException {
+    protected void handleUnassignedDevice(GDecodedEventPayload payload) throws SiteWhereException {
 	getLogger().info("Device '" + payload.getDeviceToken()
 		+ "' is not currently assigned. Forwarding to unassigned devices topic.");
-	byte[] marshaled = EventModelMarshaler.buildInboundEventPayloadMessage(payload);
+	byte[] marshaled = EventModelMarshaler.buildDecodedEventPayloadMessage(payload);
 	getUnregisteredDeviceEventsProducer().send(payload.getDeviceToken(), marshaled);
     }
 
@@ -254,17 +195,17 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
      */
     protected class InboundEventPayloadProcessor extends SystemUserRunnable {
 
-	/** Record to be processed */
-	private ConsumerRecord<String, byte[]> record;
+	/** Event to be processed */
+	private GDecodedEventPayload event;
 
-	public InboundEventPayloadProcessor(ConsumerRecord<String, byte[]> record) {
+	public InboundEventPayloadProcessor(GDecodedEventPayload event) {
 	    super(getTenantEngine().getMicroservice(), getTenantEngine().getTenant());
-	    this.record = record;
+	    this.event = event;
 	}
 
 	@Override
 	public void runAsSystemUser() throws SiteWhereException {
-	    processRecord(record);
+	    processDecodedEvent(event);
 	}
     }
 
@@ -283,18 +224,16 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
      * @return
      */
     protected IDeviceManagement getDeviceManagement() {
-	return ((IInboundProcessingMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiDemux()
-		.getApiChannel();
+	return ((IInboundProcessingMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
     }
 
     /**
-     * Get device event management implementation.
+     * Get inbound events Kafka producer.
      * 
      * @return
      */
-    protected IDeviceEventManagement getDeviceEventManagement() {
-	return new BlockingDeviceEventManagement(((IInboundProcessingMicroservice) getTenantEngine().getMicroservice())
-		.getDeviceEventManagementApiDemux().getApiChannel());
+    protected IInboundEventsProducer getInboundEventsProducer() {
+	return ((IInboundProcessingTenantEngine) getTenantEngine()).getInboundEventsProducer();
     }
 
     protected ExecutorService getInboundProcessorsExecutor() {
@@ -303,29 +242,5 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 
     protected IDecodedEventsConsumer getDecodedEventsConsumer() {
 	return decodedEventsConsumer;
-    }
-
-    protected Meter getProcessedEvents() {
-	return processedEvents;
-    }
-
-    protected Meter getFailedEvents() {
-	return failedEvents;
-    }
-
-    protected Timer getEventStorageTimer() {
-	return eventStorageTimer;
-    }
-
-    protected Timer getDeviceLookupTimer() {
-	return deviceLookupTimer;
-    }
-
-    protected Timer getAssignmentLookupTimer() {
-	return assignmentLookupTimer;
-    }
-
-    protected IInboundEventStorageStrategy getEventStorageStrategy() {
-	return eventStorageStrategy;
     }
 }

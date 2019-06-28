@@ -16,14 +16,12 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.sitewhere.web.rest.controllers.Assets;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
-import io.opentracing.contrib.spring.web.interceptor.TracingHandlerInterceptor;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -88,28 +86,10 @@ public class RestApiConfiguration implements WebMvcConfigurer {
 
     @Bean
     public ApiInfo apiInfo() {
-	return new ApiInfoBuilder()
-		.title(API_TITLE)
-		.description(API_DESCRIPTION)
-		.termsOfServiceUrl("http://www.sitewhere.com")
-		.license(API_LICENSE_TYPE)
-		.licenseUrl(API_LICENSE_URL)
+	return new ApiInfoBuilder().title(API_TITLE).description(API_DESCRIPTION)
+		.termsOfServiceUrl("http://www.sitewhere.com").license(API_LICENSE_TYPE).licenseUrl(API_LICENSE_URL)
 		.version(microservice.getVersion().getVersionIdentifier())
-		.extensions(Collections.singletonList(xLogoVendorExtensios()))
-		.build();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
-     * #addInterceptors(org.springframework.web.servlet.config.annotation.
-     * InterceptorRegistry)
-     */
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-	registry.addInterceptor(new TracingHandlerInterceptor(getMicroservice().getTracer()));
+		.extensions(Collections.singletonList(xLogoVendorExtensios())).build();
     }
 
     /*
@@ -139,9 +119,9 @@ public class RestApiConfiguration implements WebMvcConfigurer {
     public void setMicroservice(IWebRestMicroservice<?> microservice) {
 	this.microservice = microservice;
     }
-    
+
     @SuppressWarnings("rawtypes")
-    private static VendorExtension xLogoVendorExtensios () {
+    private static VendorExtension xLogoVendorExtensios() {
 	ObjectVendorExtension xLogoVendorExtension = new ObjectVendorExtension("x-logo");
 	xLogoVendorExtension.addProperty(new StringVendorExtension("url", "../images/logo.svg"));
 	xLogoVendorExtension.addProperty(new StringVendorExtension("backgroundColor", "#FFFFFF"));

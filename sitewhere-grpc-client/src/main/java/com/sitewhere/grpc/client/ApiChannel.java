@@ -7,18 +7,13 @@
  */
 package com.sitewhere.grpc.client;
 
-import java.util.concurrent.TimeUnit;
-
-import org.springframework.util.backoff.BackOffExecution;
-import org.springframework.util.backoff.ExponentialBackOff;
-
 import com.sitewhere.grpc.client.spi.IApiChannel;
-import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-
-import io.grpc.ConnectivityState;
 
 /**
  * Base class for channels that uses SiteWhere APIs to communicate with GRPC
@@ -31,27 +26,26 @@ import io.grpc.ConnectivityState;
 public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngineLifecycleComponent
 	implements IApiChannel<T> {
 
-    /** Min interval at which GRPC connection will be checked */
-    private static final long CONNECTION_CHECK_INTERVAL_MIN_MS = 100;
+    /** Instance settings */
+    private IInstanceSettings settings;
 
-    /** Max interval at which GRPC connection will be checked */
-    private static final long CONNECTION_CHECK_INTERVAL_MAX_MS = 60 * 1000;
+    /** Function identifier */
+    private IFunctionIdentifier functionIdentifier;
 
-    /** Parent demux */
-    private IApiDemux<?> demux;
+    /** gRPC service identifier */
+    private IGrpcServiceIdentifier grpcServiceIdentifier;
 
-    /** Hostname */
-    private String hostname;
-
-    /** GRPC Port */
+    /** Binding port */
     private int port;
 
     /** Underlying GRPC channel */
     private T grpcChannel;
 
-    public ApiChannel(IApiDemux<?> demux, String hostname, int port) {
-	this.demux = demux;
-	this.hostname = hostname;
+    public ApiChannel(IInstanceSettings settings, IFunctionIdentifier functionIdentifier,
+	    IGrpcServiceIdentifier grpcServiceIdentifier, int port) {
+	this.settings = settings;
+	this.functionIdentifier = functionIdentifier;
+	this.grpcServiceIdentifier = grpcServiceIdentifier;
 	this.port = port;
     }
 
@@ -70,7 +64,10 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.grpcChannel = (T) createGrpcChannel(getMicroservice(), getHostname(), getPort());
+	this.grpcChannel = createGrpcChannel(getSettings(), getFunctionIdentifier(), getGrpcServiceIdentifier(),
+		getPort());
+	getLogger().info(String.format("Initializing gRPC channel for %s to '%s:%d'", getGrpcServiceIdentifier(),
+		getGrpcChannel().getHostname(), getGrpcChannel().getPort()));
 	initializeNestedComponent(getGrpcChannel(), monitor, true);
     }
 
@@ -81,6 +78,8 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	getLogger().info(String.format("Starting gRPC channel to '%s:%d'", getGrpcChannel().getHostname(),
+		getGrpcChannel().getPort()));
 	startNestedComponent(getGrpcChannel(), monitor, true);
     }
 
@@ -91,75 +90,33 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	getLogger().info(String.format("Stopping gRPC channel to '%s:%d'", getGrpcChannel().getHostname(),
+		getGrpcChannel().getPort()));
 	stopNestedComponent(getGrpcChannel(), monitor);
     }
 
     /*
-     * @see com.sitewhere.grpc.client.spi.IApiChannel#waitForChannelAvailable()
+     * @see com.sitewhere.grpc.client.spi.IApiChannel#getFunctionIdentifier()
      */
     @Override
-    public void waitForChannelAvailable() throws ApiChannelNotAvailableException {
-	waitForChannelAvailable(5 * 60, TimeUnit.SECONDS, 60);
+    public IFunctionIdentifier getFunctionIdentifier() {
+	return functionIdentifier;
+    }
+
+    public void setFunctionIdentifier(IFunctionIdentifier functionIdentifier) {
+	this.functionIdentifier = functionIdentifier;
     }
 
     /*
-     * @see com.sitewhere.grpc.client.spi.IApiChannel#waitForChannelAvailable(long,
-     * java.util.concurrent.TimeUnit, long)
+     * @see com.sitewhere.grpc.client.spi.IApiChannel#getGrpcServiceIdentifier()
      */
     @Override
-    public void waitForChannelAvailable(long duration, TimeUnit unit, long logMessageDelay)
-	    throws ApiChannelNotAvailableException {
-	if (getGrpcChannel() == null) {
-	    throw new ApiChannelNotAvailableException("GRPC channel not found. Unable to access API.");
-	}
-
-	long start = System.currentTimeMillis();
-	long deadline = start + unit.toMillis(duration);
-	long logAfter = start + unit.toMillis(logMessageDelay);
-
-	ExponentialBackOff backOff = new ExponentialBackOff(CONNECTION_CHECK_INTERVAL_MIN_MS, 1.5);
-	backOff.setMaxInterval(CONNECTION_CHECK_INTERVAL_MAX_MS);
-	BackOffExecution backOffExec = backOff.start();
-	while ((System.currentTimeMillis() - deadline) < 0) {
-	    long waitPeriod = backOffExec.nextBackOff();
-	    try {
-		if (getGrpcChannel().getChannel() == null) {
-		    if ((System.currentTimeMillis() - logAfter) > 0) {
-			getLogger().info("Waiting for GRPC channel to be initialized.");
-		    }
-		    Thread.sleep(waitPeriod);
-		} else {
-		    ConnectivityState state = getGrpcChannel().getChannel().getState(true);
-		    if (ConnectivityState.READY != state) {
-			if ((System.currentTimeMillis() - logAfter) > 0) {
-			    getLogger().info("Waiting for GRPC service to become available on '" + getHostname()
-				    + "'. (status:" + state.name() + ")");
-			}
-			Thread.sleep(waitPeriod);
-		    } else {
-			return;
-		    }
-		}
-	    } catch (Exception e) {
-		throw new ApiChannelNotAvailableException("Unhandled exception waiting for API to become available.",
-			e);
-	    }
-	}
-	ApiChannelNotAvailableException e = new ApiChannelNotAvailableException(
-		"API not available within timeout period.");
-	throw e;
+    public IGrpcServiceIdentifier getGrpcServiceIdentifier() {
+	return grpcServiceIdentifier;
     }
 
-    /*
-     * @see com.sitewhere.grpc.client.spi.IApiChannel#getHostname()
-     */
-    @Override
-    public String getHostname() {
-	return hostname;
-    }
-
-    public void setHostname(String hostname) {
-	this.hostname = hostname;
+    public void setGrpcServiceIdentifier(IGrpcServiceIdentifier grpcServiceIdentifier) {
+	this.grpcServiceIdentifier = grpcServiceIdentifier;
     }
 
     /*
@@ -170,19 +127,15 @@ public abstract class ApiChannel<T extends GrpcChannel<?, ?>> extends TenantEngi
 	return port;
     }
 
-    public void setPort(int port) {
+    protected void setPort(int port) {
 	this.port = port;
     }
 
-    /*
-     * @see com.sitewhere.grpc.client.spi.IApiChannel#getDemux()
-     */
-    @Override
-    public IApiDemux<?> getDemux() {
-	return demux;
+    protected IInstanceSettings getSettings() {
+	return settings;
     }
 
-    public void setDemux(IApiDemux<?> demux) {
-	this.demux = demux;
+    protected void setSettings(IInstanceSettings settings) {
+	this.settings = settings;
     }
 }

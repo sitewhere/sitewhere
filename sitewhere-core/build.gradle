@@ -16,6 +16,8 @@ dependencies {
     compile group: 'commons-collections', name: 'commons-collections'
     compile group: 'commons-io', name: 'commons-io'
     
+    compile "com.evanlennick:retry4j:0.15.0"
+    
     // Geolocation classes made available to scripts.
 	compile group: 'com.vividsolutions', name: 'jts', version:'1.13'
 }

@@ -17,6 +17,7 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.InputStreamResource;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
  * Utility class for managing server configuration.
@@ -29,15 +30,16 @@ public class ConfigurationUtils {
      * Builds a Spring {@link ApplicationContext} from a byte array containing the
      * XML configuration.
      * 
+     * @param logProvider
      * @param configuration
      * @param properties
-     * @param microservice
      * @return
      * @throws SiteWhereException
      */
-    public static ApplicationContext buildGlobalContext(byte[] configuration, Map<String, Object> properties,
-	    ApplicationContext microservice) throws SiteWhereException {
-	GenericApplicationContext context = new GenericApplicationContext(microservice);
+    public static ApplicationContext buildGlobalContext(ILifecycleComponent logProvider, byte[] configuration,
+	    Map<String, Object> properties) throws SiteWhereException {
+	logProvider.getLogger().debug("Using global configuration:\n\n" + new String(configuration) + "\n\n");
+	GenericApplicationContext context = new GenericApplicationContext();
 
 	// Plug in custom property source.
 	MapPropertySource source = new MapPropertySource("sitewhere", properties);

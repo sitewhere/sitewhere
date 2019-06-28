@@ -121,6 +121,8 @@ public abstract class MicroserviceKafkaConsumer extends TenantEngineLifecycleCom
 	    // Attempt to subscribe
 	    while (true) {
 		try {
+		    getLogger()
+			    .debug(String.format("Kafka consumer subscribing to %s", getSourceTopicNames().toString()));
 		    getConsumer().subscribe(getSourceTopicNames());
 		    break;
 		} catch (SiteWhereException e) {
@@ -137,9 +139,12 @@ public abstract class MicroserviceKafkaConsumer extends TenantEngineLifecycleCom
 	    try {
 		while (true) {
 		    ConsumerRecords<String, byte[]> records = getConsumer().poll(Duration.ofMillis(Long.MAX_VALUE));
+		    getLogger().debug(String.format("Kafka consumer received %d records on poll.", records.count()));
 		    for (TopicPartition topicPartition : records.partitions()) {
 			try {
 			    List<ConsumerRecord<String, byte[]>> topicRecords = records.records(topicPartition);
+			    getLogger().debug(String.format("Kafka consumer processing %d records for %s partition %s.",
+				    topicRecords.size(), topicPartition.topic(), topicPartition.partition()));
 			    process(topicPartition, topicRecords);
 			} catch (Throwable e) {
 			    getLogger().error("Unhandled exception in consumer processing.", e);

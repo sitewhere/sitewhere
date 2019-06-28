@@ -12,13 +12,13 @@ import java.util.Map;
 
 import com.sitewhere.grpc.client.device.DeviceModelMarshaler;
 import com.sitewhere.grpc.client.event.EventModelMarshaler;
+import com.sitewhere.microservice.kafka.DecodedEventsProducer;
+import com.sitewhere.microservice.kafka.DeviceRegistrationEventsProducer;
+import com.sitewhere.microservice.kafka.FailedDecodeEventsProducer;
+import com.sitewhere.rest.model.device.event.kafka.DecodedEventPayload;
 import com.sitewhere.rest.model.device.event.kafka.DeviceRegistrationPayload;
-import com.sitewhere.rest.model.device.event.kafka.InboundEventPayload;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
-import com.sitewhere.sources.kafka.DecodedEventsProducer;
-import com.sitewhere.sources.kafka.DeviceRegistrationEventsProducer;
-import com.sitewhere.sources.kafka.FailedDecodeEventsProducer;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IEventSourcesManager;
 import com.sitewhere.sources.spi.IInboundEventSource;
@@ -156,13 +156,13 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 	if (decoded.getRequest() instanceof IDeviceEventCreateRequest) {
 	    if (getDecodedEventsProducer().getLifecycleStatus() == LifecycleStatus.Started) {
 		// Build and forward inbound event payload message.
-		InboundEventPayload payload = new InboundEventPayload();
+		DecodedEventPayload payload = new DecodedEventPayload();
 		payload.setSourceId(sourceId);
 		payload.setDeviceToken(decoded.getDeviceToken());
 		payload.setOriginator(decoded.getOriginator());
 		payload.setEventCreateRequest((IDeviceEventCreateRequest) decoded.getRequest());
 		getDecodedEventsProducer().send(decoded.getDeviceToken(),
-			EventModelMarshaler.buildInboundEventPayloadMessage(payload));
+			EventModelMarshaler.buildDecodedEventPayloadMessage(payload));
 	    } else {
 		getLogger().warn("Producer not started. Unable to add decoded event to topic.");
 	    }

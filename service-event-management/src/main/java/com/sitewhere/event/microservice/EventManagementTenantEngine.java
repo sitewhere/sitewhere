@@ -7,17 +7,32 @@
  */
 package com.sitewhere.event.microservice;
 
-import com.sitewhere.event.grpc.EventManagementImpl;
-import com.sitewhere.event.kafka.InboundPersistedEventsProducer;
-import com.sitewhere.event.kafka.KafkaEventPersistenceTriggers;
-import com.sitewhere.event.spi.kafka.IInboundPersistedEventsProducer;
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import com.sitewhere.event.initializer.GroovyEventModelInitializer;
+import com.sitewhere.event.spi.kafka.IInboundEventsConsumer;
+import com.sitewhere.event.spi.kafka.IOutboundCommandInvocationsProducer;
+import com.sitewhere.event.spi.kafka.IOutboundEventsProducer;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
+import com.sitewhere.microservice.groovy.GroovyConfiguration;
+import com.sitewhere.microservice.grpc.EventManagementImpl;
+import com.sitewhere.microservice.kafka.KafkaEventPersistenceTriggers;
+import com.sitewhere.microservice.kafka.OutboundEventsProducer;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.server.lifecycle.LifecycleProgressContext;
+import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.spring.EventManagementBeans;
@@ -39,8 +54,14 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
     /** Responds to event management GRPC requests */
     private DeviceEventManagementGrpc.DeviceEventManagementImplBase eventManagementImpl;
 
+    /** Kafka consumer for decoded, pre-processed inbound events */
+    private IInboundEventsConsumer inboundEventsConsumer;
+
     /** Kafka producer for pushing persisted events to a topic */
-    private IInboundPersistedEventsProducer inboundPersistedEventsProducer;
+    private IOutboundEventsProducer outboundEventsProducer;
+
+    /** Kakfa producer for pushed persistend command invocations to a topic */
+    private IOutboundCommandInvocationsProducer outboundCommandInvocationsProducer;
 
     public EventManagementTenantEngine(ITenant tenant) {
 	super(tenant);
@@ -67,8 +88,14 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 	// Initialize event management persistence.
 	init.addInitializeStep(this, getEventManagement(), true);
 
-	// Initialize inbound persisted events producer.
-	init.addInitializeStep(this, getInboundPersistedEventsProducer(), true);
+	// Initialize outbound events producer.
+	init.addInitializeStep(this, getOutboundEventsProducer(), true);
+
+	// Initialize outbound command invocations producer.
+	init.addInitializeStep(this, getOutboundCommandInvocationsProducer(), true);
+
+	// Initialize inbound events consumer.
+	init.addInitializeStep(this, getInboundEventsConsumer(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -87,7 +114,7 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 
 	this.eventManagementImpl = new EventManagementImpl((IEventManagementMicroservice) getMicroservice(),
 		getEventManagement());
-	this.inboundPersistedEventsProducer = new InboundPersistedEventsProducer();
+	this.outboundEventsProducer = new OutboundEventsProducer();
     }
 
     /*
@@ -107,11 +134,26 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 	// Start event management persistence.
 	start.addStartStep(this, getEventManagement(), true);
 
-	// Start inbound persisted events producer.
-	start.addStartStep(this, getInboundPersistedEventsProducer(), true);
+	// Start outbound events producer.
+	start.addStartStep(this, getOutboundEventsProducer(), true);
+
+	// Start outbound command invocations producer.
+	start.addStartStep(this, getOutboundCommandInvocationsProducer(), true);
+
+	// Start inbound events consumer.
+	start.addStartStep(this, getInboundEventsConsumer(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
+    }
+
+    /*
+     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
+     * getTenantBootstrapPrerequisites()
+     */
+    @Override
+    public IFunctionIdentifier[] getTenantBootstrapPrerequisites() {
+	return new IFunctionIdentifier[] { MicroserviceIdentifier.DeviceManagement };
     }
 
     /*
@@ -122,6 +164,29 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
     @Override
     public void tenantBootstrap(IDatasetTemplate template, ILifecycleProgressMonitor monitor)
 	    throws SiteWhereException {
+	List<String> scripts = Collections.emptyList();
+	if (template.getInitializers() != null) {
+	    scripts = template.getInitializers().getEventManagement();
+	    for (String script : scripts) {
+		getTenantScriptSynchronizer().add(script);
+	    }
+	}
+
+	// Execute remote calls as superuser.
+	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
+	try {
+	    SecurityContextHolder.getContext()
+		    .setAuthentication(getMicroservice().getSystemUser().getAuthenticationForTenant(getTenant()));
+	    GroovyConfiguration groovy = new GroovyConfiguration(getTenantScriptSynchronizer());
+	    groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize event model."),
+		    getMicroservice()));
+	    for (String script : scripts) {
+		GroovyEventModelInitializer initializer = new GroovyEventModelInitializer(groovy, script);
+		initializer.initialize(getDeviceManagementApiChannel(), getEventManagement());
+	    }
+	} finally {
+	    SecurityContextHolder.getContext().setAuthentication(previous);
+	}
     }
 
     /*
@@ -138,8 +203,14 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 	// Stop event management persistence.
 	stop.addStopStep(this, getEventManagement());
 
-	// Stop inbound persisted events producer.
-	stop.addStopStep(this, getInboundPersistedEventsProducer());
+	// Stop inbound events consumer.
+	stop.addStopStep(this, getInboundEventsConsumer());
+
+	// Stop outbound command invocations producer.
+	stop.addStopStep(this, getOutboundCommandInvocationsProducer());
+
+	// Stop outbound events producer.
+	stop.addStopStep(this, getOutboundEventsProducer());
 
 	// Stop discoverable lifecycle components.
 	stop.addStep(stopDiscoverableBeans(getModuleContext()));
@@ -180,14 +251,45 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 
     /*
      * @see com.sitewhere.event.spi.microservice.IEventManagementTenantEngine#
-     * getInboundPersistedEventsProducer()
+     * getInboundEventsConsumer()
      */
     @Override
-    public IInboundPersistedEventsProducer getInboundPersistedEventsProducer() {
-	return inboundPersistedEventsProducer;
+    public IInboundEventsConsumer getInboundEventsConsumer() {
+	return inboundEventsConsumer;
     }
 
-    public void setInboundPersistedEventsProducer(IInboundPersistedEventsProducer inboundPersistedEventsProducer) {
-	this.inboundPersistedEventsProducer = inboundPersistedEventsProducer;
+    public void setInboundEventsConsumer(IInboundEventsConsumer inboundEventsConsumer) {
+	this.inboundEventsConsumer = inboundEventsConsumer;
+    }
+
+    /*
+     * @see com.sitewhere.event.spi.microservice.IEventManagementTenantEngine#
+     * getOutboundEventsProducer()
+     */
+    @Override
+    public IOutboundEventsProducer getOutboundEventsProducer() {
+	return outboundEventsProducer;
+    }
+
+    public void setOutboundEventsProducer(IOutboundEventsProducer outboundEventsProducer) {
+	this.outboundEventsProducer = outboundEventsProducer;
+    }
+
+    /*
+     * @see com.sitewhere.event.spi.microservice.IEventManagementTenantEngine#
+     * getOutboundCommandInvocationsProducer()
+     */
+    @Override
+    public IOutboundCommandInvocationsProducer getOutboundCommandInvocationsProducer() {
+	return outboundCommandInvocationsProducer;
+    }
+
+    public void setOutboundCommandInvocationsProducer(
+	    IOutboundCommandInvocationsProducer outboundCommandInvocationsProducer) {
+	this.outboundCommandInvocationsProducer = outboundCommandInvocationsProducer;
+    }
+
+    protected IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
+	return ((IEventManagementMicroservice) getMicroservice()).getDeviceManagementApiChannel();
     }
 }

@@ -40,8 +40,6 @@ import com.sitewhere.web.security.WsApiSecurity;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 import com.sitewhere.web.ws.WebSocketApiConfiguration;
 
-import io.opentracing.contrib.web.servlet.filter.TracingFilter;
-
 /**
  * Configures web server and related artifacts.
  * 
@@ -157,15 +155,6 @@ public class WebRestConfiguration {
 	ServletRegistrationBean<RedirectServlet> registration = new ServletRegistrationBean<>(redirect, "/admin");
 	registration.setName("sitewhereRedirect");
 	registration.setLoadOnStartup(3);
-	return registration;
-    }
-
-    @Bean
-    public FilterRegistrationBean<TracingFilter> tracingFilter() {
-	TracingFilter tracingFilter = new TracingFilter(getMicroservice().getTracer());
-	FilterRegistrationBean<TracingFilter> registration = new FilterRegistrationBean<>(tracingFilter);
-	registration.addUrlPatterns(RestApiConfiguration.REST_API_MATCHER);
-	registration.setOrder(Integer.MIN_VALUE);
 	return registration;
     }
 

@@ -7,73 +7,37 @@
  */
 package com.sitewhere.microservice.multitenant;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.curator.framework.CuratorFramework;
-
-import com.google.common.collect.MapMaker;
-import com.sitewhere.grpc.client.spi.client.ITenantManagementApiDemux;
-import com.sitewhere.grpc.client.tenant.TenantManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
+import com.sitewhere.grpc.client.tenant.CachedTenantManagementApiChannel;
 import com.sitewhere.microservice.configuration.ConfigurableMicroservice;
 import com.sitewhere.microservice.configuration.TenantPathInfo;
-import com.sitewhere.microservice.multitenant.operations.BootstrapTenantEngineOperation;
-import com.sitewhere.microservice.multitenant.operations.InitializeTenantEngineOperation;
-import com.sitewhere.microservice.multitenant.operations.StartTenantEngineOperation;
-import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.server.lifecycle.LifecycleProgressContext;
-import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
-import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.configuration.ITenantPathInfo;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
+import com.sitewhere.spi.microservice.multitenant.ITenantEngineManager;
 import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Microservice that contains engines for multiple tenants.
- * 
- * @author Derek
  */
 public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T extends IMicroserviceTenantEngine>
 	extends ConfigurableMicroservice<I> implements IMultitenantMicroservice<I, T> {
 
-    /** Max number of tenants being added/removed concurrently */
-    private static final int MAX_CONCURRENT_TENANT_OPERATIONS = 5;
-
     /** Tenant management API demux */
-    private ITenantManagementApiDemux tenantManagementApiDemux;
+    private ITenantManagementApiChannel<?> tenantManagementApiChannel;
 
-    /** Map of tenant engines that have been initialized */
-    private ConcurrentMap<UUID, T> initializedTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
-
-    /** Map of tenant engines that failed to initialize */
-    private ConcurrentMap<UUID, T> failedTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
-
-    /** Map of tenant engines in the process of initializing */
-    private ConcurrentMap<UUID, ITenant> initializingTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
-
-    /** List of tenant ids waiting for an engine to be created */
-    private BlockingDeque<UUID> tenantInitializationQueue = new LinkedBlockingDeque<>();
-
-    /** Executor for tenant operations */
-    private ExecutorService tenantOperations;
+    /** Tenant engine manager */
+    private ITenantEngineManager<T> tenantEngineManager = new TenantEngineManager<>();
 
     /*
      * (non-Javadoc)
@@ -88,16 +52,14 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
 	// Create GRPC components.
 	createGrpcComponents();
 
-	// Handles threading for tenant operations.
-	this.tenantOperations = Executors.newFixedThreadPool(MAX_CONCURRENT_TENANT_OPERATIONS,
-		new TenantOperationsThreadFactory());
-	tenantOperations.execute(new TenantEngineStarter(this));
-
 	// Create step that will start components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
 	// Initialize tenant management API channel.
-	init.addInitializeStep(this, getTenantManagementApiDemux(), true);
+	init.addInitializeStep(this, getTenantManagementApiChannel(), true);
+
+	// Initialize tenant engine manager.
+	init.addInitializeStep(this, getTenantEngineManager(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -113,7 +75,8 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
      * Create components that interact via GRPC.
      */
     private void createGrpcComponents() {
-	this.tenantManagementApiDemux = new TenantManagementApiDemux(true);
+	this.tenantManagementApiChannel = new CachedTenantManagementApiChannel(getInstanceSettings(),
+		new CachedTenantManagementApiChannel.CacheSettings());
     }
 
     /*
@@ -131,16 +94,16 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
 	// Start tenant mangement API channel.
-	start.addStartStep(this, getTenantManagementApiDemux(), true);
+	start.addStartStep(this, getTenantManagementApiChannel(), true);
+
+	// Start tenant engine manager.
+	start.addStartStep(this, getTenantEngineManager(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
 
 	// Call logic for starting microservice subclass.
 	microserviceStart(monitor);
-
-	// Initialize tenant engines.
-	initializeTenantEngines();
     }
 
     /*
@@ -160,8 +123,11 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
+	// Stop tenant engine manager.
+	stop.addStopStep(this, getTenantEngineManager());
+
 	// Stop tenant management API channel.
-	stop.addStopStep(this, getTenantManagementApiDemux());
+	stop.addStopStep(this, getTenantManagementApiChannel());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -175,17 +141,40 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
      */
     @Override
     public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Shut down any tenant operations.
-	if (tenantOperations != null) {
-	    tenantOperations.shutdown();
-	}
-
-	// Show down tenant management API demux.
-	if (getTenantManagementApiDemux() != null) {
-	    getTenantManagementApiDemux().terminate(monitor);
+	// Shut down tenant management API channel.
+	if (getTenantManagementApiChannel() != null) {
+	    getTenantManagementApiChannel().terminate(monitor);
 	}
 
 	super.terminate(monitor);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
+     * getTenantEngineByTenantId(java.util.UUID)
+     */
+    @Override
+    public T getTenantEngineByTenantId(UUID tenantId) throws SiteWhereException {
+	return getTenantEngineManager().getTenantEngineByTenantId(tenantId);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
+     * assureTenantEngineAvailable(java.util.UUID)
+     */
+    @Override
+    public T assureTenantEngineAvailable(UUID tenantId) throws TenantEngineNotAvailableException {
+	return getTenantEngineManager().assureTenantEngineAvailable(tenantId);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
+     * getTenantEngineForPathInfo(com.sitewhere.spi.microservice.configuration.
+     * ITenantPathInfo)
+     */
+    @Override
+    public IMicroserviceTenantEngine getTenantEngineForPathInfo(ITenantPathInfo pathInfo) throws SiteWhereException {
+	return getTenantEngineManager().getTenantEngineForPathInfo(pathInfo);
     }
 
     /*
@@ -195,137 +184,6 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
     @Override
     public String getConfigurationPath() throws SiteWhereException {
 	return null;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * getTenantEngineByTenantId(java.util.UUID)
-     */
-    @Override
-    public T getTenantEngineByTenantId(UUID id) throws SiteWhereException {
-	T engine = getInitializedTenantEngines().get(id);
-	if (engine == null) {
-	    engine = getFailedTenantEngines().get(id);
-	}
-	return engine;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * assureTenantEngineAvailable(java.util.UUID)
-     */
-    @Override
-    public T assureTenantEngineAvailable(UUID tenantId) throws TenantEngineNotAvailableException {
-	try {
-	    T engine = getTenantEngineByTenantId(tenantId);
-	    if (engine == null) {
-		throw new TenantEngineNotAvailableException("No tenant engine found for tenant id.");
-	    } else if (engine.getLifecycleStatus() == LifecycleStatus.InitializationError) {
-		throw new TenantEngineNotAvailableException("Requested tenant engine failed initialization.");
-	    } else if (engine.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
-		throw new TenantEngineNotAvailableException("Requested tenant engine failed to start.");
-	    } else if (engine.getLifecycleStatus() != LifecycleStatus.Started) {
-		throw new TenantEngineNotAvailableException("Requested tenant engine has not started.");
-	    }
-	    return engine;
-	} catch (SiteWhereException e) {
-	    throw new TenantEngineNotAvailableException(e);
-	}
-    }
-
-    /**
-     * Initialize tenant engines by inspecting the list of tenant configurations,
-     * loading tenant information, then creating a tenant engine for each.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void initializeTenantEngines() throws SiteWhereException {
-	CuratorFramework curator = getZookeeperManager().getCurator();
-	try {
-	    if (curator.checkExists().forPath(getInstanceTenantsConfigurationPath()) != null) {
-		List<String> tenantIds = curator.getChildren().forPath(getInstanceTenantsConfigurationPath());
-		for (String tenantIdStr : tenantIds) {
-		    UUID tenantId = UUID.fromString(tenantIdStr);
-		    if (getTenantEngineByTenantId(tenantId) == null) {
-			if (!getTenantInitializationQueue().contains(tenantId)) {
-			    getTenantInitializationQueue().offer(tenantId);
-			}
-		    }
-		}
-	    } else {
-		getLogger().warn("No tenants currently configured.");
-	    }
-	} catch (Exception e) {
-	    throw new SiteWhereException("Unable to create tenant engines.", e);
-	}
-    }
-
-    /**
-     * Get the tenant engine responsible for handling configuration for the given
-     * path.
-     * 
-     * @param pathInfo
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IMicroserviceTenantEngine getTenantEngineForPathInfo(TenantPathInfo pathInfo) throws SiteWhereException {
-	if (pathInfo != null) {
-	    IMicroserviceTenantEngine engine = getTenantEngineByTenantId(pathInfo.getTenantId());
-	    if (engine != null) {
-		return engine;
-	    } else if (!getTenantInitializationQueue().contains(pathInfo.getTenantId())) {
-		getTenantInitializationQueue().offer(pathInfo.getTenantId());
-	    }
-	}
-	return null;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * restartTenantEngine(java.util.UUID)
-     */
-    @Override
-    public void restartTenantEngine(UUID tenantId) throws SiteWhereException {
-	// Shut down and remove existing tenant engine.
-	removeTenantEngine(tenantId);
-	getLogger().info("Tenant engine shut down successfully. Queueing for restart...");
-
-	// Add to queue for restart.
-	getTenantInitializationQueue().offer(tenantId);
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * removeTenantEngine(java.util.UUID)
-     */
-    @Override
-    public void removeTenantEngine(UUID tenantId) throws SiteWhereException {
-	IMicroserviceTenantEngine engine = getInitializedTenantEngines().get(tenantId);
-	if (engine != null) {
-	    // Remove initialized engine if one exists.
-	    getInitializedTenantEngines().remove(tenantId);
-
-	    ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
-		    new LifecycleProgressContext(1, "Shut down tenant engine."), this);
-
-	    // Stop tenant engine.
-	    engine.lifecycleStop(monitor);
-	    if (engine.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
-		getLogger().error("Error while stopping tenant engine.", engine.getLifecycleError());
-	    }
-
-	    // Terminate tenant engine.
-	    engine.lifecycleTerminate(monitor);
-	    if (engine.getLifecycleStatus() == LifecycleStatus.LifecycleError) {
-		getLogger().error("Error while terminating tenant engine.", engine.getLifecycleError());
-	    }
-	} else {
-	    // Remove failed engine if one exists.
-	    engine = getFailedTenantEngines().get(tenantId);
-	    if (engine != null) {
-		getFailedTenantEngines().remove(tenantId);
-	    }
-	}
     }
 
     /*
@@ -339,7 +197,7 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
 	if (isConfigurationCacheReady()) {
 	    try {
 		TenantPathInfo pathInfo = TenantPathInfo.compute(path, this);
-		IMicroserviceTenantEngine engine = getTenantEngineForPathInfo(pathInfo);
+		IMicroserviceTenantEngine engine = getTenantEngineManager().getTenantEngineForPathInfo(pathInfo);
 		if (engine != null) {
 		    engine.onConfigurationAdded(pathInfo.getPath(), data);
 		}
@@ -387,11 +245,8 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
 	    try {
 		// Detect global configuration update and inform all engines.
 		if (getInstanceManagementConfigurationPath().equals(path)) {
-		    ((IMultitenantMicroservice<?, ?>) getMicroservice()).restartConfiguration().get();
-		    for (T engine : getInitializedTenantEngines().values()) {
-			engine.onGlobalConfigurationUpdated();
-			restartTenantEngine(engine.getTenant().getId());
-		    }
+		    ((IMultitenantMicroservice<?, ?>) getMicroservice()).restartConfiguration();
+		    getTenantEngineManager().restartAllTenantEngines();
 		}
 
 		// Otherwise, only report updates to tenant-specific paths.
@@ -402,10 +257,6 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
 			engine.onConfigurationUpdated(pathInfo.getPath(), data);
 		    }
 		}
-	    } catch (InterruptedException e) {
-		getLogger().warn("Interrupted while waiting for global configuration to reload.");
-	    } catch (ExecutionException e) {
-		getLogger().error("Unable to reconfigure microservice based on update.", e);
 	    } catch (SiteWhereException e) {
 		getLogger().error("Error processing configuration update.", e);
 	    }
@@ -434,155 +285,15 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
-     * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
+     * getTenantEngineManager()
      */
     @Override
-    public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public ITenantEngineManager<T> getTenantEngineManager() {
+	return tenantEngineManager;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
-     * microserviceStart(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
-     */
-    @Override
-    public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
-     * microserviceStop(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
-     */
-    @Override
-    public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-    }
-
-    public ITenantManagementApiDemux getTenantManagementApiDemux() {
-	return tenantManagementApiDemux;
-    }
-
-    public void setTenantManagementApiDemux(ITenantManagementApiDemux tenantManagementApiDemux) {
-	this.tenantManagementApiDemux = tenantManagementApiDemux;
-    }
-
-    public ConcurrentMap<UUID, T> getInitializedTenantEngines() {
-	return initializedTenantEngines;
-    }
-
-    public ConcurrentMap<UUID, T> getFailedTenantEngines() {
-	return failedTenantEngines;
-    }
-
-    public void setFailedTenantEngines(ConcurrentMap<UUID, T> failedTenantEngines) {
-	this.failedTenantEngines = failedTenantEngines;
-    }
-
-    public ConcurrentMap<UUID, ITenant> getInitializingTenantEngines() {
-	return initializingTenantEngines;
-    }
-
-    public void setInitializingTenantEngines(ConcurrentMap<UUID, ITenant> initializingTenantEngines) {
-	this.initializingTenantEngines = initializingTenantEngines;
-    }
-
-    public void setInitializedTenantEngines(ConcurrentMap<UUID, T> initializedTenantEngines) {
-	this.initializedTenantEngines = initializedTenantEngines;
-    }
-
-    public BlockingDeque<UUID> getTenantInitializationQueue() {
-	return tenantInitializationQueue;
-    }
-
-    public void setTenantInitializationQueue(BlockingDeque<UUID> tenantInitializationQueue) {
-	this.tenantInitializationQueue = tenantInitializationQueue;
-    }
-
-    public ExecutorService getTenantOperations() {
-	return tenantOperations;
-    }
-
-    public void setTenantOperations(ExecutorService tenantOperations) {
-	this.tenantOperations = tenantOperations;
-    }
-
-    /**
-     * Processes the list of tenants waiting for tenant engines to be started.
-     * 
-     * @author Derek
-     */
-    private class TenantEngineStarter extends SystemUserRunnable {
-
-	public TenantEngineStarter(IMicroservice<?> microservice) {
-	    super(microservice, null);
-	}
-
-	/*
-	 * @see com.sitewhere.microservice.security.SystemUserRunnable#runAsSystemUser()
-	 */
-	@Override
-	public void runAsSystemUser() {
-	    while (true) {
-		try {
-		    // Wait for tenant API available.
-		    getTenantManagementApiDemux().waitForMicroserviceAvailable();
-
-		    // Get next tenant id from the queue and look up the tenant.
-		    UUID tenantId = getTenantInitializationQueue().take();
-
-		    // Verify that multiple threads don't start duplicate engines.
-		    if (getInitializingTenantEngines().get(tenantId) != null) {
-			getLogger().debug("Skipping initialization for existing tenant engine '" + tenantId + "'.");
-			continue;
-		    }
-
-		    // Look up tenant and add it to initializing tenants map.
-		    ITenant tenant = getTenantManagementApiDemux().getApiChannel().getTenant(tenantId);
-		    if (tenant == null) {
-			throw new SiteWhereException("Unable to locate tenant by id '" + tenantId + "'.");
-		    }
-		    getInitializingTenantEngines().put(tenantId, tenant);
-
-		    // Start tenant initialization.
-		    if (getTenantEngineByTenantId(tenantId) == null) {
-			InitializeTenantEngineOperation
-				.createCompletableFuture(MultitenantMicroservice.this, tenant, getTenantOperations())
-				.thenCompose(engine -> StartTenantEngineOperation.createCompletableFuture(engine,
-					getTenantOperations()))
-				.thenCompose(engine -> BootstrapTenantEngineOperation.createCompletableFuture(engine,
-					getTenantOperations()))
-				.exceptionally(t -> {
-				    getLogger().error("Unable to bootstrap tenant engine.", t);
-				    return null;
-				});
-		    } else {
-			getLogger().info("Tenant engine already exists for '" + tenantId + "'.");
-		    }
-		} catch (SiteWhereException e) {
-		    getLogger().warn("Exception processing tenant engine.", e);
-		} catch (Throwable e) {
-		    getLogger().warn("Unhandled exception processing tenant engine.", e);
-		}
-	    }
-	}
-    }
-
-    /** Used for naming tenant operation threads */
-    private class TenantOperationsThreadFactory implements ThreadFactory {
-
-	/** Counts threads */
-	private AtomicInteger counter = new AtomicInteger();
-
-	public Thread newThread(Runnable r) {
-	    return new Thread(r, "Tenant Operations " + counter.incrementAndGet());
-	}
+    public ITenantManagementApiChannel<?> getTenantManagementApiChannel() {
+	return tenantManagementApiChannel;
     }
 }

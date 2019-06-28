@@ -7,12 +7,11 @@
  */
 package com.sitewhere.grpc.client.spi;
 
-import java.util.concurrent.TimeUnit;
-
-import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
 import com.sitewhere.grpc.client.GrpcChannel;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
-import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Common interface for GRPC channels that handle API calls.
@@ -22,11 +21,18 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public interface IApiChannel<T extends GrpcChannel<?, ?>> extends ITenantEngineLifecycleComponent {
 
     /**
-     * Get target hostname .
+     * Get function identifier.
      * 
      * @return
      */
-    public String getHostname();
+    public IFunctionIdentifier getFunctionIdentifier();
+
+    /**
+     * Get gRPC service identifier.
+     * 
+     * @return
+     */
+    public IGrpcServiceIdentifier getGrpcServiceIdentifier();
 
     /**
      * Get target port.
@@ -38,12 +44,14 @@ public interface IApiChannel<T extends GrpcChannel<?, ?>> extends ITenantEngineL
     /**
      * Create underlying GRPC channel.
      * 
-     * @param tracerProvider
-     * @param host
+     * @param settings
+     * @param identifier
+     * @param grpcServiceIdentifier
      * @param port
      * @return
      */
-    public T createGrpcChannel(ITracerProvider tracerProvider, String host, int port);
+    public T createGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier,
+	    IGrpcServiceIdentifier grpcServiceIdentifier, int port);
 
     /**
      * Get underlying GRPC channel.
@@ -51,30 +59,4 @@ public interface IApiChannel<T extends GrpcChannel<?, ?>> extends ITenantEngineL
      * @return
      */
     public T getGrpcChannel();
-
-    /**
-     * Wait the default amount of time for channel to become available.
-     * 
-     * @throws ApiChannelNotAvailableException
-     */
-    public void waitForChannelAvailable() throws ApiChannelNotAvailableException;
-
-    /**
-     * Wait for a maximum amount of time for the channel to become available.
-     * Displays 'waiting' messages to log after a specified delay.
-     * 
-     * @param duration
-     * @param unit
-     * @param logMessageDelay
-     * @throws ApiChannelNotAvailableException
-     */
-    public void waitForChannelAvailable(long duration, TimeUnit unit, long logMessageDelay)
-	    throws ApiChannelNotAvailableException;
-
-    /**
-     * Get parent demulitplexer.
-     * 
-     * @return
-     */
-    public IApiDemux<?> getDemux();
 }

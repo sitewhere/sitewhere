@@ -1,0 +1,18 @@
+{
+	"id": "construction",
+	"name": "Construction Site Example",
+	"initializers": {
+		"deviceManagement": [
+			"initializer/deviceModel.groovy"
+		],
+		"eventManagement": [
+			"initializer/eventModel.groovy"
+		],
+		"assetManagement": [
+			"initializer/assetModel.groovy"
+		],
+		"scheduleManagement": [
+			"initializer/scheduleModel.groovy"
+		]
+	}
+}

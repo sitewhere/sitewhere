@@ -189,10 +189,10 @@ public class CustomerTypes extends RestControllerBase {
     }
 
     private IDeviceManagement getDeviceManagement() {
-	return getMicroservice().getDeviceManagementApiDemux().getApiChannel();
+	return getMicroservice().getDeviceManagementApiChannel();
     }
 
     private ILabelGeneration getLabelGeneration() {
-	return getMicroservice().getLabelGenerationApiDemux().getApiChannel();
+	return getMicroservice().getLabelGenerationApiChannel();
     }
 }

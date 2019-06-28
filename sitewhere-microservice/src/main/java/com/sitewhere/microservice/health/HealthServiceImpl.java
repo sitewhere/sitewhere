@@ -28,25 +28,32 @@ public class HealthServiceImpl extends HealthGrpc.HealthImplBase {
     private HealthCheckResponse.ServingStatus servingStatus = HealthCheckResponse.ServingStatus.SERVING;
 
     public void setServingStatus(HealthCheckResponse.ServingStatus servingStatus) {
-        this.servingStatus = servingStatus;
+	this.servingStatus = servingStatus;
     }
-    
+
+    /*
+     * @see io.grpc.health.v1.HealthGrpc.HealthImplBase#check(io.grpc.health.v1.
+     * HealthCheckRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void check(HealthCheckRequest request, StreamObserver<HealthCheckResponse> responseObserver) {
-	LOGGER.info("Health check called");
-	
-        HealthCheckResponse response = HealthCheckResponse.newBuilder().setStatus(servingStatus).build();
-        responseObserver.onNext(response);
-        responseObserver.onCompleted();
+	LOGGER.debug("Health check called");
+
+	HealthCheckResponse response = HealthCheckResponse.newBuilder().setStatus(servingStatus).build();
+	responseObserver.onNext(response);
+	responseObserver.onCompleted();
     }
 
+    /*
+     * @see io.grpc.health.v1.HealthGrpc.HealthImplBase#watch(io.grpc.health.v1.
+     * HealthCheckRequest, io.grpc.stub.StreamObserver)
+     */
     @Override
     public void watch(HealthCheckRequest request, StreamObserver<HealthCheckResponse> responseObserver) {
-	LOGGER.info("Health watch called");
+	LOGGER.debug("Health watch called");
 
-        HealthCheckResponse response = HealthCheckResponse.newBuilder().setStatus(servingStatus).build();
-        responseObserver.onNext(response);
-        responseObserver.onCompleted();
+	HealthCheckResponse response = HealthCheckResponse.newBuilder().setStatus(servingStatus).build();
+	responseObserver.onNext(response);
+	responseObserver.onCompleted();
     }
-    
 }

@@ -8,8 +8,8 @@
 package com.sitewhere.registration.spi;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.event.kafka.IDecodedEventPayload;
 import com.sitewhere.spi.device.event.kafka.IDeviceRegistrationPayload;
-import com.sitewhere.spi.device.event.kafka.IInboundEventPayload;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
@@ -88,5 +88,5 @@ public interface IRegistrationManager extends ITenantEngineLifecycleComponent {
      * @param payload
      * @throws SiteWhereException
      */
-    public void handleUnregisteredDeviceEvent(IInboundEventPayload payload) throws SiteWhereException;
+    public void handleUnregisteredDeviceEvent(IDecodedEventPayload payload) throws SiteWhereException;
 }

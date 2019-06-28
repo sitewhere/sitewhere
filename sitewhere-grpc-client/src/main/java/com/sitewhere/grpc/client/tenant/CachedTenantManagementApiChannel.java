@@ -10,10 +10,10 @@ package com.sitewhere.grpc.client.tenant;
 import java.util.UUID;
 
 import com.sitewhere.grpc.client.cache.CacheConfiguration;
-import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.cache.ICacheConfiguration;
 import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -30,11 +30,10 @@ public class CachedTenantManagementApiChannel extends TenantManagementApiChannel
     /** Tenant by id cache */
     private ICacheProvider<UUID, ITenant> tenantByIdCache;
 
-    public CachedTenantManagementApiChannel(IApiDemux<?> demux, String host, int port, CacheSettings settings) {
-	super(demux, host, port);
-	this.tenantByTokenCache = new TenantManagementCacheProviders.TenantByTokenCache(
-		settings.getTenantConfiguration());
-	this.tenantByIdCache = new TenantManagementCacheProviders.TenantByIdCache(settings.getTenantConfiguration());
+    public CachedTenantManagementApiChannel(IInstanceSettings settings, CacheSettings cache) {
+	super(settings);
+	this.tenantByTokenCache = new TenantManagementCacheProviders.TenantByTokenCache(cache.getTenantConfiguration());
+	this.tenantByIdCache = new TenantManagementCacheProviders.TenantByIdCache(cache.getTenantConfiguration());
     }
 
     /*

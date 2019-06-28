@@ -159,6 +159,6 @@ public class DeviceStatuses extends RestControllerBase {
     }
 
     private IDeviceManagement getDeviceManagement() {
-	return getMicroservice().getDeviceManagementApiDemux().getApiChannel();
+	return getMicroservice().getDeviceManagementApiChannel();
     }
 }

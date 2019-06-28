@@ -262,7 +262,7 @@ public class MongoAssetManagement extends TenantEngineLifecycleComponent impleme
 
 	Asset asset = MongoAsset.fromDocument(existing);
 	IDeviceManagement deviceManagement = ((IAssetManagementMicroservice) getTenantEngine().getMicroservice())
-		.getDeviceManagementApiDemux().getApiChannel();
+		.getDeviceManagementApiChannel();
 	AssetManagementPersistence.assetDeleteLogic(asset, this, deviceManagement);
 
 	MongoCollection<Document> assets = getMongoClient().getAssetsCollection();

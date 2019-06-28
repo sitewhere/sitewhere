@@ -12,8 +12,6 @@ import java.util.List;
 /**
  * Contains information about a template that can be used to populate a new
  * tenant.
- * 
- * @author Derek
  */
 public interface IDatasetTemplate {
 
@@ -51,6 +49,13 @@ public interface IDatasetTemplate {
 	 * @return
 	 */
 	public List<String> getDeviceManagement();
+
+	/**
+	 * Get event management initializer Groovy script locations.
+	 * 
+	 * @return
+	 */
+	public List<String> getEventManagement();
 
 	/**
 	 * Get asset management initializer Groovy script locations.

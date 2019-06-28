@@ -510,18 +510,18 @@ public class Devices extends RestControllerBase {
     }
 
     private IDeviceManagement getDeviceManagement() {
-	return getMicroservice().getDeviceManagementApiDemux().getApiChannel();
+	return getMicroservice().getDeviceManagementApiChannel();
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {
-	return new BlockingDeviceEventManagement(getMicroservice().getDeviceEventManagementApiDemux().getApiChannel());
+	return new BlockingDeviceEventManagement(getMicroservice().getDeviceEventManagementApiChannel());
     }
 
     private IAssetManagement getAssetManagement() {
-	return getMicroservice().getAssetManagementApiDemux().getApiChannel();
+	return getMicroservice().getAssetManagementApiChannel();
     }
 
     private ILabelGeneration getLabelGeneration() {
-	return getMicroservice().getLabelGenerationApiDemux().getApiChannel();
+	return getMicroservice().getLabelGenerationApiChannel();
     }
 }

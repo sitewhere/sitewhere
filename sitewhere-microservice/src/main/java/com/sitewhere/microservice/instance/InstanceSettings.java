@@ -30,16 +30,8 @@ public class InstanceSettings implements IInstanceSettings {
     @Value("#{systemEnvironment['sitewhere.instance.template.id'] ?: 'default'}")
     private String instanceTemplateId;
 
-    /** Consul hostname info for microservices */
-    @Value("#{systemEnvironment['sitewhere.consul.host'] ?: 'consul'}")
-    private String consulHost;
-
-    /** Consul port info for microservices */
-    @Value("#{systemEnvironment['sitewhere.consul.port'] ?: '8500'}")
-    private int consulPort;
-
     /** Zookeeper hostname info for microservices */
-    @Value("#{systemEnvironment['sitewhere.zookeeper.host'] ?: 'localhost'}")
+    @Value("#{systemEnvironment['sitewhere.zookeeper.host'] ?: 'cp-zookeeper'}")
     private String zookeeperHost;
 
     /** Zookeeper port info for microservices */
@@ -47,24 +39,48 @@ public class InstanceSettings implements IInstanceSettings {
     private int zookeeperPort;
 
     /** Kafka bootstrap services configuration for microservices */
-    @Value("#{systemEnvironment['sitewhere.kafka.bootstrap.servers'] ?: 'kafka:9092'}")
+    @Value("#{systemEnvironment['sitewhere.kafka.bootstrap.servers'] ?: 'cp-kafka:9092'}")
     private String kafkaBootstrapServers;
+
+    /** Kafka default number of partitions for topics */
+    @Value("#{systemEnvironment['sitewhere.kafka.defaultTopicPartitions'] ?: '8'}")
+    private int kafkaDefaultTopicPartitions;
+
+    /** Kafka default number of partitions for topics */
+    @Value("#{systemEnvironment['sitewhere.kafka.defaultTopicReplicationFactor'] ?: '3'}")
+    private int kafkaDefaultTopicReplicationFactor;
+
+    /** Apache Synote hostname info for microservices */
+    @Value("#{systemEnvironment['sitewhere.syncope.host'] ?: 'syncope'}")
+    private String syncopeHost;
+
+    /** Apache Synote port info for microservices */
+    @Value("#{systemEnvironment['sitewhere.syncope.port'] ?: '8080'}")
+    private int syncopePort;
+
+    /** Number of retries on gRPC exponential backoff */
+    @Value("#{systemEnvironment['sitewhere.grpc.maxRetryCount'] ?: '6'}")
+    private double grpcMaxRetryCount;
+
+    /** Initial backoff in seconds for gRPC exponential backoff */
+    @Value("#{systemEnvironment['sitewhere.grpc.initialBackoffSeconds'] ?: '10'}")
+    private int grpcInitialBackoffInSeconds;
+
+    /** Max backoff in seconds for gRPC exponential backoff */
+    @Value("#{systemEnvironment['sitewhere.grpc.maxBackoffSeconds'] ?: '600'}")
+    private int grpcMaxBackoffInSeconds;
+
+    /** Mulitplier used for gRPC exponential backoff */
+    @Value("#{systemEnvironment['sitewhere.grpc.backoffMultiplier'] ?: '1.5'}")
+    private double grpcBackoffMultiplier;
+
+    /** Flag for whether to resolve via FQDN on gRPC calls */
+    @Value("#{systemEnvironment['sitewhere.grpc.resolveFQDN'] ?: 'false'}")
+    private boolean grpcResolveFQDN;
 
     /** File system root for storing SiteWhere data for microservices */
     @Value("#{systemEnvironment['sitewhere.filesystem.storage.root'] ?: '/var/sitewhere'}")
     private String fileSystemStorageRoot;
-
-    /** GRPC port for serving APIs */
-    @Value("#{systemEnvironment['sitewhere.grpc.port'] ?: '9000'}")
-    private int grpcPort;
-
-    /** GRPC port info for microservice management */
-    @Value("#{systemEnvironment['sitewhere.management.grpc.port'] ?: '9001'}")
-    private int managementGrpcPort;
-
-    /** Tracer server information */
-    @Value("#{systemEnvironment['sitewhere.tracer.server'] ?: 'jaeger'}")
-    private String tracerServer;
 
     /** Flag for whether to log metrics */
     @Value("#{systemEnvironment['sitewhere.log.metrics'] ?: 'false'}")
@@ -73,6 +89,10 @@ public class InstanceSettings implements IInstanceSettings {
     /** Microservice publicly resolvable hostname */
     @Value("#{systemEnvironment['sitewhere.service.public.hostname'] ?: '#{null}'}")
     private String publicHostname;
+
+    /** Microservice publicly resolvable hostname */
+    @Value("#{systemEnvironment['sitewhere.namespace'] ?: '#{null}'}")
+    private String kubernetesNamespace;
 
     /** Microservice publicly resolvable hostname */
     @Value("#{systemEnvironment['sitewhere.k8s.pod.ip'] ?: '#{null}'}")
@@ -118,32 +138,6 @@ public class InstanceSettings implements IInstanceSettings {
 
     /*
      * @see
-     * com.sitewhere.spi.microservice.instance.IInstanceSettings#getConsulHost()
-     */
-    @Override
-    public String getConsulHost() {
-	return consulHost;
-    }
-
-    public void setConsulHost(String consulHost) {
-	this.consulHost = consulHost;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.microservice.instance.IInstanceSettings#getConsulPort()
-     */
-    @Override
-    public int getConsulPort() {
-	return consulPort;
-    }
-
-    public void setConsulPort(int consulPort) {
-	this.consulPort = consulPort;
-    }
-
-    /*
-     * @see
      * com.sitewhere.spi.microservice.instance.IInstanceSettings#getZookeeperHost()
      */
     @Override
@@ -183,6 +177,123 @@ public class InstanceSettings implements IInstanceSettings {
 
     /*
      * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
+     * getKafkaDefaultTopicPartitions()
+     */
+    @Override
+    public int getKafkaDefaultTopicPartitions() {
+	return kafkaDefaultTopicPartitions;
+    }
+
+    public void setKafkaDefaultTopicPartitions(int kafkaDefaultTopicPartitions) {
+	this.kafkaDefaultTopicPartitions = kafkaDefaultTopicPartitions;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
+     * getKafkaDefaultTopicReplicationFactor()
+     */
+    @Override
+    public int getKafkaDefaultTopicReplicationFactor() {
+	return kafkaDefaultTopicReplicationFactor;
+    }
+
+    public void setKafkaDefaultTopicReplicationFactor(int kafkaDefaultTopicReplicationFactor) {
+	this.kafkaDefaultTopicReplicationFactor = kafkaDefaultTopicReplicationFactor;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.instance.IInstanceSettings#getSyncopeHost()
+     */
+    @Override
+    public String getSyncopeHost() {
+	return syncopeHost;
+    }
+
+    public void setSyncopeHost(String syncopeHost) {
+	this.syncopeHost = syncopeHost;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.instance.IInstanceSettings#getSyncopePort()
+     */
+    @Override
+    public int getSyncopePort() {
+	return syncopePort;
+    }
+
+    public void setSyncopePort(int syncopePort) {
+	this.syncopePort = syncopePort;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
+     * getGrpcMaxRetryCount()
+     */
+    @Override
+    public double getGrpcMaxRetryCount() {
+	return grpcMaxRetryCount;
+    }
+
+    public void setGrpcMaxRetryCount(double grpcMaxRetryCount) {
+	this.grpcMaxRetryCount = grpcMaxRetryCount;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
+     * getGrpcInitialBackoffInSeconds()
+     */
+    @Override
+    public int getGrpcInitialBackoffInSeconds() {
+	return grpcInitialBackoffInSeconds;
+    }
+
+    public void setGrpcInitialBackoffInSeconds(int grpcInitialBackoffInSeconds) {
+	this.grpcInitialBackoffInSeconds = grpcInitialBackoffInSeconds;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
+     * getGrpcMaxBackoffInSeconds()
+     */
+    @Override
+    public int getGrpcMaxBackoffInSeconds() {
+	return grpcMaxBackoffInSeconds;
+    }
+
+    public void setGrpcMaxBackoffInSeconds(int grpcMaxBackoffInSeconds) {
+	this.grpcMaxBackoffInSeconds = grpcMaxBackoffInSeconds;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.instance.IInstanceSettings#isGrpcResolveFQDN()
+     */
+    @Override
+    public boolean isGrpcResolveFQDN() {
+	return grpcResolveFQDN;
+    }
+
+    public void setGrpcResolveFQDN(boolean grpcResolveFQDN) {
+	this.grpcResolveFQDN = grpcResolveFQDN;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
+     * getGrpcBackoffMultiplier()
+     */
+    @Override
+    public double getGrpcBackoffMultiplier() {
+	return grpcBackoffMultiplier;
+    }
+
+    public void setGrpcBackoffMultiplier(double grpcBackoffMultiplier) {
+	this.grpcBackoffMultiplier = grpcBackoffMultiplier;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
      * getFileSystemStorageRoot()
      */
     @Override
@@ -192,44 +303,6 @@ public class InstanceSettings implements IInstanceSettings {
 
     public void setFileSystemStorageRoot(String fileSystemStorageRoot) {
 	this.fileSystemStorageRoot = fileSystemStorageRoot;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#getGrpcPort()
-     */
-    @Override
-    public int getGrpcPort() {
-	return grpcPort;
-    }
-
-    public void setGrpcPort(int grpcPort) {
-	this.grpcPort = grpcPort;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
-     * getManagementGrpcPort()
-     */
-    @Override
-    public int getManagementGrpcPort() {
-	return managementGrpcPort;
-    }
-
-    public void setManagementGrpcPort(int managementGrpcPort) {
-	this.managementGrpcPort = managementGrpcPort;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.microservice.instance.IInstanceSettings#getTracerServer()
-     */
-    @Override
-    public String getTracerServer() {
-	return tracerServer;
-    }
-
-    public void setTracerServer(String tracerServer) {
-	this.tracerServer = tracerServer;
     }
 
     /*
@@ -255,6 +328,19 @@ public class InstanceSettings implements IInstanceSettings {
 
     public void setPublicHostname(String publicHostname) {
 	this.publicHostname = publicHostname;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#
+     * getKubernetesNamespace()
+     */
+    @Override
+    public String getKubernetesNamespace() {
+	return kubernetesNamespace;
+    }
+
+    public void setKubernetesNamespace(String kubernetesNamespace) {
+	this.kubernetesNamespace = kubernetesNamespace;
     }
 
     /*

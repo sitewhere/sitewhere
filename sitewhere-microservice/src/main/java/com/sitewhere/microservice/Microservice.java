@@ -10,21 +10,24 @@ package com.sitewhere.microservice;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.ScheduledReporter;
-import com.codahale.metrics.Slf4jReporter;
+import com.evanlennick.retry4j.CallExecutorBuilder;
+import com.evanlennick.retry4j.Status;
+import com.evanlennick.retry4j.config.RetryConfig;
+import com.evanlennick.retry4j.config.RetryConfigBuilder;
+import com.evanlennick.retry4j.exception.RetriesExhaustedException;
+import com.evanlennick.retry4j.listener.RetryListener;
 import com.sitewhere.Version;
-import com.sitewhere.microservice.discovery.consul.ConsulServiceDiscoveryProvider;
 import com.sitewhere.microservice.management.MicroserviceManagementGrpcServer;
 import com.sitewhere.microservice.scripting.ScriptTemplateManager;
 import com.sitewhere.microservice.state.MicroserviceStateUpdatesKafkaProducer;
@@ -33,7 +36,6 @@ import com.sitewhere.rest.model.microservice.state.MicroserviceDetails;
 import com.sitewhere.rest.model.microservice.state.MicroserviceState;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
-import com.sitewhere.server.lifecycle.TracerUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IMicroservice;
@@ -42,7 +44,6 @@ import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.configuration.model.IElementNode;
 import com.sitewhere.spi.microservice.configuration.model.IElementRole;
-import com.sitewhere.spi.microservice.discovery.IServiceDiscoveryProvider;
 import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
@@ -58,13 +59,8 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.system.IVersion;
 
-import io.opentracing.ActiveSpan;
-import io.opentracing.Tracer;
-
 /**
  * Common base class for all SiteWhere microservices.
- * 
- * @author Derek
  */
 public abstract class Microservice<T extends IFunctionIdentifier> extends LifecycleComponent
 	implements IMicroservice<T> {
@@ -75,11 +71,14 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     /** Instance state folder name */
     private static final String INSTANCE_STATE_FOLDER = "/state";
 
-    /** Relative path to instance bootstrap marker */
-    private static final String INSTANCE_BOOTSTRAP_MARKER = "/bootstrapped";
+    /** Relative path to instance configuration bootstrap marker */
+    private static final String INSTANCE_CONFIG_BOOTSTRAP_MARKER = "/config-bootstrapped";
 
-    /** Number of seconds to wait between checks for isntance bootstrap marker */
-    private static final int INSTANCE_BOOTSTRAP_CHECK_INTERVAL_SECS = 3;
+    /** Relative path to instance users bootstrap marker */
+    private static final String INSTANCE_USERS_BOOTSTRAP_MARKER = "/users-bootstrapped";
+
+    /** Relative path to instance tenants bootstrap marker */
+    private static final String INSTANCE_TENANTS_BOOTSTRAP_MARKER = "/tenants-bootstrapped";
 
     /** Heartbeat interval in seconds */
     private static final int HEARTBEAT_INTERVAL_SECS = 10;
@@ -107,18 +106,11 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     @Autowired
     private IKafkaTopicNaming kafkaTopicNaming;
 
-    /** Tracer implementation */
-    @Autowired
-    private Tracer tracer;
-
     /** Version information */
     private IVersion version = new Version();
 
     /** Configuration model */
     private IConfigurationModel configurationModel;
-
-    /** Service discovery provider implementation */
-    private IServiceDiscoveryProvider serviceDiscoveryProvider = new ConsulServiceDiscoveryProvider();
 
     /** Microservice management GRPC server */
     private IMicroserviceManagementGrpcServer microserviceManagementGrpcServer;
@@ -137,12 +129,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     /** Executor for heartbeat */
     private ExecutorService microserviceHeartbeatService;
-
-    /** Metric registry */
-    private MetricRegistry metricRegistry = new MetricRegistry();
-
-    /** Metrics reporter */
-    private ScheduledReporter metricsReporter;
 
     /** Unique id for microservice */
     private UUID id = UUID.randomUUID();
@@ -185,9 +171,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	// Initialize configuration model.
 	initializeConfigurationModel();
 
-	// Initialize metrics logging.
-	initializeMetrics();
-
 	// Initialize GRPC components.
 	initializeGrpcComponents();
 
@@ -197,11 +180,11 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	// Organizes steps for initializing microservice.
 	ICompositeLifecycleStep initialize = new CompositeLifecycleStep("Initialize " + getName());
 
-	// Initialize service discovery.
-	initialize.addInitializeStep(this, getServiceDiscoveryProvider(), true);
+	// Initialize microservice management GRPC server.
+	initialize.addInitializeStep(this, getMicroserviceManagementGrpcServer(), true);
 
-	// Start service discovery.
-	initialize.addStartStep(this, getServiceDiscoveryProvider(), true);
+	// Start microservice management GRPC server.
+	initialize.addStartStep(this, getMicroserviceManagementGrpcServer(), true);
 
 	// Initialize script template manager.
 	initialize.addInitializeStep(this, getScriptTemplateManager(), true);
@@ -212,11 +195,8 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	// Initialize Zookeeper configuration management.
 	initialize.addInitializeStep(this, getZookeeperManager(), true);
 
-	// Initialize microservice management GRPC server.
-	initialize.addInitializeStep(this, getMicroserviceManagementGrpcServer(), true);
-
-	// Start microservice management GRPC server.
-	initialize.addStartStep(this, getMicroserviceManagementGrpcServer(), true);
+	// Start Zookeeper configuration management.
+	initialize.addStartStep(this, getZookeeperManager(), true);
 
 	// Initialize Kafka producer for reporting state.
 	initialize.addInitializeStep(this, getStateUpdatesKafkaProducer(), true);
@@ -229,7 +209,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
 	// Record start time.
 	this.startTime = System.currentTimeMillis();
-	getServiceDiscoveryProvider().registerService();
 	getMicroserviceAnalytics().sendMicroserviceStarted(this);
 
 	// Start sending heartbeats.
@@ -242,19 +221,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     protected void initializeConfigurationModel() {
 	this.configurationModel = buildConfigurationModel();
 	((ConfigurationModel) configurationModel).setMicroserviceDetails(getMicroserviceDetails());
-    }
-
-    /**
-     * Initialize metrics.
-     */
-    protected void initializeMetrics() {
-	if (getInstanceSettings().isLogMetrics()) {
-	    this.metricsReporter = Slf4jReporter.forRegistry(getMetricRegistry()).convertRatesTo(TimeUnit.SECONDS)
-		    .convertDurationsTo(TimeUnit.MILLISECONDS).build();
-	    getMetricsReporter().start(20, TimeUnit.SECONDS);
-	} else {
-	    getLogger().info(MicroserviceMessages.METRICS_REPORTING_DISABLED);
-	}
     }
 
     /**
@@ -292,36 +258,28 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getMicroserviceAnalytics().sendMicroserviceStopped(this);
 
-	// Stop reporting metrics.
-	if (getMetricsReporter() != null) {
-	    getMetricsReporter().stop();
-	}
-
 	// Stop sending heartbeats.
 	if (getMicroserviceHeartbeatService() != null) {
 	    getMicroserviceHeartbeatService().shutdownNow();
 	}
 
 	// Create step that will stop components.
-	ICompositeLifecycleStep terminate = new CompositeLifecycleStep("Stop " + getComponentName());
-
-	// Stop microservice management GRPC server.
-	terminate.addStopStep(this, getMicroserviceManagementGrpcServer());
+	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
 
 	// Stop Kafka producer for reporting state.
-	terminate.addStopStep(this, getStateUpdatesKafkaProducer());
+	stop.addStopStep(this, getStateUpdatesKafkaProducer());
 
 	// Terminate Zk manager.
-	terminate.addStopStep(this, getZookeeperManager());
+	stop.addStopStep(this, getZookeeperManager());
 
 	// Terminate script template manager.
-	terminate.addStopStep(this, getScriptTemplateManager());
+	stop.addStopStep(this, getScriptTemplateManager());
 
-	// Terminate service discovery.
-	terminate.addStopStep(this, getServiceDiscoveryProvider());
+	// Stop microservice management GRPC server.
+	stop.addStopStep(this, getMicroserviceManagementGrpcServer());
 
 	// Execute shutdown steps.
-	terminate.execute(monitor);
+	stop.execute(monitor);
     }
 
     /*
@@ -331,25 +289,32 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
      * waitForInstanceInitialization()
      */
     @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void waitForInstanceInitialization() throws SiteWhereException {
-	ActiveSpan span = null;
 	try {
-	    span = getTracer().buildSpan("Wait for instance to be bootstrapped").startActive();
-	    getLogger().info(MicroserviceMessages.INSTANCE_VERIFY_BOOTSTRAPPED);
-	    while (true) {
-		if (getZookeeperManager().getCurator().checkExists().forPath(getInstanceBootstrappedMarker()) != null) {
-		    break;
+	    getLogger().info("Verifying that instance has been bootstrapped...");
+	    Callable<Boolean> bootstrapCheck = () -> {
+		return getZookeeperManager().getCurator().checkExists()
+			.forPath(getInstanceConfigBootstrappedMarker()) == null ? false : true;
+	    };
+	    RetryConfig config = new RetryConfigBuilder().retryOnReturnValue(Boolean.FALSE).withMaxNumberOfTries(12)
+		    .withDelayBetweenTries(Duration.ofSeconds(2)).withFibonacciBackoff().build();
+	    RetryListener listener = new RetryListener<Boolean>() {
+
+		@Override
+		public void onEvent(Status<Boolean> status) {
+		    getLogger().info(String.format(
+			    "Unable to locate bootstrap marker on attempt %d (total wait so far %dms). Retrying after fallback...",
+			    status.getTotalTries(), status.getTotalElapsedDuration().toMillis()));
 		}
-		getLogger().info(MicroserviceMessages.INSTANCE_BOOTSTRAP_MARKER_NOT_FOUND,
-			getInstanceBootstrappedMarker());
-		Thread.sleep(INSTANCE_BOOTSTRAP_CHECK_INTERVAL_SECS * 1000);
-	    }
-	    getLogger().info(MicroserviceMessages.INSTANCE_BOOTSTRAP_CONFIRMED);
-	} catch (Exception e) {
-	    TracerUtils.handleErrorInTracerSpan(span, e);
-	    throw new SiteWhereException("Error waiting on instance to be bootstrapped.", e);
-	} finally {
-	    TracerUtils.finishTracerSpan(span);
+	    };
+	    new CallExecutorBuilder().config(config).afterFailedTryListener(listener).build().execute(bootstrapCheck);
+	    getLogger().info("Confirmed that instance was bootstrapped.");
+	} catch (RetriesExhaustedException e) {
+	    Status status = e.getStatus();
+	    throw new SiteWhereException(
+		    String.format("Unable to find instance bootstrap indicator for after %d attempts (%dms).",
+			    status.getTotalTries(), status.getTotalElapsedDuration().toMillis()));
 	}
     }
 
@@ -427,26 +392,31 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     @Override
     public void setLifecycleStatus(LifecycleStatus lifecycleStatus) {
 	super.setLifecycleStatus(lifecycleStatus);
-	getLogger().info(MicroserviceMessages.LIFECYCLE_STATUS_SENDING, getLifecycleStatus().name());
-	sendChangedState();
+	if (sendChangedState()) {
+	    getLogger().info(
+		    String.format("Sent state update for lifecycle status change '%s'", getLifecycleStatus().name()));
+	}
     }
 
     /**
      * Send current state for microservice to Kafka topic.
+     * 
+     * @return
      */
-    protected void sendChangedState() {
+    protected boolean sendChangedState() {
 	if ((getStateUpdatesKafkaProducer() != null)
 		&& (getStateUpdatesKafkaProducer().getLifecycleStatus() == LifecycleStatus.Started)) {
 	    try {
 		IMicroserviceState state = getCurrentState();
 		getStateUpdatesKafkaProducer().send(state);
+		return true;
 	    } catch (SiteWhereException e) {
-		getLogger().error(MicroserviceMessages.LIFECYCLE_STATUS_SEND_EXCEPTION);
 		getLogger().error("Unable to send lifecycle status.", e);
 	    }
 	} else {
-	    getLogger().warn(MicroserviceMessages.LIFECYCLE_STATUS_FAILED_NO_KAFKA);
+	    getLogger().debug("Unable to report state. Waiting on Kafka producer to become available.");
 	}
+	return false;
     }
 
     /*
@@ -493,12 +463,30 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     }
 
     /*
-     * @see com.sitewhere.microservice.spi.IMicroservice#
-     * getInstanceBootstrappedMarker()
+     * @see com.sitewhere.spi.microservice.IMicroservice#
+     * getInstanceConfigBootstrappedMarker()
      */
     @Override
-    public String getInstanceBootstrappedMarker() throws SiteWhereException {
-	return getInstanceStatePath() + INSTANCE_BOOTSTRAP_MARKER;
+    public String getInstanceConfigBootstrappedMarker() throws SiteWhereException {
+	return getInstanceStatePath() + INSTANCE_CONFIG_BOOTSTRAP_MARKER;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#
+     * getInstanceUsersBootstrappedMarker()
+     */
+    @Override
+    public String getInstanceUsersBootstrappedMarker() throws SiteWhereException {
+	return getInstanceStatePath() + INSTANCE_USERS_BOOTSTRAP_MARKER;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#
+     * getInstanceTenantsBootstrappedMarker()
+     */
+    @Override
+    public String getInstanceTenantsBootstrappedMarker() throws SiteWhereException {
+	return getInstanceStatePath() + INSTANCE_TENANTS_BOOTSTRAP_MARKER;
     }
 
     /*
@@ -555,19 +543,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     public void setSystemUser(ISystemUser systemUser) {
 	this.systemUser = systemUser;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.microservice.IMicroservice#getServiceDiscoveryProvider()
-     */
-    @Override
-    public IServiceDiscoveryProvider getServiceDiscoveryProvider() {
-	return serviceDiscoveryProvider;
-    }
-
-    public void setServiceDiscoveryProvider(IServiceDiscoveryProvider serviceDiscoveryProvider) {
-	this.serviceDiscoveryProvider = serviceDiscoveryProvider;
     }
 
     /*
@@ -646,42 +621,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getMetricRegistry()
-     */
-    @Override
-    public MetricRegistry getMetricRegistry() {
-	return metricRegistry;
-    }
-
-    public void setMetricRegistry(MetricRegistry metricRegistry) {
-	this.metricRegistry = metricRegistry;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getMetricsReporter()
-     */
-    @Override
-    public ScheduledReporter getMetricsReporter() {
-	return metricsReporter;
-    }
-
-    public void setMetricsReporter(ScheduledReporter metricsReporter) {
-	this.metricsReporter = metricsReporter;
-    }
-
-    /*
-     * @see com.sitewhere.spi.tracing.ITracerProvider#getTracer()
-     */
-    @Override
-    public Tracer getTracer() {
-	return tracer;
-    }
-
-    public void setTracer(Tracer tracer) {
-	this.tracer = tracer;
-    }
-
-    /*
      * @see com.sitewhere.microservice.spi.IMicroservice#getVersion()
      */
     @Override
@@ -733,7 +672,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	    while (true) {
 		try {
 		    getLogger().trace("Sending heartbeat.");
-		    getServiceDiscoveryProvider().sendHeartbeat();
 		    sendChangedState();
 		} catch (Throwable t) {
 		    getLogger().error("Unable to send state for heartbeat.", t);
@@ -756,7 +694,7 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	private AtomicInteger counter = new AtomicInteger();
 
 	public Thread newThread(Runnable r) {
-	    return new Thread(r, "Microservice Operations " + counter.incrementAndGet());
+	    return new Thread(r, "Service Ops " + counter.incrementAndGet());
 	}
     }
 
@@ -767,7 +705,7 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	private AtomicInteger counter = new AtomicInteger();
 
 	public Thread newThread(Runnable r) {
-	    return new Thread(r, "Microservice Heartbeat " + counter.incrementAndGet());
+	    return new Thread(r, "Service Heartbeat " + counter.incrementAndGet());
 	}
     }
 }

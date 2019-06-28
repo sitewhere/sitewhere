@@ -13,8 +13,6 @@ import ch.qos.cal10n.LocaleData;
 
 /**
  * Localized messages for microservice core classes.
- * 
- * @author Derek
  */
 @BaseName("microservice")
 @LocaleData({ @Locale("en_US") })
@@ -30,7 +28,7 @@ public enum MicroserviceMessages {
 
     LIFECYCLE_STATUS_SEND_EXCEPTION,
 
-    LIFECYCLE_STATUS_SENDING,
+    LIFECYCLE_STATUS_SENT,
 
     METRICS_REPORTING_DISABLED;
 }

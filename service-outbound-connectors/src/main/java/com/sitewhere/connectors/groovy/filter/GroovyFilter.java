@@ -8,6 +8,7 @@
 package com.sitewhere.connectors.groovy.filter;
 
 import com.sitewhere.connectors.filter.DeviceEventFilter;
+import com.sitewhere.connectors.microservice.OutboundConnectorsMicroservice;
 import com.sitewhere.connectors.spi.IDeviceEventFilter;
 import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
@@ -89,7 +90,8 @@ public class GroovyFilter extends DeviceEventFilter {
      */
     @Override
     public boolean isFiltered(IDeviceEventContext context, IDeviceEvent event) throws SiteWhereException {
-	IDeviceManagementApiChannel<?> deviceManagement = getDeviceManagementApiDemux().getApiChannel();
+	IDeviceManagementApiChannel<?> deviceManagement = ((OutboundConnectorsMicroservice) getMicroservice())
+		.getDeviceManagementApiChannel();
 	IDeviceAssignment assignment = deviceManagement.getDeviceAssignment(event.getDeviceAssignmentId());
 	IDevice device = deviceManagement.getDevice(assignment.getDeviceId());
 

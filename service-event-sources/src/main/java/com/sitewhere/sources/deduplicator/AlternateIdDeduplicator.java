@@ -57,6 +57,6 @@ public class AlternateIdDeduplicator extends TenantEngineLifecycleComponent impl
 
     private IDeviceEventManagement getDeviceEventManagement() {
 	return new BlockingDeviceEventManagement(
-		((IEventSourcesMicroservice) getMicroservice()).getDeviceEventManagementApiDemux().getApiChannel());
+		((IEventSourcesMicroservice) getMicroservice()).getDeviceEventManagementApiChannel());
     }
 }

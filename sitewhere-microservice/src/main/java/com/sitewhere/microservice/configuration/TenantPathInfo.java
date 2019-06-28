@@ -11,14 +11,13 @@ import java.util.UUID;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
+import com.sitewhere.spi.microservice.configuration.ITenantPathInfo;
 
 /**
  * Holds path information for a file relative to the tenant configuration
  * folder.
- * 
- * @author Derek
  */
-public class TenantPathInfo {
+public class TenantPathInfo implements ITenantPathInfo {
 
     /** Tenant id */
     private UUID tenantId;
@@ -52,6 +51,11 @@ public class TenantPathInfo {
 	return null;
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.configuration.ITenantPathInfo#getTenantId()
+     */
+    @Override
     public UUID getTenantId() {
 	return tenantId;
     }
@@ -60,6 +64,10 @@ public class TenantPathInfo {
 	this.tenantId = tenantId;
     }
 
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.ITenantPathInfo#getPath()
+     */
+    @Override
     public String getPath() {
 	return path;
     }

@@ -36,20 +36,6 @@ public interface IInstanceSettings {
     public String getInstanceTemplateId();
 
     /**
-     * Get hostname used by microservices to connect to Consul.
-     * 
-     * @return
-     */
-    public String getConsulHost();
-
-    /**
-     * Get port used by microservices to connect to Consul.
-     * 
-     * @return
-     */
-    public int getConsulPort();
-
-    /**
      * Get hostname used by microservices to connect to Zookeeper.
      * 
      * @return
@@ -71,32 +57,74 @@ public interface IInstanceSettings {
     public String getKafkaBootstrapServers();
 
     /**
+     * Get default number of partitions used for Kafka topics.
+     * 
+     * @return
+     */
+    public int getKafkaDefaultTopicPartitions();
+
+    /**
+     * Get default replication factor used for Kafka topics.
+     * 
+     * @return
+     */
+    public int getKafkaDefaultTopicReplicationFactor();
+
+    /**
+     * Get hostname used by microservices to connect to Apache Syncope API.
+     * 
+     * @return
+     */
+    public String getSyncopeHost();
+
+    /**
+     * Get port used by microservices to connect to Apache Syncope API.
+     * 
+     * @return
+     */
+    public int getSyncopePort();
+
+    /**
+     * Get max retries for gRPC exponential backoff.
+     * 
+     * @return
+     */
+    public double getGrpcMaxRetryCount();
+
+    /**
+     * Get initial wait time for exponential backoff on gRPC calls.
+     * 
+     * @return
+     */
+    public int getGrpcInitialBackoffInSeconds();
+
+    /**
+     * Get max time for exponential backoff on gRPC calls.
+     * 
+     * @return
+     */
+    public int getGrpcMaxBackoffInSeconds();
+
+    /**
+     * Get multiplier used for exponential backoff.
+     * 
+     * @return
+     */
+    public double getGrpcBackoffMultiplier();
+
+    /**
+     * Indicates whether FQDN is used when resolving gRPC services.
+     * 
+     * @return
+     */
+    public boolean isGrpcResolveFQDN();
+
+    /**
      * Get root filesystem path where microservice resources may be stored.
      * 
      * @return
      */
     public String getFileSystemStorageRoot();
-
-    /**
-     * Get port to which GRPC server is bound.
-     * 
-     * @return
-     */
-    public int getGrpcPort();
-
-    /**
-     * Get port to which management GRPC service is bound.
-     * 
-     * @return
-     */
-    public int getManagementGrpcPort();
-
-    /**
-     * Get server information for tracer collector.
-     * 
-     * @return
-     */
-    public String getTracerServer();
 
     /**
      * Indicates whether to log metrics.
@@ -111,6 +139,13 @@ public interface IInstanceSettings {
      * @return
      */
     public String getPublicHostname();
+
+    /**
+     * Get Kubernetes namespace.
+     * 
+     * @return
+     */
+    public String getKubernetesNamespace();
 
     /**
      * Get IP address for Kubernetes Pod running microservice.

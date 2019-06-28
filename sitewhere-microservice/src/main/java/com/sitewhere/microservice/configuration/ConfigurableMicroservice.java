@@ -10,18 +10,15 @@ package com.sitewhere.microservice.configuration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
+import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.microservice.Microservice;
-import com.sitewhere.microservice.operations.InitializeConfigurationOperation;
-import com.sitewhere.microservice.operations.StartConfigurationOperation;
-import com.sitewhere.microservice.operations.StopConfigurationOperation;
-import com.sitewhere.microservice.operations.TerminateConfigurationOperation;
 import com.sitewhere.microservice.scripting.ZookeeperScriptManagement;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.server.lifecycle.LifecycleProgressContext;
+import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
@@ -34,6 +31,7 @@ import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
+import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
  * Base class for microservices that monitor the configuration folder for
@@ -47,18 +45,20 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
     /** Relative path to instance management configuration file */
     private static final String INSTANCE_MANAGEMENT_CONFIGURATION_PATH = "/instance-management.xml";
 
-    /** Relative path for tenant-specific data */
+    /** Relative path for authority configuration data */
+    private static final String INSTANCE_AUTHORITIES_SUBPATH = "/authoritities";
+
+    /** Relative path for user configuration data */
+    private static final String INSTANCE_USERS_SUBPATH = "/users";
+
+    /** Relative path for tenant configuration data */
     private static final String INSTANCE_TENANTS_SUBPATH = "/tenants";
 
     /** Relative path for script data */
     private static final String SCRIPTS_SUBPATH = "/scripts";
 
-    /** Relative path to tenant bootstrapped indicator data */
-    private static final String INSTANCE_TENANT_BOOTSTRAPPED_INDICATOR = "bootstrapped";
-
-    /** Injected Spring context for microservice */
-    @Autowired
-    private ApplicationContext microserviceApplicationContext;
+    /** Relative path to tenant configured indicator data */
+    private static final String INSTANCE_TENANT_CONFIGURED_INDICATOR = "configured";
 
     /** Configuration monitor */
     private IConfigurationMonitor configurationMonitor;
@@ -88,7 +88,11 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
     public void onConfigurationCacheInitialized() {
 	getLogger().info("Configuration cache initialized.");
 	setConfigurationCacheReady(true);
-	restartConfiguration();
+	try {
+	    restartConfiguration();
+	} catch (SiteWhereException e) {
+	    getLogger().error("Unable to restart microservice configuration.", e);
+	}
     }
 
     /*
@@ -143,6 +147,42 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
     }
 
     /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getInstanceAuthoritiesConfigurationPath()
+     */
+    @Override
+    public String getInstanceAuthoritiesConfigurationPath() throws SiteWhereException {
+	return getInstanceConfigurationPath() + INSTANCE_AUTHORITIES_SUBPATH;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getInstanceAuthorityConfigurationPath(java.lang.String)
+     */
+    @Override
+    public String getInstanceAuthorityConfigurationPath(String authority) throws SiteWhereException {
+	return getInstanceAuthoritiesConfigurationPath() + "/" + authority;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getInstanceUsersConfigurationPath()
+     */
+    @Override
+    public String getInstanceUsersConfigurationPath() throws SiteWhereException {
+	return getInstanceConfigurationPath() + INSTANCE_USERS_SUBPATH;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getInstanceUserConfigurationPath(java.lang.String)
+     */
+    @Override
+    public String getInstanceUserConfigurationPath(String username) throws SiteWhereException {
+	return getInstanceUsersConfigurationPath() + "/" + username;
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
@@ -191,11 +231,11 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * getInstanceTenantBootstrappedIndicatorPath(java.util.UUID)
+     * getInstanceTenantConfiguredIndicatorPath(java.util.UUID)
      */
     @Override
-    public String getInstanceTenantBootstrappedIndicatorPath(UUID tenantId) throws SiteWhereException {
-	return getInstanceTenantConfigurationPath(tenantId) + "/" + INSTANCE_TENANT_BOOTSTRAPPED_INDICATOR;
+    public String getInstanceTenantConfiguredIndicatorPath(UUID tenantId) throws SiteWhereException {
+	return getInstanceTenantConfigurationPath(tenantId) + "/" + INSTANCE_TENANT_CONFIGURED_INDICATOR;
     }
 
     /*
@@ -207,6 +247,7 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.initialize(monitor);
+	getLogger().info("Shutting down configurable microservice components...");
 
 	// Create configuration monitor.
 	this.configurationMonitor = new ConfigurationMonitor(getZookeeperManager(), getInstanceConfigurationPath());
@@ -303,6 +344,7 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		getLogger().info("Initializing discoverable beans...");
 		Map<String, IDiscoverableTenantLifecycleComponent> components = context
 			.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
 
@@ -323,6 +365,7 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		getLogger().info("Starting discoverable beans...");
 		Map<String, IDiscoverableTenantLifecycleComponent> components = context
 			.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
 
@@ -343,6 +386,7 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		getLogger().info("Stopping discoverable beans...");
 		Map<String, IDiscoverableTenantLifecycleComponent> components = context
 			.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
 
@@ -363,6 +407,7 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		getLogger().info("Terminating discoverable beans...");
 		Map<String, IDiscoverableTenantLifecycleComponent> components = context
 			.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
 
@@ -382,6 +427,11 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
      */
     @Override
     public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Stop and terminate the configuration components.
+	getLogger().info("Shutting down configurable microservice components...");
+	stopConfiguration();
+	terminateConfiguration();
+
 	super.terminate(monitor);
 
 	// Organizes steps for stopping microservice.
@@ -405,21 +455,147 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * initializeConfiguration()
+     */
+    @Override
+    public void initializeConfiguration() throws SiteWhereException {
+	try {
+	    // Load microservice configuration.
+	    setConfigurationState(ConfigurationState.Loading);
+	    byte[] global = getInstanceManagementConfigurationData();
+	    if (global == null) {
+		throw new SiteWhereException("Global instance management file not found.");
+	    }
+	    ApplicationContext globalContext = ConfigurationUtils.buildGlobalContext(this, global,
+		    getMicroservice().getSpringProperties());
+
+	    String path = getConfigurationPath();
+	    ApplicationContext localContext = null;
+	    if (path != null) {
+		String fullPath = getInstanceConfigurationPath() + "/" + path;
+		getLogger().info(String.format("Loading configuration from Zookeeper at path '%s'", fullPath));
+		byte[] data = getConfigurationMonitor().getConfigurationDataFor(fullPath);
+		if (data != null) {
+		    localContext = ConfigurationUtils.buildSubcontext(data, getMicroservice().getSpringProperties(),
+			    globalContext);
+		} else {
+		    throw new SiteWhereException("Required microservice configuration not found: " + fullPath);
+		}
+	    }
+
+	    // Store contexts for later use.
+	    setGlobalApplicationContext(globalContext);
+	    setLocalApplicationContext(localContext);
+	    setConfigurationState(ConfigurationState.Stopped);
+
+	    ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
+		    new LifecycleProgressContext(1, "Initialize microservice configuration."), getMicroservice());
+	    long start = System.currentTimeMillis();
+	    getLogger().info("Initializing from updated configuration...");
+	    configurationInitialize(getGlobalApplicationContext(), getLocalApplicationContext(), monitor);
+	    if (getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		throw getMicroservice().getLifecycleError();
+	    }
+	    getLogger().info("Microservice configuration '" + getMicroservice().getName() + "' initialized in "
+		    + (System.currentTimeMillis() - start) + "ms.");
+	    setConfigurationState(ConfigurationState.Initialized);
+	} catch (Throwable t) {
+	    getLogger().error("Unable to initialize microservice configuration '" + getMicroservice().getName() + "'.",
+		    t);
+	    setConfigurationState(ConfigurationState.Failed);
+	    throw t;
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * startConfiguration()
+     */
+    @Override
+    public void startConfiguration() throws SiteWhereException {
+	try {
+	    // Start microservice.
+	    ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
+		    new LifecycleProgressContext(1, "Start microservice configuration."), getMicroservice());
+	    long start = System.currentTimeMillis();
+	    configurationStart(getGlobalApplicationContext(), getLocalApplicationContext(), monitor);
+	    if (getMicroservice().getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		throw getMicroservice().getLifecycleError();
+	    }
+	    getLogger().info("Microservice configuration '" + getMicroservice().getName() + "' started in "
+		    + (System.currentTimeMillis() - start) + "ms.");
+	    setConfigurationState(ConfigurationState.Started);
+	} catch (Throwable t) {
+	    getLogger().error("Unable to start microservice configuration '" + getMicroservice().getName() + "'.", t);
+	    setConfigurationState(ConfigurationState.Failed);
+	    throw t;
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * stopConfiguration()
+     */
+    @Override
+    public void stopConfiguration() throws SiteWhereException {
+	try {
+	    // Stop microservice.
+	    if (getLifecycleStatus() != LifecycleStatus.Stopped) {
+		ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
+			new LifecycleProgressContext(1, "Stop microservice configuration."), getMicroservice());
+		long start = System.currentTimeMillis();
+		configurationStop(getGlobalApplicationContext(), getLocalApplicationContext(), monitor);
+		if (getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		    throw getMicroservice().getLifecycleError();
+		}
+		getMicroservice().getLogger().info("Microservice configuration '" + getMicroservice().getName()
+			+ "' stopped in " + (System.currentTimeMillis() - start) + "ms.");
+	    }
+	    setConfigurationState(ConfigurationState.Stopped);
+	} catch (Throwable t) {
+	    getLogger().error("Unable to stop microservice configuration '" + getMicroservice().getName() + "'.", t);
+	    setConfigurationState(ConfigurationState.Failed);
+	    throw t;
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * terminateConfiguration()
+     */
+    @Override
+    public void terminateConfiguration() throws SiteWhereException {
+	try {
+	    // Terminate microservice.
+	    if (getLifecycleStatus() != LifecycleStatus.Terminated) {
+		ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
+			new LifecycleProgressContext(1, "Terminate microservice configuration."), this);
+		long start = System.currentTimeMillis();
+		configurationTerminate(getGlobalApplicationContext(), getLocalApplicationContext(), monitor);
+		if (getLifecycleStatus() == LifecycleStatus.LifecycleError) {
+		    throw getMicroservice().getLifecycleError();
+		}
+		getLogger().info("Microservice configuration '" + getName() + "' terminated in "
+			+ (System.currentTimeMillis() - start) + "ms.");
+	    }
+	    setConfigurationState(ConfigurationState.Unloaded);
+	} catch (Throwable t) {
+	    getLogger().error("Unable to terminate microservice configuration '" + getName() + "'.", t);
+	    setConfigurationState(ConfigurationState.Failed);
+	    throw t;
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
      * restartConfiguration()
      */
     @Override
-    public CompletableFuture<?> restartConfiguration() {
-	return StopConfigurationOperation.createCompletableFuture(this, getMicroserviceOperationsService())
-		.thenCompose(m1 -> TerminateConfigurationOperation
-			.createCompletableFuture(this, getMicroserviceOperationsService())
-			.thenCompose(m2 -> InitializeConfigurationOperation
-				.createCompletableFuture(this, getMicroserviceOperationsService())
-				.thenCompose(m3 -> StartConfigurationOperation
-					.createCompletableFuture(this, getMicroserviceOperationsService())
-					.exceptionally(t -> {
-					    getLogger().error("Unable to restart microservice.", t);
-					    return null;
-					}))));
+    public void restartConfiguration() throws SiteWhereException {
+	stopConfiguration();
+	terminateConfiguration();
+	initializeConfiguration();
+	startConfiguration();
     }
 
     /*
@@ -430,13 +606,13 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
      */
     @Override
     public void waitForConfigurationReady() throws SiteWhereException {
-	getLogger().debug("Waiting for configuration to be loaded...");
+	getLogger().info("Waiting for configuration to be loaded...");
 	while (true) {
 	    if (getConfigurationState() == ConfigurationState.Failed) {
 		throw new SiteWhereException("Microservice configuration failed.");
 	    }
 	    if (getConfigurationState() == ConfigurationState.Started) {
-		getLogger().debug("Configuration started successfully.");
+		getLogger().info("Configuration started successfully.");
 		return;
 	    }
 	    try {
@@ -445,6 +621,33 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 		return;
 	    }
 	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleProgressMonitor)
+     */
+    @Override
+    public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * microserviceStart(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleProgressMonitor)
+     */
+    @Override
+    public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * microserviceStop(com.sitewhere.spi.server.lifecycle.
+     * ILifecycleProgressMonitor)
+     */
+    @Override
+    public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
     }
 
     /*
@@ -544,18 +747,5 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
     @Override
     public void setLocalApplicationContext(ApplicationContext localApplicationContext) {
 	this.localApplicationContext = localApplicationContext;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * getMicroserviceApplicationContext()
-     */
-    @Override
-    public ApplicationContext getMicroserviceApplicationContext() {
-	return microserviceApplicationContext;
-    }
-
-    protected void setMicroserviceApplicationContext(ApplicationContext microserviceApplicationContext) {
-	this.microserviceApplicationContext = microserviceApplicationContext;
     }
 }

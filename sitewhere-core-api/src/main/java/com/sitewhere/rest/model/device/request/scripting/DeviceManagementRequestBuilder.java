@@ -22,12 +22,14 @@ import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceGroupCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceGroupElementCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceTypeCreateRequest;
+import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.customer.ICustomer;
 import com.sitewhere.spi.customer.ICustomerType;
+import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAlarm;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -37,6 +39,7 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
+import com.sitewhere.spi.search.ISearchResults;
 
 /**
  * Builder that supports creating device management entities.
@@ -156,6 +159,17 @@ public class DeviceManagementRequestBuilder {
     }
 
     /**
+     * Get an existing zone by unique token.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    public IZone zoneByToken(String token) throws SiteWhereException {
+	return getDeviceManagement().getZoneByToken(token);
+    }
+
+    /**
      * Persist a previously created zone.
      * 
      * @param builder
@@ -269,6 +283,20 @@ public class DeviceManagementRequestBuilder {
      */
     public IDeviceAssignment persist(DeviceAssignmentCreateRequest.Builder builder) throws SiteWhereException {
 	return getDeviceManagement().createDeviceAssignment(builder.build());
+    }
+
+    /**
+     * Returns all active device assignments.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public List<IDeviceAssignment> allActiveAssignments() throws SiteWhereException {
+	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(1, 0);
+	criteria.setStatus(DeviceAssignmentStatus.Active);
+
+	ISearchResults<IDeviceAssignment> matches = getDeviceManagement().listDeviceAssignments(criteria);
+	return matches.getResults();
     }
 
     /**

@@ -69,12 +69,12 @@ public abstract class CacheProvider<K, V> extends LifecycleComponent implements 
 
     /*
      * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
-     * server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	super.start(monitor);
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
 	getCacheManager().init();
     }
 

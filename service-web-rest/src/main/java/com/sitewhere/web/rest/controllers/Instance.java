@@ -26,7 +26,6 @@ import org.w3c.dom.Document;
 
 import com.sitewhere.configuration.ConfigurationContentParser;
 import com.sitewhere.configuration.content.ElementContent;
-import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
 import com.sitewhere.grpc.client.microservice.MicroserviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IMicroserviceManagementApiChannel;
 import com.sitewhere.microservice.scripting.ScriptCloneRequest;
@@ -40,8 +39,8 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
-import com.sitewhere.spi.microservice.discovery.IServiceNode;
-import com.sitewhere.spi.microservice.discovery.ServiceNodeStatus;
+import com.sitewhere.spi.microservice.grpc.GrpcServiceIdentifier;
+import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.microservice.scripting.IScriptManagement;
 import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
 import com.sitewhere.spi.microservice.scripting.IScriptTemplate;
@@ -314,7 +313,7 @@ public class Instance extends RestControllerBase {
     @RequestMapping(value = "/microservice/{identifier}/scripting/templates/{templateId}", method = RequestMethod.GET)
     @ApiOperation(value = "Get list of script templates for a given microservice")
     @Secured({ SiteWhereRoles.REST })
-    public ResponseEntity<byte[]> getMicroserviceScriptTemplate(
+    public ResponseEntity<byte[]> getMicroserviceScriptTemplateContent(
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
 	    @ApiParam(value = "Template id", required = true) @PathVariable String templateId)
 	    throws SiteWhereException {
@@ -677,25 +676,15 @@ public class Instance extends RestControllerBase {
      */
     protected IMicroserviceManagementApiChannel<?> getManagementChannel(IFunctionIdentifier target)
 	    throws SiteWhereException {
-	List<IServiceNode> nodes = getMicroservice().getServiceDiscoveryProvider().getNodesForFunction(target);
-	for (IServiceNode node : nodes) {
-	    if (node.getStatus() == ServiceNodeStatus.Online) {
-		String host = node.getAddress();
-		LifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
-			new LifecycleProgressContext(1, "Start management interface."), getMicroservice());
-		MicroserviceManagementApiChannel channel = new MicroserviceManagementApiChannel(null, host,
-			getMicroservice().getInstanceSettings().getManagementGrpcPort());
-		channel.setMicroservice(getMicroservice());
-		channel.initialize(monitor);
-		channel.start(monitor);
-		channel.waitForChannelAvailable();
-		return channel;
-	    } else {
-		getLogger().info(String.format("Ignoring service node for '%s' on %s because it is offline.",
-			target.getShortName(), node.getAddress()));
-	    }
-	}
-	throw new ApiChannelNotAvailableException();
+	LifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
+		new LifecycleProgressContext(1, "Start management interface."), getMicroservice());
+	MicroserviceManagementApiChannel channel = new MicroserviceManagementApiChannel(
+		getMicroservice().getInstanceSettings(), target, GrpcServiceIdentifier.MicroserviceManagement,
+		IGrpcSettings.DEFAULT_MANAGEMENT_PORT);
+	channel.setMicroservice(getMicroservice());
+	channel.initialize(monitor);
+	channel.start(monitor);
+	return channel;
     }
 
     /**
@@ -730,7 +719,7 @@ public class Instance extends RestControllerBase {
     }
 
     public ITenantManagement getTenantManagement() {
-	return getMicroservice().getTenantManagementApiDemux().getApiChannel();
+	return getMicroservice().getTenantManagementApiChannel();
     }
 
     public IScriptManagement getScriptManagement() {

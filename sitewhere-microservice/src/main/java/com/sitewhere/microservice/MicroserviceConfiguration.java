@@ -7,25 +7,19 @@
  */
 package com.sitewhere.microservice;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import com.sitewhere.microservice.kafka.KafkaTopicNaming;
 import com.sitewhere.microservice.security.SystemUser;
 import com.sitewhere.microservice.security.TokenManagement;
 import com.sitewhere.microservice.zookeeper.ZookeeperManager;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
-import com.uber.jaeger.Configuration;
-import com.uber.jaeger.samplers.ProbabilisticSampler;
 
-import io.opentracing.Tracer;
-
-@org.springframework.context.annotation.Configuration
+@Configuration
 public class MicroserviceConfiguration {
 
     @Bean
@@ -46,14 +40,5 @@ public class MicroserviceConfiguration {
     @Bean
     public ISystemUser systemUser() {
 	return new SystemUser();
-    }
-
-    @Bean
-    @Autowired
-    public Tracer tracer(IInstanceSettings instanceSettings, IMicroservice<?> microservice) {
-	return new Configuration(microservice.getIdentifier().getPath(),
-		new Configuration.SamplerConfiguration(ProbabilisticSampler.TYPE, 0.01),
-		new Configuration.ReporterConfiguration(null, instanceSettings.getTracerServer(), null, null, null))
-			.getTracer();
     }
 }

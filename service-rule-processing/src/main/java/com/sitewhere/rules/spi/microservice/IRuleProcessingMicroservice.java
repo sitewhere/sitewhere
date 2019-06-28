@@ -7,8 +7,8 @@
  */
 package com.sitewhere.rules.spi.microservice;
 
-import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
@@ -21,16 +21,16 @@ public interface IRuleProcessingMicroservice
 	extends IMultitenantMicroservice<MicroserviceIdentifier, IRuleProcessingTenantEngine> {
 
     /**
-     * Get device management API demux.
+     * Get device management API channel.
      * 
      * @return
      */
-    public IDeviceManagementApiDemux getDeviceManagementApiDemux();
+    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel();
 
     /**
-     * Get event management API demux.
+     * Get event management API channel.
      * 
      * @return
      */
-    public IDeviceEventManagementApiDemux getDeviceEventManagementApiDemux();
+    public IDeviceEventManagementApiChannel<?> getDeviceEventManagementApiChannel();
 }

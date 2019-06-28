@@ -468,9 +468,9 @@ public class MicroserviceModelConverter {
 	case MSID_STREAMING_MEDIA:
 	    return MicroserviceIdentifier.StreamingMedia;
 	case MSID_TENANT_MANAGEMENT:
-	    return MicroserviceIdentifier.TenantManagement;
+	    return MicroserviceIdentifier.InstanceManagement;
 	case MSID_USER_MANAGEMENT:
-	    return MicroserviceIdentifier.UserManagement;
+	    return MicroserviceIdentifier.InstanceManagement;
 	case MSID_WEB_REST:
 	    return MicroserviceIdentifier.WebRest;
 	case UNRECOGNIZED:
@@ -521,10 +521,6 @@ public class MicroserviceModelConverter {
 	    return GMicroserviceIdentifier.MSID_SCHEDULE_MANAGEMENT;
 	case StreamingMedia:
 	    return GMicroserviceIdentifier.MSID_STREAMING_MEDIA;
-	case TenantManagement:
-	    return GMicroserviceIdentifier.MSID_TENANT_MANAGEMENT;
-	case UserManagement:
-	    return GMicroserviceIdentifier.MSID_USER_MANAGEMENT;
 	case WebRest:
 	    return GMicroserviceIdentifier.MSID_WEB_REST;
 	}

@@ -10,14 +10,10 @@ package com.sitewhere.device.spi.initializer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.server.IModelInitializer;
 
 /**
- * Class that initializes the device model with data needed to bootstrap the
- * system.
- * 
- * @author Derek
+ * Initializes the device model with data needed to bootstrap the system.
  */
 public interface IDeviceModelInitializer extends IModelInitializer {
 
@@ -25,10 +21,9 @@ public interface IDeviceModelInitializer extends IModelInitializer {
      * Initialize the device model.
      * 
      * @param deviceManagement
-     * @param deviceEventManagement
      * @param assetManagement
      * @throws SiteWhereException
      */
-    public void initialize(IDeviceManagement deviceManagement, IDeviceEventManagement deviceEventManagement,
-	    IAssetManagement assetManagement) throws SiteWhereException;
+    public void initialize(IDeviceManagement deviceManagement, IAssetManagement assetManagement)
+	    throws SiteWhereException;
 }

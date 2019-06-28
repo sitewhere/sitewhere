@@ -19,7 +19,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.sitewhere.grpc.client.spi.provider.IUserManagementDemuxProvider;
 import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.security.SitewhereUserDetails;
 import com.sitewhere.spi.SiteWhereException;
@@ -27,6 +26,7 @@ import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.web.security.jwt.JwtAuthenticationToken;
+import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
 /**
  * Spring authentication provider using SiteWhere user management APIs.
@@ -38,11 +38,11 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(SiteWhereAuthenticationProvider.class);
 
-    /** Web rest microservice */
-    private IUserManagementDemuxProvider<?> userManagementDemuxProvider;
+    /** Microservice */
+    private IWebRestMicroservice<?> microservice;
 
-    public SiteWhereAuthenticationProvider(IUserManagementDemuxProvider<?> userManagementDemuxProvider) {
-	this.userManagementDemuxProvider = userManagementDemuxProvider;
+    public SiteWhereAuthenticationProvider(IWebRestMicroservice<?> microservice) {
+	this.microservice = microservice;
     }
 
     /*
@@ -80,10 +80,9 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
 	// Swap thread to superuser to authenticate login.
 	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
 	try {
-	    SecurityContextHolder.getContext()
-		    .setAuthentication(getUserManagementDemuxProvider().getSystemUser().getAuthentication());
-	    IUser user = validateUserManagement().authenticate(username, password, false);
+	    SecurityContextHolder.getContext().setAuthentication(getMicroservice().getSystemUser().getAuthentication());
 	    IUserManagement userManagement = validateUserManagement();
+	    IUser user = userManagement.authenticate(username, password, false);
 	    List<IGrantedAuthority> auths = userManagement.getGrantedAuthorities(user.getUsername());
 	    SitewhereUserDetails details = new SitewhereUserDetails(user, auths);
 	    return new SitewhereAuthentication(details, password);
@@ -110,8 +109,7 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
 	// Swap thread to superuser to authenticate login.
 	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
 	try {
-	    SecurityContextHolder.getContext()
-		    .setAuthentication(getUserManagementDemuxProvider().getSystemUser().getAuthentication());
+	    SecurityContextHolder.getContext().setAuthentication(getMicroservice().getSystemUser().getAuthentication());
 	    IUserManagement userManagement = validateUserManagement();
 	    IUser user = userManagement.getUserByUsername(username);
 	    List<IGrantedAuthority> auths = userManagement.getGrantedAuthorities(username);
@@ -142,18 +140,18 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
      * @throws AuthenticationServiceException
      */
     protected IUserManagement validateUserManagement() throws AuthenticationServiceException {
-	if (getUserManagementDemuxProvider().getUserManagementApiDemux().getApiChannel() == null) {
+	if (getMicroservice().getUserManagementApiChannel() == null) {
 	    throw new AuthenticationServiceException(
 		    "User management API channel not initialized. Check logs for details.");
 	}
-	return getUserManagementDemuxProvider().getUserManagementApiDemux().getApiChannel();
+	return getMicroservice().getUserManagementApiChannel();
     }
 
-    public IUserManagementDemuxProvider<?> getUserManagementDemuxProvider() {
-	return userManagementDemuxProvider;
+    protected IWebRestMicroservice<?> getMicroservice() {
+	return microservice;
     }
 
-    public void setUserManagementDemuxProvider(IUserManagementDemuxProvider<?> userManagementDemuxProvider) {
-	this.userManagementDemuxProvider = userManagementDemuxProvider;
+    protected void setMicroservice(IWebRestMicroservice<?> microservice) {
+	this.microservice = microservice;
     }
 }

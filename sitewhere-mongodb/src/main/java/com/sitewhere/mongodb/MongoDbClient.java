@@ -91,6 +91,7 @@ public abstract class MongoDbClient extends TenantEngineLifecycleComponent
 	while (true) {
 	    try {
 		MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
+		builder.serverSelectionTimeout(-1); // Wait indefinitely for server selection.
 		builder.maxConnectionIdleTime(60 * 60 * 1000); // 1hour
 		builder.connectionsPerHost(10);
 

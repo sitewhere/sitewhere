@@ -7,7 +7,9 @@
  */
 package com.sitewhere.event.spi.microservice;
 
-import com.sitewhere.event.spi.kafka.IInboundPersistedEventsProducer;
+import com.sitewhere.event.spi.kafka.IInboundEventsConsumer;
+import com.sitewhere.event.spi.kafka.IOutboundCommandInvocationsProducer;
+import com.sitewhere.event.spi.kafka.IOutboundEventsProducer;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
@@ -28,17 +30,31 @@ public interface IEventManagementTenantEngine extends IMicroserviceTenantEngine 
     public IDeviceEventManagement getEventManagement();
 
     /**
-     * Get implementation class that wraps event management with GRPC
-     * conversions.
+     * Get implementation class that wraps event management with GRPC conversions.
      * 
      * @return
      */
     public DeviceEventManagementGrpc.DeviceEventManagementImplBase getEventManagementImpl();
 
     /**
-     * Get Kafka producer that sends persisted events to a topic.
+     * Get Kafka consumer for events prepared by inbound processing logic.
      * 
      * @return
      */
-    public IInboundPersistedEventsProducer getInboundPersistedEventsProducer();
+    public IInboundEventsConsumer getInboundEventsConsumer();
+
+    /**
+     * Get Kafka producer that sends enriched, persisted events to a topic.
+     * 
+     * @return
+     */
+    public IOutboundEventsProducer getOutboundEventsProducer();
+
+    /**
+     * Get Kafka producer that sends enriched, persisted command invocations to a
+     * topic.
+     * 
+     * @return
+     */
+    public IOutboundCommandInvocationsProducer getOutboundCommandInvocationsProducer();
 }

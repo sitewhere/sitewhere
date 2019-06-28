@@ -2383,10 +2383,13 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
      * @return
      */
     public IAssetManagement getAssetManagement() {
-	return ((DeviceManagementMicroservice) getTenantEngine().getMicroservice()).getAssetManagementApiDemux()
-		.getApiChannel();
+	return ((DeviceManagementMicroservice) getTenantEngine().getMicroservice()).getAssetManagementApiChannel();
     }
 
+    /*
+     * @see com.sitewhere.mongodb.MongoTenantComponent#getMongoClient()
+     */
+    @Override
     public DeviceManagementMongoClient getMongoClient() {
 	return mongoClient;
     }

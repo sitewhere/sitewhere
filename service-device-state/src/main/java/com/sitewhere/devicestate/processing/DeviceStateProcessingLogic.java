@@ -12,7 +12,6 @@ import java.util.List;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-import com.codahale.metrics.Meter;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
 import com.sitewhere.devicestate.spi.processing.IDeviceStateProcessingLogic;
@@ -30,7 +29,8 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.state.IDeviceState;
 import com.sitewhere.spi.device.state.IDeviceStateManagement;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+
+import io.prometheus.client.Counter;
 
 /**
  * Processing logic applied to enriched inbound event payloads in order to
@@ -40,21 +40,9 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  */
 public class DeviceStateProcessingLogic extends TenantEngineLifecycleComponent implements IDeviceStateProcessingLogic {
 
-    /** Meter for counting processed events */
-    private Meter processedEvents;
-
-    /*
-     * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
-     * spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	super.initialize(monitor);
-
-	// Set up metrics.
-	this.processedEvents = createMeterMetric("processedEvents");
-    }
+    /** Counter for processed events */
+    private static final Counter PROCESSED_EVENTS = TenantEngineLifecycleComponent
+	    .createCounterMetric("processed_event_count", "Count of total events processed by consumer");
 
     /*
      * @see
@@ -91,7 +79,7 @@ public class DeviceStateProcessingLogic extends TenantEngineLifecycleComponent i
      * @throws SiteWhereException
      */
     protected void processRecord(ConsumerRecord<String, byte[]> record) throws SiteWhereException {
-	getProcessedEvents().mark();
+	PROCESSED_EVENTS.labels(buildLabels()).inc();
 	try {
 	    GEnrichedEventPayload grpc = EventModelMarshaler.parseEnrichedEventPayloadMessage(record.value());
 	    EnrichedEventPayload payload = EventModelConverter.asApiEnrichedEventPayload(grpc);
@@ -198,10 +186,6 @@ public class DeviceStateProcessingLogic extends TenantEngineLifecycleComponent i
 	    request.getLastMeasurementEventIds().putAll(original.getLastMeasurementEventIds());
 	}
 	request.getLastMeasurementEventIds().put(mx.getName(), mx.getId());
-    }
-
-    protected Meter getProcessedEvents() {
-	return processedEvents;
     }
 
     protected IDeviceStateManagement getDeviceStateManagement() {

@@ -25,11 +25,4 @@ public interface IGrpcServer extends ILifecycleComponent {
      * @return
      */
     public BindableService getServiceImplementation();
-
-    /**
-     * Indicates whether to enable tracing interceptor.
-     * 
-     * @return
-     */
-    public boolean isUseTracingInterceptor();
 }

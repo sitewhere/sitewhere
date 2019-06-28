@@ -2,7 +2,7 @@ description = 'SiteWhere Core API'
 
 dependencies {
 	// SiteWhere model/API.
-    compile group: 'com.sitewhere', name: 'sitewhere-java-model', version: '2.0.2'
+    compile group: 'com.sitewhere', name: 'sitewhere-java-model', version: '2.1.0'
 	
 	// Spring security components.
     compile group: 'org.springframework.security', name: 'spring-security-core'
@@ -29,13 +29,7 @@ dependencies {
     compile group: 'org.codehaus.groovy', name: 'groovy'
       
     // Metrics support
-    compile group: 'io.dropwizard.metrics', name: 'metrics-core', version:'3.1.5'
-	
-	// Consul agent support.
-	compile 'com.orbitz.consul:consul-client:1.2.3'
-	
-	// Opentracing APIs.
-    compile group: 'io.opentracing', name: 'opentracing-api', version: '0.30.0'
+    compile group: 'io.prometheus', name: 'simpleclient', version:'0.6.0'
     
     // JSON web token support.
     compile group: 'io.jsonwebtoken', name: 'jjwt', version:'0.7.0'

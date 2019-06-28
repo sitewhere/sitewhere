@@ -7,12 +7,19 @@
  */
 package com.sitewhere.microservice.multitenant;
 
+import java.time.Duration;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Callable;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.springframework.context.ApplicationContext;
 
+import com.evanlennick.retry4j.CallExecutorBuilder;
+import com.evanlennick.retry4j.Status;
+import com.evanlennick.retry4j.config.RetryConfig;
+import com.evanlennick.retry4j.config.RetryConfigBuilder;
+import com.evanlennick.retry4j.exception.RetriesExhaustedException;
+import com.evanlennick.retry4j.listener.RetryListener;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
@@ -25,6 +32,7 @@ import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
@@ -42,8 +50,6 @@ import com.sitewhere.spi.tenant.ITenant;
 /**
  * Specialized tenant engine that runs within an
  * {@link IMultitenantMicroservice}.
- * 
- * @author Derek
  */
 public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComponent
 	implements IMicroserviceTenantEngine {
@@ -54,8 +60,8 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     /** Suffix appended to module identifier to locate module configuration */
     public static final String MODULE_CONFIGURATION_SUFFIX = ".xml";
 
-    /** Name for tenant bootstrapped indicator */
-    public static final String MODULE_BOOTSTRAPPED_NAME = "bootstrapped";
+    /** Name for tenant dataset bootstrapped indicator */
+    public static final String DATASET_BOOTSTRAPPED_NAME = "bootstrapped";
 
     /** Tenant template path (relative to configuration root) */
     public static final String TENANT_TEMPLATE_PATH = "tenant-template.json";
@@ -72,6 +78,9 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     /** Script manager */
     private TenantEngineScriptManager scriptManager;
 
+    /** Dataset bootstrap manager */
+    private DatasetBootstrapManager bootstrapManager;
+
     /** Groovy configuration */
     private IGroovyConfiguration groovyConfiguration;
 
@@ -82,6 +91,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	this.tenant = tenant;
 	this.tenantScriptSynchronizer = new TenantEngineScriptSynchronizer(this);
 	this.scriptManager = new TenantEngineScriptManager();
+	this.bootstrapManager = new DatasetBootstrapManager();
 	this.groovyConfiguration = new GroovyConfiguration(getTenantScriptSynchronizer());
     }
 
@@ -116,6 +126,9 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 
 	// Initialize Groovy configuration.
 	init.addInitializeStep(this, getGroovyConfiguration(), true);
+
+	// Initialize bootstrap manager.
+	init.addInitializeStep(this, getBootstrapManager(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -207,6 +220,9 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 
 	// Allow subclass to execute startup logic.
 	tenantStart(monitor);
+
+	// Execute bootstrap in background
+	startNestedComponent(getBootstrapManager(), monitor, true);
     }
 
     /*
@@ -218,6 +234,10 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+
+	// Stop the bootstrap manager.
+	stopNestedComponent(getBootstrapManager(), monitor);
+
 	// Allow subclass to execute shutdown logic.
 	tenantStop(monitor);
 
@@ -413,7 +433,8 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	    // Handle updated configuration file.
 	    if (getModuleConfigurationName().equals(path)) {
 		getLogger().info("Tenant engine configuration updated.");
-		((IMultitenantMicroservice<?, ?>) getMicroservice()).restartTenantEngine(getTenant().getId());
+		((IMultitenantMicroservice<?, ?>) getMicroservice()).getTenantEngineManager()
+			.restartTenantEngine(getTenant().getId());
 	    }
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to process updated configuration file.", e);
@@ -433,7 +454,8 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	    // Handle updated configuration file.
 	    if (getModuleConfigurationName().equals(path)) {
 		getLogger().info("Tenant engine configuration deleted.");
-		((IMultitenantMicroservice<?, ?>) getMicroservice()).removeTenantEngine(getTenant().getId());
+		((IMultitenantMicroservice<?, ?>) getMicroservice()).getTenantEngineManager()
+			.removeTenantEngine(getTenant().getId());
 	    }
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to process deleted configuration file.", e);
@@ -485,29 +507,59 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * waitForModuleBootstrapped(java.lang.String, long,
-     * java.util.concurrent.TimeUnit)
+     * getTenantBootstrapPrerequisites()
      */
     @Override
-    public void waitForModuleBootstrapped(String identifier, long time, TimeUnit unit) throws SiteWhereException {
-	String bspath = ((IConfigurableMicroservice<?>) getMicroservice()).getInstanceTenantStatePath(
-		getTenant().getId()) + "/" + identifier + "/" + MicroserviceTenantEngine.MODULE_BOOTSTRAPPED_NAME;
-	CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
-	long deadline = System.currentTimeMillis() + unit.toMillis(time);
-	while ((deadline - System.currentTimeMillis()) > 0) {
-	    try {
-		if (curator.checkExists().forPath(bspath) != null) {
-		    return;
+    public IFunctionIdentifier[] getTenantBootstrapPrerequisites() {
+	return new IFunctionIdentifier[0];
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * waitForTenantDatasetBootstrapped(com.sitewhere.spi.microservice.
+     * IFunctionIdentifier)
+     */
+    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void waitForTenantDatasetBootstrapped(IFunctionIdentifier identifier) throws SiteWhereException {
+	try {
+	    getLogger().info(
+		    String.format("Verifying that module '%s' has been bootstrapped.", identifier.getShortName()));
+	    String path = ((IConfigurableMicroservice<?>) getMicroservice())
+		    .getInstanceTenantStatePath(getTenant().getId()) + "/" + identifier.getPath() + "/"
+		    + MicroserviceTenantEngine.DATASET_BOOTSTRAPPED_NAME;
+	    Callable<Boolean> bootstrapCheck = () -> {
+		return getMicroservice().getZookeeperManager().getCurator().checkExists().forPath(path) == null ? false
+			: true;
+	    };
+	    RetryConfig config = new RetryConfigBuilder().retryOnReturnValue(Boolean.FALSE).withMaxNumberOfTries(12)
+		    .withDelayBetweenTries(Duration.ofSeconds(1)).withFibonacciBackoff().build();
+	    RetryListener perFail = new RetryListener<Boolean>() {
+
+		@Override
+		public void onEvent(Status<Boolean> status) {
+		    getLogger().info(String.format(
+			    "Unable to locate bootstrap marker for '%s' on attempt %d (total wait so far %dms). Retrying after fallback...",
+			    identifier.getShortName(), status.getTotalTries(),
+			    status.getTotalElapsedDuration().toMillis()));
 		}
-		getLogger().info("Waiting for bootstrap file at " + bspath + " before continuing...");
-		Thread.sleep(3000);
-	    } catch (InterruptedException e) {
-		throw new SiteWhereException("Interrupted while waiting for module to be bootstrapped.", e);
-	    } catch (Exception e) {
-		throw new SiteWhereException("Error checking for module bootstrapped.", e);
-	    }
+	    };
+	    RetryListener success = new RetryListener<Boolean>() {
+
+		@Override
+		public void onEvent(Status<Boolean> status) {
+		    getLogger().info(String.format("Located bootstrap marker for '%s' in %dms.",
+			    identifier.getShortName(), status.getTotalElapsedDuration().toMillis()));
+		}
+	    };
+	    new CallExecutorBuilder().config(config).afterFailedTryListener(perFail).onSuccessListener(success).build()
+		    .execute(bootstrapCheck);
+	} catch (RetriesExhaustedException e) {
+	    Status status = e.getStatus();
+	    throw new SiteWhereException(String.format(
+		    "Unable to find bootstrap indicator for '%s' after %d attempts (%dms).", identifier.getShortName(),
+		    status.getTotalTries(), status.getTotalElapsedDuration().toMillis()));
 	}
-	throw new SiteWhereException("Time limit exceeded for '" + identifier + "' to bootstrap.");
     }
 
     /*
@@ -564,14 +616,12 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
-     * getModuleBootstrappedPath()
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getTenantDatasetBootstrappedPath()
      */
     @Override
-    public String getModuleBootstrappedPath() throws SiteWhereException {
-	return getTenantStatePath() + "/" + MicroserviceTenantEngine.MODULE_BOOTSTRAPPED_NAME;
+    public String getTenantDatasetBootstrappedPath() throws SiteWhereException {
+	return getTenantStatePath() + "/" + MicroserviceTenantEngine.DATASET_BOOTSTRAPPED_NAME;
     }
 
     /*
@@ -613,6 +663,19 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 
     public void setScriptManager(TenantEngineScriptManager scriptManager) {
 	this.scriptManager = scriptManager;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getBootstrapManager()
+     */
+    @Override
+    public DatasetBootstrapManager getBootstrapManager() {
+	return bootstrapManager;
+    }
+
+    public void setBootstrapManager(DatasetBootstrapManager bootstrapManager) {
+	this.bootstrapManager = bootstrapManager;
     }
 
     /*

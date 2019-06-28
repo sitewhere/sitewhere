@@ -7,16 +7,15 @@
  */
 package com.sitewhere.labels.microservice;
 
-import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
-import com.sitewhere.grpc.client.asset.AssetManagementApiDemux;
-import com.sitewhere.grpc.client.device.DeviceManagementApiDemux;
-import com.sitewhere.grpc.client.spi.client.IAssetManagementApiDemux;
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
+import com.sitewhere.grpc.client.asset.CachedAssetManagementApiChannel;
+import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.labels.configuration.LabelGenerationModelProvider;
-import com.sitewhere.labels.grpc.LabelGenerationGrpcServer;
 import com.sitewhere.labels.spi.grpc.ILabelGenerationGrpcServer;
 import com.sitewhere.labels.spi.microservice.ILabelGenerationMicroservice;
 import com.sitewhere.labels.spi.microservice.ILabelGenerationTenantEngine;
+import com.sitewhere.microservice.grpc.LabelGenerationGrpcServer;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
@@ -39,10 +38,10 @@ public class LabelGenerationMicroservice
     private static final String NAME = "Label Generation";
 
     /** Device management API channel */
-    private IDeviceManagementApiDemux deviceManagementApiDemux;
+    private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
 
     /** Asset management API channel */
-    private IAssetManagementApiDemux assetManagementApiDemux;
+    private IAssetManagementApiChannel<?> assetManagementApiChannel;
 
     /** Provides server for label generation GRPC requests */
     private ILabelGenerationGrpcServer labelGenerationGrpcServer;
@@ -89,33 +88,6 @@ public class LabelGenerationMicroservice
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.Microservice#afterMicroserviceStarted()
-     */
-    @Override
-    public void afterMicroserviceStarted() {
-	try {
-	    waitForDependenciesAvailable();
-	    getLogger().debug("All required microservices detected as available.");
-	} catch (ApiChannelNotAvailableException e) {
-	    getLogger().error("Required APIs not available.", e);
-	}
-    }
-
-    /**
-     * Wait for microservice dependencies to become available.
-     * 
-     * @throws ApiNotAvailableException
-     */
-    protected void waitForDependenciesAvailable() throws ApiChannelNotAvailableException {
-	getDeviceManagementApiDemux().waitForMicroserviceAvailable();
-	getLogger().debug("Device management microservice detected as available.");
-	getAssetManagementApiDemux().waitForMicroserviceAvailable();
-	getLogger().debug("Asset management microservice detected as available.");
-    }
-
-    /*
      * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
      * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
      * ILifecycleProgressMonitor)
@@ -134,11 +106,11 @@ public class LabelGenerationMicroservice
 	// Initialize label generation GRPC server.
 	init.addInitializeStep(this, getLabelGenerationGrpcServer(), true);
 
-	// Initialize device management API demux.
-	init.addInitializeStep(this, getDeviceManagementApiDemux(), true);
+	// Initialize device management API channel.
+	init.addInitializeStep(this, getDeviceManagementApiChannel(), true);
 
-	// Initialize asset management API demux.
-	init.addInitializeStep(this, getAssetManagementApiDemux(), true);
+	// Initialize asset management API channel.
+	init.addInitializeStep(this, getAssetManagementApiChannel(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -157,11 +129,11 @@ public class LabelGenerationMicroservice
 	// Start label generation GRPC server.
 	start.addStartStep(this, getLabelGenerationGrpcServer(), true);
 
-	// Start device mangement API demux.
-	start.addStartStep(this, getDeviceManagementApiDemux(), true);
+	// Start device mangement API channel.
+	start.addStartStep(this, getDeviceManagementApiChannel(), true);
 
-	// Start asset mangement API demux.
-	start.addStartStep(this, getAssetManagementApiDemux(), true);
+	// Start asset mangement API channel.
+	start.addStartStep(this, getAssetManagementApiChannel(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -180,11 +152,11 @@ public class LabelGenerationMicroservice
 	// Stop label generation GRPC server.
 	stop.addStopStep(this, getLabelGenerationGrpcServer());
 
-	// Stop device mangement API demux.
-	stop.addStopStep(this, getDeviceManagementApiDemux());
+	// Stop device mangement API channel.
+	stop.addStopStep(this, getDeviceManagementApiChannel());
 
-	// Stop asset mangement API demux.
-	stop.addStopStep(this, getAssetManagementApiDemux());
+	// Stop asset mangement API channel.
+	stop.addStopStep(this, getAssetManagementApiChannel());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -195,10 +167,12 @@ public class LabelGenerationMicroservice
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiDemux = new DeviceManagementApiDemux(true);
+	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(getInstanceSettings(),
+		new CachedDeviceManagementApiChannel.CacheSettings());
 
 	// Asset management.
-	this.assetManagementApiDemux = new AssetManagementApiDemux(true);
+	this.assetManagementApiChannel = new CachedAssetManagementApiChannel(getInstanceSettings(),
+		new CachedAssetManagementApiChannel.CacheSettings());
     }
 
     /*
@@ -216,27 +190,27 @@ public class LabelGenerationMicroservice
 
     /*
      * @see com.sitewhere.labels.spi.microservice.ILabelGenerationMicroservice#
-     * getDeviceManagementApiDemux()
+     * getDeviceManagementApiChannel()
      */
     @Override
-    public IDeviceManagementApiDemux getDeviceManagementApiDemux() {
-	return deviceManagementApiDemux;
+    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
+	return deviceManagementApiChannel;
     }
 
-    public void setDeviceManagementApiDemux(IDeviceManagementApiDemux deviceManagementApiDemux) {
-	this.deviceManagementApiDemux = deviceManagementApiDemux;
+    public void setDeviceManagementApiChannel(IDeviceManagementApiChannel<?> deviceManagementApiChannel) {
+	this.deviceManagementApiChannel = deviceManagementApiChannel;
     }
 
     /*
      * @see com.sitewhere.labels.spi.microservice.ILabelGenerationMicroservice#
-     * getAssetManagementApiDemux()
+     * getAssetManagementApiChannel()
      */
     @Override
-    public IAssetManagementApiDemux getAssetManagementApiDemux() {
-	return assetManagementApiDemux;
+    public IAssetManagementApiChannel<?> getAssetManagementApiChannel() {
+	return assetManagementApiChannel;
     }
 
-    public void setAssetManagementApiDemux(IAssetManagementApiDemux assetManagementApiDemux) {
-	this.assetManagementApiDemux = assetManagementApiDemux;
+    public void setAssetManagementApiChannel(IAssetManagementApiChannel<?> assetManagementApiChannel) {
+	this.assetManagementApiChannel = assetManagementApiChannel;
     }
 }

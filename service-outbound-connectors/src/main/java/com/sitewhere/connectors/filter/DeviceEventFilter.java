@@ -9,8 +9,8 @@ package com.sitewhere.connectors.filter;
 
 import com.sitewhere.connectors.spi.IDeviceEventFilter;
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsMicroservice;
-import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
+import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -26,20 +26,20 @@ public abstract class DeviceEventFilter extends TenantEngineLifecycleComponent i
     }
 
     /**
-     * Allow access to the device management API channels.
+     * Allow access to the device management API channel.
      * 
      * @return
      */
-    protected IDeviceManagementApiDemux getDeviceManagementApiDemux() {
-	return ((IOutboundConnectorsMicroservice) getMicroservice()).getDeviceManagementApiDemux();
+    protected IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
+	return ((IOutboundConnectorsMicroservice) getMicroservice()).getDeviceManagementApiChannel();
     }
 
     /**
-     * Allow access to the device event management API channels.
+     * Allow access to the device event management API channel.
      * 
      * @return
      */
-    protected IDeviceEventManagementApiDemux getDeviceEventManagementApiDemux() {
-	return ((IOutboundConnectorsMicroservice) getMicroservice()).getDeviceEventManagementApiDemux();
+    protected IDeviceEventManagementApiChannel<?> getDeviceEventManagementApiChannel() {
+	return ((IOutboundConnectorsMicroservice) getMicroservice()).getDeviceEventManagementApiChannel();
     }
 }

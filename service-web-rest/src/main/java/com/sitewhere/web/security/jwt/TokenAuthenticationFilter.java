@@ -25,16 +25,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.sitewhere.grpc.client.spi.provider.ITenantManagementDemuxProvider;
 import com.sitewhere.microservice.security.InvalidJwtException;
 import com.sitewhere.microservice.security.JwtExpiredException;
 import com.sitewhere.security.SitewhereGrantedAuthority;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.security.ITenantAwareAuthentication;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.web.security.SiteWhereHttpHeaders;
+import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
 import io.jsonwebtoken.Claims;
 
@@ -49,15 +50,15 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(TokenAuthenticationFilter.class);
 
-    /** Tenant management demux provider */
-    private ITenantManagementDemuxProvider<?> tenantManagementDemuxProvider;
+    /** Microservice */
+    private IWebRestMicroservice<?> microservice;
 
     /** Authentication manager */
     private AuthenticationManager authenticationManager;
 
-    public TokenAuthenticationFilter(ITenantManagementDemuxProvider<?> tenantManagementDemuxProvider,
+    public TokenAuthenticationFilter(IWebRestMicroservice<?> microservice,
 	    AuthenticationManager authenticationManager) {
-	this.tenantManagementDemuxProvider = tenantManagementDemuxProvider;
+	this.microservice = microservice;
 	this.authenticationManager = authenticationManager;
     }
 
@@ -77,7 +78,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	String tenantAuth = SiteWhereHttpHeaders.getTenantAuthFromHeader(request);
 	if (jwt != null) {
 	    // Get username from token and load user.
-	    ITokenManagement tokenManagement = getTenantManagementDemuxProvider().getTokenManagement();
+	    ITokenManagement tokenManagement = getMicroservice().getTokenManagement();
 	    try {
 		Claims claims = tokenManagement.getClaimsForToken(jwt);
 		String username = tokenManagement.getUsernameFromClaims(claims);
@@ -102,10 +103,16 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 		LOGGER.debug("Added authentication to context.");
 		chain.doFilter(request, response);
 	    } catch (JwtExpiredException e) {
+		LOGGER.debug("Expired JWT passed.", e);
 		response.sendError(HttpServletResponse.SC_FORBIDDEN, "JWT has expired.");
 	    } catch (InvalidJwtException e) {
+		LOGGER.debug("Invalid JWT passed.", e);
 		response.sendError(HttpServletResponse.SC_FORBIDDEN, "JWT is invalid.");
+	    } catch (TenantEngineNotAvailableException e) {
+		LOGGER.debug("Requested tenant engine was not available.", e);
+		response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "Tenant engine not available.");
 	    } catch (Throwable e) {
+		LOGGER.error("Unhandled exception in token authentication filter.", e);
 		response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing JWT.");
 	    }
 	} else {
@@ -130,9 +137,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	    Authentication previous = SecurityContextHolder.getContext().getAuthentication();
 	    try {
 		SecurityContextHolder.getContext()
-			.setAuthentication(getTenantManagementDemuxProvider().getSystemUser().getAuthentication());
-		ITenant tenant = getTenantManagementDemuxProvider().getTenantManagementApiDemux().getApiChannel()
-			.getTenantByToken(tenantToken);
+			.setAuthentication(getMicroservice().getSystemUser().getAuthentication());
+		ITenant tenant = getMicroservice().getTenantManagementApiChannel().getTenantByToken(tenantToken);
 		if ((tenant == null) || (!tenant.getAuthenticationToken().equals(tenantAuth))) {
 		    throw new SiteWhereException("Auth token passed for tenant id is not correct.");
 		}
@@ -144,19 +150,19 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	}
     }
 
-    public ITenantManagementDemuxProvider<?> getTenantManagementDemuxProvider() {
-	return tenantManagementDemuxProvider;
+    protected IWebRestMicroservice<?> getMicroservice() {
+	return microservice;
     }
 
-    public void setTenantManagementDemuxProvider(ITenantManagementDemuxProvider<?> tenantManagementDemuxProvider) {
-	this.tenantManagementDemuxProvider = tenantManagementDemuxProvider;
+    protected void setMicroservice(IWebRestMicroservice<?> microservice) {
+	this.microservice = microservice;
     }
 
-    public AuthenticationManager getAuthenticationManager() {
+    protected AuthenticationManager getAuthenticationManager() {
 	return authenticationManager;
     }
 
-    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+    protected void setAuthenticationManager(AuthenticationManager authenticationManager) {
 	this.authenticationManager = authenticationManager;
     }
 }

@@ -7,8 +7,6 @@
  */
 package com.sitewhere.microservice.zookeeper;
 
-import java.util.concurrent.TimeUnit;
-
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -27,9 +25,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * @author Derek
  */
 public class ZookeeperManager extends LifecycleComponent implements IZookeeperManager {
-
-    /** Max time in seconds to wait for Zookeeper connection */
-    private static final int ZK_CHECK_INTERVAL_SECS = 60;
 
     /** Curator client */
     private CuratorFramework curator;
@@ -71,16 +66,12 @@ public class ZookeeperManager extends LifecycleComponent implements IZookeeperMa
 	this.curator = CuratorFrameworkFactory.builder().namespace(getInstanceSettings().getProductId())
 		.connectString(zk).retryPolicy(retryPolicy).build();
 	getCurator().start();
-	while (true) {
-	    try {
-		getLogger().info("Waiting for Zookeeper to become available...");
-		boolean connected = getCurator().blockUntilConnected(ZK_CHECK_INTERVAL_SECS, TimeUnit.SECONDS);
-		if (connected) {
-		    return;
-		}
-	    } catch (InterruptedException e) {
-		throw new SiteWhereException("Interrupted while connecting to Zookeeper.", e);
-	    }
+	getLogger().info("Waiting for Zookeeper to become available...");
+	try {
+	    getCurator().blockUntilConnected();
+	    getLogger().info("Zookeeper connection established.");
+	} catch (InterruptedException e) {
+	    throw new SiteWhereException("Interrupted while connecting to Zookeeper.", e);
 	}
     }
 

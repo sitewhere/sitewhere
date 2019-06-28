@@ -7,8 +7,6 @@
  */
 package com.sitewhere.spi.microservice;
 
-import com.sitewhere.spi.SiteWhereException;
-
 /**
  * Provides a list of known identifiers for microservices.
  * 
@@ -48,10 +46,6 @@ public enum MicroserviceIdentifier implements IFunctionIdentifier {
 
     StreamingMedia("streaming-media"),
 
-    TenantManagement("tenant-management"),
-
-    UserManagement("user-management"),
-
     WebRest("web-rest");
 
     /** Path */
@@ -61,20 +55,13 @@ public enum MicroserviceIdentifier implements IFunctionIdentifier {
 	this.path = path;
     }
 
-    /**
-     * Get microservice identifier by path.
-     * 
-     * @param path
-     * @return
-     * @throws SiteWhereException
-     */
-    public static MicroserviceIdentifier getByPath(String path) throws SiteWhereException {
+    public static MicroserviceIdentifier getByPath(String path) {
 	for (MicroserviceIdentifier value : MicroserviceIdentifier.values()) {
 	    if (value.getPath().equals(path)) {
 		return value;
 	    }
 	}
-	throw new SiteWhereException("Unknown microservice identifier: " + path);
+	return null;
     }
 
     /*

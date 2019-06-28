@@ -24,15 +24,14 @@ ext['git.revision.abbrev'] = ext.git.head().abbreviatedId
 ext['docker.base.image'] = 'openjdk:8-jre-alpine'
 ext['docker.maintainer'] = 'admin@sitewhere.com'
 
-ext['sitewhere.grpc.api.version'] = '2.0.3'
+ext['sitewhere.grpc.api.version'] = '2.1.0'
 ext['kafka.version'] = '2.0.0'
 ext['zookeeper.version'] = '3.4.8'
 ext['curator.version'] = '2.12.0'
-ext['hazelcast.version'] = '3.9.3'
 ext['protobuf.version'] = '3.5.1'
-ext['grpc.version'] = '1.16.1'
-ext['guava.version'] = '20.0'
-ext['netty.version'] = '4.1.27.Final'
+ext['grpc.version'] = '1.21.0'
+ext['guava.version'] = '27.1-jre'
+ext['netty.version'] = '4.1.34.Final'
 ext['groovy.version'] = '2.4.12'
 ext['mongodb.version'] = '3.4.2'
 ext['solr.version'] = '6.4.0'
@@ -42,7 +41,7 @@ apply plugin: 'distribution'
     
 allprojects {
     group = 'com.sitewhere'
-	  version = '2.0.7'
+	version = '2.1.0'
 	
     repositories {
         maven { url "http://repo.maven.apache.org/maven2" }

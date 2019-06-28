@@ -12,7 +12,6 @@ import java.util.UUID;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.MultitenantApiChannel;
 import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
-import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IDeviceStateApiChannel;
 import com.sitewhere.grpc.service.DeviceStateGrpc;
 import com.sitewhere.grpc.service.GCreateDeviceStateRequest;
@@ -30,9 +29,14 @@ import com.sitewhere.grpc.service.GUpdateDeviceStateResponse;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.state.IDeviceState;
 import com.sitewhere.spi.device.state.request.IDeviceStateCreateRequest;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.grpc.GrpcServiceIdentifier;
+import com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier;
+import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IDeviceStateSearchCriteria;
-import com.sitewhere.spi.tracing.ITracerProvider;
 
 /**
  * Supports SiteWhere device state APIs on top of a
@@ -43,18 +47,22 @@ import com.sitewhere.spi.tracing.ITracerProvider;
 public class DeviceStateApiChannel extends MultitenantApiChannel<DeviceStateGrpcChannel>
 	implements IDeviceStateApiChannel<DeviceStateGrpcChannel> {
 
-    public DeviceStateApiChannel(IApiDemux<?> demux, String host, int port) {
-	super(demux, host, port);
+    public DeviceStateApiChannel(IInstanceSettings settings) {
+	super(settings, MicroserviceIdentifier.DeviceState, GrpcServiceIdentifier.DeviceState,
+		IGrpcSettings.DEFAULT_API_PORT);
     }
 
     /*
      * @see
      * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
-     * .tracing.ITracerProvider, java.lang.String, int)
+     * .microservice.instance.IInstanceSettings,
+     * com.sitewhere.spi.microservice.IFunctionIdentifier,
+     * com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier, int)
      */
     @Override
-    public DeviceStateGrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	return new DeviceStateGrpcChannel(tracerProvider, host, port);
+    public DeviceStateGrpcChannel createGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier,
+	    IGrpcServiceIdentifier grpcServiceIdentifier, int port) {
+	return new DeviceStateGrpcChannel(settings, identifier, grpcServiceIdentifier, port);
     }
 
     /*

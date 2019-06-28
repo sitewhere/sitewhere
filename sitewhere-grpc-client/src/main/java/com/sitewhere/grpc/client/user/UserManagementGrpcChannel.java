@@ -11,7 +11,9 @@ import com.sitewhere.grpc.client.GrpcChannel;
 import com.sitewhere.grpc.service.UserManagementGrpc;
 import com.sitewhere.grpc.service.UserManagementGrpc.UserManagementBlockingStub;
 import com.sitewhere.grpc.service.UserManagementGrpc.UserManagementStub;
-import com.sitewhere.spi.tracing.ITracerProvider;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Channel that allows for communication with a remote user mangement GRPC
@@ -21,8 +23,9 @@ import com.sitewhere.spi.tracing.ITracerProvider;
  */
 public class UserManagementGrpcChannel extends GrpcChannel<UserManagementBlockingStub, UserManagementStub> {
 
-    public UserManagementGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	super(tracerProvider, host, port);
+    public UserManagementGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier,
+	    IGrpcServiceIdentifier grpcServiceIdentifier, int port) {
+	super(settings, identifier, grpcServiceIdentifier, port);
     }
 
     /*

@@ -11,13 +11,13 @@ import java.util.UUID;
 
 import com.sitewhere.grpc.client.cache.AssetManagementCacheProviders;
 import com.sitewhere.grpc.client.cache.CacheConfiguration;
-import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.cache.ICacheConfiguration;
 import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
 import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetType;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -40,14 +40,14 @@ public class CachedAssetManagementApiChannel extends AssetManagementApiChannel {
     /** Asset by id cache */
     private ICacheProvider<UUID, IAsset> assetByIdCache;
 
-    public CachedAssetManagementApiChannel(IApiDemux<?> demux, String host, int port, CacheSettings settings) {
-	super(demux, host, port);
+    public CachedAssetManagementApiChannel(IInstanceSettings settings, CacheSettings cache) {
+	super(settings);
 	this.assetTypeCache = new AssetManagementCacheProviders.AssetTypeByTokenCache(
-		settings.getAssetTypeConfiguration());
+		cache.getAssetTypeConfiguration());
 	this.assetTypeByIdCache = new AssetManagementCacheProviders.AssetTypeByIdCache(
-		settings.getAssetTypeConfiguration());
-	this.assetCache = new AssetManagementCacheProviders.AssetByTokenCache(settings.getAssetConfiguration());
-	this.assetByIdCache = new AssetManagementCacheProviders.AssetByIdCache(settings.getAssetConfiguration());
+		cache.getAssetTypeConfiguration());
+	this.assetCache = new AssetManagementCacheProviders.AssetByTokenCache(cache.getAssetConfiguration());
+	this.assetByIdCache = new AssetManagementCacheProviders.AssetByIdCache(cache.getAssetConfiguration());
     }
 
     /*

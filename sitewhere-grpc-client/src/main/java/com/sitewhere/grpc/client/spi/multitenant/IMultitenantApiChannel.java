@@ -7,10 +7,6 @@
  */
 package com.sitewhere.grpc.client.spi.multitenant;
 
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
-import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
 import com.sitewhere.grpc.client.MultitenantGrpcChannel;
 import com.sitewhere.grpc.client.spi.IApiChannel;
 
@@ -23,33 +19,4 @@ import com.sitewhere.grpc.client.spi.IApiChannel;
  * @param <T>
  */
 public interface IMultitenantApiChannel<T extends MultitenantGrpcChannel<?, ?>> extends IApiChannel<T> {
-
-    /**
-     * Checks whether engine for tenant is available.
-     * 
-     * @return true if tenant is available
-     */
-    public boolean checkTenantEngineAvailable();
-
-    /**
-     * Wait the default amount of time for API to become available for a given
-     * tenant.
-     * 
-     * @param tenantId
-     * @throws ApiChannelNotAvailableException
-     */
-    public void waitForTenantApiAvailable(UUID tenantId) throws ApiChannelNotAvailableException;
-
-    /**
-     * Wait for a maximum amount of time for the API to become available for a given
-     * tenant. Displays 'waiting' messages to log after a specified delay.
-     * 
-     * @param tenantId
-     * @param duration
-     * @param unit
-     * @param logMessageDelay
-     * @throws ApiChannelNotAvailableException
-     */
-    public void waitForTenantApiAvailable(UUID tenantId, long duration, TimeUnit unit, long logMessageDelay)
-	    throws ApiChannelNotAvailableException;
 }

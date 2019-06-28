@@ -8,7 +8,6 @@
 package com.sitewhere.spi.microservice.configuration;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 import org.springframework.context.ApplicationContext;
 
@@ -112,6 +111,40 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
     public byte[] getInstanceManagementConfigurationData() throws SiteWhereException;
 
     /**
+     * Subpath of instance configuration that contains authority configuration data.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getInstanceAuthoritiesConfigurationPath() throws SiteWhereException;
+
+    /**
+     * Get path for authority configuration.
+     * 
+     * @param username
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getInstanceAuthorityConfigurationPath(String authority) throws SiteWhereException;
+
+    /**
+     * Subpath of instance configuration that contains user configuration data.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getInstanceUsersConfigurationPath() throws SiteWhereException;
+
+    /**
+     * Get path for user configuration.
+     * 
+     * @param username
+     * @return
+     * @throws SiteWhereException
+     */
+    public String getInstanceUserConfigurationPath(String username) throws SiteWhereException;
+
+    /**
      * Subpath of instance configuration that contains tenant configuration data.
      * 
      * @return
@@ -155,14 +188,14 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
     public String getInstanceTenantStatePath(UUID tenantId) throws SiteWhereException;
 
     /**
-     * Get path to Zk node that indicates a tenant has been bootstrapped with
-     * template data.
+     * Get path to Zk node that indicates a tenant has been configured with template
+     * data.
      * 
      * @param tenantId
      * @return
      * @throws SiteWhereException
      */
-    public String getInstanceTenantBootstrappedIndicatorPath(UUID tenantId) throws SiteWhereException;
+    public String getInstanceTenantConfiguredIndicatorPath(UUID tenantId) throws SiteWhereException;
 
     /**
      * Initialize configurable components.
@@ -207,14 +240,6 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
      */
     public void configurationTerminate(ApplicationContext global, ApplicationContext local,
 	    ILifecycleProgressMonitor monitor) throws SiteWhereException;
-
-    /**
-     * Get base microservice application context.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public ApplicationContext getMicroserviceApplicationContext() throws SiteWhereException;
 
     /**
      * Get global application context.
@@ -313,10 +338,37 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
     public ILifecycleStep terminateDiscoverableBeans(ApplicationContext context) throws SiteWhereException;
 
     /**
-     * Restart the microservice configuration and return a {@link CompletableFuture}
-     * to handle results asynchronously.
+     * Initialize the current configuration.
      * 
-     * @return
+     * @throws SiteWhereException
      */
-    public CompletableFuture<?> restartConfiguration();
+    public void initializeConfiguration() throws SiteWhereException;
+
+    /**
+     * Start the current configuration.
+     * 
+     * @throws SiteWhereException
+     */
+    public void startConfiguration() throws SiteWhereException;
+
+    /**
+     * Stop the current configuration.
+     * 
+     * @throws SiteWhereException
+     */
+    public void stopConfiguration() throws SiteWhereException;
+
+    /**
+     * Terminate the current configuration.
+     * 
+     * @throws SiteWhereException
+     */
+    public void terminateConfiguration() throws SiteWhereException;
+
+    /**
+     * Restart the current configuration.
+     * 
+     * @throws SiteWhereException
+     */
+    public void restartConfiguration() throws SiteWhereException;
 }

@@ -21,14 +21,16 @@ import org.fusesource.mqtt.client.Message;
 import org.fusesource.mqtt.client.QoS;
 import org.fusesource.mqtt.client.Topic;
 
-import com.codahale.metrics.Meter;
 import com.sitewhere.communication.mqtt.MqttLifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.messages.EventSourcesMessages;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.sources.spi.IInboundEventSource;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+
+import io.prometheus.client.Counter;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that subscribes to an MQTT
@@ -46,6 +48,10 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 
     /** MQTT Topic Quality of Service */
     public static final QoS DEFAULT_QoS = QoS.AT_LEAST_ONCE;
+
+    /** Meter for counting received events */
+    private static final Counter RECEIVED_EVENTS = TenantEngineLifecycleComponent
+	    .createCounterMetric("mqtt_events_received_count", "Count of MQTT events received", "source_id");
 
     /** Parent event source */
     private IInboundEventSource<byte[]> eventSource;
@@ -65,9 +71,6 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
     /** Used to process MQTT events in a thread pool */
     private ExecutorService processorsExecutor;
 
-    /** Meter for counting received events */
-    private Meter receivedEvents;
-
     public MqttInboundEventReceiver() {
 	super(LifecycleComponentType.InboundEventReceiver);
     }
@@ -85,9 +88,6 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 
 	this.subscriptionExecutor = Executors.newSingleThreadExecutor(new SubscribersThreadFactory());
 	this.processorsExecutor = Executors.newFixedThreadPool(getNumThreads(), new ProcessorsThreadFactory());
-
-	// Set up metrics.
-	this.receivedEvents = createMeterMetric(getMetricPrefix() + "receivedEvents");
 
 	getLogger().info("Receiver connecting to MQTT broker at '" + getBrokerInfo() + "'...");
 	connection = getConnection();
@@ -203,7 +203,7 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 	@Override
 	public void run() {
 	    try {
-		getReceivedEvents().mark();
+		RECEIVED_EVENTS.labels(buildLabels(getEventSource().getSourceId())).inc();
 		byte[] payload = message.getPayload();
 		getEventSource().onEncodedEventReceived(MqttInboundEventReceiver.this, payload, null);
 		message.ack();
@@ -274,14 +274,6 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 
     public void setNumThreads(int numThreads) {
 	this.numThreads = numThreads;
-    }
-
-    protected Meter getReceivedEvents() {
-	return receivedEvents;
-    }
-
-    protected void setReceivedEvents(Meter receivedEvents) {
-	this.receivedEvents = receivedEvents;
     }
 
     /** Used for naming consumer threads */

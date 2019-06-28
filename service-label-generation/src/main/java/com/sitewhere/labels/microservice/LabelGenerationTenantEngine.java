@@ -8,8 +8,8 @@
 package com.sitewhere.labels.microservice;
 
 import com.sitewhere.grpc.service.LabelGenerationGrpc;
-import com.sitewhere.labels.grpc.LabelGenerationImpl;
 import com.sitewhere.labels.spi.microservice.ILabelGenerationTenantEngine;
+import com.sitewhere.microservice.grpc.LabelGenerationImpl;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;

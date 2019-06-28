@@ -4,6 +4,8 @@ dependencies {
 	compile project(':sitewhere-core')
 	compile project(':sitewhere-microservice')
 	compile project(':sitewhere-grpc-client')
+	
+	compile group: 'org.apache.syncope.client', name: 'syncope-client-lib', version: '2.1.4'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -41,8 +43,9 @@ task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, depends
 	// Copy Spring Boot jar.
 	copyFile("${project.name}-${project.version}-boot.jar", "/")
 	
-	// Copy tenant templates.
-	copyFile("templates", "/templates")
+	// Copy instance and tenant templates.
+	copyFile("instance", "/instance")
+	copyFile("tenant", "/tenant")
 
 	// Run Java command to start application.
 	if(!project.hasProperty("debug")) {
@@ -90,10 +93,11 @@ task dockerImageLatest(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildI
 
 	if(!project.hasProperty("debug")) {
 		primaryTag = "${dockerRepository}/sitewhere/${project.name}:${version}"
+		secondaryTag = "${dockerRepository}/sitewhere/${project.name}:latest"
 	} else {
 		primaryTag = "${dockerRepository}/sitewhere/${project.name}:debug-${version}"
+		secondaryTag = "${dockerRepository}/sitewhere/${project.name}:debug-latest"
 	}
-	secondaryTag = "${dockerRepository}/sitewhere/${project.name}:latest"
 	tags = [primaryTag, secondaryTag]
 }
 

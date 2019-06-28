@@ -11,7 +11,6 @@ import java.util.List;
 
 import com.sitewhere.grpc.client.ApiChannel;
 import com.sitewhere.grpc.client.GrpcUtils;
-import com.sitewhere.grpc.client.spi.IApiDemux;
 import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
 import com.sitewhere.grpc.service.GAddGrantedAuthoritiesRequest;
 import com.sitewhere.grpc.service.GAddGrantedAuthoritiesResponse;
@@ -44,8 +43,13 @@ import com.sitewhere.grpc.service.GUpdateUserRequest;
 import com.sitewhere.grpc.service.GUpdateUserResponse;
 import com.sitewhere.grpc.service.UserManagementGrpc;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.grpc.GrpcServiceIdentifier;
+import com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier;
+import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.tracing.ITracerProvider;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria;
 import com.sitewhere.spi.user.IUser;
@@ -56,24 +60,26 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
 /**
  * Supports SiteWhere user management APIs on top of a
  * {@link UserManagementGrpcChannel}.
- * 
- * @author Derek
  */
 public class UserManagementApiChannel extends ApiChannel<UserManagementGrpcChannel>
 	implements IUserManagementApiChannel<UserManagementGrpcChannel> {
 
-    public UserManagementApiChannel(IApiDemux<?> demux, String host, int port) {
-	super(demux, host, port);
+    public UserManagementApiChannel(IInstanceSettings settings) {
+	super(settings, MicroserviceIdentifier.InstanceManagement, GrpcServiceIdentifier.UserManagement,
+		IGrpcSettings.USER_MANAGEMENT_API_PORT);
     }
 
     /*
      * @see
      * com.sitewhere.grpc.client.spi.IApiChannel#createGrpcChannel(com.sitewhere.spi
-     * .tracing.ITracerProvider, java.lang.String, int)
+     * .microservice.instance.IInstanceSettings,
+     * com.sitewhere.spi.microservice.IFunctionIdentifier,
+     * com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier, int)
      */
     @Override
-    public UserManagementGrpcChannel createGrpcChannel(ITracerProvider tracerProvider, String host, int port) {
-	return new UserManagementGrpcChannel(tracerProvider, host, port);
+    public UserManagementGrpcChannel createGrpcChannel(IInstanceSettings settings, IFunctionIdentifier identifier,
+	    IGrpcServiceIdentifier grpcServiceIdentifier, int port) {
+	return new UserManagementGrpcChannel(settings, identifier, grpcServiceIdentifier, port);
     }
 
     /*

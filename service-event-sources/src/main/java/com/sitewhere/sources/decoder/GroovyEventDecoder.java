@@ -50,7 +50,7 @@ public class GroovyEventDecoder extends GroovyComponent implements IDeviceEventD
     public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, Object> metadata)
 	    throws EventDecodeException {
 	try {
-	    Binding binding = createBindingFor(this);
+	    Binding binding = new Binding();
 	    List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();
 	    binding.setVariable(IGroovyVariables.VAR_DEVICE_MANAGEMENT_BUILDER,
 		    new DeviceManagementRequestBuilder(getDeviceManagement()));
@@ -59,6 +59,7 @@ public class GroovyEventDecoder extends GroovyComponent implements IDeviceEventD
 	    binding.setVariable(IGroovyVariables.VAR_DECODED_EVENTS, events);
 	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD, payload);
 	    binding.setVariable(IGroovyVariables.VAR_PAYLOAD_METADATA, metadata);
+	    binding.setVariable(IGroovyVariables.VAR_LOGGER, getLogger());
 	    getLogger().debug("About to execute '" + getScriptId() + "' with payload: " + payload);
 	    run(binding);
 	    return (List<IDecodedDeviceRequest<?>>) binding.getVariable(IGroovyVariables.VAR_DECODED_EVENTS);
@@ -68,12 +69,11 @@ public class GroovyEventDecoder extends GroovyComponent implements IDeviceEventD
     }
 
     private IDeviceManagement getDeviceManagement() {
-	return ((IEventSourcesMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiDemux()
-		.getApiChannel();
+	return ((IEventSourcesMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {
-	return new BlockingDeviceEventManagement(((IEventSourcesMicroservice) getTenantEngine().getMicroservice())
-		.getDeviceEventManagementApiDemux().getApiChannel());
+	return new BlockingDeviceEventManagement(
+		((IEventSourcesMicroservice) getTenantEngine().getMicroservice()).getDeviceEventManagementApiChannel());
     }
 }

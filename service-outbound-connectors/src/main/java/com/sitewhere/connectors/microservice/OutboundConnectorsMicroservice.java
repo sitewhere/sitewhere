@@ -10,15 +10,13 @@ package com.sitewhere.connectors.microservice;
 import com.sitewhere.connectors.configuration.OutboundConnectorsModelProvider;
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsMicroservice;
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsTenantEngine;
-import com.sitewhere.grpc.client.ApiChannelNotAvailableException;
-import com.sitewhere.grpc.client.device.DeviceManagementApiDemux;
-import com.sitewhere.grpc.client.event.DeviceEventManagementApiDemux;
-import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiDemux;
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiDemux;
+import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
+import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.messages.SiteWhereMessage;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -38,10 +36,10 @@ public class OutboundConnectorsMicroservice
     private static final String NAME = "Outbound Connectors";
 
     /** Device management API demux */
-    private IDeviceManagementApiDemux deviceManagementApiDemux;
+    private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
 
     /** Device event management API demux */
-    private IDeviceEventManagementApiDemux deviceEventManagementApiDemux;
+    private IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel;
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
@@ -85,34 +83,6 @@ public class OutboundConnectorsMicroservice
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.Microservice#afterMicroserviceStarted()
-     */
-    @Override
-    public void afterMicroserviceStarted() {
-	try {
-	    waitForDependenciesAvailable();
-	    getLogger().debug("All required microservices detected as available.");
-	} catch (ApiChannelNotAvailableException e) {
-	    getLogger().error(SiteWhereMessage.MICROSERVICE_NOT_AVAILABLE);
-	    getLogger().error("Microservice not available.", e);
-	}
-    }
-
-    /**
-     * Wait for required microservices to become available.
-     * 
-     * @throws ApiNotAvailableException
-     */
-    protected void waitForDependenciesAvailable() throws ApiChannelNotAvailableException {
-	getDeviceManagementApiDemux().waitForMicroserviceAvailable();
-	getLogger().debug("Device management microservice detected as available.");
-	getDeviceEventManagementApiDemux().waitForMicroserviceAvailable();
-	getLogger().debug("Device event management microservice detected as available.");
-    }
-
-    /*
      * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
      * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
      * ILifecycleProgressMonitor)
@@ -125,11 +95,11 @@ public class OutboundConnectorsMicroservice
 	// Composite step for initializing microservice.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
-	// Initialize device management API demux.
-	init.addInitializeStep(this, getDeviceManagementApiDemux(), true);
+	// Initialize device management API channel.
+	init.addInitializeStep(this, getDeviceManagementApiChannel(), true);
 
-	// Initialize device event management API demux.
-	init.addInitializeStep(this, getDeviceEventManagementApiDemux(), true);
+	// Initialize device event management API channel.
+	init.addInitializeStep(this, getDeviceEventManagementApiChannel(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -145,11 +115,11 @@ public class OutboundConnectorsMicroservice
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
-	// Start device mangement API demux.
-	start.addStartStep(this, getDeviceManagementApiDemux(), true);
+	// Start device mangement API channel.
+	start.addStartStep(this, getDeviceManagementApiChannel(), true);
 
-	// Start device event mangement API demux.
-	start.addStartStep(this, getDeviceEventManagementApiDemux(), true);
+	// Start device event mangement API channel.
+	start.addStartStep(this, getDeviceEventManagementApiChannel(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -165,11 +135,11 @@ public class OutboundConnectorsMicroservice
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
-	// Stop device mangement API demux.
-	stop.addStopStep(this, getDeviceManagementApiDemux());
+	// Stop device mangement API channel.
+	stop.addStopStep(this, getDeviceManagementApiChannel());
 
-	// Stop device event mangement API demux.
-	stop.addStopStep(this, getDeviceEventManagementApiDemux());
+	// Stop device event mangement API channel.
+	stop.addStopStep(this, getDeviceEventManagementApiChannel());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -180,37 +150,39 @@ public class OutboundConnectorsMicroservice
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiDemux = new DeviceManagementApiDemux(true);
+	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(getInstanceSettings(),
+		new CachedDeviceManagementApiChannel.CacheSettings());
 
 	// Device event management.
-	this.deviceEventManagementApiDemux = new DeviceEventManagementApiDemux(true);
+	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(getInstanceSettings());
     }
 
     /*
      * @see
      * com.sitewhere.connectors.spi.microservice.IOutboundConnectorsMicroservice#
-     * getDeviceManagementApiDemux()
+     * getDeviceManagementApiChannel()
      */
     @Override
-    public IDeviceManagementApiDemux getDeviceManagementApiDemux() {
-	return deviceManagementApiDemux;
+    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
+	return deviceManagementApiChannel;
     }
 
-    public void setDeviceManagementApiDemux(IDeviceManagementApiDemux deviceManagementApiDemux) {
-	this.deviceManagementApiDemux = deviceManagementApiDemux;
+    public void setDeviceManagementApiChannel(IDeviceManagementApiChannel<?> deviceManagementApiChannel) {
+	this.deviceManagementApiChannel = deviceManagementApiChannel;
     }
 
     /*
      * @see
      * com.sitewhere.connectors.spi.microservice.IOutboundConnectorsMicroservice#
-     * getDeviceEventManagementApiDemux()
+     * getDeviceEventManagementApiChannel()
      */
     @Override
-    public IDeviceEventManagementApiDemux getDeviceEventManagementApiDemux() {
-	return deviceEventManagementApiDemux;
+    public IDeviceEventManagementApiChannel<?> getDeviceEventManagementApiChannel() {
+	return deviceEventManagementApiChannel;
     }
 
-    public void setDeviceEventManagementApiDemux(IDeviceEventManagementApiDemux deviceEventManagementApiDemux) {
-	this.deviceEventManagementApiDemux = deviceEventManagementApiDemux;
+    public void setDeviceEventManagementApiChannel(
+	    IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel) {
+	this.deviceEventManagementApiChannel = deviceEventManagementApiChannel;
     }
 }
