@@ -313,7 +313,7 @@ public class Instance extends RestControllerBase {
     @RequestMapping(value = "/microservice/{identifier}/scripting/templates/{templateId}", method = RequestMethod.GET)
     @ApiOperation(value = "Get list of script templates for a given microservice")
     @Secured({ SiteWhereRoles.REST })
-    public ResponseEntity<byte[]> getMicroserviceScriptTemplate(
+    public ResponseEntity<byte[]> getMicroserviceScriptTemplateContent(
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
 	    @ApiParam(value = "Template id", required = true) @PathVariable String templateId)
 	    throws SiteWhereException {

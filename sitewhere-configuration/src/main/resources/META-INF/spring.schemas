@@ -1,3 +1,6 @@
 http\://sitewhere.io/schema/sitewhere/microservice/common/current/connector-common.xsd=META-INF/connector-common.xsd
+https\://sitewhere.io/schema/sitewhere/microservice/common/current/connector-common.xsd=META-INF/connector-common.xsd
 http\://sitewhere.io/schema/sitewhere/microservice/common/current/datastore-common.xsd=META-INF/datastore-common.xsd
+https\://sitewhere.io/schema/sitewhere/microservice/common/current/datastore-common.xsd=META-INF/datastore-common.xsd
 http\://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd=META-INF/microservice-common.xsd
+https\://sitewhere.io/schema/sitewhere/microservice/common/current/microservice-common.xsd=META-INF/microservice-common.xsd
