@@ -23,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -69,6 +70,7 @@ import com.sitewhere.spi.label.ILabel;
 import com.sitewhere.spi.label.ILabelGeneration;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.ITreeNode;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
 import com.sitewhere.web.rest.RestControllerBase;
@@ -209,6 +211,18 @@ public class Customers extends RestControllerBase {
 	    results.add(helper.convert(customer));
 	}
 	return new SearchResults<ICustomer>(results, matches.getNumResults());
+    }
+
+    /**
+     * List all customers in a hierarchical tree format.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    @GetMapping(value = "/tree")
+    @ApiOperation(value = "List all customers in tree format")
+    public List<ITreeNode> getCustomersTree() throws SiteWhereException {
+	return getDeviceManagement().getCustomersTree();
     }
 
     /**

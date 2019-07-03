@@ -24,6 +24,7 @@ import com.mongodb.client.result.DeleteResult;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.device.microservice.DeviceManagementMicroservice;
 import com.sitewhere.device.persistence.DeviceManagementPersistence;
+import com.sitewhere.device.persistence.TreeBuilder;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
 import com.sitewhere.mongodb.MongoTenantComponent;
@@ -43,6 +44,8 @@ import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
+import com.sitewhere.rest.model.search.area.AreaSearchCriteria;
+import com.sitewhere.rest.model.search.customer.CustomerSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceCommandSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceStatusSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
@@ -83,6 +86,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.error.ResourceExistsException;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.ITreeNode;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceAlarmSearchCriteria;
@@ -1309,8 +1313,7 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	}
 
 	// Look up parent customer.
-	ICustomer parentCustomer = (request.getParentCustomerToken() != null)
-		? getCustomerByToken(request.getParentCustomerToken())
+	ICustomer parentCustomer = (request.getParentToken() != null) ? getCustomerByToken(request.getParentToken())
 		: null;
 
 	// Use common logic so all backend implementations work the same.
@@ -1406,6 +1409,15 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	}
 	Document sort = new Document(MongoArea.PROP_NAME, 1);
 	return MongoPersistence.search(ICustomer.class, customers, query, sort, criteria, LOOKUP);
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getCustomersTree()
+     */
+    @Override
+    public List<ITreeNode> getCustomersTree() throws SiteWhereException {
+	ISearchResults<ICustomer> all = listCustomers(new CustomerSearchCriteria(1, 0));
+	return TreeBuilder.buildTree(all.getResults());
     }
 
     /*
@@ -1532,7 +1544,7 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	}
 
 	// Look up parent area.
-	IArea parentArea = (request.getParentAreaToken() != null) ? getAreaByToken(request.getParentAreaToken()) : null;
+	IArea parentArea = (request.getParentToken() != null) ? getAreaByToken(request.getParentToken()) : null;
 
 	// Use common logic so all backend implementations work the same.
 	Area area = DeviceManagementPersistence.areaCreateLogic(request, areaType, parentArea);
@@ -1625,6 +1637,15 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	}
 	Document sort = new Document(MongoArea.PROP_NAME, 1);
 	return MongoPersistence.search(IArea.class, areas, query, sort, criteria, LOOKUP);
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getAreasTree()
+     */
+    @Override
+    public List<ITreeNode> getAreasTree() throws SiteWhereException {
+	ISearchResults<IArea> all = listAreas(new AreaSearchCriteria(1, 0));
+	return TreeBuilder.buildTree(all.getResults());
     }
 
     /*

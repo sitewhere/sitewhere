@@ -42,6 +42,7 @@ import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.ITreeNode;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceAlarmSearchCriteria;
@@ -560,6 +561,14 @@ public class DeviceManagementDecorator extends TenantEngineLifecycleComponentDec
     }
 
     /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getCustomersTree()
+     */
+    @Override
+    public List<ITreeNode> getCustomersTree() throws SiteWhereException {
+	return getDelegate().getCustomersTree();
+    }
+
+    /*
      * @see
      * com.sitewhere.spi.device.IDeviceManagement#deleteCustomer(java.util.UUID)
      */
@@ -677,6 +686,14 @@ public class DeviceManagementDecorator extends TenantEngineLifecycleComponentDec
     @Override
     public ISearchResults<IArea> listAreas(IAreaSearchCriteria criteria) throws SiteWhereException {
 	return getDelegate().listAreas(criteria);
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getAreasTree()
+     */
+    @Override
+    public List<ITreeNode> getAreasTree() throws SiteWhereException {
+	return getDelegate().getAreasTree();
     }
 
     /*

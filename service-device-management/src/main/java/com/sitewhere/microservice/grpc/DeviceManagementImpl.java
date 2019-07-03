@@ -58,6 +58,7 @@ import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.ITreeNode;
 import com.sitewhere.spi.search.device.IDeviceCommandSearchCriteria;
 
 import io.grpc.stub.StreamObserver;
@@ -401,6 +402,32 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getCustomersTree(com.sitewhere.grpc.service.GGetCustomersTreeRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getCustomersTree(GGetCustomersTreeRequest request,
+	    StreamObserver<GGetCustomersTreeResponse> responseObserver) {
+	try {
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetCustomersTreeMethod());
+	    List<ITreeNode> apiResult = getDeviceManagement().getCustomersTree();
+	    GGetCustomersTreeResponse.Builder response = GGetCustomersTreeResponse.newBuilder();
+	    for (ITreeNode node : apiResult) {
+		response.addCustomers(DeviceModelConverter.asGrpcTreeNode(node));
+	    }
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetCustomersTreeMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetCustomersTreeMethod());
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
      * deleteCustomer(com.sitewhere.grpc.service.GDeleteCustomerRequest,
      * io.grpc.stub.StreamObserver)
      */
@@ -720,6 +747,30 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getListAreasMethod(), e, responseObserver);
 	} finally {
 	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getListAreasMethod());
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getAreasTree(com.sitewhere.grpc.service.GGetAreasTreeRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getAreasTree(GGetAreasTreeRequest request, StreamObserver<GGetAreasTreeResponse> responseObserver) {
+	try {
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetAreasTreeMethod());
+	    List<ITreeNode> apiResult = getDeviceManagement().getAreasTree();
+	    GGetAreasTreeResponse.Builder response = GGetAreasTreeResponse.newBuilder();
+	    for (ITreeNode node : apiResult) {
+		response.addAreas(DeviceModelConverter.asGrpcTreeNode(node));
+	    }
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetAreasTreeMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetAreasTreeMethod());
 	}
     }
 

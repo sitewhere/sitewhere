@@ -76,6 +76,7 @@ import com.sitewhere.grpc.model.DeviceModel.GDeviceTypeReference;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceTypeSearchCriteria;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceTypeSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceUnit;
+import com.sitewhere.grpc.model.DeviceModel.GTreeNode;
 import com.sitewhere.grpc.model.DeviceModel.GZone;
 import com.sitewhere.grpc.model.DeviceModel.GZoneCreateRequest;
 import com.sitewhere.grpc.model.DeviceModel.GZoneSearchCriteria;
@@ -114,6 +115,7 @@ import com.sitewhere.rest.model.device.request.DeviceGroupElementCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceStatusCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceTypeCreateRequest;
 import com.sitewhere.rest.model.search.SearchResults;
+import com.sitewhere.rest.model.search.TreeNode;
 import com.sitewhere.rest.model.search.area.AreaSearchCriteria;
 import com.sitewhere.rest.model.search.customer.CustomerSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceAlarmSearchCriteria;
@@ -161,6 +163,7 @@ import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.ITreeNode;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceAlarmSearchCriteria;
@@ -2027,7 +2030,7 @@ public class DeviceModelConverter {
 	CustomerCreateRequest api = new CustomerCreateRequest();
 	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
 	api.setCustomerTypeToken(grpc.hasCustomerTypeToken() ? grpc.getCustomerTypeToken().getValue() : null);
-	api.setParentCustomerToken(grpc.hasParentCustomerToken() ? grpc.getParentCustomerToken().getValue() : null);
+	api.setParentToken(grpc.hasParentCustomerToken() ? grpc.getParentCustomerToken().getValue() : null);
 	api.setName(grpc.hasName() ? grpc.getName().getValue() : null);
 	api.setDescription(grpc.hasDescription() ? grpc.getDescription().getValue() : null);
 	api.setMetadata(grpc.getMetadataMap());
@@ -2051,8 +2054,8 @@ public class DeviceModelConverter {
 	if (api.getCustomerTypeToken() != null) {
 	    grpc.setCustomerTypeToken(GOptionalString.newBuilder().setValue(api.getCustomerTypeToken()));
 	}
-	if (api.getParentCustomerToken() != null) {
-	    grpc.setParentCustomerToken(GOptionalString.newBuilder().setValue(api.getParentCustomerToken()));
+	if (api.getParentToken() != null) {
+	    grpc.setParentCustomerToken(GOptionalString.newBuilder().setValue(api.getParentToken()));
 	}
 	if (api.getName() != null) {
 	    grpc.setName(GOptionalString.newBuilder().setValue(api.getName()));
@@ -2126,6 +2129,64 @@ public class DeviceModelConverter {
     }
 
     /**
+     * Convert tree node from API to GRPC.
+     * 
+     * @param api
+     * @return
+     * @throws SiteWhereException
+     */
+    public static GTreeNode asGrpcTreeNode(ITreeNode api) throws SiteWhereException {
+	GTreeNode.Builder grpc = GTreeNode.newBuilder();
+	grpc.setToken(api.getToken());
+	grpc.setName(api.getName());
+	if (api.getIcon() != null) {
+	    grpc.setIcon(GOptionalString.newBuilder().setValue(api.getIcon()));
+	}
+	if (api.getChildren() != null) {
+	    for (ITreeNode child : api.getChildren()) {
+		grpc.addChildren(DeviceModelConverter.asGrpcTreeNode(child));
+	    }
+	}
+	return grpc.build();
+    }
+
+    /**
+     * Convert tree node from GRPC to API.
+     * 
+     * @param grpc
+     * @return
+     * @throws SiteWhereException
+     */
+    public static TreeNode asApiTreeNode(GTreeNode grpc) throws SiteWhereException {
+	TreeNode api = new TreeNode();
+	api.setToken(grpc.getToken());
+	api.setName(grpc.getName());
+	api.setIcon(grpc.hasIcon() ? grpc.getIcon().getValue() : null);
+	if (grpc.getChildrenCount() > 0) {
+	    api.setChildren(new ArrayList<ITreeNode>());
+	    for (GTreeNode node : grpc.getChildrenList()) {
+		api.getChildren().add(DeviceModelConverter.asApiTreeNode(node));
+	    }
+	}
+	return api;
+    }
+
+    /**
+     * Convert list of tree nodes from GRPC to API.
+     * 
+     * @param grpcs
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<ITreeNode> asApiTreeNodes(Collection<GTreeNode> grpcs) throws SiteWhereException {
+	List<ITreeNode> apis = new ArrayList<>();
+	for (GTreeNode grpc : grpcs) {
+	    apis.add(DeviceModelConverter.asApiTreeNode(grpc));
+	}
+	return apis;
+    }
+
+    /**
      * Convert customer from GRPC to API.
      * 
      * @param grpc
@@ -2135,8 +2196,7 @@ public class DeviceModelConverter {
     public static Customer asApiCustomer(GCustomer grpc) throws SiteWhereException {
 	Customer api = new Customer();
 	api.setCustomerTypeId(CommonModelConverter.asApiUuid(grpc.getCustomerTypeId()));
-	api.setParentCustomerId(
-		grpc.hasParentCustomerId() ? CommonModelConverter.asApiUuid(grpc.getParentCustomerId()) : null);
+	api.setParentId(grpc.hasParentCustomerId() ? CommonModelConverter.asApiUuid(grpc.getParentCustomerId()) : null);
 	api.setName(grpc.getName());
 	api.setDescription(grpc.getDescription());
 	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
@@ -2169,8 +2229,8 @@ public class DeviceModelConverter {
     public static GCustomer asGrpcCustomer(ICustomer api) throws SiteWhereException {
 	GCustomer.Builder grpc = GCustomer.newBuilder();
 	grpc.setCustomerTypeId(CommonModelConverter.asGrpcUuid(api.getCustomerTypeId()));
-	if (api.getParentCustomerId() != null) {
-	    grpc.setParentCustomerId(CommonModelConverter.asGrpcUuid(api.getParentCustomerId()));
+	if (api.getParentId() != null) {
+	    grpc.setParentCustomerId(CommonModelConverter.asGrpcUuid(api.getParentId()));
 	}
 	grpc.setName(api.getName());
 	grpc.setDescription(api.getDescription());
@@ -2315,7 +2375,7 @@ public class DeviceModelConverter {
 	AreaCreateRequest api = new AreaCreateRequest();
 	api.setToken(grpc.hasToken() ? grpc.getToken().getValue() : null);
 	api.setAreaTypeToken(grpc.hasAreaTypeToken() ? grpc.getAreaTypeToken().getValue() : null);
-	api.setParentAreaToken(grpc.hasParentAreaToken() ? grpc.getParentAreaToken().getValue() : null);
+	api.setParentToken(grpc.hasParentAreaToken() ? grpc.getParentAreaToken().getValue() : null);
 	api.setName(grpc.hasName() ? grpc.getName().getValue() : null);
 	api.setDescription(grpc.hasDescription() ? grpc.getDescription().getValue() : null);
 	api.setBounds(CommonModelConverter.asApiLocations(grpc.getBoundsList()));
@@ -2339,8 +2399,8 @@ public class DeviceModelConverter {
 	if (api.getAreaTypeToken() != null) {
 	    grpc.setAreaTypeToken(GOptionalString.newBuilder().setValue(api.getAreaTypeToken()));
 	}
-	if (api.getParentAreaToken() != null) {
-	    grpc.setParentAreaToken(GOptionalString.newBuilder().setValue(api.getParentAreaToken()));
+	if (api.getParentToken() != null) {
+	    grpc.setParentAreaToken(GOptionalString.newBuilder().setValue(api.getParentToken()));
 	}
 	if (api.getName() != null) {
 	    grpc.setName(GOptionalString.newBuilder().setValue(api.getName()));
@@ -2421,7 +2481,7 @@ public class DeviceModelConverter {
     public static Area asApiArea(GArea grpc) throws SiteWhereException {
 	Area api = new Area();
 	api.setAreaTypeId(CommonModelConverter.asApiUuid(grpc.getAreaTypeId()));
-	api.setParentAreaId(grpc.hasParentAreaId() ? CommonModelConverter.asApiUuid(grpc.getParentAreaId()) : null);
+	api.setParentId(grpc.hasParentAreaId() ? CommonModelConverter.asApiUuid(grpc.getParentAreaId()) : null);
 	api.setName(grpc.getName());
 	api.setDescription(grpc.getDescription());
 	api.setBounds(CommonModelConverter.asApiLocations(grpc.getBoundsList()));
@@ -2455,8 +2515,8 @@ public class DeviceModelConverter {
     public static GArea asGrpcArea(IArea api) throws SiteWhereException {
 	GArea.Builder grpc = GArea.newBuilder();
 	grpc.setAreaTypeId(CommonModelConverter.asGrpcUuid(api.getAreaTypeId()));
-	if (api.getParentAreaId() != null) {
-	    grpc.setParentAreaId(CommonModelConverter.asGrpcUuid(api.getParentAreaId()));
+	if (api.getParentId() != null) {
+	    grpc.setParentAreaId(CommonModelConverter.asGrpcUuid(api.getParentId()));
 	}
 	grpc.setName(api.getName());
 	grpc.setDescription(api.getDescription());

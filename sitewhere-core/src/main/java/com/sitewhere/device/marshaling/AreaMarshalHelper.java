@@ -89,7 +89,7 @@ public class AreaMarshalHelper {
 	}
 	MarshaledArea area = new MarshaledArea();
 	area.setAreaTypeId(source.getAreaTypeId());
-	area.setParentAreaId(source.getParentAreaId());
+	area.setParentId(source.getParentId());
 	area.setName(source.getName());
 	area.setDescription(source.getDescription());
 	area.setBounds(Location.copy(source.getBounds()));
@@ -98,8 +98,8 @@ public class AreaMarshalHelper {
 	    area.setAreaType(getDeviceManagement().getAreaType(source.getAreaTypeId()));
 	}
 	if (isIncludeParentArea()) {
-	    if (source.getParentAreaId() != null) {
-		IArea parent = getDeviceManagement().getArea(source.getParentAreaId());
+	    if (source.getParentId() != null) {
+		IArea parent = getDeviceManagement().getArea(source.getParentId());
 		area.setParentArea(parent);
 	    }
 	}

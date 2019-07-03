@@ -73,7 +73,7 @@ public class CustomerMarshalHelper {
 	}
 	MarshaledCustomer customer = new MarshaledCustomer();
 	customer.setCustomerTypeId(source.getCustomerTypeId());
-	customer.setParentCustomerId(source.getParentCustomerId());
+	customer.setParentId(source.getParentId());
 	customer.setName(source.getName());
 	customer.setDescription(source.getDescription());
 	BrandedEntity.copy(source, customer);
@@ -81,8 +81,8 @@ public class CustomerMarshalHelper {
 	    customer.setCustomerType(getDeviceManagement().getCustomerType(source.getCustomerTypeId()));
 	}
 	if (isIncludeParentCustomer()) {
-	    if (source.getParentCustomerId() != null) {
-		ICustomer parent = getDeviceManagement().getCustomer(source.getParentCustomerId());
+	    if (source.getParentId() != null) {
+		ICustomer parent = getDeviceManagement().getCustomer(source.getParentId());
 		customer.setParentCustomer(parent);
 	    }
 	}

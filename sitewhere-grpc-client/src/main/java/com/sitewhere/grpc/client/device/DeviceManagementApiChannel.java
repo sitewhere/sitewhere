@@ -51,6 +51,7 @@ import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.ITreeNode;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceAlarmSearchCriteria;
@@ -345,6 +346,23 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     }
 
     /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getCustomersTree()
+     */
+    @Override
+    public List<ITreeNode> getCustomersTree() throws SiteWhereException {
+	try {
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetCustomersTreeMethod());
+	    GGetCustomersTreeRequest.Builder grequest = GGetCustomersTreeRequest.newBuilder();
+	    GGetCustomersTreeResponse gresponse = getGrpcChannel().getBlockingStub().getCustomersTree(grequest.build());
+	    List<ITreeNode> results = DeviceModelConverter.asApiTreeNodes(gresponse.getCustomersList());
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetCustomersTreeMethod(), results);
+	    return results;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetCustomersTreeMethod(), t);
+	}
+    }
+
+    /*
      * @see
      * com.sitewhere.spi.device.IDeviceManagement#deleteCustomer(java.util.UUID)
      */
@@ -600,6 +618,23 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    return results;
 	} catch (Throwable t) {
 	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getListAreasMethod(), t);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getAreasTree()
+     */
+    @Override
+    public List<ITreeNode> getAreasTree() throws SiteWhereException {
+	try {
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetAreasTreeMethod());
+	    GGetAreasTreeRequest.Builder grequest = GGetAreasTreeRequest.newBuilder();
+	    GGetAreasTreeResponse gresponse = getGrpcChannel().getBlockingStub().getAreasTree(grequest.build());
+	    List<ITreeNode> results = DeviceModelConverter.asApiTreeNodes(gresponse.getAreasList());
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetAreasTreeMethod(), results);
+	    return results;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetAreasTreeMethod(), t);
 	}
     }
 
