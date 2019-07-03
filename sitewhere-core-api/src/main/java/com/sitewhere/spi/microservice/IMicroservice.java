@@ -18,6 +18,7 @@ import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
+import com.sitewhere.spi.microservice.metrics.IMetricsServer;
 import com.sitewhere.spi.microservice.scripting.IScriptTemplateManager;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
@@ -243,6 +244,13 @@ public interface IMicroservice<T extends IFunctionIdentifier>
      * @return
      */
     public IZookeeperManager getZookeeperManager();
+
+    /**
+     * Get metrics server.
+     * 
+     * @return
+     */
+    public IMetricsServer getMetricsServer();
 
     /**
      * Wait for SiteWhere instance configuration metadata to become initialized

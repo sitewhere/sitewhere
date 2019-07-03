@@ -85,6 +85,13 @@ public interface IInstanceSettings {
     public int getSyncopePort();
 
     /**
+     * Get port used to allow HTTP metrics scraping.
+     * 
+     * @return
+     */
+    public int getMetricsHttpPort();
+
+    /**
      * Get max retries for gRPC exponential backoff.
      * 
      * @return

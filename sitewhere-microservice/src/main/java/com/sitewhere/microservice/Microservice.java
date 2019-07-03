@@ -47,6 +47,7 @@ import com.sitewhere.spi.microservice.configuration.model.IElementRole;
 import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
+import com.sitewhere.spi.microservice.metrics.IMetricsServer;
 import com.sitewhere.spi.microservice.scripting.IScriptTemplateManager;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
@@ -93,6 +94,10 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     /** Zookeeper manager */
     @Autowired
     private IZookeeperManager zookeeperManager;
+
+    /** Metrics server */
+    @Autowired
+    private IMetricsServer metricsServer;
 
     /** JWT token management */
     @Autowired
@@ -198,6 +203,12 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	// Start Zookeeper configuration management.
 	initialize.addStartStep(this, getZookeeperManager(), true);
 
+	// Initialize HTTP metrics server.
+	initialize.addInitializeStep(this, getMetricsServer(), true);
+
+	// Start HTTP metrics server.
+	initialize.addStartStep(this, getMetricsServer(), true);
+
 	// Initialize Kafka producer for reporting state.
 	initialize.addInitializeStep(this, getStateUpdatesKafkaProducer(), true);
 
@@ -268,6 +279,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
 	// Stop Kafka producer for reporting state.
 	stop.addStopStep(this, getStateUpdatesKafkaProducer());
+
+	// HTTP metrics server.
+	stop.addStopStep(this, getMetricsServer());
 
 	// Terminate Zk manager.
 	stop.addStopStep(this, getZookeeperManager());
@@ -519,6 +533,18 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     public void setZookeeperManager(IZookeeperManager zookeeperManager) {
 	this.zookeeperManager = zookeeperManager;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getMetricsServer()
+     */
+    @Override
+    public IMetricsServer getMetricsServer() {
+	return metricsServer;
+    }
+
+    public void setMetricsServer(IMetricsServer metricsServer) {
+	this.metricsServer = metricsServer;
     }
 
     /*
