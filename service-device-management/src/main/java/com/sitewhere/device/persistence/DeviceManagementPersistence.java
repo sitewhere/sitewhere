@@ -149,7 +149,7 @@ public class DeviceManagementPersistence extends Persistence {
 	Persistence.brandedEntityCreateLogic(request, area);
 
 	area.setCustomerTypeId(customerType.getId());
-	area.setParentCustomerId(parentCustomer != null ? parentCustomer.getId() : null);
+	area.setParentId(parentCustomer != null ? parentCustomer.getId() : null);
 	area.setName(request.getName());
 	area.setDescription(request.getDescription());
 	area.setImageUrl(request.getImageUrl());
@@ -243,7 +243,7 @@ public class DeviceManagementPersistence extends Persistence {
 	Persistence.brandedEntityCreateLogic(request, area);
 
 	area.setAreaTypeId(areaType.getId());
-	area.setParentAreaId(parentArea != null ? parentArea.getId() : null);
+	area.setParentId(parentArea != null ? parentArea.getId() : null);
 	area.setName(request.getName());
 	area.setDescription(request.getDescription());
 	area.setImageUrl(request.getImageUrl());

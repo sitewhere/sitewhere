@@ -63,7 +63,7 @@ public class MongoCustomer implements MongoConverter<ICustomer> {
      */
     public static void toDocument(ICustomer source, Document target) {
 	target.append(PROP_CUSTOMER_TYPE_ID, source.getCustomerTypeId());
-	target.append(PROP_PARENT_CUSTOMER_ID, source.getParentCustomerId());
+	target.append(PROP_PARENT_CUSTOMER_ID, source.getParentId());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_DESCRIPTION, source.getDescription());
 
@@ -83,7 +83,7 @@ public class MongoCustomer implements MongoConverter<ICustomer> {
 	String description = (String) source.get(PROP_DESCRIPTION);
 
 	target.setCustomerTypeId(customerTypeId);
-	target.setParentCustomerId(parentCustomerId);
+	target.setParentId(parentCustomerId);
 	target.setName(name);
 	target.setDescription(description);
 

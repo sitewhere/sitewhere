@@ -241,6 +241,21 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getCustomersTree(com.sitewhere.grpc.service.GGetCustomersTreeRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getCustomersTree(GGetCustomersTreeRequest request,
+	    StreamObserver<GGetCustomersTreeResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getCustomersTree(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
      * deleteCustomer(com.sitewhere.grpc.service.GDeleteCustomerRequest,
      * io.grpc.stub.StreamObserver)
      */
@@ -424,6 +439,20 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
 	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
 	if (engine != null) {
 	    engine.listAreas(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getAreasTree(com.sitewhere.grpc.service.GGetAreasTreeRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getAreasTree(GGetAreasTreeRequest request, StreamObserver<GGetAreasTreeResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getAreasTree(request, responseObserver);
 	}
     }
 

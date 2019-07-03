@@ -269,14 +269,14 @@ public class GrpcUtils {
 	    Status status = Status.fromCode(Code.FAILED_PRECONDITION)
 		    .withDescription(sysex.getCode().getCode() + ":" + sysex.getCode().getMessage());
 	    thrown = status.asException();
+	} else if (t instanceof TenantEngineNotAvailableException) {
+	    TenantEngineNotAvailableException sw = (TenantEngineNotAvailableException) t;
+	    Status status = Status.fromCode(Code.UNAVAILABLE).withDescription(sw.getMessage());
+	    thrown = status.asException();
 	} else if (t instanceof SiteWhereException) {
 	    SiteWhereException sw = (SiteWhereException) t;
 	    Status status = Status.fromCode(Code.FAILED_PRECONDITION)
 		    .withDescription(ErrorCode.Error.getCode() + ":" + sw.getMessage());
-	    thrown = status.asException();
-	} else if (t instanceof TenantEngineNotAvailableException) {
-	    TenantEngineNotAvailableException sw = (TenantEngineNotAvailableException) t;
-	    Status status = Status.fromCode(Code.UNAVAILABLE).withDescription(sw.getMessage());
 	    thrown = status.asException();
 	} else {
 	    thrown = Status.fromThrowable(t).asException();

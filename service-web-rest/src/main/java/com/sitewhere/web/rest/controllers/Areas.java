@@ -69,6 +69,7 @@ import com.sitewhere.spi.label.ILabel;
 import com.sitewhere.spi.label.ILabelGeneration;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.ITreeNode;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
 import com.sitewhere.web.rest.RestControllerBase;
@@ -171,6 +172,14 @@ public class Areas extends RestControllerBase {
     /**
      * List areas matching criteria.
      * 
+     * @param rootOnly
+     * @param parentAreaToken
+     * @param areaTypeToken
+     * @param includeAreaType
+     * @param includeAssignments
+     * @param includeZones
+     * @param page
+     * @param pageSize
      * @return
      * @throws SiteWhereException
      */
@@ -201,6 +210,18 @@ public class Areas extends RestControllerBase {
 	    results.add(helper.convert(area));
 	}
 	return new SearchResults<IArea>(results, matches.getNumResults());
+    }
+
+    /**
+     * List all areas in a hierarchical tree format.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    @GetMapping(value = "/tree")
+    @ApiOperation(value = "List all areas in tree format")
+    public List<ITreeNode> getAreasTree() throws SiteWhereException {
+	return getDeviceManagement().getAreasTree();
     }
 
     /**
