@@ -34,8 +34,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 /**
  * Kafka consumer that listens for state updates and aggregates them to produce
  * an estimated topology of the SiteWhere instance.
- * 
- * @author Derek
  */
 public class TopologyStateAggregator extends MicroserviceStateUpdatesKafkaConsumer implements ITopologyStateAggregator {
 
