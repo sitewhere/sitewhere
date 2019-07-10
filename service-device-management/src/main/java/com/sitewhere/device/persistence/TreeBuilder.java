@@ -16,7 +16,6 @@ import java.util.UUID;
 import com.sitewhere.rest.model.search.TreeNode;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IBrandedTreeEntity;
-import com.sitewhere.spi.search.ITreeNode;
 
 public class TreeBuilder {
 
@@ -30,7 +29,7 @@ public class TreeBuilder {
      * @return
      * @throws SiteWhereException
      */
-    public static List<ITreeNode> buildTree(List<? extends IBrandedTreeEntity> flat) throws SiteWhereException {
+    public static List<TreeNode> buildTree(List<? extends IBrandedTreeEntity> flat) throws SiteWhereException {
 	Map<UUID, List<IBrandedTreeEntity>> byParentId = getChildrenByParentId(flat);
 	return buildTree(byParentId, ROOT);
     }
@@ -42,8 +41,8 @@ public class TreeBuilder {
      * @param id
      * @return
      */
-    protected static List<ITreeNode> buildTree(Map<UUID, List<IBrandedTreeEntity>> childrenById, UUID id) {
-	List<ITreeNode> nodes = new ArrayList<>();
+    protected static List<TreeNode> buildTree(Map<UUID, List<IBrandedTreeEntity>> childrenById, UUID id) {
+	List<TreeNode> nodes = new ArrayList<>();
 	List<? extends IBrandedTreeEntity> entities = childrenById.get(id);
 	if (entities != null) {
 	    for (IBrandedTreeEntity entity : entities) {

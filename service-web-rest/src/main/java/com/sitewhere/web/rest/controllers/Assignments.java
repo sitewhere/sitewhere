@@ -60,10 +60,8 @@ import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.schedule.ScheduledJobHelper;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
-import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.charting.IChartSeries;
@@ -249,36 +247,63 @@ public class Assignments extends RestControllerBase {
 	// Build criteria.
 	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(page, pageSize);
 	if (deviceToken != null) {
-	    IDevice device = getDeviceManagement().getDeviceByToken(deviceToken);
-	    if (device == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidDeviceToken, ErrorLevel.ERROR);
-	    }
-	    criteria.setDeviceId(device.getId());
+	    criteria.setDeviceTokens(Collections.singletonList(deviceToken));
 	}
 
 	// If limiting by customer, look up customer and contained customers.
 	if (customerToken != null) {
-	    List<UUID> customerIds = Customers.resolveCustomerIds(customerToken, true, getDeviceManagement());
-	    criteria.setCustomerIds(customerIds);
+	    List<String> customers = Customers.resolveCustomerTokensRecursive(customerToken, true,
+		    getDeviceManagement());
+	    criteria.setCustomerTokens(customers);
 	}
 
 	// If limiting by area, look up area and contained areas.
 	if (areaToken != null) {
-	    List<UUID> areaIds = Areas.resolveAreaIds(areaToken, true, getDeviceManagement());
-	    criteria.setAreaIds(areaIds);
+	    List<String> areas = Areas.resolveAreaTokensRecursive(areaToken, true, getDeviceManagement());
+	    criteria.setAreaTokens(areas);
 	}
 
 	// If limiting by asset, look up asset.
 	if (assetToken != null) {
-	    IAsset asset = getAssetManagement().getAssetByToken(assetToken);
-	    if (asset == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidAssetToken, ErrorLevel.ERROR);
-	    }
-	    List<UUID> assetIds = new ArrayList<>();
-	    assetIds.add(asset.getId());
-	    criteria.setAssetIds(assetIds);
+	    criteria.setAssetTokens(Collections.singletonList(assetToken));
 	}
 
+	// Perform search.
+	ISearchResults<IDeviceAssignment> matches = getDeviceManagement().listDeviceAssignments(criteria);
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
+	helper.setIncludeDevice(includeDevice);
+	helper.setIncludeCustomer(includeCustomer);
+	helper.setIncludeArea(includeArea);
+	helper.setIncludeAsset(includeAsset);
+
+	List<IDeviceAssignment> results = new ArrayList<>();
+	for (IDeviceAssignment assn : matches.getResults()) {
+	    results.add(helper.convert(assn, getAssetManagement()));
+	}
+	return new SearchResults<IDeviceAssignment>(results, matches.getNumResults());
+    }
+
+    /**
+     * Perform and advanced search of device assignments.
+     * 
+     * @param includeDevice
+     * @param includeCustomer
+     * @param includeArea
+     * @param includeAsset
+     * @param criteria
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    @PostMapping(value = "/search")
+    @ApiOperation(value = "Search device assignments with advanced criteria")
+    public ISearchResults<IDeviceAssignment> searchDeviceAssignments(
+	    @ApiParam(value = "Include device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
+	    @ApiParam(value = "Include customer information", required = false) @RequestParam(defaultValue = "false") boolean includeCustomer,
+	    @ApiParam(value = "Include area information", required = false) @RequestParam(defaultValue = "false") boolean includeArea,
+	    @ApiParam(value = "Include asset information", required = false) @RequestParam(defaultValue = "false") boolean includeAsset,
+	    @RequestBody DeviceAssignmentSearchCriteria criteria, HttpServletResponse response)
+	    throws SiteWhereException {
 	// Perform search.
 	ISearchResults<IDeviceAssignment> matches = getDeviceManagement().listDeviceAssignments(criteria);
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());

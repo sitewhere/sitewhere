@@ -564,7 +564,7 @@ public class DeviceManagementDecorator extends TenantEngineLifecycleComponentDec
      * @see com.sitewhere.spi.device.IDeviceManagement#getCustomersTree()
      */
     @Override
-    public List<ITreeNode> getCustomersTree() throws SiteWhereException {
+    public List<? extends ITreeNode> getCustomersTree() throws SiteWhereException {
 	return getDelegate().getCustomersTree();
     }
 
@@ -692,7 +692,7 @@ public class DeviceManagementDecorator extends TenantEngineLifecycleComponentDec
      * @see com.sitewhere.spi.device.IDeviceManagement#getAreasTree()
      */
     @Override
-    public List<ITreeNode> getAreasTree() throws SiteWhereException {
+    public List<? extends ITreeNode> getAreasTree() throws SiteWhereException {
 	return getDelegate().getAreasTree();
     }
 

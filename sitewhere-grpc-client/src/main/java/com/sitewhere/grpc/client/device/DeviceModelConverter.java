@@ -1170,6 +1170,21 @@ public class DeviceModelConverter {
     }
 
     /**
+     * Convert devices from API to GRPC.
+     * 
+     * @param apis
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<GDevice> asGrpcDevices(List<IDevice> apis) throws SiteWhereException {
+	List<GDevice> grpcs = new ArrayList<GDevice>();
+	for (IDevice api : apis) {
+	    grpcs.add(asGrpcDevice(api));
+	}
+	return grpcs;
+    }
+
+    /**
      * Convert device search criteria from GRPC to API.
      * 
      * @param grpc
@@ -1498,12 +1513,12 @@ public class DeviceModelConverter {
 	    GDeviceAssignmentSearchCriteria grpc) throws SiteWhereException {
 	DeviceAssignmentSearchCriteria api = new DeviceAssignmentSearchCriteria(grpc.getPaging().getPageNumber(),
 		grpc.getPaging().getPageSize());
-	api.setStatus(CommonModelConverter.asApiDeviceAssignmentStatus(grpc.getStatus()));
-	api.setDeviceId(grpc.hasDeviceId() ? CommonModelConverter.asApiUuid(grpc.getDeviceId()) : null);
-	api.setDeviceTypeIds(CommonModelConverter.asApiUuids(grpc.getDeviceTypeIdsList()));
-	api.setCustomerIds(CommonModelConverter.asApiUuids(grpc.getCustomerIdsList()));
-	api.setAreaIds(CommonModelConverter.asApiUuids(grpc.getAreaIdsList()));
-	api.setAssetIds(CommonModelConverter.asApiUuids(grpc.getAssetIdsList()));
+	api.setAssignmentStatuses(CommonModelConverter.asApiDeviceAssignmentStatuses(grpc.getStatusList()));
+	api.setDeviceTokens(grpc.getDeviceTokensList());
+	api.setDeviceTypeTokens(grpc.getDeviceTypeTokensList());
+	api.setCustomerTokens(grpc.getCustomerTokensList());
+	api.setAreaTokens(grpc.getAreaTokensList());
+	api.setAssetTokens(grpc.getAssetTokensList());
 	return api;
     }
 
@@ -1517,21 +1532,23 @@ public class DeviceModelConverter {
     public static GDeviceAssignmentSearchCriteria asGrpcDeviceAssignmentSearchCriteria(
 	    IDeviceAssignmentSearchCriteria api) throws SiteWhereException {
 	GDeviceAssignmentSearchCriteria.Builder grpc = GDeviceAssignmentSearchCriteria.newBuilder();
-	grpc.setStatus(CommonModelConverter.asGrpcDeviceAssignmentStatus(api.getStatus()));
-	if (api.getDeviceId() != null) {
-	    grpc.setDeviceId(CommonModelConverter.asGrpcUuid(api.getDeviceId()));
+	if (api.getAssignmentStatuses() != null) {
+	    grpc.addAllStatus(CommonModelConverter.asGrpcDeviceAssignmentStatuses(api.getAssignmentStatuses()));
 	}
-	if (api.getDeviceTypeIds() != null) {
-	    grpc.addAllDeviceTypeIds(CommonModelConverter.asGrpcUuids(api.getDeviceTypeIds()));
+	if (api.getDeviceTokens() != null) {
+	    grpc.addAllDeviceTokens(api.getDeviceTokens());
 	}
-	if (api.getCustomerIds() != null) {
-	    grpc.addAllCustomerIds(CommonModelConverter.asGrpcUuids(api.getCustomerIds()));
+	if (api.getDeviceTypeTokens() != null) {
+	    grpc.addAllDeviceTypeTokens(api.getDeviceTypeTokens());
 	}
-	if (api.getAreaIds() != null) {
-	    grpc.addAllAreaIds(CommonModelConverter.asGrpcUuids(api.getAreaIds()));
+	if (api.getCustomerTokens() != null) {
+	    grpc.addAllCustomerTokens(api.getCustomerTokens());
 	}
-	if (api.getAssetIds() != null) {
-	    grpc.addAllAssetIds(CommonModelConverter.asGrpcUuids(api.getAssetIds()));
+	if (api.getAreaTokens() != null) {
+	    grpc.addAllAreaTokens(api.getAreaTokens());
+	}
+	if (api.getAssetTokens() != null) {
+	    grpc.addAllAssetTokens(api.getAssetTokens());
 	}
 	grpc.setPaging(CommonModelConverter.asGrpcPaging(api));
 	return grpc.build();
@@ -2163,7 +2180,7 @@ public class DeviceModelConverter {
 	api.setName(grpc.getName());
 	api.setIcon(grpc.hasIcon() ? grpc.getIcon().getValue() : null);
 	if (grpc.getChildrenCount() > 0) {
-	    api.setChildren(new ArrayList<ITreeNode>());
+	    api.setChildren(new ArrayList<TreeNode>());
 	    for (GTreeNode node : grpc.getChildrenList()) {
 		api.getChildren().add(DeviceModelConverter.asApiTreeNode(node));
 	    }
@@ -2429,8 +2446,8 @@ public class DeviceModelConverter {
 	AreaSearchCriteria api = new AreaSearchCriteria(grpc.getPaging().getPageNumber(),
 		grpc.getPaging().getPageSize());
 	api.setRootOnly(grpc.hasRootOnly() ? grpc.getRootOnly().getValue() : null);
-	api.setParentAreaId(grpc.hasParentAreaId() ? CommonModelConverter.asApiUuid(grpc.getParentAreaId()) : null);
-	api.setAreaTypeId(grpc.hasAreaTypeId() ? CommonModelConverter.asApiUuid(grpc.getAreaTypeId()) : null);
+	api.setParentAreaToken(grpc.hasParentAreaToken() ? grpc.getParentAreaToken().getValue() : null);
+	api.setAreaTypeToken(grpc.hasAreaTypeToken() ? grpc.getAreaTypeToken().getValue() : null);
 	return api;
     }
 
@@ -2446,11 +2463,11 @@ public class DeviceModelConverter {
 	if (api.getRootOnly() != null) {
 	    grpc.setRootOnly(GOptionalBoolean.newBuilder().setValue(api.getRootOnly()));
 	}
-	if (api.getParentAreaId() != null) {
-	    grpc.setParentAreaId(CommonModelConverter.asGrpcUuid(api.getParentAreaId()));
+	if (api.getParentAreaToken() != null) {
+	    grpc.setParentAreaToken(GOptionalString.newBuilder().setValue(api.getParentAreaToken()));
 	}
-	if (api.getAreaTypeId() != null) {
-	    grpc.setAreaTypeId(CommonModelConverter.asGrpcUuid(api.getAreaTypeId()));
+	if (api.getAreaTypeToken() != null) {
+	    grpc.setAreaTypeToken(GOptionalString.newBuilder().setValue(api.getAreaTypeToken()));
 	}
 	grpc.setPaging(CommonModelConverter.asGrpcPaging(api));
 	return grpc.build();

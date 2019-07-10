@@ -36,7 +36,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.label.ILabel;
@@ -152,15 +151,7 @@ public class Assets extends RestControllerBase {
 	    throws SiteWhereException {
 	// Build criteria.
 	AssetSearchCriteria criteria = new AssetSearchCriteria(page, pageSize);
-
-	// If limiting by asset type, look up asset type.
-	if (assetTypeToken != null) {
-	    IAssetType assetType = getAssetManagement().getAssetTypeByToken(assetTypeToken);
-	    if (assetType == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidAssetTypeToken, ErrorLevel.ERROR);
-	    }
-	    criteria.setAssetTypeId(assetType.getId());
-	}
+	criteria.setAssetTypeToken(assetTypeToken);
 
 	// Perform search.
 	ISearchResults<IAsset> matches = getAssetManagement().listAssets(criteria);

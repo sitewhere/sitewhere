@@ -8,8 +8,8 @@
 package com.sitewhere.device.marshaling;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 import com.sitewhere.rest.model.common.BrandedEntity;
 import com.sitewhere.rest.model.customer.Customer;
@@ -87,11 +87,9 @@ public class CustomerMarshalHelper {
 	    }
 	}
 	if (isIncludeAssignments()) {
-	    List<UUID> customerIds = new ArrayList<>();
-	    customerIds.add(customer.getId());
 	    DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(1, 0);
-	    criteria.setStatus(DeviceAssignmentStatus.Active);
-	    criteria.setCustomerIds(customerIds);
+	    criteria.setAssignmentStatuses(Collections.singletonList(DeviceAssignmentStatus.Active));
+	    criteria.setCustomerTokens(Collections.singletonList(customer.getToken()));
 	    ISearchResults<IDeviceAssignment> matches = getDeviceManagement().listDeviceAssignments(criteria);
 	    List<DeviceAssignment> assignments = new ArrayList<DeviceAssignment>();
 	    for (IDeviceAssignment match : matches.getResults()) {

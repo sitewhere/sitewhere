@@ -7,9 +7,7 @@
  */
 package com.sitewhere.asset.persistence;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.Collections;
 
 import com.sitewhere.persistence.Persistence;
 import com.sitewhere.rest.model.asset.Asset;
@@ -91,7 +89,7 @@ public class AssetManagementPersistence extends Persistence {
     public static void assetTypeDeleteLogic(IAssetType assetType, IAssetManagement assetManagement)
 	    throws SiteWhereException {
 	AssetSearchCriteria criteria = new AssetSearchCriteria(1, 1);
-	criteria.setAssetTypeId(assetType.getId());
+	criteria.setAssetTypeToken(assetType.getToken());
 	ISearchResults<IAsset> assets = assetManagement.listAssets(criteria);
 	if (assets.getNumResults() > 0) {
 	    throw new SiteWhereSystemException(ErrorCode.AssetTypeNoDeleteHasAssets, ErrorLevel.ERROR);
@@ -155,9 +153,8 @@ public class AssetManagementPersistence extends Persistence {
     public static void assetDeleteLogic(IAsset asset, IAssetManagement assetManagement,
 	    IDeviceManagement deviceManagement) throws SiteWhereException {
 	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(1, 1);
-	List<UUID> assetIds = new ArrayList<>();
-	assetIds.add(asset.getId());
-	criteria.setAssetIds(assetIds);
+	criteria.setAssetTokens(Collections.singletonList(asset.getToken()));
+
 	ISearchResults<IDeviceAssignment> assignments = deviceManagement.listDeviceAssignments(criteria);
 	if (assignments.getNumResults() > 0) {
 	    throw new SiteWhereSystemException(ErrorCode.AssetNoDeleteHasAssignments, ErrorLevel.ERROR);

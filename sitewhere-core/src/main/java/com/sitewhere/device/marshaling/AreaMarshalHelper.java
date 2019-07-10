@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +25,7 @@ import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.rest.model.search.device.ZoneSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
+import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
@@ -95,20 +95,19 @@ public class AreaMarshalHelper {
 	area.setBounds(Location.copy(source.getBounds()));
 	BrandedEntity.copy(source, area);
 	if (isIncludeAreaType()) {
-	    area.setAreaType(getDeviceManagement().getAreaType(source.getAreaTypeId()));
+	    IAreaType type = getDeviceManagement().getAreaType(source.getAreaTypeId());
+	    area.setAreaType(new AreaTypeMarshalHelper(deviceManagement).convert(type));
 	}
 	if (isIncludeParentArea()) {
 	    if (source.getParentId() != null) {
 		IArea parent = getDeviceManagement().getArea(source.getParentId());
-		area.setParentArea(parent);
+		area.setParentArea(new AreaMarshalHelper(deviceManagement, assetManagement).convert(parent));
 	    }
 	}
 	if (isIncludeAssignments()) {
-	    List<UUID> areaIds = new ArrayList<>();
-	    areaIds.add(area.getId());
 	    DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(1, 0);
-	    criteria.setStatus(DeviceAssignmentStatus.Active);
-	    criteria.setAreaIds(areaIds);
+	    criteria.setAssignmentStatuses(Collections.singletonList(DeviceAssignmentStatus.Active));
+	    criteria.setAreaTokens(Collections.singletonList(area.getToken()));
 	    ISearchResults<IDeviceAssignment> matches = getDeviceManagement().listDeviceAssignments(criteria);
 	    List<DeviceAssignment> assignments = new ArrayList<DeviceAssignment>();
 	    for (IDeviceAssignment match : matches.getResults()) {

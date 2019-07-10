@@ -9,6 +9,7 @@ package com.sitewhere.web.rest.controllers;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -239,11 +240,7 @@ public class Devices extends RestControllerBase {
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	// Create search criteria.
 	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(page, pageSize);
-	IDevice device = getDeviceManagement().getDeviceByToken(deviceToken);
-	if (device == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceToken, ErrorLevel.ERROR);
-	}
-	criteria.setDeviceId(device.getId());
+	criteria.setDeviceTokens(Collections.singletonList(deviceToken));
 
 	ISearchResults<IDeviceAssignment> history = getDeviceManagement().listDeviceAssignments(criteria);
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());

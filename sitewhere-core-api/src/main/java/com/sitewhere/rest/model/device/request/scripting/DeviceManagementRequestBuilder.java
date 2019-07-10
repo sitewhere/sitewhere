@@ -8,6 +8,7 @@
 package com.sitewhere.rest.model.device.request.scripting;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.sitewhere.rest.model.area.request.AreaCreateRequest;
@@ -293,7 +294,7 @@ public class DeviceManagementRequestBuilder {
      */
     public List<IDeviceAssignment> allActiveAssignments() throws SiteWhereException {
 	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(1, 0);
-	criteria.setStatus(DeviceAssignmentStatus.Active);
+	criteria.setAssignmentStatuses(Collections.singletonList(DeviceAssignmentStatus.Active));
 
 	ISearchResults<IDeviceAssignment> matches = getDeviceManagement().listDeviceAssignments(criteria);
 	return matches.getResults();

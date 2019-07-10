@@ -8,6 +8,7 @@
 package com.sitewhere.web.rest.controllers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +51,6 @@ import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.area.IArea;
-import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -220,7 +220,7 @@ public class Areas extends RestControllerBase {
      */
     @GetMapping(value = "/tree")
     @ApiOperation(value = "List all areas in tree format")
-    public List<ITreeNode> getAreasTree() throws SiteWhereException {
+    public List<? extends ITreeNode> getAreasTree() throws SiteWhereException {
 	return getDeviceManagement().getAreasTree();
     }
 
@@ -235,28 +235,13 @@ public class Areas extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    protected AreaSearchCriteria buildAreaSearchCriteria(int page, int pageSize, boolean rootOnly,
+    public static AreaSearchCriteria buildAreaSearchCriteria(int page, int pageSize, boolean rootOnly,
 	    String parentAreaToken, String areaTypeToken) throws SiteWhereException {
 	// Build criteria.
 	AreaSearchCriteria criteria = new AreaSearchCriteria(page, pageSize);
 	criteria.setRootOnly(rootOnly);
-
-	// Look up parent area if provided.
-	if (parentAreaToken != null) {
-	    IArea parent = getDeviceManagement().getAreaByToken(parentAreaToken);
-	    if (parent != null) {
-		criteria.setParentAreaId(parent.getId());
-	    }
-	}
-
-	// Look up area type if provided.
-	if (areaTypeToken != null) {
-	    IAreaType areaType = getDeviceManagement().getAreaTypeByToken(areaTypeToken);
-	    if (areaType != null) {
-		criteria.setAreaTypeId(areaType.getId());
-	    }
-	}
-
+	criteria.setParentAreaToken(parentAreaToken);
+	criteria.setAreaTypeToken(areaTypeToken);
 	return criteria;
     }
 
@@ -297,7 +282,7 @@ public class Areas extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletResponse response) throws SiteWhereException {
-	List<UUID> areas = resolveAreaIds(areaToken, true, getDeviceManagement());
+	List<UUID> areas = resolveAreaIdsRecursive(areaToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
 		endDate, response);
 	ISearchResults<IDeviceMeasurement> results = getDeviceEventManagement()
@@ -332,7 +317,7 @@ public class Areas extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletResponse response) throws SiteWhereException {
-	List<UUID> areas = resolveAreaIds(areaToken, true, getDeviceManagement());
+	List<UUID> areas = resolveAreaIdsRecursive(areaToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
 		endDate, response);
 	ISearchResults<IDeviceLocation> results = getDeviceEventManagement()
@@ -369,7 +354,7 @@ public class Areas extends RestControllerBase {
 	    HttpServletResponse response) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
 		endDate, response);
-	List<UUID> areas = resolveAreaIds(areaToken, true, getDeviceManagement());
+	List<UUID> areas = resolveAreaIdsRecursive(areaToken, true, getDeviceManagement());
 	ISearchResults<IDeviceAlert> results = getDeviceEventManagement()
 		.listDeviceAlertsForIndex(DeviceEventIndex.Area, areas, criteria);
 
@@ -402,7 +387,7 @@ public class Areas extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletResponse response) throws SiteWhereException {
-	List<UUID> areas = resolveAreaIds(areaToken, true, getDeviceManagement());
+	List<UUID> areas = resolveAreaIdsRecursive(areaToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
 		endDate, response);
 	ISearchResults<IDeviceCommandInvocation> results = getDeviceEventManagement()
@@ -437,7 +422,7 @@ public class Areas extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletResponse response) throws SiteWhereException {
-	List<UUID> areas = resolveAreaIds(areaToken, true, getDeviceManagement());
+	List<UUID> areas = resolveAreaIdsRecursive(areaToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
 		endDate, response);
 	ISearchResults<IDeviceCommandResponse> results = getDeviceEventManagement()
@@ -472,7 +457,7 @@ public class Areas extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletResponse response) throws SiteWhereException {
-	List<UUID> areas = resolveAreaIds(areaToken, true, getDeviceManagement());
+	List<UUID> areas = resolveAreaIdsRecursive(areaToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
 		endDate, response);
 	ISearchResults<IDeviceStateChange> results = getDeviceEventManagement()
@@ -514,10 +499,10 @@ public class Areas extends RestControllerBase {
 	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(page, pageSize);
 	DeviceAssignmentStatus decodedStatus = (status != null) ? DeviceAssignmentStatus.valueOf(status) : null;
 	if (decodedStatus != null) {
-	    criteria.setStatus(decodedStatus);
+	    criteria.setAssignmentStatuses(Collections.singletonList(decodedStatus));
 	}
-	List<UUID> areas = resolveAreaIds(areaToken, true, getDeviceManagement());
-	criteria.setAreaIds(areas);
+	List<String> areas = resolveAreaTokensRecursive(areaToken, true, getDeviceManagement());
+	criteria.setAreaTokens(areas);
 
 	ISearchResults<IDeviceAssignment> matches = getDeviceManagement().listDeviceAssignments(criteria);
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
@@ -557,8 +542,8 @@ public class Areas extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    protected List<String> resolveAreaTokens(String areaToken, boolean recursive, IDeviceManagement deviceManagement)
-	    throws SiteWhereException {
+    public static List<String> resolveAreaTokensRecursive(String areaToken, boolean recursive,
+	    IDeviceManagement deviceManagement) throws SiteWhereException {
 	List<IArea> areas = resolveAreas(areaToken, recursive, deviceManagement);
 	List<String> tokens = new ArrayList<>();
 	for (IArea area : areas) {
@@ -576,8 +561,8 @@ public class Areas extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    public static List<UUID> resolveAreaIds(String areaToken, boolean recursive, IDeviceManagement deviceManagement)
-	    throws SiteWhereException {
+    public static List<UUID> resolveAreaIdsRecursive(String areaToken, boolean recursive,
+	    IDeviceManagement deviceManagement) throws SiteWhereException {
 	List<IArea> areas = resolveAreas(areaToken, recursive, deviceManagement);
 	List<UUID> ids = new ArrayList<>();
 	for (IArea area : areas) {

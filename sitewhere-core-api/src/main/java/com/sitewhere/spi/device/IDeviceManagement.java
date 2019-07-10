@@ -538,7 +538,7 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public List<ITreeNode> getCustomersTree() throws SiteWhereException;
+    public List<? extends ITreeNode> getCustomersTree() throws SiteWhereException;
 
     /**
      * Delete a customer.
@@ -665,7 +665,7 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public List<ITreeNode> getAreasTree() throws SiteWhereException;
+    public List<? extends ITreeNode> getAreasTree() throws SiteWhereException;
 
     /**
      * Delete an area.
