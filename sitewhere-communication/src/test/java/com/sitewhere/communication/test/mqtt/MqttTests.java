@@ -41,10 +41,10 @@ import com.sitewhere.spi.device.event.AlertSource;
 public class MqttTests {
 
     /** Nunber of threads for multithreaded tests */
-    private static final int NUM_THREADS = 1;
+    private static final int NUM_THREADS = 10;
 
     /** Nunber of calls performed per thread */
-    private static final int NUM_CALLS_PER_THREAD = 1;
+    private static final int NUM_CALLS_PER_THREAD = 10;
 
     @Test
     public void runMqttTest() throws Exception {
@@ -106,7 +106,7 @@ public class MqttTests {
 	 */
 	public void sendLocationOverMqtt() throws SiteWhereException {
 	    DeviceRequest request = new DeviceRequest();
-	    request.setDeviceToken("39430-GALAXYTAB3-7481908");
+	    request.setDeviceToken("79439-OPENHAB-2059127");
 	    request.setType(Type.DeviceLocation);
 	    DeviceLocationCreateRequest location = new DeviceLocationCreateRequest();
 	    location.setEventDate(new Date());

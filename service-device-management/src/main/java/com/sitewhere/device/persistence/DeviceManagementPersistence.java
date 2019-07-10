@@ -393,38 +393,7 @@ public class DeviceManagementPersistence extends Persistence {
 	command.setDescription(request.getDescription());
 	command.getParameters().addAll(request.getParameters());
 
-	checkDuplicateCommand(command, existing);
-
 	return command;
-    }
-
-    /**
-     * Checks whether a command is already in the given list (same name and
-     * namespace).
-     * 
-     * @param command
-     * @param existing
-     * @throws SiteWhereException
-     */
-    protected static void checkDuplicateCommand(DeviceCommand command, List<IDeviceCommand> existing)
-	    throws SiteWhereException {
-	boolean duplicate = false;
-	for (IDeviceCommand current : existing) {
-	    if (current.getName().equals(command.getName())) {
-		if (current.getNamespace() == null) {
-		    if (command.getNamespace() == null) {
-			duplicate = true;
-			break;
-		    }
-		} else if (current.getNamespace().equals(command.getNamespace())) {
-		    duplicate = true;
-		    break;
-		}
-	    }
-	}
-	if (duplicate) {
-	    throw new SiteWhereSystemException(ErrorCode.DeviceCommandExists, ErrorLevel.ERROR);
-	}
     }
 
     /**
@@ -444,16 +413,10 @@ public class DeviceManagementPersistence extends Persistence {
 	    target.setDeviceTypeId(deviceType.getId());
 	}
 	if (request.getName() != null) {
-	    if (!request.getName().equals(target.getName())) {
-		checkDuplicateCommand(target, existing);
-		target.setName(request.getName());
-	    }
+	    target.setName(request.getName());
 	}
 	if (request.getNamespace() != null) {
-	    if (!request.getNamespace().equals(target.getNamespace())) {
-		checkDuplicateCommand(target, existing);
-		target.setNamespace(request.getNamespace());
-	    }
+	    target.setNamespace(request.getNamespace());
 	}
 
 	if (request.getDescription() != null) {
