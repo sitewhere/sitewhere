@@ -421,6 +421,22 @@ public class CommonModelConverter {
     }
 
     /**
+     * Convert device assignment statuses from GRPC to API.
+     * 
+     * @param grpcs
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<DeviceAssignmentStatus> asApiDeviceAssignmentStatuses(List<GDeviceAssignmentStatus> grpcs)
+	    throws SiteWhereException {
+	List<DeviceAssignmentStatus> api = new ArrayList<DeviceAssignmentStatus>();
+	for (GDeviceAssignmentStatus grpc : grpcs) {
+	    api.add(CommonModelConverter.asApiDeviceAssignmentStatus(grpc));
+	}
+	return api;
+    }
+
+    /**
      * Convert device assignment status from API to GRPC.
      * 
      * @param api
@@ -441,5 +457,21 @@ public class CommonModelConverter {
 	    return GDeviceAssignmentStatus.ASSN_STATUS_RELEASED;
 	}
 	throw new SiteWhereException("Unknown device assignment status: " + api.name());
+    }
+
+    /**
+     * Convert device assignment statuses from API to GRPC.
+     * 
+     * @param apis
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<GDeviceAssignmentStatus> asGrpcDeviceAssignmentStatuses(List<DeviceAssignmentStatus> apis)
+	    throws SiteWhereException {
+	List<GDeviceAssignmentStatus> grpcs = new ArrayList<GDeviceAssignmentStatus>();
+	for (DeviceAssignmentStatus api : apis) {
+	    grpcs.add(asGrpcDeviceAssignmentStatus(api));
+	}
+	return grpcs;
     }
 }

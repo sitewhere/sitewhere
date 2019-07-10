@@ -8,6 +8,7 @@
 package com.sitewhere.device.persistence;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -598,7 +599,7 @@ public class DeviceManagementPersistence extends Persistence {
 	}
 
 	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(1, 1);
-	criteria.setDeviceId(device.getId());
+	criteria.setDeviceTokens(Collections.singletonList(device.getToken()));
 	ISearchResults<IDeviceAssignment> assignments = deviceManagement.listDeviceAssignments(criteria);
 	if (assignments.getNumResults() > 0) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceDeleteHasAssignments, ErrorLevel.ERROR);

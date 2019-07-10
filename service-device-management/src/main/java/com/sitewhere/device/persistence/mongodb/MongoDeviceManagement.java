@@ -22,6 +22,7 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.result.DeleteResult;
 import com.sitewhere.common.MarshalUtils;
+import com.sitewhere.device.DeviceManagementUtils;
 import com.sitewhere.device.microservice.DeviceManagementMicroservice;
 import com.sitewhere.device.persistence.DeviceManagementPersistence;
 import com.sitewhere.device.persistence.TreeBuilder;
@@ -44,6 +45,7 @@ import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
+import com.sitewhere.rest.model.search.TreeNode;
 import com.sitewhere.rest.model.search.area.AreaSearchCriteria;
 import com.sitewhere.rest.model.search.customer.CustomerSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceCommandSearchCriteria;
@@ -86,7 +88,6 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.error.ResourceExistsException;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.search.ITreeNode;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceAlarmSearchCriteria;
@@ -1131,23 +1132,44 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	}
 	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
 	Document query = new Document();
-	if (criteria.getStatus() != null) {
-	    query.append(MongoDeviceAssignment.PROP_STATUS, criteria.getStatus().name());
+	if ((criteria.getAssignmentStatuses() != null) && (criteria.getAssignmentStatuses().size() > 0)) {
+	    List<String> names = DeviceManagementUtils.getAssignmentStatusNames(criteria.getAssignmentStatuses());
+	    query.append(MongoDeviceAssignment.PROP_STATUS, new Document("$in", names));
 	}
-	if (criteria.getDeviceId() != null) {
-	    query.append(MongoDeviceAssignment.PROP_DEVICE_ID, criteria.getDeviceId());
+	if ((criteria.getDeviceTokens() != null) && (criteria.getDeviceTokens().size() > 0)) {
+	    List<UUID> ids = DeviceManagementUtils.getDeviceIds(criteria.getDeviceTokens(), this);
+	    query.append(MongoDeviceAssignment.PROP_DEVICE_ID, new Document("$in", ids));
 	}
-	if ((criteria.getCustomerIds() != null) && (criteria.getCustomerIds().size() > 0)) {
-	    query.append(MongoDeviceAssignment.PROP_CUSTOMER_ID, new Document("$in", criteria.getCustomerIds()));
+	if ((criteria.getCustomerTokens() != null) && (criteria.getCustomerTokens().size() > 0)) {
+	    List<UUID> ids = DeviceManagementUtils.getCustomerIds(criteria.getCustomerTokens(), this);
+	    query.append(MongoDeviceAssignment.PROP_CUSTOMER_ID, new Document("$in", ids));
 	}
-	if ((criteria.getAreaIds() != null) && (criteria.getAreaIds().size() > 0)) {
-	    query.append(MongoDeviceAssignment.PROP_AREA_ID, new Document("$in", criteria.getAreaIds()));
+	if ((criteria.getAreaTokens() != null) && (criteria.getAreaTokens().size() > 0)) {
+	    List<UUID> ids = DeviceManagementUtils.getAreaIds(criteria.getAreaTokens(), this);
+	    query.append(MongoDeviceAssignment.PROP_AREA_ID, new Document("$in", ids));
 	}
-	if ((criteria.getAssetIds() != null) && (criteria.getAssetIds().size() > 0)) {
-	    query.append(MongoDeviceAssignment.PROP_ASSET_ID, new Document("$in", criteria.getAssetIds()));
+	if ((criteria.getAssetTokens() != null) && (criteria.getAssetTokens().size() > 0)) {
+	    List<UUID> ids = getAssetIds(criteria.getAssetTokens());
+	    query.append(MongoDeviceAssignment.PROP_ASSET_ID, new Document("$in", ids));
 	}
 	Document sort = new Document(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);
 	return MongoPersistence.search(IDeviceAssignment.class, assignments, query, sort, criteria, LOOKUP);
+    }
+
+    /**
+     * Look up a list of asset tokens to get the corresponding list of asset ids.
+     * 
+     * @param tokens
+     * @return
+     * @throws SiteWhereException
+     */
+    protected List<UUID> getAssetIds(List<String> tokens) throws SiteWhereException {
+	List<UUID> result = new ArrayList<>();
+	for (String token : tokens) {
+	    IAsset asset = getAssetManagement().getAssetByToken(token);
+	    result.add(asset.getId());
+	}
+	return result;
     }
 
     /*
@@ -1415,7 +1437,7 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
      * @see com.sitewhere.spi.device.IDeviceManagement#getCustomersTree()
      */
     @Override
-    public List<ITreeNode> getCustomersTree() throws SiteWhereException {
+    public List<TreeNode> getCustomersTree() throws SiteWhereException {
 	ISearchResults<ICustomer> all = listCustomers(new CustomerSearchCriteria(1, 0));
 	return TreeBuilder.buildTree(all.getResults());
     }
@@ -1629,11 +1651,13 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	Document query = new Document();
 	if ((criteria.getRootOnly() != null) && (criteria.getRootOnly().booleanValue() == true)) {
 	    query.append(MongoArea.PROP_PARENT_AREA_ID, null);
-	} else if (criteria.getParentAreaId() != null) {
-	    query.append(MongoArea.PROP_PARENT_AREA_ID, criteria.getParentAreaId());
+	} else if (criteria.getParentAreaToken() != null) {
+	    IArea parent = MongoArea.fromDocument(assertArea(criteria.getParentAreaToken()));
+	    query.append(MongoArea.PROP_PARENT_AREA_ID, parent.getId());
 	}
-	if (criteria.getAreaTypeId() != null) {
-	    query.append(MongoArea.PROP_AREA_TYPE_ID, criteria.getAreaTypeId());
+	if (criteria.getAreaTypeToken() != null) {
+	    IAreaType type = MongoAreaType.fromDocument(assertAreaType(criteria.getAreaTypeToken()));
+	    query.append(MongoArea.PROP_AREA_TYPE_ID, type.getId());
 	}
 	Document sort = new Document(MongoArea.PROP_NAME, 1);
 	return MongoPersistence.search(IArea.class, areas, query, sort, criteria, LOOKUP);
@@ -1643,7 +1667,7 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
      * @see com.sitewhere.spi.device.IDeviceManagement#getAreasTree()
      */
     @Override
-    public List<ITreeNode> getAreasTree() throws SiteWhereException {
+    public List<TreeNode> getAreasTree() throws SiteWhereException {
 	ISearchResults<IArea> all = listAreas(new AreaSearchCriteria(1, 0));
 	return TreeBuilder.buildTree(all.getResults());
     }
@@ -2151,6 +2175,22 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	MongoCollection<Document> types = getMongoClient().getAreaTypesCollection();
 	Document query = new Document(MongoPersistentEntity.PROP_TOKEN, token);
 	return types.find(query).first();
+    }
+
+    /**
+     * Return the {@link Document} for the area type with the given token. Throws an
+     * exception if the token is not found.
+     * 
+     * @param hardwareId
+     * @return
+     * @throws SiteWhereException
+     */
+    protected Document assertAreaType(String token) throws SiteWhereException {
+	Document match = getAreaTypeDocumentByToken(token);
+	if (match == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaTypeToken, ErrorLevel.INFO);
+	}
+	return match;
     }
 
     /**

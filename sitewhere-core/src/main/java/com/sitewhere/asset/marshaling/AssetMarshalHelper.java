@@ -61,7 +61,7 @@ public class AssetMarshalHelper {
 	if (isIncludeAssetType()) {
 	    IAssetType assetType = getAssetManagement().getAssetType(source.getAssetTypeId());
 	    if (assetType != null) {
-		asset.setAssetType(assetType);
+		asset.setAssetType(new AssetTypeMarshalHelper(assetManagement).convert(assetType));
 	    } else {
 		LOGGER.warn("Asset references invalid asset type.");
 	    }

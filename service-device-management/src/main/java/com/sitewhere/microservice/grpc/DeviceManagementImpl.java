@@ -410,7 +410,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GGetCustomersTreeResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetCustomersTreeMethod());
-	    List<ITreeNode> apiResult = getDeviceManagement().getCustomersTree();
+	    List<? extends ITreeNode> apiResult = getDeviceManagement().getCustomersTree();
 	    GGetCustomersTreeResponse.Builder response = GGetCustomersTreeResponse.newBuilder();
 	    for (ITreeNode node : apiResult) {
 		response.addCustomers(DeviceModelConverter.asGrpcTreeNode(node));
@@ -760,7 +760,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void getAreasTree(GGetAreasTreeRequest request, StreamObserver<GGetAreasTreeResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetAreasTreeMethod());
-	    List<ITreeNode> apiResult = getDeviceManagement().getAreasTree();
+	    List<? extends ITreeNode> apiResult = getDeviceManagement().getAreasTree();
 	    GGetAreasTreeResponse.Builder response = GGetAreasTreeResponse.newBuilder();
 	    for (ITreeNode node : apiResult) {
 		response.addAreas(DeviceModelConverter.asGrpcTreeNode(node));

@@ -281,12 +281,43 @@ public class MongoAssetManagement extends TenantEngineLifecycleComponent impleme
 	Document query = new Document();
 
 	// Add filter if asset type id specified.
-	if (criteria.getAssetTypeId() != null) {
-	    query.append(MongoAsset.PROP_ASSET_TYPE_ID, criteria.getAssetTypeId());
+	if (criteria.getAssetTypeToken() != null) {
+	    IAssetType type = MongoAssetType.fromDocument(assertAssetType(criteria.getAssetTypeToken()));
+	    query.append(MongoAsset.PROP_ASSET_TYPE_ID, type.getId());
 	}
 
 	Document sort = new Document(MongoAsset.PROP_NAME, 1);
 	return MongoPersistence.search(IAsset.class, assets, query, sort, criteria, LOOKUP);
+    }
+
+    /**
+     * Get the DBObject containing asset type information that matches the given
+     * token.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    protected Document getAssetTypeDocumentByToken(String token) throws SiteWhereException {
+	MongoCollection<Document> assetTypes = getMongoClient().getAssetTypesCollection();
+	Document query = new Document(MongoPersistentEntity.PROP_TOKEN, token);
+	return assetTypes.find(query).first();
+    }
+
+    /**
+     * Return the {@link Document} for the asset type with the given token. Throws
+     * an exception if the token is not found.
+     * 
+     * @param hardwareId
+     * @return
+     * @throws SiteWhereException
+     */
+    protected Document assertAssetType(String token) throws SiteWhereException {
+	Document match = getAssetTypeDocumentByToken(token);
+	if (match == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidAssetTypeToken, ErrorLevel.INFO);
+	}
+	return match;
     }
 
     /**
