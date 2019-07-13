@@ -328,13 +328,13 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     public IDeviceAssignment getDeviceAssignmentByToken(String token) throws SiteWhereException;
 
     /**
-     * Gets the current assignment for a device. Null if none.
+     * Gets list of active assignments for a device.
      * 
      * @param deviceId
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceAssignment getCurrentDeviceAssignment(UUID deviceId) throws SiteWhereException;
+    public List<IDeviceAssignment> getActiveDeviceAssignments(UUID deviceId) throws SiteWhereException;
 
     /**
      * Update an existing device assignment.

@@ -7,6 +7,8 @@
  */
 package com.sitewhere.commands.destination.mqtt;
 
+import java.util.List;
+
 import org.fusesource.hawtdispatch.ShutdownException;
 import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.QoS;
@@ -24,8 +26,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * Implementation of {@link ICommandDeliveryProvider} that publishes commands to
  * an MQTT topic so that they can be processed asynchronously by a device
  * listening on the topic.
- * 
- * @author Derek
  */
 public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
 	implements ICommandDeliveryProvider<byte[], MqttParameters> {
@@ -75,17 +75,15 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.ICommandDeliveryProvider#deliver(
-     * com. sitewhere .spi.device.IDeviceNestingContext,
-     * com.sitewhere.spi.device.IDeviceAssignment,
+     * @see
+     * com.sitewhere.commands.spi.ICommandDeliveryProvider#deliver(com.sitewhere.spi
+     * .device.IDeviceNestingContext, java.util.List,
      * com.sitewhere.spi.device.command.IDeviceCommandExecution, java.lang.Object,
      * java.lang.Object)
      */
     @Override
-    public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment, IDeviceCommandExecution execution,
-	    byte[] encoded, MqttParameters params) throws SiteWhereException {
+    public void deliver(IDeviceNestingContext nested, List<IDeviceAssignment> assignments,
+	    IDeviceCommandExecution execution, byte[] encoded, MqttParameters params) throws SiteWhereException {
 	try {
 	    getLogger().info("About to publish command message to topic: " + params.getCommandTopic());
 	    connection.publish(params.getCommandTopic(), encoded, QoS.AT_LEAST_ONCE, false);
@@ -96,15 +94,13 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.ICommandDeliveryProvider#
-     * deliverSystemCommand (com.sitewhere.spi.device.IDeviceNestingContext,
-     * com.sitewhere.spi.device.IDeviceAssignment, java.lang.Object,
+     * @see
+     * com.sitewhere.commands.spi.ICommandDeliveryProvider#deliverSystemCommand(com.
+     * sitewhere.spi.device.IDeviceNestingContext, java.util.List, java.lang.Object,
      * java.lang.Object)
      */
     @Override
-    public void deliverSystemCommand(IDeviceNestingContext nested, IDeviceAssignment assignment, byte[] encoded,
+    public void deliverSystemCommand(IDeviceNestingContext nested, List<IDeviceAssignment> assignments, byte[] encoded,
 	    MqttParameters params) throws SiteWhereException {
 	try {
 	    getLogger().info("About to publish system message to topic: " + params.getSystemTopic());

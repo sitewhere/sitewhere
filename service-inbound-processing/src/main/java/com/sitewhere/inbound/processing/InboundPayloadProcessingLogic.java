@@ -108,22 +108,22 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
      * @throws SiteWhereException
      */
     protected void processDecodedEvent(GDecodedEventPayload event) throws SiteWhereException {
-	IDeviceAssignment assignment = validateAssignment(event);
-	if (assignment != null) {
+	List<IDeviceAssignment> assignments = validateAssignment(event);
+	if (assignments != null) {
 	    byte[] marshaled = EventModelMarshaler.buildDecodedEventPayloadMessage(event);
 	    getInboundEventsProducer().send(event.getDeviceToken(), marshaled);
 	}
     }
 
     /**
-     * Validates that inbound event payload references a registered device that is
-     * asssigned.
+     * Validates that inbound event payload references a registered device that has
+     * one or more active assignments.
      * 
      * @param payload
      * @return
      * @throws SiteWhereException
      */
-    protected IDeviceAssignment validateAssignment(GDecodedEventPayload payload) throws SiteWhereException {
+    protected List<IDeviceAssignment> validateAssignment(GDecodedEventPayload payload) throws SiteWhereException {
 	// Verify that device is registered.
 	final Histogram.Timer deviceLookupTime = DEVICE_LOOKUP_TIMER.labels(buildLabels()).startTimer();
 	IDevice device = null;
@@ -138,25 +138,25 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	}
 
 	// Verify that device is assigned.
-	if (device.getDeviceAssignmentId() == null) {
+	if (device.getActiveDeviceAssignmentIds().size() == 0) {
 	    handleUnassignedDevice(payload);
 	    return null;
 	}
 
 	// Verify that device assignment exists.
 	final Histogram.Timer assignmentLookupTime = ASSIGNMENT_LOOKUP_TIMER.labels(buildLabels()).startTimer();
-	IDeviceAssignment assignment = null;
+	List<IDeviceAssignment> assignments = null;
 	try {
-	    assignment = getDeviceManagement().getDeviceAssignment(device.getDeviceAssignmentId());
+	    assignments = getDeviceManagement().getActiveDeviceAssignments(device.getId());
 	} finally {
 	    assignmentLookupTime.close();
 	}
-	if (assignment == null) {
+	if (assignments.size() == 0) {
 	    handleUnassignedDevice(payload);
 	    return null;
 	}
 
-	return assignment;
+	return assignments;
     }
 
     /**

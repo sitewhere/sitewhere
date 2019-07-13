@@ -10,6 +10,7 @@ import com.sitewhere.spi.customer.ICustomer;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.IDeviceType;
 
 /**
  * Utility class for common device management operations.
@@ -30,6 +31,25 @@ public class DeviceManagementUtils {
 	for (String token : tokens) {
 	    IDevice device = deviceManagement.getDeviceByToken(token);
 	    result.add(device.getId());
+	}
+	return result;
+    }
+
+    /**
+     * Look up a list of device type tokens to get the corresponding list of device
+     * type ids.
+     * 
+     * @param tokens
+     * @param deviceManagement
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<UUID> getDeviceTypeIds(List<String> tokens, IDeviceManagement deviceManagement)
+	    throws SiteWhereException {
+	List<UUID> result = new ArrayList<>();
+	for (String token : tokens) {
+	    IDeviceType type = deviceManagement.getDeviceTypeByToken(token);
+	    result.add(type.getId());
 	}
 	return result;
     }

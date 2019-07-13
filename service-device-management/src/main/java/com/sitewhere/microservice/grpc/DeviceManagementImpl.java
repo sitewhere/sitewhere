@@ -2042,32 +2042,30 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getCurrentAssignmentForDevice(com.sitewhere.grpc.service.
-     * GGetCurrentAssignmentForDeviceRequest, io.grpc.stub.StreamObserver)
+     * getActiveAssignmentsForDevice(com.sitewhere.grpc.service.
+     * GGetActiveAssignmentsForDeviceRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void getCurrentAssignmentForDevice(GGetCurrentAssignmentForDeviceRequest request,
-	    StreamObserver<GGetCurrentAssignmentForDeviceResponse> responseObserver) {
+    public void getActiveAssignmentsForDevice(GGetActiveAssignmentsForDeviceRequest request,
+	    StreamObserver<GGetActiveAssignmentsForDeviceResponse> responseObserver) {
 	try {
-	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetCurrentAssignmentForDeviceMethod());
-	    IDeviceAssignment apiResult = getDeviceManagement()
-		    .getCurrentDeviceAssignment(CommonModelConverter.asApiUuid(request.getId()));
-	    GGetCurrentAssignmentForDeviceResponse.Builder response = GGetCurrentAssignmentForDeviceResponse
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetActiveAssignmentsForDeviceMethod());
+	    List<IDeviceAssignment> apiResult = getDeviceManagement()
+		    .getActiveDeviceAssignments(CommonModelConverter.asApiUuid(request.getId()));
+	    GGetActiveAssignmentsForDeviceResponse.Builder response = GGetActiveAssignmentsForDeviceResponse
 		    .newBuilder();
 	    if (apiResult != null) {
-		response.setAssignment(DeviceModelConverter.asGrpcDeviceAssignment(apiResult));
+		response.addAllAssignment(DeviceModelConverter.asGrpcDeviceAssignments(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetCurrentAssignmentForDeviceMethod(), e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetActiveAssignmentsForDeviceMethod(), e,
 		    responseObserver);
 	} finally {
-	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetCurrentAssignmentForDeviceMethod());
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetActiveAssignmentsForDeviceMethod());
 	}
     }
 

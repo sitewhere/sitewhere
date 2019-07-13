@@ -76,31 +76,27 @@ public class TwilioCommandDeliveryProvider extends TenantEngineLifecycleComponen
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.ICommandDeliveryProvider#deliver(
-     * com.sitewhere .spi.device.IDeviceNestingContext,
-     * com.sitewhere.spi.device.IDeviceAssignment,
+     * @see
+     * com.sitewhere.commands.spi.ICommandDeliveryProvider#deliver(com.sitewhere.spi
+     * .device.IDeviceNestingContext, java.util.List,
      * com.sitewhere.spi.device.command.IDeviceCommandExecution, java.lang.Object,
      * java.lang.Object)
      */
     @Override
-    public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment, IDeviceCommandExecution execution,
-	    String encoded, SmsParameters params) throws SiteWhereException {
+    public void deliver(IDeviceNestingContext nested, List<IDeviceAssignment> assignments,
+	    IDeviceCommandExecution execution, String encoded, SmsParameters params) throws SiteWhereException {
 	getLogger().info("Delivering SMS command to " + params.getSmsPhoneNumber() + ".");
 	sendSms(encoded, getFromPhoneNumber(), params.getSmsPhoneNumber());
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.ICommandDeliveryProvider#
-     * deliverSystemCommand (com.sitewhere.spi.device.IDeviceNestingContext,
-     * com.sitewhere.spi.device.IDeviceAssignment, java.lang.Object,
+     * @see
+     * com.sitewhere.commands.spi.ICommandDeliveryProvider#deliverSystemCommand(com.
+     * sitewhere.spi.device.IDeviceNestingContext, java.util.List, java.lang.Object,
      * java.lang.Object)
      */
     @Override
-    public void deliverSystemCommand(IDeviceNestingContext nested, IDeviceAssignment assignment, String encoded,
+    public void deliverSystemCommand(IDeviceNestingContext nested, List<IDeviceAssignment> assignments, String encoded,
 	    SmsParameters params) throws SiteWhereException {
 	throw new UnsupportedOperationException();
     }

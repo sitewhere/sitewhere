@@ -7,6 +7,7 @@
  */
 package com.sitewhere.commands.destination.sms;
 
+import java.util.List;
 import java.util.Map;
 
 import com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor;
@@ -39,11 +40,10 @@ public class SmsParameterExtractor extends TenantEngineLifecycleComponent
     /*
      * @see com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor#
      * extractDeliveryParameters(com.sitewhere.spi.device.IDeviceNestingContext,
-     * com.sitewhere.spi.device.IDeviceAssignment,
-     * com.sitewhere.spi.device.command.IDeviceCommandExecution)
+     * java.util.List, com.sitewhere.spi.device.command.IDeviceCommandExecution)
      */
     @Override
-    public SmsParameters extractDeliveryParameters(IDeviceNestingContext nesting, IDeviceAssignment assignment,
+    public SmsParameters extractDeliveryParameters(IDeviceNestingContext nesting, List<IDeviceAssignment> assignments,
 	    IDeviceCommandExecution execution) throws SiteWhereException {
 	SmsParameters params = new SmsParameters();
 

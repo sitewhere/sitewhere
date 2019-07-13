@@ -10,6 +10,7 @@ package com.sitewhere.commands.encoding.protobuf;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.List;
 
 import com.sitewhere.rest.model.device.event.DeviceEventOriginator;
 import com.sitewhere.spi.SiteWhereException;
@@ -30,17 +31,14 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 public class JavaHybridProtobufExecutionEncoder extends ProtobufExecutionEncoder {
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.device.communication.protobuf.ProtobufExecutionEncoder#
-     * encode(com .sitewhere.spi.device.command.IDeviceCommandExecution,
-     * com.sitewhere.spi.device.IDeviceNestingContext,
-     * com.sitewhere.spi.device.IDeviceAssignment)
+     * com.sitewhere.commands.encoding.protobuf.ProtobufExecutionEncoder#encode(com.
+     * sitewhere.spi.device.command.IDeviceCommandExecution,
+     * com.sitewhere.spi.device.IDeviceNestingContext, java.util.List)
      */
     @Override
-    public byte[] encode(IDeviceCommandExecution execution, IDeviceNestingContext nested, IDeviceAssignment assignment)
-	    throws SiteWhereException {
+    public byte[] encode(IDeviceCommandExecution execution, IDeviceNestingContext nested,
+	    List<IDeviceAssignment> assignments) throws SiteWhereException {
 	try {
 	    ByteArrayOutputStream encoded = new ByteArrayOutputStream();
 	    ObjectOutputStream out = new ObjectOutputStream(encoded);

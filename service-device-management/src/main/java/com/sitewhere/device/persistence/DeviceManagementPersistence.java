@@ -594,7 +594,7 @@ public class DeviceManagementPersistence extends Persistence {
      * @throws SiteWhereException
      */
     public static void deviceDeleteLogic(IDevice device, IDeviceManagement deviceManagement) throws SiteWhereException {
-	if (device.getDeviceAssignmentId() != null) {
+	if (device.getActiveDeviceAssignmentIds().size() > 0) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceCanNotBeDeletedIfAssigned, ErrorLevel.ERROR);
 	}
 

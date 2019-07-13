@@ -280,12 +280,12 @@ public class DeviceManagementDecorator extends TenantEngineLifecycleComponentDec
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getCurrentDeviceAssignment(java.
+     * com.sitewhere.spi.device.IDeviceManagement#getActiveDeviceAssignments(java.
      * util.UUID)
      */
     @Override
-    public IDeviceAssignment getCurrentDeviceAssignment(UUID id) throws SiteWhereException {
-	return getDelegate().getCurrentDeviceAssignment(id);
+    public List<IDeviceAssignment> getActiveDeviceAssignments(UUID deviceId) throws SiteWhereException {
+	return getDelegate().getActiveDeviceAssignments(deviceId);
     }
 
     /*

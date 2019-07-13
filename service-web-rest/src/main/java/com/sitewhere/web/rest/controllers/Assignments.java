@@ -302,8 +302,18 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Include customer information", required = false) @RequestParam(defaultValue = "false") boolean includeCustomer,
 	    @ApiParam(value = "Include area information", required = false) @RequestParam(defaultValue = "false") boolean includeArea,
 	    @ApiParam(value = "Include asset information", required = false) @RequestParam(defaultValue = "false") boolean includeAsset,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") Integer page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") Integer pageSize,
 	    @RequestBody DeviceAssignmentSearchCriteria criteria, HttpServletResponse response)
 	    throws SiteWhereException {
+	// Allow request parameters to override paging criteria.
+	if (page != null) {
+	    criteria.setPageNumber(page);
+	}
+	if (pageSize != null) {
+	    criteria.setPageSize(pageSize);
+	}
+
 	// Perform search.
 	ISearchResults<IDeviceAssignment> matches = getDeviceManagement().listDeviceAssignments(criteria);
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());

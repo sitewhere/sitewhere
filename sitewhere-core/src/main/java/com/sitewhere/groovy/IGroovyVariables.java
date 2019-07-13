@@ -32,6 +32,9 @@ public interface IGroovyVariables {
     /** Groovy variable used for passing assignment */
     public static final String VAR_ASSIGNMENT = "assignment";
 
+    /** Groovy variable used for passing active assignments */
+    public static final String VAR_ACTIVE_ASSIGNMENTS = "assignments";
+
     /** Groovy variable used for device management builder */
     public static final String VAR_DEVICE_MANAGEMENT_BUILDER = "deviceBuilder";
 

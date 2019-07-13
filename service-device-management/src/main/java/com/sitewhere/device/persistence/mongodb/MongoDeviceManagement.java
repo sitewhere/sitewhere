@@ -9,6 +9,7 @@ package com.sitewhere.device.persistence.mongodb;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,6 +49,7 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.TreeNode;
 import com.sitewhere.rest.model.search.area.AreaSearchCriteria;
 import com.sitewhere.rest.model.search.customer.CustomerSearchCriteria;
+import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceCommandSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceStatusSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
@@ -730,16 +732,17 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getCurrentDeviceAssignment(java.
+     * com.sitewhere.spi.device.IDeviceManagement#getActiveDeviceAssignments(java.
      * util.UUID)
      */
     @Override
-    public IDeviceAssignment getCurrentDeviceAssignment(UUID deviceId) throws SiteWhereException {
-	IDevice device = getApiDeviceById(deviceId);
-	if (device.getDeviceAssignmentId() == null) {
-	    return null;
+    public List<IDeviceAssignment> getActiveDeviceAssignments(UUID deviceId) throws SiteWhereException {
+	IDevice device = MongoDevice.fromDocument(assertDevice(deviceId));
+	List<IDeviceAssignment> active = new ArrayList<>();
+	for (UUID uuid : device.getActiveDeviceAssignmentIds()) {
+	    active.add(getDeviceAssignment(uuid));
 	}
-	return getDeviceAssignment(device.getDeviceAssignmentId());
+	return active;
     }
 
     /*
@@ -752,7 +755,7 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
 	Document dbCriteria = new Document();
 	if (criteria.isExcludeAssigned()) {
-	    dbCriteria.put(MongoDevice.PROP_ASSIGNMENT_ID, null);
+	    dbCriteria.put(MongoDevice.PROP_ACTIVE_ASSIGNMENT_IDS, new Document("$not", new Document("$size", 0)));
 	}
 	MongoPersistence.addDateSearchCriteria(dbCriteria, MongoPersistentEntity.PROP_CREATED_DATE, criteria);
 
@@ -852,12 +855,7 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
      */
     @Override
     public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request) throws SiteWhereException {
-	// Verify device is not already assigned.
 	IDevice existing = getDeviceByToken(request.getDeviceToken());
-	if (existing.getDeviceAssignmentId() != null) {
-	    throw new SiteWhereSystemException(ErrorCode.DeviceAlreadyAssigned, ErrorLevel.ERROR);
-	}
-	Document deviceDb = assertDevice(existing.getId());
 
 	// Look up customer if specified.
 	ICustomer customer = null;
@@ -890,21 +888,40 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	// Use common logic to load assignment from request.
 	DeviceAssignment newAssignment = DeviceManagementPersistence.deviceAssignmentCreateLogic(request, customer,
 		area, asset, existing);
-	if (newAssignment.getToken() == null) {
-	    newAssignment.setToken(UUID.randomUUID().toString());
-	}
 
 	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
 	Document created = MongoDeviceAssignment.toDocument(newAssignment);
 	MongoPersistence.insert(assignments, created, ErrorCode.DuplicateDeviceAssignment);
 
-	// Update device to point to created assignment.
-	MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
-	Document query = new Document(MongoPersistentEntity.PROP_TOKEN, request.getDeviceToken());
-	deviceDb.put(MongoDevice.PROP_ASSIGNMENT_ID, newAssignment.getId());
-	MongoPersistence.update(devices, query, deviceDb);
+	// Update field containing active assignments list.
+	updateDeviceActiveAssignments(existing);
 
 	return newAssignment;
+    }
+
+    /**
+     * Update field containing list of active assignments for device.
+     * 
+     * @param device
+     * @throws SiteWhereException
+     */
+    protected void updateDeviceActiveAssignments(IDevice device) throws SiteWhereException {
+	MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
+	Document query = new Document(MongoPersistentEntity.PROP_TOKEN, device.getToken());
+
+	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(1, 0);
+	criteria.setDeviceTokens(Collections.singletonList(device.getToken()));
+	criteria.setAssignmentStatuses(Collections.singletonList(DeviceAssignmentStatus.Active));
+	ISearchResults<IDeviceAssignment> matches = listDeviceAssignments(criteria);
+
+	List<UUID> uuids = new ArrayList<>();
+	for (IDeviceAssignment assignment : matches.getResults()) {
+	    uuids.add(assignment.getId());
+	}
+
+	Document deviceDb = assertDevice(device.getId());
+	deviceDb.put(MongoDevice.PROP_ACTIVE_ASSIGNMENT_IDS, uuids);
+	MongoPersistence.update(devices, query, deviceDb);
     }
 
     /*
@@ -1186,13 +1203,10 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	Document query = new Document(MongoPersistentEntity.PROP_ID, id);
 	MongoPersistence.update(assignments, query, match);
 
-	// Remove device assignment reference.
-	MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
+	// Update list of active assignments.
 	UUID deviceId = (UUID) match.get(MongoDeviceAssignment.PROP_DEVICE_ID);
-	Document deviceMatch = getDeviceDocumentById(deviceId);
-	deviceMatch.put(MongoDevice.PROP_ASSIGNMENT_ID, null);
-	query = new Document(MongoPersistentEntity.PROP_ID, deviceId);
-	MongoPersistence.update(devices, query, deviceMatch);
+	IDevice device = MongoDevice.fromDocument(assertDevice(deviceId));
+	updateDeviceActiveAssignments(device);
 
 	DeviceAssignment assignment = MongoDeviceAssignment.fromDocument(match);
 	return assignment;

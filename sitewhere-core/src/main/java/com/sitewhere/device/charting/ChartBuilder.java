@@ -22,13 +22,11 @@ import com.sitewhere.spi.device.event.IDeviceMeasurement;
 
 /**
  * Builds chart series from measurements.
- * 
- * @author Derek
  */
 public class ChartBuilder {
 
     /** Map of measurement names to series */
-    private Map<String, IChartSeries<Double>> seriesByMeasurementName;
+    private Map<String, ChartSeries<Double>> seriesByMeasurementName;
 
     /**
      * Process measurements into a list of charts series.
@@ -37,7 +35,7 @@ public class ChartBuilder {
      * @return
      */
     public List<IChartSeries<Double>> process(List<IDeviceMeasurement> matches, String[] measurementIds) {
-	seriesByMeasurementName = new HashMap<String, IChartSeries<Double>>();
+	seriesByMeasurementName = new HashMap<String, ChartSeries<Double>>();
 	List<String> mxids = null;
 	if ((measurementIds != null) && (measurementIds.length > 0)) {
 	    mxids = Arrays.asList(measurementIds);
@@ -67,7 +65,7 @@ public class ChartBuilder {
      * @param date
      */
     protected void addSeriesEntry(String key, Double value, Date date) {
-	IChartSeries<Double> series = seriesByMeasurementName.get(key);
+	ChartSeries<Double> series = seriesByMeasurementName.get(key);
 	if (series == null) {
 	    ChartSeries<Double> newSeries = new ChartSeries<Double>();
 	    newSeries.setMeasurementId(key);

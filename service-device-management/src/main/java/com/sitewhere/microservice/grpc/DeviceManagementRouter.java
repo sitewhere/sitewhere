@@ -1137,15 +1137,15 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getCurrentAssignmentForDevice(com.sitewhere.grpc.service.
-     * GGetCurrentAssignmentForDeviceRequest, io.grpc.stub.StreamObserver)
+     * getActiveAssignmentsForDevice(com.sitewhere.grpc.service.
+     * GGetActiveAssignmentsForDeviceRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void getCurrentAssignmentForDevice(GGetCurrentAssignmentForDeviceRequest request,
-	    StreamObserver<GGetCurrentAssignmentForDeviceResponse> responseObserver) {
+    public void getActiveAssignmentsForDevice(GGetActiveAssignmentsForDeviceRequest request,
+	    StreamObserver<GGetActiveAssignmentsForDeviceResponse> responseObserver) {
 	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
 	if (engine != null) {
-	    engine.getCurrentAssignmentForDevice(request, responseObserver);
+	    engine.getActiveAssignmentsForDevice(request, responseObserver);
 	}
     }
 

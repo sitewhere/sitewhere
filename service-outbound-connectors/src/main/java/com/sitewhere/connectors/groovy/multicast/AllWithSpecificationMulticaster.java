@@ -31,8 +31,6 @@ import groovy.lang.Binding;
 /**
  * Routes events to all devices that use a given specification. The list of
  * devices is cached and refreshed at an interval to improve performance.
- * 
- * @author Derek
  *
  * @param <T>
  */
@@ -86,16 +84,14 @@ public abstract class AllWithSpecificationMulticaster<T> extends GroovyComponent
 	List<T> routes = new ArrayList<T>();
 	IDeviceManagement dm = getDeviceManagement(getTenantEngine().getTenant());
 	for (IDevice targetDevice : matches) {
-	    IDeviceAssignment targetAssignment = dm.getDeviceAssignment(targetDevice.getDeviceAssignmentId());
+	    List<IDeviceAssignment> assignments = dm.getActiveDeviceAssignments(targetDevice.getId());
 	    Binding binding = new Binding();
 	    binding.setVariable("logger", getLogger());
 	    binding.setVariable("event", event);
 	    binding.setVariable("device", device);
 	    binding.setVariable("assignment", assignment);
-	    if (device.getDeviceAssignmentId() != null) {
-		binding.setVariable("targetAssignment", targetAssignment);
-		binding.setVariable("targetDevice", targetDevice);
-	    }
+	    binding.setVariable("targetDevice", targetDevice);
+	    binding.setVariable("targetAssignments", assignments);
 	    try {
 		Object result = run(binding);
 		if (result != null) {
